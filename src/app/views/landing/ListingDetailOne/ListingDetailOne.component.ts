@@ -3055,10 +3055,16 @@ if (bookingSummaryElement) {
   scrollToAccommodationCheckin() {
     const element = document.getElementById('checkin');
     if (element) {
-      const yOffset = -100; // Adjust this value as needed
+      const yOffset = -2000; // Adjust this value as needed
       const y = element.getBoundingClientRect().top + window.scrollY + yOffset;
       window.scrollTo({ top: y, behavior: 'smooth' });
       console.log('Scroll target position:', y);
+
+
+    const card = document.getElementById('slideCard');
+    if (card && card.classList.contains('active')) {
+      card.classList.remove('active');
+    }
   }
   }
 
