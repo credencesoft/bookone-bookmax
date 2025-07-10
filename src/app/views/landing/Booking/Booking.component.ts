@@ -1,4 +1,3 @@
-
 import { CallToActionComponent } from './../../../../views/landing/components/call-to-action/call-to-action.component';
 // import { Components } from './../../model/components';
 // import { Template } from './../../model/template';

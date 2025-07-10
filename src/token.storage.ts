@@ -349,13 +349,15 @@ export class TokenStorage {
       clearExtraChildCharge(){
          localStorage.removeItem(Save_Child_Charge);
       }
-       public saveLandingPrice(landingrice: any){
+         public saveLandingPrice(landingrice: any){
     localStorage.removeItem(CHECK_LANDING_PRICE);
     if (landingrice !== null || landingrice !== undefined) {
       localStorage.setItem(CHECK_LANDING_PRICE, landingrice);
+    } else {
       localStorage.setItem(CHECK_LANDING_PRICE, '{}');
     }
   }
+
 
   public getLandingPrice() {
     return localStorage.getItem(CHECK_LANDING_PRICE);

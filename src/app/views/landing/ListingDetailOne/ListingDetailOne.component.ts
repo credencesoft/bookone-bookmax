@@ -3683,7 +3683,6 @@ clicked(){
                   (accumulator, currentValue) => accumulator + currentValue,
                   0
                 );
-                console.log('totalplanPrice is',this.totalplanPrice);
                 if(this.activeForGoogleHotelCenter === true && element.otaPlanList.length > 0){
                   this.token.saveLandingPrice(this.totalplanPrice);
                   }
@@ -4484,5 +4483,3 @@ onNo() {
 }
 
 }
-
-
