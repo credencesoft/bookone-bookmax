@@ -348,14 +348,14 @@
                 }}
               </td>
             </tr>
-            <ng-container *ngIf="selectedServicesOne?.length > 0" style="background-color: #fff; font-weight: bold; padding-top: 15px; padding-bottom: 10px; margin-top: 15px;
+            <ng-container *ngIf="selectedServicesOne?.length > 0 && hasServiceWithPrice" style="background-color: #fff; font-weight: bold; padding-top: 15px; padding-bottom: 10px; margin-top: 15px;
           border-radius: 10px;">
               <h4 style="font-weight: bold;">Add-on Services</h4>
 
               <tr *ngFor="let fac of selectedServicesOne">
                 <td>
                   <div class="d-flex "
-                    *ngIf="fac.name !== null && fac.name !== undefined && fac.serviceType !== 'Distance' && fac.serviceType !== 'RestaurantHotel' && fac.serviceType !== 'DistanceRailway'">
+                    *ngIf="fac.name !== null && fac.name !== undefined && fac.serviceType !== 'Distance' && fac.serviceType !== 'RestaurantHotel' && fac.serviceType !== 'DistanceRailway' && fac.servicePrice > 0">
                     <div style="display: flex; gap:4px">
 
                       <img *ngIf="!fac.imageUrl" src="https://static.thenounproject.com/png/3421816-200.png" alt="icon"
@@ -550,13 +550,13 @@
             </td>
           </tr>
           <!-- Add more rows dynamically based on your data -->
-          <ng-container class="addon-services" *ngIf="selectedServicesOne?.length >0" style="font-weight: bold;">
+          <ng-container class="addon-services" *ngIf="selectedServicesOne?.length >0 && hasServiceWithPrice" style="font-weight: bold;">
             <h4 style="font-weight: bold;margin-top: 10px;">Add-on Services</h4>
 
             <tr *ngFor="let fac of selectedServicesOne">
               <td>
                 <div class="d-flex "
-                  *ngIf="fac.name !== null && fac.name !== undefined && fac.serviceType !== 'Distance' && fac.serviceType !== 'RestaurantHotel' && fac.serviceType !== 'DistanceRailway'">
+                  *ngIf="fac.name !== null && fac.name !== undefined && fac.serviceType !== 'Distance' && fac.serviceType !== 'RestaurantHotel' && fac.serviceType !== 'DistanceRailway' && fac.servicePrice > 0">
                   <div style="display: flex; gap:4px">
 
                     <img *ngIf="!fac.imageUrl" src="https://static.thenounproject.com/png/3421816-200.png" alt="icon"
@@ -827,7 +827,7 @@
           <p class="hero-subheading" style="font-weight: bold !important;">{{businessUser.address?.streetName}},
             {{businessUser.address?.city}}, {{businessUser.address?.state}}, {{businessUser.address?.country}}</p>
           <ul style="display: flex; flex-wrap: wrap; margin-left: -3rem; margin-top: 5px;"
-            *ngIf="showHideFlag === false ">
+            *ngIf="showHideFlag === false && phoneNumberBookingEngine">
             <li class="property-number-section"><a href="tel:+91{{phoneNumberBookingEngine}}"><span
                   style="color: #484848; text-decoration: underline; font-weight: bold;">
                   <img src=" assets/images/phone-dark.png" alt="" height="20px" width="25px">+91-{{phoneNumberBookingEngine}}</span></a>
@@ -964,10 +964,16 @@
                         <div class="d-flex">
                           <div class="col-6" style="border-right: 1px solid gray;">
                             <h4 class="card-title customized-title">{{ room.name }}</h4>
-                            <p class="customized-p" style="font-size: 23px; font-weight: bold; padding-bottom: 0px;">
+                            <!-- <p class="customized-p" style="font-size: 23px; font-weight: bold; padding-bottom: 0px;">
                               {{ room.roomOnlyPrice | currency: currency: "symbol": "1.2-2" }}
                               <b style="font-size: 13px;">per night </b>
-                            </p>
+                            </p> -->
+                            <ng-container *ngIf="roomLowestPricesBookingEngine[room.id || room.name] as lowestPlan">
+                          <p class="customized-p" style="font-size: 23px; font-weight: bold; padding-bottom: 0px;">
+                            {{lowestPlan.amount | currency: currency:"symbol":"1.2-2" }}</p>
+                             <b style="font-size: 13px;">per night </b>
+                           </ng-container>
+
                           </div>
                           <div class="col-6" style="padding-right: 5px; padding-left: 5px;">
                             <table style="width:100%">
@@ -1598,7 +1604,7 @@
                             </div>
 
 
-                            <div class="col-12" *ngIf="viewAddon" style="margin-top: 10px;">
+                            <div class="col-12" *ngIf="viewAddon && hasServiceWithPrice" style="margin-top: 10px;">
                               <div>
                                 <h3 class="servicetitle">Add-On Services</h3>
 
@@ -1608,7 +1614,7 @@
                                   <ng-container
                                     *ngFor="let fac of propertyServiceListDataOne | slice:0:(viewMoreOne ? propertyServiceListDataOne.length : 4); let i = index">
                                     <div class="col-lg-3 col-3 p-2" style="margin-bottom: 15px;"
-                                      *ngIf="fac.name !== null && fac.name !== undefined && fac.serviceType !== 'Distance' && fac.serviceType !== 'RestaurantHotel' && fac.serviceType !== 'DistanceRailway'">
+                                      *ngIf="fac.name !== null && fac.name !== undefined && fac.serviceType !== 'Distance' && fac.serviceType !== 'RestaurantHotel' && fac.serviceType !== 'DistanceRailway' && fac.servicePrice > 0">
                                       <div class="d-flex" id="facilitysms">
                                         <div>
                                           <img *ngIf="!fac.imageUrl"
@@ -1858,7 +1864,7 @@
                             let plan of rates.roomRatePlans;
                             let p = index
                           ">
-                                    <div class="col-md-4 plan_card_style" *ngIf="plan.amount >0">
+                                    <div class="col-md-4 plan_card_style" *ngIf="plan.amount >0 && plan.name !== 'Economy'">
                                       <div class="card plan_cards hello_card" style="min-width: 250px;"
                                         *ngIf="rates.roomRatePlans.length <= 2">
                                         <div class="card-header"
@@ -1969,7 +1975,8 @@
                                       <!-- Scrollable Card List -->
                                       <div #scrollContainer class="custom-scroll-container"
                                         style="scroll-behavior: smooth; overflow-x: auto;overflow-y: hidden; white-space: nowrap; display: flex; padding-bottom: 16px;">
-                                        <div *ngFor="let plan of rates.roomRatePlans; let p = index" style="
+                                        <ng-container *ngFor="let plan of rates.roomRatePlans; let p = index">
+                                   <div  *ngIf="plan.name !== 'Economy'" style="
                             min-width: 250px;
                             background-color: #fff !important;
                               margin: 0 8px;
@@ -2083,6 +2090,7 @@
                                           </ng-container>
 
                                         </div>
+                                        </ng-container>
                                       </div>
 
 
@@ -2097,8 +2105,8 @@
 
                             <!-- Add on service Start -->
                             <div class="col-12" *ngIf="selectedRoomIndex === i  && viewAddon">
-                              <div *ngIf="viewAddon">
-                                <h3 class="servicetitle" style="margin-left: 162px; margin-top: 25px;">Add-On Services
+                              <div *ngIf="viewAddon && hasServiceWithPrice ">
+                                <h3 class="servicetitle" style="margin-left: 162px; margin-top: 25px;" >Add-On Services
                                 </h3>
 
                                 <div class="row facrow1 ammmmi"
@@ -2107,7 +2115,7 @@
                                     *ngFor="let fac of propertyServiceListDataOne | slice:0:(viewMoreOne ? propertyServiceListDataOne.length : 4); let i = index">
                                     <div class="col-lg-12 col-12 p-2"
                                       style="margin-bottom: 15px;display: flex;justify-content: center;"
-                                      *ngIf="fac.name !== null && fac.name !== undefined && fac.serviceType !== 'Distance' && fac.serviceType !== 'RestaurantHotel' && fac.serviceType !== 'DistanceRailway'">
+                                      *ngIf="fac.name !== null && fac.name !== undefined && fac.serviceType !== 'Distance' && fac.serviceType !== 'RestaurantHotel' && fac.serviceType !== 'DistanceRailway' && fac.servicePrice > 0">
                                       <div class="card" style="width: 80%;border-radius: 10px;">
                                         <div class="row">
                                           <div class="col-6" style="border-right: 1px solid lightgray;">
@@ -2613,7 +2621,7 @@
                             <!-- Add on service Start -->
 
                             <div class="col-12" *ngIf="selectedRoomIndex === i  && viewAddon">
-                              <div *ngIf="viewAddon">
+                              <div *ngIf="viewAddon && hasServiceWithPrice">
                                 <h3 class="servicetitle" style="margin-left:130px !important;">Add-On Services</h3>
 
                                 <div class="row facrow1 ammmmi" style="flex-wrap: wrap; justify-content: left; ">
@@ -2621,7 +2629,7 @@
                                     *ngFor="let fac of propertyServiceListDataOne | slice:0:(viewMoreOne ? propertyServiceListDataOne.length : 4); let i = index">
                                     <div class="col-lg-12 col-12 p-2"
                                       style="margin-bottom: 15px;display: flex;justify-content: center;"
-                                      *ngIf="fac.name !== null && fac.name !== undefined && fac.serviceType !== 'Distance' && fac.serviceType !== 'RestaurantHotel' && fac.serviceType !== 'DistanceRailway'">
+                                      *ngIf="fac.name !== null && fac.name !== undefined && fac.serviceType !== 'Distance' && fac.serviceType !== 'RestaurantHotel' && fac.serviceType !== 'DistanceRailway' && fac.servicePrice > 0">
                                       <div class="card" style="width: 80%;border-radius: 10px;padding: 10px;">
                                         <div class="row">
                                           <div class="col-6" style="border-right: 1px solid lightgray;">
@@ -3127,7 +3135,7 @@
     flex-wrap: wrap;
     margin-left: -1rem;
     margin-top: 5px;
-    gap: 9px;" *ngIf="showHideFlag === false ">
+    gap: 9px;" *ngIf="showHideFlag === false && phoneNumberBookingEngine">
       <li class="property-number-section"><a href="tel:+91{{phoneNumberBookingEngine}}"><span
             style="color: #484848; text-decoration: underline; font-weight: bold;">
             <img src=" assets/images/phone-dark.png" alt="" height="20px" width="25px">+91-{{phoneNumberBookingEngine}}</span></a>
@@ -3193,21 +3201,23 @@
                     <div class="card shadow  customized-subcard" *ngFor="let room of sortedRoomsOne">
                       <div class="card-body customised-card" *ngIf="room.ratesAndAvailabilityDtos?.length>=0 ">
                         <h5 class="card-title customized-title">{{room.name}}</h5>
-                        <p class="customized-p">{{room.roomOnlyPrice | currency: currency:"symbol":"1.2-2"}}</p>
-                          <!-- <ng-container *ngIf="roomLowestPrices[room.id || room.name] as lowestPrice">
-                            {{lowestPrice}}
-                          <p class="customized-p">{{lowestPrice}}</p>
-</ng-container> -->
+                        <!-- <p class="customized-p">{{room.roomOnlyPrice | currency: currency:"symbol":"1.2-2"}}</p> -->
+                          <ng-container *ngIf="roomLowestPricesBookingEngine[room.id || room.name] as lowestPlan">
+                          <p class="customized-p">{{lowestPlan.amount | currency: currency:"symbol":"1.2-2" }}</p>
+                       </ng-container>
 
                       </div>
                     </div>
+                      <p *ngIf="!isLoading"
+                      style="text-align: right; color: #031EAA !important; cursor: pointer; font-weight: bold;"
+                      (click)="scrollToAccommodationDashmobile()">View More Options</p>
                   </div>
 
                   <div *ngIf="isLoading" class="loading-spinner">
                     Loading...
                   </div>
 
-                  <div *ngIf="!isLoading" style="margin-left: 15px;">
+                  <!-- <div *ngIf="!isLoading" style="margin-left: 15px;">
                     <button class="shadow button-section"
                       *ngIf="this.activeForGoogleHotelCenter == false || this.activeForGoogleHotelCenter == true "
                       (click)="scrollToAccommodationDashmobile()" style="background-color: black;
@@ -3218,7 +3228,7 @@
                 padding-left: 14px;
                 padding-right: 14px;">
                       Book Now</button>
-                  </div>
+                  </div> -->
 
                 </div>
               </div>
@@ -4135,11 +4145,12 @@
                       <div>
                         <!-- <h3 *ngIf="rates.roomRatePlans.length > 0 " class=" room-text-edit plan1"> Plans & Packages</h3> -->
                         <div class="row col-lg-12 card_body_styl" *ngIf="rates.roomRatePlans.length <= 2">
-                          <div *ngFor="
+                          <ng-container *ngFor="
                         let plan of rates.roomRatePlans;
                         let p = index
                       ">
-                            <div class="col-md-4 plan_card_style" *ngIf="plan.amount >0">
+                            <div >
+                            <div class="col-md-4 plan_card_style" *ngIf="plan.amount >0 && plan.name !== 'Economy'">
                               <div class="card plan_cards hello_card" *ngIf="rates.roomRatePlans.length <= 2">
                                 <div class="card-header" style="padding-left: 7px;
                           padding-top: 5px;
@@ -4239,14 +4250,16 @@
                               </div>
                             </div>
                           </div>
+                          </ng-container>
                         </div>
 
                         <div #scrollContainerFour class="custom-scroll-container" *ngIf="rates.roomRatePlans.length > 2"
                           style="scroll-behavior: smooth; overflow-x: auto;overflow-y: hidden; white-space: nowrap; display: flex; padding-bottom: 16px;">
-                          <div *ngFor="
+                         <ng-container *ngFor="
                   let plan of rates.roomRatePlans;
                   let p = index
-                " style="
+                " >
+                           <div *ngIf="plan.name !== 'Economy'" style="
                       min-width: 250px;
                       background-color: #fff !important;
                         margin: 0 8px;
@@ -4358,6 +4371,7 @@
                             </ng-container>
 
                           </div>
+                         </ng-container>
                         </div>
 
                       </div>
@@ -4950,13 +4964,13 @@
     <!-- Add on service Start -->
 
     <div id="serv">
-      <div class="servicecdiv" *ngIf="viewAddon ">
+      <div class="servicecdiv" *ngIf="viewAddon && hasServiceWithPrice">
         <h3 class="servicetitle" style="margin-left:30px !important;">Add-On Services</h3>
         <div class="row facrow1 ammmmi" style="flex-wrap: wrap; justify-content: left; ">
           <ng-container
             *ngFor="let fac of propertyServiceListDataOne | slice:0:(viewMore ? propertyServiceListDataOne.length : 4); let i = index">
             <div class="col-lg-12 col-12 p-2" style="margin-bottom: 15px;display: flex;justify-content: space-between;"
-              *ngIf="fac.name !== null && fac.name !== undefined && fac.serviceType !== 'Distance' && fac.serviceType !== 'RestaurantHotel' && fac.serviceType !== 'DistanceRailway'">
+              *ngIf="fac.name !== null && fac.name !== undefined && fac.serviceType !== 'Distance' && fac.serviceType !== 'RestaurantHotel' && fac.serviceType !== 'DistanceRailway' && fac.servicePrice > 0">
               <div class="card" style="width: 100%;border-radius: 10px;padding: 10px;">
                 <div class="row">
                   <div class="col-6" style="border-right: 1px solid lightgray;">
@@ -5251,20 +5265,27 @@ padding-right: 10px;
       </div>
       <div class="col-md-4 col-sm-12 custom-footer-col text-center">
         <ul class="footer-socials">
-          <li class="me-3">
-            <i class="fab fa-whatsapp"></i>
-          </li>
-          <li class="me-3">
-            <i class="fab fa-facebook"></i>
-          </li>
-          <li class="me-3">
-            <i class="fab fa-instagram"></i>
-          </li>
-        </ul>
+  <li class="me-3">
+    <a [href]="'https://wa.me/' + businessUser?.whatsApp" target="_blank" rel="noopener noreferrer">
+      <i class="fab fa-whatsapp"></i>
+    </a>
+  </li>
+  <li class="me-3">
+    <a [href]="socialmedialist?.facebook" target="_blank" rel="noopener noreferrer">
+      <i class="fab fa-facebook"></i>
+    </a>
+  </li>
+  <li class="me-3">
+    <a [href]="socialmedialist?.instagram" target="_blank" rel="noopener noreferrer">
+      <i class="fab fa-instagram"></i>
+    </a>
+  </li>
+</ul>
+
       </div>
       <div class="col-md-4 col-sm-12 custom-footer-col text-center">
         <a href="tel:{{this.businessUser.mobile}}" class="contact-us-link">
-          <i class="fas fa-phone-alt contact-icon"></i> Contact Us - {{this.businessUser.mobile}}
+          <i class="fas fa-phone-alt contact-icon" style="transform: scaleX(1) rotate(110deg);"></i> Contact Us - {{this.businessUser.mobile}}
         </a>
       </div>
     </div>

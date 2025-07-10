@@ -80,10 +80,12 @@ export interface Email {
 })
 export class ListingDetailOneComponent implements OnInit {
   roomLowestPrices: { [roomId: string]: number | null } = {};
+  roomLowestPricesBookingEngine: { [roomId: string]: number | null } = {};
 
   @ViewChild('accmd') accmdSection!: ElementRef;
   // @Output() bookNowClicked = new EventEmitter<void>();
   showFullDescription: boolean[] = [];
+  hasServiceWithPrice:boolean = false;
   showListingDetails: boolean = false;
   website: string;
   currentUrl: string;
@@ -1268,7 +1270,6 @@ if (this.city != null && this.city != undefined) {
   return allPlans?.length ? Math.min(...allPlans) : null;
 }
 
-
   getDynamicNameFromUrl(url: string): string | null {
     const fullUrl = this.locationBack.prepareExternalUrl(this.locationBack.path(true));
 
@@ -1294,8 +1295,34 @@ if (this.city != null && this.city != undefined) {
 
       // Assign the total available rooms to the room object
       room.roomsAvailable = totalAvailableRooms;
+
+      this.roomLowestPricesBookingEngine = this.roomLowestPricesBookingEngine || {}; // Ensure object is initialized
+
+const lowestPlan = this.getLowestPriceBookingEngine(room); // This returns a number or null
+
+const roomKey = room.id || room.name;
+
+if (roomKey) {
+  this.roomLowestPricesBookingEngine[roomKey] = lowestPlan;
+}
+
+
     });
   }
+
+  getLowestPriceBookingEngine(room: any): number | null{
+ const allPlans = room?.ratesAndAvailabilityDtos
+    ?.flatMap((availability: any) => availability?.roomRatePlans || [])
+    .filter((plan: any) => typeof plan?.amount === 'number' && !isNaN(plan.amount) && plan?.code?.toLowerCase() !== 'ghc');
+
+  if (!allPlans?.length) return null;
+
+  const lowestPlan = allPlans.reduce((min, curr) => curr.amount < min.amount ? curr : min);
+
+
+  return lowestPlan;
+}
+
 
   toggleView() {
     this.isExpanded = !this.isExpanded;
@@ -1976,6 +2003,9 @@ this.isHeaderVisible = true;
         });
 
         this.propertyServiceListDataOne = this.businessUser.propertyServicesList;
+         this.hasServiceWithPrice = this.propertyServiceListDataOne?.some(
+  val => val?.servicePrice != null && val?.servicePrice > 0
+);
           if(this.selectedServices != null &&  this.selectedServices != undefined ){
             this.savedServices = this.token?.getSelectedServices()?.forEach(ele => {
               this.propertyServiceListDataOne.forEach(val => {
@@ -1984,6 +2014,7 @@ this.isHeaderVisible = true;
                   this.viewAddon = true;
                 val.quantity = ele.quantity;
                 }
+
               })
 
             console.log("val.quantity", this.propertyServiceListDataOne)
@@ -2436,6 +2467,9 @@ this.isHeaderVisible = true;
             this.checkingAvailability();
           }
           this.propertyServiceListDataOne = this.businessUser.propertyServicesList;
+          this.hasServiceWithPrice = this.propertyServiceListDataOne?.some(
+  val => val?.servicePrice != null && val?.servicePrice > 0
+);
           if(this.selectedServices != null &&  this.selectedServices != undefined ){
           this.savedServices = this.token?.getSelectedServices()?.forEach(ele => {
             this.propertyServiceListDataOne?.forEach(val => {
@@ -3741,7 +3775,8 @@ clicked(){
 
           let currentUrl = window.location.href;
 
-        this.phoneNumberBookingEngine = currentUrl.includes("bookingEngine") ? this.businessUser.mobile : "9040785705";
+          this.phoneNumberBookingEngine =  currentUrl.includes("BookingEngine") || currentUrl.includes("bookingEngine")
+                ? this.businessUser.mobile : "9040785705";
 
           // Logger.log('checkAvailability ' + JSON.stringify(response.body));
         },
