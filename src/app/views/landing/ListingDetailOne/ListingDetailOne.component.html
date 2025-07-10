@@ -282,7 +282,7 @@
                 <td style="color: black;padding:5px" *ngIf="daterangefilter && daterangefilter.length ">{{ item }}</td>
                 <td style="color: black;padding:5px ;float: right;" *ngFor="let price of [planPrice[i]]">
                   <!-- <div *ngIf="daterangefilter && daterangefilter.length  "> ₹{{ price | number:'1.2-2' }}</div> -->
-                      <div *ngIf="daterangefilter && daterangefilter.length">
+                      <div *ngIf="daterangefilter && daterangefilter.length" style="text-align: end">
                   ₹{{ price | number: '1.2-2' }}
                   <span *ngIf="booking.extraPersonCharge > 0 || booking.extraChildCharge > 0" class="info-tooltip">
                     🛈
@@ -514,7 +514,7 @@
               <td style="color: black;padding:5px" *ngIf="daterangefilter && daterangefilter.length ">{{ item }}</td>
               <td style="color: black;padding:5px ;float: right;" *ngFor="let price of [planPrice[i]]">
 
-                  <div *ngIf="daterangefilter && daterangefilter.length">
+                  <div *ngIf="daterangefilter && daterangefilter.length" style="text-align: end">
                   ₹{{ price | number: '1.2-2' }}
                   <span *ngIf="booking.extraPersonCharge > 0 || booking.extraChildCharge > 0" class="info-tooltip">
                     🛈
