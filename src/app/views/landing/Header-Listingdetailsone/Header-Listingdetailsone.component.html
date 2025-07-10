@@ -76,15 +76,12 @@
 </div>
 
 <!-- Top Navbar -->
-<nav class="navbar navbar-dark top-navbar desktop-view-ui" *ngIf="showheader === true" >
+<!-- <nav class="navbar navbar-dark top-navbar desktop-view-ui" *ngIf="showheader === true" >
   <div class="container-div" style="display: flex; justify-content: space-between; align-items: center;    margin-left: 60px; margin-right: 60px;">
-    <!-- Left Section: Logo and Business Name -->
-    <div class="left-section" style="display: flex; align-items: center;">
+    <div class="left-section" style="display: flex; align-items: center;"  *ngIf="businessUser?.logoUrl">
       <img class="logo-image" [src]="businessUser?.logoUrl" alt="Business Logo" style=" height: 68px; margin-right: 85px;">
-      <!-- <span class="title-nav">{{ businessUser?.name }}</span> -->
     </div>
 
-    <!-- Middle Section: Navigation Links -->
     <div style="display: flex;
     gap: 48px;
     color: white;">
@@ -115,23 +112,61 @@
       </div>
     </div>
 
-    <!-- Right Section: Book Now Button -->
     <div style="margin-right: 30px;">
       <button class="blinking-unique-btn" (click)="scrollToAccommodation($event)" style="background-color: black; color: white !important; border: none; padding: 10px 20px;">Book Now</button>
     </div>
   </div>
+</nav> -->
+<nav class="navbar navbar-dark top-navbar desktop-view-ui" *ngIf="showheader === true">
+  <div class="container-div" style="display: flex; justify-content: space-between; align-items: center; margin-left: 60px; margin-right: 60px; width: 100%;">
+
+    <div class="left-section" *ngIf="businessUser?.logoUrl" style="display: flex; align-items: center;">
+      <img class="logo-image" [src]="businessUser?.logoUrl" alt="Business Logo" style="height: 68px; margin-right: 85px;">
+    </div>
+
+    <div style="display: flex; gap: 48px; color: white; flex-grow: 1; justify-content: center;">
+      <div>
+        <a *ngIf="businessUser?.website" [href]="businessUser.website" target="_top" style="color: white;">Home</a>
+      </div>
+      <div>
+        <a *ngIf="businessUser?.website && socialmedialist?.aboutUs" [href]="socialmedialist?.aboutUs" target="_top" style="color: white;">About Us</a>
+      </div>
+      <div>
+        <a *ngIf="businessUser?.website && socialmedialist?.blogPageUrl" [href]="socialmedialist?.blogPageUrl" target="_top" style="color: white;">Blogs</a>
+      </div>
+      <div>
+        <a *ngIf="businessUser?.website && socialmedialist?.csr" [href]="socialmedialist?.csr" target="_top" style="color: white;">CSR</a>
+      </div>
+      <div>
+        <a *ngIf="businessUser?.website && socialmedialist?.contact" [href]="socialmedialist?.contact" target="_top" style="color: white;">Contact</a>
+      </div>
+      <div>
+        <a *ngIf="businessUser?.website && socialmedialist?.termsAndConditions" [href]="socialmedialist?.termsAndConditions" target="_top" style="color: white;">Terms & Conditions</a>
+      </div>
+      <div>
+        <a *ngIf="businessUser?.website && socialmedialist?.privacyPolicy" [href]="socialmedialist?.privacyPolicy" target="_top" style="color: white;">Privacy Policy</a>
+      </div>
+      <div>
+        <a *ngIf="businessUser?.website && socialmedialist?.paymentTerms" [href]="socialmedialist?.paymentTerms" target="_top" style="color: white;">Payment Terms</a>
+      </div>
+    </div>
+
+    <!-- Right Section: Book Now Button -->
+    <!-- <div style="margin-left: auto;">
+      <button class="blinking-unique-btn" (click)="scrollToAccommodation($event)" style="background-color: black; color: white !important; border: none; padding: 10px 20px;">Book Now</button>
+    </div> -->
+
+  </div>
 </nav>
 
 
-    <nav class="navbar navbar-dark top-navbar mobile-view-ui" *ngIf="showheader === true">
+
+    <!-- <nav class="navbar navbar-dark top-navbar mobile-view-ui" *ngIf="showheader === true">
       <div class="container-div">
-        <!-- Left Section: Logo and Business Name -->
         <div class="left-section">
             <img class="logo-image" [src]="businessUser?.logoUrl" alt="Business Logo">
-            <!-- <span class="title-nav">{{ businessUser?.name }}</span> -->
         </div>
 
-        <!-- Right Section: Toggle Button -->
         <div style="float: right;
         display: flex;
         gap: 7px;">
@@ -146,7 +181,38 @@
       </div>
     </div>
 
-    </nav>
+    </nav> -->
+
+    <nav class="navbar navbar-dark top-navbar mobile-view-ui" *ngIf="showheader === true">
+  <div class="container-div" style="display: flex; justify-content: space-between; align-items: center;">
+
+    <!-- Left Section: Always rendered -->
+    <div class="left-section" style="min-width: 80px; min-height: 60px; display: flex; align-items: center;">
+      <img
+        *ngIf="businessUser?.logoUrl"
+        class="logo-image"
+        [src]="businessUser.logoUrl"
+        alt="Business Logo"
+        style="height: 50px;">
+    </div>
+
+    <!-- Right Section: Always visible (if businessUser?.website exists) -->
+    <div style="display: flex; gap: 7px;">
+      <button
+        class="navbar-toggler"
+        *ngIf="businessUser?.website"
+        (click)="toggleListingDetails()"
+        type="button"
+        aria-controls="navbarToggleExternalContent"
+        aria-expanded="false"
+        aria-label="Toggle navigation">
+        <img src="assets/images/nav-toggle.png" alt="Toggle Navigation">
+      </button>
+    </div>
+
+  </div>
+</nav>
+
 
 <!-- Styles -->
 
