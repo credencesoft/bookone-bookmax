@@ -137,7 +137,7 @@
             <tr *ngFor="let item of daterangefilter; let i = index">
               <td style="color: black;padding:5px" *ngIf="daterangefilter && daterangefilter.length ">{{ item }}</td>
               <td style="color: black;padding:5px ;float: right;" *ngFor="let price of [planPrice[i]]">
-                <div *ngIf="daterangefilter && daterangefilter.length  "> ₹{{ price | number:'1.2-2' }}</div>
+                <!-- <div *ngIf="daterangefilter && daterangefilter.length  "> ₹{{ price | number:'1.2-2' }}</div> -->
               </td>
 
             </tr>
@@ -281,12 +281,35 @@
               <tr *ngFor="let item of daterangefilter; let i = index">
                 <td style="color: black;padding:5px" *ngIf="daterangefilter && daterangefilter.length ">{{ item }}</td>
                 <td style="color: black;padding:5px ;float: right;" *ngFor="let price of [planPrice[i]]">
-                  <div *ngIf="daterangefilter && daterangefilter.length  "> ₹{{ price | number:'1.2-2' }}</div>
+                  <!-- <div *ngIf="daterangefilter && daterangefilter.length  "> ₹{{ price | number:'1.2-2' }}</div> -->
+                      <div *ngIf="daterangefilter && daterangefilter.length">
+                  ₹{{ price | number: '1.2-2' }}
+                  <span *ngIf="booking.extraPersonCharge > 0 || booking.extraChildCharge > 0" class="info-tooltip">
+                    🛈
+                    <span class="tooltip-text">
+                      Includes
+                      <span *ngIf="booking.extraPersonCharge > 0">
+                        Extra person ₹{{ (booking.extraPersonCharge / booking.noOfNights) | number:'1.2-2' }}
+                      </span>
+                      <span *ngIf="booking.extraPersonCharge > 0 && booking.extraChildCharge > 0">, </span>
+                      <span *ngIf="booking.extraChildCharge > 0">
+                        Extra child ₹{{ (booking.extraChildCharge / booking.noOfNights) | number:'1.2-2' }}
+                      </span>
+                    </span>
+                  </span>
+                </div>
+
+
+                <div *ngIf="taxArray && taxArray.length">
+                  <small style="color: black;">
+                    Tax Fee: ₹{{ taxArray[i] | number:'1.2-2' }}
+                  </small>
+                </div>
                 </td>
 
               </tr>
             </ng-container>
-            <tr *ngIf="booking.extraPersonCharge">
+            <!-- <tr *ngIf="booking.extraPersonCharge">
               <td class="p-1" style="color: black !important;">Extra Pax Charges({{booking.noOfExtraPerson}}) :</td>
               <td class="p-1" colspan="2" style="color: black !important; text-align: right;">
                 {{booking.extraPersonCharge | currency: currency:"symbol":"1.2-2"}}</td>
@@ -296,22 +319,32 @@
               <td class="p-1" style="color: black !important;">Extra Child Charges({{booking.noOfExtraChild}}) :</td>
               <td class="p-1" colspan="2" style="color: black !important; text-align: right;">{{booking.extraChildCharge
                 | currency: currency:"symbol":"1.2-2"}}</td>
-            </tr>
+            </tr> -->
             <!-- Add more rows dynamically based on your data -->
             <tr>
-              <td class="p-1" style="color: black !important;">Total Net Amount :</td>
-              <td class="p-1" colspan="2" style="color: black !important; text-align: right;">
-                {{
-                (activeForGoogleHotelCenter && booking.planCode === 'GHC' ? (this.totalplanPrice +
-                booking.extraPersonCharge + booking.extraChildCharge) : booking.netAmount)
-                | currency: currency:"symbol":"1.2-2"
-                }}
-                <!-- {{
-                booking.netAmount
-                | currency: currency:"symbol":"1.2-2"
-                }} -->
-              </td>
-            </tr>
+            <td class="p-1" style="color: black !important;">Total Net Amount :</td>
+            <td class="p-1" colspan="2" style="color: black !important; text-align: right;">
+            {{
+              (activeForGoogleHotelCenter && booking.planCode === 'GHC' ? (this.totalplanPrice + booking.extraPersonCharge + booking.extraChildCharge) : booking.netAmount)
+              | currency: currency:"symbol":"1.2-2"
+            }}
+            <span *ngIf="booking.extraPersonCharge > 0 || booking.extraChildCharge > 0"
+              class="info-tooltip">
+          🛈
+          <span class="tooltip-text">
+            Includes
+            <span *ngIf="booking.extraPersonCharge > 0">
+              Extra person ₹{{ (booking.extraPersonCharge) | number:'1.2-2' }}
+            </span>
+            <span *ngIf="booking.extraPersonCharge > 0 && booking.extraChildCharge > 0">, </span>
+            <span *ngIf="booking.extraChildCharge > 0">
+              Extra child ₹{{ (booking.extraChildCharge) | number:'1.2-2' }}
+            </span>
+          </span>
+        </span>
+
+          </td>
+          </tr>
 
             <tr *ngIf="booking.taxPercentage">
               <td class="p-1" style="color: black !important;">Tax Amount :</td>
@@ -480,12 +513,37 @@
             <tr *ngFor="let item of daterangefilter; let i = index">
               <td style="color: black;padding:5px" *ngIf="daterangefilter && daterangefilter.length ">{{ item }}</td>
               <td style="color: black;padding:5px ;float: right;" *ngFor="let price of [planPrice[i]]">
-                <div *ngIf="daterangefilter && daterangefilter.length  "> ₹{{ price | number:'1.2-2' }}</div>
+
+                  <div *ngIf="daterangefilter && daterangefilter.length">
+                  ₹{{ price | number: '1.2-2' }}
+                  <span *ngIf="booking.extraPersonCharge > 0 || booking.extraChildCharge > 0" class="info-tooltip">
+                    🛈
+                    <span class="tooltip-text">
+                      Includes
+                      <span *ngIf="booking.extraPersonCharge > 0">
+                        Extra person ₹{{ (booking.extraPersonCharge / booking.noOfNights) | number:'1.2-2' }}
+                      </span>
+                      <span *ngIf="booking.extraPersonCharge > 0 && booking.extraChildCharge > 0">, </span>
+                      <span *ngIf="booking.extraChildCharge > 0">
+                        Extra child ₹{{ (booking.extraChildCharge / booking.noOfNights) | number:'1.2-2' }}
+                      </span>
+                    </span>
+                  </span>
+                </div>
+
+
+                <div *ngIf="taxArray && taxArray.length">
+                  <small style="color: black;">
+                    Tax Fee: ₹{{ taxArray[i] | number:'1.2-2' }}
+                  </small>
+                </div>
+                <!-- <div *ngIf="daterangefilter && daterangefilter.length  "> ₹{{ price | number:'1.2-2' }}</div> -->
               </td>
 
             </tr>
           </ng-container>
-          <tr *ngIf="booking.extraPersonCharge">
+
+          <!-- <tr *ngIf="booking.extraPersonCharge">
             <td class="p-1" style="color: black !important;">Extra Pax Charges({{booking.noOfExtraPerson}}) :</td>
             <td class="p-1" colspan="2" style="color: black !important; text-align: right;">{{booking.extraPersonCharge
               | currency: currency:"symbol":"1.2-2"}}</td>
@@ -495,20 +553,30 @@
             <td class="p-1" style="color: black !important;">Extra Child Charges({{booking.noOfExtraChild}}) :</td>
             <td class="p-1" colspan="2" style="color: black !important; text-align: right;">{{booking.extraChildCharge |
               currency: currency:"symbol":"1.2-2"}}</td>
-          </tr>
-          <tr>
+          </tr> -->
+           <tr>
             <td class="p-1" style="color: black !important;">Total Net Amount :</td>
             <td class="p-1" colspan="2" style="color: black !important; text-align: right;">
-              {{
-              (activeForGoogleHotelCenter && booking.planCode === 'GHC' ? (this.totalplanPrice +
-              booking.extraPersonCharge + booking.extraChildCharge) : booking.netAmount)
+            {{
+              (activeForGoogleHotelCenter && booking.planCode === 'GHC' ? (this.totalplanPrice + booking.extraPersonCharge + booking.extraChildCharge) : booking.netAmount)
               | currency: currency:"symbol":"1.2-2"
-              }}
-              <!-- {{
-              booking.netAmount
-              | currency: currency:"symbol":"1.2-2"
-              }} -->
-            </td>
+            }}
+            <span *ngIf="booking.extraPersonCharge > 0 || booking.extraChildCharge > 0"
+              class="info-tooltip">
+          🛈
+          <span class="tooltip-text">
+            Includes
+            <span *ngIf="booking.extraPersonCharge > 0">
+              Extra person ₹{{ (booking.extraPersonCharge) | number:'1.2-2' }}
+            </span>
+            <span *ngIf="booking.extraPersonCharge > 0 && booking.extraChildCharge > 0">, </span>
+            <span *ngIf="booking.extraChildCharge > 0">
+              Extra child ₹{{ (booking.extraChildCharge) | number:'1.2-2' }}
+            </span>
+          </span>
+        </span>
+
+          </td>
           </tr>
 
           <tr *ngIf="booking.taxPercentage">
