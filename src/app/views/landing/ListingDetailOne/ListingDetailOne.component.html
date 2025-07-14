@@ -1146,7 +1146,7 @@
                   <ng-container *ngIf="showAll">
                     <div class="row facrow1 ammmmi" style="flex-wrap: wrap;">
                       <ng-container *ngFor="let fac of propertyServiceListData; let i=index">
-                        <ng-container *ngIf="i>6">
+                        <ng-container *ngIf="i>=6">
                           <div class="col-lg-4 col-4 p-2">
                             <div class="d-flex" id="facilitysm"
                               *ngIf="fac.name !== null && fac.name !== undefined && fac.serviceType !== 'Distance' && fac.serviceType !== 'RestaurantHotel' && fac.serviceType !== 'DistanceRailway'">
@@ -1165,7 +1165,7 @@
                       </ng-container>
                     </div>
                   </ng-container>
-                  <p style="text-align: end;" *ngIf="propertyServiceListData?.length>3"><a (click)="showAll = !showAll"
+                  <p style="text-align: end;" *ngIf="propertyServiceListData?.length > 6"><a (click)="showAll = !showAll"
                       style="
           color: #221950;
           font-weight: bold;font-size: 15px; cursor: pointer;">View
@@ -3604,7 +3604,7 @@
         <ng-container *ngIf="showAll">
           <div class="row facrow1 ammmmi" style="flex-wrap: wrap;">
             <ng-container *ngFor="let fac of propertyServiceListData; let i=index">
-              <ng-container *ngIf="i>5">
+              <ng-container *ngIf="i>=4">
                 <div class="col-lg-6 col-6 p-2">
                   <div class="d-flex" id="facilitysm"
                     *ngIf="fac.name !== null && fac.name !== undefined && fac.serviceType !== 'Distance' && fac.serviceType !== 'RestaurantHotel' && fac.serviceType !== 'DistanceRailway'">
@@ -3622,7 +3622,7 @@
             </ng-container>
           </div>
         </ng-container>
-        <p style="text-align: end;" *ngIf="propertyServiceListData?.length>3"><a (click)="showAll = !showAll" style="
+        <p style="text-align: end;" *ngIf="propertyServiceListData?.length>4"><a (click)="showAll = !showAll" style="
       color: #221950;
       font-weight: bold;font-size: 15px; cursor: pointer;">View
             {{showAll? "Less": "More"}}</a>
