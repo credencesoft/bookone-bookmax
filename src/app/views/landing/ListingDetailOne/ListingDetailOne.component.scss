@@ -4133,7 +4133,7 @@ body {
     margin-left: 7px;
     margin-top: 5px;
     font-weight: bold;
-
+    text-align: center;
   }
 
   .customized-p {
@@ -4485,6 +4485,7 @@ font-family: 'Nunito Sans';
     margin-top: 5px;
     font-weight: bold;
     margin-bottom: 0;
+    text-align: center;
   }
 
   .customized-p {
@@ -4691,6 +4692,7 @@ font-family: 'Nunito Sans';
     margin-top: 5px;
     font-weight: bold;
     margin-bottom: 0;
+    text-align: center;
   }
 
   .customized-p {
@@ -5451,6 +5453,7 @@ font-family: 'Nunito Sans';
   color: white;
 }
 
+
 .review-item {
   display: flex;
   align-items: center;
@@ -5973,4 +5976,11 @@ font-family: 'Nunito Sans';
 
 .popup-overlay {
   left: 300px;
+}
+.price-center{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 16px;
+  font-weight: bold;
 }

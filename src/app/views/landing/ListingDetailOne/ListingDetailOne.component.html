@@ -1315,11 +1315,13 @@
 
                               <div *ngIf="room.description" class=" col-12 desktopone"
                                 style="font-weight: bold;margin-top:35px;">
+                                <div>Room Description:-</div>
                                 <div class="mt-2" [innerHTML]="room.description">
                                 </div>
                               </div>
 
                               <div *ngIf="room.description" class=" col-12 mobile-one" style="font-weight: bold;">
+                                <div>Room Description:-</div>
                                 <div class="mt-2" [innerHTML]="room.description">
                                 </div>
                               </div>
@@ -1849,11 +1851,13 @@
                               </div>
                               <div *ngIf="room.description" class=" col-12 desktopone"
                                 style="font-weight: bold;margin-top:35px;">
+                                <div>Room Description:-</div>
                                 <div class="mt-2" [innerHTML]="room.description">
                                 </div>
                               </div>
 
                               <div *ngIf="room.description" class=" col-12 mobile-one" style="font-weight: bold;">
+                                <div>Room Description:-</div>
                                 <div class="mt-2" [innerHTML]="room.description">
                                 </div>
                               </div>
@@ -2356,11 +2360,13 @@
 
                               <div *ngIf="room.description" class=" col-12 desktopone"
                                 style="font-weight: bold; margin-top:35px;">
+                                  <div>Room Description:-</div>
                                 <div class="mt-2" [innerHTML]="room.description">
                                 </div>
                               </div>
 
                               <div *ngIf="room.description" class=" col-12 mobile-one" style="font-weight: bold;">
+                                  <div>Room Description:-</div>
                                 <div class="mt-2" [innerHTML]="room.description">
                                 </div>
                               </div>
@@ -2866,11 +2872,13 @@
 
                                 <!-- desktop view -->
                                 <div class="desktopone" style="font-weight: bold; margin-top:35px;">
+                                    <div>Room Description:-</div>
                                   <div class="mt-2" [innerHTML]="room.description">
                                   </div>
                                 </div>
 
                                 <div class="mobile-one" style="font-weight: bold;">
+                                    <div>Room Description:-</div>
                                   <div class="mt-2" [innerHTML]="room.description">
                                   </div>
                                 </div>
@@ -2994,16 +3002,16 @@
 
         <div class="col-lg-12 pl-0 pr-0">
           <div *ngFor="let bServiceDtoList of policies; let i = index" style=" margin-top: 20px;">
-            <div *ngIf="bServiceDtoList?.policy">
+            <div *ngIf="bServiceDtoList?.policy && bServiceDtoList?.policy.trim() !== '<p>.</p>' && bServiceDtoList?.policy.trim() !== '<p><br></p>'">
               <h3 class="ameniti1" style="padding-left:10px; padding-top: 10px;" *ngIf="policies">
                 Terms & Conditions
               </h3>
 
               <div class="terms-content terms-container">
                 <div
-                  [innerHTML]="isReadMore[i] ? bServiceDtoList?.policy : (bServiceDtoList?.policy | slice:0:200) + '...'">
+                  [innerHTML]="isReadMore[i] ? bServiceDtoList?.policy : (bServiceDtoList?.policy | slice:0:200)">
                 </div>
-                <div style="padding: 10px;">
+                <div *ngIf="bServiceDtoList?.policy?.length > 200" style="padding: 10px;">
                   <span style="color: #221950; font-weight: bold; font-size: 15px; cursor: pointer;float:right"
                     (click)="toggleReadMore(i)">
                     {{ isReadMore[i] ? 'View Less' : 'View More' }}
@@ -3257,9 +3265,11 @@
                       <div class="card-body customised-card" *ngIf="room.ratesAndAvailabilityDtos?.length >= 0">
                         <h5 class="card-title customized-title">{{room.name}}</h5>
                         <!-- <p class="customized-p">{{room.roomOnlyPrice}}</p> -->
-                          <ng-container *ngIf="roomLowestPrices[room.id || room.name] as lowestPrice">
+                         <div class="price-center">
+                           <ng-container *ngIf="roomLowestPrices[room.id || room.name] as lowestPrice">
   {{ lowestPrice | currency: currency:"symbol":"1.2-2" }}
   </ng-container>
+                         </div>
                       </div>
                     </div>
                   </div>
@@ -3899,11 +3909,13 @@
                               </div>
                               <div *ngIf="room.description" class="desktopone"
                                 style="font-weight: bold; margin-top:35px;">
+                                  <div>Room Description:-</div>
                                 <div class="mt-2" [innerHTML]="room.description">
                                 </div>
                               </div>
 
                               <div *ngIf="room.description" class="mobile-one" style="font-weight: bold;">
+                                  <div>Room Description:-</div>
                                 <div class="mt-2" [innerHTML]="room.description">
                                 </div>
                               </div>
@@ -4190,11 +4202,13 @@
                             </div>
                             <!-- desktop view -->
                             <div *ngIf="showDescription" class="desktopone" style="font-weight: bold; margin-top:35px;">
+                                <div>Room Description:-</div>
                               <div class="mt-2" [innerHTML]="room.description">
                               </div>
                             </div>
 
                             <div *ngIf="showDescription" class="mobile-one" style="font-weight: bold;">
+                                <div>Room Description:-</div>
                               <div class="mt-2" [innerHTML]="room.description">
                               </div>
                             </div>
@@ -4589,11 +4603,13 @@
                             </div>
                             <!-- desktop view -->
                             <div *ngIf="showDescription" class="desktopone" style="font-weight: bold; margin-top:35px;">
+                                <div>Room Description:-</div>
                               <div class="mt-2" [innerHTML]="room.description">
                               </div>
                             </div>
 
                             <div *ngIf="showDescription" class="mobile-one" style="font-weight: bold;">
+                                <div>Room Description:-</div>
                               <div class="mt-2" [innerHTML]="room.description">
                               </div>
                             </div>
@@ -4761,12 +4777,14 @@
                             </div>
                             <div *ngIf="room.description && showFullDescription[i] " class="desktopone"
                               style="font-weight: bold; margin-top:35px;">
+                                <div>Room Description:-</div>
                               <div class="mt-2" [innerHTML]="room.description">
                               </div>
                             </div>
 
                             <div *ngIf="room.description && showFullDescription[i] " class="mobile-one"
                               style="font-weight: bold;">
+                                <div>Room Description:-</div>
                               <div class="mt-2" [innerHTML]="room.description">
                               </div>
                             </div>
@@ -5184,15 +5202,15 @@ padding-right: 10px;
     <!-- Add terms and conditions starts here -->
 
     <div class="terms-container" *ngFor="let bServiceDtoList of policies; let i = index">
-      <div *ngIf="bServiceDtoList?.policy">
+      <div *ngIf="bServiceDtoList?.policy && bServiceDtoList?.policy.trim() !== '<p>.</p>' && bServiceDtoList?.policy.trim() !== '<p><br></p>'">
         <h3 class="ameniti1" style="padding-left:10px; padding-top: 10px;" *ngIf="policies">
           Terms & Conditions
         </h3>
 
         <div class="terms-content">
-          <div [innerHTML]="isReadMore[i] ? bServiceDtoList?.policy : (bServiceDtoList?.policy | slice:0:200) + '...'">
+          <div [innerHTML]="isReadMore[i] ? bServiceDtoList?.policy : (bServiceDtoList?.policy | slice:0:200)">
           </div>
-          <div style="padding: 10px;">
+          <div *ngIf="bServiceDtoList?.policy?.length > 200" style="padding: 10px;">
             <span style="color: #221950; font-weight: bold; font-size: 15px; cursor: pointer;float:right"
               (click)="toggleReadMore(i)">
               {{ isReadMore[i] ? 'View Less' : 'View More' }}
