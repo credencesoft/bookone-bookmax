@@ -718,7 +718,7 @@
                   <label for="checkin" class="label_heading1 checkAva4">
                     Check-in-Date
                   </label>
-                  <input #dpFromDate3 type="text" class="date-input form-control input-field-resize2"
+                  <input #dpFromDate3 type="text" class="date-input form-control input-field-resize2 custom-border-on-focus"
                     style="border: none; background: none !important;margin-top: -6px;" placeholder="Check-in"
                     name="dpFromDate3" [value]="formatter.format(fromDate) | date: 'EEE, MMM d'"
                     (input)="fromDate = validateInput(fromDate, dpFromDate3.value)" required
@@ -739,7 +739,7 @@
                   <label for="checkout" class="label_heading1 checkAva7">
                     Check-out-Date
                   </label>
-                  <input #dpToDate3 type="text" class="date-input form-control input-field-resize2"
+                  <input #dpToDate3 type="text" class="date-input form-control input-field-resize2 custom-border-on-focus"
                     placeholder="Check-out" name="dpToDate3" [value]="formatter.format(toDate) | date: 'EEE, MMM d'"
                     style="border: none;background: none !important;margin-top: -6px;"
                     (input)="toDate = validateInput(toDate, dpToDate3.value)" required (click)="datepicker4.toggle()"
@@ -3359,7 +3359,7 @@
                 <label for="checkin" class="label_heading1 checkAva4">
                   Check-in-Date
                 </label>
-                <input #dpFromDate3 type="text" class="date-input form-control input-field-resize2"
+                <input #dpFromDate3 type="text" class="date-input form-control input-field-resize2 custom-border-on-focus"
                   style="border: none; background: none !important;margin-top: -6px;" placeholder="Check-in"
                   name="dpFromDate3" [value]="formatter.format(fromDate) | date: 'EEE, MMM d'"
                   (input)="fromDate = validateInput(fromDate, dpFromDate3.value)" required
@@ -3380,7 +3380,7 @@
                 <label for="checkout" class="label_heading1 checkAva7">
                   Check-out-Date
                 </label>
-                <input #dpToDate3 type="text" class="date-input form-control input-field-resize2"
+                <input #dpToDate3 type="text" class="date-input form-control input-field-resize2 custom-border-on-focus"
                   placeholder="Check-out" name="dpToDate3" [value]="formatter.format(toDate) | date: 'EEE, MMM d'"
                   style="border: none;background: none !important;margin-top: -6px;"
                   (input)="toDate = validateInput(toDate, dpToDate3.value)" required (click)="datepicker4.toggle()"
