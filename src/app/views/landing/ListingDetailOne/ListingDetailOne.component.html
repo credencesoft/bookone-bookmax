@@ -3115,17 +3115,17 @@
               <form #contactForm=ngForm style="padding-left: 60px; padding-right: 60px;">
                 <div class="form-group">
                   <label for="name" style="font-weight: bold; font-size: 15px;">Name</label>
-                  <input type="text" class="form-control text-form" id="name" [formControl]="nameControl"
+                  <input type="text" class="form-control text-form" id="name"
                     placeholder="Enter your name" [(ngModel)]="name">
                 </div>
                 <div class="form-group">
                   <label for="mobile" style="font-weight: bold;font-size: 15px;">Mobile Number</label>
-                  <input type="tel" class="form-control text-form" [formControl]="phoneControl" id="mobile"
+                  <input type="tel" class="form-control text-form" id="mobile"
                     [(ngModel)]="phone" placeholder="Enter your mobile number">
                 </div>
-                <div class="form-group">
+                <!-- <div class="form-group">
                   <label for="email" style="font-weight: bold;font-size: 15px;">Email</label>
-                  <input type="email" class="form-control text-form" [formControl]="fromEmailControl" id="email"
+                  <input type="email" class="form-control text-form"  id="email"
                     pattern="^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$" placeholder="Enter your email"
                     [(ngModel)]="fromEmail">
                   <div class="form-control-feedback pr-1 d-flex justify-content-center align-items-center"
@@ -3134,8 +3134,23 @@
                     <span *ngIf="fromEmailControl.errors.pattern" class="text-danger">Please enter valid email</span>
                   </div>
 
-                </div>
-                <div class="form-group">
+                </div> -->
+                 <div class="form-group">
+    <label for="email">Email</label>
+    <input
+      type="email"
+      id="email"
+      name="fromEmail"
+      class="form-control text-form" placeholder="Enter your email"
+      [(ngModel)]="fromEmail"
+      required
+      pattern="^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$">
+    <div *ngIf="contactForm.submitted && contactForm.controls['fromEmail']?.errors">
+      <span *ngIf="contactForm.controls['fromEmail']?.errors['required']" class="text-danger">Email is required</span>
+      <span *ngIf="contactForm.controls['fromEmail']?.errors['pattern']" class="text-danger">Invalid email format</span>
+    </div>
+  </div>
+                <!-- <div class="form-group">
                   <label for="message" style="font-weight: bold;font-size: 15px;">Message</label>
                   <textarea class="form-control text-form" [formControl]="messageControl" id="message" rows="3"
                     placeholder="Your message" [(ngModel)]="message"></textarea>
@@ -3143,10 +3158,19 @@
                     *ngIf="(messageControl.touched || contactForm.submitted) && messageControl.errors">
                     <span *ngIf="messageControl.errors.required" class="text-danger">* Question is required </span>
                   </div>
-                </div>
-                <button type="submit" class="btn property-submit"
-                  style="background-color: black !important; color:white; font-size: 15px; font-weight: bold; margin-top: 20px;"
-                  (click)="submitForm(contactForm)" [disabled]='contactForm.invalid'>Submit</button>
+                </div> -->
+                 <div class="form-group">
+    <label for="message">Message</label>
+    <textarea
+      id="message"
+      name="message"
+      class="form-control text-form" placeholder="Your message"
+      [(ngModel)]="message"
+      required></textarea></div>
+               <button type="submit" class="btn property-submit"(click)="submitForm(contactForm)"
+                  [disabled]="contactForm.invalid" [ngStyle]="{ 'cursor': contactForm.invalid ? 'not-allowed' : 'pointer' }"
+                   style="background-color: black !important; color:white; font-size: 15px; font-weight: bold; margin-top: 20px;">Submit
+               </button>
               </form>
             </div>
           </div>
@@ -5269,15 +5293,15 @@ padding-right: 10px;
       <form #contactForm=ngForm>
         <div class="form-group">
           <label for="name">Name</label>
-          <input type="text" class="form-control text-form" id="name" [formControl]="nameControl"
+          <input type="text" class="form-control text-form" id="name"
             placeholder="Enter your name" [(ngModel)]="name">
         </div>
         <div class="form-group">
           <label for="mobile">Mobile Number</label>
-          <input type="tel" class="form-control text-form" [formControl]="phoneControl" id="mobile" [(ngModel)]="phone"
+          <input type="tel" class="form-control text-form" id="mobile" [(ngModel)]="phone"
             placeholder="Enter your mobile number">
         </div>
-        <div class="form-group">
+        <!-- <div class="form-group">
           <label for="email">Email</label>
           <input type="email" class="form-control text-form" [formControl]="fromEmailControl" id="email"
             pattern="^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$" placeholder="Enter your email"
@@ -5297,7 +5321,31 @@ padding-right: 10px;
             *ngIf="(messageControl.touched || contactForm.submitted) && messageControl.errors">
             <span *ngIf="messageControl.errors.required" class="text-danger">* Question is required </span>
           </div>
-        </div>
+        </div> -->
+         <div class="form-group">
+    <label for="email">Email</label>
+    <input
+      type="email"
+      id="email"
+      name="fromEmail"
+      class="form-control text-form" placeholder="Enter your email"
+      [(ngModel)]="fromEmail"
+      required
+      pattern="^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$">
+    <div *ngIf="contactForm.submitted && contactForm.controls['fromEmail']?.errors">
+      <span *ngIf="contactForm.controls['fromEmail']?.errors['required']" class="text-danger">Email is required</span>
+      <span *ngIf="contactForm.controls['fromEmail']?.errors['pattern']" class="text-danger">Invalid email format</span>
+    </div>
+  </div>
+
+                 <div class="form-group">
+    <label for="message">Message</label>
+    <textarea
+      id="message"
+      name="message"
+      class="form-control text-form" placeholder="Your message"
+      [(ngModel)]="message"
+      required></textarea></div>
         <button type="submit" class="btn btn-dark" (click)="submitForm(contactForm)"
           [disabled]='contactForm.invalid'>Submit</button>
       </form>
