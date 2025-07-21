@@ -413,12 +413,6 @@ export class BookingComponent implements OnInit {
 
     this.PropertyUrl = this.token.getPropertyUrl();
     console.log("property url:" + this.PropertyUrl)
-    let isBookingEngine = false;
-
-if (this.PropertyUrl && this.PropertyUrl.includes('bookingEngine')) {
-  isBookingEngine = true;
-  console.log("Booking Engine detected:", isBookingEngine);
-}
   }
 
   ngOnInit() {
@@ -542,13 +536,6 @@ if (this.PropertyUrl && this.PropertyUrl.includes('bookingEngine')) {
   }
 
   showPayNow(): boolean {
-    const propertyUrl = this.token.getPropertyUrl();
-    const isBookingEngine = propertyUrl?.includes('bookingEngine');
-
-    if (isBookingEngine) {
-    return this.businessUser.paymentGateway != null;
-  }
-
     const fromDateTimestamp = new Date(this.booking.fromDate).getTime();
     const createdDateTimestamp = new Date(this.booking.createdDate).getTime();
     const hoursDifference = (fromDateTimestamp - createdDateTimestamp) / (1000 * 60 * 60);
@@ -557,15 +544,6 @@ if (this.PropertyUrl && this.PropertyUrl.includes('bookingEngine')) {
   }
 
   showPayLater(): boolean {
-     const propertyUrl = this.token.getPropertyUrl();
-  const isBookingEngine = propertyUrl?.includes('bookingEngine');
-
-  if (isBookingEngine) {
-    // Skip pay later option if it's a booking engine
-    return false;
-  }
-
-
     const fromDateTimestamp = new Date(this.booking.fromDate).getTime();
     const createdDateTimestamp = new Date(this.booking.createdDate).getTime();
     const hoursDifference = (fromDateTimestamp - createdDateTimestamp) / (1000 * 60 * 60);
