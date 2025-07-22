@@ -51,6 +51,7 @@ import { ErrorpageComponent } from './errorpage/errorpage.component';
 import { CheckoutRazorpayComponent } from './checkout-razorpay/checkout-razorpay.component';
 import { CancellationPolicyComponent } from './cancellation-policy/cancellation-policy.component';
 import { TermsAndConditionComponent } from './terms-and-condition/terms-and-condition.component';
+import { AboutUsComponent } from './about-us/about-us.component';
 // import { WhatsappRedirectPageComponent } from './whatsapp-redirect-page/whatsapp-redirect-page.component';
 // import { BookingComponent } from './Booking/Booking.component';
 const routes: Routes = [
@@ -213,6 +214,10 @@ const routes: Routes = [
         {
     path: 'terms',
     component: TermsAndConditionComponent, data: {title: 'Terms & Conditions'}
+  },
+          {
+    path: 'about',
+    component: AboutUsComponent, data: {title: 'About Us'}
   },
   {
     path: 'error',

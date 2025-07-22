@@ -126,6 +126,7 @@ import { ErrorpageComponent } from './errorpage/errorpage.component';
 import { CheckoutRazorpayComponent } from './checkout-razorpay/checkout-razorpay.component';
 import { TermsAndConditionComponent } from './terms-and-condition/terms-and-condition.component';
 import { CancellationPolicyComponent } from './cancellation-policy/cancellation-policy.component';
+import { AboutUsComponent } from './about-us/about-us.component';
 
 
 @NgModule({
@@ -247,7 +248,8 @@ EnquiryComponent,
     WhatappPaylaterTemplateComponent,
     ErrorpageComponent,
     TermsAndConditionComponent,
-    CancellationPolicyComponent
+    CancellationPolicyComponent,
+    AboutUsComponent
 
   ],
   providers: [WINDOW_PROVIDERS,
