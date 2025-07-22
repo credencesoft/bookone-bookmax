@@ -599,7 +599,7 @@ export class BookingComponent implements OnInit {
     externalreservation.channelId = "9";
     externalreservation.lastModifiedBy = 'hotelmate';
     externalreservation.modeOfPayment = "Cash";
-    externalreservation.otaReservationId = this.propertyData.shortName + "-THM-" + this.booking.id;
+    externalreservation.otaReservationId = this.propertyData.shortName + "-BE-" + this.booking.id;
     externalreservation.propertyId = this.booking.propertyId.toString();
     externalreservation.propertyName = this.booking.businessName;
     externalreservation.firstName = this.booking.firstName
@@ -607,7 +607,7 @@ export class BookingComponent implements OnInit {
     externalreservation.bookoneReservationId = this.booking.propertyReservationNumber;
     externalreservation.contactNumber = this.booking.mobile;
     externalreservation.propertyBusinessEmail = this.booking.businessEmail;
-    externalreservation.externalTransactionId =this.propertyData.shortName + "-THM-" + this.booking.id;
+    externalreservation.externalTransactionId =this.propertyData.shortName + "-BE-" + this.booking.id;
     externalreservation.createdBy = 'hotelmate';
     roomdetailss.checkinDate = this.booking.fromDate;
     roomdetailss.checkoutDate = this.booking.toDate;
