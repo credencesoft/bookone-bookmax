@@ -485,7 +485,7 @@ console.log("this.bookingRoomPrice" +this.bookingRoomPrice)
   createBookingPayTM() {
 
     this.booking.modeOfPayment = this.payment.paymentMode;
-    this.booking.externalSite = 'The Hotel Mate';
+    this.booking.externalSite = 'WebSite';
     this.booking.businessName = this.businessUser.name;
     this.booking.businessEmail = this.businessUser.email;
     this.booking.roomBooking = true;
@@ -810,8 +810,8 @@ externalreservation.amountBeforeTax = this.booking.beforeTaxAmount;
 externalreservation.channelId = "9";
 externalreservation.lastModifiedBy ='hotelmate';
 externalreservation.modeOfPayment = "Cash";
-externalreservation.externalTransactionId = this.shortName +"-THM-"+this.booking.id;
-externalreservation.otaReservationId = this.shortName+"-THM-"+this.booking.id;
+externalreservation.externalTransactionId = this.shortName +"-BE-"+this.booking.id;
+externalreservation.otaReservationId = this.shortName+"-BE-"+this.booking.id;
 externalreservation.propertyId = this.booking.propertyId.toString();
 externalreservation.propertyName = this.booking.businessName;
 externalreservation.firstName = this.booking.firstName
