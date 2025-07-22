@@ -124,6 +124,8 @@ import { WhatsappRedirectPageComponent } from './whatsapp-redirect-page/whatsapp
 import { WhatappPaylaterTemplateComponent } from './whatapp-paylater-template/whatapp-paylater-template.component';
 import { ErrorpageComponent } from './errorpage/errorpage.component';
 import { CheckoutRazorpayComponent } from './checkout-razorpay/checkout-razorpay.component';
+import { TermsAndConditionComponent } from './terms-and-condition/terms-and-condition.component';
+import { CancellationPolicyComponent } from './cancellation-policy/cancellation-policy.component';
 
 
 @NgModule({
@@ -243,7 +245,9 @@ EnquiryComponent,
     BookingConfirmComponent,
     WhatsappRedirectPageComponent,
     WhatappPaylaterTemplateComponent,
-    ErrorpageComponent
+    ErrorpageComponent,
+    TermsAndConditionComponent,
+    CancellationPolicyComponent
 
   ],
   providers: [WINDOW_PROVIDERS,

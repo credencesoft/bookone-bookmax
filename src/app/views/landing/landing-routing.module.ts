@@ -49,6 +49,8 @@ import { WhatappPaylaterTemplateComponent } from './whatapp-paylater-template/wh
 import { CheckoutPhonepeComponentComponent } from './CheckoutPhonepeComponent/CheckoutPhonepeComponent.component';
 import { ErrorpageComponent } from './errorpage/errorpage.component';
 import { CheckoutRazorpayComponent } from './checkout-razorpay/checkout-razorpay.component';
+import { CancellationPolicyComponent } from './cancellation-policy/cancellation-policy.component';
+import { TermsAndConditionComponent } from './terms-and-condition/terms-and-condition.component';
 // import { WhatsappRedirectPageComponent } from './whatsapp-redirect-page/whatsapp-redirect-page.component';
 // import { BookingComponent } from './Booking/Booking.component';
 const routes: Routes = [
@@ -200,6 +202,18 @@ const routes: Routes = [
     path: 'submitted-form',
     component: OnboardingformSubmittedFormComponent,
   },
+    {
+    path: 'privacy',
+    component: PrivacyPolicyComponent, data: {title: 'Privacy Policy'}
+  },
+      {
+    path: 'cancellation',
+    component: CancellationPolicyComponent, data: {title: 'Cancellation Policy'}
+  },
+        {
+    path: 'terms',
+    component: TermsAndConditionComponent, data: {title: 'Terms & Conditions'}
+  },
   {
     path: 'error',
     component: ErrorpageComponent
@@ -259,10 +273,7 @@ const routes: Routes = [
   },
 
 
-  {
-    path: 'privacy',
-    component: PrivacyPolicyComponent, data: {title: 'Privacy Policy'}
-  }
+
 
 
 ];
