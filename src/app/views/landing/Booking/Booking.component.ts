@@ -307,8 +307,9 @@ export class BookingComponent implements OnInit {
     }
     if (this.token.getProperty() !== null) {
       this.propertyData = this.token.getProperty();
-
-
+      console.log('propertyData issss',this.propertyData);
+      this.propertyData.shortName =  this.token.getProperty().shortName;
+      console.log('propertyData shortName issss',this.propertyData.shortName);
     }
 
 
@@ -413,6 +414,11 @@ export class BookingComponent implements OnInit {
 
     this.PropertyUrl = this.token.getPropertyUrl();
     console.log("property url:" + this.PropertyUrl)
+    let isBookingEngine = false;
+
+if (this.PropertyUrl && this.PropertyUrl.includes('bookingEngine')) {
+  isBookingEngine = true;
+}
   }
 
   ngOnInit() {
@@ -536,6 +542,13 @@ export class BookingComponent implements OnInit {
   }
 
   showPayNow(): boolean {
+     const propertyUrl = this.token.getPropertyUrl();
+    const isBookingEngine = propertyUrl?.includes('bookingEngine');
+
+    if (isBookingEngine) {
+    return this.businessUser.paymentGateway != null;
+  }
+
     const fromDateTimestamp = new Date(this.booking.fromDate).getTime();
     const createdDateTimestamp = new Date(this.booking.createdDate).getTime();
     const hoursDifference = (fromDateTimestamp - createdDateTimestamp) / (1000 * 60 * 60);
@@ -544,6 +557,12 @@ export class BookingComponent implements OnInit {
   }
 
   showPayLater(): boolean {
+  const propertyUrl = this.token.getPropertyUrl();
+  const isBookingEngine = propertyUrl?.includes('bookingEngine');
+
+  if (isBookingEngine) {
+    return false;
+  }
     const fromDateTimestamp = new Date(this.booking.fromDate).getTime();
     const createdDateTimestamp = new Date(this.booking.createdDate).getTime();
     const hoursDifference = (fromDateTimestamp - createdDateTimestamp) / (1000 * 60 * 60);
@@ -598,7 +617,7 @@ export class BookingComponent implements OnInit {
     externalreservation.channelId = "9";
     externalreservation.lastModifiedBy = 'hotelmate';
     externalreservation.modeOfPayment = "Cash";
-    externalreservation.otaReservationId = "THM-" + this.booking.id;
+    externalreservation.otaReservationId = this.propertyData.shortName + "THM-" + this.booking.id;
     externalreservation.propertyId = this.booking.propertyId.toString();
     externalreservation.propertyName = this.booking.businessName;
     externalreservation.firstName = this.booking.firstName
