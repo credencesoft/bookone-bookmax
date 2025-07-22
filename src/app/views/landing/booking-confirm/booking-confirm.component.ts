@@ -124,6 +124,8 @@ textToCopyOne: string = 'This is some text to copy';
   bookingOne:Booking;
   taxPercentage: number;
   allSubscription: any;
+  propertyData: any;
+  shortName: any;
 
   constructor(
     private http: HttpClient,
@@ -284,6 +286,11 @@ textToCopyOne: string = 'This is some text to copy';
 
 
                 }
+
+      this.propertyData =  this.token.getProperty();
+      this.shortName = this.propertyData?.shortName;
+
+
   }
 
   ngOnInit() {
@@ -800,11 +807,11 @@ externalreservation.currency = this.booking.currency;
 externalreservation.email = this.booking.email;
 externalreservation.totalAmount = this.booking.totalAmount;
 externalreservation.amountBeforeTax = this.booking.beforeTaxAmount;
-externalreservation.channelId = "24";
+externalreservation.channelId = "9";
 externalreservation.lastModifiedBy ='hotelmate';
 externalreservation.modeOfPayment = "Cash";
-externalreservation.externalTransactionId = "THM-"+this.booking.id;
-externalreservation.otaReservationId = "THM-"+this.booking.id;
+externalreservation.externalTransactionId = this.shortName +"-BE-"+this.booking.id;
+externalreservation.otaReservationId = this.shortName+"-BE-"+this.booking.id;
 externalreservation.propertyId = this.booking.propertyId.toString();
 externalreservation.propertyName = this.booking.businessName;
 externalreservation.firstName = this.booking.firstName
@@ -842,7 +849,7 @@ externalreservation.taxAmount = this.booking.taxAmount;
 // externalreservation.lastModifiedDate = new Date().toString();
 externalreservation.noOfPerson = this.booking.noOfPersons.toString();
 externalreservation.resType ='';
-externalreservation.otaName = 'Thehotelmate.com'
+externalreservation.otaName = 'WebSite'
 externalreservation.bookingStatus ='Confirmed';
 externalreservation.payloadType ='json';
 this.externalReservationDtoList.push(externalreservation)
