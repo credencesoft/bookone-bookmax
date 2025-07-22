@@ -485,7 +485,7 @@ console.log("this.bookingRoomPrice" +this.bookingRoomPrice)
   createBookingPayTM() {
 
     this.booking.modeOfPayment = this.payment.paymentMode;
-    this.booking.externalSite = 'The Hotel Mate';
+    this.booking.externalSite = 'Website';
     this.booking.businessName = this.businessUser.name;
     this.booking.businessEmail = this.businessUser.email;
     this.booking.roomBooking = true;
