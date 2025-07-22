@@ -304,11 +304,11 @@
       <img *ngIf="coupon.imageList?.[0]?.url" [src]="coupon.imageList[0].url" alt="image"
         style="width: 40px; height: 40px; object-fit: cover; border-radius: 5px; margin-left: 10px;">
 
-      <!-- <button (click)="selectedCoupon(coupon)" [disabled]="storedActualNetAmount <= coupon.minimumOrderAmount"
+      <button (click)="selectedCoupon(coupon)" [disabled]="storedActualNetAmount <= coupon.minimumOrderAmount"
         style="background-color: #4CAF50; color: white; border: none; border-radius: 5px; padding: 8px 16px; cursor: pointer; font-size: 14px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);"
         [ngStyle]="{ 'background-color': (storedActualNetAmount <= coupon.minimumOrderAmount ? '#d3d3d3' : '#4CAF50'), 'cursor': (storedActualNetAmount <= coupon.minimumOrderAmount ? 'not-allowed' : 'pointer') }">
         Apply
-      </button> -->
+      </button>
     </div>
   </div>
 
