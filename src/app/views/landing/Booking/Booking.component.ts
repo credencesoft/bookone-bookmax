@@ -307,8 +307,9 @@ export class BookingComponent implements OnInit {
     }
     if (this.token.getProperty() !== null) {
       this.propertyData = this.token.getProperty();
-
-
+      console.log('propertyData issss',this.propertyData);
+      this.propertyData.shortName =  this.token.getProperty().shortName;
+      console.log('propertyData shortName issss',this.propertyData.shortName);
     }
 
 
@@ -616,7 +617,7 @@ if (this.PropertyUrl && this.PropertyUrl.includes('bookingEngine')) {
     externalreservation.channelId = "9";
     externalreservation.lastModifiedBy = 'hotelmate';
     externalreservation.modeOfPayment = "Cash";
-    externalreservation.otaReservationId = "THM-" + this.booking.id;
+    externalreservation.otaReservationId = this.propertyData.shortName + "THM-" + this.booking.id;
     externalreservation.propertyId = this.booking.propertyId.toString();
     externalreservation.propertyName = this.booking.businessName;
     externalreservation.firstName = this.booking.firstName
