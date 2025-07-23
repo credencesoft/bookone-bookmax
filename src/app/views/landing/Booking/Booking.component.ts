@@ -695,6 +695,7 @@ export class BookingComponent implements OnInit {
       this.selectedCouponList = coupon;
       const finalPrice = this.calculateDiscountedPrice(this.booking.netAmount, coupon?.discountPercentage);
       this.appliedCoupon = finalPrice;
+      this.getApplicableTaxPercentage();
       this.booking.totalAmount = this.appliedCoupon + this.totalServiceCost + ((this.appliedCoupon * this.booking.taxPercentage) / 100);
       this.showTheSelectedCoupon = true;
       this.visiblePromotion = false;
@@ -709,6 +710,25 @@ export class BookingComponent implements OnInit {
       console.error("Error in selectedCoupon : ", error);
     }
   }
+
+  getApplicableTaxPercentage(): void {
+  const coupon = this.appliedCoupon;
+  const taxDetailsList = this.booking?.taxDetails;
+  if (Array.isArray(taxDetailsList)) {
+    taxDetailsList.forEach(item => {
+      const taxSlabsList = item.taxSlabsList;
+      if (Array.isArray(taxSlabsList)) {
+        taxSlabsList.forEach(item1 => {
+          if (coupon > 7501) {
+            this.booking.taxPercentage = item1.percentage;
+          }
+        });
+      }
+    });
+  } else {
+    console.error('Invalid taxDetailsList or empty array.');
+  }
+}
   // Used For handled to clear the selected offer
   clearSelectedCoupons() {
     try {
@@ -726,6 +746,7 @@ export class BookingComponent implements OnInit {
   // Used for handled to calculate the discount percentage
   calculateDiscountedPrice(originalAmount: number, discountPercentage: number): number {
     try {
+       originalAmount = this.storedActualNetAmount;
       const discountAmount = this.storedActualNetAmount - ((originalAmount * discountPercentage) / 100);
       return discountAmount;
     }
