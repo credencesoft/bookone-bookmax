@@ -71,7 +71,9 @@ export class HeaderListingdetailsoneComponent implements OnInit {
                 }, 1000);
 
    }
+ ngAfterViewInit() {
 
+ }
   ngOnInit() {
     this.website = this.businessUser?.website;
 
