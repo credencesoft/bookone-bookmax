@@ -124,6 +124,10 @@ import { WhatsappRedirectPageComponent } from './whatsapp-redirect-page/whatsapp
 import { WhatappPaylaterTemplateComponent } from './whatapp-paylater-template/whatapp-paylater-template.component';
 import { ErrorpageComponent } from './errorpage/errorpage.component';
 import { CheckoutRazorpayComponent } from './checkout-razorpay/checkout-razorpay.component';
+import { TermsAndConditionComponent } from './terms-and-condition/terms-and-condition.component';
+import { CancellationPolicyComponent } from './cancellation-policy/cancellation-policy.component';
+import { AboutUsComponent } from './about-us/about-us.component';
+import { CalendarModule } from 'primeng/calendar';
 
 
 @NgModule({
@@ -148,6 +152,7 @@ import { CheckoutRazorpayComponent } from './checkout-razorpay/checkout-razorpay
     MatRadioModule,
     MatFormFieldModule,
     MatTableModule,
+    CalendarModule,
   ],
   declarations: [
     LandingV1Component,
@@ -243,7 +248,10 @@ EnquiryComponent,
     BookingConfirmComponent,
     WhatsappRedirectPageComponent,
     WhatappPaylaterTemplateComponent,
-    ErrorpageComponent
+    ErrorpageComponent,
+    TermsAndConditionComponent,
+    CancellationPolicyComponent,
+    AboutUsComponent
 
   ],
   providers: [WINDOW_PROVIDERS,

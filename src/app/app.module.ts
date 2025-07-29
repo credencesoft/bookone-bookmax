@@ -32,11 +32,12 @@ import { environment } from 'src/environments/environment';
 import { AuthService } from './auth/auth.service';
 import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material';
+import { CalendarModule } from 'primeng/calendar';
 @NgModule({
   declarations: [AppComponent],
   imports: [
     CommonModule,
-
+CalendarModule,
     SharedModule,
     HttpClientModule,
     BrowserAnimationsModule,
