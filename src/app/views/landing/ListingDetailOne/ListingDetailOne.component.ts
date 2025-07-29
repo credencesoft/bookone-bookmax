@@ -1078,32 +1078,6 @@ export class ListingDetailOneComponent implements OnInit {
     if (this.hotelID != null && this.hotelID != undefined) {
       this.token.saveBookingEngineBoolean('googlehotelcenter');
     }
-    const toggleCardBtn = document.getElementById('toggleCardBtn');
-    const closeCardBtn = document.getElementById('closeCardBtn');
-    const stickyCard = document.getElementById('stickyCard');
-
-    // Toggle the visibility of the sticky card
-    toggleCardBtn.addEventListener('click', function () {
-      stickyCard.classList.toggle('show');
-    });
-
-    closeCardBtn.addEventListener('click', function () {
-      stickyCard.classList.remove('show');
-    });
-
-    const toggleCardPrivate = document.getElementById('toggleCardPrivate');
-    const closeCardPrivate = document.getElementById('closeCardPrivate');
-    const stickyPrivate = document.getElementById('stickyPrivate');
-
-    toggleCardPrivate?.addEventListener('click', function () {
-      stickyPrivate.classList.toggle('show');
-    });
-
-    closeCardPrivate?.addEventListener('click', function () {
-      stickyPrivate.classList.remove('show');
-    });
-
-    // Close the card when the 'Close' button is clicked
 
     this.isReadMore = this.policies.map(() => false);
     window.addEventListener('df-request-sent', (event) => {

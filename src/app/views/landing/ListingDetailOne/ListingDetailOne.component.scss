@@ -380,10 +380,9 @@
 }
 .maiiin {
   width: 75%;
-
 }
 .card-rooms {
-    background-color: #fbfbfb;
+  background-color: #fbfbfb;
   padding: 30px 10px;
   border-radius: 20px;
 }
@@ -768,12 +767,12 @@
   font-family: "Poppins";
 }
 .terms-container {
-  background-color: #D9D9D92E;
+  background-color: #d9d9d92e;
   padding: 20px;
   margin-top: 20px;
 }
 .view-more-segment a {
-      color: #090979;
+  color: #090979;
 }
 .view-more-segment {
   text-align: right;
@@ -786,11 +785,11 @@
   gap: 12px;
 }
 .bordering-review {
-      border: 1px solid #E9EFF5;
-    margin-top: 0rem !important;
-    margin-bottom: 0rem !important;
-    margin-left: -20px !important;
-    margin-right: -20px !important;
+  border: 1px solid #e9eff5;
+  margin-top: 0rem !important;
+  margin-bottom: 0rem !important;
+  margin-left: -20px !important;
+  margin-right: -20px !important;
 }
 /* Fix: Re-apply the Bootstrap SVG icon manually */
 .carousel-control-prev-icon {
@@ -846,8 +845,8 @@
   }
 }
 .ameniti1 {
-    font-family: "Poppins";
-    font-weight: 500;
+  font-family: "Poppins";
+  font-weight: 500;
 }
 
 .carousel-control-next-icon {
@@ -934,10 +933,30 @@
   .smart-card-img {
     width: 35px;
   }
+  .gallery-section {
+    width: 176px;
+    margin-bottom: 10px;
+  }
+  .gallery-section1 {
+    width: 176px;
+  }
+  .gallery-hero-section {
+    width: 580px;
+  }
 }
 @media (min-width: 1461px) and (max-width: 1800px) {
   .container-div {
     width: 1360px;
+  }
+  .gallery-hero-section {
+    width: 585px;
+  }
+  .gallery-section {
+    width: 185px;
+    margin-bottom: 10px;
+  }
+  .gallery-section1 {
+    width: 185px;
   }
   .margin-width-gallery {
     width: 77%;
@@ -955,16 +974,16 @@
     width: 77%;
   }
   .gallery-hero-section {
-    width: 550px;
+    width: 660px;
   }
   .smart-card-img {
     width: 29px;
   }
   .gallery-section {
-    width: 174px;
+    width: 210px;
   }
   .gallery-section1 {
-    width: 174px;
+    width: 210px;
   }
   .special-offer {
     margin-left: 26px;
