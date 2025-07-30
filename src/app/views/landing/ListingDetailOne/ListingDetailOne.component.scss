@@ -388,7 +388,7 @@
 }
 
 .side-images {
-  width: 30%;
+  width: 25%;
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -510,13 +510,20 @@
   gap: 5px;
   align-items: center;
   background-color: rgba(255, 255, 255, 0.5019607843);
-  padding: 3px 9px;
+  padding: 0px 10px;
   border-radius: 20px;
   font-size: 12px;
 }
-
+.margin-bottom-10px {
+  margin-bottom: 10px;
+}
 .last-rooms {
   background-color: #5797e9;
+  color: #fff;
+}
+.sold-rooms {
+  background-color: red;
+  color: #fff;
 }
 .booking-card {
   border-radius: 16px;
@@ -900,10 +907,70 @@
     }
   }
 }
+.padding-10px {
+    padding: 10px !important;
+}
 .guest-slider {
   padding: 10px;
   background-color: #e5f9ff2e;
 }
+.ngb-dp-weekdays {
+  background-color: #0b01cc !important;
+}
+.ngb-dp-header {
+  background-color: #0b01cc !important;
+}
+.text-white {
+  color: #fff !important;
+  background-color: #0b01cc !important;
+}
+.main-img {
+  width: 100%;
+  height: auto;
+  object-fit: fill;
+  max-height: 400px;
+}
+
+.small-img {
+  width: 174px;
+  height: 126px;
+  object-fit: cover;
+}
+
+.gallery-thumbs {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  margin-left: 10px;
+}
+.roomDescription {
+  text-align: justify;
+  color: #757575;
+  font-size: small;
+}
+.sold-out-header {
+  font-family: "Poppins";
+  font-weight: 600;
+}
+.dates-seemore {
+  background-color: #031eaa;
+  color: #fff;
+  border: none;
+  padding: 8px 29px;
+  border-radius: 8px;
+}
+@media (min-width: 992px) {
+  .gallery-thumbs {
+    flex-direction: column;
+    width: 161px;
+    margin-left: 10px;
+  }
+
+  .main-img {
+    height: 400px;
+  }
+}
+
 @media (min-width: 1181px) and (max-width: 1262px) {
   .container-div {
     margin: auto;
@@ -967,6 +1034,9 @@
 }
 
 @media (min-width: 1801px) {
+  .roomDescription {
+    font-size: medium;
+  }
   .container-div {
     width: 1560px;
   }
