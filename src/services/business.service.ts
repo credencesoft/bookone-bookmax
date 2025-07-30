@@ -36,9 +36,7 @@ export class BusinessService {
       this.API_URL = API_URL_IN;
     }
   }
-  getOfferListFindByName(name){
-    return this.http.get<any[]>(API_URL_PROMOTION + '/api/offer/findByPromotionType/' + name +'/', { observe: 'response' });
-  }
+
   createUser(applicationUser: BusinessUser) {
     this.setApi();
     return this.http.post<BusinessUser>(
