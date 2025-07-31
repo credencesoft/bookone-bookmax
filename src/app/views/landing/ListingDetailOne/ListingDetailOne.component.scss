@@ -114,24 +114,27 @@
   border-radius: 5px;
   width: 100%;
 }
-.color-text{
+.color-text {
   color: #0b01cc;
 }
 .default-color {
-  color:#4A4A4A;
+  color: #4a4a4a;
 }
 .cursor-pointer {
   cursor: pointer;
 }
+.margin-bottom-40px {
+  margin-bottom: 40px !important;
+}
 .roomsAndOccupancy {
-display: block;
-    position: absolute;
-    z-index: 1;
-    margin-top: 80px;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3019607843);
-    right: 0;
-    border-radius: 38px;
-    top: 0;
+  display: block;
+  position: absolute;
+  z-index: 1;
+  margin-top: 80px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3019607843);
+  right: 0;
+  border-radius: 38px;
+  top: 0;
 }
 .business-text {
   background-color: #fff;
@@ -919,10 +922,10 @@ display: block;
   }
 }
 .padding-10px {
-    padding: 10px !important;
+  padding: 10px !important;
 }
 .business-text {
- font-family: 'Poppins';;
+  font-family: "Poppins";
 }
 .guest-slider {
   padding: 10px;
@@ -955,7 +958,25 @@ display: block;
   display: flex;
   flex-direction: row;
   gap: 10px;
-  margin-left: 10px;
+  margin-left: 5px;
+}
+.image-gallery-main {
+    max-width: 100%;
+    object-fit: cover;
+    margin-bottom: 10px;
+    height: 50vh;
+}
+.padding-right-0px {
+  padding-right: 0px !important;
+}
+.modal-content-change {
+  height: 100vh;
+}
+.see-more {
+  background-color: #fff;
+  color: #000;
+  font-family: "Poppins";
+  font-weight: 500;
 }
 .roomDescription {
   text-align: justify;
@@ -977,12 +998,26 @@ display: block;
   .gallery-thumbs {
     flex-direction: column;
     width: 161px;
-    margin-left: 10px;
+    margin-left: 5px;
   }
 
   .main-img {
     height: 400px;
   }
+  .modal-fullscreen-gallery {
+    min-width: 100% !important;
+    margin: 0px !important;
+  }
+  .modal-open .modal {
+    padding-right: 0px !important;
+  }
+  .image-gallery-main {
+    max-width: 100%;
+    object-fit: cover;
+    margin-bottom: 20px;
+    height: 50vh;
+    width: 400px !important;
+}
 }
 
 @media (min-width: 1181px) and (max-width: 1262px) {

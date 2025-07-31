@@ -63,7 +63,7 @@ import { BusinessService } from 'src/services/business.service';
 import { BusinessUser } from 'src/app/model/user';
 import { RatesAndAvailability } from 'src/app/model/ratesAndAvailability';
 // import { Email } from "src/app/pages/Contact/Contact.component";
-
+declare var $: any;
 export interface Email {
   fromEmail: string;
   toEmail: string;
@@ -848,6 +848,10 @@ selectedGuestsByPlan: {
   [planCode: string]: { adults: number; children: number }
 } = {};
 selectedPlansSummary: any[] = [];
+ activeImageIndex: number = 0;
+
+  @ViewChild('galleryModalRef') galleryModalRef!: ElementRef;
+  @ViewChild('carouselModalRef') carouselModalRef!: ElementRef;
 
 
   constructor(
@@ -1305,7 +1309,46 @@ disableRoomIndexList(index: number, roomKey: string): boolean {
   }
 }
 
+  openGalleryModal() {
+    $(`#${this.galleryModalRef.nativeElement.id}`).modal('show');
+  }
 
+  closeGalleryModal() {
+    $(`#${this.galleryModalRef.nativeElement.id}`).modal('hide');
+  }
+
+  openCarouselModal(index: number, fromGallery: boolean = false) {
+    this.activeImageIndex = index;
+
+    if (fromGallery) {
+      this.closeGalleryModal();
+    }
+
+    setTimeout(() => {
+      $(`#${this.carouselModalRef.nativeElement.id}`).modal('show');
+    }, 200);
+  }
+
+  closeCarouselModal() {
+    $(`#${this.carouselModalRef.nativeElement.id}`).modal('hide');
+
+    // Open gallery modal again if coming from it
+    setTimeout(() => {
+      this.openGalleryModal();
+    }, 200);
+  }
+
+  nextImage() {
+    if (this.activeImageIndex < this.businessUser.imageList.length - 1) {
+      this.activeImageIndex++;
+    }
+  }
+
+  prevImage() {
+    if (this.activeImageIndex > 0) {
+      this.activeImageIndex--;
+    }
+  }
 onIncrement(planCode: string, type: 'adults' | 'children', plan: any) {
   const limit = type === 'adults' ? plan.maximumOccupancy : plan.noOfChildren;
   const totalAllowed = type === 'adults' ? this.totalAdults : this.totalChildren;
