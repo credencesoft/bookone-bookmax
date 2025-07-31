@@ -438,7 +438,7 @@
   </p-carousel>
 </div>
 
-<div class="container-div">
+<div class="container-div margin-bottom-40px">
   <div class="row margin-top-40px">
     <div class="col-12 col-lg-7">
       <h2 class="hero-heading">{{ businessUser?.name }}</h2>
@@ -462,21 +462,31 @@
 
         <!-- Stacked Thumbnails -->
         <div class="d-flex flex-lg-column gap-2 gallery-thumbs">
-          <img
-            *ngIf="businessUser?.imageList?.length > 1"
-            [src]="businessUser.imageList[1]?.url"
-            class="img-fluid rounded small-img"
-          />
-          <img
-            *ngIf="businessUser?.imageList?.length > 2"
-            [src]="businessUser.imageList[2]?.url"
-            class="img-fluid rounded small-img"
-          />
-          <img
-            *ngIf="businessUser?.imageList?.length > 3"
-            [src]="businessUser.imageList[3]?.url"
-            class="img-fluid rounded small-img"
-          />
+           <div
+            class="d-flex flex-lg-column gap-2 gallery-thumbs position-relative"
+          >
+            <ng-container
+              *ngFor="
+                let img of businessUser?.imageList?.slice(1, 4);
+                let i = index
+              "
+            >
+              <img
+                [src]="img.url"
+                class="img-fluid rounded small-img"
+              />
+            </ng-container>
+
+            <!-- See More Button -->
+            <button
+              *ngIf="businessUser?.imageList?.length > 1"
+              class="btn position-absolute see-more"
+              style="bottom: 4px; right: 3px;"
+              (click)="openGalleryModal()"
+            >
+              See More Photos
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -558,12 +568,83 @@
       </div>
     </div>
   </div>
+  <div  class="modal fade" tabindex="-1" id="galleryModal" #galleryModalRef >
+  <div class="modal-dialog modal-lg modal-dialog-centered modal-fullscreen-gallery">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">{{ businessUser?.name }} Gallery</h5>
+        <button type="button" style="border: none; background-color: transparent;" (click)="closeGalleryModal()"> <i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-6 col-md-4 col-lg-4 ng-star-inserted padding-right-0px" *ngFor="let img of businessUser.imageList; let idx = index">
+            <img
+              [src]="img.url"
+              class="img-fluid rounded image-gallery-main"
+              (click)="openCarouselModal(idx, true)"
+              style="cursor: pointer"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal 2: Fullscreen Carousel -->
+<!-- Modal 2: Fullscreen Carousel -->
+<div class="modal fade" id="carouselModal" tabindex="-1" role="dialog" #carouselModalRef>
+  <div class="modal-dialog modal-lg modal-dialog-centered modal-fullscreen-gallery" role="document">
+    <div class="modal-content p-0 position-relative " style="background: #fff; border: none">
+
+      <!-- Close Button -->
+      <button
+        type="button"
+        class="btn btn-light position-absolute"
+        style="top: 10px; right: 10px; border-radius: 50%;background-color: transparent;border: none;"
+        (click)="closeCarouselModal()"
+      >
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <!-- Prev Button -->
+      <button
+        class="btn btn-light position-absolute shadow"
+        style="top: 50%; left: 10px; transform: translateY(-50%); border-radius: 50%; background-color: transparent;border: none;"
+        (click)="prevImage()"
+        [disabled]="activeImageIndex === 0"
+      >
+        <i class="fa-solid fa-angle-left"></i>
+      </button>
+
+      <!-- Next Button -->
+      <button
+        class="btn btn-light position-absolute shadow"
+        style="top: 50%; right: 10px; transform: translateY(-50%); border-radius: 50%;background-color: transparent;border: none;"
+        (click)="nextImage()"
+        [disabled]="activeImageIndex === businessUser.imageList.length - 1"
+      >
+        <i class="fa-solid fa-angle-right"></i>
+      </button>
+
+      <!-- Image Display -->
+      <div class="d-flex justify-content-center align-items-center" style="min-height: 100vh">
+        <img
+          [src]="businessUser.imageList[activeImageIndex]?.url"
+          class="img-fluid rounded"
+          style="max-height: 80vh; max-width: 100%; object-fit: contain;"
+        />
+      </div>
+
+    </div>
+  </div>
+</div>
 
   <div class="row margin-top-40px">
     <div class="col-12 col-lg-7">
       <div>
         <h4 class="aminities-highlights">Property Highlights</h4>
-        <div class="card margin-top-20px">
+        <div class="card margin-top-20px" style="box-shadow: 0px 4px 40px 0px #D9D9D966;">
           <div class="padding-20px">
             <div class="row facrow1" [ngClass]="{ 'expanded-row': showAll }">
               <div
@@ -668,7 +749,7 @@
     <div class="col-5">
       <div>
         <h4 class="aminities-highlights">About Property</h4>
-        <div class="card margin-top-20px">
+        <div class="card margin-top-20px" style="box-shadow: 0px 4px 40px 0px #D9D9D966;">
           <div class="padding-20px">
             <div *ngIf="isRestaurant || distance || DistanceRailway">
               <dl>
