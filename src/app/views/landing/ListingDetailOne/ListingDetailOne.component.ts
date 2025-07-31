@@ -165,6 +165,7 @@ additionalRooms: RoomOne[] = [];
   primaryColorProperty: any;
   privateCouponPresent: any[];
   phoneNumberBookingEngine: string;
+
   toggleListingDetails() {
     this.showListingDetails = !this.showListingDetails;
   }
@@ -846,7 +847,8 @@ additionalRooms: RoomOne[] = [];
 selectedGuestsByPlan: {
   [planCode: string]: { adults: number; children: number }
 } = {};
-selectedPlansMap: { [code: string]: number } = {};
+selectedPlansSummary: any[] = [];
+
 
   constructor(
     private listingService: ListingService,
@@ -1275,11 +1277,35 @@ get totalChildren(): number {
 }
 onRoomSelect(planCode: string, count: number) {
   this.selectedRoomsByPlan[planCode] = count;
+
 }
 getRemainingRooms(): number {
   const totalSelected = Object.values(this.selectedRoomsByPlan).reduce((a, b) => a + b, 0);
+  console.log("============>gg",this.selectedRoomsByPlan);
   return this.rooms - totalSelected;
 }
+
+disableRoomIndexList(index: number, roomKey: string): boolean {
+  try {
+    const selectedKeys = Object.keys(this.selectedRoomsByPlan || {});
+    const selectedCount = selectedKeys.length;
+    const maxSelectable = this.rooms;
+
+    // Always enable already selected rooms
+    if (this.selectedRoomsByPlan[roomKey]) {
+      return false;
+    }
+
+    // Only allow enabling the next (maxSelectable - selectedCount) slots
+    // For example: rooms = 4, selected = 2 → allow only index 0, 1
+    return index >= (maxSelectable - (maxSelectable - selectedCount));
+  } catch (error) {
+    console.error("Error in disableRoomIndexList:", error);
+    return true;
+  }
+}
+
+
 onIncrement(planCode: string, type: 'adults' | 'children', plan: any) {
   const limit = type === 'adults' ? plan.maximumOccupancy : plan.noOfChildren;
   const totalAllowed = type === 'adults' ? this.totalAdults : this.totalChildren;
@@ -1308,12 +1334,7 @@ onDecrement(planCode: string, type: 'adults' | 'children') {
   }
 }
 
-onPlanSelect(planCode: string) {
-  const selectedRoomCount = this.selectedRoomsByPlan[planCode];
-  if (selectedRoomCount) {
-    this.selectedPlansMap[planCode] = selectedRoomCount;
-  }
-}
+
 
   addRoom() {
   if (this.rooms >= 30) return; // max 30 rooms total
@@ -1331,6 +1352,39 @@ onMouseLeave() {
     this.roomsAndOccupancy = false;
   }, 200); // 200ms delay to avoid flicker
 }
+onPlanSelect(planCode: string,rates: any) {
+  const selectedRooms = this.selectedRoomsByPlan[planCode];
+  const selectedGuests = this.selectedGuestsByPlan[planCode];
+  const plan = rates.roomRatePlans.find(p => p.code === planCode);
+
+  if (selectedRooms && selectedGuests?.adults > 0) {
+    const roomName = rates.roomName;
+    const planName = plan.code;
+    const nights = this.DiffDate;
+    const price = plan.code === 'GHC' && this.activeForGoogleHotelCenter
+      ? this.totalplanPrice
+      : plan.amount * nights * selectedRooms;
+
+
+    const summaryEntry = {
+      roomName,
+      planName,
+      adults: selectedGuests.adults,
+      children: selectedGuests.children || 0,
+      nights,
+      price
+    };
+
+    // Replace if already exists
+    const index = this.selectedPlansSummary.findIndex(p => p.planName === planName);
+    if (index > -1) {
+      this.selectedPlansSummary[index] = summaryEntry;
+    } else {
+      this.selectedPlansSummary.push(summaryEntry);
+    }
+  }
+}
+
   publishPage(event: any) {
     if (
       this.token.getProperty() !== undefined &&
@@ -4258,6 +4312,16 @@ onMouseLeave() {
     this.token.clearAllTaxArray();
     this.getTotalTaxFee();
   }
+getTotalAfterTaxAmountFacility(): number {
+  const limit = this.viewMore ? this.propertyServiceListDataOne.length : 4;
+  return this.propertyServiceListDataOne
+    .slice(0, limit)
+    .reduce((sum, item) => sum + (item?.afterTaxAmount || 0), 0);
+}
+
+getTotalPlanPrice(): number {
+  return this.selectedPlansSummary?.reduce((sum, plan) => sum + (plan?.price || 0), 0) || 0;
+}
 
   getTotalTaxFee(): number {
     let url = new URL(this.googleUrl);
