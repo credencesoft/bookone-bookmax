@@ -846,6 +846,7 @@ additionalRooms: RoomOne[] = [];
 selectedGuestsByPlan: {
   [planCode: string]: { adults: number; children: number }
 } = {};
+selectedPlansMap: { [code: string]: number } = {};
 
   constructor(
     private listingService: ListingService,
@@ -1280,7 +1281,6 @@ getRemainingRooms(): number {
   return this.rooms - totalSelected;
 }
 onIncrement(planCode: string, type: 'adults' | 'children', plan: any) {
-  debugger
   const limit = type === 'adults' ? plan.maximumOccupancy : plan.noOfChildren;
   const totalAllowed = type === 'adults' ? this.totalAdults : this.totalChildren;
 
@@ -1308,7 +1308,12 @@ onDecrement(planCode: string, type: 'adults' | 'children') {
   }
 }
 
-
+onPlanSelect(planCode: string) {
+  const selectedRoomCount = this.selectedRoomsByPlan[planCode];
+  if (selectedRoomCount) {
+    this.selectedPlansMap[planCode] = selectedRoomCount;
+  }
+}
 
   addRoom() {
   if (this.rooms >= 30) return; // max 30 rooms total
