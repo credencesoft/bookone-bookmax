@@ -72,6 +72,11 @@ export interface Email {
   message: string;
 }
 
+interface RoomOne {
+  adults: number;
+  children: number;
+}
+
 @Component({
   selector: 'list-detail-one',
   templateUrl: './ListingDetailOne.component.html',
@@ -81,7 +86,7 @@ export interface Email {
 export class ListingDetailOneComponent implements OnInit {
   roomLowestPrices: { [roomId: string]: number | null } = {};
   roomLowestPricesBookingEngine: { [roomId: string]: number | null } = {};
-
+additionalRooms: RoomOne[] = [];
   @ViewChild('accmd') accmdSection!: ElementRef;
   expandedReviews: { [key: number]: boolean } = {};
   reviews = [
@@ -836,6 +841,12 @@ export class ListingDetailOneComponent implements OnInit {
   dates: Date[] | undefined;
   blogPosts$: Observable<any> | undefined;
   responsiveOptions: any[];
+  popupTimeout: any;
+  selectedRoomsByPlan: { [planCode: string]: number } = {};
+selectedGuestsByPlan: {
+  [planCode: string]: { adults: number; children: number }
+} = {};
+
   constructor(
     private listingService: ListingService,
     private reviewService: ReviewService,
@@ -1254,6 +1265,67 @@ export class ListingDetailOneComponent implements OnInit {
     //  this.getTotalTaxFee();
     localStorage.removeItem('landingrice');
   }
+  get totalAdults(): number {
+  return this.adults + this.additionalRooms.reduce((sum, r) => sum + r.adults, 0);
+}
+
+get totalChildren(): number {
+  return this.children + this.additionalRooms.reduce((sum, r) => sum + r.children, 0);
+}
+onRoomSelect(planCode: string, count: number) {
+  this.selectedRoomsByPlan[planCode] = count;
+}
+getRemainingRooms(): number {
+  const totalSelected = Object.values(this.selectedRoomsByPlan).reduce((a, b) => a + b, 0);
+  return this.rooms - totalSelected;
+}
+onIncrement(planCode: string, type: 'adults' | 'children', plan: any) {
+  debugger
+  const limit = type === 'adults' ? plan.maximumOccupancy : plan.noOfChildren;
+  const totalAllowed = type === 'adults' ? this.totalAdults : this.totalChildren;
+
+  if (!this.selectedGuestsByPlan[planCode]) {
+    this.selectedGuestsByPlan[planCode] = { adults: 0, children: 0 };
+  }
+
+  const current = this.selectedGuestsByPlan[planCode][type];
+  const totalSelected = Object.values(this.selectedGuestsByPlan).reduce(
+    (sum, val) => sum + val[type],
+    0
+  );
+
+  if (current < limit && totalSelected < totalAllowed) {
+    this.selectedGuestsByPlan[planCode][type]++;
+  }
+}
+
+onDecrement(planCode: string, type: 'adults' | 'children') {
+  if (
+    this.selectedGuestsByPlan[planCode] &&
+    this.selectedGuestsByPlan[planCode][type] > 0
+  ) {
+    this.selectedGuestsByPlan[planCode][type]--;
+  }
+}
+
+
+
+  addRoom() {
+  if (this.rooms >= 30) return; // max 30 rooms total
+  this.additionalRooms.push({ adults: 1, children: 0 });
+  this.rooms++;
+  this.noOfrooms = this.rooms;
+}
+onMouseEnter() {
+  clearTimeout(this.popupTimeout);
+  this.roomsAndOccupancy = true;
+}
+
+onMouseLeave() {
+  this.popupTimeout = setTimeout(() => {
+    this.roomsAndOccupancy = false;
+  }, 200); // 200ms delay to avoid flicker
+}
   publishPage(event: any) {
     if (
       this.token.getProperty() !== undefined &&
@@ -3621,9 +3693,7 @@ export class ListingDetailOneComponent implements OnInit {
     this.token.saveBookingData(this.booking);
     // this.router.navigate(['/add-service-odt']);
   }
-  onRoomSelect(roomIndex: number) {
-    this.selectedRoomIndex = roomIndex; // Set the selected room index
-  }
+
   onRoomBook(roomId, index, indexOne) {
     // //console.log("ftgyhjkl"+JSON.stringify(this.booking))
     // this.checkAvailabilityStatus = false;
@@ -3834,8 +3904,8 @@ export class ListingDetailOneComponent implements OnInit {
       );
     }
     this.booking.noOfRooms = this.noOfrooms;
-    this.booking.noOfPersons = this.adults;
-    this.booking.noOfChildren = this.children;
+    this.booking.noOfPersons = this.totalAdults;
+    this.booking.noOfChildren = this.totalChildren;
     this.booking.noOfRooms = this.rooms;
     this.booking.noOfNights = this.DiffDate;
     this.token.saveBookingData(this.booking);
