@@ -185,9 +185,7 @@ export class BusinessService {
     );
   }
 
-  getOfferListFindByName(name){
-    return this.http.get<any[]>(API_URL_PROMOTION + '/api/offer/findByPromotionType/' + name +'/', { observe: 'response' });
-  }
+
 
   getOfferById(offerId) {
     this.setApi();
