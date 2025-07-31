@@ -22,8 +22,11 @@
                 id="autocomplete-container"
                 style="border-right: 2px solid #d9d9d9"
               >
-                <label for="checkin" class="label_heading1 checkAva4">
-                  Check-in-Date
+                <label
+                  for="checkin"
+                  class="label_heading1 checkAva4 default-color"
+                >
+                  Check-in date
                 </label>
                 <input
                   #dpFromDate3
@@ -66,8 +69,11 @@
 
             <div class="checkAva6">
               <div id="autocomplete-container">
-                <label for="checkout" class="label_heading1 checkAva7">
-                  Check-out-Date
+                <label
+                  for="checkout"
+                  class="label_heading1 checkAva7 default-color"
+                >
+                  Check-out date
                 </label>
                 <input
                   #dpToDate3
@@ -104,7 +110,7 @@
                   />
                 </div>
               </div>
-              <div class="content-centered" (click)="rangeCalendar.toggle()">
+              <div class="content-centered">
                 <img
                   src=" assets/images/Calendar.png"
                   alt=""
@@ -115,25 +121,23 @@
             </div>
             <div
               class="main-search-input-item checkAvaRoom"
-              style="padding: 0px; padding-left: 30px"
+              style="padding: 0px; padding-left: 13px"
             >
               <div
                 data-visible="accommodation,flights"
-                class="input-group guests"
+                class="input-group guests flex-nowrap align-item-center"
+                (mouseenter)="onMouseEnter()"
+                (mouseleave)="onMouseLeave()"
               >
-                <div
-                  data-component="index/guest-errors"
-                  data-id="main"
-                  data-view-id="accommodation"
-                  role="alert"
-                ></div>
                 <div
                   class="input-box"
                   (click)="toggleRoomsAndOccupancy()"
                   style="padding-bottom: 9px; padding-top: 7px !important"
                 >
-                  <label for="" style="margin-bottom: 0px !important"
-                    >No. of Guests</label
+                  <label
+                    class="default-color"
+                    style="margin-bottom: 0px !important"
+                    >Guests & Rooms</label
                   >
                   <br />
                   <label
@@ -147,12 +151,12 @@
                   >
                     <span class="guests_count">
                       <span data-adults-count="" class="text-nowrap"
-                        >{{ adults }} adults</span
+                        >{{ totalAdults }} adults</span
                       >
                       <span data-visible="accommodation">
                         &nbsp;&nbsp;&nbsp;&nbsp;
                         <span data-children-count="" class="text-nowrap"
-                          >{{ children }} children</span
+                          >{{ totalChildren }} children</span
                         >
                       </span>
                       <span data-visible="accommodation">
@@ -165,6 +169,9 @@
                   </label>
                 </div>
 
+                <div class="content-centered">
+                  <img src=" assets/images/bed.svg" alt="" />
+                </div>
                 <div
                   class="list-holder roomsAndOccupancy"
                   role="region"
@@ -174,167 +181,154 @@
                   <div
                     class="item business-text p-4"
                     (clickOutside)="toggleRoomsAndOccupancy()"
+                    style="background: #fff; border-radius: 10px; width: 400px"
                   >
-                    <div class="clearfix" data-render="">
-                      <div class="group_field group_field-adults">
-                        <div class="row stepper" data-component="InputStepper">
-                          <div class="col-6 stepper_title-wrapper">
-                            <label
-                              class="stepper_title text-default"
-                              style="font-weight: 700"
-                              for="group_adults"
-                              >Adults</label
-                            >
-                          </div>
+                    <!-- Room 1: Uses existing variables -->
+                    <div class="pb-3">
+                      <div
+                        class="d-flex text-center justify-content-between align-items-center"
+                      >
+                        <div class="col">
+                          <div class="font-weight-bold mb-2">Room</div>
+                          <div>1</div>
+                        </div>
+
+                        <!-- Adults -->
+                        <div class="col">
+                          <div class="font-weight-bold mb-2">Adults</div>
                           <div
-                            class="col-6"
-                            style="display: flex; align-items: center"
+                            class="d-flex justify-content-center align-items-center"
                           >
-                            <input
-                              style="display: none"
-                              type="number"
-                              class="stepper_input"
-                              data-ref="input-stepper-field"
-                              id="group_adults"
-                              name="group_adults"
-                              min="1"
-                              max="30"
-                              value="2"
-                              data-group-adults-count=""
-                              [(ngModel)]="adults"
-                            />
                             <button
-                              class="btn btn-outline-default btn-sm"
-                              type="button"
+                              class="btn btn-outline-secondary btn-sm border-0"
                               (click)="adults = adults - 1"
                               [disabled]="adults <= 1"
                             >
-                              <span class="button_text">−</span>
+                              −
                             </button>
-                            <span
-                              class="stepper_display text-default"
-                              aria-hidden="true"
-                              >{{ adults }}</span
-                            >
+                            <div class="mx-2">{{ adults }}</div>
                             <button
-                              class="btn btn-outline-default btn-sm"
-                              type="button"
+                              class="btn btn-outline-secondary btn-sm border-0"
                               (click)="adults = adults + 1"
-                              [disabled]="adults >= 30"
+                              [disabled]="adults >= 4"
                             >
-                              <span class="button_text">+</span>
+                              +
                             </button>
                           </div>
                         </div>
-                      </div>
-                      <div class="group_field group-children">
-                        <div class="row stepper" data-component="InputStepper">
-                          <div class="col-6 stepper_title-wrapper">
-                            <label
-                              class="stepper_title text-default"
-                              style="font-weight: 700"
-                              for="group_children"
-                              >Children</label
-                            >
-                          </div>
+
+                        <!-- Children -->
+                        <div class="col">
+                          <div class="font-weight-bold mb-2">Children</div>
                           <div
-                            class="col-6"
-                            style="display: flex; align-items: center"
+                            class="d-flex justify-content-center align-items-center"
                           >
-                            <input
-                              style="display: none"
-                              type="number"
-                              class="stepper_input"
-                              data-ref="input-stepper-field"
-                              id="group_adults"
-                              name="group_adults"
-                              min="1"
-                              max="30"
-                              value="2"
-                              data-group-adults-count=""
-                            />
                             <button
-                              class="btn btn-outline-default btn-sm"
-                              type="button"
+                              class="btn btn-outline-secondary btn-sm border-0"
                               (click)="children = children - 1"
                               [disabled]="children <= 0"
                             >
-                              <span class="button_text">−</span>
+                              −
                             </button>
-                            <span
-                              class="stepper_display text-default"
-                              aria-hidden="true"
-                              >{{ children }}</span
-                            >
+                            <div class="mx-2">{{ children }}</div>
                             <button
-                              class="btn btn-outline-default btn-sm"
-                              type="button"
+                              class="btn btn-outline-secondary btn-sm border-0"
                               (click)="children = children + 1"
-                              [disabled]="children >= 3"
+                              [disabled]="children >= 2"
                             >
-                              <span class="button_text">+</span>
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="group_field group_field-rooms">
-                        <div class="row stepper" data-component="InputStepper">
-                          <div class="col-6 stepper_title-wrapper">
-                            <label
-                              class="stepper_title text-default"
-                              style="font-weight: 700"
-                              for="no_rooms"
-                              >Rooms</label
-                            >
-                          </div>
-                          <div
-                            class="col-6"
-                            style="display: flex; align-items: center"
-                          >
-                            <input
-                              style="display: none"
-                              type="number"
-                              class="stepper_input"
-                              data-ref="input-stepper-field"
-                              id="group_adults"
-                              name="group_adults"
-                              min="1"
-                              max="30"
-                              value="2"
-                              data-group-adults-count=""
-                            />
-                            <button
-                              class="btn btn-outline-default btn-sm"
-                              type="button"
-                              (click)="rooms = rooms - 1"
-                              [disabled]="rooms <= 1"
-                            >
-                              <span class="button_text">−</span>
-                            </button>
-                            <span
-                              class="stepper_display text-default"
-                              aria-hidden="true"
-                              >{{ rooms }}</span
-                            >
-                            <button
-                              class="btn btn-outline-default btn-sm"
-                              type="button"
-                              (click)="rooms = rooms + 1"
-                              [disabled]="rooms >= 30"
-                            >
-                              <span class="button_text">+</span>
+                              +
                             </button>
                           </div>
                         </div>
                       </div>
                     </div>
-                    <div class="checkAva8">
-                      <button
-                        class="btn btn-default btn-sm checkAva9"
-                        (click)="toggleRoomsAndOccupancy()"
+
+                    <!-- Additional Rooms (Room 2+) -->
+                    <div
+                      *ngFor="let room of additionalRooms; let i = index"
+                      class="pb-3"
+                    >
+                      <div
+                        class="d-flex text-center justify-content-between align-items-center"
                       >
-                        Close
-                      </button>
+                        <div class="col">
+                          <div class="font-weight-bold mb-2">Room</div>
+                          <div>{{ i + 2 }}</div>
+                        </div>
+
+                        <!-- Adults -->
+                        <div class="col">
+                          <div class="font-weight-bold mb-2">Adults</div>
+                          <div
+                            class="d-flex justify-content-center align-items-center"
+                          >
+                            <button
+                              class="btn btn-outline-secondary btn-sm border-0"
+                              (click)="room.adults = room.adults - 1"
+                              [disabled]="room.adults <= 1"
+                            >
+                              −
+                            </button>
+                            <div class="mx-2">{{ room.adults }}</div>
+                            <button
+                              class="btn btn-outline-secondary btn-sm border-0"
+                              (click)="room.adults = room.adults + 1"
+                              [disabled]="room.adults >= 4"
+                            >
+                              +
+                            </button>
+                          </div>
+                        </div>
+
+                        <!-- Children -->
+                        <div class="col">
+                          <div class="font-weight-bold mb-2">Children</div>
+                          <div
+                            class="d-flex justify-content-center align-items-center"
+                          >
+                            <button
+                              class="btn btn-outline-secondary btn-sm border-0"
+                              (click)="room.children = room.children - 1"
+                              [disabled]="room.children <= 0"
+                            >
+                              −
+                            </button>
+                            <div class="mx-2">{{ room.children }}</div>
+                            <button
+                              class="btn btn-outline-secondary btn-sm border-0"
+                              (click)="room.children = room.children + 1"
+                              [disabled]="room.children >= 2"
+                            >
+                              +
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Info note -->
+                    <div
+                      class="d-flex align-items-start mt-3 text-muted small justify-content-between"
+                    >
+                      <div style="width: 70%">
+                        <a
+                          class="color-text font-weight-bold cursor-pointer"
+                          (click)="addRoom()"
+                          *ngIf="rooms < 30"
+                          >+ Add Room</a
+                        >
+                      </div>
+
+                      <div class="d-flex text-align-justify">
+                        <i
+                          class="fa fa-info-circle color-text mr-2 mt-1"
+                          aria-hidden="true"
+                        ></i>
+                        <span>
+                          Please select the number of rooms and assign guests
+                          accordingly.
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -384,8 +378,6 @@
   <div class="checkavailability-div">
     <button
       class="checkavaialabilyy-btn"
-      [disabled]="checkAvailabilityDisabled"
-      [ngClass]="{ 'disabled-btn': checkAvailabilityDisabled }"
       (click)="
         checkingAvailability();
         scrollToAccommodationDash();
@@ -560,7 +552,9 @@
       </div>
 
       <div class="d-flex justify-content-end margin-top-20px">
-        <button class="select-mannual">Select Manually</button>
+        <button class="select-mannual" (click)="scrollToAccommodationDash()">
+          Select Manually
+        </button>
       </div>
     </div>
   </div>
@@ -717,7 +711,7 @@
     <h4 class="rooms-heading-starts">Select Rooms</h4>
   </div>
 
-  <div class="image-container"  >
+  <div class="image-container">
     <div class="maiiin">
       <div *ngFor="let room of availableRooms; let i = index">
         <div
@@ -892,33 +886,69 @@
                               >Room</label
                             >
                           </div>
-                          <select class="select-icon" id="inputGroupSelect01">
-                            <option value="1" selected>1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
+                          <select
+                            class="select-icon"
+                            id="inputGroupSelect01"
+                            [(ngModel)]="selectedRoomsByPlan[plan.code]"
+                            (change)="
+                              onRoomSelect(
+                                plan.code,
+                                selectedRoomsByPlan[plan.code]
+                              )
+                            "
+                          >
+                            <option
+                              *ngFor="
+                                let count of [].constructor(
+                                  rates.noOfAvailable
+                                );
+                                let i = index
+                              "
+                              [value]="i + 1"
+                              [disabled]="
+                                i + 1 > getRemainingRooms() ||
+                                i + 1 > rates.noOfAvailable
+                              "
+                            >
+                              {{ i + 1 }}
+                            </option>
                           </select>
                         </div>
                         <div class="d-flex room-number">
                           <div>
                             <img
-                              src=" assets/images/profile-pic.svg"
+                              src="assets/images/profile-pic.svg"
                               alt=""
                               width="20px"
                             />
                           </div>
                           <div>Adult</div>
                           <div class="d-flex room-number">
-                            <div>-</div>
-                            <div>0</div>
-                            <div>+</div>
+                            <div (click)="onDecrement(plan.code, 'adults')">
+                              -
+                            </div>
+                            <div>
+                              {{ selectedGuestsByPlan[plan.code]?.adults || 0 }}
+                            </div>
+                            <div (click)="onIncrement(plan.code, 'adults',plan)">
+                              +
+                            </div>
                           </div>
                         </div>
                         <div class="d-flex room-number">
                           <div>Child</div>
                           <div class="d-flex room-number">
-                            <div>-</div>
-                            <div>0</div>
-                            <div>+</div>
+                            <div (click)="onDecrement(plan.code, 'children')">
+                              -
+                            </div>
+                            <div>
+                              {{
+                                selectedGuestsByPlan[plan.code]?.children || 0
+                              }}
+                            </div>
+                            <div (click)="onIncrement(plan.code, 'children',plan)">
+                              +
+                            </div>
                           </div>
                         </div>
                         <div class="d-flex room-number">
@@ -1108,7 +1138,7 @@
                         </div>
                       </div>
                     </div>
-                    <div class="card-data">
+                                        <div class="card-data">
                       <div
                         class="d-flex justify-content-between"
                         style="gap: 11px"
@@ -1121,33 +1151,69 @@
                               >Room</label
                             >
                           </div>
-                          <select class="select-icon" id="inputGroupSelect01">
-                            <option value="1" selected>1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
+                          <select
+                            class="select-icon"
+                            id="inputGroupSelect01"
+                            [(ngModel)]="selectedRoomsByPlan[plan.code]"
+                            (change)="
+                              onRoomSelect(
+                                plan.code,
+                                selectedRoomsByPlan[plan.code]
+                              )
+                            "
+                          >
+                            <option
+                              *ngFor="
+                                let count of [].constructor(
+                                  rates.noOfAvailable
+                                );
+                                let i = index
+                              "
+                              [value]="i + 1"
+                              [disabled]="
+                                i + 1 > getRemainingRooms() ||
+                                i + 1 > rates.noOfAvailable
+                              "
+                            >
+                              {{ i + 1 }}
+                            </option>
                           </select>
                         </div>
                         <div class="d-flex room-number">
                           <div>
                             <img
-                              src=" assets/images/profile-pic.svg"
+                              src="assets/images/profile-pic.svg"
                               alt=""
                               width="20px"
                             />
                           </div>
                           <div>Adult</div>
                           <div class="d-flex room-number">
-                            <div>-</div>
-                            <div>0</div>
-                            <div>+</div>
+                            <div (click)="onDecrement(plan.code, 'adults')">
+                              -
+                            </div>
+                            <div>
+                              {{ selectedGuestsByPlan[plan.code]?.adults || 0 }}
+                            </div>
+                            <div (click)="onIncrement(plan.code, 'adults',plan)">
+                              +
+                            </div>
                           </div>
                         </div>
                         <div class="d-flex room-number">
                           <div>Child</div>
                           <div class="d-flex room-number">
-                            <div>-</div>
-                            <div>0</div>
-                            <div>+</div>
+                            <div (click)="onDecrement(plan.code, 'children')">
+                              -
+                            </div>
+                            <div>
+                              {{
+                                selectedGuestsByPlan[plan.code]?.children || 0
+                              }}
+                            </div>
+                            <div (click)="onIncrement(plan.code, 'children',plan)">
+                              +
+                            </div>
                           </div>
                         </div>
                         <div class="d-flex room-number">
@@ -1304,9 +1370,9 @@
                       availability.
                     </p>
                   </div>
-                  <div class="margin-top-20px d-flex" style="gap:30px">
+                  <div class="margin-top-20px d-flex" style="gap: 30px">
                     <button class="dates-seemore">Change Dates</button>
-                    <button class="dates-seemore">See More Rooms</button>
+                    <button (click)="scrollToAccommodationDash()" class="dates-seemore">See More Rooms</button>
                   </div>
                 </div>
               </div>
@@ -1356,7 +1422,9 @@
               <span class="text-dark">2/26/2022</span>
             </div>
           </div>
-          <div class="pt-2 d-flex justify-content-between align-items-center padding-10px">
+          <div
+            class="pt-2 d-flex justify-content-between align-items-center padding-10px"
+          >
             <div>
               <small class="text-uppercase font-weight-bold text-muted"
                 >Guests</small
