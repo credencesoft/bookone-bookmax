@@ -865,7 +865,7 @@
                               activeForGoogleHotelCenter && plan.code === "GHC"
                                 ? (this.totalplanPrice
                                   | currency : currency : "symbol" : "1.2-2")
-                                : (plan.amount * DiffDate * rooms
+                                : (plan.amount * DiffDate
                                   | currency : currency : "symbol" : "1.2-2")
                             }}
                           </div>
@@ -905,10 +905,6 @@
                                 let i = index
                               "
                               [value]="i + 1"
-                              [disabled]="
-                                i + 1 > getRemainingRooms() ||
-                                i + 1 > rates.noOfAvailable
-                              "
                             >
                               {{ i + 1 }}
                             </option>
@@ -930,7 +926,9 @@
                             <div>
                               {{ selectedGuestsByPlan[plan.code]?.adults || 0 }}
                             </div>
-                            <div (click)="onIncrement(plan.code, 'adults',plan)">
+                            <div
+                              (click)="onIncrement(plan.code, 'adults', plan)"
+                            >
                               +
                             </div>
                           </div>
@@ -946,13 +944,20 @@
                                 selectedGuestsByPlan[plan.code]?.children || 0
                               }}
                             </div>
-                            <div (click)="onIncrement(plan.code, 'children',plan)">
+                            <div
+                              (click)="onIncrement(plan.code, 'children', plan)"
+                            >
                               +
                             </div>
                           </div>
                         </div>
                         <div class="d-flex room-number">
-                          <div class="selected" (click)="onPlanSelect(plan.code)">Select</div>
+                          <div
+                            class="selected"
+                            (click)="onPlanSelect(plan.code, rates)"
+                          >
+                            Select
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -976,13 +981,7 @@
                 <div
                   class="margin-top-40px d-flex justify-content-center align-items-start"
                 >
-                  <button class="btn-add">
-                      {{
-                        plan?.code && selectedPlansMap[plan.code]
-                          ? 'Added (' + selectedPlansMap[plan.code] + ')'
-                          : 'Add'
-                      }}
-                    </button>
+                  <button class="btn-add">Add</button>
                 </div>
               </div>
             </div>
@@ -1136,7 +1135,7 @@
                               activeForGoogleHotelCenter && plan.code === "GHC"
                                 ? (this.totalplanPrice
                                   | currency : currency : "symbol" : "1.2-2")
-                                : (plan.amount * DiffDate * rooms
+                                : (plan.amount * DiffDate
                                   | currency : currency : "symbol" : "1.2-2")
                             }}
                           </div>
@@ -1144,7 +1143,7 @@
                         </div>
                       </div>
                     </div>
-                                        <div class="card-data">
+                    <div class="card-data">
                       <div
                         class="d-flex justify-content-between"
                         style="gap: 11px"
@@ -1176,10 +1175,6 @@
                                 let i = index
                               "
                               [value]="i + 1"
-                              [disabled]="
-                                i + 1 > getRemainingRooms() ||
-                                i + 1 > rates.noOfAvailable
-                              "
                             >
                               {{ i + 1 }}
                             </option>
@@ -1201,7 +1196,9 @@
                             <div>
                               {{ selectedGuestsByPlan[plan.code]?.adults || 0 }}
                             </div>
-                            <div (click)="onIncrement(plan.code, 'adults',plan)">
+                            <div
+                              (click)="onIncrement(plan.code, 'adults', plan)"
+                            >
                               +
                             </div>
                           </div>
@@ -1217,13 +1214,20 @@
                                 selectedGuestsByPlan[plan.code]?.children || 0
                               }}
                             </div>
-                            <div (click)="onIncrement(plan.code, 'children',plan)">
+                            <div
+                              (click)="onIncrement(plan.code, 'children', plan)"
+                            >
                               +
                             </div>
                           </div>
                         </div>
                         <div class="d-flex room-number">
-                          <div class="selected">Select</div>
+                          <div
+                            class="selected"
+                            (click)="onPlanSelect(plan.code, rates)"
+                          >
+                            Select
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -1378,7 +1382,12 @@
                   </div>
                   <div class="margin-top-20px d-flex" style="gap: 30px">
                     <button class="dates-seemore">Change Dates</button>
-                    <button (click)="scrollToAccommodationDash()" class="dates-seemore">See More Rooms</button>
+                    <button
+                      (click)="scrollToAccommodationDash()"
+                      class="dates-seemore"
+                    >
+                      See More Rooms
+                    </button>
                   </div>
                 </div>
               </div>
@@ -1419,13 +1428,13 @@
               <small class="text-uppercase font-weight-bold text-muted"
                 >Check-in</small
               ><br />
-              <span class="text-dark">2/19/2022</span>
+              <span class="text-dark">{{this.booking.fromDate | date : 'dd-MM-YYYY'}}</span>
             </div>
             <div class="col-6 pl-2 padding-10px">
               <small class="text-uppercase font-weight-bold text-muted"
                 >Checkout</small
               ><br />
-              <span class="text-dark">2/26/2022</span>
+              <span class="text-dark">{{this.booking.toDate | date : 'dd-MM-YYYY'}}</span>
             </div>
           </div>
           <div
@@ -1435,14 +1444,14 @@
               <small class="text-uppercase font-weight-bold text-muted"
                 >Guests</small
               ><br />
-              <span class="text-primary">6 guests</span>
+              <span class="text-primary">{{ totalAdults }} adults, {{ totalChildren }} children</span>
             </div>
             <i class="fa fa-chevron-down"></i>
             <!-- or use a Bootstrap icon -->
           </div>
         </div>
 
-        <div class="room-box d-flex justify-content-between mb-4">
+        <!-- <div class="room-box d-flex justify-content-between mb-4">
           <div class="room-details">
             <div class="room-title">Standard AC Room</div>
             <small class="text-muted">CP Plan · 2 Adults, 2 Children</small
@@ -1450,56 +1459,50 @@
             <small class="text-muted">2 Nights</small>
           </div>
           <div class="room-price">₹ 9,543</div>
-        </div>
-
-        <div class="room-box d-flex justify-content-between mb-4">
+        </div> -->
+        <div
+          *ngFor="let plan of selectedPlansSummary"
+          class="room-box d-flex justify-content-between mb-4"
+        >
           <div class="room-details">
-            <div class="room-title">Deluxe Room</div>
-            <small class="text-muted">CP Plan · 2 Adults, 0 Children</small
+            <div class="room-title">{{ plan.roomName }}</div>
+            <small class="text-muted">
+              {{ plan.planName }} · {{ plan.adults }} Adults,
+              {{ plan.children }} Children </small
             ><br />
-            <small class="text-muted">2 Nights</small>
+            <small class="text-muted">{{ plan.nights }} Nights</small>
           </div>
-          <div class="room-price">₹ 5,401</div>
+          <div class="room-price">₹ {{ plan.price | number : "1.2-2" }}</div>
         </div>
 
-        <hr />
+        <hr *ngIf="selectedPlansSummary.length > 0" />
 
         <!-- Add-ons -->
-        <div class="mb-3">
+        <div class="mb-3" *ngIf="propertyServiceListDataOne.length >0">
           <div class="font-weight-semibold mb-2">Add-ons</div>
-          <div class="custom-checkbox mb-2">
+             <ng-container
+            *ngFor="let fac of propertyServiceListDataOne | slice:0:(viewMore ? propertyServiceListDataOne.length : 4); let i = index">
+              <div class="custom-checkbox mb-2">
             <label>
               <input type="checkbox" checked />
               <span class="checkmark"></span>
-              Airport Pick-up (₹2,000)
+              {{fac.name}}
             </label>
           </div>
-          <div class="custom-checkbox mb-2">
-            <label>
-              <input type="checkbox" />
-              <span class="checkmark"></span>
-              Spa Package (₹2,300)
-            </label>
-          </div>
-          <div class="custom-checkbox mb-2">
-            <label>
-              <input type="checkbox" />
-              <span class="checkmark"></span>
-              Extra Bed (₹800)
-            </label>
-          </div>
+          </ng-container>
+
           <!-- <a href="#" class="text-primary small font-weight-semibold">Add More ▼</a> -->
         </div>
 
         <!-- Summary -->
-        <div class="mb-3">
+        <div class="mb-3" *ngIf="selectedPlansSummary.length > 0">
           <div class="d-flex justify-content-between">
             <span>Rooms Total</span>
-            <span>₹ 13,944</span>
+            <span>₹{{ getTotalPlanPrice() | number : '1.2-2' }}</span>
           </div>
           <div class="d-flex justify-content-between">
             <span>Add-ons Total</span>
-            <span>₹ 2,000</span>
+            <span>₹{{ getTotalAfterTaxAmountFacility() | number : '1.2-2' }}</span>
           </div>
           <div class="d-flex justify-content-between mb-2">
             <span>Tax & Services</span>
