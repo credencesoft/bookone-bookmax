@@ -622,7 +622,7 @@
         class="btn btn-light position-absolute shadow"
         style="top: 50%; right: 10px; transform: translateY(-50%); border-radius: 50%;background-color: transparent;border: none;"
         (click)="nextImage()"
-        [disabled]="activeImageIndex === businessUser.imageList.length - 1"
+        [disabled]="activeImageIndex === businessUser?.imageList?.length - 1"
       >
         <i class="fa-solid fa-angle-right"></i>
       </button>
@@ -630,7 +630,8 @@
       <!-- Image Display -->
       <div class="d-flex justify-content-center align-items-center" style="min-height: 100vh">
         <img
-          [src]="businessUser.imageList[activeImageIndex]?.url"
+        *ngIf="businessUser?.imageList?.length > activeImageIndex && businessUser?.imageList[activeImageIndex]"
+          [src]="businessUser?.imageList[activeImageIndex]?.url"
           class="img-fluid rounded"
           style="max-height: 80vh; max-width: 100%; object-fit: contain;"
         />
@@ -1001,13 +1002,13 @@
                           </div>
                           <div>Adult</div>
                           <div class="d-flex room-number">
-                            <div (click)="onDecrement(plan.code, 'adults')">
+                            <div class="cursor-pointer" (click)="onDecrement(plan.code, 'adults')">
                               -
                             </div>
                             <div>
                               {{ selectedGuestsByPlan[plan.code]?.adults || 0 }}
                             </div>
-                            <div
+                            <div class="cursor-pointer"
                               (click)="onIncrement(plan.code, 'adults', plan)"
                             >
                               +
@@ -1017,7 +1018,7 @@
                         <div class="d-flex room-number">
                           <div>Child</div>
                           <div class="d-flex room-number">
-                            <div (click)="onDecrement(plan.code, 'children')">
+                            <div  class="cursor-pointer" (click)="onDecrement(plan.code, 'children')">
                               -
                             </div>
                             <div>
@@ -1025,7 +1026,7 @@
                                 selectedGuestsByPlan[plan.code]?.children || 0
                               }}
                             </div>
-                            <div
+                            <div class="cursor-pointer"
                               (click)="onIncrement(plan.code, 'children', plan)"
                             >
                               +
@@ -1271,13 +1272,13 @@
                           </div>
                           <div>Adult</div>
                           <div class="d-flex room-number">
-                            <div (click)="onDecrement(plan.code, 'adults')">
+                            <div class="cursor-pointer" (click)="onDecrement(plan.code, 'adults')">
                               -
                             </div>
                             <div>
                               {{ selectedGuestsByPlan[plan.code]?.adults || 0 }}
                             </div>
-                            <div
+                            <div class="cursor-pointer"
                               (click)="onIncrement(plan.code, 'adults', plan)"
                             >
                               +
@@ -1287,7 +1288,7 @@
                         <div class="d-flex room-number">
                           <div>Child</div>
                           <div class="d-flex room-number">
-                            <div (click)="onDecrement(plan.code, 'children')">
+                            <div class="cursor-pointer" (click)="onDecrement(plan.code, 'children')">
                               -
                             </div>
                             <div>
@@ -1295,7 +1296,7 @@
                                 selectedGuestsByPlan[plan.code]?.children || 0
                               }}
                             </div>
-                            <div
+                            <div class="cursor-pointer"
                               (click)="onIncrement(plan.code, 'children', plan)"
                             >
                               +
@@ -1549,9 +1550,8 @@
             <div class="room-title">{{ plan.roomName }}</div>
             <small class="text-muted">
               {{ plan.planName }} · {{ plan.adults }} Adults,
-              {{ plan.children }} Children </small
-            ><br />
-            <small class="text-muted">{{ plan.nights }} Nights</small>
+              {{ plan.children }} Children </small><br />
+            <small class="text-muted">{{ plan.nights }} Nights . {{plan.selectedRoomnumber}} room(s)</small>
           </div>
           <div class="room-price">₹ {{ plan.price | number : "1.2-2" }}</div>
         </div>
