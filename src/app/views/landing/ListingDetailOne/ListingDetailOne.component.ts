@@ -1395,6 +1395,14 @@ onMouseLeave() {
     this.roomsAndOccupancy = false;
   }, 200); // 200ms delay to avoid flicker
 }
+
+selectRoomsbtn() {
+  this.closeGalleryModal();
+  setTimeout(() => {
+    this.scrollToAccommodationDash();
+  }, 500);
+}
+
 onPlanSelect(planCode: string,rates: any) {
   const selectedRooms = this.selectedRoomsByPlan[planCode];
   const selectedGuests = this.selectedGuestsByPlan[planCode];
