@@ -1407,6 +1407,8 @@ onPlanSelect(planCode: string,rates: any) {
     const price = plan.code === 'GHC' && this.activeForGoogleHotelCenter
       ? this.totalplanPrice
       : plan.amount * nights * selectedRooms;
+    const selectedRoomnumber = selectedRooms;
+
 
 
     const summaryEntry = {
@@ -1415,7 +1417,8 @@ onPlanSelect(planCode: string,rates: any) {
       adults: selectedGuests.adults,
       children: selectedGuests.children || 0,
       nights,
-      price
+      price,
+      selectedRoomnumber
     };
 
     // Replace if already exists
