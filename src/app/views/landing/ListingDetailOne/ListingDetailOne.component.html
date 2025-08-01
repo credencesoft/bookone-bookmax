@@ -462,7 +462,7 @@
 
         <!-- Stacked Thumbnails -->
         <div class="d-flex flex-lg-column gap-2 gallery-thumbs">
-           <div
+          <div
             class="d-flex flex-lg-column gap-2 gallery-thumbs position-relative"
           >
             <ng-container
@@ -471,17 +471,14 @@
                 let i = index
               "
             >
-              <img
-                [src]="img.url"
-                class="img-fluid rounded small-img"
-              />
+              <img [src]="img.url" class="img-fluid rounded small-img" />
             </ng-container>
 
             <!-- See More Button -->
             <button
               *ngIf="businessUser?.imageList?.length > 1"
               class="btn position-absolute see-more"
-              style="bottom: 4px; right: 3px;"
+              style="bottom: 4px; right: 3px"
               (click)="openGalleryModal()"
             >
               See More Photos
@@ -568,86 +565,137 @@
       </div>
     </div>
   </div>
-  <div  class="modal fade" tabindex="-1" id="galleryModal" #galleryModalRef >
-  <div class="modal-dialog modal-lg modal-dialog-centered modal-fullscreen-gallery">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h4 class="modal-title"><i style="cursor: pointer;" (click)="closeGalleryModal()" class="fa-solid fa-angle-left"></i> &nbsp;&nbsp; {{ businessUser?.name }} Gallery</h4>
-        <button class="select-mannual" (click)="selectRoomsbtn()">
-          Select Rooms
-        </button>
-      </div>
-      <div class="modal-body">
-        <div class="row">
-          <div class="col-6 col-md-3 col-lg-3 ng-star-inserted padding-right-0px" *ngFor="let img of businessUser.imageList; let idx = index">
-            <img
-              [src]="img.url"
-              class="img-fluid rounded image-gallery-main"
-              (click)="openCarouselModal(idx, true)"
+  <div class="modal fade" tabindex="-1" id="galleryModal" #galleryModalRef>
+    <div
+      class="modal-dialog modal-lg modal-dialog-centered modal-fullscreen-gallery"
+    >
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">
+            <i
               style="cursor: pointer"
-            />
+              (click)="closeGalleryModal()"
+              class="fa-solid fa-angle-left"
+            ></i>
+            &nbsp;&nbsp; {{ businessUser?.name }} Gallery
+          </h4>
+          <button class="select-mannual" (click)="selectRoomsbtn()">
+            Select Rooms
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div
+              class="col-6 col-md-3 col-lg-3 ng-star-inserted padding-right-0px"
+              *ngFor="let img of businessUser.imageList; let idx = index"
+            >
+              <img
+                [src]="img.url"
+                class="img-fluid rounded image-gallery-main"
+                (click)="openCarouselModal(idx, true)"
+                style="cursor: pointer"
+              />
+            </div>
           </div>
         </div>
       </div>
     </div>
   </div>
-</div>
 
-<!-- Modal 2: Fullscreen Carousel -->
-<!-- Modal 2: Fullscreen Carousel -->
-<div class="modal fade" id="carouselModal" tabindex="-1" role="dialog" #carouselModalRef>
-  <div class="modal-dialog modal-lg modal-dialog-centered modal-fullscreen-gallery" role="document">
-    <div class="modal-content p-0 position-relative " style="background: #fff; border: none">
-
-      <!-- Close Button -->
-      <button
-        type="button"
-        class="btn btn-light position-absolute"
-        style="top: 10px; right: 10px; border-radius: 50%;background-color: transparent;border: none;"
-        (click)="closeCarouselModal()"
+  <!-- Modal 2: Fullscreen Carousel -->
+  <!-- Modal 2: Fullscreen Carousel -->
+  <div
+    class="modal fade"
+    id="carouselModal"
+    tabindex="-1"
+    role="dialog"
+    #carouselModalRef
+  >
+    <div
+      class="modal-dialog modal-lg modal-dialog-centered modal-fullscreen-gallery"
+      role="document"
+    >
+      <div
+        class="modal-content p-0 position-relative"
+        style="background: #fff; border: none"
       >
-        <i class="fa-solid fa-xmark"></i>
-      </button>
+        <!-- Close Button -->
+        <button
+          type="button"
+          class="btn btn-light position-absolute"
+          style="
+            top: 10px;
+            right: 10px;
+            border-radius: 50%;
+            background-color: transparent;
+            border: none;
+          "
+          (click)="closeCarouselModal()"
+        >
+          <i class="fa-solid fa-xmark"></i>
+        </button>
 
-      <!-- Prev Button -->
-      <button
-        class="btn btn-light position-absolute shadow"
-        style="top: 50%; left: 10px; transform: translateY(-50%); border-radius: 50%; background-color: transparent;border: none;"
-        (click)="prevImage()"
-        [disabled]="activeImageIndex === 0"
-      >
-        <i class="fa-solid fa-angle-left"></i>
-      </button>
+        <!-- Prev Button -->
+        <button
+          class="btn btn-light position-absolute shadow"
+          style="
+            top: 50%;
+            left: 10px;
+            transform: translateY(-50%);
+            border-radius: 50%;
+            background-color: transparent;
+            border: none;
+          "
+          (click)="prevImage()"
+          [disabled]="activeImageIndex === 0"
+        >
+          <i class="fa-solid fa-angle-left"></i>
+        </button>
 
-      <!-- Next Button -->
-      <button
-        class="btn btn-light position-absolute shadow"
-        style="top: 50%; right: 10px; transform: translateY(-50%); border-radius: 50%;background-color: transparent;border: none;"
-        (click)="nextImage()"
-        [disabled]="activeImageIndex === businessUser?.imageList?.length - 1"
-      >
-        <i class="fa-solid fa-angle-right"></i>
-      </button>
+        <!-- Next Button -->
+        <button
+          class="btn btn-light position-absolute shadow"
+          style="
+            top: 50%;
+            right: 10px;
+            transform: translateY(-50%);
+            border-radius: 50%;
+            background-color: transparent;
+            border: none;
+          "
+          (click)="nextImage()"
+          [disabled]="activeImageIndex === businessUser?.imageList?.length - 1"
+        >
+          <i class="fa-solid fa-angle-right"></i>
+        </button>
 
-      <!-- Image Display -->
-      <div class="d-flex justify-content-center align-items-center" style="min-height: 100vh">
-        <img
-        *ngIf="businessUser?.imageList?.length > activeImageIndex && businessUser?.imageList[activeImageIndex]"
-          [src]="businessUser?.imageList[activeImageIndex]?.url"
-          class="img-fluid rounded"
-          style="max-height: 80vh; max-width: 100%; object-fit: contain;"
-        />
+        <!-- Image Display -->
+        <div
+          class="d-flex justify-content-center align-items-center"
+          style="min-height: 100vh"
+        >
+          <img
+            *ngIf="
+              businessUser?.imageList?.length > activeImageIndex &&
+              businessUser?.imageList[activeImageIndex]
+            "
+            [src]="businessUser?.imageList[activeImageIndex]?.url"
+            class="img-fluid rounded"
+            style="max-height: 80vh; max-width: 100%; object-fit: contain"
+          />
+        </div>
       </div>
-
     </div>
   </div>
-</div>
 
   <div class="row margin-top-40px">
     <div class="col-12 col-lg-7">
       <div>
         <h4 class="aminities-highlights">Property Highlights</h4>
-        <div class="card margin-top-20px" style="box-shadow: 0px 4px 40px 0px #D9D9D966;">
+        <div
+          class="card margin-top-20px"
+          style="box-shadow: 0px 4px 40px 0px #d9d9d966"
+        >
           <div class="padding-20px">
             <div class="row facrow1" [ngClass]="{ 'expanded-row': showAll }">
               <div
@@ -752,7 +800,10 @@
     <div class="col-5">
       <div>
         <h4 class="aminities-highlights">About Property</h4>
-        <div class="card margin-top-20px" style="box-shadow: 0px 4px 40px 0px #D9D9D966;">
+        <div
+          class="card margin-top-20px"
+          style="box-shadow: 0px 4px 40px 0px #d9d9d966"
+        >
           <div class="padding-20px">
             <div *ngIf="isRestaurant || distance || DistanceRailway">
               <dl>
@@ -918,9 +969,17 @@
                 </div>
               </div>
 
-              <div class="col-5">
-                <div>
+              <div class="col-7">
+                <div class="d-flex justify-content-between">
                   <h3>{{ room.name }}</h3>
+                  <div>
+                    <img
+                      src=" assets/images/profile-pic.svg"
+                      alt=""
+                      width="17px"
+                    />{{ room.maximumOccupancy }}
+                  </div>
+                  <!-- <div>380 sq.ft</div> -->
                 </div>
                 <div class="d-block margin-top-30px">
                   <div
@@ -933,7 +992,18 @@
                         style="gap: 20px"
                       >
                         <div class="d-flex align-item-center" style="gap: 15px">
-                          <div class="planName">{{ plan.code }}</div>
+                          <div
+                            class="planName"
+                            style="cursor: pointer"
+                            [title]="plan.name"
+                          >
+                            {{
+                              plan.name.split(" ").length > 3
+                                ? plan.name.split(" ").slice(0, 3).join(" ") +
+                                  "..."
+                                : plan.name
+                            }}
+                          </div>
                           <div class="ViewDetails">
                             <img
                               src=" assets/images/view-details.svg"
@@ -958,10 +1028,7 @@
                       </div>
                     </div>
                     <div class="card-data">
-                      <div
-                        class="d-flex justify-content-between"
-                        style="gap: 11px"
-                      >
+                      <div class="d-flex justify-content-between align-items-end">
                         <div class="d-flex room-number">
                           <div>
                             <label
@@ -974,27 +1041,25 @@
                             class="select-icon"
                             id="inputGroupSelect01"
                             [(ngModel)]="selectedRoomsByPlan[plan.code]"
-                            (change)="
-                              onRoomSelect(
-                                plan.code,
-                                selectedRoomsByPlan[plan.code]
-                              )
-                            "
+                            (ngModelChange)="onRoomSelect(plan.code, $event)"
                           >
+                            <!-- Ensure default is assigned -->
+                            <ng-container
+                              *ngIf="setDefaultRoomIfMissing(plan.code)"
+                            ></ng-container>
+
                             <option
                               *ngFor="
-                                let count of [].constructor(
-                                  rates.noOfAvailable
-                                );
-                                let i = index
+                                let count of getRoomOptions(rates.noOfAvailable)
                               "
-                              [value]="i + 1"
+                              [value]="count"
+                              [disabled]="count === 0"
                             >
-                              {{ i + 1 }}
+                              {{ count === 0 ? "0" : count }}
                             </option>
                           </select>
                         </div>
-                        <div class="d-flex room-number">
+                        <div class="d-flex room-numberOne">
                           <div>
                             <img
                               src="assets/images/profile-pic.svg"
@@ -1002,36 +1067,48 @@
                               width="20px"
                             />
                           </div>
-                          <div>Adult</div>
-                          <div class="d-flex room-number">
-                            <div class="cursor-pointer" (click)="onDecrement(plan.code, 'adults')">
-                              -
-                            </div>
-                            <div>
-                              {{ selectedGuestsByPlan[plan.code]?.adults || 0 }}
-                            </div>
-                            <div class="cursor-pointer"
-                              (click)="onIncrement(plan.code, 'adults', plan)"
-                            >
-                              +
+                          <div>
+                            <div class="margin-bottom-5px">Adult</div>
+                            <div class="d-flex increament-bg">
+                              <div
+                                class="cursor-pointer minus-btn"
+                                (click)="onDecrement(plan.code, 'adults')"
+                              >
+                                <i class="fa-solid fa-minus"></i>
+                              </div>
+                              <div>
+                                {{
+                                  selectedGuestsByPlan[plan.code]?.adults || 0
+                                }}
+                              </div>
+                              <div
+                                class="cursor-pointer plus-btn"
+                                (click)="onIncrement(plan.code, 'adults', plan)"
+                              >
+                                <i class="fa-solid fa-plus"></i>
+                              </div>
                             </div>
                           </div>
                         </div>
-                        <div class="d-flex room-number">
-                          <div>Child</div>
-                          <div class="d-flex room-number">
-                            <div  class="cursor-pointer" (click)="onDecrement(plan.code, 'children')">
-                              -
+                        <div class="d-block room-number">
+                          <div class="margin-bottom-5px">Child</div>
+                          <div class="d-flex increament-bg">
+                            <div
+                              class="cursor-pointer minus-btn"
+                              (click)="onDecrement(plan.code, 'children')"
+                            >
+                              <i class="fa-solid fa-minus"></i>
                             </div>
                             <div>
                               {{
                                 selectedGuestsByPlan[plan.code]?.children || 0
                               }}
                             </div>
-                            <div class="cursor-pointer"
+                            <div
+                              class="cursor-pointer plus-btn"
                               (click)="onIncrement(plan.code, 'children', plan)"
                             >
-                              +
+                              <i class="fa-solid fa-plus"></i>
                             </div>
                           </div>
                         </div>
@@ -1048,26 +1125,14 @@
                   </div>
                 </div>
               </div>
-              <div class="col-2">
-                <div
-                  class="d-flex justify-content-center content-room-number"
-                  style="gap: 20px"
-                >
-                  <div>
-                    <img
-                      src=" assets/images/profile-pic.svg"
-                      alt=""
-                      width="17px"
-                    />{{ room.maximumOccupancy }}
-                  </div>
-                  <!-- <div>380 sq.ft</div> -->
-                </div>
+              <!-- <div class="col-2">
+
                 <div
                   class="margin-top-40px d-flex justify-content-center align-items-start"
                 >
                   <button class="btn-add">Add</button>
                 </div>
-              </div>
+              </div> -->
             </div>
           </div>
         </div>
@@ -1188,9 +1253,16 @@
                 </div>
               </div>
 
-              <div class="col-5">
-                <div>
+              <div class="col-7">
+                <div class="d-flex justify-content-between">
                   <h3>{{ room.name }}</h3>
+                  <div>
+                    <img
+                      src=" assets/images/profile-pic.svg"
+                      alt=""
+                      width="17px"
+                    />{{ room.maximumOccupancy }}
+                  </div>
                 </div>
                 <div class="d-block margin-top-30px">
                   <div
@@ -1203,7 +1275,18 @@
                         style="gap: 20px"
                       >
                         <div class="d-flex align-item-center" style="gap: 15px">
-                          <div class="planName">{{ plan.code }}</div>
+                          <div
+                            class="planName"
+                            style="cursor: pointer"
+                            [title]="plan.name"
+                          >
+                            {{
+                              plan.name.split(" ").length > 3
+                                ? plan.name.split(" ").slice(0, 3).join(" ") +
+                                  "..."
+                                : plan.name
+                            }}
+                          </div>
                           <div class="ViewDetails">
                             <img
                               src=" assets/images/view-details.svg"
@@ -1228,10 +1311,7 @@
                       </div>
                     </div>
                     <div class="card-data">
-                      <div
-                        class="d-flex justify-content-between"
-                        style="gap: 11px"
-                      >
+                      <div class="d-flex justify-content-between align-items-end">
                         <div class="d-flex room-number">
                           <div>
                             <label
@@ -1244,27 +1324,25 @@
                             class="select-icon"
                             id="inputGroupSelect01"
                             [(ngModel)]="selectedRoomsByPlan[plan.code]"
-                            (change)="
-                              onRoomSelect(
-                                plan.code,
-                                selectedRoomsByPlan[plan.code]
-                              )
-                            "
+                            (ngModelChange)="onRoomSelect(plan.code, $event)"
                           >
+                            <!-- Ensure default is assigned -->
+                            <ng-container
+                              *ngIf="setDefaultRoomIfMissing(plan.code)"
+                            ></ng-container>
+
                             <option
                               *ngFor="
-                                let count of [].constructor(
-                                  rates.noOfAvailable
-                                );
-                                let i = index
+                                let count of getRoomOptions(rates.noOfAvailable)
                               "
-                              [value]="i + 1"
+                              [value]="count"
+                              [disabled]="count === 0"
                             >
-                              {{ i + 1 }}
+                              {{ count === 0 ? "0" : count }}
                             </option>
                           </select>
                         </div>
-                        <div class="d-flex room-number">
+                        <div class="d-flex room-numberOne">
                           <div>
                             <img
                               src="assets/images/profile-pic.svg"
@@ -1272,36 +1350,48 @@
                               width="20px"
                             />
                           </div>
-                          <div>Adult</div>
-                          <div class="d-flex room-number">
-                            <div class="cursor-pointer" (click)="onDecrement(plan.code, 'adults')">
-                              -
-                            </div>
-                            <div>
-                              {{ selectedGuestsByPlan[plan.code]?.adults || 0 }}
-                            </div>
-                            <div class="cursor-pointer"
-                              (click)="onIncrement(plan.code, 'adults', plan)"
-                            >
-                              +
+                          <div>
+                            <div class="margin-bottom-5px">Adult</div>
+                            <div class="d-flex increament-bg">
+                              <div
+                                class="cursor-pointer minus-btn"
+                                (click)="onDecrement(plan.code, 'adults')"
+                              >
+                                <i class="fa-solid fa-minus"></i>
+                              </div>
+                              <div>
+                                {{
+                                  selectedGuestsByPlan[plan.code]?.adults || 0
+                                }}
+                              </div>
+                              <div
+                                class="cursor-pointer plus-btn"
+                                (click)="onIncrement(plan.code, 'adults', plan)"
+                              >
+                                <i class="fa-solid fa-plus"></i>
+                              </div>
                             </div>
                           </div>
                         </div>
-                        <div class="d-flex room-number">
-                          <div>Child</div>
-                          <div class="d-flex room-number">
-                            <div class="cursor-pointer" (click)="onDecrement(plan.code, 'children')">
-                              -
+                        <div class="d-block room-numberOne">
+                          <div class="margin-bottom-5px">Child</div>
+                          <div class="d-flex increament-bg">
+                            <div
+                              class="cursor-pointer minus-btn"
+                              (click)="onDecrement(plan.code, 'children')"
+                            >
+                              <i class="fa-solid fa-minus"></i>
                             </div>
                             <div>
                               {{
                                 selectedGuestsByPlan[plan.code]?.children || 0
                               }}
                             </div>
-                            <div class="cursor-pointer"
+                            <div
+                              class="cursor-pointer plus-btn"
                               (click)="onIncrement(plan.code, 'children', plan)"
                             >
-                              +
+                              <i class="fa-solid fa-plus"></i>
                             </div>
                           </div>
                         </div>
@@ -1316,26 +1406,6 @@
                       </div>
                     </div>
                   </div>
-                </div>
-              </div>
-              <div class="col-2">
-                <div
-                  class="d-flex justify-content-center content-room-number"
-                  style="gap: 20px"
-                >
-                  <div>
-                    <img
-                      src=" assets/images/profile-pic.svg"
-                      alt=""
-                      width="17px"
-                    />{{ room.maximumOccupancy }}
-                  </div>
-                  <!-- <div>380 sq.ft</div> -->
-                </div>
-                <div
-                  class="margin-top-40px d-flex justify-content-center align-items-start"
-                >
-                  <button class="btn-add">Add</button>
                 </div>
               </div>
             </div>
@@ -1449,9 +1519,16 @@
                 </div>
               </div>
 
-              <div class="col-5">
-                <div>
+              <div class="col-7">
+                <div class="d-flex justify-content-between">
                   <h3>{{ room.name }}</h3>
+                  <div>
+                    <img
+                      src=" assets/images/profile-pic.svg"
+                      alt=""
+                      width="17px"
+                    />{{ room.maximumOccupancy }}
+                  </div>
                 </div>
                 <div class="d-block margin-top-30px">
                   <div
@@ -1475,26 +1552,6 @@
                   </div>
                 </div>
               </div>
-              <div class="col-2">
-                <div
-                  class="d-flex justify-content-center content-room-number"
-                  style="gap: 20px"
-                >
-                  <div>
-                    <img
-                      src=" assets/images/profile-pic.svg"
-                      alt=""
-                      width="17px"
-                    />{{ room.maximumOccupancy }}
-                  </div>
-                  <!-- <div>380 sq.ft</div> -->
-                </div>
-                <div
-                  class="margin-top-40px d-flex justify-content-center align-items-start"
-                >
-                  <button class="btn-add">Add</button>
-                </div>
-              </div>
             </div>
           </div>
         </div>
@@ -1512,13 +1569,17 @@
               <small class="text-uppercase font-weight-bold text-muted"
                 >Check-in</small
               ><br />
-              <span class="text-dark">{{this.booking.fromDate | date : 'dd-MM-YYYY'}}</span>
+              <span class="text-dark">{{
+                this.booking.fromDate | date : "dd-MM-YYYY"
+              }}</span>
             </div>
             <div class="col-6 pl-2 padding-10px">
               <small class="text-uppercase font-weight-bold text-muted"
                 >Checkout</small
               ><br />
-              <span class="text-dark">{{this.booking.toDate | date : 'dd-MM-YYYY'}}</span>
+              <span class="text-dark">{{
+                this.booking.toDate | date : "dd-MM-YYYY"
+              }}</span>
             </div>
           </div>
           <div
@@ -1528,7 +1589,9 @@
               <small class="text-uppercase font-weight-bold text-muted"
                 >Guests</small
               ><br />
-              <span class="text-primary">{{ totalAdults }} adults, {{ totalChildren }} children</span>
+              <span class="text-primary"
+                >{{ totalAdults }} adults, {{ totalChildren }} children</span
+              >
             </div>
             <i class="fa fa-chevron-down"></i>
             <!-- or use a Bootstrap icon -->
@@ -1552,8 +1615,12 @@
             <div class="room-title">{{ plan.roomName }}</div>
             <small class="text-muted">
               {{ plan.planName }} · {{ plan.adults }} Adults,
-              {{ plan.children }} Children </small><br />
-            <small class="text-muted">{{ plan.nights }} Nights . {{plan.selectedRoomnumber}} room(s)</small>
+              {{ plan.children }} Children </small
+            ><br />
+            <small class="text-muted"
+              >{{ plan.nights }} Nights .
+              {{ plan.selectedRoomnumber }} room(s)</small
+            >
           </div>
           <div class="room-price">₹ {{ plan.price | number : "1.2-2" }}</div>
         </div>
@@ -1561,17 +1628,24 @@
         <hr *ngIf="selectedPlansSummary.length > 0" />
 
         <!-- Add-ons -->
-        <div class="mb-3" *ngIf="propertyServiceListDataOne.length >0">
+        <div class="mb-3" *ngIf="propertyServiceListDataOne.length > 0">
           <div class="font-weight-semibold mb-2">Add-ons</div>
-             <ng-container
-            *ngFor="let fac of propertyServiceListDataOne | slice:0:(viewMore ? propertyServiceListDataOne.length : 4); let i = index">
-              <div class="custom-checkbox mb-2">
-            <label>
-              <input type="checkbox" checked />
-              <span class="checkmark"></span>
-              {{fac.name}}
-            </label>
-          </div>
+          <ng-container
+            *ngFor="
+              let fac of propertyServiceListDataOne
+                | slice
+                  : 0
+                  : (viewMore ? propertyServiceListDataOne.length : 4);
+              let i = index
+            "
+          >
+            <div class="custom-checkbox mb-2">
+              <label>
+                <input type="checkbox" checked />
+                <span class="checkmark"></span>
+                {{ fac.name }}
+              </label>
+            </div>
           </ng-container>
 
           <!-- <a href="#" class="text-primary small font-weight-semibold">Add More ▼</a> -->
@@ -1581,21 +1655,32 @@
         <div class="mb-3" *ngIf="selectedPlansSummary.length > 0">
           <div class="d-flex justify-content-between">
             <span>Rooms Total</span>
-            <span>₹{{ getTotalPlanPrice() | number : '1.2-2' }}</span>
+            <span>₹{{ getTotalPlanPrice() | number : "1.2-2" }}</span>
           </div>
-          <div class="d-flex justify-content-between">
+          <div
+            class="d-flex justify-content-between"
+            *ngIf="getTotalAfterTaxAmountFacility() > 0"
+          >
             <span>Add-ons Total</span>
-            <span>₹{{ getTotalAfterTaxAmountFacility() | number : '1.2-2' }}</span>
+            <span
+              >₹{{ getTotalAfterTaxAmountFacility() | number : "1.2-2" }}</span
+            >
           </div>
           <div class="d-flex justify-content-between mb-2">
             <span>Tax & Services</span>
-            <span>₹ 1,303</span>
+            <span>₹{{ getTotalTaxPrice() | number : "1.2-2" }}</span>
           </div>
           <div
             class="d-flex justify-content-between font-weight-bold total-amount"
           >
             <span>Total Amount</span>
-            <span>₹ 23,247</span>
+            <span
+              >₹{{
+                getTotalPlanPrice() +
+                  getTotalAfterTaxAmountFacility() +
+                  getTotalTaxPrice() | number : "1.2-2"
+              }}</span
+            >
           </div>
         </div>
 

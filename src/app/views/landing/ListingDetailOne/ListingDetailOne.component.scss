@@ -408,12 +408,12 @@
   gap: 10px;
 }
 .card-title {
-  background-color: #090979;
-  color: #fff;
-  border-top-left-radius: 20px;
-  border-top-right-radius: 20px;
-  padding: 5px 16px;
-  margin-bottom: 10px;
+background-color: #090979;
+    color: #fff;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    padding: 8px 16px;
+    margin-bottom: 10px;
 }
 
 .input-group-text {
@@ -421,7 +421,7 @@
   align-items: center;
   padding: 0rem 0rem;
   margin-bottom: 0;
-  font-size: 10px;
+  font-size: 13px;
   font-weight: 400;
   line-height: 1.5;
   color: #302e3b;
@@ -443,7 +443,7 @@
   color: #fff;
 }
 .ViewDetails {
-  font-size: 8px;
+  font-size: 11px;
   font-family: "Poppins";
   color: #fff;
   cursor: pointer;
@@ -455,7 +455,7 @@
   color: #fff;
 }
 .perNight {
-  font-size: 7px;
+  font-size: 10px;
   font-family: "Poppins";
   color: #fff;
 }
@@ -473,18 +473,49 @@
   position: relative;
   background-color: rgba(255, 255, 255, 0.1);
   padding: 3px 10px;
-  font-size: 10px;
+  font-size: 13px;
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='10' height='10'><path d='M5 8l7 7 7-7' stroke='black' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>");
   background-repeat: no-repeat;
   background-position: right 10px center;
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
-  border-radius: 20px;
+  border-radius: 7px;
   height: 25px;
 }
 .room-number {
   align-items: center;
+  gap: 8px;
+}
+.increament-bg {
+  align-items: center;
+  gap: 17px;
+  background-color: #f4f4f4;
+}
+.minus-btn {
+  padding: 1px 7px;
+  background-color: #090979;
+  color: #fff;
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+}
+.align-items-end {
+  align-items: end;
+}
+.plus-btn {
+  padding: 1px 7px;
+  background-color: #090979;
+  color: #fff;
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+
+.margin-bottom-5px {
+  margin-bottom: 5px;
+}
+
+.room-numberOne {
+  align-items: end;
   gap: 8px;
 }
 .room-number-one {
@@ -492,9 +523,9 @@
   gap: 6px;
 }
 .card-data {
-  padding: 10px;
+  padding: 10px 11px;
   margin-top: -10px;
-  font-size: 10px;
+  font-size: 13px;
   font-family: "Poppins";
 }
 .margin-top-40px {
@@ -513,7 +544,10 @@
   font-size: small;
 }
 .selected {
-  color: #031eaa;
+  padding: 4px 11px;
+  background-color: #090979;
+  color: #fff;
+  border-radius: 10px;
   cursor: pointer;
 }
 .bottom-0px {
@@ -569,7 +603,7 @@
 }
 
 .btn-book-now {
-  background: linear-gradient(to right, #1e40af, #3b82f6);
+      background: #090979;
   color: white;
   font-weight: 600;
   border-radius: 8px;
@@ -578,7 +612,9 @@
 }
 
 .btn-book-now:hover {
-  background: linear-gradient(to right, #1e3a8a, #2563eb);
+      background: #fff;
+      color: #090979;
+      border: 1px solid #090979;
 }
 
 /* Custom checkboxes */
@@ -961,10 +997,10 @@
   margin-left: 5px;
 }
 .image-gallery-main {
-    max-width: 100%;
-    object-fit: cover;
-    margin-bottom: 10px;
-    height: 400px;
+  max-width: 100%;
+  object-fit: cover;
+  margin-bottom: 10px;
+  height: 400px;
 }
 .padding-right-0px {
   padding-right: 0px !important;
@@ -1017,14 +1053,14 @@
     margin-bottom: 20px;
     height: 400px;
     width: 400px !important;
-}
+  }
 }
 
 @media (min-width: 1181px) and (max-width: 1262px) {
-    .image-gallery-main {
-        height: 239px !important;
-        width: 400px !important;
-    }
+  .image-gallery-main {
+    height: 239px !important;
+    width: 400px !important;
+  }
   .container-div {
     margin: auto;
     width: 95%;
@@ -1044,9 +1080,9 @@
 }
 @media (min-width: 1263px) and (max-width: 1460px) {
   .image-gallery-main {
-        height: 239px !important;
-        width: 400px !important;
-    }
+    height: 239px !important;
+    width: 400px !important;
+  }
 
   .container-div {
     width: 96%;
@@ -1107,13 +1143,13 @@
   .smart-card-img {
     width: 29px;
   }
-    .image-gallery-main {
+  .image-gallery-main {
     max-width: 100%;
     object-fit: cover;
     margin-bottom: 20px;
     height: 450px !important;
     width: 480px !important;
-}
+  }
   .gallery-section {
     width: 210px;
   }
@@ -1126,7 +1162,7 @@
 }
 
 @media (min-width: 2102px) {
-    .roomDescription {
+  .roomDescription {
     font-size: medium;
   }
   .container-div {
@@ -1141,11 +1177,11 @@
   .smart-card-img {
     width: 29px;
   }
-    .image-gallery-main {
-        height: 550px !important;
-        width: 650px !important;
-    }
-      .gallery-section {
+  .image-gallery-main {
+    height: 550px !important;
+    width: 650px !important;
+  }
+  .gallery-section {
     width: 210px;
   }
   .gallery-section1 {
