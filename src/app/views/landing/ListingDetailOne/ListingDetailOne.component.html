@@ -572,12 +572,14 @@
   <div class="modal-dialog modal-lg modal-dialog-centered modal-fullscreen-gallery">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">{{ businessUser?.name }} Gallery</h5>
-        <button type="button" style="border: none; background-color: transparent;" (click)="closeGalleryModal()"> <i class="fa-solid fa-xmark"></i></button>
+        <h4 class="modal-title"><i style="cursor: pointer;" (click)="closeGalleryModal()" class="fa-solid fa-angle-left"></i> &nbsp;&nbsp; {{ businessUser?.name }} Gallery</h4>
+        <button class="select-mannual" (click)="selectRoomsbtn()">
+          Select Rooms
+        </button>
       </div>
       <div class="modal-body">
         <div class="row">
-          <div class="col-6 col-md-4 col-lg-4 ng-star-inserted padding-right-0px" *ngFor="let img of businessUser.imageList; let idx = index">
+          <div class="col-6 col-md-3 col-lg-3 ng-star-inserted padding-right-0px" *ngFor="let img of businessUser.imageList; let idx = index">
             <img
               [src]="img.url"
               class="img-fluid rounded image-gallery-main"
