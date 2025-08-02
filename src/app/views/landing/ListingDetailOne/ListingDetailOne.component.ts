@@ -387,6 +387,7 @@ export class ListingDetailOneComponent implements OnInit {
   DiffDate;
   enddate;
   startDate;
+  viewMoreRoomState: { [roomName: string]: boolean } = {};
   slideConfig = {
     centerMode: true,
     centerPadding: '20%',
@@ -855,7 +856,9 @@ export class ListingDetailOneComponent implements OnInit {
 
   @ViewChild('galleryModalRef') galleryModalRef!: ElementRef;
   @ViewChild('carouselModalRef') carouselModalRef!: ElementRef;
-
+  isPanelOpen = false;
+  selectedRoom: any = null;
+  products: [] | undefined;
   constructor(
     private listingService: ListingService,
     private reviewService: ReviewService,
@@ -1278,6 +1281,16 @@ export class ListingDetailOneComponent implements OnInit {
     return (
       this.adults + this.additionalRooms.reduce((sum, r) => sum + r.adults, 0)
     );
+  }
+
+  togglePanel(room: any, index: number) {
+    this.isPanelOpen = !this.isPanelOpen;
+
+    if (this.isPanelOpen) {
+      this.selectedRoom = room; // Save the clicked room data
+    } else {
+      this.selectedRoom = null;
+    }
   }
 
   get totalChildren(): number {
@@ -3768,6 +3781,26 @@ export class ListingDetailOneComponent implements OnInit {
     this.router.navigate(['/booking']);
     // }
   }
+  onBookNow() {
+    const bookingData = {
+      fromDate: this.booking.fromDate,
+      toDate: this.booking.toDate,
+      totalAdults: this.totalAdults,
+      totalChildren: this.totalChildren,
+      selectedPlansSummary: this.selectedPlansSummary,
+      propertyServiceListDataOne: this.propertyServiceListDataOne,
+      totalPlanPrice: this.getTotalPlanPrice(),
+      totalAddOnsPrice: this.getTotalAfterTaxAmountFacility(),
+      totalTax: this.getTotalTaxPrice(),
+      totalAmount:
+        this.getTotalPlanPrice() +
+        this.getTotalAfterTaxAmountFacility() +
+        this.getTotalTaxPrice(),
+    };
+
+    sessionStorage.setItem('bookingSummary', JSON.stringify(bookingData));
+    this.router.navigate(['/booking']);
+  }
   opendate() {
     this.oneDayTrip = true;
     this.selectBooking = false;
@@ -4523,7 +4556,7 @@ export class ListingDetailOneComponent implements OnInit {
     );
   }
 
-    getTotalTaxPrice(): number {
+  getTotalTaxPrice(): number {
     return (
       this.selectedPlansSummary?.reduce(
         (sum, plan) => sum + (plan?.taxPercentageperroom || 0),
@@ -4732,6 +4765,31 @@ export class ListingDetailOneComponent implements OnInit {
   openImage() {
     // Set this to true to open the modal with the carousel
     this.showCarousel = true;
+  }
+
+  toggleRoomViewMore(roomName: string): void {
+    this.viewMoreRoomState[roomName] = !this.viewMoreRoomState[roomName];
+  }
+
+  expandedRooms: string[] = [];
+
+  isPlanVisible(filteredPlans: any, roomName: string) {
+    return this.expandedRooms.includes(roomName)
+      ? filteredPlans
+      : filteredPlans.slice(0, 2);
+  }
+
+  toggleRoomExpansion(roomName: string): void {
+    const index = this.expandedRooms.indexOf(roomName);
+    if (index > -1) {
+      this.expandedRooms.splice(index, 1);
+    } else {
+      this.expandedRooms.push(roomName);
+    }
+  }
+
+  isRoomExpanded(roomName: string): boolean {
+    return this.expandedRooms.includes(roomName);
   }
 
   checkingAvailability1() {

@@ -353,6 +353,15 @@
   display: inline-block;
   padding: 4px 8px;
 }
+.aminities-highlights-ones {
+    font-family: "Poppins";
+    color: #000;
+    background-color: rgba(229, 249, 255, 0.5019607843);
+    display: inline-block;
+    padding: 4px 8px;
+    font-size: smaller;
+}
+
 .icon-amenities {
   width: 25px;
 }
@@ -435,6 +444,10 @@ background-color: #090979;
 }
 .border-radius-20px {
   border-radius: 20px;
+}
+.selected-text {
+    font-family: "Poppins";
+        font-size: small;
 }
 .planName {
   font-family: "Poppins";
@@ -1030,6 +1043,80 @@ background-color: #090979;
   padding: 8px 29px;
   border-radius: 8px;
 }
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100vw;
+  background: rgba(0, 0, 0, 0.4); /* semi-transparent dark overlay */
+  z-index: 1040;
+}
+.margin-top-10px {
+  margin-top: 10px;
+}
+.alignment-items-one {
+      display: flex;
+    gap: 5px;
+    align-items: center;
+    padding: 0px 10px;
+    border-radius: 20px;
+}
+.popup-heading {
+    font-size: 1.4rem;
+    font-weight: 400;
+    font-family: "Poppins";
+}
+.right-popup {
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: 500px;
+  background: #fff;
+  box-shadow: -2px 0 10px rgba(0, 0, 0, 0.2);
+  transform: translateY(-100%);
+  transition: transform 0.4s ease-in-out;
+  z-index: 1050;
+  overflow-y: auto;
+  border-left: 1px solid #ccc;
+}
+
+.right-popup.show {
+  transform: translateY(0);
+}
+
+.popup-header {
+  padding: 16px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.popup-body {
+    padding: 16px;
+}
+
+.popup-card {
+    border-radius: 10px;
+    box-shadow: 0 1px 15px 1px rgba(0, 0, 0, 0.04), 0 1px 6px rgba(0, 0, 0, 0.04);
+    border: 1px solid #E5E7EB;
+    margin-bottom: 10px;
+    padding: 10px 15px;
+    background-color: #F9FAFB;
+}
+.popup-plan {
+  font-family: 'Poppins';
+    color: #031EAA;
+    font-size: 1.1rem;
+}
+
+.close-btn {
+  float: right;
+  font-size: 24px;
+  cursor: pointer;
+}
+
 @media (min-width: 992px) {
   .gallery-thumbs {
     flex-direction: column;
