@@ -353,6 +353,15 @@
   display: inline-block;
   padding: 4px 8px;
 }
+.aminities-highlights-ones {
+    font-family: "Poppins";
+    color: #000;
+    background-color: rgba(229, 249, 255, 0.5019607843);
+    display: inline-block;
+    padding: 4px 8px;
+    font-size: smaller;
+}
+
 .icon-amenities {
   width: 25px;
 }
@@ -408,12 +417,12 @@
   gap: 10px;
 }
 .card-title {
-  background-color: #090979;
-  color: #fff;
-  border-top-left-radius: 20px;
-  border-top-right-radius: 20px;
-  padding: 5px 16px;
-  margin-bottom: 10px;
+background-color: #090979;
+    color: #fff;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    padding: 8px 16px;
+    margin-bottom: 10px;
 }
 
 .input-group-text {
@@ -421,7 +430,7 @@
   align-items: center;
   padding: 0rem 0rem;
   margin-bottom: 0;
-  font-size: 10px;
+  font-size: 13px;
   font-weight: 400;
   line-height: 1.5;
   color: #302e3b;
@@ -436,6 +445,10 @@
 .border-radius-20px {
   border-radius: 20px;
 }
+.selected-text {
+    font-family: "Poppins";
+        font-size: small;
+}
 .planName {
   font-family: "Poppins";
   font-weight: 400;
@@ -443,7 +456,7 @@
   color: #fff;
 }
 .ViewDetails {
-  font-size: 8px;
+  font-size: 11px;
   font-family: "Poppins";
   color: #fff;
   cursor: pointer;
@@ -455,7 +468,7 @@
   color: #fff;
 }
 .perNight {
-  font-size: 7px;
+  font-size: 10px;
   font-family: "Poppins";
   color: #fff;
 }
@@ -473,18 +486,49 @@
   position: relative;
   background-color: rgba(255, 255, 255, 0.1);
   padding: 3px 10px;
-  font-size: 10px;
+  font-size: 13px;
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='10' height='10'><path d='M5 8l7 7 7-7' stroke='black' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>");
   background-repeat: no-repeat;
   background-position: right 10px center;
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
-  border-radius: 20px;
+  border-radius: 7px;
   height: 25px;
 }
 .room-number {
   align-items: center;
+  gap: 8px;
+}
+.increament-bg {
+  align-items: center;
+  gap: 17px;
+  background-color: #f4f4f4;
+}
+.minus-btn {
+  padding: 1px 7px;
+  background-color: #090979;
+  color: #fff;
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+}
+.align-items-end {
+  align-items: end;
+}
+.plus-btn {
+  padding: 1px 7px;
+  background-color: #090979;
+  color: #fff;
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+
+.margin-bottom-5px {
+  margin-bottom: 5px;
+}
+
+.room-numberOne {
+  align-items: end;
   gap: 8px;
 }
 .room-number-one {
@@ -492,9 +536,9 @@
   gap: 6px;
 }
 .card-data {
-  padding: 10px;
+  padding: 10px 11px;
   margin-top: -10px;
-  font-size: 10px;
+  font-size: 13px;
   font-family: "Poppins";
 }
 .margin-top-40px {
@@ -513,7 +557,10 @@
   font-size: small;
 }
 .selected {
-  color: #031eaa;
+  padding: 4px 11px;
+  background-color: #090979;
+  color: #fff;
+  border-radius: 10px;
   cursor: pointer;
 }
 .bottom-0px {
@@ -569,7 +616,7 @@
 }
 
 .btn-book-now {
-  background: linear-gradient(to right, #1e40af, #3b82f6);
+      background: #090979;
   color: white;
   font-weight: 600;
   border-radius: 8px;
@@ -578,7 +625,9 @@
 }
 
 .btn-book-now:hover {
-  background: linear-gradient(to right, #1e3a8a, #2563eb);
+      background: #fff;
+      color: #090979;
+      border: 1px solid #090979;
 }
 
 /* Custom checkboxes */
@@ -961,10 +1010,10 @@
   margin-left: 5px;
 }
 .image-gallery-main {
-    max-width: 100%;
-    object-fit: cover;
-    margin-bottom: 10px;
-    height: 400px;
+  max-width: 100%;
+  object-fit: cover;
+  margin-bottom: 10px;
+  height: 400px;
 }
 .padding-right-0px {
   padding-right: 0px !important;
@@ -994,6 +1043,80 @@
   padding: 8px 29px;
   border-radius: 8px;
 }
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100vw;
+  background: rgba(0, 0, 0, 0.4); /* semi-transparent dark overlay */
+  z-index: 1040;
+}
+.margin-top-10px {
+  margin-top: 10px;
+}
+.alignment-items-one {
+      display: flex;
+    gap: 5px;
+    align-items: center;
+    padding: 0px 10px;
+    border-radius: 20px;
+}
+.popup-heading {
+    font-size: 1.4rem;
+    font-weight: 400;
+    font-family: "Poppins";
+}
+.right-popup {
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: 500px;
+  background: #fff;
+  box-shadow: -2px 0 10px rgba(0, 0, 0, 0.2);
+  transform: translateY(-100%);
+  transition: transform 0.4s ease-in-out;
+  z-index: 1050;
+  overflow-y: auto;
+  border-left: 1px solid #ccc;
+}
+
+.right-popup.show {
+  transform: translateY(0);
+}
+
+.popup-header {
+  padding: 16px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.popup-body {
+    padding: 16px;
+}
+
+.popup-card {
+    border-radius: 10px;
+    box-shadow: 0 1px 15px 1px rgba(0, 0, 0, 0.04), 0 1px 6px rgba(0, 0, 0, 0.04);
+    border: 1px solid #E5E7EB;
+    margin-bottom: 10px;
+    padding: 10px 15px;
+    background-color: #F9FAFB;
+}
+.popup-plan {
+  font-family: 'Poppins';
+    color: #031EAA;
+    font-size: 1.1rem;
+}
+
+.close-btn {
+  float: right;
+  font-size: 24px;
+  cursor: pointer;
+}
+
 @media (min-width: 992px) {
   .gallery-thumbs {
     flex-direction: column;
@@ -1017,14 +1140,14 @@
     margin-bottom: 20px;
     height: 400px;
     width: 400px !important;
-}
+  }
 }
 
 @media (min-width: 1181px) and (max-width: 1262px) {
-    .image-gallery-main {
-        height: 239px !important;
-        width: 400px !important;
-    }
+  .image-gallery-main {
+    height: 239px !important;
+    width: 400px !important;
+  }
   .container-div {
     margin: auto;
     width: 95%;
@@ -1044,9 +1167,9 @@
 }
 @media (min-width: 1263px) and (max-width: 1460px) {
   .image-gallery-main {
-        height: 239px !important;
-        width: 400px !important;
-    }
+    height: 239px !important;
+    width: 400px !important;
+  }
 
   .container-div {
     width: 96%;
@@ -1107,13 +1230,13 @@
   .smart-card-img {
     width: 29px;
   }
-    .image-gallery-main {
+  .image-gallery-main {
     max-width: 100%;
     object-fit: cover;
     margin-bottom: 20px;
     height: 450px !important;
     width: 480px !important;
-}
+  }
   .gallery-section {
     width: 210px;
   }
@@ -1126,7 +1249,7 @@
 }
 
 @media (min-width: 2102px) {
-    .roomDescription {
+  .roomDescription {
     font-size: medium;
   }
   .container-div {
@@ -1141,11 +1264,11 @@
   .smart-card-img {
     width: 29px;
   }
-    .image-gallery-main {
-        height: 550px !important;
-        width: 650px !important;
-    }
-      .gallery-section {
+  .image-gallery-main {
+    height: 550px !important;
+    width: 650px !important;
+  }
+  .gallery-section {
     width: 210px;
   }
   .gallery-section1 {
