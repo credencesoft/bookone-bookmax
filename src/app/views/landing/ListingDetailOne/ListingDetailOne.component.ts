@@ -907,6 +907,15 @@ export class ListingDetailOneComponent implements OnInit {
     // this.updateTag();
     this.token.clearwebsitebookingURL();
     // this.token.saveSelectedServices(this.selectedServices);
+    const savedRooms = sessionStorage.getItem('bookingSummary');
+  if (savedRooms) {
+    try {
+      this.additionalRooms = JSON.parse(savedRooms);
+    } catch (e) {
+      console.error('Invalid bookingSummary data', e);
+      this.additionalRooms = [];
+    }
+  }
     this.bookingMinDate = calendar.getToday();
     this.bookingengineurl = this.token.getwebsitebookingURL();
     sessionStorage.removeItem('enquiryNo');
@@ -967,7 +976,23 @@ export class ListingDetailOneComponent implements OnInit {
         this.totalExtraAmount +
         this.booking.taxAmount;
     }
+    const savedBooking = sessionStorage.getItem('bookingSummaryDetails');
+  if (savedBooking) {
+    const data = JSON.parse(savedBooking);
+    this.selectedPlansSummary = data.selectedPlansSummary || [];
 
+    // Rebuild selectedGuestsByPlan and selectedRoomsByPlan
+    this.selectedGuestsByPlan = {};
+    this.selectedRoomsByPlan = {};
+
+    this.selectedPlansSummary.forEach(plan => {
+      this.selectedGuestsByPlan[plan.planName] = {
+        adults: plan.adults,
+        children: plan.children
+      };
+      this.selectedRoomsByPlan[plan.planName] = plan.selectedRoomnumber;
+    });
+  }
     // this.toDate = calendar.getNext(calendar.getToday(), 'd', 10);
     if (
       this.token?.getRoomsData() !== null &&
@@ -1004,7 +1029,29 @@ export class ListingDetailOneComponent implements OnInit {
       ) {
         this.adults = 1;
       } else {
-        this.adults = this.booking.noOfPersons;
+         const bookingData = this.token.getBookingData();
+        if (bookingData) {
+          this.booking = bookingData;
+
+          const totalAdults = this.booking.noOfPersons || 1;
+
+
+          const additionalAdults = this.additionalRooms?.reduce(
+            (sum, room) => sum + (room.adults || 0),
+            0
+          );
+
+          this.adults = totalAdults - additionalAdults;
+
+          // Optional for children
+          const totalChildren = this.booking.noOfChildren || 0;
+          const additionalChildren = this.additionalRooms?.reduce(
+            (sum, room) => sum + (room.children || 0),
+            0
+          );
+
+          this.children = totalChildren - additionalChildren;
+        }
       }
 
       this.children = this.booking.noOfChildren;
@@ -1282,7 +1329,9 @@ export class ListingDetailOneComponent implements OnInit {
       this.adults + this.additionalRooms.reduce((sum, r) => sum + r.adults, 0)
     );
   }
-
+saveRoomSummary() {
+  sessionStorage.setItem('bookingSummary', JSON.stringify(this.additionalRooms));
+}
   togglePanel(room: any, index: number) {
     this.isPanelOpen = !this.isPanelOpen;
 
@@ -1590,6 +1639,13 @@ export class ListingDetailOneComponent implements OnInit {
         this.selectedPlansSummary.push(summaryEntry);
       }
       console.log('summaryEntry', summaryEntry);
+      sessionStorage.setItem(
+        'bookingSummaryDetails',
+        JSON.stringify({
+          selectedPlansSummary: this.selectedPlansSummary
+          // Add any other relevant data if needed
+        })
+      );
     }
   }
 
@@ -3787,6 +3843,7 @@ export class ListingDetailOneComponent implements OnInit {
       toDate: this.booking.toDate,
       totalAdults: this.totalAdults,
       totalChildren: this.totalChildren,
+      totalNights: this.DiffDate,
       selectedPlansSummary: this.selectedPlansSummary,
       propertyServiceListDataOne: this.propertyServiceListDataOne,
       totalPlanPrice: this.getTotalPlanPrice(),
@@ -3798,7 +3855,7 @@ export class ListingDetailOneComponent implements OnInit {
         this.getTotalTaxPrice(),
     };
 
-    sessionStorage.setItem('bookingSummary', JSON.stringify(bookingData));
+    sessionStorage.setItem('bookingSummaryDetails', JSON.stringify(bookingData));
     this.router.navigate(['/booking']);
   }
   opendate() {
@@ -4196,6 +4253,7 @@ export class ListingDetailOneComponent implements OnInit {
     this.booking.noOfRooms = this.rooms;
     this.booking.noOfNights = this.DiffDate;
     this.token.saveBookingData(this.booking);
+    sessionStorage.setItem('bookingSummary', JSON.stringify(this.additionalRooms))
     // Logger.log('checkAvailability submit' + JSON.stringify(this.booking));
 
     this.hotelBookingService

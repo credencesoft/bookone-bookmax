@@ -202,7 +202,7 @@
                           >
                             <button
                               class="btn btn-outline-secondary btn-sm border-0"
-                              (click)="adults = adults - 1"
+                              (click)="adults = adults - 1; saveRoomSummary()"
                               [disabled]="adults <= 1"
                             >
                               −
@@ -210,7 +210,7 @@
                             <div class="mx-2">{{ adults }}</div>
                             <button
                               class="btn btn-outline-secondary btn-sm border-0"
-                              (click)="adults = adults + 1"
+                              (click)="adults = adults + 1; saveRoomSummary()"
                               [disabled]="adults >= 4"
                             >
                               +
@@ -226,7 +226,7 @@
                           >
                             <button
                               class="btn btn-outline-secondary btn-sm border-0"
-                              (click)="children = children - 1"
+                              (click)="children = children - 1; saveRoomSummary()"
                               [disabled]="children <= 0"
                             >
                               −
@@ -234,7 +234,7 @@
                             <div class="mx-2">{{ children }}</div>
                             <button
                               class="btn btn-outline-secondary btn-sm border-0"
-                              (click)="children = children + 1"
+                              (click)="children = children + 1; saveRoomSummary()"
                               [disabled]="children >= 2"
                             >
                               +
@@ -265,7 +265,7 @@
                           >
                             <button
                               class="btn btn-outline-secondary btn-sm border-0"
-                              (click)="room.adults = room.adults - 1"
+                              (click)="room.adults = room.adults - 1; saveRoomSummary()"
                               [disabled]="room.adults <= 1"
                             >
                               −
@@ -273,7 +273,7 @@
                             <div class="mx-2">{{ room.adults }}</div>
                             <button
                               class="btn btn-outline-secondary btn-sm border-0"
-                              (click)="room.adults = room.adults + 1"
+                              (click)="room.adults = room.adults + 1; saveRoomSummary()"
                               [disabled]="room.adults >= 4"
                             >
                               +
@@ -289,7 +289,7 @@
                           >
                             <button
                               class="btn btn-outline-secondary btn-sm border-0"
-                              (click)="room.children = room.children - 1"
+                              (click)="room.children = room.children - 1; saveRoomSummary()"
                               [disabled]="room.children <= 0"
                             >
                               −
@@ -297,7 +297,7 @@
                             <div class="mx-2">{{ room.children }}</div>
                             <button
                               class="btn btn-outline-secondary btn-sm border-0"
-                              (click)="room.children = room.children + 1"
+                              (click)="room.children = room.children + 1; saveRoomSummary()"
                               [disabled]="room.children >= 2"
                             >
                               +
@@ -1904,15 +1904,6 @@
           </div>
         </div>
 
-        <!-- <div class="room-box d-flex justify-content-between mb-4">
-          <div class="room-details">
-            <div class="room-title">Standard AC Room</div>
-            <small class="text-muted">CP Plan · 2 Adults, 2 Children</small
-            ><br />
-            <small class="text-muted">2 Nights</small>
-          </div>
-          <div class="room-price">₹ 9,543</div>
-        </div> -->
         <div
           *ngFor="let plan of selectedPlansSummary"
           class="room-box d-flex justify-content-between mb-4"

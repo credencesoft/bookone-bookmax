@@ -621,7 +621,6 @@
         color: #4caf50;
         position: relative;
         background: linear-gradient(45deg, #4caf50, #8bc34a);
-        -webkit-background-clip: text;
         color: transparent;
         text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
       "
@@ -680,46 +679,46 @@
             <div class="text-center aminities-highlights-details">
               Check-in Date
             </div>
-            <div class="text-center">18-07-2025</div>
+            <div class="text-center">{{bookingSummaryDetails?.fromDate | date : 'dd-MM-YYYY'}}</div>
           </div>
           <div class="d-block">
             <div class="text-center aminities-highlights-details">
               Check-in Date
             </div>
-            <div class="text-center">18-07-2025</div>
+            <div class="text-center">{{bookingSummaryDetails?.toDate | date : 'dd-MM-YYYY'}}</div>
           </div>
           <div class="d-block">
             <div class="text-center aminities-highlights-details">
               No. Of Adults
             </div>
-            <div class="text-center">04</div>
+            <div class="text-center">{{ totalPlanAdults}}</div>
           </div>
           <div class="d-block">
             <div class="text-center aminities-highlights-details">
               No. Of Children
             </div>
-            <div class="text-center">00</div>
+            <div class="text-center">{{totalPlanChildren}}</div>
           </div>
           <div class="d-block">
             <div class="text-center aminities-highlights-details">
               No. Of Nights
             </div>
-            <div class="text-center">02</div>
+            <div class="text-center">{{bookingSummaryDetails?.totalNights}}</div>
           </div>
         </div>
       </div>
       <div class="booking-summary-container">
         <div class="row" style="margin: 0px !important">
           <div class="col-8 padding-left0px padding-right-0px">
-            <div class="rooms-cards-pricing card">
-              <div>
+            <div class="rooms-cards-pricing card" >
+              <div  *ngFor="let plan of bookingSummaryDetails.selectedPlansSummary; let last = last">
                 <div class="line-height-27px font-weight-600">
-                  Standard AC Room x 1
+                  {{plan.roomName}} x {{ plan.selectedRoomnumber }}
                 </div>
                 <div class="d-flex justify-content-between line-height-27px">
-                  <div>EP Plan x 1</div>
+                  <div>{{ plan.planName }} x {{ plan.selectedRoomnumber }}</div>
 
-                  <div>₹ 3,500</div>
+                  <div>₹ {{ plan.price | number : "1.2-2" }}</div>
                 </div>
                 <div class="d-flex justify-content-between line-height-27px">
                   <div>Extra Pax Charges</div>
@@ -729,14 +728,14 @@
                 <div class="d-flex justify-content-between line-height-27px">
                   <div>Tax & Services</div>
 
-                  <div>₹ 840</div>
+                  <div>₹ {{ plan.taxPercentageperroom | number : "1.2-2" }}</div>
                 </div>
                 <div class="d-flex justify-content-between line-height-27px">
                   <div>Total</div>
 
-                  <div class="font-weight-600">₹ 4,340</div>
+                  <div class="font-weight-600">₹ {{ plan.price + plan.taxPercentageperroom | number : "1.2-2" }}</div>
                 </div>
-                <hr style="border: 1px solid #e5e7eb" />
+                <hr *ngIf="!last" style="border: 1px solid #e5e7eb" />
               </div>
             </div>
 
@@ -744,34 +743,43 @@
               <div class="line-height-27px font-weight-600">
                 Add-on Services
               </div>
-              <div class="d-flex justify-content-between line-height-27px">
-                <div>Airport Pick-up</div>
+              <div *ngIf="bookingSummaryDetails?.propertyServiceListDataOne?.length > 0">
+                <div class="d-flex justify-content-between line-height-27px"
+                *ngFor="let fac of bookingSummaryDetails?.propertyServiceListDataOne;let i = index">
+                <div>{{ fac.name }}</div>
 
-                <div class="font-weight-600">₹ 3,500</div>
+                <div class="font-weight-600">₹ {{ fac.afterTaxAmount | number : "1.2-2" }}</div>
               </div>
 
-              <div class="d-flex justify-content-between line-height-27px">
-                <div>Parking</div>
-
-                <div class="font-weight-600">₹ 500</div>
               </div>
+
             </div>
           </div>
           <div class="col-4 padding-right-0px">
-             <div class="rooms-cards-pricing card" style="margin-bottom: 20px">
-              <div class="line-height-27px font-weight-600">
-                Add-on Services
-              </div>
-              <div class="d-flex justify-content-between line-height-27px">
-                <div>Airport Pick-up</div>
+            <div class="rooms-cards-pricing card" style="margin-bottom: 20px">
 
-                <div class="font-weight-600">₹ 3,500</div>
+              <div class="d-flex justify-content-between line-height-27px">
+                <div class="font-weight-600">Total Room Price</div>
+
+                <div class="font-weight-600">₹ {{ bookingSummaryDetails?.totalPlanPrice | number : "1.2-2" }}</div>
               </div>
 
               <div class="d-flex justify-content-between line-height-27px">
-                <div>Parking</div>
+                <div class="font-weight-600">Total Tax & Services</div>
 
-                <div class="font-weight-600">₹ 500</div>
+                <div class="font-weight-600">₹ {{ bookingSummaryDetails?.totalTax | number : "1.2-2" }}</div>
+              </div>
+
+              <div class="d-flex justify-content-between line-height-27px">
+                <div class="font-weight-600" >Total Add-on Services</div>
+
+                <div class="font-weight-600">₹ {{ bookingSummaryDetails?.totalAddOnsPrice | number : "1.2-2" }}</div>
+              </div>
+
+              <div class="d-flex justify-content-between line-height-27px">
+                <div class="font-weight-600">Total Amount</div>
+
+                <div class="font-weight-600">₹ {{ bookingSummaryDetails?.totalAmount | number : "1.2-2" }}</div>
               </div>
             </div>
             <!-- Fill Your Details Section -->
@@ -787,11 +795,10 @@
                   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
                 "
               >
-
                 <div class="mb-3">
                   <label class="label-changes" for="firstName"
-                    >First Name </label
-                  >
+                    >First Name
+                  </label>
                   <input
                     type="text"
                     class="form-control"
@@ -813,9 +820,7 @@
                 </div>
 
                 <div class="mb-3">
-                  <label class="label-changes" for="lastName"
-                    >Last Name
-                  </label>
+                  <label class="label-changes" for="lastName">Last Name </label>
                   <input
                     type="text"
                     class="form-control"
@@ -882,7 +887,7 @@
                     id="mobile"
                     name="mobile"
                     required
-                    style="height: 2.5rem;"
+                    style="height: 2.5rem"
                     (ngModelChange)="validateMobile()"
                   />
                   <span class="text-danger" *ngIf="mobileHasError">
@@ -892,11 +897,9 @@
 
                 <div class="mb-3">
                   <label class="label-changes" for="notes">Special Notes</label>
-                  <textarea
-                    class="form-control"
-                    id="notes"
-                    >{{ booking.notes }}</textarea
-                  >
+                  <textarea class="form-control" id="notes">{{
+                    booking.notes
+                  }}</textarea>
                 </div>
 
                 <!-- View Coupon section -->
