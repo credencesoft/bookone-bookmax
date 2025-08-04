@@ -1102,13 +1102,27 @@ background-color: #090979;
     box-shadow: 0 1px 15px 1px rgba(0, 0, 0, 0.04), 0 1px 6px rgba(0, 0, 0, 0.04);
     border: 1px solid #E5E7EB;
     margin-bottom: 10px;
-    padding: 10px 15px;
+    padding: 14px 22px;
     background-color: #F9FAFB;
 }
 .popup-plan {
-  font-family: 'Poppins';
+    font-family: "Poppins";
     color: #031EAA;
     font-size: 1.1rem;
+    font-weight: 600;
+}
+.select-plan {
+      width: 100%;
+        padding: 10px 11px;
+    background-color: #090979;
+    color: #fff;
+    border-radius: 10px;
+    cursor: pointer;
+}
+.select-plan:hover {
+  border: 1px solid #090979;
+  color: #090979 !important;
+  background-color: #fff;
 }
 
 .close-btn {

@@ -6,6 +6,128 @@
 	margin-bottom: 0.5rem;
 	/* font-size: 1rem; */
 }
+.apply-disabled {
+  background-color: #737373;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 14px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.close-btn {
+  font-size: 37px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: #f44336;
+
+}
+.container-div {
+  margin: auto;
+}
+.review-book {
+  font-family: 'Poppins';
+}
+
+.label-changes {
+    font-family: "Poppins";
+    font-weight: 600;
+    color: black;
+    font-size: small;
+}
+.booking-d-heading {
+  font-family: 'Poppins';
+  font-weight: 500;
+}
+.aminities-highlights-details {
+    font-weight: 500;
+    font-family: "Poppins";
+    color: #000;
+    background-color: rgba(229, 249, 255, 0.5019607843);
+    display: inline-block;
+    padding: 4px 8px;
+        font-size: small;
+}
+.margin-botton-20px {
+      margin-bottom: 20px;
+}
+.rooms-cards-pricing {
+  padding: 20px;
+      font-family: 'Poppins';
+    font-size: small;
+}
+.booking-summary-container {
+  margin-top: 20px;
+}
+.line-height-27px {
+      line-height: 27px;
+}
+.custom-bg {
+      background-color: #F8F8F8;
+}
+.font-weight-600 {
+      font-weight: 600;
+}
+.padding-right-0px{
+      padding-right: 0px !important;
+}
+.padding-left0px{
+  padding-left: 0px !important;
+}
+@media (min-width: 1181px) and (max-width: 1262px) {
+ .container-div {
+    margin: auto;
+    width: 95%;
+  }
+}
+
+@media (min-width: 1263px) and (max-width: 1460px) {
+   .container-div {
+    width: 96%;
+  }
+}
+
+@media (min-width: 1461px) and (max-width: 1800px) {
+    .container-div {
+    width: 1360px;
+  }
+}
+
+@media (min-width: 1801px) and (max-width: 2100px) {
+.container-div {
+    width: 1560px;
+  }
+}
+
+@media (min-width: 2102px) {
+.container-div {
+    width: 1560px;
+  }
+}
+
+.close-btn:hover {
+  color: #d32f2f; /* Darker red on hover */
+  transform: scale(1.1); /* Slight zoom effect */
+}
+
+.coupon-card {
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  padding: 10px;
+  margin-bottom: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-body {
+  padding: 20px;
+}
+
 .summery {
 	padding: 0;
 	margin-top: 1.5rem;
@@ -1444,17 +1566,17 @@ a.fancybox.tcClick.mngroominfo {
 
 
   .form-control {
-      display: block;
-      width: 100%;
-
-      padding: 4px 6px;
-      font-size: 14px;
-      line-height: 1.428571429;
-      color: #3e3e3e;
-      vertical-align: middle;
-      background-color: #fff;
-      border: 1px solid #d7d6d2;
-      /* border-radius: 4px; */
+    display: block;
+    width: 100%;
+    padding: 4px 6px;
+    font-size: 14px;
+    line-height: 1.428571429;
+    color: #3e3e3e;
+    vertical-align: middle;
+    background-color: #fff;
+    border: none;
+    /* border-radius: 4px; */
+    background-color: #F8F8F8;
   }
 
   select2-container .select2-choice .select2-arrow b {
@@ -2924,15 +3046,6 @@ padding-left: 65px;
 
 // Booking Summry section
 
-
-.booking-summary-container {
-
-  margin: 2px 20px;
-   padding: 1px;
-  background-color: ghostwhite;
-  font-family: Arial, sans-serif;
-  border-radius: 8px;
-}
 
 .booking-title {
 
