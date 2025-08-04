@@ -1649,6 +1649,74 @@ saveRoomSummary() {
     }
   }
 
+onSelectPlanFromPopup(plan: any): void {
+  const planCode = plan.code;
+
+  // 1. Assign default selection
+  this.selectedRoomsByPlan[planCode] = 1;
+  this.selectedGuestsByPlan[planCode] = {
+    adults: 2,
+    children: 0,
+  };
+
+  // 2. Trigger plan selection
+  this.onPlanSelect(planCode, this.getRateByPlanCode(planCode));
+  this.isPanelOpen = false;
+  // 3. Scroll to the plan card — even if it's already in view
+  setTimeout(() => {
+    const el = document.getElementById('plan-' + planCode);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+      // Optionally add a highlight effect
+      el.classList.add('scroll-highlight');
+      setTimeout(() => {
+        el.classList.remove('scroll-highlight');
+      }, 1000);
+    }
+  }, 100); // slight delay ensures DOM updates
+}
+
+
+getRateByPlanCode(planCode: string) {
+  for (let rate of this.selectedRoom?.ratesAndAvailabilityDtos || []) {
+    const plan = rate.roomRatePlans.find(p => p.code === planCode);
+    if (plan) return rate;
+  }
+  return null;
+}
+
+  removePlan(index: number): void {
+  if (index > -1) {
+    this.selectedPlansSummary.splice(index, 1);
+
+    // Update session storage
+    sessionStorage.setItem(
+      'bookingSummaryDetails',
+      JSON.stringify({
+        selectedPlansSummary: this.selectedPlansSummary
+      })
+    );
+        const savedBooking = sessionStorage.getItem('bookingSummaryDetails');
+  if (savedBooking) {
+    const data = JSON.parse(savedBooking);
+    this.selectedPlansSummary = data.selectedPlansSummary || [];
+
+    // Rebuild selectedGuestsByPlan and selectedRoomsByPlan
+    this.selectedGuestsByPlan = {};
+    this.selectedRoomsByPlan = {};
+
+    this.selectedPlansSummary.forEach(plan => {
+      this.selectedGuestsByPlan[plan.planName] = {
+        adults: plan.adults,
+        children: plan.children
+      };
+      this.selectedRoomsByPlan[plan.planName] = plan.selectedRoomnumber;
+    });
+  }
+  }
+}
+
   publishPage(event: any) {
     if (
       this.token.getProperty() !== undefined &&

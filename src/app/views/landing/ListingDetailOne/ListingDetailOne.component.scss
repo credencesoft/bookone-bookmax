@@ -1105,6 +1105,11 @@ background-color: #090979;
     padding: 14px 22px;
     background-color: #F9FAFB;
 }
+.scroll-highlight {
+  box-shadow: 0 0 10px #007bff;
+  transition: box-shadow 0.5s ease;
+}
+
 .popup-plan {
     font-family: "Poppins";
     color: #031EAA;
