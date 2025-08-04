@@ -249,6 +249,9 @@ export class BookingComponent implements OnInit {
   OtaPlanAllPrice: number;
   otaTaxAmount: any;
   validCoupons: any[];
+  bookingSummaryDetails: any;
+  totalPlanAdults: number = 0;
+totalPlanChildren: number = 0;
 
   constructor(
     private token: TokenStorage,
@@ -315,6 +318,15 @@ export class BookingComponent implements OnInit {
 
     this.savedServices = this.token.getSelectedServices();
 
+    const bookingDataDetails = sessionStorage.getItem('bookingSummaryDetails');
+if (bookingDataDetails) {
+  this.bookingSummaryDetails = JSON.parse(bookingDataDetails);
+  this.calculateTotalGuestsFromPlans();
+  console.log("bookingSummaryDetails", this.bookingSummaryDetails);
+
+}
+
+
     setTimeout(() => {
       this.businessUser?.socialMediaLinks.forEach(element => {
         this.socialmedialist = element
@@ -364,7 +376,6 @@ export class BookingComponent implements OnInit {
 
     this.calculateserviceprice();
 
-    console.log('Total Service Cost:', this.totalServiceCost);
 
     this.booking.fromTime =
       new Date(this.booking.fromDate).getTime() + 21600000;
@@ -477,6 +488,17 @@ if (this.PropertyUrl && this.PropertyUrl.includes('bookingEngine')) {
     this.token.clearBookingDataObj();
   }
 
+  calculateTotalGuestsFromPlans() {
+  this.totalPlanAdults = this.bookingSummaryDetails?.selectedPlansSummary?.reduce(
+    (sum, plan) => sum + (plan.adults || 0),
+    0
+  );
+
+  this.totalPlanChildren = this.bookingSummaryDetails?.selectedPlansSummary?.reduce(
+    (sum, plan) => sum + (plan.children || 0),
+    0
+  );
+}
   clearFormField(bookingData?) {
     try {
       bookingData.firstName = '';
@@ -928,8 +950,6 @@ if (this.PropertyUrl && this.PropertyUrl.includes('bookingEngine')) {
     this.token.saveTime(String(this.tokenFromTime));
     this.token.saveToTime(String(this.tokenToTime));
     this.accommodationvalue = this.businessUser.businessServiceDtoList.filter(ele => ele.name === 'Accommodation');
-    console.log("dfghvalue" + JSON.stringify(this.accommodationvalue))
-    // console.log("accommodation value is :"+JSON.stringify(this.accommodationvalue));
     this.currency = this.businessUser.localCurrency.toUpperCase();
     this.getOfferDetails();
 
@@ -1000,7 +1020,6 @@ if (this.PropertyUrl && this.PropertyUrl.includes('bookingEngine')) {
       this.booking.netAmount +
       this.booking.gstAmount -
       this.booking.discountAmount + this.totalServiceCost;
-    console.log("this.totalServiceCost" + this.totalServiceCost)
     this.businessServiceDto = this.businessUser.businessServiceDtoList.find(
       (data) => data.name === "Accommodation"
     );

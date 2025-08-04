@@ -202,7 +202,7 @@
                           >
                             <button
                               class="btn btn-outline-secondary btn-sm border-0"
-                              (click)="adults = adults - 1"
+                              (click)="adults = adults - 1; saveRoomSummary()"
                               [disabled]="adults <= 1"
                             >
                               −
@@ -210,7 +210,7 @@
                             <div class="mx-2">{{ adults }}</div>
                             <button
                               class="btn btn-outline-secondary btn-sm border-0"
-                              (click)="adults = adults + 1"
+                              (click)="adults = adults + 1; saveRoomSummary()"
                               [disabled]="adults >= 4"
                             >
                               +
@@ -226,7 +226,9 @@
                           >
                             <button
                               class="btn btn-outline-secondary btn-sm border-0"
-                              (click)="children = children - 1"
+                              (click)="
+                                children = children - 1; saveRoomSummary()
+                              "
                               [disabled]="children <= 0"
                             >
                               −
@@ -234,7 +236,9 @@
                             <div class="mx-2">{{ children }}</div>
                             <button
                               class="btn btn-outline-secondary btn-sm border-0"
-                              (click)="children = children + 1"
+                              (click)="
+                                children = children + 1; saveRoomSummary()
+                              "
                               [disabled]="children >= 2"
                             >
                               +
@@ -265,7 +269,9 @@
                           >
                             <button
                               class="btn btn-outline-secondary btn-sm border-0"
-                              (click)="room.adults = room.adults - 1"
+                              (click)="
+                                room.adults = room.adults - 1; saveRoomSummary()
+                              "
                               [disabled]="room.adults <= 1"
                             >
                               −
@@ -273,7 +279,9 @@
                             <div class="mx-2">{{ room.adults }}</div>
                             <button
                               class="btn btn-outline-secondary btn-sm border-0"
-                              (click)="room.adults = room.adults + 1"
+                              (click)="
+                                room.adults = room.adults + 1; saveRoomSummary()
+                              "
                               [disabled]="room.adults >= 4"
                             >
                               +
@@ -289,7 +297,10 @@
                           >
                             <button
                               class="btn btn-outline-secondary btn-sm border-0"
-                              (click)="room.children = room.children - 1"
+                              (click)="
+                                room.children = room.children - 1;
+                                saveRoomSummary()
+                              "
                               [disabled]="room.children <= 0"
                             >
                               −
@@ -297,7 +308,10 @@
                             <div class="mx-2">{{ room.children }}</div>
                             <button
                               class="btn btn-outline-secondary btn-sm border-0"
-                              (click)="room.children = room.children + 1"
+                              (click)="
+                                room.children = room.children + 1;
+                                saveRoomSummary()
+                              "
                               [disabled]="room.children >= 2"
                             >
                               +
@@ -938,9 +952,41 @@
                     <h4 class="popup-plan">{{ plan.name }}</h4>
 
                     <div class="d-flex justify-content-between margin-top-20px">
-                      <h4 class="popup-plan"> {{plan.amount * DiffDate
-                                  | currency : currency : "symbol" : "1.2-2"}}</h4>
-                      <p style="font-size: smaller" >per night + taxes</p>
+                      <h4 class="popup-plan font-weight-bold">
+                        {{
+                          plan.amount * DiffDate
+                            | currency : currency : "symbol" : "1.2-2"
+                        }}
+                      </h4>
+                      <p style="font-size: smaller">per night + taxes</p>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                      <div
+                        class="d-flex"
+                        style="align-items: center; gap: 10px"
+                      >
+                        <img src=" assets/images/adult-img.svg" alt="" />
+                        <p style="font-size: smaller; margin-bottom: 0px">
+                          Extra Adult Charge:
+                        </p>
+                      </div>
+                      <div
+                        class="d-flex"
+                        style="align-items: center; gap: 10px"
+                      >
+                        <img src=" assets/images/child-img.svg" alt="" />
+                        <p style="font-size: smaller; margin-bottom: 0px">
+                          Extra Child Charge:
+                        </p>
+                      </div>
+                    </div>
+                    <div class="margin-top-10px">
+                      <button
+                        class="btn select-plan"
+                        (click)="onSelectPlanFromPopup(plan)"
+                      >
+                        Select Plan
+                      </button>
                     </div>
                   </div>
                 </ng-container>
@@ -1058,7 +1104,7 @@
                         <div class="small mt-1">{{ item.name }}</div>
                       </div>
 
-                      <div (click)="togglePanel(room, i)">
+                      <div (click)="togglePanel(room, i)" style="cursor: pointer;">
                         <img
                           src=" assets/images/stories-image.svg"
                           alt=""
@@ -1090,6 +1136,7 @@
                       let plan of isPlanVisible(rates.roomRatePlans, room.name);
                       let p = index
                     "
+                    [attr.id]="'plan-' + plan.code"
                   >
                     <div class="card-title">
                       <div
@@ -1109,7 +1156,7 @@
                                 : plan.name
                             }}
                           </div>
-                          <div class="ViewDetails">
+                          <div class="ViewDetails" (click)="togglePanel(room, i)" style="cursor: pointer;">
                             <img
                               src=" assets/images/view-details.svg"
                               alt=""
@@ -1364,7 +1411,7 @@
                         <div class="small mt-1">{{ item.name }}</div>
                       </div>
 
-                      <div (click)="togglePanel(room, i)">
+                      <div (click)="togglePanel(room, i)" style="cursor: pointer;">
                         <img
                           src=" assets/images/stories-image.svg"
                           alt=""
@@ -1394,6 +1441,7 @@
                       let plan of isPlanVisible(rates.roomRatePlans, room.name);
                       let p = index
                     "
+                    [attr.id]="'plan-' + plan.code"
                   >
                     <div class="card-title">
                       <div
@@ -1413,7 +1461,7 @@
                                 : plan.name
                             }}
                           </div>
-                          <div class="ViewDetails">
+                          <div class="ViewDetails" (click)="togglePanel(room, i)" style="cursor: pointer;">
                             <img
                               src=" assets/images/view-details.svg"
                               alt=""
@@ -1650,7 +1698,7 @@
                         <div class="small mt-1">{{ item.name }}</div>
                       </div>
 
-                      <div (click)="togglePanel(room, p)">
+                      <div (click)="togglePanel(room, p)" style="cursor: pointer;">
                         <img
                           src=" assets/images/stories-image.svg"
                           alt=""
@@ -1795,7 +1843,7 @@
                         <div class="small mt-1">{{ item.name }}</div>
                       </div>
 
-                      <div (click)="togglePanel(room, p)">
+                      <div (click)="togglePanel(room, p)" style="cursor: pointer;">
                         <img
                           src=" assets/images/stories-image.svg"
                           alt=""
@@ -1886,17 +1934,8 @@
           </div>
         </div>
 
-        <!-- <div class="room-box d-flex justify-content-between mb-4">
-          <div class="room-details">
-            <div class="room-title">Standard AC Room</div>
-            <small class="text-muted">CP Plan · 2 Adults, 2 Children</small
-            ><br />
-            <small class="text-muted">2 Nights</small>
-          </div>
-          <div class="room-price">₹ 9,543</div>
-        </div> -->
         <div
-          *ngFor="let plan of selectedPlansSummary"
+          *ngFor="let plan of selectedPlansSummary; let i = index"
           class="room-box d-flex justify-content-between mb-4"
         >
           <div class="room-details">
@@ -1910,7 +1949,16 @@
               {{ plan.selectedRoomnumber }} room(s)</small
             >
           </div>
-          <div class="room-price">₹ {{ plan.price | number : "1.2-2" }}</div>
+          <div class="d-flex align-items-start">
+            <div class="room-price">₹ {{ plan.price | number : "1.2-2" }}</div> &nbsp; &nbsp;
+            <div
+              style="cursor: pointer; font-size: 18px; margin-top: 0px"
+              (click)="removePlan(i)"
+              title="Remove"
+            >
+              <i class="fa-regular fa-circle-xmark"></i>
+            </div>
+          </div>
         </div>
 
         <hr *ngIf="selectedPlansSummary.length > 0" />
