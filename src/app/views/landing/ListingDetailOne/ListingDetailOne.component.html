@@ -937,7 +937,9 @@
                 </div>
               </div>
               <ng-container
-                *ngIf="selectedRoom?.ratesAndAvailabilityDtos?.length > 0"
+                *ngIf="selectedRoom?.ratesAndAvailabilityDtos?.length > 0 &&
+            i === 0 && selectedRoom?.ratesAndAvailabilityDtos != null && selectedRoom?.ratesAndAvailabilityDtos?.[0]?.stopSellOBE == null && selectedRoom?.ratesAndAvailabilityDtos?.[0]?.stopSellOBE == false
+          || selectedRoom?.ratesAndAvailabilityDtos?.[0]?.stopSellOTA == null && selectedRoom?.ratesAndAvailabilityDtos?.[0]?.stopSellOTA == false"
               >
                 <ng-container
                   *ngFor="
@@ -990,6 +992,74 @@
                     </div>
                   </div>
                 </ng-container>
+              </ng-container>
+
+              <ng-container
+                *ngIf="selectedRoom?.ratesAndAvailabilityDtos?.length>0 && i>0 && this.isDiabled && selectedRoom?.ratesAndAvailabilityDtos?.[0]?.roomRatePlans?.length > 0 && (selectedRoom?.ratesAndAvailabilityDtos?.[0]?.stopSellOBE === null || selectedRoom?.ratesAndAvailabilityDtos?.[0]?.stopSellOBE === false) &&
+       (selectedRoom?.ratesAndAvailabilityDtos?.[0]?.stopSellOTA === null || selectedRoom?.ratesAndAvailabilityDtos?.[0]?.stopSellOTA === false) "
+              >
+                <ng-container
+                  *ngFor="
+                    let rates of selectedRoom?.ratesAndAvailabilityDtos;
+                    let r = index
+                  "
+                >
+                  <div
+                    class="popup-card"
+                    *ngFor="let plan of rates?.roomRatePlans; let p = index"
+                  >
+                    <h4 class="popup-plan">{{ plan.name }}</h4>
+
+                    <div class="d-flex justify-content-between margin-top-20px">
+                      <h4 class="popup-plan font-weight-bold">
+                        {{
+                          plan.amount * DiffDate
+                            | currency : currency : "symbol" : "1.2-2"
+                        }}
+                      </h4>
+                      <p style="font-size: smaller">per night + taxes</p>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                      <div
+                        class="d-flex"
+                        style="align-items: center; gap: 10px"
+                      >
+                        <img src=" assets/images/adult-img.svg" alt="" />
+                        <p style="font-size: smaller; margin-bottom: 0px">
+                          Extra Adult Charge:
+                        </p>
+                      </div>
+                      <div
+                        class="d-flex"
+                        style="align-items: center; gap: 10px"
+                      >
+                        <img src=" assets/images/child-img.svg" alt="" />
+                        <p style="font-size: smaller; margin-bottom: 0px">
+                          Extra Child Charge:
+                        </p>
+                      </div>
+                    </div>
+                    <div class="margin-top-10px">
+                      <button
+                        class="btn select-plan"
+                        (click)="onSelectPlanFromPopup(plan)"
+                      >
+                        Select Plan
+                      </button>
+                    </div>
+                  </div>
+                </ng-container>
+              </ng-container>
+              <ng-container
+                *ngIf="selectedRoom?.ratesAndAvailabilityDtos === null"
+              >
+                <h4 class="not-available">No Plans Available</h4>
+              </ng-container>
+              <ng-container
+                *ngIf="selectedRoom?.ratesAndAvailabilityDtos?.[0]?.stopSellOBE != null && selectedRoom?.ratesAndAvailabilityDtos?.[0]?.stopSellOBE !== false
+          || selectedRoom?.ratesAndAvailabilityDtos?.[0]?.stopSellOTA != null && selectedRoom?.ratesAndAvailabilityDtos?.[0]?.stopSellOTA !== false"
+              >
+                <h4 class="not-available">No Plans Available</h4>
               </ng-container>
             </div>
           </div>
@@ -1104,7 +1174,10 @@
                         <div class="small mt-1">{{ item.name }}</div>
                       </div>
 
-                      <div (click)="togglePanel(room, i)" style="cursor: pointer;">
+                      <div
+                        (click)="togglePanel(room, i)"
+                        style="cursor: pointer"
+                      >
                         <img
                           src=" assets/images/stories-image.svg"
                           alt=""
@@ -1156,7 +1229,11 @@
                                 : plan.name
                             }}
                           </div>
-                          <div class="ViewDetails" (click)="togglePanel(room, i)" style="cursor: pointer;">
+                          <div
+                            class="ViewDetails"
+                            (click)="togglePanel(room, i)"
+                            style="cursor: pointer"
+                          >
                             <img
                               src=" assets/images/view-details.svg"
                               alt=""
@@ -1411,7 +1488,10 @@
                         <div class="small mt-1">{{ item.name }}</div>
                       </div>
 
-                      <div (click)="togglePanel(room, i)" style="cursor: pointer;">
+                      <div
+                        (click)="togglePanel(room, i)"
+                        style="cursor: pointer"
+                      >
                         <img
                           src=" assets/images/stories-image.svg"
                           alt=""
@@ -1461,7 +1541,11 @@
                                 : plan.name
                             }}
                           </div>
-                          <div class="ViewDetails" (click)="togglePanel(room, i)" style="cursor: pointer;">
+                          <div
+                            class="ViewDetails"
+                            (click)="togglePanel(room, i)"
+                            style="cursor: pointer"
+                          >
                             <img
                               src=" assets/images/view-details.svg"
                               alt=""
@@ -1698,7 +1782,10 @@
                         <div class="small mt-1">{{ item.name }}</div>
                       </div>
 
-                      <div (click)="togglePanel(room, p)" style="cursor: pointer;">
+                      <div
+                        (click)="togglePanel(room, p)"
+                        style="cursor: pointer"
+                      >
                         <img
                           src=" assets/images/stories-image.svg"
                           alt=""
@@ -1843,7 +1930,10 @@
                         <div class="small mt-1">{{ item.name }}</div>
                       </div>
 
-                      <div (click)="togglePanel(room, p)" style="cursor: pointer;">
+                      <div
+                        (click)="togglePanel(room, p)"
+                        style="cursor: pointer"
+                      >
                         <img
                           src=" assets/images/stories-image.svg"
                           alt=""
@@ -1950,7 +2040,8 @@
             >
           </div>
           <div class="d-flex align-items-start">
-            <div class="room-price">₹ {{ plan.price | number : "1.2-2" }}</div> &nbsp; &nbsp;
+            <div class="room-price">₹ {{ plan.price | number : "1.2-2" }}</div>
+            &nbsp; &nbsp;
             <div
               style="cursor: pointer; font-size: 18px; margin-top: 0px"
               (click)="removePlan(i)"

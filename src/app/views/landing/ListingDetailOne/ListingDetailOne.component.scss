@@ -1110,6 +1110,13 @@ background-color: #090979;
   transition: box-shadow 0.5s ease;
 }
 
+.not-available {
+  text-align: center;
+    margin-top: 30px;
+    font-family: 'Poppins';
+    color: red;
+}
+
 .popup-plan {
     font-family: "Poppins";
     color: #031EAA;
