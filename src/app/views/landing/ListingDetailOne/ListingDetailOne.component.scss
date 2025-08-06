@@ -567,13 +567,22 @@ background-color: #090979;
   bottom: 0px;
 }
 .aminities-alignment {
-  display: flex;
-  gap: 5px;
-  align-items: center;
-  background-color: rgba(255, 255, 255, 0.5019607843);
-  padding: 0px 10px;
-  border-radius: 20px;
-  font-size: 12px;
+display: flex;
+    gap: 5px;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.5019607843);
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+}
+.stories {
+      cursor: pointer;
+    display: flex;
+    position: absolute;
+    right: 10px;
+    background-color: rgba(255, 255, 255, 0.5019607843);
+    padding: 3px 10px;
+    border-radius: 10px;
 }
 .margin-bottom-10px {
   margin-bottom: 10px;
