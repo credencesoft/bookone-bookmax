@@ -646,7 +646,7 @@ getSubscriptions(booking: any) {
     roomdetailss.noOfadult = booking.noOfPersons;
     roomdetailss.noOfchild = booking.noOfChildren;
     roomdetailss.plan = booking.roomRatePlanName;
-    roomdetailss.roomRate = (booking.roomTariffBeforeDiscount + booking.extraChildCharge + booking.extraPersonCharge);
+    roomdetailss.roomRate = booking.roomPrice;
     roomdetailss.roomTypeId = booking.roomId;
     roomdetailss.roomTypeName = booking.roomName;
     this.reservationRoomDetails.push(roomdetailss);
@@ -664,7 +664,7 @@ getSubscriptions(booking: any) {
     externalreservation.services = this.propertyServices;
     externalreservation.taxAmount = booking.taxAmount;
     // externalreservation.lastModifiedDate = new Date().toString();
-    externalreservation.noOfPerson = this.booking.noOfPersons.toString();
+    externalreservation.noOfPerson = booking.noOfPersons.toString();
     externalreservation.resType = '';
     externalreservation.otaBooking = false
     externalreservation.otaName = 'WebSite'
@@ -2808,10 +2808,10 @@ createBooking(plan: any, bookingSummary: any, callback?: () => void) {
   booking.roomBooking = true;
   booking.groupBooking = false;
   booking.available = true;
-  booking.roomPrice = booking.netAmount;
+  booking.roomPrice = plan.actualRoomPrice;
   booking.totalServiceAmount = this.totalServiceCost || 0;
   booking.taxAmount = booking.gstAmount;
-  booking.totalRoomTariffBeforeDiscount = booking.roomPrice;
+  booking.totalRoomTariffBeforeDiscount = plan.price;
   booking.noOfExtraPerson = plan.extraCountAdult;
   booking.noOfExtraChild = plan.extraCountChild;
   booking.purposeOfVisit = '';
@@ -2841,11 +2841,14 @@ createBooking(plan: any, bookingSummary: any, callback?: () => void) {
 
       this.addServiceToBooking(savedBooking.id, this.savedServices);
       this.getSubscriptions(savedBooking); // 🔁 Pass the correct booking
-      this.sendWhatsappMessageToTHM();
-      this.sendWhatsappMessageToTHM1();
-      this.sendWhatsappMessageToTHM2();
-      this.sendWhatsappMessageToTHM3();
-      this.sendWhatsappMessageToTHM4();
+      this.sendWhatsappMessageToTHM(savedBooking);
+      // this.sendWhatsappMessageToTHM1(savedBooking);
+      // this.sendWhatsappMessageToTHM2(savedBooking);
+      // this.sendWhatsappMessageToTHM3(savedBooking);
+      // this.sendWhatsappMessageToTHM4(savedBooking);
+      //  setTimeout(() => {
+      //       this.accommodationEnquiryBookingData();
+      //     }, 3000);
       this.router.navigate(["/reservation-confirm-page"]);
 
 
@@ -2910,7 +2913,7 @@ createBooking(plan: any, bookingSummary: any, callback?: () => void) {
 
     return iconMap[name.trim()] || 'fa-circle-question'; // fallback icon
   }
-  sendWhatsappMessageToTHM() {
+  sendWhatsappMessageToTHM(booking) {
     this.whatsappForm.messaging_product = 'whatsapp';
     this.whatsappForm.recipient_type = 'individual';
     this.template.name = "";
@@ -2921,7 +2924,7 @@ createBooking(plan: any, bookingSummary: any, callback?: () => void) {
       this.componentstype2.type = 'body',
       this.parametertype2 = new Para()
     this.parametertype2.type = 'text',
-      this.parametertype2.text = this.booking.firstName;
+      this.parametertype2.text = booking.firstName;
     this.parameterss2.push(this.parametertype2);
 
     this.parametertype2 = new Para()
@@ -2931,18 +2934,18 @@ createBooking(plan: any, bookingSummary: any, callback?: () => void) {
 
     this.parametertype2 = new Para();
     this.parametertype2.type = 'text',
-      this.parametertype2.text = String(this.referenceNumberAfterBooking);
+      this.parametertype2.text = String(booking.propertyReservationNumber);
     this.parameterss2.push(this.parametertype2);
 
     this.parametertype2 = new Para();
     this.parametertype2.type = 'text',
-      this.parametertype2.text = this.datePipe.transform(this.booking.fromDate, 'dd-MM-YYYY') + ",";
+      this.parametertype2.text = this.datePipe.transform(booking.fromDate, 'dd-MM-YYYY') + ",";
     this.parameterss2.push(this.parametertype2);
 
     this.parametertype2 = new Para();
     this.parametertype2.type = 'text';
     if (this.booking.fromTime) {
-      this.parametertype2.text = new Date(this.booking.fromTime).toLocaleTimeString();
+      this.parametertype2.text = new Date(booking.fromTime).toLocaleTimeString();
     } else {
       this.parametertype2.text = " ";
     }
@@ -2950,13 +2953,13 @@ createBooking(plan: any, bookingSummary: any, callback?: () => void) {
 
     this.parametertype2 = new Para();
     this.parametertype2.type = 'text',
-      this.parametertype2.text = this.datePipe.transform(this.booking.toDate, 'dd-MM-YYYY') + ",";
+      this.parametertype2.text = this.datePipe.transform(booking.toDate, 'dd-MM-YYYY') + ",";
     this.parameterss2.push(this.parametertype2);
 
     this.parametertype2 = new Para();
     this.parametertype2.type = 'text';
     if (this.booking.toTime) {
-      this.parametertype2.text = new Date(this.booking.toTime).toLocaleTimeString();
+      this.parametertype2.text = new Date(booking.toTime).toLocaleTimeString();
     } else {
       this.parametertype2.text = " ";
     }
@@ -2964,32 +2967,32 @@ createBooking(plan: any, bookingSummary: any, callback?: () => void) {
 
     this.parametertype2 = new Para();
     this.parametertype2.type = 'text';
-    this.parametertype2.text = String(this.booking.noOfRooms);
+    this.parametertype2.text = String(booking.noOfRooms);
     this.parameterss2.push(this.parametertype2);
 
     this.parametertype2 = new Para();
     this.parametertype2.type = 'text';
-    this.parametertype2.text = this.booking.roomName;
+    this.parametertype2.text = booking.roomName;
     this.parameterss2.push(this.parametertype2);
 
     this.parametertype2 = new Para();
     this.parametertype2.type = 'text';
-    this.parametertype2.text = String(this.booking.noOfPersons);
+    this.parametertype2.text = String(booking.noOfPersons);
     this.parameterss2.push(this.parametertype2);
 
     this.parametertype2 = new Para();
     this.parametertype2.type = 'text';
-    this.parametertype2.text = String(this.booking.noOfChildren);
+    this.parametertype2.text = String(booking.noOfChildren);
     this.parameterss2.push(this.parametertype2);
 
     this.parametertype2 = new Para();
     this.parametertype2.type = 'text',
-    this.parametertype2.text = this.booking.promotionName ? this.booking.promotionName : ' ';
+    this.parametertype2.text = booking.promotionName ? booking.promotionName : ' ';
     this.parameterss2.push(this.parametertype2);
 
     this.parametertype2 = new Para();
     this.parametertype2.type = 'text',
-      this.parametertype2.text = this.booking.totalAmount.toFixed(2);
+      this.parametertype2.text = booking.totalAmount.toFixed(2);
     this.parameterss2.push(this.parametertype2);
 
     this.parametertype2 = new Para();
@@ -2999,7 +3002,7 @@ createBooking(plan: any, bookingSummary: any, callback?: () => void) {
 
      this.parametertype2 = new Para();
     this.parametertype2.type = 'text',
-      this.parametertype2.text = this.booking.totalAmount.toFixed(2);
+      this.parametertype2.text = booking.totalAmount.toFixed(2);
     this.parameterss2.push(this.parametertype2);
 
      this.parametertype2 = new Para();
@@ -3016,7 +3019,7 @@ createBooking(plan: any, bookingSummary: any, callback?: () => void) {
 
     this.parametertype20 = new Para();
     this.parametertype20.type = 'text',
-      this.parametertype20.text = "/reservation-confirm?bookingId=" + this.referenceNumberAfterBooking;
+      this.parametertype20.text = "/reservation-confirm?bookingId=" + booking.propertyReservationNumber;
     this.parameterss15.push(this.parametertype20);
     this.componentstype9.parameters = this.parameterss15;
     this.components.push(this.componentstype9);

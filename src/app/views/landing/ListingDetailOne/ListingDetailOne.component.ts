@@ -166,6 +166,7 @@ export class ListingDetailOneComponent implements OnInit {
   privateCouponPresent: any[];
   phoneNumberBookingEngine: string;
   roomPricePerPlan: any;
+  actualroompriceCharge: any;
   extraAdultCharge: number;
   extraChildrenCharge: number;
   extraAdultCount: number;
@@ -1520,32 +1521,33 @@ removeRoom(index: number): void {
     const selectedRooms = this.selectedRoomsByPlan[planCode];
     const selectedGuests = this.selectedGuestsByPlan[planCode];
     const plan = rates.roomRatePlans.find((p) => p.code === planCode);
-    const extraPerson = rates.roomRatePlans.forEach((ele1) => {
-      if (
-        plan.code === ele1.code &&
-        selectedGuests.adults > ele1.minimumOccupancy
-      ) {
+    // Reset
+      this.extraAdultCharge = 0;
+      this.extraChildrenCharge = 0;
+      this.extraAdultCount = 0;
+      this.extraChildCount = 0;
 
-        const extraPersonAdultAmount =
-          ele1.extraChargePerPerson *
-          (selectedGuests.adults - ele1.minimumOccupancy);
-        this.extraAdultCharge = extraPersonAdultAmount;
-        const extraAdultCount = selectedGuests.adults - ele1.minimumOccupancy;
-        this.extraAdultCount = extraAdultCount;
-      }
-      if (
-        plan.code === ele1.code &&
-        selectedGuests.children > ele1.noOfChildren
-      ) {
-        const extraPersonChildAmount =
-          ele1.extraChargePerChild *
-          (selectedGuests.children - ele1.noOfChildren);
-        this.extraChildrenCharge = extraPersonChildAmount;
-        const extraChildCount = selectedGuests.children - ele1.noOfChildren;
-        this.extraChildCount = extraChildCount;
-      }
-    });
+      rates.roomRatePlans.forEach((ele1) => {
+        if (plan.code === ele1.code) {
+          const totalMinAdults = ele1.minimumOccupancy * selectedRooms;
+          const totalMinChildren = ele1.noOfChildren * selectedRooms;
 
+          const extraAdults =
+            selectedGuests.adults > totalMinAdults
+              ? selectedGuests.adults - totalMinAdults
+              : 0;
+          const extraChildren =
+            selectedGuests.children > totalMinChildren
+              ? selectedGuests.children - totalMinChildren
+              : 0;
+
+          this.extraAdultCount = extraAdults;
+          this.extraAdultCharge = extraAdults * ele1.extraChargePerPerson;
+
+          this.extraChildCount = extraChildren;
+          this.extraChildrenCharge = extraChildren * ele1.extraChargePerChild;
+        }
+      });
     if (selectedRooms && selectedGuests?.adults > 0) {
       const roomName = rates.roomName;
       const roomId = rates.roomId;
@@ -1558,12 +1560,14 @@ removeRoom(index: number): void {
           plan.code === 'GHC' && this.activeForGoogleHotelCenter
             ? this.totalplanPrice + this.extraAdultCharge
             : plan.amount * nights * selectedRooms + this.extraAdultCharge;
+            this.actualroompriceCharge = plan.amount;
         this.roomPricePerPlan = priceOne;
       } else if (this.extraChildrenCharge && !this.extraAdultCharge) {
         const priceOne =
           plan.code === 'GHC' && this.activeForGoogleHotelCenter
             ? this.totalplanPrice + this.extraChildrenCharge
             : plan.amount * nights * selectedRooms + this.extraChildrenCharge;
+        this.actualroompriceCharge = plan.amount;
         this.roomPricePerPlan = priceOne;
       } else if (this.extraAdultCharge && this.extraChildrenCharge) {
         const priceOne =
@@ -1572,6 +1576,7 @@ removeRoom(index: number): void {
               (this.extraChildrenCharge + this.extraAdultCharge)
             : plan.amount * nights * selectedRooms +
               (this.extraChildrenCharge + this.extraAdultCharge);
+        this.actualroompriceCharge = plan.amount;
         this.roomPricePerPlan = priceOne;
       } else {
         const priceOne =
@@ -1579,8 +1584,10 @@ removeRoom(index: number): void {
             ? this.totalplanPrice
             : plan.amount * nights * selectedRooms;
         this.roomPricePerPlan = priceOne;
+        this.actualroompriceCharge = plan.amount;
       }
       const price = this.roomPricePerPlan;
+      const actualRoomPrice = this.actualroompriceCharge;
       const selectedRoomnumber = selectedRooms;
       const extraPersonAdultCountAmount = this.extraAdultCharge;
       const extraPersonChildCountAmount = this.extraChildrenCharge;
@@ -1650,6 +1657,7 @@ removeRoom(index: number): void {
 
       const summaryEntry = {
         roomName,
+        actualRoomPrice,
         extraPersonChildCountAmount,
         extraPersonAdultCountAmount,
         roomId,
