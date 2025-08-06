@@ -659,128 +659,288 @@
 
 <!-- Booking Summry section -->
 <div *ngIf="!bookingConfirmed">
-  <div class="booking-checkout-web-view custom-bg">
-    <div class="card" style="margin-top: 80px">
+  <div class="booking-checkout-web-view">
+    <div style="margin-top: 80px">
       <div
         class="d-flex align-items-center container-div"
-        style="gap: 10px; padding-top: 20px; padding-bottom: 20px"
-        (click)="backClicked()"
+        style="gap: 10px; padding-top: 20px"
       >
-        <h4 class="review-book">
-          <i class="fa-solid fa-angle-left"></i> &nbsp; Review Booking
+        <h4 class="review-book" (click)="backClicked()">
+          <i class="fa-solid fa-arrow-left"></i> &nbsp; Review Booking
         </h4>
+      </div>
+      <div class="container-div text-change">
+        &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;Looks like a great stay! Confirm the
+        details and book your getaway now.
       </div>
     </div>
     <div class="container-div" style="margin-top: 20px">
-      <div class="card" style="padding: 30px">
-        <h5 class="margin-botton-20px booking-d-heading">Booking Details</h5>
-        <div class="d-flex justify-content-between">
-          <div class="d-block">
-            <div class="text-center aminities-highlights-details">
-              Check-in Date
-            </div>
-            <div class="text-center">{{bookingSummaryDetails?.fromDate | date : 'dd-MM-YYYY'}}</div>
-          </div>
-          <div class="d-block">
-            <div class="text-center aminities-highlights-details">
-              Check-in Date
-            </div>
-            <div class="text-center">{{bookingSummaryDetails?.toDate | date : 'dd-MM-YYYY'}}</div>
-          </div>
-          <div class="d-block">
-            <div class="text-center aminities-highlights-details">
-              No. Of Adults
-            </div>
-            <div class="text-center">{{ totalPlanAdults}}</div>
-          </div>
-          <div class="d-block">
-            <div class="text-center aminities-highlights-details">
-              No. Of Children
-            </div>
-            <div class="text-center">{{totalPlanChildren}}</div>
-          </div>
-          <div class="d-block">
-            <div class="text-center aminities-highlights-details">
-              No. Of Nights
-            </div>
-            <div class="text-center">{{bookingSummaryDetails?.totalNights}}</div>
-          </div>
-        </div>
-      </div>
       <div class="booking-summary-container">
         <div class="row" style="margin: 0px !important">
           <div class="col-8 padding-left0px padding-right-0px">
-            <div class="rooms-cards-pricing card" >
-              <div  *ngFor="let plan of bookingSummaryDetails.selectedPlansSummary; let last = last">
-                <div class="line-height-27px font-weight-600">
-                  {{plan.roomName}} x {{ plan.selectedRoomnumber }}
+            <div class="card" style="padding: 30px">
+              <h5 class="margin-botton-20px booking-d-heading">
+                <img
+                  src="assets/images/calemder-frame.svg"
+                  alt="icon"
+                  width="20"
+                  height="20"
+                  style="margin-right: 5px"
+                />
+                Your Booking
+              </h5>
+
+              <h5 class="booking-heading">{{ businessUser?.name }}</h5>
+              <p class="booking-subheading">
+                <img
+                  src="assets/images/maps-booking.svg"
+                  alt=""
+                  width="15"
+                  height="15"
+                />
+                {{ businessUser.address?.streetName }},
+                {{ businessUser.address?.city }},
+                {{ businessUser.address?.state }},
+                {{ businessUser.address?.country }}
+              </p>
+
+              <div class="d-flex justify-content-between check-card">
+                <div class="d-flex spacing-gap">
+                  <div>
+                    <img
+                      src="assets/images/checkin-book-calender.svg"
+                      alt=""
+                      width="15"
+                      height="15"
+                    />
+                  </div>
+                  <div class="d-block">
+                    <div class="text-center aminities-highlights-details">
+                      Check-in
+                    </div>
+                    <div class="text-center">
+                      {{
+                        bookingSummaryDetails?.fromDate | date : "dd-MM-YYYY"
+                      }}
+                    </div>
+                  </div>
+                </div>
+
+                <div class="d-flex spacing-gap">
+                  <div>
+                    <img
+                      src="assets/images/checkin-book-calender.svg"
+                      alt=""
+                      width="15"
+                      height="15"
+                    />
+                  </div>
+                  <div class="d-block">
+                    <div class="text-center aminities-highlights-details">
+                      Check-out
+                    </div>
+                    <div class="text-center">
+                      {{ bookingSummaryDetails?.toDate | date : "dd-MM-YYYY" }}
+                    </div>
+                  </div>
+                </div>
+                <div class="d-flex spacing-gap">
+                  <div>
+                    <img
+                      src="assets/images/guest-booking.svg"
+                      alt=""
+                      width="20"
+                      height="20"
+                    />
+                  </div>
+                  <div class="d-block">
+                    <div class="text-center aminities-highlights-details">
+                      Guests
+                    </div>
+                    <div class="text-center">
+                      {{ totalPlanAdults }} Adults,
+                      {{ totalPlanChildren }} Children
+                    </div>
+                  </div>
+                </div>
+
+                <div class="d-flex spacing-gap">
+                  <div style="color: #031eaa">
+                    <i class="fa-solid fa-moon"></i>
+                  </div>
+                  <div class="d-block">
+                    <div class="text-center aminities-highlights-details">
+                      No. Of Nights
+                    </div>
+                    <div class="text-center">
+                      {{ bookingSummaryDetails?.totalNights }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <hr
+                style="
+                  border: 1px solid #e5e7eb;
+                  margin-top: 20px;
+                  margin-bottom: 20px;
+                "
+              />
+
+              <div
+                class="booking-heading"
+                *ngFor="
+                  let plan of bookingSummaryDetails.selectedPlansSummary;
+                  let last = last
+                "
+              >
+                <div class="line-height-27px d-flex justify-content-between">
+                  <div class="font-weight-600">
+                    {{ plan.roomName }}
+                  </div>
+                  <div class="nights">
+                    {{ plan.selectedRoomnumber }} Night(s)
+                  </div>
                 </div>
                 <div class="d-flex justify-content-between line-height-27px">
-                  <div>{{ plan.planName }} x {{ plan.selectedRoomnumber }}</div>
+                  <div class="color-graying">
+                    {{ plan.planName }} x {{ plan.selectedRoomnumber }}
+                  </div>
 
                   <div>₹ {{ plan.price | number : "1.2-2" }}</div>
                 </div>
                 <div class="d-flex justify-content-between line-height-27px">
-                  <div>Extra Pax Charges</div>
+                  <div class="color-graying">Extra Pax Charges</div>
 
                   <div>₹ 0</div>
                 </div>
                 <div class="d-flex justify-content-between line-height-27px">
-                  <div>Tax & Services</div>
+                  <div class="color-graying">Tax & Services</div>
 
-                  <div>₹ {{ plan.taxPercentageperroom | number : "1.2-2" }}</div>
+                  <div>
+                    ₹ {{ plan.taxPercentageperroom | number : "1.2-2" }}
+                  </div>
                 </div>
                 <div class="d-flex justify-content-between line-height-27px">
-                  <div>Total</div>
+                  <div class="color-graying font-weight-600">Total</div>
 
-                  <div class="font-weight-600">₹ {{ plan.price + plan.taxPercentageperroom | number : "1.2-2" }}</div>
+                  <div class="font-weight-600">
+                    ₹
+                    {{
+                      plan.price + plan.taxPercentageperroom | number : "1.2-2"
+                    }}
+                  </div>
                 </div>
                 <hr *ngIf="!last" style="border: 1px solid #e5e7eb" />
               </div>
             </div>
 
-            <div class="rooms-cards-pricing card" style="margin-top: 20px">
-              <div class="line-height-27px font-weight-600">
+            <div
+              class="rooms-cards-pricing card"
+              style="margin-top: 20px; border: 1px solid #f3f4f6"
+              *ngIf="
+                bookingSummaryDetails?.propertyServiceListDataOne?.length > 0
+              "
+            >
+              <h5
+                class="line-height-27px font-weight-600"
+                style="color: #1f2937"
+              >
+                <img
+                  src="assets/images/add-onservice.svg"
+                  alt=""
+                  width="18"
+                  height="18"
+                  style="margin-right: 5px"
+                />
                 Add-on Services
-              </div>
-              <div *ngIf="bookingSummaryDetails?.propertyServiceListDataOne?.length > 0">
-                <div class="d-flex justify-content-between line-height-27px"
-                *ngFor="let fac of bookingSummaryDetails?.propertyServiceListDataOne;let i = index">
-                <div>{{ fac.name }}</div>
+              </h5>
+              <div
+                *ngIf="
+                  bookingSummaryDetails?.propertyServiceListDataOne?.length > 0
+                "
+              >
+                <div
+                  class="d-flex justify-content-between line-height-27px fac-div"
+                  *ngFor="
+                    let fac of bookingSummaryDetails?.propertyServiceListDataOne;
+                    let i = index
+                  "
+                >
+                  <div class="d-block align-item-center">
 
-                <div class="font-weight-600">₹ {{ fac.afterTaxAmount | number : "1.2-2" }}</div>
-              </div>
+                        <div class="font-weight-600 headimg-color-One" >{{ fac.name }}</div>
 
-              </div>
+                        <div class="fac-description">
+                          <!-- Description handling -->
+                          <span *ngIf="!expanded[i]">
+                            {{ getFirstWords(fac.description, 5) }}...
+                            <a style="color: #031eaa;cursor: pointer;" (click)="toggleViewMore(i, $event)"
+                              >View more</a
+                            >
+                          </span>
+                          <span *ngIf="expanded[i]">
+                            {{ fac.description }}
+                            <a style="color: #031eaa;cursor: pointer;"  (click)="toggleViewMore(i, $event)"
+                              >View less</a
+                            >
+                          </span>
+                        </div>
 
+                  </div>
+
+                  <div class="font-weight-600" style="width: 30%; text-align: end;">
+                    ₹ {{ fac.afterTaxAmount | number : "1.2-2" }}
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
           <div class="col-4 padding-right-0px">
             <div class="rooms-cards-pricing card" style="margin-bottom: 20px">
+              <h5 class="headimg-color"> <img
+                      src="assets/images/payment-sum.svg"
+                      alt=""
+                      width="20"
+                      height="20"
+                      style="margin-right: 5px;"
+                    /> Payment Summary</h5>
 
+                     <div class="d-flex justify-content-between line-height-27px">
+                <div class="font-weight-600" style="font-size: 1rem;">Total Amount</div>
+
+                <div class="font-weight-600" style="font-size: 1rem;">
+                  ₹ {{ bookingSummaryDetails?.totalAmount | number : "1.2-2" }}
+                </div>
+              </div>
               <div class="d-flex justify-content-between line-height-27px">
-                <div class="font-weight-600">Total Room Price</div>
+                <div class="color-graying">Total Room Price</div>
 
-                <div class="font-weight-600">₹ {{ bookingSummaryDetails?.totalPlanPrice | number : "1.2-2" }}</div>
+                <div style="color: #3B82F6;font-weight: 500;" >
+                  ₹
+                  {{ bookingSummaryDetails?.totalPlanPrice | number : "1.2-2" }}
+                </div>
               </div>
 
               <div class="d-flex justify-content-between line-height-27px">
-                <div class="font-weight-600">Total Tax & Services</div>
+                <div class="color-graying">Total Tax & Services</div>
 
-                <div class="font-weight-600">₹ {{ bookingSummaryDetails?.totalTax | number : "1.2-2" }}</div>
+                <div style="font-weight: 500;" >
+                  ₹ {{ bookingSummaryDetails?.totalTax | number : "1.2-2" }}
+                </div>
               </div>
 
               <div class="d-flex justify-content-between line-height-27px">
-                <div class="font-weight-600" >Total Add-on Services</div>
+                <div class="color-graying">Total Add-on Services</div>
 
-                <div class="font-weight-600">₹ {{ bookingSummaryDetails?.totalAddOnsPrice | number : "1.2-2" }}</div>
+                <div style="font-weight: 500;">
+                  ₹
+                  {{
+                    bookingSummaryDetails?.totalAddOnsPrice | number : "1.2-2"
+                  }}
+                </div>
               </div>
 
-              <div class="d-flex justify-content-between line-height-27px">
-                <div class="font-weight-600">Total Amount</div>
 
-                <div class="font-weight-600">₹ {{ bookingSummaryDetails?.totalAmount | number : "1.2-2" }}</div>
-              </div>
             </div>
             <!-- Fill Your Details Section -->
             <form
@@ -789,13 +949,21 @@
               *ngIf="!bookingConfirmed"
             >
               <div
-                class="card p-4 mx-auto"
+                class="card p-4 mx-auto booking-heading"
                 style="
                   border-radius: 10px;
                   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
                 "
               >
-                <div class="mb-3">
+              <h5 class="headimg-color"> <img
+                      src="assets/images/guest-booking-details.svg"
+                      alt=""
+                      width="18"
+                      height="18"
+                      style="margin-right: 5px;"
+                    /> Guest Details</h5>
+                    <div class="d-flex justify-content-between gap-20px">
+                      <div class="mb-3">
                   <label class="label-changes" for="firstName"
                     >First Name
                   </label>
@@ -840,6 +1008,8 @@
                     Last Name is required
                   </span>
                 </div>
+                    </div>
+
 
                 <div class="mb-3">
                   <label class="label-changes" for="email"
@@ -897,7 +1067,7 @@
 
                 <div class="mb-3">
                   <label class="label-changes" for="notes">Special Notes</label>
-                  <textarea class="form-control" id="notes">{{
+                  <textarea class="form-control" placeholder="Any special requests or preferences..." id="notes">{{
                     booking.notes
                   }}</textarea>
                 </div>

@@ -37,6 +37,11 @@ taxPercentage: number;
   loader: boolean;
   PropertyUrl: string;
   propertyServiceListData: any[] = [];
+    bookingSummaryDetails: any;
+      totalPlanAdults: number = 0;
+totalPlanChildren: number = 0;
+  bookingsResponseList: any;
+  expanded: boolean = false;
 constructor(private token :TokenStorage,
       private hotelBookingService: HotelBookingService,
       private listingService: ListingService,
@@ -96,6 +101,21 @@ if (this.booking?.propertyId != null && this.booking?.propertyId != undefined) {
   this.getPropertyDetailsById(this.booking.propertyId);
 console.log("this.booking.proprtyId", this.booking.propertyId)
 }
+    const bookingDataDetails = sessionStorage.getItem('bookingSummaryDetails');
+if (bookingDataDetails) {
+  this.bookingSummaryDetails = JSON.parse(bookingDataDetails);
+  this.calculateTotalGuestsFromPlans();
+  console.log("bookingSummaryDetails", this.bookingSummaryDetails);
+
+}
+
+const bookingsResponseList = sessionStorage.getItem('bookingsResponseList');
+if (bookingsResponseList) {
+  this.bookingsResponseList = JSON.parse(bookingsResponseList);
+  this.calculateTotalGuestsFromPlans();
+  console.log("bookingsResponseList", this.bookingsResponseList);
+
+}
 }
 
 ngOnInIt(){
@@ -106,7 +126,41 @@ calculateServiceHours (){
   this.accommodationService = this.propertyDetails.businessServiceDtoList.filter(service => service.name === "Accommodation");
   console.log(" this.accommodationService" + JSON.stringify( this.accommodationService))
 }
+toggleViewMore(event: Event): void {
+  event.preventDefault();
+  this.expanded = !this.expanded;
+}
 
+// Strip HTML and get first 20 words, then wrap in a span
+getFirstWords(html: string, wordLimit: number): string {
+  const tempDiv = document.createElement('div');
+  tempDiv.innerHTML = html;
+  const textContent = tempDiv.textContent || tempDiv.innerText || '';
+
+  const words = textContent.split(/\s+/);
+  const firstWords = words.slice(0, wordLimit).join(' ');
+
+  return `<span>${firstWords}...</span>`;
+}
+
+// Check if more than 20 words exist
+shouldShowViewMore(html: string): boolean {
+  const tempDiv = document.createElement('div');
+  tempDiv.innerHTML = html;
+  const textContent = tempDiv.textContent || tempDiv.innerText || '';
+  return textContent.trim().split(/\s+/).length > 20;
+}
+  calculateTotalGuestsFromPlans() {
+  this.totalPlanAdults = this.bookingSummaryDetails?.selectedPlansSummary?.reduce(
+    (sum, plan) => sum + (plan.adults || 0),
+    0
+  );
+
+  this.totalPlanChildren = this.bookingSummaryDetails?.selectedPlansSummary?.reduce(
+    (sum, plan) => sum + (plan.children || 0),
+    0
+  );
+}
 async getPropertyDetailsById(id: number) {
   // debugger
   // this.token.saveBookingEngineBoolean('googlehotelcenter')

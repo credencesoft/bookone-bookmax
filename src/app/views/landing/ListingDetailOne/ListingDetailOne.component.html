@@ -2110,9 +2110,11 @@
             >
           </div>
         </div>
-
+          <small *ngIf="!isBookingAllowed()" class="text-danger">
+            Please select minimum {{ rooms }} room(s) to proceed.
+          </small>
         <!-- Book Now -->
-        <button class="btn btn-book-now btn-block" (click)="onBookNow()">
+        <button class="btn btn-book-now btn-block" [disabled]="!isBookingAllowed()" (click)="onBookNow()">
           Book Now
         </button>
       </div>
