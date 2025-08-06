@@ -168,6 +168,8 @@ export class ListingDetailOneComponent implements OnInit {
   roomPricePerPlan: any;
   extraAdultCharge: number;
   extraChildrenCharge: number;
+  extraAdultCount: number;
+  extraChildCount: number;
 
   toggleListingDetails() {
     this.showListingDetails = !this.showListingDetails;
@@ -1348,6 +1350,15 @@ saveRoomSummary() {
       this.additionalRooms.reduce((sum, r) => sum + r.children, 0)
     );
   }
+  isBookingAllowed(): boolean {
+  const selectedRooms = this.selectedPlansSummary?.reduce(
+    (total, plan) => total + (plan.selectedRoomnumber || 0),
+    0
+  );
+
+  return selectedRooms >= this.rooms;
+}
+
   getRoomOptions(noOfAvailable: number): number[] {
     const options = [0];
     for (let i = 1; i <= noOfAvailable; i++) {
@@ -1505,10 +1516,13 @@ saveRoomSummary() {
         plan.code === ele1.code &&
         selectedGuests.adults > ele1.minimumOccupancy
       ) {
+
         const extraPersonAdultAmount =
           ele1.extraChargePerPerson *
           (selectedGuests.adults - ele1.minimumOccupancy);
         this.extraAdultCharge = extraPersonAdultAmount;
+        const extraAdultCount = selectedGuests.adults - ele1.minimumOccupancy;
+        this.extraAdultCount = extraAdultCount;
       }
       if (
         plan.code === ele1.code &&
@@ -1518,12 +1532,17 @@ saveRoomSummary() {
           ele1.extraChargePerChild *
           (selectedGuests.children - ele1.noOfChildren);
         this.extraChildrenCharge = extraPersonChildAmount;
+        const extraChildCount = selectedGuests.children - ele1.noOfChildren;
+        this.extraChildCount = extraChildCount;
       }
     });
 
     if (selectedRooms && selectedGuests?.adults > 0) {
       const roomName = rates.roomName;
+      const roomId = rates.roomId;
+      // i have suffle because i have added a condition
       const planName = plan.code;
+      const planCodeName = plan.name;
       const nights = this.DiffDate;
       if (this.extraAdultCharge && !this.extraChildrenCharge) {
         const priceOne =
@@ -1556,7 +1575,8 @@ saveRoomSummary() {
       const selectedRoomnumber = selectedRooms;
       const extraPersonAdultCountAmount = this.extraAdultCharge;
       const extraPersonChildCountAmount = this.extraChildrenCharge;
-
+      const extraCountAdult = this.extraAdultCount? this.extraAdultCount: 0;
+      const extraCountChild = this.extraChildCount? this.extraChildCount: 0;
       if (this.businessUser.taxDetails.length > 0) {
         this.businessUser.taxDetails.forEach((element) => {
           if (element.name === 'GST') {
@@ -1616,10 +1636,14 @@ saveRoomSummary() {
         });
         // this.taxPercentage = this.booking.taxDetails[0].percentage;
       }
+      const taxpercentage = this.booking.taxPercentage;
       const taxPercentageperroom = (price * this.booking.taxPercentage) / 100;
 
       const summaryEntry = {
         roomName,
+        extraPersonChildCountAmount,
+        extraPersonAdultCountAmount,
+        roomId,
         planName,
         adults: selectedGuests.adults,
         children: selectedGuests.children || 0,
@@ -1627,6 +1651,10 @@ saveRoomSummary() {
         price,
         selectedRoomnumber,
         taxPercentageperroom,
+        taxpercentage,
+        extraCountChild,
+        extraCountAdult,
+        planCodeName
       };
 
       // Replace if already exists

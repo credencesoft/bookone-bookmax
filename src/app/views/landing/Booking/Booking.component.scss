@@ -35,7 +35,7 @@
 .label-changes {
     font-family: "Poppins";
     font-weight: 600;
-    color: black;
+    color: #374151;
     font-size: small;
 }
 .booking-d-heading {
@@ -43,13 +43,16 @@
   font-weight: 500;
 }
 .aminities-highlights-details {
-    font-weight: 500;
-    font-family: "Poppins";
-    color: #000;
-    background-color: rgba(229, 249, 255, 0.5019607843);
+font-family: "Poppins";
+    color: #6B7280;
     display: inline-block;
     padding: 4px 8px;
-        font-size: small;
+    font-size: small;
+}
+.check-card {
+      background-color: #F9FAFB;
+    padding: 10px;
+    border-radius: 20px;
 }
 .margin-botton-20px {
       margin-bottom: 20px;
@@ -65,9 +68,7 @@
 .line-height-27px {
       line-height: 27px;
 }
-.custom-bg {
-      background-color: #F8F8F8;
-}
+
 .font-weight-600 {
       font-weight: 600;
 }
@@ -76,6 +77,53 @@
 }
 .padding-left0px{
   padding-left: 0px !important;
+}
+.text-change {
+      padding-bottom: 20px;
+    font-family: 'Poppins';
+    color: #6B7280;
+    font-size: small;
+}
+.booking-subheading {
+  font-size: small;
+   font-family: 'Poppins';
+}
+.booking-heading {
+  font-family: 'Poppins';
+}
+.color-graying {
+      color: #6B7280;
+}
+.fac-description {
+  margin-top: -7px;
+    color: #6B7280;
+    font-size: smaller;
+}
+.fac-div {
+    background-color: #F9FAFB;
+    padding: 10px 25px;
+    border-radius: 20px;
+    margin-bottom: 10px;
+}
+.spacing-gap{
+      align-items: center;
+    gap: 10px;
+}
+.nights {
+      color: #6B7280;
+    font-size: small;
+}
+.headimg-color {
+    color: #1F2937;
+    font-weight: 600;
+    margin-bottom: 18px;
+}
+.headimg-color-One {
+    color: #1F2937;
+    font-weight: 600;
+}
+.gap-20px{
+  gap: 20px;
 }
 @media (min-width: 1181px) and (max-width: 1262px) {
  .container-div {
@@ -1565,7 +1613,7 @@ a.fancybox.tcClick.mngroominfo {
   }
 
 
-  .form-control {
+.form-control {
     display: block;
     width: 100%;
     padding: 4px 6px;
@@ -1574,10 +1622,12 @@ a.fancybox.tcClick.mngroominfo {
     color: #3e3e3e;
     vertical-align: middle;
     background-color: #fff;
-    border: none;
+    border: 1px solid #E5E7EB;
     /* border-radius: 4px; */
-    background-color: #F8F8F8;
-  }
+    background-color: transparent;
+    border-radius: 12px;
+}
+
 
   select2-container .select2-choice .select2-arrow b {
       display: block;

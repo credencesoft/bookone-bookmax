@@ -19,11 +19,18 @@
 }
 
 .details-card {
-  box-shadow: 0px 6px 14px #888888;
-  border-radius: 24px;
-  padding: 20px;
-  padding-top: 30px;
-  background-color: #f0f0f0;
+    box-shadow: 0px 6px 14px #888888;
+    border-radius: 24px;
+    padding: 20px;
+    padding-top: 30px;
+    background-color: #f0f0f0;
+    font-family: "Poppins";
+}
+.clamp-text {
+  display: -webkit-box;
+  -webkit-line-clamp: 20;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 .footer-link {
   text-align: center;
