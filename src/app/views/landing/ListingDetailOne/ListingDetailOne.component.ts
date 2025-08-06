@@ -1331,8 +1331,17 @@ export class ListingDetailOneComponent implements OnInit {
       this.adults + this.additionalRooms.reduce((sum, r) => sum + r.adults, 0)
     );
   }
+  calculateRoomSummary(): void {
+  this.rooms = 1 + this.additionalRooms.length;
+}
 saveRoomSummary() {
   sessionStorage.setItem('bookingSummary', JSON.stringify(this.additionalRooms));
+}
+
+removeRoom(index: number): void {
+  this.additionalRooms.splice(index, 1);
+  this.saveRoomSummary();
+   this.calculateRoomSummary();
 }
   togglePanel(room: any, index: number) {
     this.isPanelOpen = !this.isPanelOpen;

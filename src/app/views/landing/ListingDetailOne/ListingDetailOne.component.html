@@ -259,6 +259,7 @@
                         <div class="col">
                           <div class="font-weight-bold mb-2">Room</div>
                           <div>{{ i + 2 }}</div>
+
                         </div>
 
                         <!-- Adults -->
@@ -318,6 +319,9 @@
                             </button>
                           </div>
                         </div>
+                        <span (click)="removeRoom(i)" style="cursor: pointer;">
+                          <i class="fa-solid fa-trash"></i>
+                        </span>
                       </div>
                     </div>
 
