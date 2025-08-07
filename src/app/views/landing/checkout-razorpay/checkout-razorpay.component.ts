@@ -69,7 +69,7 @@ initiatePayment() {
   if (this.payment.failureMessage !== null) return;
 
   const options = {
-    key: 'rzp_live_zdw5fN3v2hSGdn',
+    key: this.businessUser.paymentGatewayApiKey,
     amount: Math.round(this.payment.amount * 100),
     currency: 'INR',
     name: this.businessUser.name,
