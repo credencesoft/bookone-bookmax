@@ -862,6 +862,8 @@ export class ListingDetailOneComponent implements OnInit {
   isPanelOpen = false;
   selectedRoom: any = null;
   products: [] | undefined;
+  selectedFacilityNames: string[] = [];
+
   constructor(
     private listingService: ListingService,
     private reviewService: ReviewService,
@@ -1187,6 +1189,16 @@ export class ListingDetailOneComponent implements OnInit {
   ngOnInit() {
     localStorage.removeItem('selectedPromoData');
     localStorage.removeItem('selectPromo');
+const storedBooking = sessionStorage.getItem('bookingSummaryDetails');
+if (storedBooking) {
+  const bookingData = JSON.parse(storedBooking);
+  if(bookingData?.propertyServiceListDataOne) {
+    this.selectedFacilityNames = bookingData?.propertyServiceListDataOne?.map(item => item.name);
+  }
+}
+
+
+
     this.setResponsiveOption();
     if (this.hotelID != null && this.hotelID != undefined) {
       this.token.saveBookingEngineBoolean('googlehotelcenter');
@@ -3950,27 +3962,30 @@ getRateByPlanCode(planCode: string) {
     this.router.navigate(['/booking']);
     // }
   }
-  onBookNow() {
-    const bookingData = {
-      fromDate: this.booking.fromDate,
-      toDate: this.booking.toDate,
-      totalAdults: this.totalAdults,
-      totalChildren: this.totalChildren,
-      totalNights: this.DiffDate,
-      selectedPlansSummary: this.selectedPlansSummary,
-      propertyServiceListDataOne: this.propertyServiceListDataOne,
-      totalPlanPrice: this.getTotalPlanPrice(),
-      totalAddOnsPrice: this.getTotalAfterTaxAmountFacility(),
-      totalTax: this.getTotalTaxPrice(),
-      totalAmount:
-        this.getTotalPlanPrice() +
-        this.getTotalAfterTaxAmountFacility() +
-        this.getTotalTaxPrice(),
-    };
+onBookNow() {
+  const selectedAddOns = this.propertyServiceListDataOne
+    .filter(item => this.selectedFacilityNames.includes(item.name));
 
-    sessionStorage.setItem('bookingSummaryDetails', JSON.stringify(bookingData));
-    this.router.navigate(['/booking']);
-  }
+  const bookingData = {
+    fromDate: this.booking.fromDate,
+    toDate: this.booking.toDate,
+    totalAdults: this.totalAdults,
+    totalChildren: this.totalChildren,
+    totalNights: this.DiffDate,
+    selectedPlansSummary: this.selectedPlansSummary,
+    propertyServiceListDataOne: selectedAddOns, // ✅ only selected items
+    totalPlanPrice: this.getTotalPlanPrice(),
+    totalAddOnsPrice: this.getTotalAfterTaxAmountFacility(),
+    totalTax: this.getTotalTaxPrice(),
+    totalAmount:
+      this.getTotalPlanPrice() +
+      this.getTotalAfterTaxAmountFacility() +
+      this.getTotalTaxPrice(),
+  };
+
+  sessionStorage.setItem('bookingSummaryDetails', JSON.stringify(bookingData));
+  this.router.navigate(['/booking']);
+}
   opendate() {
     this.oneDayTrip = true;
     this.selectBooking = false;
@@ -4711,12 +4726,25 @@ getRateByPlanCode(planCode: string) {
     this.token.clearAllTaxArray();
     this.getTotalTaxFee();
   }
-  getTotalAfterTaxAmountFacility(): number {
-    const limit = this.viewMore ? this.propertyServiceListDataOne.length : 4;
-    return this.propertyServiceListDataOne
-      .slice(0, limit)
-      .reduce((sum, item) => sum + (item?.afterTaxAmount || 0), 0);
+
+
+onFacilityToggle(name: string, isChecked: boolean): void {
+  if (isChecked) {
+    this.selectedFacilityNames.push(name);
+  } else {
+    this.selectedFacilityNames = this.selectedFacilityNames.filter(n => n !== name);
   }
+}
+
+
+getTotalAfterTaxAmountFacility(): number {
+  const limit = this.viewMore ? this.propertyServiceListDataOne.length : 4;
+  return this.propertyServiceListDataOne
+    .slice(0, limit)
+    .filter(item => this.selectedFacilityNames.includes(item.name))
+    .reduce((sum, item) => sum + (item?.afterTaxAmount || 0), 0);
+}
+
 
   getTotalPlanPrice(): number {
     return (

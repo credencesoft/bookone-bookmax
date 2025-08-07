@@ -103,22 +103,28 @@ export class PaylaterConfirmComponent {
       this.getPropertyDetailsById(this.booking.propertyId);
       console.log('this.booking.proprtyId', this.booking.propertyId);
     }
-    const bookingDataDetails = sessionStorage.getItem('bookingSummaryDetails');
-    if (bookingDataDetails) {
-      this.bookingSummaryDetails = JSON.parse(bookingDataDetails);
-      this.calculateTotalGuestsFromPlans();
-      console.log('bookingSummaryDetails', this.bookingSummaryDetails);
-    }
-
-    const bookingsResponseList = sessionStorage.getItem('bookingsResponseList');
-    if (bookingsResponseList) {
-      this.bookingsResponseList = JSON.parse(bookingsResponseList);
-      this.calculateTotalGuestsFromPlans();
-      console.log('bookingsResponseList', this.bookingsResponseList);
-    }
+      setInterval(() => {
+    this.loadBookingSessionData();
+  }, 10);
   }
 
   ngOnInIt() {}
+  loadBookingSessionData(): void {
+  const bookingDataDetails = sessionStorage.getItem('bookingSummaryDetails');
+  if (bookingDataDetails) {
+    this.bookingSummaryDetails = JSON.parse(bookingDataDetails);
+    this.calculateTotalGuestsFromPlans();
+    console.log('bookingSummaryDetails', this.bookingSummaryDetails);
+  }
+
+  const bookingsResponseList = sessionStorage.getItem('bookingsResponseList');
+  if (bookingsResponseList) {
+    this.bookingsResponseList = JSON.parse(bookingsResponseList);
+    this.calculateTotalGuestsFromPlans();
+    console.log('bookingsResponseList', this.bookingsResponseList);
+  }
+}
+
   calculateServiceHours() {
     this.accommodationService =
       this.propertyDetails.businessServiceDtoList.filter(

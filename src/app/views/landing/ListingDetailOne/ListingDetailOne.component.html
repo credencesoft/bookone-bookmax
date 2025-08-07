@@ -2047,27 +2047,29 @@
 
         <!-- Add-ons -->
         <div class="mb-3" *ngIf="propertyServiceListDataOne.length > 0">
-          <div class="font-weight-semibold mb-2">Add-ons</div>
-          <ng-container
-            *ngFor="
-              let fac of propertyServiceListDataOne
-                | slice
-                  : 0
-                  : (viewMore ? propertyServiceListDataOne.length : 4);
-              let i = index
-            "
-          >
-            <div class="custom-checkbox mb-2">
-              <label>
-                <input type="checkbox" checked />
-                <span class="checkmark"></span>
-                {{ fac.name }}
-              </label>
-            </div>
-          </ng-container>
+  <div class="font-weight-semibold mb-2">Add-ons</div>
 
-          <!-- <a href="#" class="text-primary small font-weight-semibold">Add More ▼</a> -->
-        </div>
+  <ng-container
+    *ngFor="
+      let fac of propertyServiceListDataOne
+        | slice : 0 : (viewMore ? propertyServiceListDataOne.length : 4);
+      let i = index
+    "
+  >
+    <div class="custom-checkbox mb-2">
+      <label>
+        <input
+          type="checkbox"
+          [checked]="selectedFacilityNames.includes(fac.name)"
+          (change)="onFacilityToggle(fac.name, $event.target.checked)"
+        />
+        <span class="checkmark"></span>
+        {{ fac.name }}
+      </label>
+    </div>
+  </ng-container>
+
+</div>
 
         <!-- Summary -->
         <div class="mb-3" *ngIf="selectedPlansSummary.length > 0">
