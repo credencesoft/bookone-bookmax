@@ -2,8 +2,7 @@ import { CallToActionComponent } from './../../../../views/landing/components/ca
 // import { Components } from './../../model/components';
 // import { Template } from './../../model/template';
 
-
-import { Router } from "@angular/router";
+import { Router } from '@angular/router';
 // import { Customer } from "./../../model/customer";
 import {
   Component,
@@ -12,30 +11,39 @@ import {
   ViewEncapsulation,
   ChangeDetectorRef,
   NgZone,
-} from "@angular/core";
-import { Location, DatePipe, formatDate } from "@angular/common";
-import { suburbList } from "src/app/data/cityList.data";
-import { Booking } from "src/app/model/booking";
-import { BusinessServiceDtoList } from "src/app/model/businessServiceDtoList";
+} from '@angular/core';
+import { Location, DatePipe, formatDate } from '@angular/common';
+import { suburbList } from 'src/app/data/cityList.data';
+import { Booking } from 'src/app/model/booking';
+import { BusinessServiceDtoList } from 'src/app/model/businessServiceDtoList';
 
-import { MessageDto } from "src/app/model/MessageDto";
-import { Msg } from "src/app/model/msg";
-import { Payment } from "src/app/model/payment";
-import { BusinessUser } from "src/app/model/user";
+import { MessageDto } from 'src/app/model/MessageDto';
+import { Msg } from 'src/app/model/msg';
+import { Payment } from 'src/app/model/payment';
+import { BusinessUser } from 'src/app/model/user';
 
-import { API_URL_IN, API_URL_NZ, EMAIL_Expression, SMS_NUMBER } from "src/app/app.component";
-import { HttpClient, HttpErrorResponse } from "@angular/common/http";
-import { NgbDate } from "@ng-bootstrap/ng-bootstrap";
-import { BankAccount } from "src/app/model/BankAccount";
-import { MobileWallet } from "src/app/model/mobileWallet";
-import { BusinessOfferDto } from "src/app/model/businessOfferDto";
-import { PropertyServiceDTO } from "src/app/model/PropertyServices";
-import { environment } from "src/environments/environment";
+import {
+  API_URL_IN,
+  API_URL_NZ,
+  EMAIL_Expression,
+  SMS_NUMBER,
+} from 'src/app/app.component';
+import {
+  HttpClient,
+  HttpErrorResponse,
+  HttpResponse,
+} from '@angular/common/http';
+import { NgbDate } from '@ng-bootstrap/ng-bootstrap';
+import { BankAccount } from 'src/app/model/BankAccount';
+import { MobileWallet } from 'src/app/model/mobileWallet';
+import { BusinessOfferDto } from 'src/app/model/businessOfferDto';
+import { PropertyServiceDTO } from 'src/app/model/PropertyServices';
+import { environment } from 'src/environments/environment';
 // import { EnquiryForm } from "../Enquiry/Enquiry.component";
-import { EnquiryDto } from "src/app/model/enquiry";
+import { EnquiryDto } from 'src/app/model/enquiry';
 // import { forEach } from "cypress/types/lodash";
-import { json } from "express";
-import { WhatsappDto } from "src/app/model/whatsappDto";
+import { json } from 'express';
+import { WhatsappDto } from 'src/app/model/whatsappDto';
 import { Para } from 'src/app/model/parameters';
 import { Images } from 'src/app/model/image';
 import { Language } from 'src/app/model/language';
@@ -44,21 +52,21 @@ import { TokenStorage } from 'src/token.storage';
 import { ListingService } from 'src/services/listing.service';
 import { HotelBookingService } from 'src/services/hotel-booking.service';
 import { Logger } from 'src/services/logger.service';
-import { Template } from "src/app/model/template";
-import { Components } from "src/app/model/components";
-import { Customer } from "src/app/model/customer";
-import { EnquiryForm } from "../onboarding-roomdetails-form/onboarding-roomdetails-form.component";
-import { PropertyEnquiryDto } from "src/model/propertyEnquiryDto";
-import { externalReservationDtoList } from "src/app/model/externalReservation";
-import { RoomDetail } from "src/app/model/RoomDetail";
+import { Template } from 'src/app/model/template';
+import { Components } from 'src/app/model/components';
+import { Customer } from 'src/app/model/customer';
+import { EnquiryForm } from '../onboarding-roomdetails-form/onboarding-roomdetails-form.component';
+import { PropertyEnquiryDto } from 'src/model/propertyEnquiryDto';
+import { externalReservationDtoList } from 'src/app/model/externalReservation';
+import { RoomDetail } from 'src/app/model/RoomDetail';
 import { MessageService } from 'primeng/api';
 declare var Stripe: any;
 
 declare var window: any;
 @Component({
-  selector: "booking",
-  templateUrl: "./Booking.component.html",
-  styleUrls: ["./Booking.component.scss"],
+  selector: 'booking',
+  templateUrl: './Booking.component.html',
+  styleUrls: ['./Booking.component.scss'],
   encapsulation: ViewEncapsulation.None,
   providers: [DatePipe],
 })
@@ -93,7 +101,7 @@ export class BookingComponent implements OnInit {
   policies = [];
   businessTypeName: string;
   parameterss4: Para[];
-  language: Language
+  language: Language;
   showAlert: boolean = false;
   alertType: string;
   propertyDetails: BusinessUser;
@@ -101,10 +109,10 @@ export class BookingComponent implements OnInit {
   toTime: string;
 
   totalExtraAmount: number = 0;
-  images: Images
-  verifyOption = "email";
+  images: Images;
+  verifyOption = 'email';
   // smsOption: string = '';
-  sendBtn = "Send";
+  sendBtn = 'Send';
   submitButtonDisable: boolean = false;
   loader = false;
   verificationCode: string;
@@ -154,10 +162,10 @@ export class BookingComponent implements OnInit {
   leadMaxDay: number;
   leadMaxMin: number;
   leadMaxHour: number;
-  componentstype: Components
-  componentstype2: Components
-  componentstype3: Components
-  componentstype4: Components
+  componentstype: Components;
+  componentstype2: Components;
+  componentstype3: Components;
+  componentstype4: Components;
   contentDialog: any;
 
   ngbDate: any;
@@ -196,7 +204,7 @@ export class BookingComponent implements OnInit {
   businessOfferDto: BusinessOfferDto;
   promoCode: string;
   discountPercentage: number;
-  promoMessage = "";
+  promoMessage = '';
   addServiceList: PropertyServiceDTO[];
   accommodationvalue = [];
   private ewaySecureFieldCode: string;
@@ -213,7 +221,7 @@ export class BookingComponent implements OnInit {
   pet: string;
   externalReservationdto: any;
 
-  propertyenquiryone: PropertyEnquiryDto
+  propertyenquiryone: PropertyEnquiryDto;
   equitycreatedData: any;
   success: EnquiryForm;
   bookingengineurl: any;
@@ -252,8 +260,8 @@ export class BookingComponent implements OnInit {
   validCoupons: any[];
   bookingSummaryDetails: any;
   totalPlanAdults: number = 0;
-totalPlanChildren: number = 0;
-bookingsResponseList: any[] = [];
+  totalPlanChildren: number = 0;
+  bookingsResponseList: any[] = [];
   constructor(
     private token: TokenStorage,
     private ngZone: NgZone,
@@ -266,7 +274,6 @@ bookingsResponseList: any[] = [];
     private http: HttpClient,
     private hotelBookingService: HotelBookingService
   ) {
-
     this.message = new MessageDto();
     this.myDate = new Date();
     this.parametertype = new Para();
@@ -281,17 +288,17 @@ bookingsResponseList: any[] = [];
     this.componentstype10 = new Components();
     this.parametertype20 = new Para();
     this.parameterss15 = [];
-    this.images = new Images()
+    this.images = new Images();
     this.whatsappForm = new WhatsappDto();
     this.whatsappForm2 = new WhatsappDto();
-    this.template = new Template()
+    this.template = new Template();
     this.businessOfferDto = new BusinessOfferDto();
     // this.slotReservation = new SlotReservation();
     this.businessServiceDto = new BusinessServiceDtoList();
     this.businessUser = new BusinessUser();
     this.booking = new Booking();
     this.components = [];
-    this.components2 = []
+    this.components2 = [];
     this.language = new Language();
     this.propertyenquiryone = new PropertyEnquiryDto();
     this.payment = new Payment();
@@ -311,31 +318,27 @@ bookingsResponseList: any[] = [];
     }
     if (this.token.getProperty() !== null) {
       this.propertyData = this.token.getProperty();
-      console.log('propertyData issss',this.propertyData);
-      this.propertyData.shortName =  this.token.getProperty().shortName;
-      console.log('propertyData shortName issss',this.propertyData.shortName);
+      console.log('propertyData issss', this.propertyData);
+      this.propertyData.shortName = this.token.getProperty().shortName;
+      console.log('propertyData shortName issss', this.propertyData.shortName);
     }
-
 
     this.savedServices = this.token.getSelectedServices();
 
     const bookingDataDetails = sessionStorage.getItem('bookingSummaryDetails');
-if (bookingDataDetails) {
-  this.bookingSummaryDetails = JSON.parse(bookingDataDetails);
-  this.calculateTotalGuestsFromPlans();
-  console.log("bookingSummaryDetails", this.bookingSummaryDetails);
-
-}
-
+    if (bookingDataDetails) {
+      this.bookingSummaryDetails = JSON.parse(bookingDataDetails);
+      this.calculateTotalGuestsFromPlans();
+      console.log('bookingSummaryDetails', this.bookingSummaryDetails);
+    }
 
     setTimeout(() => {
-      this.businessUser?.socialMediaLinks.forEach(element => {
-        this.socialmedialist = element
+      this.businessUser?.socialMediaLinks.forEach((element) => {
+        this.socialmedialist = element;
       });
     }, 100);
 
-
-    this.bookingengineurl = this.token.getwebsitebookingURL()
+    this.bookingengineurl = this.token.getwebsitebookingURL();
     if (this.token.getBookingData() !== null) {
       this.bookingData = this.token.getBookingData();
       this.booking = this.bookingData;
@@ -358,25 +361,17 @@ if (bookingDataDetails) {
     }
     if (this.token.saveBookingRoomPrice(this.booking.roomPrice) !== null) {
       this.bookingRoomPrice = this.token.getBookingRoomPrice();
-
-
     }
-
 
     if (this.token.saveExtraPerson(this.booking.noOfExtraChild) !== null) {
       this.noOfExtraChild = this.token.getExtraChildCharge();
-
-
-
     }
 
     if (this.token.saveRoomPrice(this.booking.roomPrice) !== null) {
       this.bookingroomPrice = this.token.getRoomPrice();
     }
 
-
     this.calculateserviceprice();
-
 
     this.booking.fromTime =
       new Date(this.booking.fromDate).getTime() + 21600000;
@@ -387,8 +382,8 @@ if (bookingDataDetails) {
     // this.calculateDateDeference();
     this.getDiffDate(this.toDate, this.fromDate);
     // this.booking.roomId = this.bookingData.roomId;
-    this.url = this.token.getBookingEngineBoolean()
-    if (this.url === "googlehotelcenter") {
+    this.url = this.token.getBookingEngineBoolean();
+    if (this.url === 'googlehotelcenter') {
       this.activeGoogleCenter = true;
     }
     // this.booking.roomType = this.bookingData.roomType;
@@ -402,46 +397,47 @@ if (bookingDataDetails) {
 
     this.booking.discountAmount = 0;
     this.booking.dayTrip = false;
-    this.booking.netAmount =
-      this.booking.netAmount
+    this.booking.netAmount = this.booking.netAmount;
 
     this.booking.gstAmount =
       (this.booking.netAmount * this.booking.taxPercentage) / 100;
     this.booking.taxAmount = this.booking.gstAmount;
     this.booking.beforeTaxAmount =
       this.booking.netAmount - this.booking.discountAmount;
-    this.booking.roomTariffBeforeDiscount = Number(this.token.getBookingRoomPrice());
+    this.booking.roomTariffBeforeDiscount = Number(
+      this.token.getBookingRoomPrice()
+    );
     this.getPropertyDetails(this.booking.propertyId);
 
-    this.payment.expYear = "";
-    this.payment.expMonth = "";
+    this.payment.expYear = '';
+    this.payment.expMonth = '';
 
     if (this.booking.email === undefined) {
-      this.booking.email = "";
+      this.booking.email = '';
     }
 
     if (this.booking.mobile === undefined) {
-      this.booking.mobile = "";
+      this.booking.mobile = '';
     }
 
     this.PropertyUrl = this.token.getPropertyUrl();
-    console.log("property url:" + this.PropertyUrl)
+    console.log('property url:' + this.PropertyUrl);
     let isBookingEngine = false;
 
-if (this.PropertyUrl && this.PropertyUrl.includes('bookingEngine')) {
-  isBookingEngine = true;
-}
-     this.propertyData.shortName =  this.token.getProperty().shortName;
+    if (this.PropertyUrl && this.PropertyUrl.includes('bookingEngine')) {
+      isBookingEngine = true;
+    }
+    this.propertyData.shortName = this.token.getProperty().shortName;
   }
 
   ngOnInit() {
     this.clearFormField(this.booking);
-     this.otaPlanPrice = this.token.getLandingPrice();
+    this.otaPlanPrice = this.token.getLandingPrice();
     this.otaTaxAmount = this.token.getAllTaxArray();
     this.googleCenter = this.token.getBookingEngineBoolean();
-    if(this.otaPlanPrice > 0){
+    if (this.otaPlanPrice > 0) {
       const OtaPlanAllPrice = Number(this.otaPlanPrice);
-      this.storedActualNetAmount = (OtaPlanAllPrice) ;
+      this.storedActualNetAmount = OtaPlanAllPrice;
       this.otaTaxAmountValue = this.otaTaxAmount;
     } else {
       this.storedActualNetAmount = this.booking.netAmount;
@@ -454,8 +450,8 @@ if (this.PropertyUrl && this.PropertyUrl.includes('bookingEngine')) {
     this.accommodationData = this.propertyData.businessServiceDtoList?.filter(
       (entry) => entry.name === 'Accommodation'
     );
-    this.accommodationData.forEach(element => {
-      if (this.bookingengineurl === "true") {
+    this.accommodationData.forEach((element) => {
+      if (this.bookingengineurl === 'true') {
         this.value = element.websiteinstantBooking;
       } else if (this.value !== true) {
         this.value = element.instantBooking;
@@ -474,8 +470,9 @@ if (this.PropertyUrl && this.PropertyUrl.includes('bookingEngine')) {
     this.grandTotalAmount =
       this.booking.beforeTaxAmount +
       this.totalExtraAmount +
-      this.booking.taxAmount + this.totalServiceCost;
-    window["angularComponentReference"] = {
+      this.booking.taxAmount +
+      this.totalServiceCost;
+    window['angularComponentReference'] = {
       component: this,
       zone: this.ngZone,
       loadAngularFunction: () => this.stripePaymentSuccess(),
@@ -488,25 +485,27 @@ if (this.PropertyUrl && this.PropertyUrl.includes('bookingEngine')) {
     }
     this.token.clearBookingDataObj();
   }
-getFirstWords(text: string, count: number): string {
-  return text.split(' ').slice(0, count).join(' ');
-}
+  getFirstWords(text: string, count: number): string {
+    return text.split(' ').slice(0, count).join(' ');
+  }
 
-toggleViewMore(index: number, event: Event): void {
-  event.preventDefault(); // prevent page jump
-  this.expanded[index] = !this.expanded[index];
-}
+  toggleViewMore(index: number, event: Event): void {
+    event.preventDefault(); // prevent page jump
+    this.expanded[index] = !this.expanded[index];
+  }
   calculateTotalGuestsFromPlans() {
-  this.totalPlanAdults = this.bookingSummaryDetails?.selectedPlansSummary?.reduce(
-    (sum, plan) => sum + (plan.adults || 0),
-    0
-  );
+    this.totalPlanAdults =
+      this.bookingSummaryDetails?.selectedPlansSummary?.reduce(
+        (sum, plan) => sum + (plan.adults || 0),
+        0
+      );
 
-  this.totalPlanChildren = this.bookingSummaryDetails?.selectedPlansSummary?.reduce(
-    (sum, plan) => sum + (plan.children || 0),
-    0
-  );
-}
+    this.totalPlanChildren =
+      this.bookingSummaryDetails?.selectedPlansSummary?.reduce(
+        (sum, plan) => sum + (plan.children || 0),
+        0
+      );
+  }
   clearFormField(bookingData?) {
     try {
       bookingData.firstName = '';
@@ -514,9 +513,8 @@ toggleViewMore(index: number, event: Event): void {
       bookingData.email = '';
       bookingData.mobile = '';
       if (this.booking.notes) bookingData.notes = '';
-    }
-    catch (error) {
-      console.error("Error in clearFormField : ", error);
+    } catch (error) {
+      console.error('Error in clearFormField : ', error);
     }
   }
 
@@ -557,46 +555,48 @@ toggleViewMore(index: number, event: Event): void {
   }
 
   ngAfterViewInit() {
-    let radios = document.querySelectorAll(".payment-tab-trigger > input");
+    let radios = document.querySelectorAll('.payment-tab-trigger > input');
 
     for (let i = 0; i < radios.length; i++) {
-      radios[i].addEventListener("change", expandAccordion);
+      radios[i].addEventListener('change', expandAccordion);
     }
 
     function expandAccordion(event) {
-      let allTabs = document.querySelectorAll(".payment-tab");
+      let allTabs = document.querySelectorAll('.payment-tab');
       for (let i = 0; i < allTabs.length; i++) {
-        allTabs[i].classList.remove("payment-tab-active");
+        allTabs[i].classList.remove('payment-tab-active');
       }
-      event.target.parentNode.parentNode.classList.add("payment-tab-active");
+      event.target.parentNode.parentNode.classList.add('payment-tab-active');
     }
   }
 
   showPayNow(): boolean {
-     const propertyUrl = this.token.getPropertyUrl();
+    const propertyUrl = this.token.getPropertyUrl();
     const isBookingEngine = propertyUrl?.includes('bookingEngine');
 
     if (isBookingEngine) {
-    return this.businessUser.paymentGateway != null;
-  }
+      return this.businessUser.paymentGateway != null;
+    }
 
     const fromDateTimestamp = new Date(this.booking.fromDate).getTime();
     const createdDateTimestamp = new Date(this.booking.createdDate).getTime();
-    const hoursDifference = (fromDateTimestamp - createdDateTimestamp) / (1000 * 60 * 60);
+    const hoursDifference =
+      (fromDateTimestamp - createdDateTimestamp) / (1000 * 60 * 60);
 
     return hoursDifference >= 48 && this.businessUser.paymentGateway != null;
   }
 
   showPayLater(): boolean {
-  const propertyUrl = this.token.getPropertyUrl();
-  const isBookingEngine = propertyUrl?.includes('bookingEngine');
+    const propertyUrl = this.token.getPropertyUrl();
+    const isBookingEngine = propertyUrl?.includes('bookingEngine');
 
-  if (isBookingEngine) {
-    return false;
-  }
+    if (isBookingEngine) {
+      return false;
+    }
     const fromDateTimestamp = new Date(this.booking.fromDate).getTime();
     const createdDateTimestamp = new Date(this.booking.createdDate).getTime();
-    const hoursDifference = (fromDateTimestamp - createdDateTimestamp) / (1000 * 60 * 60);
+    const hoursDifference =
+      (fromDateTimestamp - createdDateTimestamp) / (1000 * 60 * 60);
     if (hoursDifference < 48) {
       return true;
     }
@@ -609,10 +609,9 @@ toggleViewMore(index: number, event: Event): void {
   }
 
   calculateserviceprice() {
-    this.calculatedServices = []
+    this.calculatedServices = [];
     if (this.savedServices != null && this.savedServices != undefined) {
-
-      this.savedServices?.forEach(element => {
+      this.savedServices?.forEach((element) => {
         let serviceCost = element.afterTaxAmount * element.quantity;
         this.calculatedServices.push(serviceCost);
         this.totalServiceCost += serviceCost; // Accumulating the total cost
@@ -620,20 +619,23 @@ toggleViewMore(index: number, event: Event): void {
     }
   }
 
-getSubscriptions(booking: any) {
-  console.log("booking",booking);
-  this.hotelBookingService.getSubscriptions(booking.propertyId).subscribe((res) => {
-    this.allSubscription = res.body;
-    const foundSubscription = this.allSubscription.find(ele => ele.name === "BookOne Subscription");
+  getSubscriptions(booking: any) {
+    console.log('booking', booking);
+    this.hotelBookingService
+      .getSubscriptions(booking.propertyId)
+      .subscribe((res) => {
+        this.allSubscription = res.body;
+        const foundSubscription = this.allSubscription.find(
+          (ele) => ele.name === 'BookOne Subscription'
+        );
 
-    if (foundSubscription) {
-      this.externalReservation(booking);
-    } else {
-      console.log('BookOne Subscription is not found');
-    }
-  });
-}
-
+        if (foundSubscription) {
+          this.externalReservation(booking);
+        } else {
+          console.log('BookOne Subscription is not found');
+        }
+      });
+  }
 
   externalReservation(booking) {
     this.reservationRoomDetails = [];
@@ -647,18 +649,21 @@ getSubscriptions(booking: any) {
     externalreservation.promotionName = booking.promotionName;
     externalreservation.totalAmount = booking.totalAmount;
     externalreservation.amountBeforeTax = booking.beforeTaxAmount;
-    externalreservation.channelId = "9";
+    externalreservation.channelId = '9';
     externalreservation.lastModifiedBy = 'hotelmate';
-    externalreservation.modeOfPayment = "Cash";
-    externalreservation.otaReservationId = this.propertyData.shortName + "-BE-" + booking.id;
+    externalreservation.modeOfPayment = 'Cash';
+    externalreservation.otaReservationId =
+      this.propertyData.shortName + '-BE-' + booking.id;
     externalreservation.propertyId = booking.propertyId.toString();
     externalreservation.propertyName = booking.businessName;
-    externalreservation.firstName = booking.firstName
+    externalreservation.firstName = booking.firstName;
     externalreservation.lastName = booking.lastName;
-    externalreservation.bookoneReservationId = booking.propertyReservationNumber;
+    externalreservation.bookoneReservationId =
+      booking.propertyReservationNumber;
     externalreservation.contactNumber = booking.mobile;
     externalreservation.propertyBusinessEmail = booking.businessEmail;
-    externalreservation.externalTransactionId = this.propertyData.shortName + "-BE-" + booking.id;
+    externalreservation.externalTransactionId =
+      this.propertyData.shortName + '-BE-' + booking.id;
     externalreservation.createdBy = 'hotelmate';
     roomdetailss.checkinDate = booking.fromDate;
     roomdetailss.checkoutDate = booking.toDate;
@@ -672,7 +677,7 @@ getSubscriptions(booking: any) {
     this.reservationRoomDetails.push(roomdetailss);
     externalreservation.roomDetails = this.reservationRoomDetails;
     this.propertyServices = this.savedServices;
-    this.propertyServices?.forEach(ele => {
+    this.propertyServices?.forEach((ele) => {
       ele.count = ele.quantity;
       ele.id = null;
       ele.date = new Date().toISOString().split('T')[0];
@@ -686,21 +691,20 @@ getSubscriptions(booking: any) {
     // externalreservation.lastModifiedDate = new Date().toString();
     externalreservation.noOfPerson = booking.noOfPersons.toString();
     externalreservation.resType = '';
-    externalreservation.otaBooking = false
-    externalreservation.otaName = 'WebSite'
+    externalreservation.otaBooking = false;
+    externalreservation.otaName = 'WebSite';
     externalreservation.bookingStatus = 'Confirmed';
     externalreservation.payloadType = 'json';
     this.externalReservationDtoList = [];
-    this.externalReservationDtoList.push(externalreservation)
+    this.externalReservationDtoList.push(externalreservation);
     this.hotelBookingService
       .externalReservation(this.externalReservationDtoList)
       .subscribe((res) => {
         if (res.status === 200) {
-          this.externalReservationdto = res.body
+          this.externalReservationdto = res.body;
           // setTimeout(() => {
           //   this.createBookingReservation();
           // }, 300);
-
         }
       });
   }
@@ -710,7 +714,9 @@ getSubscriptions(booking: any) {
       .subscribe((data) => {
         this.businessOfferDto = data.body;
         this.validCoupons = this.checkValidCouponOrNot(data.body);
-         this.promocodeListChip = this.validCoupons.filter(coupon => coupon.promotionAppliedFor !== 'Private');
+        this.promocodeListChip = this.validCoupons.filter(
+          (coupon) => coupon.promotionAppliedFor !== 'Private'
+        );
       });
   }
   // Used For handled to check coupons are valid ot not.
@@ -723,15 +729,18 @@ getSubscriptions(booking: any) {
           const startDate = new Date(coupon.startDate);
           const endDate = new Date(coupon.endDate);
           // Check if the current date is within the start and end date
-          if (currentDate >= startDate && currentDate <= endDate && coupon.discountPercentage != 100) {
+          if (
+            currentDate >= startDate &&
+            currentDate <= endDate &&
+            coupon.discountPercentage != 100
+          ) {
             validCoupons.push(coupon);
           }
         }
       });
       return validCoupons;
-    }
-    catch (error) {
-      console.error("Error in checkValidCouponOrNot : ", error);
+    } catch (error) {
+      console.error('Error in checkValidCouponOrNot : ', error);
     }
   }
   // Used For handled to set the selected coupon
@@ -745,10 +754,16 @@ getSubscriptions(booking: any) {
         this.booking.netAmount = this.storedActualNetAmount;
       }
       this.selectedCouponList = coupon;
-      const finalPrice = this.calculateDiscountedPrice(this.booking.netAmount, coupon?.discountPercentage);
+      const finalPrice = this.calculateDiscountedPrice(
+        this.booking.netAmount,
+        coupon?.discountPercentage
+      );
       this.appliedCoupon = finalPrice;
       this.getApplicableTaxPercentage();
-      this.booking.totalAmount = this.appliedCoupon + this.totalServiceCost + ((this.appliedCoupon * this.booking.taxPercentage) / 100);
+      this.booking.totalAmount =
+        this.appliedCoupon +
+        this.totalServiceCost +
+        (this.appliedCoupon * this.booking.taxPercentage) / 100;
       this.showTheSelectedCoupon = true;
       this.visiblePromotion = false;
       this.showingSuccessMessage = true;
@@ -757,30 +772,29 @@ getSubscriptions(booking: any) {
       setTimeout(() => {
         this.showingSuccessMessage = false;
       }, 3000);
-    }
-    catch (error) {
-      console.error("Error in selectedCoupon : ", error);
+    } catch (error) {
+      console.error('Error in selectedCoupon : ', error);
     }
   }
 
   getApplicableTaxPercentage(): void {
-  const coupon = this.appliedCoupon;
-  const taxDetailsList = this.booking?.taxDetails;
-  if (Array.isArray(taxDetailsList)) {
-    taxDetailsList.forEach(item => {
-      const taxSlabsList = item.taxSlabsList;
-      if (Array.isArray(taxSlabsList)) {
-        taxSlabsList.forEach(item1 => {
-          if (coupon > 7501) {
-            this.booking.taxPercentage = item1.percentage;
-          }
-        });
-      }
-    });
-  } else {
-    console.error('Invalid taxDetailsList or empty array.');
+    const coupon = this.appliedCoupon;
+    const taxDetailsList = this.booking?.taxDetails;
+    if (Array.isArray(taxDetailsList)) {
+      taxDetailsList.forEach((item) => {
+        const taxSlabsList = item.taxSlabsList;
+        if (Array.isArray(taxSlabsList)) {
+          taxSlabsList.forEach((item1) => {
+            if (coupon > 7501) {
+              this.booking.taxPercentage = item1.percentage;
+            }
+          });
+        }
+      });
+    } else {
+      console.error('Invalid taxDetailsList or empty array.');
+    }
   }
-}
   // Used For handled to clear the selected offer
   clearSelectedCoupons() {
     try {
@@ -788,48 +802,53 @@ getSubscriptions(booking: any) {
       this.selectedCouponList = [];
       this.booking.netAmount = this.storedActualNetAmount;
       this.bookingRoomPrice = this.storeNightPerRoom;
-      this.booking.totalAmount = this.booking.netAmount + ((this.booking.netAmount * this.booking.taxPercentage) / 100);
+      this.booking.totalAmount =
+        this.booking.netAmount +
+        (this.booking.netAmount * this.booking.taxPercentage) / 100;
       this.visiblePromotion = false;
-    }
-    catch (error) {
-      console.error("Error in clearSelectedCoupons : ", error);
+    } catch (error) {
+      console.error('Error in clearSelectedCoupons : ', error);
     }
   }
   // Used for handled to calculate the discount percentage
-  calculateDiscountedPrice(originalAmount: number, discountPercentage: number): number {
+  calculateDiscountedPrice(
+    originalAmount: number,
+    discountPercentage: number
+  ): number {
     try {
-       originalAmount = this.storedActualNetAmount;
-      const discountAmount = this.storedActualNetAmount - ((originalAmount * discountPercentage) / 100);
+      originalAmount = this.storedActualNetAmount;
+      const discountAmount =
+        this.storedActualNetAmount -
+        (originalAmount * discountPercentage) / 100;
       return discountAmount;
-    }
-    catch (error) {
-      console.error("Error in calculateDiscountedPrice : ", error);
+    } catch (error) {
+      console.error('Error in calculateDiscountedPrice : ', error);
     }
   }
   // Method to open the modal
   openPromoListData(): void {
     try {
       this.visiblePromotion = true;
-    }
-    catch (error) {
-      console.error("Error in openPromoListData : ", error);
+    } catch (error) {
+      console.error('Error in openPromoListData : ', error);
     }
   }
   isPresentCouponOffer(coupon?) {
     try {
-      if (coupon?.discountPercentage == this.selectedCouponList?.discountPercentage) {
+      if (
+        coupon?.discountPercentage ==
+        this.selectedCouponList?.discountPercentage
+      ) {
         return true;
-      }
-      else {
+      } else {
         return false;
       }
-    }
-    catch (error) {
-      console.error("Error in isPresentCouponOffer : ", error);
+    } catch (error) {
+      console.error('Error in isPresentCouponOffer : ', error);
     }
   }
   applyPromoCode(offer) {
-    if (offer !== "") {
+    if (offer !== '') {
       const f = new Date(this.booking.fromDate);
       const s = new Date(offer.startDate);
 
@@ -843,11 +862,12 @@ getSubscriptions(booking: any) {
         this.booking.totalAmount =
           this.booking.netAmount +
           (this.booking.netAmount * this.taxPercentage) / 100 -
-          this.booking.discountAmount + this.totalServiceCost;
+          this.booking.discountAmount +
+          this.totalServiceCost;
 
-        this.promoMessage = offer.couponCode + " applied!";
+        this.promoMessage = offer.couponCode + ' applied!';
       } else {
-        this.promoMessage = offer.couponCode + " has expired!";
+        this.promoMessage = offer.couponCode + ' has expired!';
       }
     } else {
       this.discountPercentage = 0;
@@ -859,7 +879,7 @@ getSubscriptions(booking: any) {
         (this.booking.netAmount * this.taxPercentage) / 100 -
         this.booking.discountAmount;
 
-      this.promoMessage = "Not available!";
+      this.promoMessage = 'Not available!';
     }
   }
   mileSecondToNGBDate(date: string) {
@@ -886,7 +906,7 @@ getSubscriptions(booking: any) {
           this.startDate.getMonth(),
           this.startDate.getDate()
         )) /
-      (1000 * 60 * 60 * 24)
+        (1000 * 60 * 60 * 24)
     );
   }
   toggleRoomsAndOccupancy() {
@@ -905,8 +925,8 @@ getSubscriptions(booking: any) {
     const date2 = this.booking.toDate;
 
     // First we split the values to arrays date1[0] is the year, [1] the month and [2] the day
-    const date1a = date1.split("-");
-    const date2a = date2.split("-");
+    const date1a = date1.split('-');
+    const date2a = date2.split('-');
 
     // Now we convert the array to a Date object, which has several helpful methods
     let date1b = new Date(
@@ -939,8 +959,8 @@ getSubscriptions(booking: any) {
     //   (data) => {
     //     this.businessUser = data.body;
     this.businessUser = this.token.getProperty();
-    this.businessUser.businessServiceDtoList.forEach(item => {
-      if (item.name === "Accommodation") {
+    this.businessUser.businessServiceDtoList.forEach((item) => {
+      if (item.name === 'Accommodation') {
         this.fromTime = item.checkInTime;
         this.toTime = item.checkOutTime;
       }
@@ -953,18 +973,21 @@ getSubscriptions(booking: any) {
     this.combinedDateFromTime = combinedDateTime;
     let checkoutDateConcat = this.booking.toDate;
     let timestampcheckout = this.toTime;
-    let combinedCheckouDateTimeString = checkoutDateConcat + ' ' + timestampcheckout;
-    let combinedDateTimeCheckout = new Date(combinedCheckouDateTimeString).getTime();
+    let combinedCheckouDateTimeString =
+      checkoutDateConcat + ' ' + timestampcheckout;
+    let combinedDateTimeCheckout = new Date(
+      combinedCheckouDateTimeString
+    ).getTime();
     this.combinedDateToTime = combinedDateTimeCheckout;
     this.tokenFromTime = this.combinedDateFromTime;
     this.tokenToTime = this.combinedDateToTime;
     this.token.saveTime(String(this.tokenFromTime));
     this.token.saveToTime(String(this.tokenToTime));
-    this.accommodationvalue = this.businessUser.businessServiceDtoList.filter(ele => ele.name === 'Accommodation');
+    this.accommodationvalue = this.businessUser.businessServiceDtoList.filter(
+      (ele) => ele.name === 'Accommodation'
+    );
     this.currency = this.businessUser.localCurrency.toUpperCase();
     this.getOfferDetails();
-
-
 
     // if (this.bookingData.propertyId != null && this.bookingData.propertyId != undefined) {
     //   this.getPropertyDetailsById(this.bookingData.propertyId);
@@ -974,7 +997,7 @@ getSubscriptions(booking: any) {
     //  Logger.log(' this.businessUser ===='+JSON.stringify( this.businessUser));
     if (this.businessUser.taxDetails.length > 0) {
       this.businessUser.taxDetails.forEach((element) => {
-        if (element.name === "GST") {
+        if (element.name === 'GST') {
           this.booking.taxDetails = [];
           this.booking.taxDetails.push(element);
           this.taxPercentage = element.percentage;
@@ -985,26 +1008,38 @@ getSubscriptions(booking: any) {
 
           // }
           if (this.bookingCity != null && this.bookingCity != undefined) {
-            this.booking.roomPrice = Number(this.bookingCity)
-
+            this.booking.roomPrice = Number(this.bookingCity);
           }
           // debugger
           if (element.taxSlabsList.length > 0) {
             element.taxSlabsList.forEach((element2) => {
               this.url = this.token.getBookingEngineBoolean();
-              if(this.url === "googlehotelcenter") {
+              if (this.url === 'googlehotelcenter') {
                 if (
-                  element2.maxAmount > (this.booking.roomPrice + (this.booking.extraPersonCharge + this.booking.extraChildCharge) / this.booking.noOfNights) &&
-                  element2.minAmount < (this.booking.roomPrice + (this.booking.extraPersonCharge + this.booking.extraChildCharge) / this.booking.noOfNights)
+                  element2.maxAmount >
+                    this.booking.roomPrice +
+                      (this.booking.extraPersonCharge +
+                        this.booking.extraChildCharge) /
+                        this.booking.noOfNights &&
+                  element2.minAmount <
+                    this.booking.roomPrice +
+                      (this.booking.extraPersonCharge +
+                        this.booking.extraChildCharge) /
+                        this.booking.noOfNights
                 ) {
                   this.taxPercentage = element2.percentage;
                   this.booking.taxPercentage = this.taxPercentage;
-                } else if (element2.maxAmount < (this.booking.roomPrice + (this.booking.extraPersonCharge + this.booking.extraChildCharge) / this.booking.noOfNights)) {
+                } else if (
+                  element2.maxAmount <
+                  this.booking.roomPrice +
+                    (this.booking.extraPersonCharge +
+                      this.booking.extraChildCharge) /
+                      this.booking.noOfNights
+                ) {
                   this.taxPercentage = element2.percentage;
                   this.booking.taxPercentage = this.taxPercentage;
                 }
-              }
-              else{
+              } else {
                 if (
                   element2.maxAmount > this.booking.netAmount &&
                   element2.minAmount < this.booking.netAmount
@@ -1015,7 +1050,7 @@ getSubscriptions(booking: any) {
                   this.taxPercentage = element2.percentage;
                   this.booking.taxPercentage = this.taxPercentage;
                 }
-            }
+              }
             });
           }
         }
@@ -1030,9 +1065,10 @@ getSubscriptions(booking: any) {
     this.booking.totalAmount =
       this.booking.netAmount +
       this.booking.gstAmount -
-      this.booking.discountAmount + this.totalServiceCost;
+      this.booking.discountAmount +
+      this.totalServiceCost;
     this.businessServiceDto = this.businessUser.businessServiceDtoList.find(
-      (data) => data.name === "Accommodation"
+      (data) => data.name === 'Accommodation'
     );
 
     if (this.businessServiceDto.checkInTime !== null) {
@@ -1057,29 +1093,29 @@ getSubscriptions(booking: any) {
   }
 
   clickPhone() {
-    this.booking.email = "";
+    this.booking.email = '';
   }
 
   clickEmail() {
-    this.booking.mobile = "";
+    this.booking.mobile = '';
   }
   checkCustomer() {
     this.loader = true;
 
-    if (this.verifyOption === "email") {
+    if (this.verifyOption === 'email') {
       this.message.email = this.booking.email;
       this.message.toNumber = null;
-    } else if (this.verifyOption === "sms") {
+    } else if (this.verifyOption === 'sms') {
       this.message.toNumber = this.booking.mobile;
       this.message.email = null;
     }
 
-    this.sendBtn = "Resend";
+    this.sendBtn = 'Resend';
     this.hotelBookingService
       .authorisationToken(this.message)
       .subscribe((response) => {
         this.loader = false;
-        Logger.log("authorisationToken data", JSON.stringify(response));
+        Logger.log('authorisationToken data', JSON.stringify(response));
         const data: any = response;
         this.message.verificationStatus = data.verificationStatus;
         this.message.sid = data.sid;
@@ -1121,7 +1157,7 @@ getSubscriptions(booking: any) {
     this.isVerified = false;
   }
   customerLookup() {
-    if (this.verifyOption === "email") {
+    if (this.verifyOption === 'email') {
       this.hotelBookingService
         .getCustomerDetailsByEmail(this.booking.email)
         .subscribe(
@@ -1143,7 +1179,7 @@ getSubscriptions(booking: any) {
             this.customerExist = false;
           }
         );
-    } else if (this.verifyOption === "sms") {
+    } else if (this.verifyOption === 'sms') {
       this.hotelBookingService
         .getCustomerDetailsByMobile(this.booking.mobile)
         .subscribe(
@@ -1171,10 +1207,10 @@ getSubscriptions(booking: any) {
   varificationSend() {
     this.loader = true;
 
-    if (this.verifyOption === "email") {
+    if (this.verifyOption === 'email') {
       this.message.email = this.booking.email;
       this.message.toNumber = null;
-    } else if (this.verifyOption === "sms") {
+    } else if (this.verifyOption === 'sms') {
       this.message.toNumber = this.booking.mobile;
       this.message.email = null;
     }
@@ -1186,14 +1222,14 @@ getSubscriptions(booking: any) {
         const data: any = response;
         this.message.verificationStatus = data.verificationStatus;
         this.message.notificationStatus = data.notificationStatus;
-        if (data.verificationStatus === "approved") {
+        if (data.verificationStatus === 'approved') {
           this.verifiedPending = false;
           this.verified = true;
           this.verifySuccessMessage = true;
           setTimeout(function () {
             this.verifySuccessMessage = false;
           }, 5000);
-        } else if (data.verificationStatus === "pending") {
+        } else if (data.verificationStatus === 'pending') {
           this.isSuccess = false;
           this.verifiedPending = true;
           this.verified = false;
@@ -1210,14 +1246,14 @@ getSubscriptions(booking: any) {
       }
     );
   }
-  onSubmit(orderForm) { }
+  onSubmit(orderForm) {}
 
   showSuccess(content) {
-    this.alertType = "success";
+    this.alertType = 'success';
     this.showAlert = true;
   }
   showWarning(content) {
-    this.alertType = "warning";
+    this.alertType = 'warning';
     this.showAlert = true;
     setTimeout(() => {
       this.showAlert = false;
@@ -1225,7 +1261,7 @@ getSubscriptions(booking: any) {
     }, 3000);
   }
   showDanger(content) {
-    this.alertType = "danger";
+    this.alertType = 'danger';
     this.showAlert = true;
     setTimeout(() => {
       this.showAlert = false;
@@ -1262,8 +1298,8 @@ getSubscriptions(booking: any) {
   }
 
   onCardPaymentSubmit() {
-    this.payment.paymentMode = "Card";
-    this.payment.status = "Paid";
+    this.payment.paymentMode = 'Card';
+    this.payment.status = 'Paid';
     this.payment.firstName = this.booking.firstName;
     this.payment.lastName = this.booking.lastName;
     this.payment.netReceivableAmount = this.booking.netAmount;
@@ -1275,13 +1311,13 @@ getSubscriptions(booking: any) {
     this.payment.businessEmail = this.businessUser.email;
     this.payment.currency = this.businessUser.localCurrency;
     this.payment.deliveryChargeAmount = 0;
-    this.payment.date = formatDate(new Date(), "yyyy-MM-dd", "en");
+    this.payment.date = formatDate(new Date(), 'yyyy-MM-dd', 'en');
     this.payment.taxAmount = this.booking.gstAmount;
     this.chargeCreditCard(this.payment);
   }
   onWalletPaymentSubmit() {
-    this.payment.paymentMode = "Wallet";
-    this.payment.status = "Paid";
+    this.payment.paymentMode = 'Wallet';
+    this.payment.status = 'Paid';
     this.payment.firstName = this.booking.firstName;
     this.payment.lastName = this.booking.lastName;
     this.payment.netReceivableAmount = this.booking.netAmount;
@@ -1293,14 +1329,14 @@ getSubscriptions(booking: any) {
     this.payment.transactionChargeAmount = this.booking.totalAmount;
     this.payment.currency = this.businessUser.localCurrency;
     this.payment.deliveryChargeAmount = 0;
-    this.payment.date = formatDate(new Date(), "yyyy-MM-dd", "en");
+    this.payment.date = formatDate(new Date(), 'yyyy-MM-dd', 'en');
     this.payment.taxAmount = this.booking.gstAmount;
 
     this.processPayment(this.payment);
   }
   onBankPaymentSubmit(content) {
-    this.payment.paymentMode = "BankTransfer";
-    this.payment.status = "Paid";
+    this.payment.paymentMode = 'BankTransfer';
+    this.payment.status = 'Paid';
     this.payment.firstName = this.booking.firstName;
     this.payment.lastName = this.booking.lastName;
     this.payment.netReceivableAmount = this.booking.netAmount;
@@ -1312,20 +1348,28 @@ getSubscriptions(booking: any) {
     this.payment.transactionChargeAmount = this.booking.totalAmount;
     this.payment.currency = this.businessUser.localCurrency;
     this.payment.deliveryChargeAmount = 0;
-    this.payment.date = formatDate(new Date(), "yyyy-MM-dd", "en");
+    this.payment.date = formatDate(new Date(), 'yyyy-MM-dd', 'en');
     this.payment.taxAmount = this.booking.gstAmount;
 
     this.processPayment(this.payment);
   }
 
   validateFrom() {
-    if (EMAIL_Expression.test(this.booking.email) === true &&
-      this.booking.firstName != null && this.booking.firstName != undefined && this.booking.firstName != '' &&
-      this.booking.lastName != null && this.booking.lastName != undefined && this.booking.lastName != '' &&
-      this.booking.mobile != null && this.booking.mobile != undefined && this.booking.mobile != '' && this.validateForm()) {
+    if (
+      EMAIL_Expression.test(this.booking.email) === true &&
+      this.booking.firstName != null &&
+      this.booking.firstName != undefined &&
+      this.booking.firstName != '' &&
+      this.booking.lastName != null &&
+      this.booking.lastName != undefined &&
+      this.booking.lastName != '' &&
+      this.booking.mobile != null &&
+      this.booking.mobile != undefined &&
+      this.booking.mobile != '' &&
+      this.validateForm()
+    ) {
       return true;
-    }
-    else {
+    } else {
       return false;
     }
   }
@@ -1336,13 +1380,21 @@ getSubscriptions(booking: any) {
   submitFormOne() {
     // console.log("taxxation", this.booking.taxAmount)
     this.enquiryForm = new EnquiryDto();
-    console.log("this.token.getProperty().address", this.token.getProperty().address.city)
-    if (this.token.getProperty().address != null && this.token.getProperty().address != undefined &&
-      this.token.getProperty().address.city != null && this.token.getProperty().address.city != undefined) {
+    console.log(
+      'this.token.getProperty().address',
+      this.token.getProperty().address.city
+    );
+    if (
+      this.token.getProperty().address != null &&
+      this.token.getProperty().address != undefined &&
+      this.token.getProperty().address.city != null &&
+      this.token.getProperty().address.city != undefined
+    ) {
       this.enquiryForm.address = this.token.getProperty().address;
       this.enquiryForm.country = this.token.getProperty().address.country;
       this.enquiryForm.location = this.token.getProperty().address.city;
-      this.enquiryForm.alternativeLocation = this.token.getProperty().address.city;
+      this.enquiryForm.alternativeLocation =
+        this.token.getProperty().address.city;
     }
     this.payment.netReceivableAmount = this.booking.netAmount;
     this.enquiryForm.min = Number(this.booking.totalAmount.toFixed(2));
@@ -1366,22 +1418,31 @@ getSubscriptions(booking: any) {
     this.enquiryForm.extraPersonCharge = this.booking.extraPersonCharge;
     this.enquiryForm.extraChildCharge = this.booking.extraChildCharge;
     this.enquiryForm.noOfExtraChild = this.booking.noOfExtraChild;
-    this.enquiryForm.externalSite = "Website";
-    this.enquiryForm.source = "The Hotel Mate"
+    this.enquiryForm.externalSite = 'Website';
+    this.enquiryForm.source = 'The Hotel Mate';
     this.enquiryForm.beforeTaxAmount = this.booking.beforeTaxAmount;
-    if(this.businessServiceDto.advanceAmountPercentage === 50){
-      this.enquiryForm.advanceAmount = Number((Number(((this.booking.totalAmount / 100) * 50).toFixed(2))));
-     } else if(this.businessServiceDto.advanceAmountPercentage === 100){
-      this.enquiryForm.advanceAmount = Number((Number(((this.booking.totalAmount)).toFixed(2))));
-     }
-     else{
-      this.enquiryForm.advanceAmount = Number((Number(((this.booking.totalAmount / 100) * 20).toFixed(2))));
-     }
+    if (this.businessServiceDto.advanceAmountPercentage === 50) {
+      this.enquiryForm.advanceAmount = Number(
+        Number(((this.booking.totalAmount / 100) * 50).toFixed(2))
+      );
+    } else if (this.businessServiceDto.advanceAmountPercentage === 100) {
+      this.enquiryForm.advanceAmount = Number(
+        Number(this.booking.totalAmount.toFixed(2))
+      );
+    } else {
+      this.enquiryForm.advanceAmount = Number(
+        Number(((this.booking.totalAmount / 100) * 20).toFixed(2))
+      );
+    }
     // this.enquiryForm.counterName=this.booking.counterName;
     // this.enquiryForm.modeOfPayment=this.booking.modeOfPayment;
     // this.enquiryForm.advanceAmount=this.booking.advanceAmount;
-    if(this.token.getProperty().whatsApp === "" || this.token.getProperty().whatsApp === null || this.token.getProperty().whatsApp === undefined){
-      this.enquiryForm.mobile= this.token.getProperty().mobile;
+    if (
+      this.token.getProperty().whatsApp === '' ||
+      this.token.getProperty().whatsApp === null ||
+      this.token.getProperty().whatsApp === undefined
+    ) {
+      this.enquiryForm.mobile = this.token.getProperty().mobile;
     } else {
       this.enquiryForm.mobile = this.token.getProperty().whatsApp;
     }
@@ -1390,8 +1451,8 @@ getSubscriptions(booking: any) {
 
     this.enquiryForm.createdDate = new Date().getTime();
     this.propertyDetails = this.token.getProperty();
-    this.propertyDetails.businessServiceDtoList.forEach(item => {
-      if (item.name === "Accommodation") {
+    this.propertyDetails.businessServiceDtoList.forEach((item) => {
+      if (item.name === 'Accommodation') {
         this.fromTime = item.checkInTime;
         this.toTime = item.checkOutTime;
       }
@@ -1404,8 +1465,11 @@ getSubscriptions(booking: any) {
     this.combinedDateFromTime = combinedDateTime;
     let checkoutDateConcat = this.booking.toDate;
     let timestampcheckout = this.toTime;
-    let combinedCheckouDateTimeString = checkoutDateConcat + ' ' + timestampcheckout;
-    let combinedDateTimeCheckout = new Date(combinedCheckouDateTimeString).getTime();
+    let combinedCheckouDateTimeString =
+      checkoutDateConcat + ' ' + timestampcheckout;
+    let combinedDateTimeCheckout = new Date(
+      combinedCheckouDateTimeString
+    ).getTime();
     this.combinedDateToTime = combinedDateTimeCheckout;
     this.enquiryForm.fromTime = this.combinedDateFromTime;
     this.enquiryForm.toTime = this.combinedDateToTime;
@@ -1419,12 +1483,17 @@ getSubscriptions(booking: any) {
     this.enquiryForm.couponCode = this.booking.couponCode;
     this.enquiryForm.promotionName = this.booking.promotionName;
     this.enquiryForm.discountAmountPercentage = this.booking.discountPercentage;
-    this.enquiryForm.status = "Enquiry";
-    this.enquiryForm.specialNotes = this.booking.notes
+    this.enquiryForm.status = 'Enquiry';
+    this.enquiryForm.specialNotes = this.booking.notes;
     this.enquiryForm.propertyId = 763;
     this.enquiryForm.currency = this.token.getProperty().localCurrency;
-    this.enquiryForm.taxDetails = this.token.getProperty().taxDetails.filter(item => item.name === 'CGST' || item.name === 'SGST' || item.name === 'GST');
-    this.enquiryForm.taxDetails.forEach(item => {
+    this.enquiryForm.taxDetails = this.token
+      .getProperty()
+      .taxDetails.filter(
+        (item) =>
+          item.name === 'CGST' || item.name === 'SGST' || item.name === 'GST'
+      );
+    this.enquiryForm.taxDetails.forEach((item) => {
       if (item.name === 'CGST') {
         this.percentage1 = item.percentage;
       }
@@ -1432,10 +1501,11 @@ getSubscriptions(booking: any) {
       if (item.name === 'SGST') {
         this.percentage2 = item.percentage;
       }
-    })
-    this.totalPercentage = (this.percentage1 + this.percentage2);
+    });
+    this.totalPercentage = this.percentage1 + this.percentage2;
 
-    this.enquiryForm.taxAmount = (this.booking.netAmount * this.booking.taxPercentage) / 100;
+    this.enquiryForm.taxAmount =
+      (this.booking.netAmount * this.booking.taxPercentage) / 100;
     this.enquiryForm.planCode = this.booking.planCode;
 
     this.enquiryForm.bookingPropertyId = this.token.getProperty().id;
@@ -1485,97 +1555,169 @@ getSubscriptions(booking: any) {
     this.enquiryForm.organisationId = environment.parentOrganisationId;
     this.enquiryForm.bookingCommissionAmount = 0;
     this.paymentLoader = true;
-    if(this.booking.planCode === 'GHC'){
-      this.enquiryForm.roomPrice = (this.booking.netAmount - (this.booking.extraPersonCharge + this.booking.extraChildCharge));
-    } else{
-      this.enquiryForm.roomPrice = (this.booking.netAmount) - (this.booking.extraPersonCharge + this.booking.extraChildCharge);
+    if (this.booking.planCode === 'GHC') {
+      this.enquiryForm.roomPrice =
+        this.booking.netAmount -
+        (this.booking.extraPersonCharge + this.booking.extraChildCharge);
+    } else {
+      this.enquiryForm.roomPrice =
+        this.booking.netAmount -
+        (this.booking.extraPersonCharge + this.booking.extraChildCharge);
     }
     this.enquiryForm.couponCode = this.booking.couponCode;
     this.enquiryForm.promotionName = this.booking.promotionName;
     this.enquiryForm.discountAmount = this.booking.discountAmount;
     this.enquiryForm.discountAmountPercentage = this.booking.discountPercentage;
-    this.hotelBookingService.accommodationEnquiry(this.enquiryForm).subscribe((response) => {
-      this.equitycreatedData = response.body;
-      console.log("dfgvhbjnk" + JSON.stringify(this.equitycreatedData))
-      this.isEnquiry = true;
-      this.paymentLoader = false;
-      this.paymentLoader = false;
-      this.isSuccess = true;
-      this.submitButtonDisable = true;
-      // this.bookingConfirmed = true;
-      this.enquiryNo = "THM-" + response.body.enquiryId;
-      this.enquiriesNo = response.body.enquiryId;
+    this.hotelBookingService.accommodationEnquiry(this.enquiryForm).subscribe(
+      (response) => {
+        this.equitycreatedData = response.body;
+        console.log('dfgvhbjnk' + JSON.stringify(this.equitycreatedData));
+        this.isEnquiry = true;
+        this.paymentLoader = false;
+        this.paymentLoader = false;
+        this.isSuccess = true;
+        this.submitButtonDisable = true;
+        // this.bookingConfirmed = true;
+        this.enquiryNo = 'THM-' + response.body.enquiryId;
+        this.enquiriesNo = response.body.enquiryId;
 
-      sessionStorage.setItem('enquiryNo', this.enquiriesNo);
-
-    }, error => {
-      this.paymentLoader = false;
-    });
-
+        sessionStorage.setItem('enquiryNo', this.enquiriesNo);
+      },
+      (error) => {
+        this.paymentLoader = false;
+      }
+    );
   }
 
   payAndCheckout() {
-
     if (this.showTheSelectedCoupon) {
-      const finalPrice = this.calculateDiscountedPrice(this.storedActualNetAmount, this.selectedCouponList.discountPercentage);
+      const finalPrice = this.calculateDiscountedPrice(
+        this.storedActualNetAmount,
+        this.selectedCouponList.discountPercentage
+      );
       this.booking.netAmount = finalPrice;
-      this.booking.gstAmount = (this.booking.netAmount * this.booking.taxPercentage) / 100;
-      this.booking.discountPercentage = this.selectedCouponList.discountPercentage;
-      this.booking.discountAmount = this.storedActualNetAmount - this.appliedCoupon;
+      this.booking.gstAmount =
+        (this.booking.netAmount * this.booking.taxPercentage) / 100;
+      this.booking.discountPercentage =
+        this.selectedCouponList.discountPercentage;
+      this.booking.discountAmount =
+        this.storedActualNetAmount - this.appliedCoupon;
       this.booking.beforeTaxAmount = this.storedActualNetAmount;
-      this.booking.taxAmount = (this.booking.netAmount * this.booking.taxPercentage) / 100;
+      this.booking.taxAmount =
+        (this.booking.netAmount * this.booking.taxPercentage) / 100;
       this.booking.couponCode = this.selectedCouponList.couponCode;
       this.booking.promotionName = this.selectedCouponList.name;
-    }
-    else {
+    } else {
       this.booking.discountPercentage = 0;
     }
-    console.log("Coupon Applied Data is  Pay and check==========>", this.booking);
+    console.log(
+      'Coupon Applied Data is  Pay and check==========>',
+      this.booking
+    );
     this.bookingroomPrice = this.token.getRoomPrice();
     this.submitFormOne();
-    this.payment.callbackUrl = environment.callbackUrl + this.booking.propertyReservationNumber + "&BookingEngine=true";
-    if (this.businessUser.paymentGateway === "paytm") {
-      this.payment.paymentMode = "UPI";
-      this.payment.status = "NotPaid";
-      this.payment.businessServiceName = "Accommodation";
+    this.payment.callbackUrl =
+      environment.callbackUrl +
+      this.booking.propertyReservationNumber +
+      '&BookingEngine=true';
+    if (this.businessUser.paymentGateway === 'paytm') {
+      this.payment.paymentMode = 'UPI';
+      this.payment.status = 'NotPaid';
+      this.payment.businessServiceName = 'Accommodation';
       this.payment.firstName = this.booking.firstName;
       this.payment.lastName = this.booking.lastName;
-      this.payment.name = this.booking.firstName + " " + this.booking.lastName;
+      this.payment.name = this.booking.firstName + ' ' + this.booking.lastName;
 
       this.payment.email = this.booking.email;
       this.payment.businessEmail = this.businessUser.email;
       this.payment.currency = this.businessUser.localCurrency;
       this.payment.propertyId = this.businessUser.id;
-      this.booking.taxAmount = ((this.booking.netAmount * this.booking.taxPercentage) / 100);
+      this.booking.taxAmount =
+        (this.booking.netAmount * this.booking.taxPercentage) / 100;
       if (this.businessServiceDto.advanceAmountPercentage === 100) {
-        this.payment.taxAmount = Number((Number(((this.booking.taxAmount)).toFixed(2)) + Number(((this.totalTaxAmount)).toFixed(2))).toFixed(2));
-        this.payment.netReceivableAmount = Number((Number(((this.booking.netAmount).toFixed(2))) + Number(((this.totalBeforeTaxAmount)).toFixed(2))).toFixed(2));
-        this.payment.transactionAmount = Number((Number(((this.booking.totalAmount)).toFixed(2))));
-        this.payment.amount = Number((Number(((this.booking.totalAmount)).toFixed(2))));
-        this.booking.advanceAmount = Number((Number(((this.booking.totalAmount)).toFixed(2))));
-        this.payment.transactionChargeAmount = Number((Number(((this.booking.totalAmount)).toFixed(2))));
-      }
-      else if(this.businessServiceDto.advanceAmountPercentage === 50) {
-        this.payment.taxAmount = Number((Number(((this.booking.taxAmount / 100) * 50).toFixed(2)) + Number(((this.totalTaxAmount / 100) * 50).toFixed(2))).toFixed(2));
-        this.payment.netReceivableAmount = Number((Number(((this.booking.netAmount / 100)* 50).toFixed(2)) + Number(((this.totalBeforeTaxAmount  / 100) * 50).toFixed(2))).toFixed(2));
-        this.payment.transactionAmount = Number((Number(((this.booking.totalAmount / 100) * 50).toFixed(2))));
-        this.payment.amount = Number((Number(((this.booking.totalAmount / 100) * 50).toFixed(2))));
+        this.payment.taxAmount = Number(
+          (
+            Number(this.booking.taxAmount.toFixed(2)) +
+            Number(this.totalTaxAmount.toFixed(2))
+          ).toFixed(2)
+        );
+        this.payment.netReceivableAmount = Number(
+          (
+            Number(this.booking.netAmount.toFixed(2)) +
+            Number(this.totalBeforeTaxAmount.toFixed(2))
+          ).toFixed(2)
+        );
+        this.payment.transactionAmount = Number(
+          Number(this.booking.totalAmount.toFixed(2))
+        );
+        this.payment.amount = Number(
+          Number(this.booking.totalAmount.toFixed(2))
+        );
+        this.booking.advanceAmount = Number(
+          Number(this.booking.totalAmount.toFixed(2))
+        );
+        this.payment.transactionChargeAmount = Number(
+          Number(this.booking.totalAmount.toFixed(2))
+        );
+      } else if (this.businessServiceDto.advanceAmountPercentage === 50) {
+        this.payment.taxAmount = Number(
+          (
+            Number(((this.booking.taxAmount / 100) * 50).toFixed(2)) +
+            Number(((this.totalTaxAmount / 100) * 50).toFixed(2))
+          ).toFixed(2)
+        );
+        this.payment.netReceivableAmount = Number(
+          (
+            Number(((this.booking.netAmount / 100) * 50).toFixed(2)) +
+            Number(((this.totalBeforeTaxAmount / 100) * 50).toFixed(2))
+          ).toFixed(2)
+        );
+        this.payment.transactionAmount = Number(
+          Number(((this.booking.totalAmount / 100) * 50).toFixed(2))
+        );
+        this.payment.amount = Number(
+          Number(((this.booking.totalAmount / 100) * 50).toFixed(2))
+        );
 
-        this.booking.advanceAmount = Number((Number(((this.booking.totalAmount / 100) * 50).toFixed(2))));
-        this.payment.transactionChargeAmount = Number((Number(((this.booking.totalAmount / 100) * 50).toFixed(2))));
-       }
-      else {
-        this.payment.taxAmount = Number((Number(((this.booking.taxAmount / 100) * 20).toFixed(2)) + Number(((this.totalTaxAmount / 100) * 20).toFixed(2))).toFixed(2));
-        this.payment.netReceivableAmount = Number((Number(((this.booking.netAmount / 100) * 20).toFixed(2)) + Number(((this.totalBeforeTaxAmount / 100) * 20).toFixed(2))).toFixed(2));
-        this.payment.transactionAmount = Number((Number(((this.booking.totalAmount / 100) * 20).toFixed(2))));
-        this.payment.amount = Number((Number(((this.booking.totalAmount / 100) * 20).toFixed(2))));
+        this.booking.advanceAmount = Number(
+          Number(((this.booking.totalAmount / 100) * 50).toFixed(2))
+        );
+        this.payment.transactionChargeAmount = Number(
+          Number(((this.booking.totalAmount / 100) * 50).toFixed(2))
+        );
+      } else {
+        this.payment.taxAmount = Number(
+          (
+            Number(((this.booking.taxAmount / 100) * 20).toFixed(2)) +
+            Number(((this.totalTaxAmount / 100) * 20).toFixed(2))
+          ).toFixed(2)
+        );
+        this.payment.netReceivableAmount = Number(
+          (
+            Number(((this.booking.netAmount / 100) * 20).toFixed(2)) +
+            Number(((this.totalBeforeTaxAmount / 100) * 20).toFixed(2))
+          ).toFixed(2)
+        );
+        this.payment.transactionAmount = Number(
+          Number(((this.booking.totalAmount / 100) * 20).toFixed(2))
+        );
+        this.payment.amount = Number(
+          Number(((this.booking.totalAmount / 100) * 20).toFixed(2))
+        );
 
-        this.booking.advanceAmount = Number((Number(((this.booking.totalAmount / 100) * 20).toFixed(2))));
-        this.payment.transactionChargeAmount = Number((Number(((this.booking.totalAmount / 100) * 20).toFixed(2))));
+        this.booking.advanceAmount = Number(
+          Number(((this.booking.totalAmount / 100) * 20).toFixed(2))
+        );
+        this.payment.transactionChargeAmount = Number(
+          Number(((this.booking.totalAmount / 100) * 20).toFixed(2))
+        );
       }
       this.payment.referenceNumber = new Date().getTime().toString();
       this.payment.deliveryChargeAmount = 0;
-      this.payment.date = this.datePipe.transform(new Date().getTime(), "yyyy-MM-dd");
+      this.payment.date = this.datePipe.transform(
+        new Date().getTime(),
+        'yyyy-MM-dd'
+      );
       // Logger.log("this.payment " + JSON.stringify(this.payment));
       // this.token.saveBookingData(this.booking);
       // this.token.savePaymentData(this.payment);
@@ -1586,33 +1728,63 @@ getSubscriptions(booking: any) {
       // this.processPaymentPayTM(this.payment);
 
       this.cardPaymentAvailable = true;
-    }
-    else if (this.businessUser.paymentGateway === "atom") {
-      this.payment.paymentMode = "UPI";
-      this.payment.status = "NotPaid";
-      this.payment.businessServiceName = "Accommodation";
+    } else if (this.businessUser.paymentGateway === 'atom') {
+      this.payment.paymentMode = 'UPI';
+      this.payment.status = 'NotPaid';
+      this.payment.businessServiceName = 'Accommodation';
       this.payment.firstName = this.booking.firstName;
       this.payment.lastName = this.booking.lastName;
-      this.payment.name = this.booking.firstName + " " + this.booking.lastName;
+      this.payment.name = this.booking.firstName + ' ' + this.booking.lastName;
 
       this.payment.email = this.booking.email;
       this.payment.businessEmail = this.businessUser.email;
       this.payment.currency = this.businessUser.localCurrency;
       this.payment.propertyId = this.businessUser.id;
-      this.booking.taxAmount = ((this.booking.netAmount * this.booking.taxPercentage) / 100);
-      this.payment.taxAmount = Number((Number(((this.booking.taxAmount / 100) * 20).toFixed(2)) + Number(((this.totalTaxAmount / 100) * 20).toFixed(2))).toFixed(2));
-      this.payment.netReceivableAmount = Number((Number(((this.booking.netAmount / 100) * 20).toFixed(2)) + Number(((this.totalBeforeTaxAmount / 100) * 20).toFixed(2))).toFixed(2));
-      this.payment.transactionAmount = Number((Number(((this.booking.totalAmount / 100) * 20).toFixed(2)) + Number(((this.totalExtraAmount / 100) * 20).toFixed(2))).toFixed(2));
-      this.payment.amount = Number((Number(((this.booking.totalAmount / 100) * 20).toFixed(2)) + Number(((this.totalExtraAmount / 100) * 20).toFixed(2))).toFixed(2));
-      this.booking.advanceAmount = Number((Number(((this.booking.totalAmount / 100) * 20).toFixed(2)) + Number(((this.totalExtraAmount / 100) * 20).toFixed(2))).toFixed(2));
-      this.payment.transactionChargeAmount = Number((Number(((this.booking.totalAmount / 100) * 20).toFixed(2)) + Number(((this.totalExtraAmount / 100) * 20).toFixed(2))).toFixed(2));
+      this.booking.taxAmount =
+        (this.booking.netAmount * this.booking.taxPercentage) / 100;
+      this.payment.taxAmount = Number(
+        (
+          Number(((this.booking.taxAmount / 100) * 20).toFixed(2)) +
+          Number(((this.totalTaxAmount / 100) * 20).toFixed(2))
+        ).toFixed(2)
+      );
+      this.payment.netReceivableAmount = Number(
+        (
+          Number(((this.booking.netAmount / 100) * 20).toFixed(2)) +
+          Number(((this.totalBeforeTaxAmount / 100) * 20).toFixed(2))
+        ).toFixed(2)
+      );
+      this.payment.transactionAmount = Number(
+        (
+          Number(((this.booking.totalAmount / 100) * 20).toFixed(2)) +
+          Number(((this.totalExtraAmount / 100) * 20).toFixed(2))
+        ).toFixed(2)
+      );
+      this.payment.amount = Number(
+        (
+          Number(((this.booking.totalAmount / 100) * 20).toFixed(2)) +
+          Number(((this.totalExtraAmount / 100) * 20).toFixed(2))
+        ).toFixed(2)
+      );
+      this.booking.advanceAmount = Number(
+        (
+          Number(((this.booking.totalAmount / 100) * 20).toFixed(2)) +
+          Number(((this.totalExtraAmount / 100) * 20).toFixed(2))
+        ).toFixed(2)
+      );
+      this.payment.transactionChargeAmount = Number(
+        (
+          Number(((this.booking.totalAmount / 100) * 20).toFixed(2)) +
+          Number(((this.totalExtraAmount / 100) * 20).toFixed(2))
+        ).toFixed(2)
+      );
       this.payment.referenceNumber = new Date().getTime().toString();
       this.payment.deliveryChargeAmount = 0;
       this.payment.date = this.datePipe.transform(
         new Date().getTime(),
-        "yyyy-MM-dd"
+        'yyyy-MM-dd'
       );
-      Logger.log("this.payment " + JSON.stringify(this.payment));
+      Logger.log('this.payment ' + JSON.stringify(this.payment));
       // this.token.saveBookingData(this.booking);
       // this.token.savePaymentData(this.payment);
 
@@ -1620,33 +1792,57 @@ getSubscriptions(booking: any) {
       this.processPaymentAtom(this.payment);
 
       this.cardPaymentAvailable = true;
-    }
-    else if (this.businessUser.paymentGateway === "hdfc") {
-      this.payment.paymentMode = "UPI";
-      this.payment.status = "NotPaid";
-      this.payment.businessServiceName = "Accommodation";
+    } else if (this.businessUser.paymentGateway === 'hdfc') {
+      this.payment.paymentMode = 'UPI';
+      this.payment.status = 'NotPaid';
+      this.payment.businessServiceName = 'Accommodation';
       this.payment.firstName = this.booking.firstName;
       this.payment.lastName = this.booking.lastName;
-      this.payment.name = this.booking.firstName + " " + this.booking.lastName;
+      this.payment.name = this.booking.firstName + ' ' + this.booking.lastName;
 
       this.payment.email = this.booking.email;
       this.payment.businessEmail = this.businessUser.email;
       this.payment.currency = this.businessUser.localCurrency;
       this.payment.propertyId = this.businessUser.id;
-      this.booking.taxAmount = ((this.booking.netAmount * this.booking.taxPercentage) / 100);
-      this.payment.taxAmount = Number((Number(((this.booking.taxAmount / 100) * 20).toFixed(2)) + Number(((this.totalTaxAmount / 100) * 20).toFixed(2))).toFixed(2));
-      this.payment.netReceivableAmount = Number((Number(((this.booking.netAmount / 100) * 20).toFixed(2)) + Number(((this.totalBeforeTaxAmount / 100) * 20).toFixed(2))).toFixed(2));
-      this.payment.transactionAmount = Number((Number(((this.booking.totalAmount / 100) * 20).toFixed(2))));
-      this.payment.amount = Number((Number(((this.booking.totalAmount / 100) * 20).toFixed(2))));
-      this.booking.advanceAmount = Number((Number(((this.booking.totalAmount / 100) * 20).toFixed(2)) + Number(((this.totalExtraAmount / 100) * 20).toFixed(2))).toFixed(2));
-      this.payment.transactionChargeAmount = Number((Number(((this.booking.totalAmount / 100) * 20).toFixed(2)) + Number(((this.totalExtraAmount / 100) * 20).toFixed(2))).toFixed(2));
+      this.booking.taxAmount =
+        (this.booking.netAmount * this.booking.taxPercentage) / 100;
+      this.payment.taxAmount = Number(
+        (
+          Number(((this.booking.taxAmount / 100) * 20).toFixed(2)) +
+          Number(((this.totalTaxAmount / 100) * 20).toFixed(2))
+        ).toFixed(2)
+      );
+      this.payment.netReceivableAmount = Number(
+        (
+          Number(((this.booking.netAmount / 100) * 20).toFixed(2)) +
+          Number(((this.totalBeforeTaxAmount / 100) * 20).toFixed(2))
+        ).toFixed(2)
+      );
+      this.payment.transactionAmount = Number(
+        Number(((this.booking.totalAmount / 100) * 20).toFixed(2))
+      );
+      this.payment.amount = Number(
+        Number(((this.booking.totalAmount / 100) * 20).toFixed(2))
+      );
+      this.booking.advanceAmount = Number(
+        (
+          Number(((this.booking.totalAmount / 100) * 20).toFixed(2)) +
+          Number(((this.totalExtraAmount / 100) * 20).toFixed(2))
+        ).toFixed(2)
+      );
+      this.payment.transactionChargeAmount = Number(
+        (
+          Number(((this.booking.totalAmount / 100) * 20).toFixed(2)) +
+          Number(((this.totalExtraAmount / 100) * 20).toFixed(2))
+        ).toFixed(2)
+      );
       this.payment.referenceNumber = new Date().getTime().toString();
       this.payment.deliveryChargeAmount = 0;
       this.payment.date = this.datePipe.transform(
         new Date().getTime(),
-        "yyyy-MM-dd"
+        'yyyy-MM-dd'
       );
-      Logger.log("this.payment " + JSON.stringify(this.payment));
+      Logger.log('this.payment ' + JSON.stringify(this.payment));
       // this.token.saveBookingData(this.booking);
       // this.token.savePaymentData(this.payment);
 
@@ -1654,49 +1850,86 @@ getSubscriptions(booking: any) {
       this.processPaymentHDFC(this.payment);
 
       this.cardPaymentAvailable = true;
-    } else if (this.businessUser.paymentGateway === "phonepe") {
-      console.log("booking",this.booking);
-      this.payment.paymentMode = "UPI";
-      this.payment.status = "NotPaid";
-      this.payment.businessServiceName = "Accommodation";
+    } else if (this.businessUser.paymentGateway === 'phonepe') {
+      console.log('booking', this.booking);
+      this.payment.paymentMode = 'UPI';
+      this.payment.status = 'NotPaid';
+      this.payment.businessServiceName = 'Accommodation';
       this.payment.firstName = this.booking.firstName;
       this.payment.lastName = this.booking.lastName;
-      this.payment.name = this.booking.firstName + " " + this.booking.lastName;
+      this.payment.name = this.booking.firstName + ' ' + this.booking.lastName;
 
       this.payment.email = this.booking.email;
       this.payment.businessEmail = this.businessUser.email;
       this.payment.currency = this.businessUser.localCurrency;
       this.payment.propertyId = this.businessUser.id;
-      this.booking.taxAmount = ((this.booking.netAmount * this.booking.taxPercentage) / 100);
+      this.booking.taxAmount =
+        (this.booking.netAmount * this.booking.taxPercentage) / 100;
       // this.payment.taxAmount = Number((Number(((this.booking.taxAmount / 100) * 20).toFixed(2)) + Number(((this.totalTaxAmount / 100) * 20).toFixed(2))).toFixed(2));
       // this.payment.netReceivableAmount = Number((Number(((this.booking.netAmount / 100)* 20).toFixed(2)) + Number(((this.totalBeforeTaxAmount  / 100) * 20).toFixed(2))).toFixed(2));
       // this.payment.transactionAmount = Number((Number(((this.booking.totalAmount / 100) * 20).toFixed(2))));
       // this.payment.amount = Number((Number(((this.booking.totalAmount / 100) * 20).toFixed(2))));
       // this.booking.advanceAmount = Number((Number(((this.booking.totalAmount / 100) * 20).toFixed(2)) + Number(((this.totalExtraAmount / 100) * 20).toFixed(2))).toFixed(2));
       // this.payment.transactionChargeAmount = Number((Number(((this.booking.totalAmount / 100) * 20).toFixed(2)) + Number(((this.totalExtraAmount /100) * 20).toFixed(2))).toFixed(2));
-      if(this.businessServiceDto.advanceAmountPercentage === 100){
-        this.payment.taxAmount = Number((Number(((this.booking.taxAmount)).toFixed(2)) + Number(((this.totalTaxAmount)).toFixed(2))).toFixed(2));
-        this.payment.netReceivableAmount = Number((Number(((this.booking.netAmount).toFixed(2))) + Number(((this.totalBeforeTaxAmount )).toFixed(2))).toFixed(2));
-        this.payment.transactionAmount = Number((Number(((this.booking.totalAmount)).toFixed(2))));
-        this.payment.amount = Number((Number(((this.booking.totalAmount)).toFixed(2))));
-        this.booking.advanceAmount = Number((Number(((this.booking.totalAmount)).toFixed(2))));
-        this.payment.transactionChargeAmount = Number((Number(((this.booking.totalAmount)).toFixed(2))));
-       }else{
-        this.payment.taxAmount = Number((Number(((this.booking.taxAmount / 100) * 20).toFixed(2)) + Number(((this.totalTaxAmount / 100) * 20).toFixed(2))).toFixed(2));
-        this.payment.netReceivableAmount = Number((Number(((this.booking.netAmount / 100)* 20).toFixed(2)) + Number(((this.totalBeforeTaxAmount  / 100) * 20).toFixed(2))).toFixed(2));
-        this.payment.transactionAmount = Number((Number(((this.booking.totalAmount / 100) * 20).toFixed(2))));
-        this.payment.amount = Number((Number(((this.booking.totalAmount / 100) * 20).toFixed(2))));
+      if (this.businessServiceDto.advanceAmountPercentage === 100) {
+        this.payment.taxAmount = Number(
+          (
+            Number(this.booking.taxAmount.toFixed(2)) +
+            Number(this.totalTaxAmount.toFixed(2))
+          ).toFixed(2)
+        );
+        this.payment.netReceivableAmount = Number(
+          (
+            Number(this.booking.netAmount.toFixed(2)) +
+            Number(this.totalBeforeTaxAmount.toFixed(2))
+          ).toFixed(2)
+        );
+        this.payment.transactionAmount = Number(
+          Number(this.booking.totalAmount.toFixed(2))
+        );
+        this.payment.amount = Number(
+          Number(this.booking.totalAmount.toFixed(2))
+        );
+        this.booking.advanceAmount = Number(
+          Number(this.booking.totalAmount.toFixed(2))
+        );
+        this.payment.transactionChargeAmount = Number(
+          Number(this.booking.totalAmount.toFixed(2))
+        );
+      } else {
+        this.payment.taxAmount = Number(
+          (
+            Number(((this.booking.taxAmount / 100) * 20).toFixed(2)) +
+            Number(((this.totalTaxAmount / 100) * 20).toFixed(2))
+          ).toFixed(2)
+        );
+        this.payment.netReceivableAmount = Number(
+          (
+            Number(((this.booking.netAmount / 100) * 20).toFixed(2)) +
+            Number(((this.totalBeforeTaxAmount / 100) * 20).toFixed(2))
+          ).toFixed(2)
+        );
+        this.payment.transactionAmount = Number(
+          Number(((this.booking.totalAmount / 100) * 20).toFixed(2))
+        );
+        this.payment.amount = Number(
+          Number(((this.booking.totalAmount / 100) * 20).toFixed(2))
+        );
 
-        this.booking.advanceAmount = Number((Number(((this.booking.totalAmount / 100) * 20).toFixed(2))));
-        this.payment.transactionChargeAmount = Number((Number(((this.booking.totalAmount / 100) * 20).toFixed(2))));
-       }
+        this.booking.advanceAmount = Number(
+          Number(((this.booking.totalAmount / 100) * 20).toFixed(2))
+        );
+        this.payment.transactionChargeAmount = Number(
+          Number(((this.booking.totalAmount / 100) * 20).toFixed(2))
+        );
+      }
       this.payment.referenceNumber = new Date().getTime().toString();
       this.payment.deliveryChargeAmount = 0;
       this.payment.date = this.datePipe.transform(
         new Date().getTime(),
-        "yyyy-MM-dd"
+        'yyyy-MM-dd'
       );
-      Logger.log("this.payment " + JSON.stringify(this.payment));
+      Logger.log('this.payment ' + JSON.stringify(this.payment));
       // this.token.saveBookingData(this.booking);
       // this.token.savePaymentData(this.payment);
 
@@ -1705,53 +1938,106 @@ getSubscriptions(booking: any) {
       this.processPaymentPhonepe(this.payment);
 
       this.cardPaymentAvailable = true;
-    }  else if (this.businessUser.paymentGateway === "razorpay") {
-      this.payment.paymentMode = "UPI";
-      this.payment.status = "NotPaid";
-      this.payment.businessServiceName = "Accommodation";
+    } else if (this.businessUser.paymentGateway === 'razorpay') {
+      this.payment.paymentMode = 'UPI';
+      this.payment.status = 'NotPaid';
+      this.payment.businessServiceName = 'Accommodation';
       this.payment.firstName = this.booking.firstName;
       this.payment.lastName = this.booking.lastName;
-      this.payment.name = this.booking.firstName + " " + this.booking.lastName;
+      this.payment.name = this.booking.firstName + ' ' + this.booking.lastName;
 
       this.payment.email = this.booking.email;
       this.payment.businessEmail = this.businessUser.email;
-      this.payment.currency = "INR";
+      this.payment.currency = 'INR';
       this.payment.propertyId = this.businessUser.id;
-     this.booking.taxAmount = ((this.booking.netAmount * this.booking.taxPercentage) / 100);
+      this.booking.taxAmount =
+        (this.booking.netAmount * this.booking.taxPercentage) / 100;
       if (this.businessServiceDto.advanceAmountPercentage === 100) {
-        this.payment.taxAmount = Number((Number(((this.booking.taxAmount)).toFixed(2)) + Number(((this.totalTaxAmount)).toFixed(2))).toFixed(2));
-        this.payment.netReceivableAmount = Number((Number(((this.booking.netAmount).toFixed(2))) + Number(((this.totalBeforeTaxAmount)).toFixed(2))).toFixed(2));
-        this.payment.transactionAmount = Number((Number(((this.booking.totalAmount)).toFixed(2))));
-        this.payment.amount = Number((Number(((this.booking.totalAmount)).toFixed(2))));
-        this.booking.advanceAmount = Number((Number(((this.booking.totalAmount)).toFixed(2))));
-        this.payment.transactionChargeAmount = Number((Number(((this.booking.totalAmount)).toFixed(2))));
-      }
-      else if(this.businessServiceDto.advanceAmountPercentage === 50) {
-        this.payment.taxAmount = Number((Number(((this.booking.taxAmount / 100) * 50).toFixed(2)) + Number(((this.totalTaxAmount / 100) * 50).toFixed(2))).toFixed(2));
-        this.payment.netReceivableAmount = Number((Number(((this.booking.netAmount / 100)* 50).toFixed(2)) + Number(((this.totalBeforeTaxAmount  / 100) * 50).toFixed(2))).toFixed(2));
-        this.payment.transactionAmount = Number((Number(((this.booking.totalAmount / 100) * 50).toFixed(2))));
-        this.payment.amount = Number((Number(((this.booking.totalAmount / 100) * 50).toFixed(2))));
+        this.payment.taxAmount = Number(
+          (
+            Number(this.booking.taxAmount.toFixed(2)) +
+            Number(this.totalTaxAmount.toFixed(2))
+          ).toFixed(2)
+        );
+        this.payment.netReceivableAmount = Number(
+          (
+            Number(this.booking.netAmount.toFixed(2)) +
+            Number(this.totalBeforeTaxAmount.toFixed(2))
+          ).toFixed(2)
+        );
+        this.payment.transactionAmount = Number(
+          Number(this.booking.totalAmount.toFixed(2))
+        );
+        this.payment.amount = Number(
+          Number(this.booking.totalAmount.toFixed(2))
+        );
+        this.booking.advanceAmount = Number(
+          Number(this.booking.totalAmount.toFixed(2))
+        );
+        this.payment.transactionChargeAmount = Number(
+          Number(this.booking.totalAmount.toFixed(2))
+        );
+      } else if (this.businessServiceDto.advanceAmountPercentage === 50) {
+        this.payment.taxAmount = Number(
+          (
+            Number(((this.booking.taxAmount / 100) * 50).toFixed(2)) +
+            Number(((this.totalTaxAmount / 100) * 50).toFixed(2))
+          ).toFixed(2)
+        );
+        this.payment.netReceivableAmount = Number(
+          (
+            Number(((this.booking.netAmount / 100) * 50).toFixed(2)) +
+            Number(((this.totalBeforeTaxAmount / 100) * 50).toFixed(2))
+          ).toFixed(2)
+        );
+        this.payment.transactionAmount = Number(
+          Number(((this.booking.totalAmount / 100) * 50).toFixed(2))
+        );
+        this.payment.amount = Number(
+          Number(((this.booking.totalAmount / 100) * 50).toFixed(2))
+        );
 
-        this.booking.advanceAmount = Number((Number(((this.booking.totalAmount / 100) * 50).toFixed(2))));
-        this.payment.transactionChargeAmount = Number((Number(((this.booking.totalAmount / 100) * 50).toFixed(2))));
-       }
-      else {
-        this.payment.taxAmount = Number((Number(((this.booking.taxAmount / 100) * 20).toFixed(2)) + Number(((this.totalTaxAmount / 100) * 20).toFixed(2))).toFixed(2));
-        this.payment.netReceivableAmount = Number((Number(((this.booking.netAmount / 100) * 20).toFixed(2)) + Number(((this.totalBeforeTaxAmount / 100) * 20).toFixed(2))).toFixed(2));
-        this.payment.transactionAmount = Number((Number(((this.booking.totalAmount / 100) * 20).toFixed(2))));
-        this.payment.amount = Number((Number(((this.booking.totalAmount / 100) * 20).toFixed(2))));
+        this.booking.advanceAmount = Number(
+          Number(((this.booking.totalAmount / 100) * 50).toFixed(2))
+        );
+        this.payment.transactionChargeAmount = Number(
+          Number(((this.booking.totalAmount / 100) * 50).toFixed(2))
+        );
+      } else {
+        this.payment.taxAmount = Number(
+          (
+            Number(((this.booking.taxAmount / 100) * 20).toFixed(2)) +
+            Number(((this.totalTaxAmount / 100) * 20).toFixed(2))
+          ).toFixed(2)
+        );
+        this.payment.netReceivableAmount = Number(
+          (
+            Number(((this.booking.netAmount / 100) * 20).toFixed(2)) +
+            Number(((this.totalBeforeTaxAmount / 100) * 20).toFixed(2))
+          ).toFixed(2)
+        );
+        this.payment.transactionAmount = Number(
+          Number(((this.booking.totalAmount / 100) * 20).toFixed(2))
+        );
+        this.payment.amount = Number(
+          Number(((this.booking.totalAmount / 100) * 20).toFixed(2))
+        );
 
-        this.booking.advanceAmount = Number((Number(((this.booking.totalAmount / 100) * 20).toFixed(2))));
-        this.payment.transactionChargeAmount = Number((Number(((this.booking.totalAmount / 100) * 20).toFixed(2))));
+        this.booking.advanceAmount = Number(
+          Number(((this.booking.totalAmount / 100) * 20).toFixed(2))
+        );
+        this.payment.transactionChargeAmount = Number(
+          Number(((this.booking.totalAmount / 100) * 20).toFixed(2))
+        );
       }
 
       this.payment.referenceNumber = new Date().getTime().toString();
       this.payment.deliveryChargeAmount = 0;
       this.payment.date = this.datePipe.transform(
         new Date().getTime(),
-        "yyyy-MM-dd"
+        'yyyy-MM-dd'
       );
-      Logger.log("this.payment " + JSON.stringify(this.payment));
+      Logger.log('this.payment ' + JSON.stringify(this.payment));
       // this.token.saveBookingData(this.booking);
       // this.token.savePaymentData(this.payment);
 
@@ -1761,7 +2047,7 @@ getSubscriptions(booking: any) {
       this.cardPaymentAvailable = true;
     }
   }
-     processPaymentRazorpay(payment: Payment) {
+  processPaymentRazorpay(payment: Payment) {
     this.paymentLoader = true;
     this.changeDetectorRefs.detectChanges();
 
@@ -1771,10 +2057,10 @@ getSubscriptions(booking: any) {
           if (response.body.failureMessage !== null) {
             this.paymentLoader = false;
             this.isSuccess = false;
-            this.headerTitle = "Error!";
+            this.headerTitle = 'Error!';
             this.bodyMessage =
-              "Unable to process payment" +
-              " Code: " +
+              'Unable to process payment' +
+              ' Code: ' +
               response.body.failureMessage;
             this.showDanger(this.contentDialog);
 
@@ -1794,8 +2080,8 @@ getSubscriptions(booking: any) {
         } else {
           this.paymentLoader = false;
           this.isSuccess = false;
-          this.headerTitle = "Error!";
-          this.bodyMessage = "Payment Failed! Code: " + response.status;
+          this.headerTitle = 'Error!';
+          this.bodyMessage = 'Payment Failed! Code: ' + response.status;
           this.showDanger(this.contentDialog);
           this.changeDetectorRefs.detectChanges();
         }
@@ -1803,8 +2089,8 @@ getSubscriptions(booking: any) {
       (error) => {
         this.paymentLoader = false;
         this.isSuccess = false;
-        this.headerTitle = "Error!";
-        this.bodyMessage = "Payment Failed! Code: " + error.status;
+        this.headerTitle = 'Error!';
+        this.bodyMessage = 'Payment Failed! Code: ' + error.status;
         this.showDanger(this.contentDialog);
         this.changeDetectorRefs.detectChanges();
       }
@@ -1813,19 +2099,20 @@ getSubscriptions(booking: any) {
   paymentIntentRayzorpay(payment: Payment) {
     this.paymentLoader = true;
 
-    this.hotelBookingService.paymentIntentRayzorpay(payment).subscribe((response) => {
-      this.paymentLoader = false;
-      if (response.status === 200) {
-        this.payment = response.body;
+    this.hotelBookingService
+      .paymentIntentRayzorpay(payment)
+      .subscribe((response) => {
+        this.paymentLoader = false;
+        if (response.status === 200) {
+          this.payment = response.body;
 
-this.token.saveBookingData(this.booking);
-        this.token.savePaymentData(this.payment);
-        this.token.savePropertyData(this.businessUser);
+          this.token.saveBookingData(this.booking);
+          this.token.savePaymentData(this.payment);
+          this.token.savePropertyData(this.businessUser);
 
-
-        this.router.navigate(["/checkout-rayzorpay"]);
-      }
-    });
+          this.router.navigate(['/checkout-rayzorpay']);
+        }
+      });
   }
   processPaymentPayTM(payment: Payment) {
     this.paymentLoader = true;
@@ -1837,10 +2124,10 @@ this.token.saveBookingData(this.booking);
           if (response.body.failureMessage !== null) {
             this.paymentLoader = false;
             this.isSuccess = false;
-            this.headerTitle = "Error!";
+            this.headerTitle = 'Error!';
             this.bodyMessage =
-              "Unable to process payment" +
-              " Code: " +
+              'Unable to process payment' +
+              ' Code: ' +
               response.body.failureMessage;
             this.showDanger(this.contentDialog);
 
@@ -1859,8 +2146,8 @@ this.token.saveBookingData(this.booking);
         } else {
           this.paymentLoader = false;
           this.isSuccess = false;
-          this.headerTitle = "Error!";
-          this.bodyMessage = "Payment Failed! Code: " + response.status;
+          this.headerTitle = 'Error!';
+          this.bodyMessage = 'Payment Failed! Code: ' + response.status;
           this.showDanger(this.contentDialog);
           this.changeDetectorRefs.detectChanges();
         }
@@ -1868,8 +2155,8 @@ this.token.saveBookingData(this.booking);
       (error) => {
         this.paymentLoader = false;
         this.isSuccess = false;
-        this.headerTitle = "Error!";
-        this.bodyMessage = "Payment Failed! Code: " + error.status;
+        this.headerTitle = 'Error!';
+        this.bodyMessage = 'Payment Failed! Code: ' + error.status;
         this.showDanger(this.contentDialog);
         this.changeDetectorRefs.detectChanges();
       }
@@ -1885,10 +2172,10 @@ this.token.saveBookingData(this.booking);
           if (response.body.failureMessage !== null) {
             this.paymentLoader = false;
             this.isSuccess = false;
-            this.headerTitle = "Error!";
+            this.headerTitle = 'Error!';
             this.bodyMessage =
-              "Unable to process payment" +
-              " Code: " +
+              'Unable to process payment' +
+              ' Code: ' +
               response.body.failureMessage;
             this.showDanger(this.contentDialog);
 
@@ -1908,8 +2195,8 @@ this.token.saveBookingData(this.booking);
         } else {
           this.paymentLoader = false;
           this.isSuccess = false;
-          this.headerTitle = "Error!";
-          this.bodyMessage = "Payment Failed! Code: " + response.status;
+          this.headerTitle = 'Error!';
+          this.bodyMessage = 'Payment Failed! Code: ' + response.status;
           this.showDanger(this.contentDialog);
           this.changeDetectorRefs.detectChanges();
         }
@@ -1917,8 +2204,8 @@ this.token.saveBookingData(this.booking);
       (error) => {
         this.paymentLoader = false;
         this.isSuccess = false;
-        this.headerTitle = "Error!";
-        this.bodyMessage = "Payment Failed! Code: " + error.status;
+        this.headerTitle = 'Error!';
+        this.bodyMessage = 'Payment Failed! Code: ' + error.status;
         this.showDanger(this.contentDialog);
         this.changeDetectorRefs.detectChanges();
       }
@@ -1934,10 +2221,10 @@ this.token.saveBookingData(this.booking);
           if (response.body.failureMessage !== null) {
             this.paymentLoader = false;
             this.isSuccess = false;
-            this.headerTitle = "Error!";
+            this.headerTitle = 'Error!';
             this.bodyMessage =
-              "Unable to process payment" +
-              " Code: " +
+              'Unable to process payment' +
+              ' Code: ' +
               response.body.failureMessage;
             this.showDanger(this.contentDialog);
 
@@ -1957,8 +2244,8 @@ this.token.saveBookingData(this.booking);
         } else {
           this.paymentLoader = false;
           this.isSuccess = false;
-          this.headerTitle = "Error!";
-          this.bodyMessage = "Payment Failed! Code: " + response.status;
+          this.headerTitle = 'Error!';
+          this.bodyMessage = 'Payment Failed! Code: ' + response.status;
           this.showDanger(this.contentDialog);
           this.changeDetectorRefs.detectChanges();
         }
@@ -1966,8 +2253,8 @@ this.token.saveBookingData(this.booking);
       (error) => {
         this.paymentLoader = false;
         this.isSuccess = false;
-        this.headerTitle = "Error!";
-        this.bodyMessage = "Payment Failed! Code: " + error.status;
+        this.headerTitle = 'Error!';
+        this.bodyMessage = 'Payment Failed! Code: ' + error.status;
         this.showDanger(this.contentDialog);
         this.changeDetectorRefs.detectChanges();
       }
@@ -1983,10 +2270,10 @@ this.token.saveBookingData(this.booking);
           if (response.body.failureMessage !== null) {
             this.paymentLoader = false;
             this.isSuccess = false;
-            this.headerTitle = "Error!";
+            this.headerTitle = 'Error!';
             this.bodyMessage =
-              "Unable to process payment" +
-              " Code: " +
+              'Unable to process payment' +
+              ' Code: ' +
               response.body.failureMessage;
             this.showDanger(this.contentDialog);
 
@@ -2001,13 +2288,13 @@ this.token.saveBookingData(this.booking);
 
             // for pre booking create
 
-            this.addServiceToBooking(this.booking.id,this.savedServices);
+            this.addServiceToBooking(this.booking.id, this.savedServices);
           }
         } else {
           this.paymentLoader = false;
           this.isSuccess = false;
-          this.headerTitle = "Error!";
-          this.bodyMessage = "Payment Failed! Code: " + response.status;
+          this.headerTitle = 'Error!';
+          this.bodyMessage = 'Payment Failed! Code: ' + response.status;
           this.showDanger(this.contentDialog);
           this.changeDetectorRefs.detectChanges();
         }
@@ -2015,8 +2302,8 @@ this.token.saveBookingData(this.booking);
       (error) => {
         this.paymentLoader = false;
         this.isSuccess = false;
-        this.headerTitle = "Error!";
-        this.bodyMessage = "Payment Failed! Code: " + error.status;
+        this.headerTitle = 'Error!';
+        this.bodyMessage = 'Payment Failed! Code: ' + error.status;
         this.showDanger(this.contentDialog);
         this.changeDetectorRefs.detectChanges();
       }
@@ -2025,22 +2312,24 @@ this.token.saveBookingData(this.booking);
   paymentIntentPhonepe(payment: Payment) {
     this.paymentLoader = true;
 
-    this.hotelBookingService.paymentIntentPhonepe(payment).subscribe((response) => {
-      this.paymentLoader = false;
-      if (response.status === 200) {
-        this.payment = response.body;
+    this.hotelBookingService
+      .paymentIntentPhonepe(payment)
+      .subscribe((response) => {
+        this.paymentLoader = false;
+        if (response.status === 200) {
+          this.payment = response.body;
 
-        this.token.saveBookingData(this.booking);
-        this.token.savePaymentData(this.payment);
-        this.token.savePropertyData(this.businessUser);
+          this.token.saveBookingData(this.booking);
+          this.token.savePaymentData(this.payment);
+          this.token.savePropertyData(this.businessUser);
 
-        this.router.navigate(["/checkout-phonepe"]);
-      }
-    });
+          this.router.navigate(['/checkout-phonepe']);
+        }
+      });
   }
   createBookingPayTM() {
     this.booking.modeOfPayment = this.payment.paymentMode;
-    this.booking.externalSite = "Website";
+    this.booking.externalSite = 'Website';
     this.booking.businessName = this.businessUser.name;
     this.booking.businessEmail = this.businessUser.email;
     this.booking.roomBooking = true;
@@ -2051,7 +2340,7 @@ this.token.saveBookingData(this.booking);
     this.booking.currency = this.businessUser.localCurrency;
     this.booking.paymentId = this.payment.id;
 
-    Logger.log("createBooking ", JSON.stringify(this.booking));
+    Logger.log('createBooking ', JSON.stringify(this.booking));
 
     this.paymentLoader = true;
     this.hotelBookingService
@@ -2069,7 +2358,7 @@ this.token.saveBookingData(this.booking);
           this.payment.amount;
           this.paymentLoader = true;
 
-          Logger.log("payment " + JSON.stringify(this.payment));
+          Logger.log('payment ' + JSON.stringify(this.payment));
 
           this.hotelBookingService
             .savePayment(this.payment)
@@ -2079,15 +2368,18 @@ this.token.saveBookingData(this.booking);
                 this.paymentLoader = false;
 
                 this.payment.id = undefined;
-                this.payment.paymentMode = "Cash";
-                this.payment.status = "NotPaid";
+                this.payment.paymentMode = 'Cash';
+                this.payment.status = 'NotPaid';
                 this.booking.taxAmount =
                   (this.booking.netAmount * this.booking.taxPercentage) / 100;
                 this.payment.taxAmount = (this.booking.taxAmount / 100) * 20;
-                this.payment.netReceivableAmount = (this.booking.netAmount / 100) * 20;
-                this.payment.transactionAmount = (this.booking.totalAmount / 100) * 20;
+                this.payment.netReceivableAmount =
+                  (this.booking.netAmount / 100) * 20;
+                this.payment.transactionAmount =
+                  (this.booking.totalAmount / 100) * 20;
                 this.payment.amount = (this.booking.totalAmount / 100) * 20;
-                this.booking.advanceAmount = (this.booking.totalAmount / 100) * 20;
+                this.booking.advanceAmount =
+                  (this.booking.totalAmount / 100) * 20;
                 this.payment.propertyId = this.bookingData.propertyId;
                 this.payment.transactionChargeAmount =
                   (this.booking.totalAmount / 100) * 20;
@@ -2100,18 +2392,18 @@ this.token.saveBookingData(this.booking);
                     if (this.booking.id != null) {
                       this.submitButtonDisable = true;
                       this.isSuccess = true;
-                      this.headerTitle = "Success!";
+                      this.headerTitle = 'Success!';
                       this.bodyMessage =
-                        "Thanks for the booking .Please note the Reservation No: # " +
+                        'Thanks for the booking .Please note the Reservation No: # ' +
                         this.booking.propertyReservationNumber +
-                        " and an email is sent with the booking details.";
+                        ' and an email is sent with the booking details.';
 
                       this.token.clearHotelBooking();
                       // this.showSuccess(this.contentDialog);
 
                       this.paymentLoader = true;
 
-                      Logger.log("payment " + JSON.stringify(this.payment));
+                      Logger.log('payment ' + JSON.stringify(this.payment));
                       this.paymentIntentPayTm(this.payment);
                     } else {
                       this.paymentLoader = false;
@@ -2163,13 +2455,13 @@ this.token.saveBookingData(this.booking);
         this.token.savePaymentData(this.payment);
         this.token.savePropertyData(this.businessUser);
 
-        this.router.navigate(["/checkout"]);
+        this.router.navigate(['/checkout']);
       }
     });
   }
   createBookingAtom() {
     this.booking.modeOfPayment = this.payment.paymentMode;
-    this.booking.externalSite = "Website";
+    this.booking.externalSite = 'Website';
     this.booking.businessName = this.businessUser.name;
     this.booking.businessEmail = this.businessUser.email;
     this.booking.roomBooking = true;
@@ -2180,7 +2472,7 @@ this.token.saveBookingData(this.booking);
     this.booking.currency = this.businessUser.localCurrency;
     this.booking.paymentId = this.payment.id;
 
-    Logger.log("createBooking ", JSON.stringify(this.booking));
+    Logger.log('createBooking ', JSON.stringify(this.booking));
 
     this.paymentLoader = true;
     this.hotelBookingService
@@ -2198,7 +2490,7 @@ this.token.saveBookingData(this.booking);
           this.payment.amount;
           this.paymentLoader = true;
 
-          Logger.log("payment " + JSON.stringify(this.payment));
+          Logger.log('payment ' + JSON.stringify(this.payment));
 
           this.hotelBookingService
             .savePayment(this.payment)
@@ -2213,18 +2505,18 @@ this.token.saveBookingData(this.booking);
                 if (this.booking.id !== null) {
                   this.submitButtonDisable = true;
                   this.isSuccess = true;
-                  this.headerTitle = "Success!";
+                  this.headerTitle = 'Success!';
                   this.bodyMessage =
-                    "Thanks for the booking .Please note the Reservation No: # " +
+                    'Thanks for the booking .Please note the Reservation No: # ' +
                     this.booking.propertyReservationNumber +
-                    " and an email is sent with the booking details.";
+                    ' and an email is sent with the booking details.';
 
                   this.token.clearHotelBooking();
                   // this.showSuccess(this.contentDialog);
 
                   this.paymentLoader = true;
 
-                  Logger.log("payment " + JSON.stringify(this.payment));
+                  Logger.log('payment ' + JSON.stringify(this.payment));
                   this.paymentIntentAtom(this.payment);
                 } else {
                   this.paymentLoader = false;
@@ -2276,7 +2568,7 @@ this.token.saveBookingData(this.booking);
         this.token.savePaymentData(this.payment);
         this.token.savePropertyData(this.businessUser);
 
-        this.router.navigate(["/checkout-atom"]);
+        this.router.navigate(['/checkout-atom']);
       }
     });
   }
@@ -2292,7 +2584,7 @@ this.token.saveBookingData(this.booking);
         this.token.savePaymentData(this.payment);
         this.token.savePropertyData(this.businessUser);
 
-        this.router.navigate(["/checkout-hdfc"]);
+        this.router.navigate(['/checkout-hdfc']);
       }
     });
   }
@@ -2302,32 +2594,45 @@ this.token.saveBookingData(this.booking);
     // localStorage.removeItem('selectedPromoData');
     // localStorage.removeItem('selectPromo');
     const bookingSummaryStr = sessionStorage.getItem('bookingSummaryDetails');
-    const bookingSummary = bookingSummaryStr ? JSON.parse(bookingSummaryStr) : null;
+    const bookingSummary = bookingSummaryStr
+      ? JSON.parse(bookingSummaryStr)
+      : null;
 
     if (this.showTheSelectedCoupon) {
-      const finalPrice = this.calculateDiscountedPrice(this.storedActualNetAmount, this.selectedCouponList.discountPercentage);
+      const finalPrice = this.calculateDiscountedPrice(
+        this.storedActualNetAmount,
+        this.selectedCouponList.discountPercentage
+      );
       this.booking.netAmount = finalPrice;
-      this.booking.gstAmount = (this.booking.netAmount * this.booking.taxPercentage) / 100;
-      this.booking.discountPercentage = this.selectedCouponList.discountPercentage;
-      this.booking.discountAmount = this.storedActualNetAmount - this.appliedCoupon;
+      this.booking.gstAmount =
+        (this.booking.netAmount * this.booking.taxPercentage) / 100;
+      this.booking.discountPercentage =
+        this.selectedCouponList.discountPercentage;
+      this.booking.discountAmount =
+        this.storedActualNetAmount - this.appliedCoupon;
       this.booking.beforeTaxAmount = this.storedActualNetAmount;
-      this.booking.taxAmount = (this.booking.netAmount * this.booking.taxPercentage) / 100;
+      this.booking.taxAmount =
+        (this.booking.netAmount * this.booking.taxPercentage) / 100;
       this.booking.couponCode = this.selectedCouponList.couponCode;
       this.booking.promotionName = this.selectedCouponList.name;
-    }
-    else {
+    } else {
       this.booking.discountPercentage = 0;
     }
-    console.log("Coupon Applied Data is  PayLater==========>", this.booking);
+    console.log('Coupon Applied Data is  PayLater==========>', this.booking);
     this.loadingOne = true;
-    this.payment.paymentMode = "Cash";
-    this.payment.status = "NotPaid";
+    this.payment.paymentMode = 'Cash';
+    this.payment.status = 'NotPaid';
     this.payment.firstName = this.booking.firstName;
     this.payment.lastName = this.booking.lastName;
     this.payment.netReceivableAmount = this.booking.netAmount;
     this.netAmount = this.booking.netAmount;
-    this.taxAmountBooking = (this.booking.netAmount * this.booking.taxPercentage) / 100;
-    if (this.totalServiceCost != null && this.totalServiceCost != undefined && this.totalServiceCost > 0) {
+    this.taxAmountBooking =
+      (this.booking.netAmount * this.booking.taxPercentage) / 100;
+    if (
+      this.totalServiceCost != null &&
+      this.totalServiceCost != undefined &&
+      this.totalServiceCost > 0
+    ) {
       this.payment.transactionAmount = bookingSummary.totalAmount;
     } else {
       this.payment.transactionAmount = bookingSummary.totalAmount;
@@ -2340,11 +2645,16 @@ this.token.saveBookingData(this.booking);
     this.payment.transactionChargeAmount = bookingSummary.totalAmount;
     this.payment.currency = this.businessUser.localCurrency;
     this.payment.deliveryChargeAmount = 0;
-    this.payment.date = formatDate(new Date(), "yyyy-MM-dd", "en");
+    this.payment.date = formatDate(new Date(), 'yyyy-MM-dd', 'en');
     this.payment.taxAmount = bookingSummary.totalTax;
     this.booking.totalRoomTariffBeforeDiscount = bookingSummary.totalPlanPrice;
-    this.booking.taxDetails = this.token.getProperty().taxDetails.filter(item => item.name === 'CGST' || item.name === 'SGST' || item.name === 'GST');
-    this.booking.taxDetails.forEach(item => {
+    this.booking.taxDetails = this.token
+      .getProperty()
+      .taxDetails.filter(
+        (item) =>
+          item.name === 'CGST' || item.name === 'SGST' || item.name === 'GST'
+      );
+    this.booking.taxDetails.forEach((item) => {
       if (item.name === 'CGST') {
         this.percentage1 = item.percentage;
       }
@@ -2352,8 +2662,8 @@ this.token.saveBookingData(this.booking);
       if (item.name === 'SGST') {
         this.percentage2 = item.percentage;
       }
-    })
-    this.totalPercentage = (this.percentage1 + this.percentage2);
+    });
+    this.totalPercentage = this.percentage1 + this.percentage2;
 
     this.booking.taxAmount = bookingSummary.totalTax;
     this.processPayment(this.payment);
@@ -2361,7 +2671,7 @@ this.token.saveBookingData(this.booking);
 
   chargeCreditCard(payment: Payment) {
     this.paymentLoader = true;
-    if (this.businessUser.paymentGateway === "eway") {
+    if (this.businessUser.paymentGateway === 'eway') {
       const eWAY = (window as any).eWAY;
 
       const comp = this;
@@ -2376,16 +2686,16 @@ this.token.saveBookingData(this.booking);
         ) {
           comp.paymentLoader = false;
           comp.isSuccess = false;
-          comp.headerTitle = "Error!";
-          comp.bodyMessage = "Missing card information!";
+          comp.headerTitle = 'Error!';
+          comp.bodyMessage = 'Missing card information!';
           comp.showDanger(comp.contentDialog);
           comp.changeDetectorRefs.detectChanges();
         } else if (comp.ewayErrors !== null && comp.ewayErrors !== undefined) {
           comp.paymentLoader = false;
           comp.isSuccess = false;
-          comp.headerTitle = "Error!";
+          comp.headerTitle = 'Error!';
           comp.bodyMessage =
-            "Wrong card information!" + " Codes: " + comp.ewayErrors;
+            'Wrong card information!' + ' Codes: ' + comp.ewayErrors;
           comp.showDanger(comp.contentDialog);
           comp.changeDetectorRefs.detectChanges();
         } else {
@@ -2411,15 +2721,15 @@ this.token.saveBookingData(this.booking);
           } else if (status === 402) {
             this.paymentLoader = false;
             this.isSuccess = false;
-            this.headerTitle = "Error!";
-            this.bodyMessage = "Wrong card information!" + " Code: " + status;
+            this.headerTitle = 'Error!';
+            this.bodyMessage = 'Wrong card information!' + ' Code: ' + status;
             this.showDanger(this.contentDialog);
             this.changeDetectorRefs.detectChanges();
           } else {
             this.paymentLoader = false;
             this.isSuccess = false;
-            this.headerTitle = "Error!";
-            this.bodyMessage = "Card Payment Faied!" + " Code: " + status;
+            this.headerTitle = 'Error!';
+            this.bodyMessage = 'Card Payment Faied!' + ' Code: ' + status;
             this.showDanger(this.contentDialog);
             this.changeDetectorRefs.detectChanges();
           }
@@ -2482,23 +2792,21 @@ this.token.saveBookingData(this.booking);
   // }
 
   addServiceToBooking(bookingId, savedServices: any[]) {
-    this.savedServices?.forEach(element => {
+    this.savedServices?.forEach((element) => {
       element.count = element.quantity;
-      element.afterTaxAmount = element.quantity * element.servicePrice
+      element.afterTaxAmount = element.quantity * element.servicePrice;
       element.date = new Date();
     });
-    this.hotelBookingService.saveBookingService(bookingId, savedServices).subscribe(
-      (data) => {
-
-        this.changeDetectorRefs.detectChanges();
-        // Logger.log(JSON.stringify( this.businessServices));
-      },
-      (error) => {
-
-      }
-    );
+    this.hotelBookingService
+      .saveBookingService(bookingId, savedServices)
+      .subscribe(
+        (data) => {
+          this.changeDetectorRefs.detectChanges();
+          // Logger.log(JSON.stringify( this.businessServices));
+        },
+        (error) => {}
+      );
   }
-
 
   processPayment(payment: Payment) {
     this.paymentLoader = true;
@@ -2510,10 +2818,10 @@ this.token.saveBookingData(this.booking);
           if (response.body.failureMessage !== null) {
             this.paymentLoader = false;
             this.isSuccess = false;
-            this.headerTitle = "Error!";
+            this.headerTitle = 'Error!';
             this.bodyMessage =
-              "Unable to process payment" +
-              " Code: " +
+              'Unable to process payment' +
+              ' Code: ' +
               response.body.failureMessage;
             this.showDanger(this.contentDialog);
 
@@ -2534,9 +2842,9 @@ this.token.saveBookingData(this.booking);
                 } else {
                   this.paymentLoader = false;
                   this.isSuccess = false;
-                  this.headerTitle = "Error!";
+                  this.headerTitle = 'Error!';
                   this.bodyMessage =
-                    "Unable to save payment" + " Code: " + status;
+                    'Unable to save payment' + ' Code: ' + status;
                   this.showDanger(this.contentDialog);
 
                   this.paymentLoader = false;
@@ -2546,48 +2854,45 @@ this.token.saveBookingData(this.booking);
               (error) => {
                 this.paymentLoader = false;
                 this.isSuccess = false;
-                this.headerTitle = "Error!";
+                this.headerTitle = 'Error!';
                 this.bodyMessage =
-                  "Saving Payment Failed! Code: " + error.status;
+                  'Saving Payment Failed! Code: ' + error.status;
                 this.showDanger(this.contentDialog);
                 this.changeDetectorRefs.detectChanges();
               }
             );
-
           }
         } else {
           this.paymentLoader = false;
           this.loadingOne = false;
           this.isSuccess = false;
-          this.headerTitle = "Error!";
-          this.bodyMessage = "Payment Failed! Code: " + response.status;
+          this.headerTitle = 'Error!';
+          this.bodyMessage = 'Payment Failed! Code: ' + response.status;
           this.showDanger(this.contentDialog);
           this.changeDetectorRefs.detectChanges();
-
         }
       },
       (error) => {
         this.paymentLoader = false;
         this.loadingOne = false;
         this.isSuccess = false;
-        this.headerTitle = "Error!";
-        this.bodyMessage = "Payment Failed! Code: " + error.status;
+        this.headerTitle = 'Error!';
+        this.bodyMessage = 'Payment Failed! Code: ' + error.status;
         this.showDanger(this.contentDialog);
         this.changeDetectorRefs.detectChanges();
       }
     );
-
   }
   cashOnDelivery() {
     this.cashPayment = true;
   }
   cardPayment() {
     this.cashPayment = false;
-    if (this.businessUser.paymentGateway === "stripe") {
+    if (this.businessUser.paymentGateway === 'stripe') {
       this.loadStripe();
 
-      this.payment.paymentMode = "Card";
-      this.payment.status = "Paid";
+      this.payment.paymentMode = 'Card';
+      this.payment.status = 'Paid';
       this.payment.firstName = this.booking.firstName;
       this.payment.lastName = this.booking.lastName;
       this.payment.netReceivableAmount = this.booking.netAmount;
@@ -2605,7 +2910,7 @@ this.token.saveBookingData(this.booking);
       this.payment.deliveryChargeAmount = 0;
       this.payment.date = this.datePipe.transform(
         new Date().getTime(),
-        "yyyy-MM-dd"
+        'yyyy-MM-dd'
       );
       this.booking.outstandingAmount = 0;
       this.paymentIntent(this.payment);
@@ -2621,7 +2926,6 @@ this.token.saveBookingData(this.booking);
 
   redirectToBooking() {
     this.locationBack.back();
-
   }
 
   sendConfirmationMessage() {
@@ -2637,8 +2941,8 @@ this.token.saveBookingData(this.booking);
           this.paymentLoader = false;
           // this.submitButtonDisable = true;
           this.isSuccess = true;
-          this.headerTitle = "Success!";
-          this.bodyMessage = "Booking Confirmation Sent.";
+          this.headerTitle = 'Success!';
+          this.bodyMessage = 'Booking Confirmation Sent.';
           this.showSuccess(this.contentDialog);
           setTimeout(() => {
             this.showAlert = false;
@@ -2651,259 +2955,165 @@ this.token.saveBookingData(this.booking);
         if (error instanceof HttpErrorResponse) {
           this.paymentLoader = false;
           this.isSuccess = false;
-          this.headerTitle = "Error!";
-          this.bodyMessage = "Error in sending sms.";
+          this.headerTitle = 'Error!';
+          this.bodyMessage = 'Error in sending sms.';
           this.showDanger(this.contentDialog);
           this.changeDetectorRefs.detectChanges();
         }
       }
     );
   }
-createAllBookings() {
-  const bookingSummaryStr = sessionStorage.getItem('bookingSummaryDetails');
-  const bookingSummary = bookingSummaryStr ? JSON.parse(bookingSummaryStr) : null;
+ createAllBookings() {
+    const bookingSummaryStr = sessionStorage.getItem('bookingSummaryDetails');
+    const bookingSummary = bookingSummaryStr
+      ? JSON.parse(bookingSummaryStr)
+      : null;
 
-  if (!bookingSummary || !bookingSummary.selectedPlansSummary?.length) {
-    console.error('No valid booking summary found.');
-    return;
+    if (!bookingSummary || !bookingSummary.selectedPlansSummary?.length) {
+      console.error('No valid booking summary found.');
+      return;
+    }
+
+    const plans = bookingSummary.selectedPlansSummary;
+
+    const processPlan = (index: number) => {
+      if (index >= plans.length) return;
+      const currentPlan = plans[index];
+
+      this.createBooking(currentPlan, bookingSummary, () => {
+        setTimeout(() => {
+          processPlan(index + 1);
+        }, 1000);
+      });
+    };
+
+    processPlan(0); // start from index 0
   }
 
-  const plans = bookingSummary.selectedPlansSummary;
 
-  const processPlan = (index: number) => {
-    if (index >= plans.length) return;
-    const currentPlan = plans[index];
+  createBooking(plan: any, bookingSummary: any, callback?: () => void) {
+    const booking: any = {};
 
-    this.createBooking(currentPlan, bookingSummary, () => {
-      setTimeout(() => {
-        processPlan(index + 1); // ⏭️ move to next plan
-      }, 1000); // add small delay if needed
+    booking.roomRatePlanName = plan.planCodeName;
+    booking.roomName = plan.roomName;
+    booking.roomType = plan.roomName;
+    booking.planCode = plan.planName;
+    booking.roomId = plan.roomId;
+    booking.noOfPersons = plan.adults;
+    booking.firstName = this.booking.firstName;
+    booking.lastName = this.booking.lastName;
+    booking.mobile = this.booking.mobile;
+    booking.email = this.booking.email;
+    booking.noOfChildren = plan.children;
+    booking.noOfNights = plan.nights;
+    booking.noOfRooms = Number(plan.selectedRoomnumber);
+    booking.netAmount = plan.price;
+    booking.beforeTaxAmount = plan.price;
+    booking.createdDate = new Date().toISOString();
+    booking.propertyId = this.booking.propertyId;
+    booking.gstAmount = plan.taxPercentageperroom;
+    booking.dayTrip = false;
+    booking.discountPercentage = 0;
+    booking.discountAmount = 0;
+    booking.extraChildCharge = plan.extraPersonChildCountAmount || 0;
+    booking.extraPersonCharge = plan.extraPersonCharge || 0;
+    booking.roomTariffBeforeDiscount = plan.price;
+    booking.totalAmount = plan.price + plan.taxPercentageperroom;
+    booking.bookingAmount = booking.totalAmount;
+    booking.payableAmount = this.showTheSelectedCoupon
+      ? booking.totalAmount
+      : booking.totalAmount;
+    booking.fromDate = bookingSummary.fromDate;
+    booking.toDate = bookingSummary.toDate;
+    booking.currency = this.businessUser.localCurrency;
+    booking.fromTime = Number(this.token.getFromTime());
+    booking.toTime = Number(this.token.getToTime());
+    booking.modeOfPayment = this.payment.paymentMode;
+    booking.externalSite = 'WebSite';
+    booking.businessName = this.businessUser.name;
+    booking.businessEmail = this.businessUser.email;
+    booking.roomBooking = true;
+    booking.groupBooking = false;
+    booking.available = true;
+    booking.roomPrice = plan.actualRoomPrice;
+    booking.totalServiceAmount = this.totalServiceCost || 0;
+    booking.taxAmount = booking.gstAmount;
+    booking.totalRoomTariffBeforeDiscount = plan.price;
+    booking.noOfExtraPerson = plan.extraCountAdult;
+    booking.noOfExtraChild = plan.extraCountChild;
+    booking.purposeOfVisit = '';
+    booking.advanceAmount = 0;
+    booking.paymentId = this.booking.paymentId;
+    booking.includeService = this.booking.includeService;
+    booking.taxDetails = this.token
+      .getProperty()
+      .taxDetails.filter(
+        (item) =>
+          item.name === 'CGST' || item.name === 'SGST' || item.name === 'GST'
+      );
+    booking.taxPercentage = plan.taxpercentage;
+
+    Logger.log('createBooking ', JSON.stringify(booking));
+
+    this.paymentLoader = true;
+
+    this.hotelBookingService.createBooking(booking).subscribe((response) => {
+      this.paymentLoader = false;
+      if (response.status === 200) {
+        const savedBooking = response.body;
+        const existingBookingsStr = sessionStorage.getItem(
+          'bookingsResponseList'
+        );
+        const existingBookings = existingBookingsStr
+          ? JSON.parse(existingBookingsStr)
+          : [];
+        existingBookings.push(savedBooking);
+        sessionStorage.setItem(
+          'bookingsResponseList',
+          JSON.stringify(existingBookings)
+        );
+        this.token.saveBookingDataObj(savedBooking);
+        this.bookingId = savedBooking.id;
+        this.referenceNumberAfterBooking =
+          savedBooking.propertyReservationNumber;
+
+        this.addServiceToBooking(savedBooking.id, this.bookingSummaryDetails?.propertyServiceListDataOne);
+        this.getSubscriptions(savedBooking);
+        this.sendWhatsappMessageToTHM(savedBooking);
+        // this.sendWhatsappMessageToTHM1(savedBooking);
+        // this.sendWhatsappMessageToTHM2(savedBooking);
+        // this.sendWhatsappMessageToTHM3(savedBooking);
+        // this.sendWhatsappMessageToTHM4(savedBooking);
+        //  setTimeout(() => {
+        //       this.accommodationEnquiryBookingData();
+        //     }, 3000);
+        this.router.navigate(['/reservation-confirm-page']);
+
+        this.loadingOne = false;
+
+        // Save payment
+        this.payment.referenceNumber = savedBooking.propertyReservationNumber;
+        this.payment.externalReference = savedBooking.externalBookingID;
+        this.payment.amount = booking.totalAmount;
+
+        Logger.log('payment ' + JSON.stringify(this.payment));
+
+        if (callback) callback();
+      } else {
+        this.loadingOne = false;
+        if (callback) callback(); // Proceed even if failed
+      }
     });
-  };
-
-  processPlan(0); // start from index 0
-}
-
-
-
-// createBooking(plan: any, bookingSummary: any, callback?: () => void) {
-
-
-//   // Map data from current plan
-//   this.booking.roomRatePlanName = plan.planCodeName;
-//   this.booking.roomName = plan.roomName;
-//   this.booking.roomType = plan.roomName;
-//   this.booking.planCode = plan.planName;
-//   this.booking.roomId = plan.roomId;
-//   this.booking.noOfPersons = plan.adults;
-//   this.booking.firstName = this.booking.firstName;
-//   this.booking.lastName = this.booking.lastName;
-//   this.booking.mobile = this.booking.mobile;
-//   this.booking.email = this.booking.email;
-//   this.booking.noOfChildren = plan.children;
-//   this.booking.noOfNights = plan.nights;
-//   this.booking.noOfRooms = Number(plan.selectedRoomnumber);
-//   this.booking.netAmount = plan.price;
-//   this.booking.beforeTaxAmount = plan.price;
-//   this.booking.createdDate = new Date().toISOString();
-//   this.booking.propertyId = this.booking.propertyId;
-//   this.booking.gstAmount = plan.taxPercentageperroom;
-//   this.booking.dayTrip = false;
-//   this.booking.discountPercentage = 0;
-//   this.booking.discountAmount = 0;
-//   this.booking.extraChildCharge = plan.extraPersonChildCountAmount ? plan.extraPersonChildCountAmount : 0;
-//   this.booking.extraPersonCharge = plan.extraPersonCharge ? plan.extraPersonCharge : 0;
-//   this.booking.roomTariffBeforeDiscount = plan.price;
-//   this.booking.totalAmount = plan.price + plan.taxPercentageperroom;
-//   this.booking.bookingAmount = this.booking.totalAmount;
-//   this.booking.payableAmount = this.showTheSelectedCoupon ? this.booking.totalAmount : this.booking.totalAmount;
-// this.booking.fromDate = bookingSummary.fromDate;
-// this.booking.toDate = bookingSummary.toDate;
-//   this.booking.currency = this.businessUser.localCurrency;
-//   this.booking.fromTime = Number(this.token.getFromTime());
-//   this.booking.toTime = Number(this.token.getToTime());
-//   this.booking.modeOfPayment = this.payment.paymentMode;
-//   this.booking.externalSite = "WebSite";
-//   this.booking.businessName = this.businessUser.name;
-//   this.booking.businessEmail = this.businessUser.email;
-//   this.booking.roomBooking = true;
-//   this.booking.groupBooking = false;
-//   this.booking.available = true;
-//   this.booking.roomPrice = this.booking.netAmount;
-//   this.booking.totalServiceAmount = this.totalServiceCost || 0;
-//   this.booking.taxAmount = this.booking.gstAmount;
-//   this.booking.totalRoomTariffBeforeDiscount = this.booking.roomPrice;
-//   this.booking.noOfExtraPerson = plan.extraCountAdult;
-//   this.booking.noOfExtraChild = plan.extraCountChild;
-//   this.booking.purposeOfVisit = '';
-//   this.booking.advanceAmount = 0;
-//   this.booking.paymentId = this.booking.paymentId;
-//   this.booking.includeService = this.booking.includeService;
-//   this.booking.taxDetails = this.token.getProperty().taxDetails.filter(item => item.name === 'CGST' || item.name === 'SGST' || item.name === 'GST');
-//   this.booking.taxPercentage = plan.taxpercentage;
-//   Logger.log("createBooking ", JSON.stringify(this.booking));
-
-//   this.paymentLoader = true;
-
-//   this.hotelBookingService.createBooking(this.booking).subscribe((response) => {
-//     this.paymentLoader = false;
-//     if (response.status === 200) {
-//       const savedBooking = response.body;
-//       this.token.saveBookingDataObj(savedBooking);
-//       this.bookingId = savedBooking.id;
-//       this.referenceNumberAfterBooking = savedBooking.propertyReservationNumber;
-
-//       this.addServiceToBooking(savedBooking.id, this.savedServices);
-//       this.getSubscriptions(savedBooking);
-//       this.sendWhatsappMessageToTHM();
-//       this.sendWhatsappMessageToTHM1();
-//       this.sendWhatsappMessageToTHM2();
-//       this.sendWhatsappMessageToTHM3();
-//       this.sendWhatsappMessageToTHM4();
-
-//       this.router.navigate(["/reservation-confirm-page"]);
-//       this.loadingOne = false;
-
-//       // Save payment
-//       this.payment.referenceNumber = savedBooking.propertyReservationNumber;
-//       this.payment.externalReference = savedBooking.externalBookingID;
-//       this.payment.amount = this.booking.totalAmount;
-//       Logger.log("payment " + JSON.stringify(this.payment));
-
-//       this.hotelBookingService.savePayment(this.payment).subscribe((res) => {
-//         if (res.status === 200) {
-//           this.showSuccess(this.contentDialog);
-//         } else {
-//           this.showDanger(this.contentDialog);
-//         }
-//       });
-
-//       if (callback) callback(); // 🔁 call next booking
-//     } else {
-//       this.loadingOne = false;
-//       if (callback) callback(); // even on error, continue
-//     }
-//   });
-// }
-
-createBooking(plan: any, bookingSummary: any, callback?: () => void) {
-  const booking: any = {};
-
-  booking.roomRatePlanName = plan.planCodeName;
-  booking.roomName = plan.roomName;
-  booking.roomType = plan.roomName;
-  booking.planCode = plan.planName;
-  booking.roomId = plan.roomId;
-  booking.noOfPersons = plan.adults;
-  booking.firstName = this.booking.firstName;
-  booking.lastName = this.booking.lastName;
-  booking.mobile = this.booking.mobile;
-  booking.email = this.booking.email;
-  booking.noOfChildren = plan.children;
-  booking.noOfNights = plan.nights;
-  booking.noOfRooms = Number(plan.selectedRoomnumber);
-  booking.netAmount = plan.price;
-  booking.beforeTaxAmount = plan.price;
-  booking.createdDate = new Date().toISOString();
-  booking.propertyId = this.booking.propertyId;
-  booking.gstAmount = plan.taxPercentageperroom;
-  booking.dayTrip = false;
-  booking.discountPercentage = 0;
-  booking.discountAmount = 0;
-  booking.extraChildCharge = plan.extraPersonChildCountAmount || 0;
-  booking.extraPersonCharge = plan.extraPersonCharge || 0;
-  booking.roomTariffBeforeDiscount = plan.price;
-  booking.totalAmount = plan.price + plan.taxPercentageperroom;
-  booking.bookingAmount = booking.totalAmount;
-  booking.payableAmount = this.showTheSelectedCoupon ? booking.totalAmount : booking.totalAmount;
-  booking.fromDate = bookingSummary.fromDate;
-  booking.toDate = bookingSummary.toDate;
-  booking.currency = this.businessUser.localCurrency;
-  booking.fromTime = Number(this.token.getFromTime());
-  booking.toTime = Number(this.token.getToTime());
-  booking.modeOfPayment = this.payment.paymentMode;
-  booking.externalSite = "WebSite";
-  booking.businessName = this.businessUser.name;
-  booking.businessEmail = this.businessUser.email;
-  booking.roomBooking = true;
-  booking.groupBooking = false;
-  booking.available = true;
-  booking.roomPrice = plan.actualRoomPrice;
-  booking.totalServiceAmount = this.totalServiceCost || 0;
-  booking.taxAmount = booking.gstAmount;
-  booking.totalRoomTariffBeforeDiscount = plan.price;
-  booking.noOfExtraPerson = plan.extraCountAdult;
-  booking.noOfExtraChild = plan.extraCountChild;
-  booking.purposeOfVisit = '';
-  booking.advanceAmount = 0;
-  booking.paymentId = this.booking.paymentId;
-  booking.includeService = this.booking.includeService;
-  booking.taxDetails = this.token.getProperty().taxDetails.filter(item =>
-    item.name === 'CGST' || item.name === 'SGST' || item.name === 'GST'
-  );
-  booking.taxPercentage = plan.taxpercentage;
-
-  Logger.log("createBooking ", JSON.stringify(booking));
-
-  this.paymentLoader = true;
-
-  this.hotelBookingService.createBooking(booking).subscribe((response) => {
-    this.paymentLoader = false;
-    if (response.status === 200) {
-      const savedBooking = response.body;
-        const existingBookingsStr = sessionStorage.getItem('bookingsResponseList');
-      const existingBookings = existingBookingsStr ? JSON.parse(existingBookingsStr) : [];
-      existingBookings.push(savedBooking);
-      sessionStorage.setItem('bookingsResponseList', JSON.stringify(existingBookings));
-      this.token.saveBookingDataObj(savedBooking);
-      this.bookingId = savedBooking.id;
-      this.referenceNumberAfterBooking = savedBooking.propertyReservationNumber;
-
-      this.addServiceToBooking(savedBooking.id, this.savedServices);
-      this.getSubscriptions(savedBooking); // 🔁 Pass the correct booking
-      this.sendWhatsappMessageToTHM(savedBooking);
-      // this.sendWhatsappMessageToTHM1(savedBooking);
-      // this.sendWhatsappMessageToTHM2(savedBooking);
-      // this.sendWhatsappMessageToTHM3(savedBooking);
-      // this.sendWhatsappMessageToTHM4(savedBooking);
-      //  setTimeout(() => {
-      //       this.accommodationEnquiryBookingData();
-      //     }, 3000);
-      this.router.navigate(["/reservation-confirm-page"]);
-
-
-      this.loadingOne = false;
-
-      // Save payment
-      this.payment.referenceNumber = savedBooking.propertyReservationNumber;
-      this.payment.externalReference = savedBooking.externalBookingID;
-      this.payment.amount = booking.totalAmount;
-
-      Logger.log("payment " + JSON.stringify(this.payment));
-
-      if (callback) callback(); // 🔁 trigger next booking
-    } else {
-      this.loadingOne = false;
-      if (callback) callback(); // Proceed even if failed
-    }
-  });
-}
-
-
+  }
 
   createBookingReservation() {
-    this.externalReservationdto?.forEach(ele => {
+    this.externalReservationdto?.forEach((ele) => {
       this.saveResponseBooking.message = ele.otaReservationId;
-    }
-    )
+    });
 
     this.hotelBookingService
       .createBooking(this.saveResponseBooking)
-      .subscribe((response) => {
-
-      });
-
-
+      .subscribe((response) => {});
   }
 
   getAmenityIcon(name: string): string {
@@ -2936,44 +3146,47 @@ createBooking(plan: any, bookingSummary: any, callback?: () => void) {
   sendWhatsappMessageToTHM(booking) {
     this.whatsappForm.messaging_product = 'whatsapp';
     this.whatsappForm.recipient_type = 'individual';
-    this.template.name = "";
-    this.template.name = "bookone_paylater";
-    this.language.code = 'en',
-      this.template.language = this.language;
-    this.componentstype.type = 'header',
-      this.componentstype2.type = 'body',
-      this.parametertype2 = new Para()
-    this.parametertype2.type = 'text',
-      this.parametertype2.text = booking.firstName;
-    this.parameterss2.push(this.parametertype2);
-
-    this.parametertype2 = new Para()
-    this.parametertype2.type = 'text',
-      this.parametertype2.text = this.businessUser.name;
+    this.template.name = '';
+    this.template.name = 'bookone_paylater';
+    (this.language.code = 'en'), (this.template.language = this.language);
+    (this.componentstype.type = 'header'),
+      (this.componentstype2.type = 'body'),
+      (this.parametertype2 = new Para());
+    (this.parametertype2.type = 'text'),
+      (this.parametertype2.text = booking.firstName);
     this.parameterss2.push(this.parametertype2);
 
     this.parametertype2 = new Para();
-    this.parametertype2.type = 'text',
-      this.parametertype2.text = String(booking.propertyReservationNumber);
+    (this.parametertype2.type = 'text'),
+      (this.parametertype2.text = this.businessUser.name);
     this.parameterss2.push(this.parametertype2);
 
     this.parametertype2 = new Para();
-    this.parametertype2.type = 'text',
-      this.parametertype2.text = this.datePipe.transform(booking.fromDate, 'dd-MM-YYYY') + ",";
+    (this.parametertype2.type = 'text'),
+      (this.parametertype2.text = String(booking.propertyReservationNumber));
+    this.parameterss2.push(this.parametertype2);
+
+    this.parametertype2 = new Para();
+    (this.parametertype2.type = 'text'),
+      (this.parametertype2.text =
+        this.datePipe.transform(booking.fromDate, 'dd-MM-YYYY') + ',');
     this.parameterss2.push(this.parametertype2);
 
     this.parametertype2 = new Para();
     this.parametertype2.type = 'text';
     if (this.booking.fromTime) {
-      this.parametertype2.text = new Date(booking.fromTime).toLocaleTimeString();
+      this.parametertype2.text = new Date(
+        booking.fromTime
+      ).toLocaleTimeString();
     } else {
-      this.parametertype2.text = " ";
+      this.parametertype2.text = ' ';
     }
     this.parameterss2.push(this.parametertype2);
 
     this.parametertype2 = new Para();
-    this.parametertype2.type = 'text',
-      this.parametertype2.text = this.datePipe.transform(booking.toDate, 'dd-MM-YYYY') + ",";
+    (this.parametertype2.type = 'text'),
+      (this.parametertype2.text =
+        this.datePipe.transform(booking.toDate, 'dd-MM-YYYY') + ',');
     this.parameterss2.push(this.parametertype2);
 
     this.parametertype2 = new Para();
@@ -2981,7 +3194,7 @@ createBooking(plan: any, bookingSummary: any, callback?: () => void) {
     if (this.booking.toTime) {
       this.parametertype2.text = new Date(booking.toTime).toLocaleTimeString();
     } else {
-      this.parametertype2.text = " ";
+      this.parametertype2.text = ' ';
     }
     this.parameterss2.push(this.parametertype2);
 
@@ -3006,55 +3219,57 @@ createBooking(plan: any, bookingSummary: any, callback?: () => void) {
     this.parameterss2.push(this.parametertype2);
 
     this.parametertype2 = new Para();
-    this.parametertype2.type = 'text',
-    this.parametertype2.text = booking.promotionName ? booking.promotionName : ' ';
+    (this.parametertype2.type = 'text'),
+      (this.parametertype2.text = booking.promotionName
+        ? booking.promotionName
+        : ' ');
     this.parameterss2.push(this.parametertype2);
 
     this.parametertype2 = new Para();
-    this.parametertype2.type = 'text',
-      this.parametertype2.text = booking.totalAmount.toFixed(2);
+    (this.parametertype2.type = 'text'),
+      (this.parametertype2.text = booking.totalAmount.toFixed(2));
     this.parameterss2.push(this.parametertype2);
 
     this.parametertype2 = new Para();
-    this.parametertype2.type = 'text',
-     this.parametertype2.text = " ";
+    (this.parametertype2.type = 'text'), (this.parametertype2.text = ' ');
     this.parameterss2.push(this.parametertype2);
 
-     this.parametertype2 = new Para();
-    this.parametertype2.type = 'text',
-      this.parametertype2.text = booking.totalAmount.toFixed(2);
+    this.parametertype2 = new Para();
+    (this.parametertype2.type = 'text'),
+      (this.parametertype2.text = booking.totalAmount.toFixed(2));
     this.parameterss2.push(this.parametertype2);
 
-     this.parametertype2 = new Para();
-    this.parametertype2.type = 'text',
-      this.parametertype2.text =  " ";
+    this.parametertype2 = new Para();
+    (this.parametertype2.type = 'text'), (this.parametertype2.text = ' ');
     this.parameterss2.push(this.parametertype2);
 
     this.componentstype2.parameters = this.parameterss2;
     this.components.push(this.componentstype2);
 
     this.componentstype9.index = '0';
-    this.componentstype9.sub_type = "url";
-    this.componentstype9.type = "button";
+    this.componentstype9.sub_type = 'url';
+    this.componentstype9.type = 'button';
 
     this.parametertype20 = new Para();
-    this.parametertype20.type = 'text',
-      this.parametertype20.text = "/reservation-confirm?bookingId=" + booking.propertyReservationNumber;
+    (this.parametertype20.type = 'text'),
+      (this.parametertype20.text =
+        '/reservation-confirm?bookingId=' + booking.propertyReservationNumber);
     this.parameterss15.push(this.parametertype20);
     this.componentstype9.parameters = this.parameterss15;
     this.components.push(this.componentstype9);
 
-
     this.template.components = this.components;
     this.whatsappForm.template = this.template;
-    this.whatsappForm.to = "6372198255",
-      this.whatsappForm.type = 'template',
-      this.hotelBookingService.whatsAppMsg(this.whatsappForm).subscribe((response) => {
-        this.paymentLoader = false;
-
-      }, error => {
-        this.paymentLoader = false;
-      });
+    (this.whatsappForm.to = '6372198255'),
+      (this.whatsappForm.type = 'template'),
+      this.hotelBookingService.whatsAppMsg(this.whatsappForm).subscribe(
+        (response) => {
+          this.paymentLoader = false;
+        },
+        (error) => {
+          this.paymentLoader = false;
+        }
+      );
   }
 
   // sendWhatsappMessageToTHM11() {
@@ -3178,7 +3393,6 @@ createBooking(plan: any, bookingSummary: any, callback?: () => void) {
   //   this.componentstype9.parameters = this.parameterss15;
   //   this.components.push(this.componentstype9);
 
-
   //   this.template.components = this.components;
   //   this.whatsappForm.template = this.template;
   //   this.whatsappForm.to = "8328818871",
@@ -3202,7 +3416,7 @@ createBooking(plan: any, bookingSummary: any, callback?: () => void) {
     this.componentstype9 = new Components();
     this.parametertype2 = new Para();
     this.parametertype20 = new Para();
-    this.parametertype3 = new Para()
+    this.parametertype3 = new Para();
     this.componentstype9 = new Components();
     this.componentstype10 = new Components();
     this.parameterss2 = [];
@@ -3214,53 +3428,58 @@ createBooking(plan: any, bookingSummary: any, callback?: () => void) {
 
     this.whatsappForm.messaging_product = 'whatsapp';
     this.whatsappForm.recipient_type = 'individual';
-    this.template.name = "";
-    this.template.name = "bookone_paylater";
-    this.language.code = 'en',
-      this.template.language = this.language;
-    this.componentstype.type = 'header',
-      this.componentstype2.type = 'body',
-      this.parametertype2 = new Para()
-    this.parametertype2.type = 'text',
-      this.parametertype2.text = this.booking.firstName;
-    this.parameterss2.push(this.parametertype2);
-
-    this.parametertype2 = new Para()
-    this.parametertype2.type = 'text',
-      this.parametertype2.text = this.businessUser.name;
+    this.template.name = '';
+    this.template.name = 'bookone_paylater';
+    (this.language.code = 'en'), (this.template.language = this.language);
+    (this.componentstype.type = 'header'),
+      (this.componentstype2.type = 'body'),
+      (this.parametertype2 = new Para());
+    (this.parametertype2.type = 'text'),
+      (this.parametertype2.text = this.booking.firstName);
     this.parameterss2.push(this.parametertype2);
 
     this.parametertype2 = new Para();
-    this.parametertype2.type = 'text',
-      this.parametertype2.text = String(this.referenceNumberAfterBooking);
+    (this.parametertype2.type = 'text'),
+      (this.parametertype2.text = this.businessUser.name);
     this.parameterss2.push(this.parametertype2);
 
     this.parametertype2 = new Para();
-    this.parametertype2.type = 'text',
-    this.parametertype2.text = this.datePipe.transform(this.booking.fromDate, 'dd-MM-YYYY') + ",";
+    (this.parametertype2.type = 'text'),
+      (this.parametertype2.text = String(this.referenceNumberAfterBooking));
     this.parameterss2.push(this.parametertype2);
 
     this.parametertype2 = new Para();
-    this.parametertype2.type = 'text';
-        if (this.booking.fromTime) {
-           this.parametertype2.text = new Date(this.booking.fromTime).toLocaleTimeString();
-        } else {
-           this.parametertype2.text = " ";
-        }
-    this.parameterss2.push(this.parametertype2);
-
-    this.parametertype2 = new Para();
-    this.parametertype2.type = 'text',
-    this.parametertype2.text = this.datePipe.transform(this.booking.toDate, 'dd-MM-YYYY') + ",";
+    (this.parametertype2.type = 'text'),
+      (this.parametertype2.text =
+        this.datePipe.transform(this.booking.fromDate, 'dd-MM-YYYY') + ',');
     this.parameterss2.push(this.parametertype2);
 
     this.parametertype2 = new Para();
     this.parametertype2.type = 'text';
-        if (this.booking.toTime) {
-           this.parametertype2.text = new Date(this.booking.toTime).toLocaleTimeString();
-        } else {
-           this.parametertype2.text = " ";
-        }
+    if (this.booking.fromTime) {
+      this.parametertype2.text = new Date(
+        this.booking.fromTime
+      ).toLocaleTimeString();
+    } else {
+      this.parametertype2.text = ' ';
+    }
+    this.parameterss2.push(this.parametertype2);
+
+    this.parametertype2 = new Para();
+    (this.parametertype2.type = 'text'),
+      (this.parametertype2.text =
+        this.datePipe.transform(this.booking.toDate, 'dd-MM-YYYY') + ',');
+    this.parameterss2.push(this.parametertype2);
+
+    this.parametertype2 = new Para();
+    this.parametertype2.type = 'text';
+    if (this.booking.toTime) {
+      this.parametertype2.text = new Date(
+        this.booking.toTime
+      ).toLocaleTimeString();
+    } else {
+      this.parametertype2.text = ' ';
+    }
     this.parameterss2.push(this.parametertype2);
 
     this.parametertype2 = new Para();
@@ -3284,55 +3503,57 @@ createBooking(plan: any, bookingSummary: any, callback?: () => void) {
     this.parameterss2.push(this.parametertype2);
 
     this.parametertype2 = new Para();
-    this.parametertype2.type = 'text',
-     this.parametertype2.text = this.booking.promotionName ? this.booking.promotionName : ' ';
+    (this.parametertype2.type = 'text'),
+      (this.parametertype2.text = this.booking.promotionName
+        ? this.booking.promotionName
+        : ' ');
     this.parameterss2.push(this.parametertype2);
 
     this.parametertype2 = new Para();
-    this.parametertype2.type = 'text',
-     this.parametertype2.text = this.booking.totalAmount.toFixed(2);
+    (this.parametertype2.type = 'text'),
+      (this.parametertype2.text = this.booking.totalAmount.toFixed(2));
     this.parameterss2.push(this.parametertype2);
 
     this.parametertype2 = new Para();
-    this.parametertype2.type = 'text',
-      this.parametertype2.text = " ";
+    (this.parametertype2.type = 'text'), (this.parametertype2.text = ' ');
     this.parameterss2.push(this.parametertype2);
 
     this.parametertype2 = new Para();
-    this.parametertype2.type = 'text',
- this.parametertype2.text = this.booking.totalAmount.toFixed(2);
+    (this.parametertype2.type = 'text'),
+      (this.parametertype2.text = this.booking.totalAmount.toFixed(2));
     this.parameterss2.push(this.parametertype2);
 
-     this.parametertype2 = new Para();
-    this.parametertype2.type = 'text',
-      this.parametertype2.text = " ";
+    this.parametertype2 = new Para();
+    (this.parametertype2.type = 'text'), (this.parametertype2.text = ' ');
     this.parameterss2.push(this.parametertype2);
 
     this.componentstype2.parameters = this.parameterss2;
     this.components.push(this.componentstype2);
 
     this.componentstype9.index = '0';
-    this.componentstype9.sub_type = "url";
-    this.componentstype9.type = "button";
+    this.componentstype9.sub_type = 'url';
+    this.componentstype9.type = 'button';
 
     this.parametertype20 = new Para();
-    this.parametertype20.type = 'text',
-      this.parametertype20.text = "/reservation-confirm?bookingId=" + this.referenceNumberAfterBooking;
+    (this.parametertype20.type = 'text'),
+      (this.parametertype20.text =
+        '/reservation-confirm?bookingId=' + this.referenceNumberAfterBooking);
     this.parameterss15.push(this.parametertype20);
     this.componentstype9.parameters = this.parameterss15;
     this.components.push(this.componentstype9);
 
-
     this.template.components = this.components;
     this.whatsappForm.template = this.template;
-    this.whatsappForm.to = "9004146024",
-      this.whatsappForm.type = 'template',
-      this.hotelBookingService.whatsAppMsg(this.whatsappForm).subscribe((response) => {
-        this.paymentLoader = false;
-
-      }, error => {
-        this.paymentLoader = false;
-      });
+    (this.whatsappForm.to = '9004146024'),
+      (this.whatsappForm.type = 'template'),
+      this.hotelBookingService.whatsAppMsg(this.whatsappForm).subscribe(
+        (response) => {
+          this.paymentLoader = false;
+        },
+        (error) => {
+          this.paymentLoader = false;
+        }
+      );
   }
 
   sendWhatsappMessageToTHM2() {
@@ -3346,7 +3567,7 @@ createBooking(plan: any, bookingSummary: any, callback?: () => void) {
     this.componentstype9 = new Components();
     this.parametertype2 = new Para();
     this.parametertype20 = new Para();
-    this.parametertype3 = new Para()
+    this.parametertype3 = new Para();
     this.componentstype9 = new Components();
     this.componentstype10 = new Components();
     this.parameterss2 = [];
@@ -3358,53 +3579,58 @@ createBooking(plan: any, bookingSummary: any, callback?: () => void) {
 
     this.whatsappForm.messaging_product = 'whatsapp';
     this.whatsappForm.recipient_type = 'individual';
-    this.template.name = "";
-    this.template.name = "bookone_paylater";
-    this.language.code = 'en',
-      this.template.language = this.language;
-    this.componentstype.type = 'header',
-      this.componentstype2.type = 'body',
-      this.parametertype2 = new Para()
-    this.parametertype2.type = 'text',
-      this.parametertype2.text = this.booking.firstName;
-    this.parameterss2.push(this.parametertype2);
-
-    this.parametertype2 = new Para()
-    this.parametertype2.type = 'text',
-      this.parametertype2.text = this.businessUser.name;
+    this.template.name = '';
+    this.template.name = 'bookone_paylater';
+    (this.language.code = 'en'), (this.template.language = this.language);
+    (this.componentstype.type = 'header'),
+      (this.componentstype2.type = 'body'),
+      (this.parametertype2 = new Para());
+    (this.parametertype2.type = 'text'),
+      (this.parametertype2.text = this.booking.firstName);
     this.parameterss2.push(this.parametertype2);
 
     this.parametertype2 = new Para();
-    this.parametertype2.type = 'text',
-      this.parametertype2.text = String(this.referenceNumberAfterBooking);
+    (this.parametertype2.type = 'text'),
+      (this.parametertype2.text = this.businessUser.name);
     this.parameterss2.push(this.parametertype2);
 
     this.parametertype2 = new Para();
-    this.parametertype2.type = 'text',
-    this.parametertype2.text = this.datePipe.transform(this.booking.fromDate, 'dd-MM-YYYY') + ",";
+    (this.parametertype2.type = 'text'),
+      (this.parametertype2.text = String(this.referenceNumberAfterBooking));
     this.parameterss2.push(this.parametertype2);
 
     this.parametertype2 = new Para();
-    this.parametertype2.type = 'text';
-        if (this.booking.fromTime) {
-           this.parametertype2.text = new Date(this.booking.fromTime).toLocaleTimeString();
-        } else {
-           this.parametertype2.text = " ";
-        }
-    this.parameterss2.push(this.parametertype2);
-
-    this.parametertype2 = new Para();
-    this.parametertype2.type = 'text',
-    this.parametertype2.text = this.datePipe.transform(this.booking.toDate, 'dd-MM-YYYY') + ",";
+    (this.parametertype2.type = 'text'),
+      (this.parametertype2.text =
+        this.datePipe.transform(this.booking.fromDate, 'dd-MM-YYYY') + ',');
     this.parameterss2.push(this.parametertype2);
 
     this.parametertype2 = new Para();
     this.parametertype2.type = 'text';
-        if (this.booking.toTime) {
-           this.parametertype2.text = new Date(this.booking.toTime).toLocaleTimeString();
-        } else {
-           this.parametertype2.text = " ";
-        }
+    if (this.booking.fromTime) {
+      this.parametertype2.text = new Date(
+        this.booking.fromTime
+      ).toLocaleTimeString();
+    } else {
+      this.parametertype2.text = ' ';
+    }
+    this.parameterss2.push(this.parametertype2);
+
+    this.parametertype2 = new Para();
+    (this.parametertype2.type = 'text'),
+      (this.parametertype2.text =
+        this.datePipe.transform(this.booking.toDate, 'dd-MM-YYYY') + ',');
+    this.parameterss2.push(this.parametertype2);
+
+    this.parametertype2 = new Para();
+    this.parametertype2.type = 'text';
+    if (this.booking.toTime) {
+      this.parametertype2.text = new Date(
+        this.booking.toTime
+      ).toLocaleTimeString();
+    } else {
+      this.parametertype2.text = ' ';
+    }
     this.parameterss2.push(this.parametertype2);
 
     this.parametertype2 = new Para();
@@ -3427,56 +3653,58 @@ createBooking(plan: any, bookingSummary: any, callback?: () => void) {
     this.parametertype2.text = String(this.booking.noOfChildren);
     this.parameterss2.push(this.parametertype2);
 
-      this.parametertype2 = new Para();
-    this.parametertype2.type = 'text',
-     this.parametertype2.text = this.booking.promotionName ? this.booking.promotionName : ' ';
+    this.parametertype2 = new Para();
+    (this.parametertype2.type = 'text'),
+      (this.parametertype2.text = this.booking.promotionName
+        ? this.booking.promotionName
+        : ' ');
     this.parameterss2.push(this.parametertype2);
 
     this.parametertype2 = new Para();
-    this.parametertype2.type = 'text',
-     this.parametertype2.text = this.booking.totalAmount.toFixed(2);
+    (this.parametertype2.type = 'text'),
+      (this.parametertype2.text = this.booking.totalAmount.toFixed(2));
     this.parameterss2.push(this.parametertype2);
 
     this.parametertype2 = new Para();
-    this.parametertype2.type = 'text',
-      this.parametertype2.text = " ";
+    (this.parametertype2.type = 'text'), (this.parametertype2.text = ' ');
     this.parameterss2.push(this.parametertype2);
 
-     this.parametertype2 = new Para();
-    this.parametertype2.type = 'text',
-      this.parametertype2.text = this.booking.totalAmount.toFixed(2);;
+    this.parametertype2 = new Para();
+    (this.parametertype2.type = 'text'),
+      (this.parametertype2.text = this.booking.totalAmount.toFixed(2));
     this.parameterss2.push(this.parametertype2);
 
-     this.parametertype2 = new Para();
-    this.parametertype2.type = 'text',
-      this.parametertype2.text = " ";
+    this.parametertype2 = new Para();
+    (this.parametertype2.type = 'text'), (this.parametertype2.text = ' ');
     this.parameterss2.push(this.parametertype2);
 
     this.componentstype2.parameters = this.parameterss2;
     this.components.push(this.componentstype2);
 
     this.componentstype9.index = '0';
-    this.componentstype9.sub_type = "url";
-    this.componentstype9.type = "button";
+    this.componentstype9.sub_type = 'url';
+    this.componentstype9.type = 'button';
 
     this.parametertype20 = new Para();
-    this.parametertype20.type = 'text',
-      this.parametertype20.text = "/reservation-confirm?bookingId=" + this.referenceNumberAfterBooking;
+    (this.parametertype20.type = 'text'),
+      (this.parametertype20.text =
+        '/reservation-confirm?bookingId=' + this.referenceNumberAfterBooking);
     this.parameterss15.push(this.parametertype20);
     this.componentstype9.parameters = this.parameterss15;
     this.components.push(this.componentstype9);
 
-
     this.template.components = this.components;
     this.whatsappForm.template = this.template;
-    this.whatsappForm.to = "9040785705",
-      this.whatsappForm.type = 'template',
-      this.hotelBookingService.whatsAppMsg(this.whatsappForm).subscribe((response) => {
-        this.paymentLoader = false;
-
-      }, error => {
-        this.paymentLoader = false;
-      });
+    (this.whatsappForm.to = '9040785705'),
+      (this.whatsappForm.type = 'template'),
+      this.hotelBookingService.whatsAppMsg(this.whatsappForm).subscribe(
+        (response) => {
+          this.paymentLoader = false;
+        },
+        (error) => {
+          this.paymentLoader = false;
+        }
+      );
   }
 
   sendWhatsappMessageToTHM3() {
@@ -3490,7 +3718,7 @@ createBooking(plan: any, bookingSummary: any, callback?: () => void) {
     this.componentstype9 = new Components();
     this.parametertype2 = new Para();
     this.parametertype20 = new Para();
-    this.parametertype3 = new Para()
+    this.parametertype3 = new Para();
     this.componentstype9 = new Components();
     this.componentstype10 = new Components();
     this.parameterss2 = [];
@@ -3502,53 +3730,58 @@ createBooking(plan: any, bookingSummary: any, callback?: () => void) {
 
     this.whatsappForm.messaging_product = 'whatsapp';
     this.whatsappForm.recipient_type = 'individual';
-    this.template.name = "";
-    this.template.name = "bookone_paylater";
-    this.language.code = 'en',
-      this.template.language = this.language;
-    this.componentstype.type = 'header',
-      this.componentstype2.type = 'body',
-      this.parametertype2 = new Para()
-    this.parametertype2.type = 'text',
-      this.parametertype2.text = this.booking.firstName;
-    this.parameterss2.push(this.parametertype2);
-
-    this.parametertype2 = new Para()
-    this.parametertype2.type = 'text',
-      this.parametertype2.text = this.businessUser.name;
+    this.template.name = '';
+    this.template.name = 'bookone_paylater';
+    (this.language.code = 'en'), (this.template.language = this.language);
+    (this.componentstype.type = 'header'),
+      (this.componentstype2.type = 'body'),
+      (this.parametertype2 = new Para());
+    (this.parametertype2.type = 'text'),
+      (this.parametertype2.text = this.booking.firstName);
     this.parameterss2.push(this.parametertype2);
 
     this.parametertype2 = new Para();
-    this.parametertype2.type = 'text',
-      this.parametertype2.text = String(this.referenceNumberAfterBooking);
+    (this.parametertype2.type = 'text'),
+      (this.parametertype2.text = this.businessUser.name);
     this.parameterss2.push(this.parametertype2);
 
     this.parametertype2 = new Para();
-    this.parametertype2.type = 'text',
-    this.parametertype2.text = this.datePipe.transform(this.booking.fromDate, 'dd-MM-YYYY') + ",";
+    (this.parametertype2.type = 'text'),
+      (this.parametertype2.text = String(this.referenceNumberAfterBooking));
     this.parameterss2.push(this.parametertype2);
 
     this.parametertype2 = new Para();
-    this.parametertype2.type = 'text';
-        if (this.booking.fromTime) {
-           this.parametertype2.text = new Date(this.booking.fromTime).toLocaleTimeString();
-        } else {
-           this.parametertype2.text = " ";
-        }
-    this.parameterss2.push(this.parametertype2);
-
-    this.parametertype2 = new Para();
-    this.parametertype2.type = 'text',
-    this.parametertype2.text = this.datePipe.transform(this.booking.toDate, 'dd-MM-YYYY') + ",";
+    (this.parametertype2.type = 'text'),
+      (this.parametertype2.text =
+        this.datePipe.transform(this.booking.fromDate, 'dd-MM-YYYY') + ',');
     this.parameterss2.push(this.parametertype2);
 
     this.parametertype2 = new Para();
     this.parametertype2.type = 'text';
-        if (this.booking.toTime) {
-           this.parametertype2.text = new Date(this.booking.toTime).toLocaleTimeString();
-        } else {
-           this.parametertype2.text = " ";
-        }
+    if (this.booking.fromTime) {
+      this.parametertype2.text = new Date(
+        this.booking.fromTime
+      ).toLocaleTimeString();
+    } else {
+      this.parametertype2.text = ' ';
+    }
+    this.parameterss2.push(this.parametertype2);
+
+    this.parametertype2 = new Para();
+    (this.parametertype2.type = 'text'),
+      (this.parametertype2.text =
+        this.datePipe.transform(this.booking.toDate, 'dd-MM-YYYY') + ',');
+    this.parameterss2.push(this.parametertype2);
+
+    this.parametertype2 = new Para();
+    this.parametertype2.type = 'text';
+    if (this.booking.toTime) {
+      this.parametertype2.text = new Date(
+        this.booking.toTime
+      ).toLocaleTimeString();
+    } else {
+      this.parametertype2.text = ' ';
+    }
     this.parameterss2.push(this.parametertype2);
 
     this.parametertype2 = new Para();
@@ -3571,56 +3804,58 @@ createBooking(plan: any, bookingSummary: any, callback?: () => void) {
     this.parametertype2.text = String(this.booking.noOfChildren);
     this.parameterss2.push(this.parametertype2);
 
-      this.parametertype2 = new Para();
-    this.parametertype2.type = 'text',
-     this.parametertype2.text = this.booking.promotionName ? this.booking.promotionName : ' ';
+    this.parametertype2 = new Para();
+    (this.parametertype2.type = 'text'),
+      (this.parametertype2.text = this.booking.promotionName
+        ? this.booking.promotionName
+        : ' ');
     this.parameterss2.push(this.parametertype2);
 
     this.parametertype2 = new Para();
-    this.parametertype2.type = 'text',
-     this.parametertype2.text = this.booking.totalAmount.toFixed(2);
+    (this.parametertype2.type = 'text'),
+      (this.parametertype2.text = this.booking.totalAmount.toFixed(2));
     this.parameterss2.push(this.parametertype2);
 
     this.parametertype2 = new Para();
-    this.parametertype2.type = 'text',
-      this.parametertype2.text = " ";
+    (this.parametertype2.type = 'text'), (this.parametertype2.text = ' ');
     this.parameterss2.push(this.parametertype2);
 
-     this.parametertype2 = new Para();
-    this.parametertype2.type = 'text',
-      this.parametertype2.text = this.booking.totalAmount.toFixed(2);;
+    this.parametertype2 = new Para();
+    (this.parametertype2.type = 'text'),
+      (this.parametertype2.text = this.booking.totalAmount.toFixed(2));
     this.parameterss2.push(this.parametertype2);
 
-     this.parametertype2 = new Para();
-    this.parametertype2.type = 'text',
-      this.parametertype2.text = " ";
+    this.parametertype2 = new Para();
+    (this.parametertype2.type = 'text'), (this.parametertype2.text = ' ');
     this.parameterss2.push(this.parametertype2);
 
     this.componentstype2.parameters = this.parameterss2;
     this.components.push(this.componentstype2);
 
     this.componentstype9.index = '0';
-    this.componentstype9.sub_type = "url";
-    this.componentstype9.type = "button";
+    this.componentstype9.sub_type = 'url';
+    this.componentstype9.type = 'button';
 
     this.parametertype20 = new Para();
-    this.parametertype20.type = 'text',
-      this.parametertype20.text = "/reservation-confirm?bookingId=" + this.referenceNumberAfterBooking;
+    (this.parametertype20.type = 'text'),
+      (this.parametertype20.text =
+        '/reservation-confirm?bookingId=' + this.referenceNumberAfterBooking);
     this.parameterss15.push(this.parametertype20);
     this.componentstype9.parameters = this.parameterss15;
     this.components.push(this.componentstype9);
 
-
     this.template.components = this.components;
     this.whatsappForm.template = this.template;
-    this.whatsappForm.to = this.booking.mobile,
-      this.whatsappForm.type = 'template',
-      this.hotelBookingService.whatsAppMsg(this.whatsappForm).subscribe((response) => {
-        this.paymentLoader = false;
-
-      }, error => {
-        this.paymentLoader = false;
-      });
+    (this.whatsappForm.to = this.booking.mobile),
+      (this.whatsappForm.type = 'template'),
+      this.hotelBookingService.whatsAppMsg(this.whatsappForm).subscribe(
+        (response) => {
+          this.paymentLoader = false;
+        },
+        (error) => {
+          this.paymentLoader = false;
+        }
+      );
   }
 
   sendWhatsappMessageToTHM4() {
@@ -3634,7 +3869,7 @@ createBooking(plan: any, bookingSummary: any, callback?: () => void) {
     this.componentstype9 = new Components();
     this.parametertype2 = new Para();
     this.parametertype20 = new Para();
-    this.parametertype3 = new Para()
+    this.parametertype3 = new Para();
     this.componentstype9 = new Components();
     this.componentstype10 = new Components();
     this.parameterss2 = [];
@@ -3646,54 +3881,58 @@ createBooking(plan: any, bookingSummary: any, callback?: () => void) {
 
     this.whatsappForm.messaging_product = 'whatsapp';
     this.whatsappForm.recipient_type = 'individual';
-    this.template.name = "";
-    this.template.name = "bookone_paylater";
-    this.language.code = 'en',
-      this.template.language = this.language;
-    this.componentstype.type = 'header',
-      this.componentstype2.type = 'body',
-      this.parametertype2 = new Para()
-    this.parametertype2.type = 'text',
-      this.parametertype2.text = this.booking.firstName;
-    this.parameterss2.push(this.parametertype2);
-
-    this.parametertype2 = new Para()
-    this.parametertype2.type = 'text',
-      this.parametertype2.text = this.businessUser.name;
+    this.template.name = '';
+    this.template.name = 'bookone_paylater';
+    (this.language.code = 'en'), (this.template.language = this.language);
+    (this.componentstype.type = 'header'),
+      (this.componentstype2.type = 'body'),
+      (this.parametertype2 = new Para());
+    (this.parametertype2.type = 'text'),
+      (this.parametertype2.text = this.booking.firstName);
     this.parameterss2.push(this.parametertype2);
 
     this.parametertype2 = new Para();
-    this.parametertype2.type = 'text',
-      this.parametertype2.text = String(this.referenceNumberAfterBooking);
+    (this.parametertype2.type = 'text'),
+      (this.parametertype2.text = this.businessUser.name);
     this.parameterss2.push(this.parametertype2);
 
     this.parametertype2 = new Para();
-    this.parametertype2.type = 'text',
-    this.parametertype2.text = this.datePipe.transform(this.booking.fromDate, 'dd-MM-YYYY') + ",";
+    (this.parametertype2.type = 'text'),
+      (this.parametertype2.text = String(this.referenceNumberAfterBooking));
+    this.parameterss2.push(this.parametertype2);
+
+    this.parametertype2 = new Para();
+    (this.parametertype2.type = 'text'),
+      (this.parametertype2.text =
+        this.datePipe.transform(this.booking.fromDate, 'dd-MM-YYYY') + ',');
+    this.parameterss2.push(this.parametertype2);
+
+    this.parametertype2 = new Para();
+    this.parametertype2.type = 'text';
+    if (this.booking.fromTime) {
+      this.parametertype2.text = new Date(
+        this.booking.fromTime
+      ).toLocaleTimeString();
+    } else {
+      this.parametertype2.text = ' ';
+    }
+    this.parameterss2.push(this.parametertype2);
+
+    this.parametertype2 = new Para();
+    (this.parametertype2.type = 'text'),
+      (this.parametertype2.text =
+        this.datePipe.transform(this.booking.toDate, 'dd-MM-YYYY') + ',');
     this.parameterss2.push(this.parametertype2);
 
     this.parametertype2 = new Para();
     this.parametertype2.type = 'text';
-        if (this.booking.fromTime) {
-           this.parametertype2.text = new Date(this.booking.fromTime).toLocaleTimeString();
-        } else {
-           this.parametertype2.text = " ";
-        }
-    this.parameterss2.push(this.parametertype2);
-
-    this.parametertype2 = new Para();
-    this.parametertype2.type = 'text',
-    this.parametertype2.text = this.datePipe.transform(this.booking.toDate, 'dd-MM-YYYY') + ",";
-    this.parameterss2.push(this.parametertype2);
-
-
-    this.parametertype2 = new Para();
-    this.parametertype2.type = 'text';
-        if (this.booking.toTime) {
-           this.parametertype2.text = new Date(this.booking.toTime).toLocaleTimeString();
-        } else {
-           this.parametertype2.text = " ";
-        }
+    if (this.booking.toTime) {
+      this.parametertype2.text = new Date(
+        this.booking.toTime
+      ).toLocaleTimeString();
+    } else {
+      this.parametertype2.text = ' ';
+    }
     this.parameterss2.push(this.parametertype2);
 
     this.parametertype2 = new Para();
@@ -3716,56 +3955,58 @@ createBooking(plan: any, bookingSummary: any, callback?: () => void) {
     this.parametertype2.text = String(this.booking.noOfChildren);
     this.parameterss2.push(this.parametertype2);
 
-      this.parametertype2 = new Para();
-    this.parametertype2.type = 'text',
-    this.parametertype2.text = this.booking.promotionName ? this.booking.promotionName : ' ';
+    this.parametertype2 = new Para();
+    (this.parametertype2.type = 'text'),
+      (this.parametertype2.text = this.booking.promotionName
+        ? this.booking.promotionName
+        : ' ');
     this.parameterss2.push(this.parametertype2);
 
     this.parametertype2 = new Para();
-    this.parametertype2.type = 'text',
-      this.parametertype2.text = this.booking.totalAmount.toFixed(2);
+    (this.parametertype2.type = 'text'),
+      (this.parametertype2.text = this.booking.totalAmount.toFixed(2));
     this.parameterss2.push(this.parametertype2);
 
     this.parametertype2 = new Para();
-    this.parametertype2.type = 'text',
-      this.parametertype2.text = " ";
-    this.parameterss2.push(this.parametertype2);
-
-     this.parametertype2 = new Para();
-    this.parametertype2.type = 'text',
-      this.parametertype2.text = this.booking.totalAmount.toFixed(2);
+    (this.parametertype2.type = 'text'), (this.parametertype2.text = ' ');
     this.parameterss2.push(this.parametertype2);
 
     this.parametertype2 = new Para();
-    this.parametertype2.type = 'text',
-      this.parametertype2.text = " ";
+    (this.parametertype2.type = 'text'),
+      (this.parametertype2.text = this.booking.totalAmount.toFixed(2));
+    this.parameterss2.push(this.parametertype2);
+
+    this.parametertype2 = new Para();
+    (this.parametertype2.type = 'text'), (this.parametertype2.text = ' ');
     this.parameterss2.push(this.parametertype2);
 
     this.componentstype2.parameters = this.parameterss2;
     this.components.push(this.componentstype2);
 
     this.componentstype9.index = '0';
-    this.componentstype9.sub_type = "url";
-    this.componentstype9.type = "button";
+    this.componentstype9.sub_type = 'url';
+    this.componentstype9.type = 'button';
 
     this.parametertype20 = new Para();
-    this.parametertype20.type = 'text',
-      this.parametertype20.text = "/reservation-confirm?bookingId=" + this.referenceNumberAfterBooking;
+    (this.parametertype20.type = 'text'),
+      (this.parametertype20.text =
+        '/reservation-confirm?bookingId=' + this.referenceNumberAfterBooking);
     this.parameterss15.push(this.parametertype20);
     this.componentstype9.parameters = this.parameterss15;
     this.components.push(this.componentstype9);
 
-
     this.template.components = this.components;
     this.whatsappForm.template = this.template;
-    this.whatsappForm.to = "9583637921",
-      this.whatsappForm.type = 'template',
-      this.hotelBookingService.whatsAppMsg(this.whatsappForm).subscribe((response) => {
-        this.paymentLoader = false;
-
-      }, error => {
-        this.paymentLoader = false;
-      });
+    (this.whatsappForm.to = '9583637921'),
+      (this.whatsappForm.type = 'template'),
+      this.hotelBookingService.whatsAppMsg(this.whatsappForm).subscribe(
+        (response) => {
+          this.paymentLoader = false;
+        },
+        (error) => {
+          this.paymentLoader = false;
+        }
+      );
   }
 
   onGoHome() {
@@ -3777,10 +4018,9 @@ createBooking(plan: any, bookingSummary: any, callback?: () => void) {
   //   this.token.clearHotelBooking();
   // }
 
-
   paymentIntent(payment: Payment) {
     this.paymentLoader = true;
-    payment.date = this.datePipe.transform(new Date().getTime(), "yyyy-MM-dd");
+    payment.date = this.datePipe.transform(new Date().getTime(), 'yyyy-MM-dd');
     this.hotelBookingService.paymentIntent(payment).subscribe((response) => {
       this.paymentLoader = false;
       if (response.status === 200) {
@@ -3792,12 +4032,17 @@ createBooking(plan: any, bookingSummary: any, callback?: () => void) {
   accommodationEnquiryBookingData() {
     this.enquiryForm = new EnquiryDto();
 
-    if (this.token.getProperty().address != null && this.token.getProperty().address != undefined &&
-      this.token.getProperty().address.city != null && this.token.getProperty().address.city != undefined) {
+    if (
+      this.token.getProperty().address != null &&
+      this.token.getProperty().address != undefined &&
+      this.token.getProperty().address.city != null &&
+      this.token.getProperty().address.city != undefined
+    ) {
       this.enquiryForm.address = this.token.getProperty().address;
       this.enquiryForm.country = this.token.getProperty().address.country;
       this.enquiryForm.location = this.token.getProperty().address.city;
-      this.enquiryForm.alternativeLocation = this.token.getProperty().address.city;
+      this.enquiryForm.alternativeLocation =
+        this.token.getProperty().address.city;
     }
     this.payment.netReceivableAmount = this.netAmount;
 
@@ -3808,8 +4053,10 @@ createBooking(plan: any, bookingSummary: any, callback?: () => void) {
     this.enquiryForm.email = this.booking.email;
     this.enquiryForm.phone = this.booking.mobile;
     this.enquiryForm.taxAmount = this.taxAmountBooking;
-    this.enquiryForm.min = this.booking.totalAmount + this.booking.totalServiceAmount;
-    this.enquiryForm.max = this.booking.totalAmount + this.booking.totalServiceAmount;
+    this.enquiryForm.min =
+      this.booking.totalAmount + this.booking.totalServiceAmount;
+    this.enquiryForm.max =
+      this.booking.totalAmount + this.booking.totalServiceAmount;
 
     this.enquiryForm.checkOutDate = this.booking.toDate;
     this.enquiryForm.checkInDate = this.booking.fromDate;
@@ -3823,11 +4070,15 @@ createBooking(plan: any, bookingSummary: any, callback?: () => void) {
     this.enquiryForm.noOfExtraChild = this.booking.noOfExtraChild;
     this.enquiryForm.couponCode = this.booking.couponCode;
     this.enquiryForm.promotionName = this.booking.promotionName;
-    this.enquiryForm.externalSite = "Website";
-    this.enquiryForm.source = "Bookone Connect"
+    this.enquiryForm.externalSite = 'Website';
+    this.enquiryForm.source = 'Bookone Connect';
     this.enquiryForm.beforeTaxAmount = this.booking.beforeTaxAmount;
-    if(this.token.getProperty().whatsApp === "" || this.token.getProperty().whatsApp === null || this.token.getProperty().whatsApp === undefined){
-      this.enquiryForm.mobile= this.token.getProperty().mobile;
+    if (
+      this.token.getProperty().whatsApp === '' ||
+      this.token.getProperty().whatsApp === null ||
+      this.token.getProperty().whatsApp === undefined
+    ) {
+      this.enquiryForm.mobile = this.token.getProperty().mobile;
     } else {
       this.enquiryForm.mobile = this.token.getProperty().whatsApp;
     }
@@ -3837,8 +4088,8 @@ createBooking(plan: any, bookingSummary: any, callback?: () => void) {
     this.enquiryForm.createdDate = new Date().getTime();
 
     this.propertyDetails = this.token.getProperty();
-    this.propertyDetails.businessServiceDtoList.forEach(item => {
-      if (item.name === "Accommodation") {
+    this.propertyDetails.businessServiceDtoList.forEach((item) => {
+      if (item.name === 'Accommodation') {
         this.fromTime = item.checkInTime;
         this.toTime = item.checkOutTime;
       }
@@ -3851,8 +4102,11 @@ createBooking(plan: any, bookingSummary: any, callback?: () => void) {
     this.combinedDateFromTime = combinedDateTime;
     let checkoutDateConcat = this.booking.toDate;
     let timestampcheckout = this.toTime;
-    let combinedCheckouDateTimeString = checkoutDateConcat + ' ' + timestampcheckout;
-    let combinedDateTimeCheckout = new Date(combinedCheckouDateTimeString).getTime();
+    let combinedCheckouDateTimeString =
+      checkoutDateConcat + ' ' + timestampcheckout;
+    let combinedDateTimeCheckout = new Date(
+      combinedCheckouDateTimeString
+    ).getTime();
     this.combinedDateToTime = combinedDateTimeCheckout;
     this.enquiryForm.fromTime = this.combinedDateFromTime;
     this.enquiryForm.toTime = this.combinedDateToTime;
@@ -3866,8 +4120,8 @@ createBooking(plan: any, bookingSummary: any, callback?: () => void) {
     this.enquiryForm.accommodationType = this.token.getProperty().businessType;
     this.enquiryForm.discountAmount = this.booking.discountAmount;
     this.enquiryForm.discountAmountPercentage = this.booking.discountPercentage;
-    this.enquiryForm.status = "Booked";
-    this.enquiryForm.specialNotes = this.booking.notes
+    this.enquiryForm.status = 'Booked';
+    this.enquiryForm.specialNotes = this.booking.notes;
     this.enquiryForm.propertyId = 763;
 
     this.enquiryForm.totalAmount = this.booking.totalAmount;
@@ -3877,15 +4131,20 @@ createBooking(plan: any, bookingSummary: any, callback?: () => void) {
     taxarray = taxarray.filter(
       (tax) => tax.name !== 'IGST' && tax.name !== 'GST'
     );
-    this.enquiryForm.taxDetails = taxarray
+    this.enquiryForm.taxDetails = taxarray;
     // this.enquiryForm.planCode = this.booking.planCode;
-    this.enquiryForm.bookingReservationId = this.booking.propertyReservationNumber;
+    this.enquiryForm.bookingReservationId =
+      this.booking.propertyReservationNumber;
     this.enquiryForm.bookingId = this.booking.id;
 
     this.enquiryForm.bookingPropertyId = this.token.getProperty().id;
     this.enquiryForm.propertyName = this.token.getProperty().name;
-    this.enquiryForm.taxDetails = this.token.getProperty().taxDetails.filter(item => item.name === 'CGST' || item.name === 'SGST' || item.name === 'GST');
-
+    this.enquiryForm.taxDetails = this.token
+      .getProperty()
+      .taxDetails.filter(
+        (item) =>
+          item.name === 'CGST' || item.name === 'SGST' || item.name === 'GST'
+      );
 
     const TO_EMAIL = 'reservation@thehotelmate.co';
     const TO_NAME = 'Support - The Hotel Mate';
@@ -3931,19 +4190,25 @@ createBooking(plan: any, bookingSummary: any, callback?: () => void) {
     this.enquiryForm.noOfExtraChild = Number(this.token.getExtraChildCharge());
     this.enquiryForm.bookingCommissionAmount = 0;
     this.paymentLoader = true;
-    if(this.booking.planCode === 'GHC'){
-      this.enquiryForm.roomPrice = (this.booking.roomPrice - (this.booking.extraPersonCharge + this.booking.extraChildCharge));
-    } else{
-      this.enquiryForm.roomPrice = (this.booking.roomPrice - (this.booking.extraPersonCharge + this.booking.extraChildCharge));
+    if (this.booking.planCode === 'GHC') {
+      this.enquiryForm.roomPrice =
+        this.booking.roomPrice -
+        (this.booking.extraPersonCharge + this.booking.extraChildCharge);
+    } else {
+      this.enquiryForm.roomPrice =
+        this.booking.roomPrice -
+        (this.booking.extraPersonCharge + this.booking.extraChildCharge);
     }
-    this.hotelBookingService.accommodationEnquiry(this.enquiryForm).subscribe((response) => {
-      this.enquiryForm = response.body;
-      this.paymentLoader = false;
-      this.paymentLoader = false;
-      this.isSuccess = true;
-      this.submitButtonDisable = true;
-      this.bookingConfirmed = true;
-    })
+    this.hotelBookingService
+      .accommodationEnquiry(this.enquiryForm)
+      .subscribe((response) => {
+        this.enquiryForm = response.body;
+        this.paymentLoader = false;
+        this.paymentLoader = false;
+        this.isSuccess = true;
+        this.submitButtonDisable = true;
+        this.bookingConfirmed = true;
+      });
   }
 
   async getPropertyDetailsById(id: number) {
@@ -3954,8 +4219,8 @@ createBooking(plan: any, bookingSummary: any, callback?: () => void) {
       const data = await this.listingService?.findByPropertyId(id).toPromise();
       if (data.status === 200) {
         this.businessUser = data.body;
-        this.businessUser.businessServiceDtoList.forEach(item => {
-          if (item.name === "Accommodation") {
+        this.businessUser.businessServiceDtoList.forEach((item) => {
+          if (item.name === 'Accommodation') {
             this.fromTime = item.checkInTime;
             this.toTime = item.checkOutTime;
           }
@@ -3968,8 +4233,11 @@ createBooking(plan: any, bookingSummary: any, callback?: () => void) {
         this.combinedDateFromTime = combinedDateTime;
         let checkoutDateConcat = this.booking.toDate;
         let timestampcheckout = this.toTime;
-        let combinedCheckouDateTimeString = checkoutDateConcat + ' ' + timestampcheckout;
-        let combinedDateTimeCheckout = new Date(combinedCheckouDateTimeString).getTime();
+        let combinedCheckouDateTimeString =
+          checkoutDateConcat + ' ' + timestampcheckout;
+        let combinedDateTimeCheckout = new Date(
+          combinedCheckouDateTimeString
+        ).getTime();
         this.combinedDateToTime = combinedDateTimeCheckout;
         this.tokenFromTime = this.combinedDateFromTime;
         this.tokenToTime = this.combinedDateToTime;
@@ -3985,8 +4253,8 @@ createBooking(plan: any, bookingSummary: any, callback?: () => void) {
           (data) => data.name === this.businessUser.businessType
         );
 
-        this.businessUser?.socialMediaLinks.forEach(element => {
-          this.socialmedialist = element
+        this.businessUser?.socialMediaLinks.forEach((element) => {
+          this.socialmedialist = element;
         });
 
         if (this.businessUser.primaryColor !== undefined) {
@@ -3997,10 +4265,9 @@ createBooking(plan: any, bookingSummary: any, callback?: () => void) {
           );
         }
 
-
         this.changeDetectorRefs.detectChanges();
       } else {
-        this.router.navigate(["/404"]);
+        this.router.navigate(['/404']);
       }
     } catch (error) {
       this.loader = false;
@@ -4040,21 +4307,21 @@ createBooking(plan: any, bookingSummary: any, callback?: () => void) {
     // Create `card` element that will watch for updates
     // and display error messages
     const elements = stripe.elements();
-    const card = elements.create("card");
-    card.mount("#card-element");
-    card.addEventListener("change", (event) => {
-      const displayError = document.getElementById("card-error");
+    const card = elements.create('card');
+    card.mount('#card-element');
+    card.addEventListener('change', (event) => {
+      const displayError = document.getElementById('card-error');
       if (event.error) {
         displayError.textContent = event.error.message;
       } else {
-        displayError.textContent = "";
+        displayError.textContent = '';
       }
     });
 
     // Listen for form submission, process the form with Stripe,
     // and get the
-    const paymentForm = document.getElementById("payment-form");
-    paymentForm.addEventListener("submit", (event) => {
+    const paymentForm = document.getElementById('payment-form');
+    paymentForm.addEventListener('submit', (event) => {
       event.preventDefault();
 
       payWithCard(stripe, card, this.payment.clientSecret);
@@ -4086,21 +4353,21 @@ createBooking(plan: any, bookingSummary: any, callback?: () => void) {
     const loading = function (isLoading) {
       if (isLoading) {
         // Disable the button and show a spinner
-        document.querySelector("button").disabled = true;
-        document.querySelector("#spinner").classList.remove("hidden");
-        document.querySelector("#button-text").classList.add("hidden");
+        document.querySelector('button').disabled = true;
+        document.querySelector('#spinner').classList.remove('hidden');
+        document.querySelector('#button-text').classList.add('hidden');
       } else {
-        document.querySelector("button").disabled = false;
-        document.querySelector("#spinner").classList.add("hidden");
-        document.querySelector("#button-text").classList.remove("hidden");
+        document.querySelector('button').disabled = false;
+        document.querySelector('#spinner').classList.add('hidden');
+        document.querySelector('#button-text').classList.remove('hidden');
       }
     };
     const showError = function (errorMsgText) {
       loading(false);
-      var errorMsg = document.querySelector("#card-error");
+      var errorMsg = document.querySelector('#card-error');
       errorMsg.textContent = errorMsgText;
       setTimeout(function () {
-        errorMsg.textContent = "";
+        errorMsg.textContent = '';
       }, 4000);
     };
     let orderComplete = function () {
@@ -4119,222 +4386,220 @@ createBooking(plan: any, bookingSummary: any, callback?: () => void) {
         this.booking.paymentId = response.body.id;
         this.booking.modeOfPayment = this.payment.paymentMode;
         this.booking.outstandingAmount = 0;
-        Logger.log("Card info done" + JSON.stringify(this.payment));
+        Logger.log('Card info done' + JSON.stringify(this.payment));
         this.changeDetectorRefs.detectChanges();
 
         this.createAllBookings();
       }
     });
   }
+  async createAllEnquiries() {
+    const bookingSummaryStr = sessionStorage.getItem('bookingSummaryDetails');
+    const bookingSummary = bookingSummaryStr
+      ? JSON.parse(bookingSummaryStr)
+      : null;
 
-  submitForm() {
+    if (!bookingSummary || !bookingSummary.selectedPlansSummary?.length) {
+      console.error('No valid booking summary found.');
+      return;
+    }
 
-    // localStorage.removeItem('selectedPromoData');
-    // localStorage.removeItem('selectPromo');
+    const bookingList = bookingSummary.selectedPlansSummary;
+
+    for (let i = 0; i < bookingList.length; i++) {
+      const _booking = bookingList[i];
+      await this.submitForm(_booking, bookingList);
+    }
+  }
+
+  async submitForm(plan: any, bookingSummary: any) {
+    const booking: any = this.booking;
+
     if (this.showTheSelectedCoupon) {
-      const finalPrice = this.calculateDiscountedPrice(this.storedActualNetAmount, this.selectedCouponList.discountPercentage);
-      this.booking.netAmount = finalPrice;
-      this.booking.gstAmount = (this.booking.netAmount * this.booking.taxPercentage) / 100;
-      this.booking.discountPercentage = this.selectedCouponList.discountPercentage;
-      this.booking.discountAmount = this.storedActualNetAmount - this.appliedCoupon;
-      this.booking.beforeTaxAmount = this.storedActualNetAmount;
-      this.booking.taxAmount = (this.booking.netAmount * this.booking.taxPercentage) / 100;
-      this.booking.couponCode = this.selectedCouponList.couponCode;
-      this.booking.promotionName = this.selectedCouponList.name;
-    }
-    else {
-      this.booking.discountPercentage = 0;
-    }
-    // console.log("Coupon Applied Data is  Enquiry==========>",this.booking);
-    this.enquiryForm = new EnquiryDto();
-    if (this.token.getProperty().address != null && this.token.getProperty().address != undefined &&
-      this.token.getProperty().address.city != null && this.token.getProperty().address.city != undefined) {
-      this.enquiryForm.address = this.token.getProperty().address;
-      this.enquiryForm.country = this.token.getProperty().address.country;
-      this.enquiryForm.location = this.token.getProperty().address.city;
-      this.enquiryForm.alternativeLocation = this.token.getProperty().address.city;
-    }
-
-    this.payment.netReceivableAmount = this.booking.netAmount;
-    this.enquiryForm.min = Number(this.booking.totalAmount.toFixed(2));
-    this.enquiryForm.max = Number(this.booking.totalAmount.toFixed(2));
-
-    this.enquiryForm.firstName = this.booking.firstName;
-    this.enquiryForm.lastName = this.booking.lastName;
-    this.enquiryForm.email = this.booking.email;
-    this.enquiryForm.phone = this.booking.mobile;
-    this.enquiryForm.checkOutDate = this.booking.toDate;
-    this.enquiryForm.checkInDate = this.booking.fromDate;
-    this.enquiryForm.noOfPerson = this.booking.noOfPersons;
-    this.enquiryForm.noOfExtraPerson = this.booking.noOfExtraPerson;
-    this.enquiryForm.roomId = this.booking.roomId;
-    this.enquiryForm.payableAmount = this.booking.netAmount;
-    this.enquiryForm.roomName = this.booking.roomName;
-    this.enquiryForm.extraPersonCharge = this.booking.extraPersonCharge;
-    this.enquiryForm.extraChildCharge = this.booking.extraChildCharge;
-    this.enquiryForm.noOfExtraChild = this.booking.noOfExtraChild;
-    if(this.booking.planCode === 'GHC'){
-      this.enquiryForm.roomPrice =  (this.booking.netAmount) - (this.booking.extraPersonCharge + this.booking.extraChildCharge);
-    } else{
-      this.enquiryForm.roomPrice =  ((Number(this.token.getBookingRoomPrice()) * (this.booking.noOfRooms * this.DiffDate)));
-    }
-    this.enquiryForm.externalSite = "Website";
-    this.enquiryForm.source = "Bookone Connect";
-    this.enquiryForm.couponCode = this.booking.couponCode;
-    this.enquiryForm.promotionName = this.booking.promotionName;
-    this.enquiryForm.discountAmount = this.booking.discountAmount;
-    this.enquiryForm.beforeTaxAmount = this.booking.beforeTaxAmount;
-    // this.enquiryForm.counterName=this.booking.counterName;
-    // this.enquiryForm.modeOfPayment=this.booking.modeOfPayment;
-    // this.enquiryForm.advanceAmount=this.booking.advanceAmount;
-    if(this.token.getProperty().whatsApp === "" || this.token.getProperty().whatsApp === null || this.token.getProperty().whatsApp === undefined){
-      this.enquiryForm.mobile= this.token.getProperty().mobile;
+      const finalPrice = this.calculateDiscountedPrice(
+        this.storedActualNetAmount,
+        this.selectedCouponList.discountPercentage
+      );
+      booking.netAmount = finalPrice;
+      booking.gstAmount = (booking.netAmount * booking.taxPercentage) / 100;
+      booking.discountPercentage = this.selectedCouponList.discountPercentage;
+      booking.discountAmount = this.storedActualNetAmount - this.appliedCoupon;
+      booking.beforeTaxAmount = this.storedActualNetAmount;
+      booking.taxAmount = (booking.netAmount * booking.taxPercentage) / 100;
+      booking.couponCode = this.selectedCouponList.couponCode;
+      booking.promotionName = this.selectedCouponList.name;
     } else {
-      this.enquiryForm.mobile = this.token.getProperty().whatsApp;
+      booking.discountPercentage = 0;
     }
-    this.enquiryForm.roomType = this.booking.roomType;
-    this.enquiryForm.roomRatePlanName = this.booking.roomRatePlanName;
 
-    this.enquiryForm.createdDate = new Date().getTime();
+    const enquiryForm = new EnquiryDto();
 
-    this.propertyDetails = this.token.getProperty();
-    this.propertyDetails.businessServiceDtoList.forEach(item => {
-      if (item.name === "Accommodation") {
-        this.fromTime = item.checkInTime;
-        this.toTime = item.checkOutTime;
-      }
-    });
+    if (this.token.getProperty()?.address?.city) {
+      enquiryForm.address = this.token.getProperty().address;
+      enquiryForm.country = this.token.getProperty().address.country;
+      enquiryForm.location = this.token.getProperty().address.city;
+      enquiryForm.alternativeLocation = this.token.getProperty().address.city;
+    }
 
-    let checkinDateConcat = this.booking.fromDate;
-    let timestamp = this.fromTime;
-    let combinedDateTimeString = checkinDateConcat + ' ' + timestamp;
-    let combinedDateTime = new Date(combinedDateTimeString).getTime();
-    this.combinedDateFromTime = combinedDateTime;
-    let checkoutDateConcat = this.booking.toDate;
-    let timestampcheckout = this.toTime;
-    let combinedCheckouDateTimeString = checkoutDateConcat + ' ' + timestampcheckout;
-    let combinedDateTimeCheckout = new Date(combinedCheckouDateTimeString).getTime();
-    this.combinedDateToTime = combinedDateTimeCheckout;
-    this.enquiryForm.fromTime = this.combinedDateFromTime;
-    this.enquiryForm.toTime = this.combinedDateToTime;
-    this.token.saveTime(String(this.enquiryForm.fromTime));
-    this.token.saveToTime(String(this.enquiryForm.toTime));
-    this.enquiryForm.accountManager = '';
-    this.enquiryForm.consultantPerson = '';
-    this.enquiryForm.noOfRooms = this.booking.noOfRooms;
-    this.enquiryForm.noOfChildren = this.booking.noOfChildren;
-    this.enquiryForm.accommodationType = this.token.getProperty().businessType;
-    this.enquiryForm.status = "Enquiry";
-    this.enquiryForm.specialNotes = this.booking.notes
-    this.enquiryForm.propertyId = 763;
-    this.enquiryForm.bookingPropertyId = this.token.getProperty().id;
-    this.enquiryForm.propertyName = this.token.getProperty().name;
-    this.enquiryForm.taxDetails = this.token.getProperty().taxDetails.filter(item => item.name === 'CGST' || item.name === 'SGST' || item.name === 'GST');
-    this.enquiryForm.taxDetails.forEach(item => {
-      if (item.name === 'CGST') {
-        this.percentage1 = item.percentage;
-      }
+    this.payment.netReceivableAmount = plan.price + plan.taxPercentageperroom;
+    enquiryForm.min = Number(this.payment.netReceivableAmount.toFixed(2));
+    enquiryForm.max = Number(this.payment.netReceivableAmount.toFixed(2));
 
-      if (item.name === 'SGST') {
-        this.percentage2 = item.percentage;
-      }
-    })
-    this.totalPercentage = (this.percentage1 + this.percentage2);
+    enquiryForm.firstName = booking.firstName;
+    enquiryForm.lastName = booking.lastName;
+    enquiryForm.email = booking.email;
+    enquiryForm.phone = booking.mobile;
+    enquiryForm.checkOutDate = booking.toDate;
+    enquiryForm.checkInDate = booking.fromDate;
+    enquiryForm.noOfPerson = plan.adults;
+    enquiryForm.noOfExtraPerson = plan.extraCountAdult;
+    enquiryForm.roomId = plan.roomId;
+    enquiryForm.payableAmount = plan.price + plan.taxPercentageperroom;
+    enquiryForm.roomName = plan.roomName;
+    enquiryForm.extraPersonCharge = plan.extraPersonAdultCountAmount;
+    enquiryForm.extraChildCharge = plan.extraPersonChildCountAmount;
+    enquiryForm.noOfExtraChild = plan.extraCountChild;
 
-    this.enquiryForm.taxAmount = (this.booking.netAmount * this.booking.taxPercentage) / 100;
+    enquiryForm.roomPrice =
+      booking.planCode === 'GHC'
+        ? booking.totalAmount -
+          (plan.extraPersonCharge + plan.extraPersonChildCountAmount)
+        : plan.price - (enquiryForm.extraPersonCharge + enquiryForm.extraChildCharge);
+
+    enquiryForm.externalSite = 'Website';
+    enquiryForm.source = 'Bookone Connect';
+    enquiryForm.couponCode = booking.couponCode;
+    enquiryForm.promotionName = booking.promotionName;
+    enquiryForm.discountAmount = booking.discountAmount;
+    enquiryForm.beforeTaxAmount = plan.price;
+
+    enquiryForm.mobile =
+      this.token.getProperty().whatsApp || this.token.getProperty().mobile;
+
+    enquiryForm.roomType = plan.roomName;
+    enquiryForm.roomRatePlanName = plan.planCodeName;
+    enquiryForm.createdDate = new Date().getTime();
+
+    // Combine date and time
+    const checkInDateTime = new Date(
+      `${enquiryForm.checkInDate} ${this.fromTime}`
+    ).getTime();
+    const checkOutDateTime = new Date(
+      `${enquiryForm.checkInDate} ${this.toTime}`
+    ).getTime();
+    enquiryForm.fromTime = checkInDateTime;
+    enquiryForm.toTime = checkOutDateTime;
+    this.token.saveTime(String(checkInDateTime));
+    this.token.saveToTime(String(checkOutDateTime));
+
+    enquiryForm.accountManager = '';
+    enquiryForm.consultantPerson = '';
+    enquiryForm.noOfRooms = Number(plan.selectedRoomnumber);
+    enquiryForm.noOfChildren = plan.children;
+    enquiryForm.accommodationType = this.token.getProperty().businessType;
+    enquiryForm.status = 'Enquiry';
+    enquiryForm.specialNotes = booking.notes || '';
+    enquiryForm.propertyId = 763;
+    enquiryForm.bookingPropertyId = this.token.getProperty().id;
+    enquiryForm.propertyName = this.token.getProperty().name;
+    enquiryForm.taxDetails = this.token
+      .getProperty()
+      .taxDetails.filter((item) => ['CGST', 'SGST', 'GST'].includes(item.name));
+    enquiryForm.taxAmount = plan.taxPercentageperroom;
+
     const TO_EMAIL = 'reservation@thehotelmate.co';
     const TO_NAME = 'Support - The Hotel Mate';
     const bccEmail = 'samaya.muduli@credencesoft.co.nz';
     const bccEmail2 = 'info@bookonepms.com';
-    const bccName = 'Samaya';
 
-    this.enquiryForm.fromName =
-      this.enquiryForm.firstName + ' ' + this.enquiryForm.lastName;
-    this.enquiryForm.toName = TO_NAME;
-    this.enquiryForm.fromEmail = this.enquiryForm.email;
-    this.enquiryForm.toEmail = TO_EMAIL;
-    this.enquiryForm.bccEmail = bccEmail;
-    this.enquiryForm.bccName = bccEmail;
-    this.enquiryForm.bccEmailTo = bccEmail2;
-    this.enquiryForm.status = 'Enquiry';
+    enquiryForm.fromName = `${enquiryForm.firstName} ${enquiryForm.lastName}`;
+    enquiryForm.toName = TO_NAME;
+    enquiryForm.fromEmail = enquiryForm.email;
+    enquiryForm.toEmail = TO_EMAIL;
+    enquiryForm.bccEmail = bccEmail;
+    enquiryForm.bccName = bccEmail;
+    enquiryForm.bccEmailTo = bccEmail2;
 
-    if (
-      this.enquiryForm.dietaryRequirement === null ||
-      this.enquiryForm.dietaryRequirement === undefined
-    ) {
-      this.enquiryForm.dietaryRequirement = '';
-    }
-    if (
-      this.enquiryForm.accommodationType === null ||
-      this.enquiryForm.accommodationType === undefined
-    ) {
-      this.enquiryForm.accommodationType = '';
-    }
-    if (
-      this.enquiryForm.specialNotes === null ||
-      this.enquiryForm.specialNotes === undefined
-    ) {
-      this.enquiryForm.specialNotes = '';
-    }
-    if (
-      this.enquiryForm.alternativeLocation === null ||
-      this.enquiryForm.alternativeLocation === undefined
-    ) {
-      this.enquiryForm.alternativeLocation = '';
-    }
-    this.enquiryForm.totalAmount = this.booking.totalAmount;
-    this.enquiryForm.couponCode = this.booking.couponCode;
-    this.enquiryForm.promotionName = this.booking.promotionName;
-    this.enquiryForm.discountAmountPercentage = this.booking.discountPercentage;
-    this.enquiryForm.noOfNights = this.DiffDate;
-    this.enquiryForm.foodOptions = '';
-    this.enquiryForm.organisationId = environment.parentOrganisationId;
-    this.enquiryForm.bookingCommissionAmount = 0;
+    enquiryForm.dietaryRequirement = enquiryForm.dietaryRequirement || '';
+    enquiryForm.accommodationType = enquiryForm.accommodationType || '';
+    enquiryForm.specialNotes = enquiryForm.specialNotes || '';
+    enquiryForm.alternativeLocation = enquiryForm.alternativeLocation || '';
+
+    enquiryForm.totalAmount = plan.price + plan.taxPercentageperroom;
+    enquiryForm.discountAmountPercentage = booking.discountPercentage;
+    enquiryForm.noOfNights = plan.nights;
+    enquiryForm.foodOptions = '';
+    enquiryForm.organisationId = environment.parentOrganisationId;
+    enquiryForm.bookingCommissionAmount = 0;
+    enquiryForm.taxPercentage = plan.taxpercentage;
+
     this.paymentLoader = true;
-    this.enquiryForm.taxPercentage = this.booking.taxPercentage
-    this.hotelBookingService.accommodationEnquiry(this.enquiryForm).subscribe((response) => {
-      this.enquiryForm.checkOutDate =this.datePipe.transform(this.booking.toDate, 'dd-MM-YYYY');
-      this.enquiryForm.checkInDate = this.datePipe.transform(this.booking.fromDate, 'dd-MM-YYYY');
-      this.equitycreatedData = response.body;
-      this.token.saveEnquiryData(this.equitycreatedData)
-      // console.log("dfgvhbjnk"+ JSON.stringify(this.equitycreatedData))
-      this.isEnquiry = true;
-      this.paymentLoader = false;
-      this.paymentLoader = false;
-      this.isSuccess = true;
-      this.submitButtonDisable = true;
-      this.bookingConfirmed = true;
-      this.enquiryNo = "THM-" + response.body.enquiryId;
+    try {
+    const response: HttpResponse<EnquiryDto> = await this.hotelBookingService
+      .accommodationEnquiry(enquiryForm)
+      .toPromise();
+    if (response) {
+            this.paymentLoader = false;
 
-      this.propertyenquiryemails()
-      this.hotelBookingService.emailEnquire(this.enquiryForm).subscribe((response) => {
-        this.paymentLoader = false;
-        this.router.navigate(["/confirm"]);
-      }, error => {
-        this.paymentLoader = false;
-      });
-      this.sendenquirytoproperty(this.enquiryForm)
-      this.sendWhatsappMessageToCustomer();
-      this.sendWhatsappMessageToPropertyOwner();
+        enquiryForm.checkOutDate = this.datePipe.transform(enquiryForm.checkInDate, 'dd-MM-yyyy');
+        enquiryForm.checkInDate = this.datePipe.transform(enquiryForm.checkInDate, 'dd-MM-yyyy');
+        this.equitycreatedData = response.body;
+        const existingEnquirysStr = sessionStorage.getItem(
+          'EnquiryResponseList'
+        );
+        const existingEnquiries = existingEnquirysStr
+          ? JSON.parse(existingEnquirysStr)
+          : [];
+        existingEnquiries.push(this.equitycreatedData);
+        sessionStorage.setItem(
+          'EnquiryResponseList',
+          JSON.stringify(existingEnquiries)
+        );
+        this.token.saveEnquiryData(this.equitycreatedData);
+        this.isEnquiry = true;
+        this.isSuccess = true;
+        this.submitButtonDisable = true;
+        this.bookingConfirmed = true;
+        this.enquiryNo = "THM-" + response.body.enquiryId;
 
-    }, error => {
-      this.paymentLoader = false;
-    });
-
+        // Send notifications
+        this.propertyenquiryemails(enquiryForm);
+        this.hotelBookingService.emailEnquire(enquiryForm).subscribe(
+          () => {
+            this.paymentLoader = false;
+            this.router.navigate(["/confirm"]);
+          },
+          () => {
+            this.paymentLoader = false;
+          }
+        );
+        this.sendenquirytoproperty(enquiryForm);
+        this.sendWhatsappMessageToCustomer();
+        this.sendWhatsappMessageToPropertyOwner();
+      return true;
+    }
+  } catch (e) {
+    console.error('Submit failed', e);
   }
-  propertyenquiryemails() {
+
+  return false;
+  }
+
+  propertyenquiryemails(enquiryForm) {
     // console.log(this.equitycreatedData.enquiryId)
-    this.propertyenquiryone.customerName = this.enquiryForm.fromName;
-    this.propertyenquiryone.propertyEnquiryId = this.equitycreatedData.enquiryId;
+    this.propertyenquiryone.customerName = enquiryForm.fromName;
+    this.propertyenquiryone.propertyEnquiryId =
+      this.equitycreatedData.enquiryId;
     this.propertyenquiryone.propertyId = this.businessUser.id;
     this.propertyenquiryone.propertyName = this.businessUser.name;
     this.propertyenquiryone.propertyLandPhone = this.businessUser.mobile;
     this.propertyenquiryone.propertyMobile = this.businessUser.mobile;
 
-
-
     this.http
-      .post<EnquiryForm>('https://api.bookonelocal.in/api-lms/api/v1/propertyEnquiry', this.propertyenquiryone)
+      .post<EnquiryForm>(
+        'https://api.bookonelocal.in/api-lms/api/v1/propertyEnquiry',
+        this.propertyenquiryone
+      )
       .subscribe((response) => {
         this.success = response;
         Logger.log('sent ' + response);
@@ -4364,16 +4629,18 @@ createBooking(plan: any, bookingSummary: any, callback?: () => void) {
         //  this.enquiryForm = new EnquiryForm();
         //  this.successMessage = true;
       });
-
-
   }
   sendenquirytoproperty(enquiryForm) {
-    this.enquiryForm.fromEmail = "reservation@thehotelmate.co";
+    this.enquiryForm.fromEmail = 'reservation@thehotelmate.co';
     this.enquiryForm.phone = '';
-    this.enquiryForm.email = '',
-      this.enquiryForm.roomPrice = this.booking.totalAmount
-    this.enquiryForm.toEmail = this.businessUser.email
-    this.http.post<EnquiryForm>(environment.apiUrlBookone + '/api/email/enquire', this.enquiryForm)
+    (this.enquiryForm.email = ''),
+      (this.enquiryForm.roomPrice = this.booking.totalAmount);
+    this.enquiryForm.toEmail = this.businessUser.email;
+    this.http
+      .post<EnquiryForm>(
+        environment.apiUrlBookone + '/api/email/enquire',
+        this.enquiryForm
+      )
       .subscribe((response) => {
         this.success = response;
         Logger.log('sent ' + response);
@@ -4405,50 +4672,47 @@ createBooking(plan: any, bookingSummary: any, callback?: () => void) {
       });
 
     //  this.propertyenquiryemails(enquiryForm);
-
   }
   sendWhatsappMessageToCustomer() {
     this.whatsappForm.messaging_product = 'whatsapp';
     this.whatsappForm.recipient_type = 'individual';
-    this.template.name = "";
-    this.template.name = "sample_reservation_inquiry";
-    this.language.code = 'en',
-      this.template.language = this.language;
-    this.componentstype.type = 'header',
-      this.parametertype.type = 'image',
-      this.images.link = 'https://bookonelocal.in/cdn/BookOne.jpeg',
-      this.parametertype.image = this.images;
+    this.template.name = '';
+    this.template.name = 'sample_reservation_inquiry';
+    (this.language.code = 'en'), (this.template.language = this.language);
+    (this.componentstype.type = 'header'),
+      (this.parametertype.type = 'image'),
+      (this.images.link = 'https://bookonelocal.in/cdn/BookOne.jpeg'),
+      (this.parametertype.image = this.images);
     this.parameterss.push(this.parametertype);
     this.componentstype.parameters = this.parameterss;
     this.components.push(this.componentstype);
-    this.componentstype2.type = 'body',
-      this.parametertype2 = new Para()
-    this.parametertype2.type = 'text',
-      this.parametertype2.text = this.booking.firstName;
-    this.parameterss2.push(this.parametertype2);
-    this.parametertype2 = new Para()
-    this.parametertype2.type = 'text',
-      this.parametertype2.text = this.businessUser.name;
+    (this.componentstype2.type = 'body'), (this.parametertype2 = new Para());
+    (this.parametertype2.type = 'text'),
+      (this.parametertype2.text = this.booking.firstName);
     this.parameterss2.push(this.parametertype2);
     this.parametertype2 = new Para();
-    this.parametertype2.type = 'text',
-      this.parametertype2.text = this.booking.fromDate;
+    (this.parametertype2.type = 'text'),
+      (this.parametertype2.text = this.businessUser.name);
     this.parameterss2.push(this.parametertype2);
     this.parametertype2 = new Para();
-    this.parametertype2.type = 'text',
-      this.parametertype2.text = this.booking.toDate;
+    (this.parametertype2.type = 'text'),
+      (this.parametertype2.text = this.booking.fromDate);
     this.parameterss2.push(this.parametertype2);
     this.parametertype2 = new Para();
-    this.parametertype2.type = 'text',
-      this.parametertype2.text = this.booking.noOfRooms.toString();
+    (this.parametertype2.type = 'text'),
+      (this.parametertype2.text = this.booking.toDate);
     this.parameterss2.push(this.parametertype2);
     this.parametertype2 = new Para();
-    this.parametertype2.type = 'text',
-      this.parametertype2.text = (this.booking.noOfPersons).toString();
+    (this.parametertype2.type = 'text'),
+      (this.parametertype2.text = this.booking.noOfRooms.toString());
     this.parameterss2.push(this.parametertype2);
     this.parametertype2 = new Para();
-    this.parametertype2.type = 'text',
-      this.parametertype2.text = (this.booking.noOfChildren).toString();
+    (this.parametertype2.type = 'text'),
+      (this.parametertype2.text = this.booking.noOfPersons.toString());
+    this.parameterss2.push(this.parametertype2);
+    this.parametertype2 = new Para();
+    (this.parametertype2.type = 'text'),
+      (this.parametertype2.text = this.booking.noOfChildren.toString());
     this.parameterss2.push(this.parametertype2);
     // this.parametertype2 = new Para();
     // this.parametertype2.type = 'text';
@@ -4473,84 +4737,88 @@ createBooking(plan: any, bookingSummary: any, callback?: () => void) {
     if (this.booking.notes != null && this.booking.notes != undefined) {
       this.parametertype2.text = this.booking.notes;
     } else {
-      this.parametertype2.text = "  ";
+      this.parametertype2.text = '  ';
     }
     this.parameterss2.push(this.parametertype2);
     this.parametertype2 = new Para();
-    this.parametertype2.type = 'text',
-      this.parametertype2.text = this.booking.totalAmount.toString();
+    (this.parametertype2.type = 'text'),
+      (this.parametertype2.text = this.booking.totalAmount.toString());
     this.parameterss2.push(this.parametertype2);
     this.parametertype2 = new Para();
-    this.parametertype2.type = 'text',
-      this.parametertype2.text = this.booking.totalAmount.toString();
+    (this.parametertype2.type = 'text'),
+      (this.parametertype2.text = this.booking.totalAmount.toString());
     this.parameterss2.push(this.parametertype2);
     this.componentstype2.parameters = this.parameterss2;
     this.components.push(this.componentstype2);
     this.template.components = this.components;
     this.whatsappForm.template = this.template;
-    this.whatsappForm.to = this.booking.mobile,
-      this.whatsappForm.type = 'template',
-      this.hotelBookingService.whatsAppMsg(this.whatsappForm).subscribe((response) => {
-        this.paymentLoader = false;
-
-      }, error => {
-        this.paymentLoader = false;
-      });
+    (this.whatsappForm.to = this.booking.mobile),
+      (this.whatsappForm.type = 'template'),
+      this.hotelBookingService.whatsAppMsg(this.whatsappForm).subscribe(
+        (response) => {
+          this.paymentLoader = false;
+        },
+        (error) => {
+          this.paymentLoader = false;
+        }
+      );
   }
   sendWhatsappMessageToPropertyOwner() {
     this.whatsappForm2.messaging_product = 'whatsapp';
     this.whatsappForm2.recipient_type = 'individual';
-    this.template.name = "";
-    this.template.name = "sample_reservation_enquiry_hotel";
-    this.language.code = 'en',
-      this.template.language = this.language;
-    this.componentstype3.type = 'header',
-      this.parametertype3.type = 'image',
-      this.images.link = 'https://bookonelocal.in/cdn/BookOne.jpeg',
-      this.parametertype3.image = this.images;
+    this.template.name = '';
+    this.template.name = 'sample_reservation_enquiry_hotel';
+    (this.language.code = 'en'), (this.template.language = this.language);
+    (this.componentstype3.type = 'header'),
+      (this.parametertype3.type = 'image'),
+      (this.images.link = 'https://bookonelocal.in/cdn/BookOne.jpeg'),
+      (this.parametertype3.image = this.images);
     this.parameterss3.push(this.parametertype3);
     this.componentstype3.parameters = this.parameterss3;
     this.components2.push(this.componentstype3);
-    this.componentstype4.type = 'body',
-      this.parametertype4 = new Para()
-    this.parametertype4.type = 'text',
-      this.parametertype4.text = this.businessUser.name;
+    (this.componentstype4.type = 'body'), (this.parametertype4 = new Para());
+    (this.parametertype4.type = 'text'),
+      (this.parametertype4.text = this.businessUser.name);
     this.parameterss4.push(this.parametertype4);
     this.parametertype4 = new Para();
-    this.parametertype4.type = 'text',
-      this.parametertype4.text = this.booking.fromDate;
+    (this.parametertype4.type = 'text'),
+      (this.parametertype4.text = this.booking.fromDate);
     this.parameterss4.push(this.parametertype4);
     this.parametertype4 = new Para();
-    this.parametertype4.type = 'text',
-      this.parametertype4.text = this.booking.toDate;
+    (this.parametertype4.type = 'text'),
+      (this.parametertype4.text = this.booking.toDate);
     this.parameterss4.push(this.parametertype4);
     this.parametertype4 = new Para();
-    this.parametertype4.type = 'text',
-      this.parametertype4.text = this.booking.noOfRooms.toString();
+    (this.parametertype4.type = 'text'),
+      (this.parametertype4.text = this.booking.noOfRooms.toString());
     this.parameterss4.push(this.parametertype4);
     this.parametertype4 = new Para();
-    this.parametertype4.type = 'text',
-      this.parametertype4.text = (this.booking.noOfPersons + this.booking.noOfExtraPerson).toString();
+    (this.parametertype4.type = 'text'),
+      (this.parametertype4.text = (
+        this.booking.noOfPersons + this.booking.noOfExtraPerson
+      ).toString());
     this.parameterss4.push(this.parametertype4);
     this.parametertype4 = new Para();
-    this.parametertype4.type = 'text',
-      this.parametertype4.text = (this.booking.noOfChildren + this.booking.noOfExtraChild).toString();
+    (this.parametertype4.type = 'text'),
+      (this.parametertype4.text = (
+        this.booking.noOfChildren + this.booking.noOfExtraChild
+      ).toString());
     this.parameterss4.push(this.parametertype4);
     this.parametertype4 = new Para();
     this.parametertype4.type = 'text';
     if (this.booking.notes != null && this.booking.notes != undefined) {
       this.parametertype4.text = this.booking.notes;
     } else {
-      this.parametertype4.text = "  ";
+      this.parametertype4.text = '  ';
     }
     this.parameterss4.push(this.parametertype4);
     this.parametertype4 = new Para();
-    this.parametertype4.type = 'text',
-      this.parametertype4.text = this.booking.totalAmount.toString();
+    (this.parametertype4.type = 'text'),
+      (this.parametertype4.text = this.booking.totalAmount.toString());
     this.parameterss4.push(this.parametertype4);
     this.parametertype4 = new Para();
-    this.parametertype4.type = 'text',
-      this.parametertype4.text = this.booking.totalAmount.toString();
+    (this.parametertype4.type = 'text'),
+      (this.parametertype4.text = this.booking.totalAmount.toString());
     this.parameterss4.push(this.parametertype4);
     this.componentstype4.parameters = this.parameterss4;
     this.components2.push(this.componentstype4);
@@ -4558,12 +4826,14 @@ createBooking(plan: any, bookingSummary: any, callback?: () => void) {
     this.whatsappForm2.template = this.template;
     this.whatsappForm2.to = this.businessUser.mobile;
     this.whatsappForm2.type = 'template';
-    this.hotelBookingService.whatsAppMsg(this.whatsappForm2).subscribe((response) => {
-      this.paymentLoader = false;
-
-    }, error => {
-      this.paymentLoader = false;
-    });
+    this.hotelBookingService.whatsAppMsg(this.whatsappForm2).subscribe(
+      (response) => {
+        this.paymentLoader = false;
+      },
+      (error) => {
+        this.paymentLoader = false;
+      }
+    );
   }
   checkingAvailability() {
     this.hotelBookingService
@@ -4574,23 +4844,18 @@ createBooking(plan: any, bookingSummary: any, callback?: () => void) {
         this.booking.noOfPersons,
         this.booking.propertyId
       )
-      .subscribe(
-        (response) => {
-          this.availableRooms = response.body.roomList;
-          let facilities = this.businessUser.propertyServicesList;
-          if (
-            this.availableRooms !== null &&
-            this.availableRooms !== undefined
-          ) {
-            this.availableRooms.forEach((room) => {
-              room?.roomFacilities?.forEach((element) => {
-                if (element.name == 'Pet Friendly') {
-                  this.pet = element;
-                }
-              });
+      .subscribe((response) => {
+        this.availableRooms = response.body.roomList;
+        let facilities = this.businessUser.propertyServicesList;
+        if (this.availableRooms !== null && this.availableRooms !== undefined) {
+          this.availableRooms.forEach((room) => {
+            room?.roomFacilities?.forEach((element) => {
+              if (element.name == 'Pet Friendly') {
+                this.pet = element;
+              }
             });
-          }
+          });
         }
-      );
+      });
   }
 }

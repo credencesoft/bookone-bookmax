@@ -69,8 +69,9 @@
       >
         <div class="mb-1"><span class="highlight-text">Enquiry ID</span></div>
         <!-- <p class="mb-0">{{booking.enquiryId}}</p> -->
-        <div style="font-weight: bold; font-size: 17px">
-          THM-<b id="textToCopy" style="margin-right: 7px;">{{booking?.enquiryId}}</b>
+
+        <div style="font-weight: bold; font-size: 17px" >
+          <b id="textToCopy" style="margin-right: 7px;" *ngFor="let booking of bookingsResponseList; let last = last">THM-{{booking?.enquiryId}} <span *ngIf="!last">, </span></b>
           <img
             src="assets/images/CopyVoucher.png"
             alt=""
@@ -108,15 +109,20 @@
         </div>
       </div>
     </div>
-
-    <div class="row">
-      <div class="col-8"  style=" flex: 0 0 58%;
-    max-width: 58%;">
+        <div
+      class="row"
+      style="
+        display: flex;
+        justify-content: center;
+        gap: 30px;
+        margin-top: 20px;
+      "
+    >
+      <div class="col-8" style="flex: 0 0 38%; max-width: 38%">
         <div
           class="row mb-3"
           style="display: flex; justify-content: center; margin-top: 15px"
         >
-
           <div
             class="col-md-6"
             style="
@@ -124,41 +130,43 @@
               flex: 0 0 40%;
               text-align: center;
               border-right: 2px solid #d9d9d9;
-
             "
           >
-
             <div style="display: flex; gap: 26px; justify-content: center">
               <div>
                 <img
-                  src="assets/images/CalendarVoucher.png"
-                  alt=""
-                  height="20px"
-                  width="20px"
-                  style="margin-right: 3px;"
+                  src="assets/images/checkin-book-calender.svg"
+                  alt="icon"
+                  width="20"
+                  height="20"
+                  style="margin-right: 3px"
                 />
               </div>
-              <div *ngIf="booking?.checkInDate">
+              <div *ngIf="booking.checkInDate">
                 <b> Check-in date </b> <br />
-                <div>{{ booking?.checkInDate | date: 'd MMM' }}</div>
+                <div>{{ booking.checkInDate | date : "d MMM" }}</div>
               </div>
             </div>
           </div>
           <div
             class="col-md-6"
             style="min-width: 40% !important; flex: 0 0 40%; text-align: center"
-            *ngIf="booking?.checkOutDate"
+            *ngIf="booking.checkOutDate"
           >
             <div>
-              <b> Check-in date </b> <br />
-              <div>{{ booking?.checkOutDate | date: 'd MMM' }}</div>
+              <b> Check-Out date</b> <br />
+              <div>{{ booking.checkOutDate | date : "d MMM" }}</div>
             </div>
           </div>
 
           <div
             class="col-md-6"
-            style="min-width: 40% !important; flex: 0 0 40%; text-align: center; margin-top: 10px;"
-            *ngIf="booking?.noOfPersons || booking?.noOfChildren"
+            style="
+              min-width: 40% !important;
+              flex: 0 0 40%;
+              text-align: center;
+              margin-top: 10px;
+            "
           >
             <div>
               <b> Occupancy: </b>
@@ -166,39 +174,28 @@
           </div>
           <div
             class="col-md-6"
-            style="min-width: 40% !important; flex: 0 0 40%; text-align: center; margin-top: 10px;"
-            *ngIf="booking?.noOfPersons || booking?.noOfChildren"
+            style="
+              min-width: 40% !important;
+              flex: 0 0 40%;
+              text-align: center;
+              margin-top: 10px;
+            "
           >
             <div>
               <div>
-                {{ booking?.noOfPersons }} Adults,
-                {{ booking?.noOfChildren }} Children
+                {{ totalPlanAdults }} Adults, {{ totalPlanChildren }} Children
               </div>
-            </div>
-          </div>
-          <div
-            class="col-md-6"
-            style="min-width: 40% !important; flex: 0 0 40%; text-align: center; margin-top: 10px;"
-            *ngIf="booking?.noOfRooms"
-          >
-            <div>
-              <b> Rooms: </b>
-            </div>
-          </div>
-          <div
-            class="col-md-6"
-            style="min-width: 40% !important; flex: 0 0 40%; text-align: center; margin-top: 10px;"
-            *ngIf="booking?.noOfRooms"
-          >
-            <div>
-              <div>{{ booking?.noOfRooms }}</div>
             </div>
           </div>
 
           <div
             class="col-md-6"
-            style="min-width: 40% !important; flex: 0 0 40%; text-align: center; margin-top: 10px;"
-            *ngIf="booking?.noOfNights"
+            style="
+              min-width: 40% !important;
+              flex: 0 0 40%;
+              text-align: center;
+              margin-top: 10px;
+            "
           >
             <div>
               <b> Nights: </b>
@@ -206,17 +203,21 @@
           </div>
           <div
             class="col-md-6"
-            style="min-width: 40% !important; flex: 0 0 40%; text-align: center; margin-top: 10px;"
-            *ngIf="booking?.noOfNights"
+            style="
+              min-width: 40% !important;
+              flex: 0 0 40%;
+              text-align: center;
+              margin-top: 10px;
+            "
           >
             <div>
-              <div>{{ booking?.noOfNights }}</div>
+              <div>{{ bookingSummaryDetails?.totalNights }}</div>
             </div>
           </div>
         </div>
       </div>
 
-      <div class="col-4" style="margin-top: 20px">
+      <div class="col-4">
         <div>
           <h2
             style="
@@ -225,230 +226,255 @@
               font-size: 26px !important;
             "
           >
-            {{ propertyDetails?.name }}
+            {{ propertyDetails.name }}
           </h2>
           <h5>
             {{ propertyDetails.address.city }},{{
               propertyDetails.address.state
             }}, {{ propertyDetails.address.country }}
           </h5>
-          <h4
-            class="text-muted"
-            style="font-size: 15px"
-            [innerHTML]="propertyDetails.businessDescription"
+          <h4 style="font-size: 15px; margin-bottom: 0px">
+            <span
+              [innerHTML]="
+                expanded
+                  ? propertyDetails.businessDescription
+                  : getFirstWords(propertyDetails.businessDescription, 20)
+              "
+            ></span>
+            <span><a
+            *ngIf="shouldShowViewMore(propertyDetails.businessDescription)"
+            href="#"
+            (click)="toggleViewMore($event)"
           >
-            {{ propertyDetails?.businessDescription }}
+            {{ expanded ? "View less" : "View more" }}
+          </a></span>
           </h4>
+
+
         </div>
       </div>
     </div>
 
-    <div
-      class="row mb-4"
-      style="display: flex; justify-content: center; gap: 30px"
-    >
+    <div class="row" style="
+        display: flex;
+        justify-content: center;
+        gap: 30px;
+        margin-top: 20px;
+      ">
       <div class="col-8" style="flex: 0 0 38%; max-width: 38%">
         <div style="text-align: right;">Enquiry created at {{ booking?.createdDate | date: 'hh:mm a, dd/MM/yyyy':'GMT' }}</div>
 
         <div class="details-card">
-          <div style="font-size: 21px">
-            {{ booking?.roomName }} x {{ booking?.noOfRooms }}
-          </div>
-          <table style="width: 88%">
-            <tr>
-              <td>{{ booking?.roomRatePlanName }}</td>
-              <td>₹{{(booking?.roomPrice - (booking?.extraPersonCharge + booking?.extraChildCharge))}}</td>
-            </tr>
-            <tr *ngIf="booking?.extraPersonCharge > 0">
-              <td>Extra Person Charges</td>
-              <td>₹{{ booking?.extraPersonCharge }}</td>
-            </tr>
-            <tr *ngIf="booking?.extraChildCharge > 0">
-              <td>Extra Child Charges</td>
-              <td>₹{{ booking?.extraChildCharge }}</td>
-            </tr>
-          </table>
+          <ng-container
+            *ngFor="let booking of bookingsResponseList; let last = last"
+          >
+            <h5 style="font-weight: 600;">
+              {{ booking.roomName }} x {{ booking.noOfRooms }} room(s)
+            </h5>
+            <table style="width: 100%">
+              <tr>
+                <td>{{ booking.roomRatePlanName }}</td>
+                <td>₹{{ booking.roomPrice | number : "1.2-2" }}</td>
+              </tr>
+              <tr *ngIf="booking.extraPersonCharge > 0">
+                <td>Extra Person Charges</td>
+                <td>₹{{ booking.extraPersonCharge }}</td>
+              </tr>
+              <tr *ngIf="booking.extraChildCharge > 0">
+                <td>Extra Child Charges</td>
+                <td>₹{{ booking.extraChildCharge }}</td>
+              </tr>
+              <tr>
+                <td>Tax Fees:</td>
+                <td>₹ {{ booking.taxAmount | number : "1.2-2" }}</td>
+              </tr>
 
+              <tr>
+                <td>Total Amount</td>
+                <td>₹ {{ booking.totalAmount | number : "1.2-2" }}</td>
+              </tr>
 
-          <!-- <p style="font-size: 18px">Add-on Services:</p> -->
-          <div class="addon-services" *ngIf="savedServices?.length >0">
-            <h4 style="font-weight: bold;">Add-on Services</h4>
-            <table style=" border: none; width:100%">
-              <tr *ngFor="let fac of savedServices">
-                <td>
-                  <div class="d-flex "
-                    *ngIf="fac.name !== null && fac.name !== undefined && fac.serviceType !== 'Distance' && fac.serviceType !== 'RestaurantHotel' && fac.serviceType !== 'DistanceRailway'">
-                    <div style="display: flex; gap:4px">
+            </table>
+            <hr *ngIf="!last" style="border: 1px solid #e5e7eb" />
 
-                      <img *ngIf="!fac.imageUrl" src="https://static.thenounproject.com/png/3421816-200.png" alt="icon"
-                        style=" width: 26px;height: 23px;">
+            <!-- <p style="font-size: 18px">Add-on Services:</p> -->
+            <div class="addon-services" *ngIf="savedServices?.length > 0">
+              <h4 style="font-weight: bold">Add-on Services</h4>
+              <table style="border: none; width: 100%">
+                <tr *ngFor="let fac of savedServices">
+                  <td>
+                    <div
+                      class="d-flex"
+                      *ngIf="
+                        fac.name !== null &&
+                        fac.name !== undefined &&
+                        fac.serviceType !== 'Distance' &&
+                        fac.serviceType !== 'RestaurantHotel' &&
+                        fac.serviceType !== 'DistanceRailway'
+                      "
+                    >
+                      <div style="display: flex; gap: 4px">
+                        <img
+                          *ngIf="!fac.imageUrl"
+                          src="https://static.thenounproject.com/png/3421816-200.png"
+                          alt="icon"
+                          style="width: 26px; height: 23px"
+                        />
 
+                        <img
+                          *ngIf="fac.imageUrl"
+                          [src]="fac.imageUrl"
+                          alt="icon"
+                          style="width: 26px; height: 23px"
+                        />
 
-                      <img *ngIf="fac.imageUrl" [src]="fac.imageUrl" alt="icon" style="width: 26px;height: 23px;">
+                        <br />
 
-                      <br>
+                        <div>
+                          {{ fac.name }} * {{ fac.quantity }} <br />
 
-                      <div>{{fac.name }} * {{fac.quantity}} <br>
-
-                        <b
-                          *ngIf="fac.servicePrice !== null && fac.servicePrice !== undefined && fac.servicePrice > 0 && fac.taxAmount !== null && fac.taxAmount !== undefined">
-                          {{fac.servicePrice | currency : currency : "symbol" : "1.2-2"}} +
-                          {{fac.taxAmount | currency : currency : "symbol" : "1.2-2"}} ({{fac.taxPercentage}}% tax)
-                        </b>
-                        <b *ngIf="fac.servicePrice == null || fac.servicePrice == undefined || fac.servicePrice == 0"
-                          style="text-align: right;">{{0 | currency : currency : "symbol" : "1.2-2"}}</b>
-
+                          <b
+                            *ngIf="
+                              fac.servicePrice !== null &&
+                              fac.servicePrice !== undefined &&
+                              fac.servicePrice > 0 &&
+                              fac.taxAmount !== null &&
+                              fac.taxAmount !== undefined
+                            "
+                          >
+                            {{
+                              fac.servicePrice
+                                | currency : currency : "symbol" : "1.2-2"
+                            }}
+                            +
+                            {{
+                              fac.taxAmount
+                                | currency : currency : "symbol" : "1.2-2"
+                            }}
+                            ({{ fac.taxPercentage }}% tax)
+                          </b>
+                          <b
+                            *ngIf="
+                              fac.servicePrice == null ||
+                              fac.servicePrice == undefined ||
+                              fac.servicePrice == 0
+                            "
+                            style="text-align: right"
+                            >{{
+                              0 | currency : currency : "symbol" : "1.2-2"
+                            }}</b
+                          >
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </td>
-                <td *ngIf="fac.servicePrice !== null || fac.servicePrice !== undefined" style="text-align: right;">
-                  {{fac.afterTaxAmount * fac.quantity | currency : currency : "symbol" : "1.2-2"}}</td>
-              </tr>
-            </table>
-          </div>
-
-        </div>
-
-        <div class="details-card" style="margin-top: 20px">
-          <table style="width: 88%">
-            <tr>
-              <td>Tax Amount ({{ booking?.taxPercentage }}%)</td>
-              <td>₹ {{ booking?.taxAmount | number:'1.2-2'}}</td>
-            </tr>
-
-            <tr>
-              <td>Total Payable Amount</td>
-              <td>₹ {{ booking?.totalAmount | number:'1.2-2' }}</td>
-            </tr>
-            <tr>
-              <td>Due Amount</td>
-              <td>₹{{ booking?.totalAmount | number:'1.2-2' }}</td>
-            </tr>
-          </table>
+                  </td>
+                  <td
+                    *ngIf="
+                      fac.servicePrice !== null ||
+                      fac.servicePrice !== undefined
+                    "
+                    style="text-align: right"
+                  >
+                    {{
+                      fac.afterTaxAmount * fac.quantity
+                        | currency : currency : "symbol" : "1.2-2"
+                    }}
+                  </td>
+                </tr>
+              </table>
+            </div>
+          </ng-container>
         </div>
       </div>
-      <div class="col-4">
-        <div class="coupon-box mb-4">
-          <div style="display: flex; gap: 10px">
-            <div>
-              <img
-                src="assets/images/Tag.png"
-                alt=""
-                style="
-                  margin-right: 0px;
-                  transform: rotate(-2deg);
-                  height: 43px;
-                  width: 43px;
-                  margin-top: 10px;
-                "
-              />
-            </div>
-            <div  *ngIf="promocodeListChip.length >0 ">
-              <h5 style="color: #fff; font-weight: bold; font-size: 24px">
-                Save More On Your Booking!
-              </h5>
-              <ul>
-                <ng-container *ngFor="let coupon of promocodeListChip; let i = index">
-                  <li *ngIf="i === 0 || showMore">
-                    <div style="color:#fff !important;  font-weight: bold">
-                      Claim Coupon Code: <strong style="    background-color: #fff;
-                      color: #333;
-                      padding: 5px;
-                      border-radius: 5px;
-                      margin-left: 7px;">{{ coupon.couponCode }}</strong>
-                    </div>
-                    <div style="color:#fff !important; margin-top: 5px;">
-                      Share this coupon code when confirming your reservation to save
-                      {{ coupon.discountPercentage }}%!
-                    </div>
-                  </li>
-                </ng-container>
-              </ul>
+      <div class="col-4" style="margin-top: 20px;">
+         <div class="details-card" style="padding: 20px; border-radius: 15px; margin-bottom: 20px;">
+          <h5 class="headimg-color"> <img
+                      src="assets/images/payment-sum.svg"
+                      alt=""
+                      width="20"
+                      height="20"
+                      style="margin-right: 5px;"
+                    /> Payment Summary</h5>
 
+                     <div class="d-flex justify-content-between line-height-27px">
+                <div class="font-weight-600" style="font-size: 1rem;">Total Amount</div>
 
+                <div class="font-weight-600" style="font-size: 1rem;">
+                  ₹ {{ bookingSummaryDetails?.totalAmount | number : "1.2-2" }}
+                </div>
+              </div>
+              <div class="d-flex justify-content-between line-height-27px">
+                <div class="color-graying">Total Room Price</div>
 
+                <div style="color: #3B82F6;font-weight: 500;" >
+                  ₹
+                  {{ bookingSummaryDetails?.totalPlanPrice | number : "1.2-2" }}
+                </div>
+              </div>
 
-              <!-- View More / View Less Button -->
-              <span  style="float:right" (click)="toggleView()">
-                {{ showMore ? 'View Less..' : 'View More..' }}
-              </span>
+              <div class="d-flex justify-content-between line-height-27px">
+                <div class="color-graying">Total Tax & Services</div>
 
-            </div>
-             <!-- No Coupons Message -->
-    <!-- No Coupons Card -->
-    <div *ngIf="promocodeListChip.length === 0 && (storedPromo == null || storedPromo == undefined) " style="color:#fff !important">
-          <strong style="font-size: 18px;color: #fff !important">No Coupon Available  :(</strong>
+                <div style="font-weight: 500;" >
+                  ₹ {{ bookingSummaryDetails?.totalTax | number : "1.2-2" }}
+                </div>
+              </div>
 
-        <div style="margin: 0; font-size: 14px;color:#fff">
-          Unfortunately, this property does not have any active coupons at the moment.
-        </div>
-        <!-- <a
-          href="/deals"
-          style="margin-top: 10px; display: inline-block; color: #0066cc; text-decoration: underline; font-weight: bold;"
-        >
-          Explore Other Deals
-        </a> -->
+              <div class="d-flex justify-content-between line-height-27px">
+                <div class="color-graying">Total Add-on Services</div>
 
-    </div>
-    <div *ngIf="selectedPromo" style="color:#fff !important">
-      <strong style="font-size: 18px;"> {{selectedPromo?.couponCode}} Coupon Code is
-Applied!</strong>
-<div style="margin: 0; font-size: 14px;color:#fff">
-  You’re Saving ₹ {{booking?.discountAmount}} on this booking!
-</div>
-
-<div style="color:#fff !important">
-  Complete your booking now to save big on your stay.
-</div>
-</div>
-
-          </div>
-
+                <div style="font-weight: 500;">
+                  ₹
+                  {{
+                    bookingSummaryDetails?.totalAddOnsPrice | number : "1.2-2"
+                  }}
+                </div>
+                </div>
         </div>
 
-        <div
-          style="background-color: #f5f5f5; padding: 20px; border-radius: 15px"
-        >
+        <div class="details-card" style="padding: 20px; border-radius: 15px">
           <h5>
             <img
-              src="assets/images/User.png"
+              src="assets/images/guest-booking-details.svg"
               alt=""
-              style="height: 26px; width: 26px"
+              width="18"
+              height="18"
             />
             Guest Details
           </h5>
-          <table style="width: 88%">
+          <table style="width: 100%">
             <tr
               *ngIf="
-                booking?.firstName != null && booking?.firstName != undefined
+                booking.firstName != null && booking.firstName != undefined
               "
             >
               <td>Guest Name:</td>
-              <td>{{ booking?.firstName }}&nbsp;{{ booking?.lastName }}</td>
+              <td>{{ booking.firstName }} {{ booking.lastName }}</td>
             </tr>
 
-            <tr *ngIf="booking?.email != null && booking?.email != undefined">
+            <tr *ngIf="booking.email != null && booking.email != undefined">
               <td>Email Address:</td>
-              <td>{{ booking?.email }}</td>
+              <td>{{ booking.email }}</td>
             </tr>
 
-            <tr *ngIf="booking?.mobile != null && booking?.mobile != undefined">
+            <tr *ngIf="booking.mobile != null && booking.mobile != undefined">
               <td>Phone Number:</td>
-              <td>{{ booking?.mobile }}</td>
+              <td>{{ booking.mobile }}</td>
             </tr>
 
-            <tr *ngIf="booking?.notes != null && booking?.notes != undefined">
+            <tr *ngIf="booking.notes != null && booking.notes != undefined">
               <td>Notes:</td>
-              <td>{{ booking?.notes }}</td>
+              <td>{{ booking.notes }}</td>
             </tr>
           </table>
         </div>
       </div>
     </div>
 
+
+
     <div class="footer-link">
-      <a href="{{PropertyUrl}}" style="font-weight: bold; font-size: 18px"
+      <a (click)="backone()" href="{{PropertyUrl}}" style="font-weight: bold; font-size: 18px"
         >Go back to home page</a
       >
       <div style="display: flex; justify-content: center">
@@ -810,10 +836,10 @@ Applied!</strong>
   <div class="col-12">
     <div class="details-cardOne">
       <div style="font-size: 17px; font-weight: bold">{{booking?.roomName}} x {{booking?.noOfRooms}}</div>
-      <table style="width: 88%">
+      <table style="width: 100%">
         <tr>
           <td>{{booking?.roomRatePlanName}}</td>
-          <td>₹{{(booking?.roomPrice - (booking?.extraPersonCharge + booking?.extraChildCharge))}}</td>
+          <td>₹{{booking?.roomPrice}}</td>
         </tr>
         <tr *ngIf="booking?.extraPersonCharge > 0">
           <td>Extra Pax Charges</td>
@@ -944,7 +970,7 @@ Complete your booking? now to save big on your stay.
     </div>
 
     <div class="details-cardOne" style="margin-top: 20px">
-      <table style="width: 88%">
+      <table style="width: 100%">
         <tr>
           <td>Tax Amount ({{booking?.taxPercentage}}%)</td>
           <td>₹ {{booking?.taxAmount | number:'1.2-2'}}</td>
