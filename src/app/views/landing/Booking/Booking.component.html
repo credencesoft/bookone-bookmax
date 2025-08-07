@@ -806,7 +806,7 @@
                     {{ plan.planCodeName }} x {{ plan.selectedRoomnumber }}
                   </div>
 
-                  <div>₹ {{ plan.price | number : "1.2-2" }}</div>
+                  <div>₹ {{ plan.price - (plan.extraPersonAdultCountAmount + plan.extraPersonChildCountAmount) | number : "1.2-2" }}</div>
                 </div>
                 <div class="d-flex justify-content-between line-height-27px" *ngIf="plan.extraPersonAdultCountAmount > 0">
                   <div class="color-graying">Extra Pax Charges</div>

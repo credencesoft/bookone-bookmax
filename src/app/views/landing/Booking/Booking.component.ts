@@ -4554,15 +4554,15 @@ export class BookingComponent implements OnInit {
     enquiryForm.roomId = plan.roomId;
     enquiryForm.payableAmount = plan.price + plan.taxPercentageperroom;
     enquiryForm.roomName = plan.roomName;
-    enquiryForm.extraPersonCharge = plan.extraPersonCharge || 0;
-    enquiryForm.extraChildCharge = plan.extraPersonChildCountAmount || 0;
+    enquiryForm.extraPersonCharge = plan.extraPersonAdultCountAmount;
+    enquiryForm.extraChildCharge = plan.extraPersonChildCountAmount;
     enquiryForm.noOfExtraChild = plan.extraCountChild;
 
     enquiryForm.roomPrice =
       booking.planCode === 'GHC'
         ? booking.totalAmount -
           (plan.extraPersonCharge + plan.extraPersonChildCountAmount)
-        : plan.price + plan.taxPercentageperroom;
+        : plan.price - (enquiryForm.extraPersonCharge + enquiryForm.extraChildCharge);
 
     enquiryForm.externalSite = 'Website';
     enquiryForm.source = 'Bookone Connect';

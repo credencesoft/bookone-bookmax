@@ -109,6 +109,151 @@
         </div>
       </div>
     </div>
+        <div
+      class="row"
+      style="
+        display: flex;
+        justify-content: center;
+        gap: 30px;
+        margin-top: 20px;
+      "
+    >
+      <div class="col-8" style="flex: 0 0 38%; max-width: 38%">
+        <div
+          class="row mb-3"
+          style="display: flex; justify-content: center; margin-top: 15px"
+        >
+          <div
+            class="col-md-6"
+            style="
+              min-width: 40% !important;
+              flex: 0 0 40%;
+              text-align: center;
+              border-right: 2px solid #d9d9d9;
+            "
+          >
+            <div style="display: flex; gap: 26px; justify-content: center">
+              <div>
+                <img
+                  src="assets/images/checkin-book-calender.svg"
+                  alt="icon"
+                  width="20"
+                  height="20"
+                  style="margin-right: 3px"
+                />
+              </div>
+              <div *ngIf="booking.checkInDate">
+                <b> Check-in date </b> <br />
+                <div>{{ booking.checkInDate | date : "d MMM" }}</div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="col-md-6"
+            style="min-width: 40% !important; flex: 0 0 40%; text-align: center"
+            *ngIf="booking.checkOutDate"
+          >
+            <div>
+              <b> Check-Out date</b> <br />
+              <div>{{ booking.checkOutDate | date : "d MMM" }}</div>
+            </div>
+          </div>
+
+          <div
+            class="col-md-6"
+            style="
+              min-width: 40% !important;
+              flex: 0 0 40%;
+              text-align: center;
+              margin-top: 10px;
+            "
+          >
+            <div>
+              <b> Occupancy: </b>
+            </div>
+          </div>
+          <div
+            class="col-md-6"
+            style="
+              min-width: 40% !important;
+              flex: 0 0 40%;
+              text-align: center;
+              margin-top: 10px;
+            "
+          >
+            <div>
+              <div>
+                {{ totalPlanAdults }} Adults, {{ totalPlanChildren }} Children
+              </div>
+            </div>
+          </div>
+
+          <div
+            class="col-md-6"
+            style="
+              min-width: 40% !important;
+              flex: 0 0 40%;
+              text-align: center;
+              margin-top: 10px;
+            "
+          >
+            <div>
+              <b> Nights: </b>
+            </div>
+          </div>
+          <div
+            class="col-md-6"
+            style="
+              min-width: 40% !important;
+              flex: 0 0 40%;
+              text-align: center;
+              margin-top: 10px;
+            "
+          >
+            <div>
+              <div>{{ bookingSummaryDetails?.totalNights }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-4">
+        <div>
+          <h2
+            style="
+              font-weight: bold !important;
+              color: #000 !important;
+              font-size: 26px !important;
+            "
+          >
+            {{ propertyDetails.name }}
+          </h2>
+          <h5>
+            {{ propertyDetails.address.city }},{{
+              propertyDetails.address.state
+            }}, {{ propertyDetails.address.country }}
+          </h5>
+          <h4 style="font-size: 15px; margin-bottom: 0px">
+            <span
+              [innerHTML]="
+                expanded
+                  ? propertyDetails.businessDescription
+                  : getFirstWords(propertyDetails.businessDescription, 20)
+              "
+            ></span>
+            <span><a
+            *ngIf="shouldShowViewMore(propertyDetails.businessDescription)"
+            href="#"
+            (click)="toggleViewMore($event)"
+          >
+            {{ expanded ? "View less" : "View more" }}
+          </a></span>
+          </h4>
+
+
+        </div>
+      </div>
+    </div>
 
     <div class="row" style="
         display: flex;
@@ -124,9 +269,9 @@
             *ngFor="let booking of bookingsResponseList; let last = last"
           >
             <h5 style="font-weight: 600;">
-              {{ booking.roomName }} x {{ booking.noOfRooms }}
+              {{ booking.roomName }} x {{ booking.noOfRooms }} room(s)
             </h5>
-            <table style="width: 88%">
+            <table style="width: 100%">
               <tr>
                 <td>{{ booking.roomRatePlanName }}</td>
                 <td>₹{{ booking.roomPrice | number : "1.2-2" }}</td>
@@ -145,13 +290,10 @@
               </tr>
 
               <tr>
-                <td>Total Payable Amount</td>
+                <td>Total Amount</td>
                 <td>₹ {{ booking.totalAmount | number : "1.2-2" }}</td>
               </tr>
-              <tr>
-                <td>Due Amount</td>
-                <td>₹{{ booking.totalAmount | number : "1.2-2" }}</td>
-              </tr>
+
             </table>
             <hr *ngIf="!last" style="border: 1px solid #e5e7eb" />
 
@@ -244,7 +386,7 @@
           </ng-container>
         </div>
       </div>
-      <div class="col-4">
+      <div class="col-4" style="margin-top: 20px;">
          <div class="details-card" style="padding: 20px; border-radius: 15px; margin-bottom: 20px;">
           <h5 class="headimg-color"> <img
                       src="assets/images/payment-sum.svg"
@@ -300,7 +442,7 @@
             />
             Guest Details
           </h5>
-          <table style="width: 88%">
+          <table style="width: 100%">
             <tr
               *ngIf="
                 booking.firstName != null && booking.firstName != undefined
@@ -694,7 +836,7 @@
   <div class="col-12">
     <div class="details-cardOne">
       <div style="font-size: 17px; font-weight: bold">{{booking?.roomName}} x {{booking?.noOfRooms}}</div>
-      <table style="width: 88%">
+      <table style="width: 100%">
         <tr>
           <td>{{booking?.roomRatePlanName}}</td>
           <td>₹{{booking?.roomPrice}}</td>
@@ -828,7 +970,7 @@ Complete your booking? now to save big on your stay.
     </div>
 
     <div class="details-cardOne" style="margin-top: 20px">
-      <table style="width: 88%">
+      <table style="width: 100%">
         <tr>
           <td>Tax Amount ({{booking?.taxPercentage}}%)</td>
           <td>₹ {{booking?.taxAmount | number:'1.2-2'}}</td>
