@@ -1185,7 +1185,91 @@ display: flex;
 }
 
 @media (max-width: 600px) {
+.checkAva6 {
+    width: 50%;
+    padding-left: 10px;
+}
 
+.checkAva3 {
+    width: 50%;
+    padding-left: 14px;
+}
+.checkAvaCard {
+    padding-left: 0px;
+}
+.checkAva2 {
+    margin-right: 10px;
+}
+.checkAvaRoom {
+    margin-left: 0px;
+    width: 100%;
+}
+.special-offer {
+        width: 100%;
+        display: block;
+        margin-left: 0px;
+        margin-top: 0px;
+        padding-top: 10px;
+        padding-bottom: 10px;
+}
+.applycoupon {
+    justify-content: center;
+}
+.applycoupon-button {
+    padding: 8px 16px;
+    margin-top: 5px;
+}
+.special-section {
+    width: 100%;
+}
+.special-sectionOne {
+    width: 100%;
+    margin-top: 7px;
+}
+.promo-section {
+display: block;
+padding-top: 20px;
+padding-bottom: 20px;
+}
+.checkavaialabilyy-btn {
+    width: 100%;
+    padding: 10px 8px;
+}
+.container-div {
+    margin: auto;
+    width: 98%;
+}
+.roomsAndOccupancy {
+    margin-top: 62px;
+    left: -30px;
+}
+.special-code-One {
+  font-weight: 400;
+}
+.applycoupon {
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+}
+.code-coupon {
+text-align: center;
+}
+.promo-heading {
+ text-align: center;
+}
+.small-img {
+    width: 160px;
+    height: 94px;
+    object-fit: cover;
+        object-fit: cover;
+}
+    .main-img {
+        height: 303px;
+        object-fit: cover;
+    }
+    .gallery-thumbs {
+        width: 140px;
+    }
 }
 
 @media (min-width: 1181px){

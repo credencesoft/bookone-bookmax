@@ -1524,6 +1524,10 @@ removeRoom(index: number): void {
     }, 200); // 200ms delay to avoid flicker
   }
 
+  closeChanges(){
+    this.roomsAndOccupancy = false;
+  }
+
   selectRoomsbtn() {
     this.closeGalleryModal();
     setTimeout(() => {
