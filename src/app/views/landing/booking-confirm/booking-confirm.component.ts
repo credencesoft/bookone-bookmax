@@ -378,6 +378,14 @@ textToCopyOne: string = 'This is some text to copy';
   }
 }
 
+  backone() {
+    sessionStorage.removeItem('bookingsResponseList');
+    sessionStorage.removeItem('bookingSummaryDetails');
+    sessionStorage.removeItem('booking');
+    sessionStorage.removeItem('BOOKINGDATAOJC');
+    sessionStorage.removeItem('bookingSummary');
+    sessionStorage.removeItem('EnquiryResponseList');
+  }
   calculateTotalGuestsFromPlans() {
     this.totalPlanAdults =
       this.bookingSummaryDetails?.selectedPlansSummary?.reduce(
