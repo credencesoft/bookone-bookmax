@@ -5,386 +5,787 @@
 </app-Header-Listingdetailsone>
 <div class="popup-overlay" *ngIf="isPanelOpen"></div>
 
-<div class="container-div" style="margin-top: 40px">
+<div class="container-div">
   <div
     *ngIf="
       (availableRooms?.length >= 0 && availability == true) || !availability
     "
   >
-    <div
-      style="justify-content: space-evenly; display: flex"
-      [ngStyle]="{ 'margin-top': businessUser?.website ? '0px' : '0px' }"
-    >
-      <div class="card checkAvaCard">
-        <div id="checkin">
-          <div class="row d-flex checkAva2">
-            <div class="checkAva3">
-              <div
-                id="autocomplete-container"
-                style="border-right: 2px solid #d9d9d9"
-              >
-                <label
-                  for="checkin"
-                  class="label_heading1 checkAva4 default-color"
-                >
-                  Check-in date
-                </label>
-                <input
-                  #dpFromDate3
-                  type="text"
-                  class="date-input form-control input-field-resize2 custom-border-on-focus"
-                  style="
-                    border: none;
-                    background: none !important;
-                    margin-top: -6px;
-                  "
-                  placeholder="Check-in"
-                  name="dpFromDate3"
-                  [value]="formatter.format(fromDate) | date : 'dd-MM-YYYY'"
-                  (input)="
-                    fromDate = validateInput(fromDate, dpFromDate3.value)
-                  "
-                  required
-                  (click)="datepicker3.toggle()"
-                  autocomplete="off"
-                />
-
-                <div class="form-group" style="height: 0px">
-                  <input
-                    name="datepicker"
-                    class="form-control input-field-resize"
-                    ngbDatepicker
-                    #datepicker3="ngbDatepicker"
-                    [autoClose]="true"
-                    (dateSelect)="onDateSelection($event, 'checkin')"
-                    [displayMonths]="1"
-                    [dayTemplate]="t1"
-                    outsideDays="hidden"
-                    [startDate]="fromDate"
-                    tabindex="-1"
-                    [minDate]="minDateForCheckIn"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div class="checkAva6">
-              <div id="autocomplete-container">
-                <label
-                  for="checkout"
-                  class="label_heading1 checkAva7 default-color"
-                >
-                  Check-out date
-                </label>
-                <input
-                  #dpToDate3
-                  type="text"
-                  class="date-input form-control input-field-resize2 custom-border-on-focus"
-                  placeholder="Check-out"
-                  name="dpToDate3"
-                  [value]="formatter.format(toDate) | date : 'dd-MM-YYYY'"
-                  style="
-                    border: none;
-                    background: none !important;
-                    margin-top: -6px;
-                  "
-                  (input)="toDate = validateInput(toDate, dpToDate3.value)"
-                  required
-                  (click)="datepicker4.toggle()"
-                  autocomplete="off"
-                />
-
-                <div class="form-group" style="height: 0px">
-                  <input
-                    name="datepicker"
-                    class="form-control input-field-resize"
-                    ngbDatepicker
-                    #datepicker4="ngbDatepicker"
-                    [autoClose]="true"
-                    (dateSelect)="onDateSelection($event, 'checkout')"
-                    [displayMonths]="1"
-                    [dayTemplate]="t1"
-                    outsideDays="hidden"
-                    [startDate]="toDate"
-                    tabindex="-1"
-                    [minDate]="fromDate"
-                  />
-                </div>
-              </div>
-              <div class="content-centered">
-                <img
-                  src=" assets/images/Calendar.png"
-                  alt=""
-                  height="20px"
-                  width="25px"
-                />
-              </div>
-            </div>
-            <div
-              class="main-search-input-item checkAvaRoom"
-              style="padding: 0px; padding-left: 13px"
-            >
-              <div
-                data-visible="accommodation,flights"
-                class="input-group guests flex-nowrap align-item-center"
-                (mouseenter)="onMouseEnter()"
-                (mouseleave)="onMouseLeave()"
-              >
+    <div [ngStyle]="{ 'margin-top': businessUser?.website ? '0px' : '0px' }">
+      <div class="website-web-vision">
+        <div class="card checkAvaCard">
+          <div id="checkin">
+            <div class="row d-flex checkAva2">
+              <div class="checkAva3">
                 <div
-                  class="input-box"
-                  (click)="toggleRoomsAndOccupancy()"
-                  style="padding-bottom: 9px; padding-top: 7px !important"
+                  id="autocomplete-container"
+                  style="border-right: 2px solid #d9d9d9"
                 >
                   <label
-                    class="default-color"
-                    style="margin-bottom: 0px !important"
-                    >Guests & Rooms</label
+                    for="checkin"
+                    class="label_heading1 checkAva4 default-color"
                   >
-                  <br />
-                  <label
-                    class="text-default"
-                    style="
-                      font-size: 14px;
-                      margin: 0;
-                      padding: 0;
-                      color: #141319 !important;
-                    "
-                  >
-                    <span class="guests_count">
-                      <span data-adults-count="" class="text-nowrap"
-                        >{{ totalAdults }} adults</span
-                      >
-                      <span data-visible="accommodation">
-                        &nbsp;&nbsp;&nbsp;&nbsp;
-                        <span data-children-count="" class="text-nowrap"
-                          >{{ totalChildren }} children</span
-                        >
-                      </span>
-                      <span data-visible="accommodation">
-                        &nbsp;&nbsp;&nbsp;&nbsp;
-                        <span data-room-count="" class="text-nowrap"
-                          >{{ rooms }} room</span
-                        >
-                      </span>
-                    </span>
+                    Check-in date
                   </label>
-                </div>
+                  <input
+                    #dpFromDate3
+                    type="text"
+                    class="date-input form-control input-field-resize2 custom-border-on-focus"
+                    style="
+                      border: none;
+                      background: none !important;
+                      margin-top: -6px;
+                    "
+                    placeholder="Check-in"
+                    name="dpFromDate3"
+                    [value]="formatter.format(fromDate) | date : 'dd-MM-YYYY'"
+                    (input)="
+                      fromDate = validateInput(fromDate, dpFromDate3.value)
+                    "
+                    required
+                    (click)="datepicker3Web.toggle()"
+                    autocomplete="off"
+                  />
 
-                <div class="content-centered">
-                  <img src=" assets/images/bed.svg" alt="" />
+                  <div class="form-group" style="height: 0px">
+                    <input
+                      name="datepicker"
+                      class="form-control input-field-resize"
+                      ngbDatepicker
+                      #datepicker3Web="ngbDatepicker"
+                      [autoClose]="true"
+                      (dateSelect)="onDateSelection($event, 'checkin')"
+                      [displayMonths]="1"
+                      [dayTemplate]="t1"
+                      outsideDays="hidden"
+                      [startDate]="fromDate"
+                      tabindex="-1"
+                      [minDate]="minDateForCheckIn"
+                    />
+                  </div>
                 </div>
+              </div>
+
+              <div class="checkAva6">
+                <div id="autocomplete-container">
+                  <label
+                    for="checkout"
+                    class="label_heading1 checkAva7 default-color"
+                  >
+                    Check-out date
+                  </label>
+                  <input
+                    #dpToDate3
+                    type="text"
+                    class="date-input form-control input-field-resize2 custom-border-on-focus"
+                    placeholder="Check-out"
+                    name="dpToDate3"
+                    [value]="formatter.format(toDate) | date : 'dd-MM-YYYY'"
+                    style="
+                      border: none;
+                      background: none !important;
+                      margin-top: -6px;
+                    "
+                    (input)="toDate = validateInput(toDate, dpToDate3.value)"
+                    required
+                    (click)="datepicker4Web.toggle()"
+                    autocomplete="off"
+                  />
+
+                  <div class="form-group" style="height: 0px">
+                    <input
+                      name="datepicker"
+                      class="form-control input-field-resize"
+                      ngbDatepicker
+                      #datepicker4Web="ngbDatepicker"
+                      [autoClose]="true"
+                      (dateSelect)="onDateSelection($event, 'checkout')"
+                      [displayMonths]="1"
+                      [dayTemplate]="t1"
+                      outsideDays="hidden"
+                      [startDate]="toDate"
+                      tabindex="-1"
+                      [minDate]="fromDate"
+                    />
+                  </div>
+                </div>
+                <div class="content-centered">
+                  <img
+                    src=" assets/images/Calendar.png"
+                    alt=""
+                    height="20px"
+                    width="25px"
+                  />
+                </div>
+              </div>
+              <div
+                class="main-search-input-item checkAvaRoom"
+                style="padding: 0px; padding-left: 13px"
+              >
                 <div
-                  class="list-holder roomsAndOccupancy"
-                  role="region"
-                  aria-label="Rooms and occupancy"
-                  *ngIf="roomsAndOccupancy === true"
+                  data-visible="accommodation,flights"
+                  class="input-group guests flex-nowrap align-item-center"
+                  (mouseenter)="onMouseEnter()"
+                  (mouseleave)="onMouseLeave()"
                 >
                   <div
-                    class="item business-text p-4"
-                    (clickOutside)="toggleRoomsAndOccupancy()"
-                    style="background: #fff; border-radius: 10px; width: 400px"
+                    class="input-box"
+                    (click)="toggleRoomsAndOccupancy()"
+                    style="padding-bottom: 9px; padding-top: 7px !important"
                   >
-                    <!-- Room 1: Uses existing variables -->
-                    <div class="pb-3">
-                      <div
-                        class="d-flex text-center justify-content-between align-items-center"
-                      >
-                        <div class="col">
-                          <div class="font-weight-bold mb-2">Room</div>
-                          <div>1</div>
-                        </div>
-
-                        <!-- Adults -->
-                        <div class="col">
-                          <div class="font-weight-bold mb-2">Adults</div>
-                          <div
-                            class="d-flex justify-content-center align-items-center"
-                          >
-                            <button
-                              class="btn btn-outline-secondary btn-sm border-0"
-                              (click)="adults = adults - 1; saveRoomSummary()"
-                              [disabled]="adults <= 1"
-                            >
-                              −
-                            </button>
-                            <div class="mx-2">{{ adults }}</div>
-                            <button
-                              class="btn btn-outline-secondary btn-sm border-0"
-                              (click)="adults = adults + 1; saveRoomSummary()"
-                              [disabled]="adults >= 4"
-                            >
-                              +
-                            </button>
-                          </div>
-                        </div>
-
-                        <!-- Children -->
-                        <div class="col">
-                          <div class="font-weight-bold mb-2">Children</div>
-                          <div
-                            class="d-flex justify-content-center align-items-center"
-                          >
-                            <button
-                              class="btn btn-outline-secondary btn-sm border-0"
-                              (click)="
-                                children = children - 1; saveRoomSummary()
-                              "
-                              [disabled]="children <= 0"
-                            >
-                              −
-                            </button>
-                            <div class="mx-2">{{ children }}</div>
-                            <button
-                              class="btn btn-outline-secondary btn-sm border-0"
-                              (click)="
-                                children = children + 1; saveRoomSummary()
-                              "
-                              [disabled]="children >= 2"
-                            >
-                              +
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <!-- Additional Rooms (Room 2+) -->
-                    <div
-                      *ngFor="let room of additionalRooms; let i = index"
-                      class="pb-3"
+                    <label
+                      class="default-color"
+                      style="margin-bottom: 0px !important"
+                      >Guests & Rooms</label
                     >
-                      <div
-                        class="d-flex text-center justify-content-between align-items-center"
-                      >
-                        <div class="col">
-                          <div class="font-weight-bold mb-2">Room</div>
-                          <div>{{ i + 2 }}</div>
-                        </div>
-
-                        <!-- Adults -->
-                        <div class="col">
-                          <div class="font-weight-bold mb-2">Adults</div>
-                          <div
-                            class="d-flex justify-content-center align-items-center"
-                          >
-                            <button
-                              class="btn btn-outline-secondary btn-sm border-0"
-                              (click)="
-                                room.adults = room.adults - 1; saveRoomSummary()
-                              "
-                              [disabled]="room.adults <= 1"
-                            >
-                              −
-                            </button>
-                            <div class="mx-2">{{ room.adults }}</div>
-                            <button
-                              class="btn btn-outline-secondary btn-sm border-0"
-                              (click)="
-                                room.adults = room.adults + 1; saveRoomSummary()
-                              "
-                              [disabled]="room.adults >= 4"
-                            >
-                              +
-                            </button>
-                          </div>
-                        </div>
-
-                        <!-- Children -->
-                        <div class="col">
-                          <div class="font-weight-bold mb-2">Children</div>
-                          <div
-                            class="d-flex justify-content-center align-items-center"
-                          >
-                            <button
-                              class="btn btn-outline-secondary btn-sm border-0"
-                              (click)="
-                                room.children = room.children - 1;
-                                saveRoomSummary()
-                              "
-                              [disabled]="room.children <= 0"
-                            >
-                              −
-                            </button>
-                            <div class="mx-2">{{ room.children }}</div>
-                            <button
-                              class="btn btn-outline-secondary btn-sm border-0"
-                              (click)="
-                                room.children = room.children + 1;
-                                saveRoomSummary()
-                              "
-                              [disabled]="room.children >= 2"
-                            >
-                              +
-                            </button>
-                          </div>
-                        </div>
-                        <span (click)="removeRoom(i)" style="cursor: pointer">
-                          <i class="fa-solid fa-trash"></i>
-                        </span>
-                      </div>
-                    </div>
-
-                    <!-- Info note -->
-                    <div
-                      class="d-flex align-items-start mt-3 text-muted small justify-content-between"
+                    <br />
+                    <label
+                      class="text-default"
+                      style="
+                        font-size: 14px;
+                        margin: 0;
+                        padding: 0;
+                        color: #141319 !important;
+                      "
                     >
-                      <div style="width: 70%">
-                        <a
-                          class="color-text font-weight-bold cursor-pointer"
-                          (click)="addRoom()"
-                          *ngIf="rooms < 30"
-                          >+ Add Room</a
+                      <span class="guests_count">
+                        <span data-adults-count="" class="text-nowrap"
+                          >{{ totalAdults }} adults</span
                         >
+                        <span data-visible="accommodation">
+                          &nbsp;&nbsp;&nbsp;&nbsp;
+                          <span data-children-count="" class="text-nowrap"
+                            >{{ totalChildren }} children</span
+                          >
+                        </span>
+                        <span data-visible="accommodation">
+                          &nbsp;&nbsp;&nbsp;&nbsp;
+                          <span data-room-count="" class="text-nowrap"
+                            >{{ rooms }} room</span
+                          >
+                        </span>
+                      </span>
+                    </label>
+                  </div>
+
+                  <div class="content-centered">
+                    <img src=" assets/images/bed.svg" alt="" />
+                  </div>
+                  <div
+                    class="list-holder roomsAndOccupancy"
+                    role="region"
+                    aria-label="Rooms and occupancy"
+                    *ngIf="roomsAndOccupancy === true"
+                  >
+                    <div
+                      class="item business-text p-4"
+                      (clickOutside)="toggleRoomsAndOccupancy()"
+                      style="
+                        background: #fff;
+                        border-radius: 10px;
+                        width: 400px;
+                      "
+                    >
+                      <!-- Room 1: Uses existing variables -->
+                      <div class="pb-3">
+                        <div
+                          class="d-flex text-center justify-content-between align-items-center"
+                        >
+                          <div class="col">
+                            <div class="font-weight-bold mb-2">Room</div>
+                            <div>1</div>
+                          </div>
+
+                          <!-- Adults -->
+                          <div class="col">
+                            <div class="font-weight-bold mb-2">Adults</div>
+                            <div
+                              class="d-flex justify-content-center align-items-center"
+                            >
+                              <button
+                                class="btn btn-outline-secondary btn-sm border-0"
+                                (click)="adults = adults - 1; saveRoomSummary()"
+                                [disabled]="adults <= 1"
+                              >
+                                −
+                              </button>
+                              <div class="mx-2">{{ adults }}</div>
+                              <button
+                                class="btn btn-outline-secondary btn-sm border-0"
+                                (click)="adults = adults + 1; saveRoomSummary()"
+                                [disabled]="adults >= 4"
+                              >
+                                +
+                              </button>
+                            </div>
+                          </div>
+
+                          <!-- Children -->
+                          <div class="col">
+                            <div class="font-weight-bold mb-2">Children</div>
+                            <div
+                              class="d-flex justify-content-center align-items-center"
+                            >
+                              <button
+                                class="btn btn-outline-secondary btn-sm border-0"
+                                (click)="
+                                  children = children - 1; saveRoomSummary()
+                                "
+                                [disabled]="children <= 0"
+                              >
+                                −
+                              </button>
+                              <div class="mx-2">{{ children }}</div>
+                              <button
+                                class="btn btn-outline-secondary btn-sm border-0"
+                                (click)="
+                                  children = children + 1; saveRoomSummary()
+                                "
+                                [disabled]="children >= 2"
+                              >
+                                +
+                              </button>
+                            </div>
+                          </div>
+                        </div>
                       </div>
 
-                      <div class="d-flex text-align-justify">
-                        <i
-                          class="fa fa-info-circle color-text mr-2 mt-1"
-                          aria-hidden="true"
-                        ></i>
-                        <span>
-                          Please select the number of rooms and assign guests
-                          accordingly.
-                        </span>
+                      <!-- Additional Rooms (Room 2+) -->
+                      <div
+                        *ngFor="let room of additionalRooms; let i = index"
+                        class="pb-3"
+                      >
+                        <div
+                          class="d-flex text-center justify-content-between align-items-center"
+                        >
+                          <div class="col">
+                            <div class="font-weight-bold mb-2">Room</div>
+                            <div>{{ i + 2 }}</div>
+                          </div>
+
+                          <!-- Adults -->
+                          <div class="col">
+                            <div class="font-weight-bold mb-2">Adults</div>
+                            <div
+                              class="d-flex justify-content-center align-items-center"
+                            >
+                              <button
+                                class="btn btn-outline-secondary btn-sm border-0"
+                                (click)="
+                                  room.adults = room.adults - 1;
+                                  saveRoomSummary()
+                                "
+                                [disabled]="room.adults <= 1"
+                              >
+                                −
+                              </button>
+                              <div class="mx-2">{{ room.adults }}</div>
+                              <button
+                                class="btn btn-outline-secondary btn-sm border-0"
+                                (click)="
+                                  room.adults = room.adults + 1;
+                                  saveRoomSummary()
+                                "
+                                [disabled]="room.adults >= 4"
+                              >
+                                +
+                              </button>
+                            </div>
+                          </div>
+
+                          <!-- Children -->
+                          <div class="col">
+                            <div class="font-weight-bold mb-2">Children</div>
+                            <div
+                              class="d-flex justify-content-center align-items-center"
+                            >
+                              <button
+                                class="btn btn-outline-secondary btn-sm border-0"
+                                (click)="
+                                  room.children = room.children - 1;
+                                  saveRoomSummary()
+                                "
+                                [disabled]="room.children <= 0"
+                              >
+                                −
+                              </button>
+                              <div class="mx-2">{{ room.children }}</div>
+                              <button
+                                class="btn btn-outline-secondary btn-sm border-0"
+                                (click)="
+                                  room.children = room.children + 1;
+                                  saveRoomSummary()
+                                "
+                                [disabled]="room.children >= 2"
+                              >
+                                +
+                              </button>
+                            </div>
+                          </div>
+                          <span (click)="removeRoom(i)" style="cursor: pointer">
+                            <i class="fa-solid fa-trash"></i>
+                          </span>
+                        </div>
+                      </div>
+
+                      <!-- Info note -->
+                      <div
+                        class="d-flex align-items-start mt-3 text-muted small justify-content-between"
+                      >
+                        <div style="width: 70%">
+                          <a
+                            class="color-text font-weight-bold cursor-pointer"
+                            (click)="addRoom()"
+                            *ngIf="rooms < 30"
+                            >+ Add Room</a
+                          >
+                        </div>
+
+                        <div class="d-flex text-align-justify">
+                          <i
+                            class="fa fa-info-circle color-text mr-2 mt-1"
+                            aria-hidden="true"
+                          ></i>
+                          <span>
+                            Please select the number of rooms and assign guests
+                            accordingly.
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
 
-            <div class="special-offer">
-              <div class="special-section">
-                <div class="special-code">Got an exclusive code?</div>
-                <div class="special-code-One">Unlock your deal</div>
-              </div>
-              <div class="special-sectionOne">
-                <div>
-                  <input
-                    style="
-                      width: 100%;
-                      border: none;
-                      border-radius: 6px;
-                      padding: 5px;
-                    "
-                    type="text"
-                    [(ngModel)]="enteredCoupon"
-                    (ngModelChange)="onCouponInputChange($event)"
-                    [ngClass]="{
-                      'valid-input':
-                        enteredCoupon &&
-                        enteredCoupon.trim().toUpperCase() ===
-                          validCouponCode.toUpperCase(),
-                      'invalid-input':
-                        enteredCoupon &&
-                        enteredCoupon.trim() !== '' &&
-                        enteredCoupon.trim().toUpperCase() !==
-                          validCouponCode.toUpperCase()
-                    }"
-                  />
+              <div class="special-offer">
+                <div class="special-section">
+                  <div class="special-code">Got an exclusive code?</div>
+                  <div class="special-code-One">Unlock your deal</div>
                 </div>
-                <div class="applycoupon">
-                  <button class="applycoupon-button">Apply Coupon</button>
+                <div class="special-sectionOne">
+                  <div>
+                    <input
+                      style="
+                        width: 100%;
+                        border: none;
+                        border-radius: 6px;
+                        padding: 5px;
+                      "
+                      type="text"
+                      [(ngModel)]="enteredCoupon"
+                      (ngModelChange)="onCouponInputChange($event)"
+                      [ngClass]="{
+                        'valid-input':
+                          enteredCoupon &&
+                          enteredCoupon.trim().toUpperCase() ===
+                            validCouponCode.toUpperCase(),
+                        'invalid-input':
+                          enteredCoupon &&
+                          enteredCoupon.trim() !== '' &&
+                          enteredCoupon.trim().toUpperCase() !==
+                            validCouponCode.toUpperCase()
+                      }"
+                    />
+                  </div>
+                  <div class="applycoupon">
+                    <button class="applycoupon-button">Apply Coupon</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="website-mob-vision">
+        <div class="container-div">
+          <div class="card checkAvaCard">
+            <div id="checkin">
+              <div class="row d-flex checkAva2">
+                <div class="checkAva3">
+                  <div
+                    id="autocomplete-container"
+                    style="border-right: 2px solid #d9d9d9"
+                  >
+                    <label
+                      for="checkin"
+                      class="label_heading1 checkAva4 default-color"
+                    >
+                      Check-in date
+                    </label>
+                    <input
+                      #dpFromDate3
+                      type="text"
+                      class="date-input form-control input-field-resize2 custom-border-on-focus"
+                      style="
+                        border: none;
+                        background: none !important;
+                        margin-top: -6px;
+                      "
+                      placeholder="Check-in"
+                      name="dpFromDate3"
+                      [value]="formatter.format(fromDate) | date : 'dd-MM-YYYY'"
+                      (input)="
+                        fromDate = validateInput(fromDate, dpFromDate3.value)
+                      "
+                      required
+                      (click)="datepicker3.toggle()"
+                      autocomplete="off"
+                    />
+
+                    <div class="form-group" style="height: 0px">
+                      <input
+                        name="datepicker"
+                        class="form-control input-field-resize"
+                        ngbDatepicker
+                        #datepicker3="ngbDatepicker"
+                        [autoClose]="true"
+                        (dateSelect)="onDateSelection($event, 'checkin')"
+                        [displayMonths]="1"
+                        [dayTemplate]="t1"
+                        outsideDays="hidden"
+                        [startDate]="fromDate"
+                        tabindex="-1"
+                        [minDate]="minDateForCheckIn"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div class="checkAva6">
+                  <div id="autocomplete-container">
+                    <label
+                      for="checkout"
+                      class="label_heading1 checkAva7 default-color"
+                    >
+                      Check-out date
+                    </label>
+                    <input
+                      #dpToDate3
+                      type="text"
+                      class="date-input form-control input-field-resize2 custom-border-on-focus"
+                      placeholder="Check-out"
+                      name="dpToDate3"
+                      [value]="formatter.format(toDate) | date : 'dd-MM-YYYY'"
+                      style="
+                        border: none;
+                        background: none !important;
+                        margin-top: -6px;
+                      "
+                      (input)="toDate = validateInput(toDate, dpToDate3.value)"
+                      required
+                      (click)="datepicker4.toggle()"
+                      autocomplete="off"
+                    />
+
+                    <div class="form-group" style="height: 0px">
+                      <input
+                        name="datepicker"
+                        class="form-control input-field-resize"
+                        ngbDatepicker
+                        #datepicker4="ngbDatepicker"
+                        [autoClose]="true"
+                        (dateSelect)="onDateSelection($event, 'checkout')"
+                        [displayMonths]="1"
+                        [dayTemplate]="t1"
+                        outsideDays="hidden"
+                        [startDate]="toDate"
+                        tabindex="-1"
+                        [minDate]="fromDate"
+                      />
+                    </div>
+                  </div>
+                  <div class="content-centered">
+                    <img
+                      src=" assets/images/Calendar.png"
+                      alt=""
+                      height="20px"
+                      width="25px"
+                    />
+                  </div>
+                </div>
+                <div
+                  class="main-search-input-item checkAvaRoom"
+                  style="padding: 0px; padding-left: 13px"
+                >
+                  <div
+                    data-visible="accommodation,flights"
+                    class="input-group guests flex-nowrap align-item-center"
+                    (click)="onMouseEnter()"
+                    (mouseleave)="onMouseLeave()"
+                  >
+                    <div
+                      class="input-box"
+                      (click)="toggleRoomsAndOccupancy()"
+                      style="padding-bottom: 9px; padding-top: 7px !important"
+                    >
+                      <label
+                        class="default-color"
+                        style="margin-bottom: 0px !important"
+                        >Guests & Rooms</label
+                      >
+                      <br />
+                      <label
+                        class="text-default"
+                        style="
+                          font-size: 14px;
+                          margin: 0;
+                          padding: 0;
+                          color: #141319 !important;
+                        "
+                      >
+                        <span class="guests_count">
+                          <span data-adults-count="" class="text-nowrap"
+                            >{{ totalAdults }} adults</span
+                          >
+                          <span data-visible="accommodation">
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            <span data-children-count="" class="text-nowrap"
+                              >{{ totalChildren }} children</span
+                            >
+                          </span>
+                          <span data-visible="accommodation">
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            <span data-room-count="" class="text-nowrap"
+                              >{{ rooms }} room</span
+                            >
+                          </span>
+                        </span>
+                      </label>
+                    </div>
+
+                    <div class="content-centered">
+                      <img src=" assets/images/bed.svg" alt="" />
+                    </div>
+                    <div
+                      class="list-holder roomsAndOccupancy"
+                      role="region"
+                      aria-label="Rooms and occupancy"
+                      *ngIf="roomsAndOccupancy === true"
+                    >
+                      <div
+                        class="item business-text p-4"
+                        (clickOutside)="toggleRoomsAndOccupancy()"
+                        style="
+                          background: #fff;
+                          border-radius: 10px;
+                          width: 400px;
+                        "
+                      >
+                        <!-- Room 1: Uses existing variables -->
+                        <div class="pb-3">
+                          <div
+                            class="d-flex text-center justify-content-between align-items-center"
+                          >
+                            <div class="col">
+                              <div class="font-weight-bold mb-2">Room</div>
+                              <div>1</div>
+                            </div>
+
+                            <!-- Adults -->
+                            <div class="col">
+                              <div class="font-weight-bold mb-2">Adults</div>
+                              <div
+                                class="d-flex justify-content-center align-items-center"
+                              >
+                                <button
+                                  class="btn btn-outline-secondary btn-sm border-0"
+                                  (click)="
+                                    adults = adults - 1; saveRoomSummary()
+                                  "
+                                  [disabled]="adults <= 1"
+                                >
+                                  −
+                                </button>
+                                <div class="mx-2">{{ adults }}</div>
+                                <button
+                                  class="btn btn-outline-secondary btn-sm border-0"
+                                  (click)="
+                                    adults = adults + 1; saveRoomSummary()
+                                  "
+                                  [disabled]="adults >= 4"
+                                >
+                                  +
+                                </button>
+                              </div>
+                            </div>
+
+                            <!-- Children -->
+                            <div class="col">
+                              <div class="font-weight-bold mb-2">Children</div>
+                              <div
+                                class="d-flex justify-content-center align-items-center"
+                              >
+                                <button
+                                  class="btn btn-outline-secondary btn-sm border-0"
+                                  (click)="
+                                    children = children - 1; saveRoomSummary()
+                                  "
+                                  [disabled]="children <= 0"
+                                >
+                                  −
+                                </button>
+                                <div class="mx-2">{{ children }}</div>
+                                <button
+                                  class="btn btn-outline-secondary btn-sm border-0"
+                                  (click)="
+                                    children = children + 1; saveRoomSummary()
+                                  "
+                                  [disabled]="children >= 2"
+                                >
+                                  +
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <!-- Additional Rooms (Room 2+) -->
+                        <div
+                          *ngFor="let room of additionalRooms; let i = index"
+                          class="pb-3"
+                        >
+                          <div
+                            class="d-flex text-center justify-content-between align-items-center"
+                          >
+                            <div class="col">
+                              <div class="font-weight-bold mb-2">Room</div>
+                              <div>{{ i + 2 }}</div>
+                            </div>
+
+                            <!-- Adults -->
+                            <div class="col">
+                              <div class="font-weight-bold mb-2">Adults</div>
+                              <div
+                                class="d-flex justify-content-center align-items-center"
+                              >
+                                <button
+                                  class="btn btn-outline-secondary btn-sm border-0"
+                                  (click)="
+                                    room.adults = room.adults - 1;
+                                    saveRoomSummary()
+                                  "
+                                  [disabled]="room.adults <= 1"
+                                >
+                                  −
+                                </button>
+                                <div class="mx-2">{{ room.adults }}</div>
+                                <button
+                                  class="btn btn-outline-secondary btn-sm border-0"
+                                  (click)="
+                                    room.adults = room.adults + 1;
+                                    saveRoomSummary()
+                                  "
+                                  [disabled]="room.adults >= 4"
+                                >
+                                  +
+                                </button>
+                              </div>
+                            </div>
+
+                            <!-- Children -->
+                            <div class="col">
+                              <div class="font-weight-bold mb-2">Children</div>
+                              <div
+                                class="d-flex justify-content-center align-items-center"
+                              >
+                                <button
+                                  class="btn btn-outline-secondary btn-sm border-0"
+                                  (click)="
+                                    room.children = room.children - 1;
+                                    saveRoomSummary()
+                                  "
+                                  [disabled]="room.children <= 0"
+                                >
+                                  −
+                                </button>
+                                <div class="mx-2">{{ room.children }}</div>
+                                <button
+                                  class="btn btn-outline-secondary btn-sm border-0"
+                                  (click)="
+                                    room.children = room.children + 1;
+                                    saveRoomSummary()
+                                  "
+                                  [disabled]="room.children >= 2"
+                                >
+                                  +
+                                </button>
+                              </div>
+                            </div>
+                            <span
+                              (click)="removeRoom(i)"
+                              style="cursor: pointer"
+                            >
+                              <i class="fa-solid fa-trash"></i>
+                            </span>
+                          </div>
+                        </div>
+
+                        <!-- Info note -->
+                        <div
+                          class="d-flex align-items-start mt-3 text-muted small justify-content-between"
+                        >
+                          <div style="width: 70%">
+                            <a
+                              class="color-text font-weight-bold cursor-pointer"
+                              (click)="addRoom()"
+                              *ngIf="rooms < 30"
+                              >+ Add Room</a
+                            >
+                          </div>
+
+                          <div class="d-flex text-align-justify">
+                            <i
+                              class="fa fa-info-circle color-text mr-2 mt-1"
+                              aria-hidden="true"
+                            ></i>
+                            <span>
+                              Please select the number of rooms and assign
+                              guests accordingly.
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="special-offer">
+                  <div class="special-section">
+                    <div class="special-code">
+                      Got an exclusive code?
+                      <span class="special-code-One">Unlock your deal</span>
+                    </div>
+                  </div>
+                  <div class="special-sectionOne">
+                    <div>
+                      <input
+                        style="
+                          width: 100%;
+                          border: none;
+                          border-radius: 6px;
+                          padding: 5px;
+                        "
+                        type="text"
+                        [(ngModel)]="enteredCoupon"
+                        (ngModelChange)="onCouponInputChange($event)"
+                        [ngClass]="{
+                          'valid-input':
+                            enteredCoupon &&
+                            enteredCoupon.trim().toUpperCase() ===
+                              validCouponCode.toUpperCase(),
+                          'invalid-input':
+                            enteredCoupon &&
+                            enteredCoupon.trim() !== '' &&
+                            enteredCoupon.trim().toUpperCase() !==
+                              validCouponCode.toUpperCase()
+                        }"
+                      />
+                    </div>
+                    <div class="applycoupon">
+                      <button class="applycoupon-button">Apply Coupon</button>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -439,7 +840,7 @@
                     >
                   </div>
                 </div>
-                <div>
+                <div class="applycoupon">
                   <button
                     class="apply-coupon-btn"
                     (click)="selectedPromotionList(product)"
@@ -457,57 +858,180 @@
 </div>
 
 <div class="container-div margin-bottom-40px">
-  <div class="row margin-top-40px">
-    <div class="col-12 col-lg-7">
-      <h2 class="hero-heading">{{ businessUser?.name }}</h2>
-      <p class="hero-subheading font-weight-bold">
-        <img src="assets/images/location-icons.svg" alt="" width="17px" />
-        {{ businessUser.address?.streetName }},
-        {{ businessUser.address?.city }}, {{ businessUser.address?.state }},
-        {{ businessUser.address?.country }}
-      </p>
+  <div class="website-web-vision">
+    <div class="row margin-top-40px">
+      <div class="col-12 col-lg-7">
+        <h2 class="hero-heading">{{ businessUser?.name }}</h2>
+        <p class="hero-subheading font-weight-bold">
+          <img src="assets/images/location-icons.svg" alt="" width="17px" />
+          {{ businessUser.address?.streetName }},
+          {{ businessUser.address?.city }}, {{ businessUser.address?.state }},
+          {{ businessUser.address?.country }}
+        </p>
+        <!-- web view -->
+        <div class="d-flex flex-column flex-lg-row gap-3 mt-3">
+          <!-- Large Left Image -->
+          <div class="flex-grow-1">
+            <img
+              *ngIf="businessUser?.imageList?.length > 0"
+              [src]="businessUser?.imageList[0]?.url"
+              class="img-fluid rounded main-img"
+              alt="Main Image"
+            />
+          </div>
 
-      <div class="d-flex flex-column flex-lg-row gap-3 mt-3">
-        <!-- Large Left Image -->
-        <div class="flex-grow-1">
-          <img
-            *ngIf="businessUser?.imageList?.length > 0"
-            [src]="businessUser?.imageList[0]?.url"
-            class="img-fluid rounded main-img"
-            alt="Main Image"
-          />
-        </div>
-
-        <!-- Stacked Thumbnails -->
-        <div class="d-flex flex-lg-column gap-2 gallery-thumbs">
-          <div
-            class="d-flex flex-lg-column gap-2 gallery-thumbs position-relative"
-          >
-            <ng-container
-              *ngFor="
-                let img of businessUser?.imageList?.slice(1, 4);
-                let i = index
-              "
+          <!-- Stacked Thumbnails -->
+          <div class="d-flex flex-lg-column gap-2 gallery-thumbs">
+            <div
+              class="d-flex flex-lg-column gap-2 gallery-thumbs position-relative"
             >
-              <img [src]="img.url" class="img-fluid rounded small-img" />
-            </ng-container>
+              <ng-container
+                *ngFor="
+                  let img of businessUser?.imageList?.slice(1, 4);
+                  let i = index
+                "
+              >
+                <img [src]="img.url" class="img-fluid rounded small-img" />
+              </ng-container>
 
-            <!-- See More Button -->
-            <button
-              *ngIf="businessUser?.imageList?.length > 1"
-              class="btn position-absolute see-more"
-              style="bottom: 4px; right: 3px"
-              (click)="openGalleryModal()"
-            >
-              See More Photos
-            </button>
+              <!-- See More Button -->
+              <button
+                *ngIf="businessUser?.imageList?.length > 1"
+                class="btn position-absolute see-more"
+                style="bottom: 4px; right: 3px"
+                (click)="openGalleryModal()"
+              >
+                See More Photos
+              </button>
+            </div>
           </div>
         </div>
       </div>
+      <div class="col-5">
+        <div class="d-flex align-items-start" style="gap: 8px">
+          <div>
+            <div class="smart-card">
+              <img
+                src=" assets/images/smart-chat.svg"
+                class="smart-card-img"
+                alt=""
+              />
+            </div>
+          </div>
+          <div>
+            <div class="smart-recommend">Smart Recommendations</div>
+            <div class="smart-recommend-1">
+              Not sure what to book? These room options are the best fit for
+              your stay – selected just for you.
+            </div>
+          </div>
+        </div>
+        <div class="card smart-recommend-card">
+          <div class="d-flex justify-content-center" style="gap: 8px">
+            <div class="width-49 left-shift">
+              <h5 class="recommend-font">
+                <img src=" assets/images/sofa.svg" alt="" width="35px" />&nbsp;
+                Comfort Combo
+              </h5>
+              <div class="line-height">
+                1&nbsp;&nbsp;&nbsp;&nbsp; x&nbsp;&nbsp;&nbsp;&nbsp; Family Suite
+              </div>
+              <div class="line-height">
+                1&nbsp;&nbsp;&nbsp;&nbsp; x&nbsp;&nbsp;&nbsp;&nbsp; Deluxe Room
+              </div>
+            </div>
+            <div style="border-right: 1px solid #d9d9d9"></div>
+            <div class="width-49 left-shift">
+              <div class="text-sm">Price :</div>
+              <div class="font-small line-height35">
+                <b class="pricing-recommd">₹ 5,093</b>&nbsp; per night + taxes
+              </div>
+              <div class="font-small">Occupancy :</div>
+              <div class="occupancy-data">4 Adults + 2 Child(ren)</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card smart-recommend-card-two">
+          <div class="d-flex justify-content-center" style="gap: 8px">
+            <div class="width-49 left-shift">
+              <h5 class="recommend-font">
+                <img
+                  src=" assets/images/budget.svg"
+                  alt=""
+                  width="35px"
+                />&nbsp; Comfort Combo
+              </h5>
+              <div class="line-height">
+                1&nbsp;&nbsp;&nbsp;&nbsp; x&nbsp;&nbsp;&nbsp;&nbsp; Family Suite
+              </div>
+              <div class="line-height">
+                1&nbsp;&nbsp;&nbsp;&nbsp; x&nbsp;&nbsp;&nbsp;&nbsp; Deluxe Room
+              </div>
+            </div>
+            <div style="border-right: 1px solid #d9d9d9"></div>
+            <div class="width-49 left-shift">
+              <div class="text-sm">Price :</div>
+              <div class="font-small line-height35">
+                <b class="pricing-recommd">₹ 5,093</b>&nbsp; per night + taxes
+              </div>
+              <div class="font-small">Occupancy :</div>
+              <div class="occupancy-data">4 Adults + 2 Child(ren)</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="d-flex justify-content-end margin-top-20px">
+          <button class="select-mannual" (click)="scrollToAccommodationDash()">
+            Select Manually
+          </button>
+        </div>
+      </div>
     </div>
-    <div class="col-5">
-      <div class="d-flex align-items-start" style="gap: 8px">
-        <div>
+  </div>
+
+  <!-- web view -->
+  <!-- mob view -->
+  <div class="website-mob-vision">
+    <div class="d-flex flex-lg-row gap-3 mt-3">
+      <!-- Large Left Image -->
+      <div class="flex-grow-1">
+        <img
+          *ngIf="businessUser?.imageList?.length > 0"
+          [src]="businessUser?.imageList[0]?.url"
+          class="img-fluid rounded main-img"
+          alt="Main Image"
+        />
+      </div>
+
+      <!-- Stacked Thumbnails -->
+      <div class="d-flex flex-lg-column gap-2 gallery-thumbs">
+        <div
+          class="d-flex flex-lg-column gap-2 gallery-thumbs position-relative"
+        >
+          <ng-container
+            *ngFor="
+              let img of businessUser?.imageList?.slice(1, 4);
+              let i = index
+            "
+          >
+            <img [src]="img.url" class="img-fluid rounded small-img" />
+          </ng-container>
+
+          <!-- See More Button -->
+          <button
+            *ngIf="businessUser?.imageList?.length > 1"
+            class="btn position-absolute see-more"
+            style="bottom: 4px; right: 3px"
+          >
+            See More Photos
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="col-12">
+      <div class="d-flex align-items-start" style="gap: 8px; margin-top: 15px">
+        <div style="width: 16%">
           <div class="smart-card">
             <img
               src=" assets/images/smart-chat.svg"
@@ -524,7 +1048,8 @@
           </div>
         </div>
       </div>
-      <div class="card smart-recommend-card">
+      <div class="d-flex">
+              <div class="card smart-recommend-card">
         <div class="d-flex justify-content-center" style="gap: 8px">
           <div class="width-49 left-shift">
             <h5 class="recommend-font">
@@ -575,6 +1100,8 @@
           </div>
         </div>
       </div>
+      </div>
+
 
       <div class="d-flex justify-content-end margin-top-20px">
         <button class="select-mannual" (click)="scrollToAccommodationDash()">
@@ -583,6 +1110,8 @@
       </div>
     </div>
   </div>
+
+  <!-- mob view -->
   <div class="modal fade" tabindex="-1" id="galleryModal" #galleryModalRef>
     <div
       class="modal-dialog modal-lg modal-dialog-centered modal-fullscreen-gallery"
@@ -2047,29 +2576,30 @@
 
         <!-- Add-ons -->
         <div class="mb-3" *ngIf="propertyServiceListDataOne.length > 0">
-  <div class="font-weight-semibold mb-2">Add-ons</div>
+          <div class="font-weight-semibold mb-2">Add-ons</div>
 
-  <ng-container
-    *ngFor="
-      let fac of propertyServiceListDataOne
-        | slice : 0 : (viewMore ? propertyServiceListDataOne.length : 4);
-      let i = index
-    "
-  >
-    <div class="custom-checkbox mb-2">
-      <label>
-        <input
-          type="checkbox"
-          [checked]="selectedFacilityNames.includes(fac.name)"
-          (change)="onFacilityToggle(fac.name, $event.target.checked)"
-        />
-        <span class="checkmark"></span>
-        {{ fac.name }}
-      </label>
-    </div>
-  </ng-container>
-
-</div>
+          <ng-container
+            *ngFor="
+              let fac of propertyServiceListDataOne
+                | slice
+                  : 0
+                  : (viewMore ? propertyServiceListDataOne.length : 4);
+              let i = index
+            "
+          >
+            <div class="custom-checkbox mb-2">
+              <label>
+                <input
+                  type="checkbox"
+                  [checked]="selectedFacilityNames.includes(fac.name)"
+                  (change)="onFacilityToggle(fac.name, $event.target.checked)"
+                />
+                <span class="checkmark"></span>
+                {{ fac.name }}
+              </label>
+            </div>
+          </ng-container>
+        </div>
 
         <!-- Summary -->
         <div class="mb-3" *ngIf="selectedPlansSummary.length > 0">

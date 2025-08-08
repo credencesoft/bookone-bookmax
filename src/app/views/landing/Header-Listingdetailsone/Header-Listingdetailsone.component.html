@@ -253,31 +253,11 @@
   *ngIf="showheader === true"
 >
   <div
-    class="container-div"
-    style="display: flex; justify-content: space-between; align-items: center"
+  class="container-div"
+    style="display: flex; justify-content: space-between; align-items: center;"
   >
-    <!-- Left Section: Always rendered -->
-    <div
-      class="left-section"
-      style="
-        min-width: 80px;
-        min-height: 60px;
-        display: flex;
-        align-items: center;
-      "
-    >
-      <img
-        *ngIf="businessUser?.logoUrl"
-        class="logo-image"
-        [src]="businessUser.logoUrl"
-        alt="Business Logo"
-        style="height: 50px"
-      />
-    </div>
-
-    <!-- Right Section: Always visible (if businessUser?.website exists) -->
-    <div style="display: flex; gap: 7px">
-      <button
+    <div >
+            <button
         class="navbar-toggler"
         *ngIf="businessUser?.website"
         (click)="toggleListingDetails()"
@@ -287,6 +267,21 @@
         aria-label="Toggle navigation"
       >
         <img src="assets/images/nav-toggle.png" alt="Toggle Navigation" />
+      </button>
+    </div>
+
+    <div>
+              <button
+        class="blinking-unique-btn"
+        (click)="scrollToAccommodation($event)"
+        style="
+          background-color: #fff;
+          color: black !important;
+          border: none;
+          padding: 6px 22px;
+        "
+      >
+        Book Now
       </button>
     </div>
   </div>

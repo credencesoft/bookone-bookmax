@@ -924,6 +924,8 @@ export class ListingDetailOneComponent implements OnInit {
     this.bookingMinDate = calendar.getToday();
     this.bookingengineurl = this.token.getwebsitebookingURL();
     sessionStorage.removeItem('enquiryNo');
+    sessionStorage.removeItem('bookingsResponseList');
+    sessionStorage.removeItem('EnquiryResponseList');
 
     this.selectedServicesOne = this.token?.getSelectedServices();
     setTimeout(() => {
@@ -1520,6 +1522,10 @@ removeRoom(index: number): void {
     this.popupTimeout = setTimeout(() => {
       this.roomsAndOccupancy = false;
     }, 200); // 200ms delay to avoid flicker
+  }
+
+  closeChanges(){
+    this.roomsAndOccupancy = false;
   }
 
   selectRoomsbtn() {
