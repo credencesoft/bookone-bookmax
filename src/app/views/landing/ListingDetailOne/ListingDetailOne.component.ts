@@ -1853,40 +1853,38 @@ getRateByPlanCode(planCode: string) {
   toggleDescription(index: number) {
     this.showFullDescription[index] = !this.showFullDescription[index];
   }
-  sortAndLimitRooms() {
+sortAndLimitRooms() {
     // Sort rooms by roomOnlyPrice in ascending order
-    this.sortedRoomsLimit = this.Googlehotelsortrooms?.sort(
-      (a, b) => a.roomOnlyPrice - b.roomOnlyPrice
-    ).slice(0, 2);
-
-    this.sortedRoomsLimit?.forEach((room) => {
+    this.sortedRooms = this.Googlehotelsortrooms?.sort((a, b) => a.roomOnlyPrice - b.roomOnlyPrice).slice(0, 2);
+    this.sortedRooms?.forEach((room) => {
       let totalAvailableRooms = 0;
 
-      // Calculate total available rooms
       room?.ratesAndAvailabilityDtos?.forEach((rate) => {
         if (rate?.roomName === room?.name) {
           totalAvailableRooms += rate?.noOfAvailable || 0;
         }
       });
+
+      // Assign the total available rooms to the room object
       room.roomsAvailable = totalAvailableRooms;
+       let planPrices: number[] = [];
 
-      // Get minimum plan price from roomRatePlans
-      let planPrices: number[] = [];
-
-      room?.ratesAndAvailabilityDtos?.forEach((rate) => {
-        rate?.roomRatePlans?.forEach((plan) => {
-          if (typeof plan?.amount === 'number') {
-            planPrices.push(plan.amount);
-          }
-        });
+    room?.ratesAndAvailabilityDtos?.forEach(rate => {
+      rate?.roomRatePlans?.forEach(plan => {
+        if (typeof plan?.amount === 'number') {
+          planPrices.push(plan.amount);
+        }
       });
-      this.roomLowestPrices = {};
-      // Store lowest price by room ID or room.name
-      const lowestPrice = this.getLowestPrice(room);
-      this.roomLowestPrices[room.id || room.name] = lowestPrice;
     });
-    this.isLoading = false;
+    this.roomLowestPrices = {}
+  // Store lowest price by room ID or room.name
+    const lowestPrice = this.getLowestPrice(room);
+    this.roomLowestPrices[room.id || room.name] = lowestPrice;
+    });
+    this.isLoading=false
   }
+
+
 
   getLowestPrice(room: any): number | null {
     const allPlans = room?.ratesAndAvailabilityDtos
@@ -1938,11 +1936,9 @@ getRateByPlanCode(planCode: string) {
     return iconMap[name.trim()] || 'fa-circle-question'; // fallback icon
   }
 
-  sortAndLimitRoomsOne() {
-    // Sort rooms by roomOnlyPrice in ascending order and take top 2
-    this.sortedRoomsOne = this.shortrooms
-      ?.sort((a, b) => a.roomOnlyPrice - b.roomOnlyPrice)
-      .slice(0, 2);
+ sortAndLimitRoomsOne() {
+    this.sortedRoomsOne = this.shortrooms?.sort((a, b) => a.roomOnlyPrice - b.roomOnlyPrice).slice(0, 2);
+
     this.sortedRoomsOne?.forEach((room) => {
       let totalAvailableRooms = 0;
 
@@ -1954,8 +1950,22 @@ getRateByPlanCode(planCode: string) {
 
       // Assign the total available rooms to the room object
       room.roomsAvailable = totalAvailableRooms;
+
+      this.roomLowestPricesBookingEngine = this.roomLowestPricesBookingEngine || {}; // Ensure object is initialized
+
+const lowestPlan = this.getLowestPriceBookingEngine(room); // This returns a number or null
+
+const roomKey = room.id || room.name;
+
+if (roomKey) {
+  this.roomLowestPricesBookingEngine[roomKey] = lowestPlan;
+}
+
+
     });
   }
+
+
 
   getLowestPriceBookingEngine(room: any): number | null {
     const allPlans = room?.ratesAndAvailabilityDtos
@@ -4421,31 +4431,10 @@ onBookNow() {
           //   return 0; // Keep original order if both have or don't have "Economy"
           // });
 
-          let sortedRooms = [];
-          console.log('sortedRooms 1st is', sortedRooms);
-          if (this.availableRooms.length > 1) {
-            sortedRooms = this.availableRooms?.sort((a, b) => {
-              console.log('sortedRooms is', sortedRooms);
-              const hasEconomyA = a?.ratesAndAvailabilityDtos?.some((dto) =>
-                dto?.roomRatePlans?.some((plan) => plan?.name === 'Economy')
-              );
-              const hasEconomyB = b?.ratesAndAvailabilityDtos?.some((dto) =>
-                dto?.roomRatePlans?.some((plan) => plan?.name === 'Economy')
-              );
-
-              if (hasEconomyA && !hasEconomyB) return -1;
-              if (!hasEconomyA && hasEconomyB) return 1;
-              return 0;
-            });
-          } else {
-            this.availableRooms = this.SubAvailableRooms;
-          }
-
-          this.sortedRooms = sortedRooms;
 
           // console.log('sortedRooms is',sortedRooms);
 
-          //           this.shortrooms =  response.body.roomList;
+                    this.shortrooms =  response.body.roomList;
           //           console.log('after response is',sortedRooms);
 
           // (window as any).dataLayer = (window as any).dataLayer.filter(event => event.event !== 'hotel_booking');
@@ -4728,7 +4717,7 @@ onBookNow() {
         this.fetchAndProcessRoomsData();
       }
     }, 3000);
-    this.sortAndLimitRoomsOne();
+    // this.sortAndLimitRoomsOne();
     this.token.clearAllTaxArray();
     this.getTotalTaxFee();
   }
