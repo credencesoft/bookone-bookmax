@@ -2661,8 +2661,8 @@
           || room.ratesAndAvailabilityDtos?.[0]?.stopSellOTA != null && room.ratesAndAvailabilityDtos?.[0]?.stopSellOTA !== false"
         >
           <div>
-            <div class="d-flex justify-content-between">
-              <div class="col-5">
+            <div class="d-flex justify-content-between flex-wrap-one">
+              <div class="col-12 col-md-5 spacing-manage">
                 <div
                   class="position-relative bg-white rounded-4 overflow-hidden shadow"
                   style="border: 1px solid #e0e0e0; border-radius: 20px"
@@ -2763,9 +2763,9 @@
                 </div>
               </div>
 
-              <div class="col-7">
+              <div class="col-12 col-md-7 spacing-manage">
                 <div class="d-flex justify-content-between">
-                  <h3>{{ room.name }}</h3>
+                  <h3 class="margin-top-mobile-30px">{{ room.name }}</h3>
                   <div>
                     <img
                       src=" assets/images/profile-pic.svg"
@@ -2803,7 +2803,7 @@
     </div>
 
     <div class="side-images website-web-vision">
-      <div class="card booking-card">
+      <div class="card booking-card sticky-card">
         <h5 class="font-weight-bold mb-3">Booking Summary</h5>
 
         <!-- Dates & Guests -->

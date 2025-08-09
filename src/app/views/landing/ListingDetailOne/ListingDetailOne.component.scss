@@ -1327,6 +1327,12 @@ text-align: center;
   .display-flex {
     display: flex;
   }
+  .sticky-card {
+    position: sticky;
+    position: -webkit-sticky;
+    top: 98px;
+    z-index: 5;
+  }
 }
 
 @media (min-width: 1181px) and (max-width: 1262px) {
