@@ -16,10 +16,8 @@
         <div class="card checkAvaCard">
           <div id="checkin">
             <div class="row d-flex checkAva2">
-              <div class="checkAva3" >
-                <div
-                  id="autocomplete-container"
-                >
+              <div class="checkAva3">
+                <div id="autocomplete-container">
                   <label
                     for="checkin"
                     class="label_heading1 checkAva4 default-color"
@@ -63,7 +61,7 @@
                     />
                   </div>
                 </div>
-                <div class="content-centered"  >
+                <div class="content-centered">
                   <img
                     src=" assets/images/Calendar.png"
                     alt=""
@@ -72,7 +70,13 @@
                   />
                 </div>
 
-                <div style=" border-right: 1px solid #d9d9d9; margin-top: 2px; margin-bottom: 13px;"></div>
+                <div
+                  style="
+                    border-right: 1px solid #d9d9d9;
+                    margin-top: 2px;
+                    margin-bottom: 13px;
+                  "
+                ></div>
               </div>
 
               <div class="checkAva6">
@@ -928,7 +932,10 @@
             </div>
           </div>
           <div>
-            <div class="smart-recommend">Smart Recommendations &nbsp; <span class="coming-soon">Coming Soon</span> </div>
+            <div class="smart-recommend">
+              Smart Recommendations &nbsp;
+              <span class="coming-soon">Coming Soon</span>
+            </div>
             <div class="smart-recommend-1">
               Not sure what to book? These room options are the best fit for
               your stay – selected just for you.
@@ -936,78 +943,96 @@
           </div>
         </div>
         <ng-container *ngIf="isLoading">
-        <div
-          class="card smart-recommend-card skeleton-card"
-          *ngFor="let skeleton of [1, 2]"
-        >
-          <div class="d-flex justify-content-center" style="gap: 8px">
-            <div class="width-49 left-shift">
-              <div class="skeleton skeleton-title"></div>
-              <div class="skeleton skeleton-text"></div>
-            </div>
-            <div style="border-right: 1px solid #d9d9d9"></div>
-            <div class="width-49 left-shift">
-              <div class="skeleton skeleton-text"></div>
-              <div class="skeleton skeleton-price"></div>
-              <div class="skeleton skeleton-text"></div>
+          <div
+            class="card smart-recommend-card skeleton-card"
+            *ngFor="let skeleton of [1, 2]"
+          >
+            <div class="d-flex justify-content-center" style="gap: 8px">
+              <div class="width-49 left-shift">
+                <div class="skeleton skeleton-title"></div>
+                <div class="skeleton skeleton-text"></div>
+              </div>
+              <div style="border-right: 1px solid #d9d9d9"></div>
+              <div class="width-49 left-shift">
+                <div class="skeleton skeleton-text"></div>
+                <div class="skeleton skeleton-price"></div>
+                <div class="skeleton skeleton-text"></div>
+              </div>
             </div>
           </div>
-        </div>
         </ng-container>
-        <ng-container *ngIf="this.activeForGoogleHotelCenter == true && !isLoading">
-          <div class="card smart-recommend-card" *ngFor="let room of sortedRooms; let i = index"
-          [ngStyle]="{
-            'background-color': i % 2 === 0 ? '#f8f8ff' : '#f1fff4'
-          }">
-                     <div class="d-flex justify-content-center" style="gap: 8px">
+        <ng-container
+          *ngIf="this.activeForGoogleHotelCenter == true && !isLoading"
+        >
+          <div
+            class="card smart-recommend-card"
+            *ngFor="let room of sortedRooms; let i = index"
+            [ngStyle]="{
+              'background-color': i % 2 === 0 ? '#f8f8ff' : '#f1fff4'
+            }"
+          >
+            <div class="d-flex justify-content-center" style="gap: 8px">
               <div class="width-49 left-shift">
                 <h5 class="recommend-font">
                   {{ room.name }}
                 </h5>
                 <div class="line-height">
-                 {{room.roomsAvailable }} room(s) available
-
+                  {{ room.roomsAvailable }} room(s) available
                 </div>
               </div>
               <div style="border-right: 1px solid #d9d9d9"></div>
               <div class="width-49 left-shift">
                 <div class="text-sm">Price :</div>
                 <div class="font-small line-height35">
-                  <b class="pricing-recommd">₹ {{room.roomOnlyPrice }}</b>&nbsp; per night + taxes
+                  <b class="pricing-recommd">₹ {{ room.roomOnlyPrice }}</b
+                  >&nbsp; per night + taxes
                 </div>
-                <div class="font-small">Occupancy : <span class="occupancy-data">{{room.minimumOccupancy }} Adults</span></div>
-
+                <div class="font-small">
+                  Occupancy :
+                  <span class="occupancy-data"
+                    >{{ room.minimumOccupancy }} Adults</span
+                  >
+                </div>
               </div>
             </div>
-        </div>
+          </div>
         </ng-container>
 
-        <ng-container *ngIf="!isLoading && this.activeForGoogleHotelCenter == false">
-          <div class="card smart-recommend-card" *ngFor="let room of sortedRoomsOne; let i = index"
-          [ngStyle]="{
-            'background-color': i % 2 === 0 ? '#f8f8ff' : '#f1fff4'
-          }">
-           <div class="d-flex justify-content-center" style="gap: 8px">
+        <ng-container
+          *ngIf="!isLoading && this.activeForGoogleHotelCenter == false"
+        >
+          <div
+            class="card smart-recommend-card"
+            *ngFor="let room of sortedRoomsOne; let i = index"
+            [ngStyle]="{
+              'background-color': i % 2 === 0 ? '#f8f8ff' : '#f1fff4'
+            }"
+          >
+            <div class="d-flex justify-content-center" style="gap: 8px">
               <div class="width-49 left-shift">
                 <h5 class="recommend-font">
                   {{ room.name }}
                 </h5>
                 <div class="line-height">
-                 {{room.roomsAvailable }} room(s) available
-
+                  {{ room.roomsAvailable }} room(s) available
                 </div>
               </div>
               <div style="border-right: 1px solid #d9d9d9"></div>
               <div class="width-49 left-shift">
                 <div class="text-sm">Price :</div>
                 <div class="font-small line-height35">
-                  <b class="pricing-recommd">₹ {{room.roomOnlyPrice }}</b>&nbsp; per night + taxes
+                  <b class="pricing-recommd">₹ {{ room.roomOnlyPrice }}</b
+                  >&nbsp; per night + taxes
                 </div>
-                <div class="font-small">Occupancy : <span class="occupancy-data">{{room.minimumOccupancy }} Adults</span></div>
-
+                <div class="font-small">
+                  Occupancy :
+                  <span class="occupancy-data"
+                    >{{ room.minimumOccupancy }} Adults</span
+                  >
+                </div>
               </div>
             </div>
-        </div>
+          </div>
         </ng-container>
 
         <!-- <div class="card smart-recommend-card">
@@ -1107,12 +1132,46 @@
             *ngIf="businessUser?.imageList?.length > 1"
             class="btn position-absolute see-more"
             style="bottom: 4px; right: 3px"
+            (click)="showSliderPopup()"
           >
             See More Photos
           </button>
         </div>
       </div>
     </div>
+    {{businessUser?.imageList}}
+    <p-dialog
+
+      header="Photo Gallery"
+      [(visible)]="sliderPopupVisible"
+      [modal]="true"
+      [style]="{ width: '80vw' }"
+      [baseZIndex]="10000"
+    >
+      <p-carousel
+      *ngIf="businessUser?.imageList?.length"
+        [value]="businessUser?.imageList"
+        [numVisible]="1"
+        [numScroll]="1"
+        [circular]="true"
+        [autoplayInterval]="3000"
+        [responsiveOptions]="[
+          { breakpoint: '1024px', numVisible: 1, numScroll: 1 },
+          { breakpoint: '768px', numVisible: 1, numScroll: 1 }
+        ]"
+      >
+        <ng-template let-img pTemplate="item">
+          <div class="flex justify-content-center">
+            <img
+              [src]="img"
+              alt="Room Photo"
+              style="width: 100%; height: auto; border-radius: 8px"
+            />
+          </div>
+        </ng-template>
+      </p-carousel>
+    </p-dialog>
+
     <div class="col-12">
       <div class="d-flex align-items-start" style="gap: 8px; margin-top: 15px">
         <div style="width: 16%">
@@ -1125,20 +1184,22 @@
           </div>
         </div>
         <div>
-          <div class="smart-recommend">Smart Recommendations &nbsp; <span class="coming-soon">Coming Soon</span> </div>
+          <div class="smart-recommend">
+            Smart Recommendations &nbsp;
+            <span class="coming-soon">Coming Soon</span>
+          </div>
           <div class="smart-recommend-1">
             Not sure what to book? These room options are the best fit for your
             stay – selected just for you.
           </div>
         </div>
       </div>
-
     </div>
     <div class="d-flex scroll-container">
       <ng-container *ngIf="isLoading">
         <div
           class="card smart-recommend-card skeleton-card"
-          style=" width: 100%;"
+          style="width: 100%"
           *ngFor="let skeleton of [1, 2]"
         >
           <div style="gap: 8px">
@@ -1154,65 +1215,80 @@
             </div>
           </div>
         </div>
-        </ng-container>
-                <ng-container *ngIf="this.activeForGoogleHotelCenter == true && !isLoading">
-          <div class="card smart-recommend-card" *ngFor="let room of sortedRooms; let i = index"
+      </ng-container>
+      <ng-container
+        *ngIf="this.activeForGoogleHotelCenter == true && !isLoading"
+      >
+        <div
+          class="card smart-recommend-card"
+          *ngFor="let room of sortedRooms; let i = index"
           [ngStyle]="{
             'background-color': i % 2 === 0 ? '#f8f8ff' : '#f1fff4'
-          }">
-                     <div class="d-flex justify-content-center" style="gap: 8px">
-              <div class="width-49 left-shift">
-                <h5 class="recommend-font">
-                  {{ room.name }}
-                </h5>
-                <div class="line-height">
-                 {{room.roomsAvailable }} room(s) available
-
-                </div>
-              </div>
-              <div style="border-right: 1px solid #d9d9d9"></div>
-              <div class="width-49 left-shift">
-                <div class="text-sm">Price :</div>
-                <div class="font-small line-height35">
-                  <b class="pricing-recommd">₹ {{room.roomOnlyPrice }}</b>&nbsp; per night + taxes
-                </div>
-                <div class="font-small">Occupancy : <span class="occupancy-data">{{room.minimumOccupancy }} Adults</span></div>
-
+          }"
+        >
+          <div class="d-flex justify-content-center" style="gap: 8px">
+            <div class="width-49 left-shift">
+              <h5 class="recommend-font">
+                {{ room.name }}
+              </h5>
+              <div class="line-height">
+                {{ room.roomsAvailable }} room(s) available
               </div>
             </div>
+            <div style="border-right: 1px solid #d9d9d9"></div>
+            <div class="width-49 left-shift">
+              <div class="text-sm">Price :</div>
+              <div class="font-small line-height35">
+                <b class="pricing-recommd">₹ {{ room.roomOnlyPrice }}</b
+                >&nbsp; per night + taxes
+              </div>
+              <div class="font-small">
+                Occupancy :
+                <span class="occupancy-data"
+                  >{{ room.minimumOccupancy }} Adults</span
+                >
+              </div>
+            </div>
+          </div>
         </div>
-
-        </ng-container>
-        <ng-container *ngIf="!isLoading && this.activeForGoogleHotelCenter == false">
-          <div class="card smart-recommend-card" *ngFor="let room of sortedRoomsOne; let i = index"
+      </ng-container>
+      <ng-container
+        *ngIf="!isLoading && this.activeForGoogleHotelCenter == false"
+      >
+        <div
+          class="card smart-recommend-card"
+          *ngFor="let room of sortedRoomsOne; let i = index"
           [ngStyle]="{
             'background-color': i % 2 === 0 ? '#f8f8ff' : '#f1fff4'
-          }">
-           <div class="d-flex justify-content-center" style="gap: 8px">
-              <div class="width-49 left-shift">
-                <h5 class="recommend-font">
-                  {{ room.name }}
-                </h5>
-                <div class="line-height">
-                 {{room.roomsAvailable }} room(s) available
-
-                </div>
-              </div>
-              <div style="border-right: 1px solid #d9d9d9"></div>
-              <div class="width-49 left-shift">
-                <div class="text-sm">Price :</div>
-                <div class="font-small line-height35">
-                  <b class="pricing-recommd">₹ {{room.roomOnlyPrice }}</b>&nbsp; per night + taxes
-                </div>
-                <div class="font-small">Occupancy : <span class="occupancy-data">{{room.minimumOccupancy }} Adults</span></div>
-
+          }"
+        >
+          <div class="d-flex justify-content-center" style="gap: 8px">
+            <div class="width-49 left-shift">
+              <h5 class="recommend-font">
+                {{ room.name }}
+              </h5>
+              <div class="line-height">
+                {{ room.roomsAvailable }} room(s) available
               </div>
             </div>
+            <div style="border-right: 1px solid #d9d9d9"></div>
+            <div class="width-49 left-shift">
+              <div class="text-sm">Price :</div>
+              <div class="font-small line-height35">
+                <b class="pricing-recommd">₹ {{ room.roomOnlyPrice }}</b
+                >&nbsp; per night + taxes
+              </div>
+              <div class="font-small">
+                Occupancy :
+                <span class="occupancy-data"
+                  >{{ room.minimumOccupancy }} Adults</span
+                >
+              </div>
+            </div>
+          </div>
         </div>
-
-        </ng-container>
-
-</div>
+      </ng-container>
+    </div>
   </div>
 
   <!-- mob view -->
@@ -1252,7 +1328,6 @@
       </div>
     </div>
   </div>
-
 
   <!-- Modal 2: Fullscreen Carousel -->
   <!-- Modal 2: Fullscreen Carousel -->
@@ -1799,7 +1874,7 @@
                   <div
                     class="position-absolute bottom-0 start-0 w-100 p-2 bg-opacity-75 bottom-0px"
                   >
-                    <div class="d-flex text-center" style="gap: 20px" >
+                    <div class="d-flex text-center" style="gap: 20px">
                       <div
                         class="aminities-alignment"
                         *ngFor="let item of room.roomFacilities | slice : 0 : 3"
@@ -1811,9 +1886,13 @@
                         <div class="small mt-1">{{ item.name }}</div>
                       </div>
 
-                      <div (click)="togglePanel(room, i)"
-                      [style.top.px]="(room.roomFacilities?.length || 0) > 0 ? null : -17"
-                      class="stories">
+                      <div
+                        (click)="togglePanel(room, i)"
+                        [style.top.px]="
+                          (room.roomFacilities?.length || 0) > 0 ? null : -17
+                        "
+                        class="stories"
+                      >
                         <img
                           src=" assets/images/stories-image.svg"
                           alt=""
@@ -1826,7 +1905,7 @@
               </div>
 
               <div class="col-12 col-md-7 spacing-manage">
-                <div class="d-flex justify-content-between ">
+                <div class="d-flex justify-content-between">
                   <h3 class="margin-top-mobile-30px">{{ room.name }}</h3>
                   <div>
                     <img
@@ -1847,9 +1926,8 @@
                     "
                     [attr.id]="'plan-' + plan.code"
                   >
-
-                     <!-- web view Plans sub-Section -->
-                      <div class="card-title website-web-vision">
+                    <!-- web view Plans sub-Section -->
+                    <div class="card-title website-web-vision">
                       <div
                         class="d-flex justify-content-between align-item-center"
                         style="gap: 20px"
@@ -1895,7 +1973,6 @@
                       </div>
                     </div>
                     <div class="card-data website-web-vision">
-
                       <div
                         class="d-flex justify-content-between align-items-end"
                       >
@@ -1992,10 +2069,10 @@
                         </div>
                       </div>
                     </div>
-                     <!-- web view Plans Section -->
+                    <!-- web view Plans Section -->
 
-                     <!-- mob view Plans Section -->
-                       <div class="card-title website-mob-vision">
+                    <!-- mob view Plans Section -->
+                    <div class="card-title website-mob-vision">
                       <div
                         class="d-flex justify-content-between align-item-center"
                         style="gap: 12px"
@@ -2127,10 +2204,11 @@
                             </div>
                           </div>
                         </div>
-
                       </div>
-                      <div class="d-flex justify-content-center margin-top-20px" >
-                         <div class="d-flex room-number">
+                      <div
+                        class="d-flex justify-content-center margin-top-20px"
+                      >
+                        <div class="d-flex room-number">
                           <div
                             class="selected"
                             (click)="onPlanSelect(plan.code, rates)"
@@ -2276,9 +2354,13 @@
                         <div class="small mt-1">{{ item.name }}</div>
                       </div>
 
-                      <div (click)="togglePanel(room, i)"
-                      [style.top.px]="(room.roomFacilities?.length || 0) > 0 ? null : -17"
-                      class="stories">
+                      <div
+                        (click)="togglePanel(room, i)"
+                        [style.top.px]="
+                          (room.roomFacilities?.length || 0) > 0 ? null : -17
+                        "
+                        class="stories"
+                      >
                         <img
                           src=" assets/images/stories-image.svg"
                           alt=""
@@ -2311,7 +2393,7 @@
                     [attr.id]="'plan-' + plan.code"
                   >
                     <!-- web view Plans sub-Section -->
-                      <div class="card-title website-web-vision">
+                    <div class="card-title website-web-vision">
                       <div
                         class="d-flex justify-content-between align-item-center"
                         style="gap: 20px"
@@ -2357,7 +2439,6 @@
                       </div>
                     </div>
                     <div class="card-data website-web-vision">
-
                       <div
                         class="d-flex justify-content-between align-items-end"
                       >
@@ -2454,10 +2535,10 @@
                         </div>
                       </div>
                     </div>
-                     <!-- web view Plans Section -->
+                    <!-- web view Plans Section -->
 
-                     <!-- mob view Plans Section -->
-                       <div class="card-title website-mob-vision">
+                    <!-- mob view Plans Section -->
+                    <div class="card-title website-mob-vision">
                       <div
                         class="d-flex justify-content-between align-item-center"
                         style="gap: 12px"
@@ -2589,10 +2670,11 @@
                             </div>
                           </div>
                         </div>
-
                       </div>
-                      <div class="d-flex justify-content-center margin-top-20px" >
-                         <div class="d-flex room-number">
+                      <div
+                        class="d-flex justify-content-center margin-top-20px"
+                      >
+                        <div class="d-flex room-number">
                           <div
                             class="selected"
                             (click)="onPlanSelect(plan.code, rates)"
@@ -2720,9 +2802,13 @@
                         <div class="small mt-1">{{ item.name }}</div>
                       </div>
 
-                      <div (click)="togglePanel(room, i)"
-                      [style.top.px]="(room.roomFacilities?.length || 0) > 0 ? null : -17"
-                      class="stories">
+                      <div
+                        (click)="togglePanel(room, i)"
+                        [style.top.px]="
+                          (room.roomFacilities?.length || 0) > 0 ? null : -17
+                        "
+                        class="stories"
+                      >
                         <img
                           src=" assets/images/stories-image.svg"
                           alt=""
@@ -2757,7 +2843,9 @@
                     </p>
                   </div>
                   <div class="margin-top-20px d-flex" style="gap: 30px">
-                    <button class="dates-seemore">Change Dates</button>
+                    <button class="dates-seemore" (click)="adjustDates()">
+                      Change Dates
+                    </button>
                     <button
                       (click)="scrollToAccommodationDash()"
                       class="dates-seemore"
@@ -2867,7 +2955,13 @@
                         <div class="small mt-1">{{ item.name }}</div>
                       </div>
 
-                      <div (click)="togglePanel(room, i)" [style.top.px]="(room.roomFacilities?.length || 0) > 0 ? null : -17" class="stories">
+                      <div
+                        (click)="togglePanel(room, i)"
+                        [style.top.px]="
+                          (room.roomFacilities?.length || 0) > 0 ? null : -17
+                        "
+                        class="stories"
+                      >
                         <img
                           src=" assets/images/stories-image.svg"
                           alt=""
@@ -2902,7 +2996,9 @@
                     </p>
                   </div>
                   <div class="margin-top-20px d-flex" style="gap: 30px">
-                    <button class="dates-seemore">Change Dates</button>
+                    <button class="dates-seemore" (click)="adjustDates()">
+                      Change Dates
+                    </button>
                     <button
                       (click)="scrollToAccommodationDash()"
                       class="dates-seemore"
@@ -3251,7 +3347,7 @@
   <!-- nearby section starts -->
 
   <div class="explore-nearby margin-top-30px">
-    <div >
+    <div>
       <div class="col-lg-12">
         <div *ngIf="blogPosts$ | async as blogPosts" style="margin-top: 10px">
           <div *ngFor="let blogPost of blogPosts.items">
