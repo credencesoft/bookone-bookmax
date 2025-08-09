@@ -474,6 +474,9 @@ background-color: #090979;
 .margin-top-30px {
   margin-top: 30px;
 }
+.margin-top-web-30px {
+  margin-top: 30px;
+}
 .plan-cards {
   border: 1px solid#D9D9D9;
   box-shadow: 0 10px 16px rgba(0, 0, 0, 0.2);
@@ -1150,6 +1153,26 @@ display: flex;
   font-size: 24px;
   cursor: pointer;
 }
+.scroll-container {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  white-space: nowrap;
+  padding-bottom: 8px; /* to avoid scrollbar overlap */
+}
+
+.scroll-container::-webkit-scrollbar {
+  height: 6px; /* scrollbar height */
+}
+
+.scroll-container::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 4px;
+}
+
+.scroll-container .card {
+  flex: 0 0 auto; /* prevent shrinking */
+}
 
 @media (max-width: 1180px) {
   .website-web-vision {
@@ -1270,11 +1293,39 @@ text-align: center;
     .gallery-thumbs {
         width: 140px;
     }
+    .maiiin {
+    width: 100%;
 }
+.flex-wrap-one {
+  flex-wrap: wrap;
+}
+.spacing-manage {
+      padding-right: 0px !important;
+    padding-left: 0px !important;
+}
+.card-title {
+    padding: 11px 13px;
+}
+.margin-top-web-30px {
+  margin-top: 0px;
+}
+.margin-top-mobile-30px {
+   margin-top: 30px;
+}
+.image-container {
+  margin-top: 0px !important;
+}
+}
+
+
+
 
 @media (min-width: 1181px){
   .website-mob-vision {
     display: none;
+  }
+  .display-flex {
+    display: flex;
   }
 }
 

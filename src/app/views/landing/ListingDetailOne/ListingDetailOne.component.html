@@ -1048,67 +1048,61 @@
           </div>
         </div>
       </div>
-      <div class="d-flex">
-              <div class="card smart-recommend-card">
-        <div class="d-flex justify-content-center" style="gap: 8px">
-          <div class="width-49 left-shift">
-            <h5 class="recommend-font">
-              <img src=" assets/images/sofa.svg" alt="" width="35px" />&nbsp;
-              Comfort Combo
-            </h5>
-            <div class="line-height">
-              1&nbsp;&nbsp;&nbsp;&nbsp; x&nbsp;&nbsp;&nbsp;&nbsp; Family Suite
-            </div>
-            <div class="line-height">
-              1&nbsp;&nbsp;&nbsp;&nbsp; x&nbsp;&nbsp;&nbsp;&nbsp; Deluxe Room
-            </div>
-          </div>
-          <div style="border-right: 1px solid #d9d9d9"></div>
-          <div class="width-49 left-shift">
-            <div class="text-sm">Price :</div>
-            <div class="font-small line-height35">
-              <b class="pricing-recommd">₹ 5,093</b>&nbsp; per night + taxes
-            </div>
-            <div class="font-small">Occupancy :</div>
-            <div class="occupancy-data">4 Adults + 2 Child(ren)</div>
-          </div>
+
+    </div>
+    <div class="d-flex scroll-container">
+  <div class="card smart-recommend-card">
+    <div class="d-flex justify-content-center" style="gap: 8px">
+      <div class="left-shift">
+        <h5 class="recommend-font">
+          <img src="assets/images/sofa.svg" alt="" width="35px" />&nbsp;
+          Comfort Combo
+        </h5>
+        <div class="line-height">
+          1&nbsp;&nbsp;&nbsp;&nbsp; x&nbsp;&nbsp;&nbsp;&nbsp; Family Suite
+        </div>
+        <div class="line-height">
+          1&nbsp;&nbsp;&nbsp;&nbsp; x&nbsp;&nbsp;&nbsp;&nbsp; Deluxe Room
         </div>
       </div>
-
-      <div class="card smart-recommend-card-two">
-        <div class="d-flex justify-content-center" style="gap: 8px">
-          <div class="width-49 left-shift">
-            <h5 class="recommend-font">
-              <img src=" assets/images/budget.svg" alt="" width="35px" />&nbsp;
-              Comfort Combo
-            </h5>
-            <div class="line-height">
-              1&nbsp;&nbsp;&nbsp;&nbsp; x&nbsp;&nbsp;&nbsp;&nbsp; Family Suite
-            </div>
-            <div class="line-height">
-              1&nbsp;&nbsp;&nbsp;&nbsp; x&nbsp;&nbsp;&nbsp;&nbsp; Deluxe Room
-            </div>
-          </div>
-          <div style="border-right: 1px solid #d9d9d9"></div>
-          <div class="width-49 left-shift">
-            <div class="text-sm">Price :</div>
-            <div class="font-small line-height35">
-              <b class="pricing-recommd">₹ 5,093</b>&nbsp; per night + taxes
-            </div>
-            <div class="font-small">Occupancy :</div>
-            <div class="occupancy-data">4 Adults + 2 Child(ren)</div>
-          </div>
+      <div style="border-right: 1px solid #d9d9d9"></div>
+      <div class="left-shift">
+        <div class="text-sm">Price :</div>
+        <div class="font-small line-height35">
+          <b class="pricing-recommd">₹ 5,093</b>&nbsp; per night + taxes
         </div>
-      </div>
-      </div>
-
-
-      <div class="d-flex justify-content-end margin-top-20px">
-        <button class="select-mannual" (click)="scrollToAccommodationDash()">
-          Select Manually
-        </button>
+        <div class="font-small">Occupancy :</div>
+        <div class="occupancy-data">4 Adults + 2 Child(ren)</div>
       </div>
     </div>
+  </div>
+
+  <div class="card smart-recommend-card-two">
+    <div class="d-flex justify-content-center" style="gap: 8px">
+      <div class="width-49 left-shift">
+        <h5 class="recommend-font">
+          <img src="assets/images/budget.svg" alt="" width="35px" />&nbsp;
+          Comfort Combo
+        </h5>
+        <div class="line-height">
+          1&nbsp;&nbsp;&nbsp;&nbsp; x&nbsp;&nbsp;&nbsp;&nbsp; Family Suite
+        </div>
+        <div class="line-height">
+          1&nbsp;&nbsp;&nbsp;&nbsp; x&nbsp;&nbsp;&nbsp;&nbsp; Deluxe Room
+        </div>
+      </div>
+      <div style="border-right: 1px solid #d9d9d9"></div>
+      <div class="width-49 left-shift">
+        <div class="text-sm">Price :</div>
+        <div class="font-small line-height35">
+          <b class="pricing-recommd">₹ 5,093</b>&nbsp; per night + taxes
+        </div>
+        <div class="font-small">Occupancy :</div>
+        <div class="occupancy-data">4 Adults + 2 Child(ren)</div>
+      </div>
+    </div>
+  </div>
+</div>
   </div>
 
   <!-- mob view -->
@@ -1148,6 +1142,7 @@
       </div>
     </div>
   </div>
+
 
   <!-- Modal 2: Fullscreen Carousel -->
   <!-- Modal 2: Fullscreen Carousel -->
@@ -1235,7 +1230,7 @@
     </div>
   </div>
 
-  <div class="row margin-top-40px">
+  <div class="margin-top-40px display-flex">
     <div class="col-12 col-lg-7">
       <div>
         <h4 class="aminities-highlights">Property Highlights</h4>
@@ -1344,7 +1339,7 @@
         </div>
       </div>
     </div>
-    <div class="col-5">
+    <div class="col-12 col-md-5">
       <div>
         <h4 class="aminities-highlights">About Property</h4>
         <div
@@ -1610,14 +1605,14 @@
             *ngFor="let rates of room.ratesAndAvailabilityDtos; let r = index"
           >
             <div
-              class="d-flex justify-content-between"
+              class="d-flex justify-content-between flex-wrap-one"
               *ngIf="
                 room.id === rates.roomId &&
                 r < 1 &&
                 (rates.stopSellOBE === false || rates.stopSellOBE === null)
               "
             >
-              <div class="col-5">
+              <div class="col-12 col-md-5 spacing-manage">
                 <div
                   class="position-relative bg-white rounded-4 overflow-hidden shadow"
                   style="border: 1px solid #e0e0e0; border-radius: 20px"
@@ -1718,9 +1713,9 @@
                 </div>
               </div>
 
-              <div class="col-7">
-                <div class="d-flex justify-content-between">
-                  <h3>{{ room.name }}</h3>
+              <div class="col-12 col-md-7 spacing-manage">
+                <div class="d-flex justify-content-between ">
+                  <h3 class="margin-top-mobile-30px">{{ room.name }}</h3>
                   <div>
                     <img
                       src=" assets/images/profile-pic.svg"
@@ -1730,7 +1725,7 @@
                   </div>
                   <!-- <div>380 sq.ft</div> -->
                 </div>
-                <div class="d-block margin-top-30px">
+                <div class="d-block margin-top-web-30px">
                   <!-- Plan -- 1 -->
                   <div
                     class="card border-radius-20px plan-cards margin-bottom-10px"
@@ -1740,7 +1735,9 @@
                     "
                     [attr.id]="'plan-' + plan.code"
                   >
-                    <div class="card-title">
+
+                     <!-- web view Plans sub-Section -->
+                      <div class="card-title website-web-vision">
                       <div
                         class="d-flex justify-content-between align-item-center"
                         style="gap: 20px"
@@ -1785,7 +1782,8 @@
                         </div>
                       </div>
                     </div>
-                    <div class="card-data">
+                    <div class="card-data website-web-vision">
+
                       <div
                         class="d-flex justify-content-between align-items-end"
                       >
@@ -1882,6 +1880,155 @@
                         </div>
                       </div>
                     </div>
+                     <!-- web view Plans Section -->
+
+                     <!-- mob view Plans Section -->
+                       <div class="card-title website-mob-vision">
+                      <div
+                        class="d-flex justify-content-between align-item-center"
+                        style="gap: 20px"
+                      >
+                        <div class="d-flex align-item-center" style="gap: 15px">
+                          <div
+                            class="planName"
+                            style="cursor: pointer"
+                            [title]="plan.name"
+                          >
+                            {{
+                              plan.name.split(" ").length > 1
+                                ? plan.name.split(" ").slice(0, 1).join(" ") +
+                                  "..."
+                                : plan.name
+                            }}
+                          </div>
+                          <div
+                            class="ViewDetails"
+                            (click)="togglePanel(room, i)"
+                            style="cursor: pointer"
+                          >
+                            <img
+                              src=" assets/images/view-details.svg"
+                              alt=""
+                              width="17px"
+                            />
+                            View Details
+                          </div>
+                        </div>
+                        <div class="d-flex align-item-center" style="gap: 5px">
+                          <div class="pricing">
+                            {{
+                              activeForGoogleHotelCenter && plan.code === "GHC"
+                                ? (this.totalplanPrice
+                                  | currency : currency : "symbol" : "1.2-2")
+                                : (plan.amount * DiffDate
+                                  | currency : currency : "symbol" : "1.2-2")
+                            }}
+                          </div>
+                          <div class="perNight">per night + taxes</div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="card-data website-mob-vision">
+                      <div
+                        class="d-flex justify-content-between align-items-end"
+                      >
+                        <div class="d-flex room-number">
+                          <div>
+                            <label
+                              class="input-group-text"
+                              for="inputGroupSelect01"
+                              >Room</label
+                            >
+                          </div>
+                          <select
+                            class="select-icon"
+                            id="inputGroupSelect01"
+                            [(ngModel)]="selectedRoomsByPlan[plan.code]"
+                            (ngModelChange)="onRoomSelect(plan.code, $event)"
+                          >
+                            <!-- Ensure default is assigned -->
+                            <ng-container
+                              *ngIf="setDefaultRoomIfMissing(plan.code)"
+                            ></ng-container>
+
+                            <option
+                              *ngFor="
+                                let count of getRoomOptions(rates.noOfAvailable)
+                              "
+                              [value]="count"
+                              [disabled]="count === 0"
+                            >
+                              {{ count === 0 ? "0" : count }}
+                            </option>
+                          </select>
+                        </div>
+                        <div class="d-flex room-numberOne">
+                          <div>
+                            <img
+                              src="assets/images/profile-pic.svg"
+                              alt=""
+                              width="20px"
+                            />
+                          </div>
+                          <div>
+                            <div class="margin-bottom-5px">Adult</div>
+                            <div class="d-flex increament-bg">
+                              <div
+                                class="cursor-pointer minus-btn"
+                                (click)="onDecrement(plan.code, 'adults')"
+                              >
+                                <i class="fa-solid fa-minus"></i>
+                              </div>
+                              <div>
+                                {{
+                                  selectedGuestsByPlan[plan.code]?.adults || 0
+                                }}
+                              </div>
+                              <div
+                                class="cursor-pointer plus-btn"
+                                (click)="onIncrement(plan.code, 'adults', plan)"
+                              >
+                                <i class="fa-solid fa-plus"></i>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="d-block room-number">
+                          <div class="margin-bottom-5px">Child</div>
+                          <div class="d-flex increament-bg">
+                            <div
+                              class="cursor-pointer minus-btn"
+                              (click)="onDecrement(plan.code, 'children')"
+                            >
+                              <i class="fa-solid fa-minus"></i>
+                            </div>
+                            <div>
+                              {{
+                                selectedGuestsByPlan[plan.code]?.children || 0
+                              }}
+                            </div>
+                            <div
+                              class="cursor-pointer plus-btn"
+                              (click)="onIncrement(plan.code, 'children', plan)"
+                            >
+                              <i class="fa-solid fa-plus"></i>
+                            </div>
+                          </div>
+                        </div>
+
+                      </div>
+                      <div class="d-flex justify-content-center margin-top-20px" >
+                         <div class="d-flex room-number">
+                          <div
+                            class="selected"
+                            (click)="onPlanSelect(plan.code, rates)"
+                          >
+                            Select
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- mob view Plans Section -->
                   </div>
                   <div
                     *ngIf="rates.roomRatePlans.length > 2"
@@ -1921,14 +2068,14 @@
             *ngFor="let rates of room.ratesAndAvailabilityDtos; let r = index"
           >
             <div
-              class="d-flex justify-content-between"
+              class="d-flex justify-content-between flex-wrap-one"
               *ngIf="
                 room.id === rates.roomId &&
                 r < 1 &&
                 (rates.stopSellOBE === false || rates.stopSellOBE === null)
               "
             >
-              <div class="col-5">
+              <div class="col-12 col-md-5 spacing-manage">
                 <div
                   class="position-relative bg-white rounded-4 overflow-hidden shadow"
                   style="border: 1px solid #e0e0e0; border-radius: 20px"
@@ -2029,9 +2176,9 @@
                 </div>
               </div>
 
-              <div class="col-7">
+              <div class="col-12 col-md-7 spacing-manage">
                 <div class="d-flex justify-content-between">
-                  <h3>{{ room.name }}</h3>
+                  <h3 class="margin-top-mobile-30px">{{ room.name }}</h3>
                   <div>
                     <img
                       src=" assets/images/profile-pic.svg"
@@ -2040,7 +2187,7 @@
                     />{{ room.maximumOccupancy }}
                   </div>
                 </div>
-                <div class="d-block margin-top-30px">
+                <div class="d-block margin-top-web-30px">
                   <div
                     class="card border-radius-20px plan-cards margin-bottom-10px"
                     *ngFor="
@@ -2049,7 +2196,8 @@
                     "
                     [attr.id]="'plan-' + plan.code"
                   >
-                    <div class="card-title">
+                    <!-- web view Plans sub-Section -->
+                      <div class="card-title website-web-vision">
                       <div
                         class="d-flex justify-content-between align-item-center"
                         style="gap: 20px"
@@ -2094,7 +2242,8 @@
                         </div>
                       </div>
                     </div>
-                    <div class="card-data">
+                    <div class="card-data website-web-vision">
+
                       <div
                         class="d-flex justify-content-between align-items-end"
                       >
@@ -2159,7 +2308,7 @@
                             </div>
                           </div>
                         </div>
-                        <div class="d-block room-numberOne">
+                        <div class="d-block room-number">
                           <div class="margin-bottom-5px">Child</div>
                           <div class="d-flex increament-bg">
                             <div
@@ -2191,6 +2340,155 @@
                         </div>
                       </div>
                     </div>
+                     <!-- web view Plans Section -->
+
+                     <!-- mob view Plans Section -->
+                       <div class="card-title website-mob-vision">
+                      <div
+                        class="d-flex justify-content-between align-item-center"
+                        style="gap: 20px"
+                      >
+                        <div class="d-flex align-item-center" style="gap: 15px">
+                          <div
+                            class="planName"
+                            style="cursor: pointer"
+                            [title]="plan.name"
+                          >
+                            {{
+                              plan.name.split(" ").length > 1
+                                ? plan.name.split(" ").slice(0, 1).join(" ") +
+                                  "..."
+                                : plan.name
+                            }}
+                          </div>
+                          <div
+                            class="ViewDetails"
+                            (click)="togglePanel(room, i)"
+                            style="cursor: pointer"
+                          >
+                            <img
+                              src=" assets/images/view-details.svg"
+                              alt=""
+                              width="17px"
+                            />
+                            View Details
+                          </div>
+                        </div>
+                        <div class="d-flex align-item-center" style="gap: 5px">
+                          <div class="pricing">
+                            {{
+                              activeForGoogleHotelCenter && plan.code === "GHC"
+                                ? (this.totalplanPrice
+                                  | currency : currency : "symbol" : "1.2-2")
+                                : (plan.amount * DiffDate
+                                  | currency : currency : "symbol" : "1.2-2")
+                            }}
+                          </div>
+                          <div class="perNight">per night + taxes</div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="card-data website-mob-vision">
+                      <div
+                        class="d-flex justify-content-between align-items-end"
+                      >
+                        <div class="d-flex room-number">
+                          <div>
+                            <label
+                              class="input-group-text"
+                              for="inputGroupSelect01"
+                              >Room</label
+                            >
+                          </div>
+                          <select
+                            class="select-icon"
+                            id="inputGroupSelect01"
+                            [(ngModel)]="selectedRoomsByPlan[plan.code]"
+                            (ngModelChange)="onRoomSelect(plan.code, $event)"
+                          >
+                            <!-- Ensure default is assigned -->
+                            <ng-container
+                              *ngIf="setDefaultRoomIfMissing(plan.code)"
+                            ></ng-container>
+
+                            <option
+                              *ngFor="
+                                let count of getRoomOptions(rates.noOfAvailable)
+                              "
+                              [value]="count"
+                              [disabled]="count === 0"
+                            >
+                              {{ count === 0 ? "0" : count }}
+                            </option>
+                          </select>
+                        </div>
+                        <div class="d-flex room-numberOne">
+                          <div>
+                            <img
+                              src="assets/images/profile-pic.svg"
+                              alt=""
+                              width="20px"
+                            />
+                          </div>
+                          <div>
+                            <div class="margin-bottom-5px">Adult</div>
+                            <div class="d-flex increament-bg">
+                              <div
+                                class="cursor-pointer minus-btn"
+                                (click)="onDecrement(plan.code, 'adults')"
+                              >
+                                <i class="fa-solid fa-minus"></i>
+                              </div>
+                              <div>
+                                {{
+                                  selectedGuestsByPlan[plan.code]?.adults || 0
+                                }}
+                              </div>
+                              <div
+                                class="cursor-pointer plus-btn"
+                                (click)="onIncrement(plan.code, 'adults', plan)"
+                              >
+                                <i class="fa-solid fa-plus"></i>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="d-block room-number">
+                          <div class="margin-bottom-5px">Child</div>
+                          <div class="d-flex increament-bg">
+                            <div
+                              class="cursor-pointer minus-btn"
+                              (click)="onDecrement(plan.code, 'children')"
+                            >
+                              <i class="fa-solid fa-minus"></i>
+                            </div>
+                            <div>
+                              {{
+                                selectedGuestsByPlan[plan.code]?.children || 0
+                              }}
+                            </div>
+                            <div
+                              class="cursor-pointer plus-btn"
+                              (click)="onIncrement(plan.code, 'children', plan)"
+                            >
+                              <i class="fa-solid fa-plus"></i>
+                            </div>
+                          </div>
+                        </div>
+
+                      </div>
+                      <div class="d-flex justify-content-center margin-top-20px" >
+                         <div class="d-flex room-number">
+                          <div
+                            class="selected"
+                            (click)="onPlanSelect(plan.code, rates)"
+                          >
+                            Select
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- mob view Plans Section -->
                   </div>
                   <div
                     *ngIf="rates.roomRatePlans.length > 2"
@@ -2218,8 +2516,8 @@
           *ngIf="room?.ratesAndAvailabilityDtos === null"
         >
           <div>
-            <div class="d-flex justify-content-between">
-              <div class="col-5">
+            <div class="d-flex justify-content-between flex-wrap-one">
+              <div class="col-12 col-md-5 spacing-manage">
                 <div
                   class="position-relative bg-white rounded-4 overflow-hidden shadow"
                   style="border: 1px solid #e0e0e0; border-radius: 20px"
@@ -2320,9 +2618,9 @@
                 </div>
               </div>
 
-              <div class="col-7">
+              <div class="col-12 col-md-7 spacing-manage">
                 <div class="d-flex justify-content-between">
-                  <h3>{{ room.name }}</h3>
+                  <h3 class="margin-top-mobile-30px">{{ room.name }}</h3>
                   <div>
                     <img
                       src=" assets/images/profile-pic.svg"
@@ -2504,7 +2802,7 @@
       </div>
     </div>
 
-    <div class="side-images">
+    <div class="side-images website-web-vision">
       <div class="card booking-card">
         <h5 class="font-weight-bold mb-3">Booking Summary</h5>
 
@@ -2837,7 +3135,7 @@
   <!-- nearby section starts -->
 
   <div class="explore-nearby margin-top-30px">
-    <div class="row">
+    <div >
       <div class="col-lg-12">
         <div *ngIf="blogPosts$ | async as blogPosts" style="margin-top: 10px">
           <div *ngFor="let blogPost of blogPosts.items">
