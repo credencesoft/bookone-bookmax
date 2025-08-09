@@ -863,6 +863,8 @@ export class ListingDetailOneComponent implements OnInit {
   selectedRoom: any = null;
   products: [] | undefined;
   selectedFacilityNames: string[] = [];
+  showGallery = false;
+  sliderPopupVisible = false;
 
   constructor(
     private listingService: ListingService,
@@ -1357,6 +1359,9 @@ removeRoom(index: number): void {
   this.additionalRooms.splice(index, 1);
   this.saveRoomSummary();
    this.calculateRoomSummary();
+}
+showSliderPopup() {
+  this.sliderPopupVisible = true;
 }
   togglePanel(room: any, index: number) {
     this.isPanelOpen = !this.isPanelOpen;
@@ -3910,6 +3915,11 @@ if (roomKey) {
       element.scrollIntoView({ behavior: 'smooth' });
     }
   }
+adjustDates() {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+
 
   scrollToAccommodationDashmobile() {
     const element = document.getElementById('accmdtwo');
