@@ -171,7 +171,7 @@ export class ListingDetailOneComponent implements OnInit {
   extraChildrenCharge: number;
   extraAdultCount: number;
   extraChildCount: number;
-
+showBookingSummary: boolean = false;
   toggleListingDetails() {
     this.showListingDetails = !this.showListingDetails;
   }
@@ -865,7 +865,7 @@ export class ListingDetailOneComponent implements OnInit {
   selectedFacilityNames: string[] = [];
   showGallery = false;
   sliderPopupVisible = false;
-
+guestSelectionErrors: { [planCode: string]: string } = {};
   constructor(
     private listingService: ListingService,
     private reviewService: ReviewService,
@@ -891,7 +891,8 @@ export class ListingDetailOneComponent implements OnInit {
     private titleService: Title,
     private metaService: Meta,
     private sanitizer: DomSanitizer,
-    private viewportScroller: ViewportScroller
+    private viewportScroller: ViewportScroller,
+    private cd: ChangeDetectorRef
   ) {
     const today = new Date();
     this.minDateForCheckIn = new NgbDate(
@@ -1351,6 +1352,23 @@ if (storedBooking) {
   calculateRoomSummary(): void {
   this.rooms = 1 + this.additionalRooms.length;
 }
+bookingSummaryView(){
+  this.showBookingSummary = true
+}
+  onDialogVisibleChange(visible: boolean) {
+    console.log('visibleChange ->', visible);
+    // keep the model in sync (usually unnecessary when using two-way binding,
+    // but this is a robust fallback)
+    this.showBookingSummary = visible;
+    this.cd.detectChanges();
+  }
+
+  // onHide should fire when the dialog is dismissed (mask, close button, ESC)
+  onDialogHide() {
+    console.log('onHide fired');
+    this.showBookingSummary = false; // ensure state is cleared
+    this.cd.detectChanges(); // needed if your component uses OnPush
+  }
 saveRoomSummary() {
   sessionStorage.setItem('bookingSummary', JSON.stringify(this.additionalRooms));
 }
@@ -1473,36 +1491,74 @@ showSliderPopup() {
       this.activeImageIndex--;
     }
   }
-  onIncrement(planCode: string, type: 'adults' | 'children', plan: any) {
-    const limit = type === 'adults' ? plan.maximumOccupancy : plan.noOfChildren;
-    const totalAllowed =
-      type === 'adults' ? this.totalAdults : this.totalChildren;
+  // onIncrement(planCode: string, type: 'adults' | 'children', plan: any) {
+  //   const limit = type === 'adults' ? plan.maximumOccupancy : plan.noOfChildren;
+  //   const totalAllowed =
+  //     type === 'adults' ? this.totalAdults : this.totalChildren;
 
-    // ✅ Block increment if room count is 0 or undefined
-    if (
-      !this.selectedRoomsByPlan[planCode] ||
-      this.selectedRoomsByPlan[planCode] === 0
-    ) {
-      return; // Stop if no room selected
-    }
+  //   if (
+  //     !this.selectedRoomsByPlan[planCode] ||
+  //     this.selectedRoomsByPlan[planCode] === 0
+  //   ) {
+  //     return; // Stop if no room selected
+  //   }
 
-    // Initialize selectedGuestsByPlan if not already
-    if (!this.selectedGuestsByPlan[planCode]) {
-      this.selectedGuestsByPlan[planCode] = { adults: 0, children: 0 };
-    }
+  //   // Initialize selectedGuestsByPlan if not already
+  //   if (!this.selectedGuestsByPlan[planCode]) {
+  //     this.selectedGuestsByPlan[planCode] = { adults: 0, children: 0 };
+  //   }
 
-    const current = this.selectedGuestsByPlan[planCode][type];
+  //   const current = this.selectedGuestsByPlan[planCode][type];
 
-    const totalSelected = Object.values(this.selectedGuestsByPlan).reduce(
-      (sum, val) => sum + val[type],
-      0
-    );
+  //   const totalSelected = Object.values(this.selectedGuestsByPlan).reduce(
+  //     (sum, val) => sum + val[type],
+  //     0
+  //   );
 
-    if (current < limit && totalSelected < totalAllowed) {
-      this.selectedGuestsByPlan[planCode][type]++;
-    }
+  //   if (current < limit && totalSelected < totalAllowed) {
+  //     this.selectedGuestsByPlan[planCode][type]++;
+  //   }
+  // }
+
+onIncrement(planCode: string, type: 'adults' | 'children', plan: any) {
+  this.guestSelectionErrors[planCode] = ''; // reset error for this plan
+
+  const limit = type === 'adults' ? plan.maximumOccupancy : plan.noOfChildren;
+  const totalAllowed =
+    type === 'adults' ? this.totalAdults : this.totalChildren;
+
+  if (!this.selectedRoomsByPlan[planCode] || this.selectedRoomsByPlan[planCode] === 0) {
+    this.showTemporaryError(planCode, 'Please add a room first.');
+    return;
   }
 
+  if (!this.selectedGuestsByPlan[planCode]) {
+    this.selectedGuestsByPlan[planCode] = { adults: 0, children: 0 };
+  }
+
+  const current = this.selectedGuestsByPlan[planCode][type];
+  const totalSelected = Object.values(this.selectedGuestsByPlan).reduce(
+    (sum, val) => sum + val[type],
+    0
+  );
+
+  if (current < limit && totalSelected < totalAllowed) {
+    this.selectedGuestsByPlan[planCode][type]++;
+  } else {
+    if (current >= limit) {
+      this.showTemporaryError(planCode, `Max ${type} allowed for this plan is ${limit}.`);
+    } else if (totalSelected >= totalAllowed) {
+      this.showTemporaryError(planCode, `You cannot add more ${type}.`);
+    }
+  }
+}
+
+private showTemporaryError(planCode: string, message: string) {
+  this.guestSelectionErrors[planCode] = message;
+  setTimeout(() => {
+    this.guestSelectionErrors[planCode] = '';
+  }, 2000); // 2 seconds
+}
   onDecrement(planCode: string, type: 'adults' | 'children') {
     if (
       this.selectedGuestsByPlan[planCode] &&
