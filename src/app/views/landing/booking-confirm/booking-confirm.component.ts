@@ -179,6 +179,10 @@ textToCopyOne: string = 'This is some text to copy';
       );
             setInterval(() => {
     this.loadBookingSessionData();
+        if (this.token.getBookingData() != null && this.token.getBookingData() != undefined)
+    {
+      this.booking = this.token.getBookingData();
+    }
   }, 10);
     }
 
@@ -234,7 +238,7 @@ textToCopyOne: string = 'This is some text to copy';
     if (this.token.getPaymentData() != null && this.token.getPaymentData() != undefined)
     {
       this.payment = this.token.getPaymentData();
-      console.log("this.payment"+JSON.stringify(this.payment))
+      // console.log("this.payment"+JSON.stringify(this.payment))
     }
 
     if (this.token.getPayment2Data() != null && this.token.getPayment2Data() != undefined)
@@ -367,14 +371,14 @@ textToCopyOne: string = 'This is some text to copy';
   if (bookingDataDetails) {
     this.bookingSummaryDetails = JSON.parse(bookingDataDetails);
     this.calculateTotalGuestsFromPlans();
-    console.log('bookingSummaryDetails', this.bookingSummaryDetails);
+    // console.log('bookingSummaryDetails', this.bookingSummaryDetails);
   }
 
   const bookingsResponseList = sessionStorage.getItem('bookingsResponseList');
   if (bookingsResponseList) {
     this.bookingsResponseList = JSON.parse(bookingsResponseList);
     this.calculateTotalGuestsFromPlans();
-    console.log('bookingsResponseList', this.bookingsResponseList);
+    // console.log('bookingsResponseList', this.bookingsResponseList);
   }
 }
 
@@ -500,7 +504,7 @@ checkValidCouponOrNot(couponList?){
 
 
       this.bookingRoomPrice = this.token.getRoomPrice();
-console.log("this.bookingRoomPrice" +this.bookingRoomPrice)
+// console.log("this.bookingRoomPrice" +this.bookingRoomPrice)
 
 
   }
@@ -577,7 +581,7 @@ console.log("this.bookingRoomPrice" +this.bookingRoomPrice)
           ) {
             // Get the 0th index plan
             const firstPlan = this.bookingSummaryDetails.selectedPlansSummary[0];
-            console.log('First plan pushed:', firstPlan);
+            // console.log('First plan pushed:', firstPlan);
             if (firstPlan.planCodeName ===  booking.roomRatePlanName) {
                               if (this.businessServiceDto.advanceAmountPercentage === 50) {
               booking.advanceAmount = Number(
@@ -807,7 +811,7 @@ console.log("this.bookingRoomPrice" +this.bookingRoomPrice)
     this.totalPercentage = (this.percentage1 + this.percentage2);
 
      this.booking.taxAmount = this.booking?.taxAmount;
-     console.log('tax amount is',this.booking.taxAmount);
+    //  console.log('tax amount is',this.booking.taxAmount);
     this.booking.roomPrice = this.booking.beforeTaxAmount;
 
 //     this.propertyServices = this.savedServices;
@@ -1055,7 +1059,7 @@ console.log("this.bookingRoomPrice" +this.bookingRoomPrice)
 
   calculateServiceHours (){
     this.accommodationService = this.businessUser.businessServiceDtoList.filter(service => service.name === "Accommodation");
-    console.log(" this.accommodationService" + JSON.stringify( this.accommodationService))
+    // console.log(" this.accommodationService" + JSON.stringify( this.accommodationService))
   }
   changeTheme(primary: string, secondary: string, tertiary: string) {
     document.documentElement.style.setProperty('--primary', primary);
@@ -1083,7 +1087,7 @@ console.log("this.bookingRoomPrice" +this.bookingRoomPrice)
   }
 
   getSubscriptions(booking: any) {
-    console.log('booking', booking);
+    // console.log('booking', booking);
     this.hotelBookingService
       .getSubscriptions(booking.propertyId)
       .subscribe((res) => {
@@ -1095,7 +1099,7 @@ console.log("this.bookingRoomPrice" +this.bookingRoomPrice)
         if (foundSubscription) {
           this.externalReservation(booking);
         } else {
-          console.log('BookOne Subscription is not found');
+          // console.log('BookOne Subscription is not found');
         }
       });
   }
@@ -1202,7 +1206,7 @@ console.log("this.bookingRoomPrice" +this.bookingRoomPrice)
 
     this.hotelBookingService.accommodationEnquiry(enquiry).subscribe({
       next: (response) => {
-        console.log(`Enquiry ${index + 1} updated successfully:`, response.body);
+        // console.log(`Enquiry ${index + 1} updated successfully:`, response.body);
       },
       error: (err) => {
         console.error(`Error updating enquiry ${index + 1}:`, err);
