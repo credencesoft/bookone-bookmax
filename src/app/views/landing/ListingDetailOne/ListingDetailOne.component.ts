@@ -172,6 +172,7 @@ export class ListingDetailOneComponent implements OnInit {
   extraAdultCount: number;
   extraChildCount: number;
 showBookingSummary: boolean = false;
+  soldOutRooms: any;
   toggleListingDetails() {
     this.showListingDetails = !this.showListingDetails;
   }
@@ -866,6 +867,7 @@ showBookingSummary: boolean = false;
   showGallery = false;
   sliderPopupVisible = false;
 guestSelectionErrors: { [planCode: string]: string } = {};
+isPanelOpenOne = false;
   constructor(
     private listingService: ListingService,
     private reviewService: ReviewService,
@@ -1389,6 +1391,20 @@ showSliderPopup() {
     } else {
       this.selectedRoom = null;
     }
+  }
+
+    togglePanelOne(room: any, index: number) {
+    this.isPanelOpenOne = !this.isPanelOpenOne;
+
+    if (this.isPanelOpenOne) {
+      this.selectedRoom = room; // Save the clicked room data
+    } else {
+      this.selectedRoom = null;
+    }
+  }
+
+  closePannel(){
+    this.isPanelOpen = false;
   }
 
   get totalChildren(): number {
@@ -2459,6 +2475,17 @@ if (roomKey) {
         (response) => {
           this.loaderHotelBooking = false;
           this.availableRooms = response.body.roomList;
+          this.availableRooms = this.availableRooms.filter(room =>
+          room.ratesAndAvailabilityDtos?.length > 0 &&
+          (room.ratesAndAvailabilityDtos[0]?.stopSellOBE === null || room.ratesAndAvailabilityDtos[0]?.stopSellOBE === false) &&
+          (room.ratesAndAvailabilityDtos[0]?.stopSellOTA === null || room.ratesAndAvailabilityDtos[0]?.stopSellOTA === false)
+        );
+    // Filter sold-out rooms
+          this.soldOutRooms = response.body.roomList.filter(room =>
+            room.ratesAndAvailabilityDtos === null ||
+            (room.ratesAndAvailabilityDtos[0]?.stopSellOBE != null && room.ratesAndAvailabilityDtos[0]?.stopSellOBE !== false) ||
+            (room.ratesAndAvailabilityDtos[0]?.stopSellOTA != null && room.ratesAndAvailabilityDtos[0]?.stopSellOTA !== false)
+          );
           this.shortrooms = response.body.roomList;
           this.checkAvailabilityStatus = response.body.available;
           this.booking.bookingAmount = response.body.bookingAmount;
@@ -4479,7 +4506,17 @@ onBookNow() {
           this.loaderHotelBooking = false;
 
           this.availableRooms = response.body.roomList;
-
+                    this.availableRooms = this.availableRooms.filter(room =>
+          room.ratesAndAvailabilityDtos?.length > 0 &&
+          (room.ratesAndAvailabilityDtos[0]?.stopSellOBE === null || room.ratesAndAvailabilityDtos[0]?.stopSellOBE === false) &&
+          (room.ratesAndAvailabilityDtos[0]?.stopSellOTA === null || room.ratesAndAvailabilityDtos[0]?.stopSellOTA === false)
+        );
+    // Filter sold-out rooms
+          this.soldOutRooms = response.body.roomList.filter(room =>
+            room.ratesAndAvailabilityDtos === null ||
+            (room.ratesAndAvailabilityDtos[0]?.stopSellOBE != null && room.ratesAndAvailabilityDtos[0]?.stopSellOBE !== false) ||
+            (room.ratesAndAvailabilityDtos[0]?.stopSellOTA != null && room.ratesAndAvailabilityDtos[0]?.stopSellOTA !== false)
+          );
           this.SubAvailableRooms = response.body.roomList;
 
           // Sort the rooms so that rooms with the "Economy" rate plan come first
@@ -5036,7 +5073,7 @@ getTotalAfterTaxAmountFacility(): number {
   isPlanVisible(filteredPlans: any, roomName: string) {
     return this.expandedRooms.includes(roomName)
       ? filteredPlans
-      : filteredPlans.slice(0, 2);
+      : filteredPlans.slice(0, 3);
   }
 
   toggleRoomExpansion(roomName: string): void {
@@ -5127,7 +5164,17 @@ getTotalAfterTaxAmountFacility(): number {
         (response) => {
           this.loaderHotelBooking = false;
           this.availableRooms = response.body.roomList;
-
+                    this.availableRooms = this.availableRooms.filter(room =>
+          room.ratesAndAvailabilityDtos?.length > 0 &&
+          (room.ratesAndAvailabilityDtos[0]?.stopSellOBE === null || room.ratesAndAvailabilityDtos[0]?.stopSellOBE === false) &&
+          (room.ratesAndAvailabilityDtos[0]?.stopSellOTA === null || room.ratesAndAvailabilityDtos[0]?.stopSellOTA === false)
+        );
+    // Filter sold-out rooms
+          this.soldOutRooms = response.body.roomList.filter(room =>
+            room.ratesAndAvailabilityDtos === null ||
+            (room.ratesAndAvailabilityDtos[0]?.stopSellOBE != null && room.ratesAndAvailabilityDtos[0]?.stopSellOBE !== false) ||
+            (room.ratesAndAvailabilityDtos[0]?.stopSellOTA != null && room.ratesAndAvailabilityDtos[0]?.stopSellOTA !== false)
+          );
           this.shortrooms = response.body.roomList;
           let facilities = this.businessUser.propertyServicesList;
           if (
