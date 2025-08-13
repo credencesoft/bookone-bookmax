@@ -4493,7 +4493,8 @@ onBookNow() {
     selectedPlansSummary: this.selectedPlansSummary,
     propertyServiceListDataOne: selectedAddOns, // ✅ only selected items
     totalPlanPrice: this.getTotalPlanPrice(),
-    totalAddOnsPrice: this.getTotalAfterTaxAmountFacility(),
+    totaltaxfacilityAmount: this.getTotalTaxFacility(),
+    totalAddOnsPrice: this.getTotalAfterTaxAmountFacility() + this.getTotalTaxFacility(),
     totalTax: this.getTotalTaxPrice(),
     totalAmount:
       this.getTotalPlanPrice() +
@@ -5256,7 +5257,14 @@ getTotalAfterTaxAmountFacility(): number {
   return this.propertyServiceListDataOne
     .slice(0, limit)
     .filter(item => this.selectedFacilityNames.includes(item.name))
-    .reduce((sum, item) => sum + (item?.afterTaxAmount || 0), 0);
+    .reduce((sum, item) => sum + (item?.servicePrice || 0), 0);
+}
+getTotalTaxFacility(): number {
+  const limit = this.viewMore ? this.propertyServiceListDataOne.length : 4;
+  return this.propertyServiceListDataOne
+    .slice(0, limit)
+    .filter(item => this.selectedFacilityNames.includes(item.name))
+    .reduce((sum, item) => sum + (item?.taxAmount || 0), 0);
 }
 get totalEachPlanPrice(): number {
   return this.planPrice?.reduce((sum, price) => sum + price, 0) || 0;
