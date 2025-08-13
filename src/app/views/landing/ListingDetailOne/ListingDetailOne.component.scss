@@ -601,7 +601,7 @@ display: flex;
 .booking-card {
   border-radius: 16px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  padding: 24px;
+  padding: 20px 20px;
   font-family: "Inter", sans-serif;
   max-width: 400px;
 }
@@ -1231,6 +1231,32 @@ display: flex;
 .modal-dialog {
         margin: auto;
 }
+.tooltip-one {
+  position: relative;
+  display: inline-block;
+  color: #090979;
+  cursor: pointer;
+}
+
+.tooltip-one .tooltiptext {
+  visibility: hidden;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  position: absolute;
+  z-index: 4000;
+  bottom: 100%;
+  left: 50%;
+  margin-left: -60px;
+      white-space: nowrap;
+    padding: 10px 10px;
+}
+
+.tooltip-one:hover .tooltiptext {
+  visibility: visible;
+}
 @media (max-width: 1180px) {
   .website-web-vision {
     display: none;
@@ -1396,6 +1422,21 @@ text-align: center;
 }
 
 @media (max-width: 600px) {
+.tooltip-one .tooltiptext {
+    visibility: hidden;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+    position: absolute;
+    z-index: 4000;
+    bottom: 100%;
+    left: 0;
+    margin-left: -140px !important;
+    white-space: nowrap;
+    padding: 10px 10px;
+}
 .checkAva6 {
     width: 50%;
     padding-left: 10px;
@@ -1546,7 +1587,20 @@ text-align: center;
 }
 
 @media (min-width: 1181px) and (max-width: 1299px) {
+.increament-bg {
+    gap: 12px;
+}
+.input-group-text {
+    font-size: 10px;
+}
+.card-data {
+    font-size: 10px;
+}
 
+.select-icon {
+    font-size: 10px;
+    height: 21px;
+}
   .small-img {
         height: 113px;
     }
@@ -1572,6 +1626,17 @@ text-align: center;
   }
 }
 @media (min-width: 1300px) and (max-width: 1460px) {
+  .card-data {
+    font-size: 11px;
+}
+.input-group-text {
+    font-size: 11px;
+}
+.select-icon {
+    padding: 1px 9px;
+    font-size: 11px;
+    height: 23px;
+}
   .small-img {
     height: 121px;
 }

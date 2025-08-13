@@ -5,11 +5,10 @@
 </app-Header-Listingdetailsone>
 <div class="popup-overlay" *ngIf="isPanelOpen"></div>
 
-
-    <!-- Mobile Trigger -->
+<!-- Mobile Trigger -->
 <div class="website-mob-vision">
-  <div class="stciky-top" >
-    <button class="btn-summary-change"  (click)="bookingSummaryView()">
+  <div class="stciky-top">
+    <button class="btn-summary-change" (click)="bookingSummaryView()">
       Booking Summary
     </button>
   </div>
@@ -32,145 +31,138 @@
   [dismissableMask]="true"
   [breakpoints]="{ '768px': '100%' }"
 >
-      <div >
-
-        <!-- Dates & Guests -->
-        <div class="date-guest-box mb-4">
-          <div class="row no-gutters border-bottom">
-            <div class="col-6 pr-2 border-right padding-10px">
-              <small class="text-uppercase font-weight-bold text-muted"
-                >Check-in</small
-              ><br />
-              <span class="text-dark">{{
-                this.booking.fromDate | date : "dd-MM-YYYY"
-              }}</span>
-            </div>
-            <div class="col-6 pl-2 padding-10px">
-              <small class="text-uppercase font-weight-bold text-muted"
-                >Checkout</small
-              ><br />
-              <span class="text-dark">{{
-                this.booking.toDate | date : "dd-MM-YYYY"
-              }}</span>
-            </div>
-          </div>
-          <div
-            class="pt-2 d-flex justify-content-between align-items-center padding-10px"
-          >
-            <div>
-              <small class="text-uppercase font-weight-bold text-muted"
-                >Guests</small
-              ><br />
-              <span class="text-primary"
-                >{{ totalAdults }} adults, {{ totalChildren }} children</span
-              >
-            </div>
-            <i class="fa fa-chevron-down"></i>
-            <!-- or use a Bootstrap icon -->
-          </div>
+  <div>
+    <!-- Dates & Guests -->
+    <div class="date-guest-box mb-4">
+      <div class="row no-gutters border-bottom">
+        <div class="col-6 pr-2 border-right padding-10px">
+          <small class="text-uppercase font-weight-bold text-muted"
+            >Check-in</small
+          ><br />
+          <span class="text-dark">{{
+            this.booking.fromDate | date : "dd-MM-YYYY"
+          }}</span>
         </div>
-
-        <div
-          *ngFor="let plan of selectedPlansSummary; let i = index"
-          class="room-box d-flex justify-content-between mb-4"
-        >
-          <div class="room-details">
-            <div class="room-title">{{ plan.roomName }}</div>
-            <small class="text-muted">
-              {{ plan.planName }} · {{ plan.adults }} Adults,
-              {{ plan.children }} Children </small
-            ><br />
-            <small class="text-muted"
-              >{{ plan.nights }} Nights .
-              {{ plan.selectedRoomnumber }} room(s)</small
-            >
-          </div>
-          <div class="d-flex align-items-start">
-            <div class="room-price">₹ {{ plan.price | number : "1.2-2" }}</div>
-            &nbsp; &nbsp;
-            <div
-              style="cursor: pointer; font-size: 18px; margin-top: 0px"
-              (click)="removePlan(i)"
-              title="Remove"
-            >
-              <i class="fa-regular fa-circle-xmark"></i>
-            </div>
-          </div>
+        <div class="col-6 pl-2 padding-10px">
+          <small class="text-uppercase font-weight-bold text-muted"
+            >Checkout</small
+          ><br />
+          <span class="text-dark">{{
+            this.booking.toDate | date : "dd-MM-YYYY"
+          }}</span>
         </div>
-
-        <hr *ngIf="selectedPlansSummary.length > 0" />
-
-        <!-- Add-ons -->
-        <div class="mb-3" *ngIf="propertyServiceListDataOne.length > 0">
-          <div class="font-weight-semibold mb-2">Add-ons</div>
-
-          <ng-container
-            *ngFor="
-              let fac of propertyServiceListDataOne
-                | slice
-                  : 0
-                  : (viewMore ? propertyServiceListDataOne.length : 4);
-              let i = index
-            "
-          >
-            <div class="custom-checkbox mb-2">
-              <label>
-                <input
-                  type="checkbox"
-                  [checked]="selectedFacilityNames.includes(fac.name)"
-                  (change)="onFacilityToggle(fac.name, $event.target.checked)"
-                />
-                <span class="checkmark"></span>
-                {{ fac.name }}
-              </label>
-            </div>
-          </ng-container>
-        </div>
-
-        <!-- Summary -->
-        <div class="mb-3" *ngIf="selectedPlansSummary.length > 0">
-          <div class="d-flex justify-content-between">
-            <span>Rooms Total</span>
-            <span>₹{{ getTotalPlanPrice() | number : "1.2-2" }}</span>
-          </div>
-          <div
-            class="d-flex justify-content-between"
-            *ngIf="getTotalAfterTaxAmountFacility() > 0"
-          >
-            <span>Add-ons Total</span>
-            <span
-              >₹{{ getTotalAfterTaxAmountFacility() | number : "1.2-2" }}</span
-            >
-          </div>
-          <div class="d-flex justify-content-between mb-2">
-            <span>Tax & Services</span>
-            <span>₹{{ getTotalTaxPrice() | number : "1.2-2" }}</span>
-          </div>
-          <div
-            class="d-flex justify-content-between font-weight-bold total-amount"
-          >
-            <span>Total Amount</span>
-            <span
-              >₹{{
-                getTotalPlanPrice() +
-                  getTotalAfterTaxAmountFacility() +
-                  getTotalTaxPrice() | number : "1.2-2"
-              }}</span
-            >
-          </div>
-        </div>
-        <small *ngIf="!isBookingAllowed()" class="text-danger">
-          Please select minimum {{ rooms }} room(s) to proceed.
-        </small>
-        <!-- Book Now -->
-        <button
-          class="btn btn-book-now btn-block"
-          [disabled]="!isBookingAllowed()"
-          (click)="onBookNow()"
-        >
-          Book Now
-        </button>
       </div>
+      <div
+        class="pt-2 d-flex justify-content-between align-items-center padding-10px"
+      >
+        <div>
+          <small class="text-uppercase font-weight-bold text-muted"
+            >Guests</small
+          ><br />
+          <span class="text-primary"
+            >{{ totalAdults }} adults, {{ totalChildren }} children</span
+          >
+        </div>
+        <i class="fa fa-chevron-down"></i>
+        <!-- or use a Bootstrap icon -->
+      </div>
+    </div>
+
+    <div
+      *ngFor="let plan of selectedPlansSummary; let i = index"
+      class="room-box d-flex justify-content-between mb-4"
+    >
+      <div class="room-details">
+        <div class="room-title">{{ plan.roomName }}</div>
+        <small class="text-muted">
+          {{ plan.planName }} · {{ plan.adults }} Adults,
+          {{ plan.children }} Children </small
+        ><br />
+        <small class="text-muted"
+          >{{ plan.nights }} Nights .
+          {{ plan.selectedRoomnumber }} room(s)</small
+        >
+      </div>
+      <div class="d-flex align-items-start">
+        <div class="room-price">₹ {{ plan.price | number : "1.2-2" }}</div>
+        &nbsp; &nbsp;
+        <div
+          style="cursor: pointer; font-size: 18px; margin-top: 0px"
+          (click)="removePlan(i)"
+          title="Remove"
+        >
+          <i class="fa-regular fa-circle-xmark"></i>
+        </div>
+      </div>
+    </div>
+
+    <hr *ngIf="selectedPlansSummary.length > 0" />
+
+    <!-- Add-ons -->
+    <div class="mb-3" *ngIf="propertyServiceListDataOne.length > 0">
+      <div class="font-weight-semibold mb-2">Add-ons</div>
+
+      <ng-container
+        *ngFor="
+          let fac of propertyServiceListDataOne
+            | slice : 0 : (viewMore ? propertyServiceListDataOne.length : 4);
+          let i = index
+        "
+      >
+        <div class="custom-checkbox mb-2">
+          <label>
+            <input
+              type="checkbox"
+              [checked]="selectedFacilityNames.includes(fac.name)"
+              (change)="onFacilityToggle(fac.name, $event.target.checked)"
+            />
+            <span class="checkmark"></span>
+            {{ fac.name }}
+          </label>
+        </div>
+      </ng-container>
+    </div>
+
+    <!-- Summary -->
+    <div class="mb-3" *ngIf="selectedPlansSummary.length > 0">
+      <div class="d-flex justify-content-between">
+        <span>Rooms Total</span>
+        <span>₹{{ getTotalPlanPrice() | number : "1.2-2" }}</span>
+      </div>
+      <div
+        class="d-flex justify-content-between"
+        *ngIf="getTotalAfterTaxAmountFacility() > 0"
+      >
+        <span>Add-ons Total</span>
+        <span>₹{{ getTotalAfterTaxAmountFacility() | number : "1.2-2" }}</span>
+      </div>
+      <div class="d-flex justify-content-between mb-2">
+        <span>Tax & Services</span>
+        <span>₹{{ getTotalTaxPrice() | number : "1.2-2" }}</span>
+      </div>
+      <div class="d-flex justify-content-between font-weight-bold total-amount">
+        <span>Total Amount</span>
+        <span
+          >₹{{
+            getTotalPlanPrice() +
+              getTotalAfterTaxAmountFacility() +
+              getTotalTaxPrice() | number : "1.2-2"
+          }}</span
+        >
+      </div>
+    </div>
+    <small *ngIf="!isBookingAllowed()" class="text-danger">
+      Please select minimum {{ rooms }} room(s) to proceed.
+    </small>
+    <!-- Book Now -->
+    <button
+      class="btn btn-book-now btn-block"
+      [disabled]="!isBookingAllowed()"
+      (click)="onBookNow()"
+    >
+      Book Now
+    </button>
+  </div>
 </p-dialog>
 
 <div class="container-div">
@@ -1024,6 +1016,7 @@
                 <div class="applycoupon">
                   <button
                     class="apply-coupon-btn"
+                    (click)="couponAppliedBanner(product)"
                   >
                     Apply Coupon
                   </button>
@@ -1308,7 +1301,6 @@
       </div>
     </div>
     <p-dialog
-
       header="Photo Gallery"
       [(visible)]="sliderPopupVisible"
       [modal]="true"
@@ -1316,7 +1308,7 @@
       [baseZIndex]="10000"
     >
       <p-carousel
-      *ngIf="businessUser?.imageList?.length > 0"
+        *ngIf="businessUser?.imageList?.length > 0"
         [value]="businessUser?.imageList"
         [numVisible]="1"
         [numScroll]="1"
@@ -1457,7 +1449,6 @@
       </ng-container>
     </div>
   </div>
-
 
   <!-- mob view -->
   <div class="modal fade" tabindex="-1" id="galleryModal" #galleryModalRef>
@@ -1746,14 +1737,19 @@
       <div *ngFor="let room of availableRooms; let i = index">
         <div class="right-popup" [class.show]="isPanelOpen">
           <div class="popup-header">
-            <div style="display: flex; align-items: flex-start;justify-content: space-between;">
-
+            <div
+              style="
+                display: flex;
+                align-items: flex-start;
+                justify-content: space-between;
+              "
+            >
               <p class="popup-heading">
-            {{ selectedRoom?.name }}
-            </p>
+                {{ selectedRoom?.name }}
+              </p>
 
-            <i
-                style="cursor: pointer; font-size: larger;"
+              <i
+                style="cursor: pointer; font-size: larger"
                 (click)="togglePanel(selectedRoom, i)"
                 class="fa-solid fa-xmark"
               ></i>
@@ -1973,7 +1969,11 @@
               <div class="col-12 col-lg-5 spacing-manage">
                 <div
                   class="position-relative bg-white rounded-4 overflow-hidden shadow"
-                  style="border: 1px solid #e0e0e0; border-radius: 20px;cursor: pointer;"
+                  style="
+                    border: 1px solid #e0e0e0;
+                    border-radius: 20px;
+                    cursor: pointer;
+                  "
                 >
                   <!-- Top Badge -->
                   <div
@@ -1986,7 +1986,7 @@
                   <!-- Room Image -->
                   <!-- Fallback image if imageList is empty or undefined -->
                   <img
-                  (click)="togglePanel(room, i)"
+                    (click)="togglePanel(room, i)"
                     *ngIf="!room.imageList || room.imageList.length === 0"
                     src="https://themissionneighbourhood.com/images/no-image.png"
                     class="w-100"
@@ -1999,7 +1999,7 @@
 
                   <!-- Show single image if only one or two images but they are same -->
                   <img
-                  (click)="togglePanel(room, i)"
+                    (click)="togglePanel(room, i)"
                     *ngIf="
                       room.imageList?.length > 0 &&
                       (room.imageList.length === 1 ||
@@ -2017,7 +2017,7 @@
 
                   <!-- Show carousel only if there are 2+ unique images -->
                   <div
-                  (click)="togglePanel(room, i)"
+                    (click)="togglePanel(room, i)"
                     *ngIf="
                       room.imageList?.length > 1 &&
                       room.imageList[0]?.url !== room.imageList[1]?.url
@@ -2149,11 +2149,11 @@
                       </div>
                     </div>
                     <div class="card-data website-web-vision">
-                      <div  class="error-text">
+                      <div class="error-text">
                         {{ guestSelectionErrors[plan.code] }}
                       </div>
                       <div
-                        class="d-flex justify-content-between align-items-end"
+                        class="d-flex justify-content-between align-items-start"
                       >
                         <div class="d-flex room-number">
                           <div>
@@ -2192,9 +2192,9 @@
                               alt=""
                               width="20px"
                             />
+                            Adult
                           </div>
                           <div>
-                            <div class="margin-bottom-5px">Adult</div>
                             <div class="d-flex increament-bg">
                               <div
                                 class="cursor-pointer minus-btn"
@@ -2215,29 +2215,74 @@
                               </div>
                             </div>
                           </div>
+                          <div class="tooltip-one"><i class="fa-solid fa-circle-info"></i>
+                            <span class="tooltiptext">Additional charges apply after {{plan.minimumOccupancy}} adults.</span>
+                          </div>
                         </div>
-                        <div class="d-block room-number">
-                          <div class="margin-bottom-5px">Child</div>
-                          <div class="d-flex increament-bg">
-                            <div
-                              class="cursor-pointer minus-btn"
-                              (click)="onDecrement(plan.code, 'children')"
-                            >
-                              <i class="fa-solid fa-minus"></i>
+                        <div class="d-block">
+                          <div class="d-flex room-number">
+                            <div>Child</div>
+                            <div class="d-flex increament-bg">
+                              <div
+                                class="cursor-pointer minus-btn"
+                                (click)="onDecrement(plan.code, 'children')"
+                              >
+                                <i class="fa-solid fa-minus"></i>
+                              </div>
+                              <div>
+                                {{
+                                  selectedGuestsByPlan[plan.code]?.children || 0
+                                }}
+                              </div>
+                              <div
+                                class="cursor-pointer plus-btn"
+                                (click)="
+                                  onIncrement(plan.code, 'children', plan)
+                                "
+                              >
+                                <i class="fa-solid fa-plus"></i>
+                              </div>
                             </div>
-                            <div>
-                              {{
-                                selectedGuestsByPlan[plan.code]?.children || 0
-                              }}
-                            </div>
+                            <div class="tooltip-one"><i class="fa-solid fa-circle-info"></i>
+                            <span class="tooltiptext">Maximum Children {{plan.noOfChildren}}.</span>
+                          </div>
+                          </div>
+
+                          <!-- Show age selectors for each child -->
+                          <div *ngIf="childAgesByPlan[plan.code]?.length">
                             <div
-                              class="cursor-pointer plus-btn"
-                              (click)="onIncrement(plan.code, 'children', plan)"
+                              style="
+                                display: flex;
+                                align-content: center;
+                                justify-content: end;
+                                flex-wrap: wrap;
+                              "
+                              *ngFor="
+                                let age of childAgesByPlan[plan.code];
+                                let i = index
+                              "
+                              class="mt-2"
                             >
-                              <i class="fa-solid fa-plus"></i>
+                              <label style="margin-right: 5px; margin-bottom: 0px; margin-top: 2px;"
+                                >Child {{ i + 1 }} Age:</label
+                              >
+                              <select
+                                class="select-icon"
+                                [(ngModel)]="childAgesByPlan[plan.code][i]"
+                                (change)="onChildAgeChange(plan.code, plan)"
+                              >
+                                <option [ngValue]="null">0</option>
+                                <option
+                                  *ngFor="let a of ageOptions"
+                                  [value]="a"
+                                >
+                                  {{ a }}
+                                </option>
+                              </select>
                             </div>
                           </div>
                         </div>
+
                         <div class="d-flex room-number">
                           <div
                             class="selected"
@@ -2297,7 +2342,7 @@
                       </div>
                     </div>
                     <div class="card-data website-mob-vision">
-                      <div  class="error-text">
+                      <div class="error-text">
                         {{ guestSelectionErrors[plan.code] }}
                       </div>
                       <div
@@ -2342,7 +2387,8 @@
                             />
                           </div>
                           <div>
-                            <div class="margin-bottom-5px">Adult</div>
+                            <div class="margin-bottom-5px">Adult <span class="tooltip-one"><i class="fa-solid fa-circle-info"></i>
+                            <span class="tooltiptext">Additional charges apply after {{plan.minimumOccupancy}} adults.</span></span></div>
                             <div class="d-flex increament-bg">
                               <div
                                 class="cursor-pointer minus-btn"
@@ -2365,7 +2411,9 @@
                           </div>
                         </div>
                         <div class="d-block room-number">
-                          <div class="margin-bottom-5px">Child</div>
+                          <div class="margin-bottom-5px">Child <span class="tooltip-one"><i class="fa-solid fa-circle-info"></i>
+                            <span class="tooltiptext">Maximum Children {{plan.noOfChildren}}.</span>
+                          </span></div>
                           <div class="d-flex increament-bg">
                             <div
                               class="cursor-pointer minus-btn"
@@ -2385,8 +2433,41 @@
                               <i class="fa-solid fa-plus"></i>
                             </div>
                           </div>
+
                         </div>
                       </div>
+                      <div class="d-block" *ngIf="childAgesByPlan[plan.code]?.length">
+                            <div
+                              style="
+                                display: flex;
+                                align-content: center;
+                                justify-content: end;
+                                flex-wrap: wrap;
+                              "
+                              *ngFor="
+                                let age of childAgesByPlan[plan.code];
+                                let i = index
+                              "
+                              class="mt-2"
+                            >
+                              <label style="margin-right: 5px"
+                                >Child {{ i + 1 }} Age:</label
+                              >
+                              <select
+                                class="select-icon"
+                                [(ngModel)]="childAgesByPlan[plan.code][i]"
+                                (change)="onChildAgeChange(plan.code, plan)"
+                              >
+                                <option [ngValue]="null">0</option>
+                                <option
+                                  *ngFor="let a of ageOptions"
+                                  [value]="a"
+                                >
+                                  {{ a }}
+                                </option>
+                              </select>
+                            </div>
+                          </div>
                       <div
                         class="d-flex justify-content-center margin-top-20px"
                       >
@@ -2450,7 +2531,11 @@
               <div class="col-12 col-lg-5 spacing-manage">
                 <div
                   class="position-relative bg-white rounded-4 overflow-hidden shadow"
-                  style="border: 1px solid #e0e0e0; border-radius: 20px;cursor: pointer;"
+                  style="
+                    border: 1px solid #e0e0e0;
+                    border-radius: 20px;
+                    cursor: pointer;
+                  "
                 >
                   <!-- Top Badge -->
                   <div
@@ -2463,7 +2548,7 @@
                   <!-- Room Image -->
                   <!-- Fallback image if imageList is empty or undefined -->
                   <img
-                  (click)="togglePanel(room, i)"
+                    (click)="togglePanel(room, i)"
                     *ngIf="!room.imageList || room.imageList.length === 0"
                     src="https://themissionneighbourhood.com/images/no-image.png"
                     class="w-100"
@@ -2476,7 +2561,7 @@
 
                   <!-- Show single image if only one or two images but they are same -->
                   <img
-                  (click)="togglePanel(room, i)"
+                    (click)="togglePanel(room, i)"
                     *ngIf="
                       room.imageList?.length > 0 &&
                       (room.imageList.length === 1 ||
@@ -2494,7 +2579,7 @@
 
                   <!-- Show carousel only if there are 2+ unique images -->
                   <div
-                  (click)="togglePanel(room, i)"
+                    (click)="togglePanel(room, i)"
                     *ngIf="
                       room.imageList?.length > 1 &&
                       room.imageList[0]?.url !== room.imageList[1]?.url
@@ -2568,7 +2653,7 @@
                     />{{ room.maximumOccupancy }}
                   </div>
                 </div>
-                <div class="d-block ">
+                <div class="d-block">
                   <div
                     class="card border-radius-20px plan-cards margin-bottom-10px"
                     *ngFor="
@@ -2625,10 +2710,10 @@
                     </div>
                     <div class="card-data website-web-vision">
                       <div class="error-text">
-                      {{ guestSelectionErrors[plan.code] }}
-                    </div>
+                        {{ guestSelectionErrors[plan.code] }}
+                      </div>
                       <div
-                        class="d-flex justify-content-between align-items-end"
+                        class="d-flex justify-content-between align-items-start"
                       >
                         <div class="d-flex room-number">
                           <div>
@@ -2667,9 +2752,9 @@
                               alt=""
                               width="20px"
                             />
+                            Adult
                           </div>
                           <div>
-                            <div class="margin-bottom-5px">Adult</div>
                             <div class="d-flex increament-bg">
                               <div
                                 class="cursor-pointer minus-btn"
@@ -2690,29 +2775,74 @@
                               </div>
                             </div>
                           </div>
+                          <div class="tooltip-one"><i class="fa-solid fa-circle-info"></i>
+                            <span class="tooltiptext">Additional charges apply after {{plan.minimumOccupancy}} adults.</span>
+                          </div>
                         </div>
-                        <div class="d-block room-number">
-                          <div class="margin-bottom-5px">Child</div>
-                          <div class="d-flex increament-bg">
-                            <div
-                              class="cursor-pointer minus-btn"
-                              (click)="onDecrement(plan.code, 'children')"
-                            >
-                              <i class="fa-solid fa-minus"></i>
+                        <div class="d-block">
+                          <div class="d-flex room-number">
+                            <div>Child</div>
+                            <div class="d-flex increament-bg">
+                              <div
+                                class="cursor-pointer minus-btn"
+                                (click)="onDecrement(plan.code, 'children')"
+                              >
+                                <i class="fa-solid fa-minus"></i>
+                              </div>
+                              <div>
+                                {{
+                                  selectedGuestsByPlan[plan.code]?.children || 0
+                                }}
+                              </div>
+                              <div
+                                class="cursor-pointer plus-btn"
+                                (click)="
+                                  onIncrement(plan.code, 'children', plan)
+                                "
+                              >
+                                <i class="fa-solid fa-plus"></i>
+                              </div>
                             </div>
-                            <div>
-                              {{
-                                selectedGuestsByPlan[plan.code]?.children || 0
-                              }}
-                            </div>
+                            <div class="tooltip-one"><i class="fa-solid fa-circle-info"></i>
+                            <span class="tooltiptext">Maximum Children {{plan.noOfChildren}}.</span>
+                          </div>
+                          </div>
+
+                          <!-- Show age selectors for each child -->
+                          <div *ngIf="childAgesByPlan[plan.code]?.length">
                             <div
-                              class="cursor-pointer plus-btn"
-                              (click)="onIncrement(plan.code, 'children', plan)"
+                              style="
+                                display: flex;
+                                align-content: center;
+                                justify-content: end;
+                                flex-wrap: wrap;
+                              "
+                              *ngFor="
+                                let age of childAgesByPlan[plan.code];
+                                let i = index
+                              "
+                              class="mt-2"
                             >
-                              <i class="fa-solid fa-plus"></i>
+                              <label style="margin-right: 5px"
+                                >Child {{ i + 1 }} Age:</label
+                              >
+                              <select
+                                class="select-icon"
+                                [(ngModel)]="childAgesByPlan[plan.code][i]"
+                                (change)="onChildAgeChange(plan.code, plan)"
+                              >
+                                <option [ngValue]="null">0</option>
+                                <option
+                                  *ngFor="let a of ageOptions"
+                                  [value]="a"
+                                >
+                                  {{ a }}
+                                </option>
+                              </select>
                             </div>
                           </div>
                         </div>
+
                         <div class="d-flex room-number">
                           <div
                             class="selected"
@@ -2772,7 +2902,7 @@
                       </div>
                     </div>
                     <div class="card-data website-mob-vision">
-                      <div  class="error-text">
+                      <div class="error-text">
                         {{ guestSelectionErrors[plan.code] }}
                       </div>
                       <div
@@ -2817,7 +2947,8 @@
                             />
                           </div>
                           <div>
-                            <div class="margin-bottom-5px">Adult</div>
+                            <div class="margin-bottom-5px">Adult <span class="tooltip-one"><i class="fa-solid fa-circle-info"></i>
+                            <span class="tooltiptext">Additional charges apply after {{plan.minimumOccupancy}} adults.</span></span></div>
                             <div class="d-flex increament-bg">
                               <div
                                 class="cursor-pointer minus-btn"
@@ -2838,9 +2969,12 @@
                               </div>
                             </div>
                           </div>
+
                         </div>
                         <div class="d-block room-number">
-                          <div class="margin-bottom-5px">Child</div>
+                          <div class="margin-bottom-5px">Child <span class="tooltip-one"><i class="fa-solid fa-circle-info"></i>
+                            <span class="tooltiptext">Maximum Children {{plan.noOfChildren}}.</span>
+                          </span></div>
                           <div class="d-flex increament-bg">
                             <div
                               class="cursor-pointer minus-btn"
@@ -2860,8 +2994,41 @@
                               <i class="fa-solid fa-plus"></i>
                             </div>
                           </div>
+
                         </div>
                       </div>
+                      <div class="d-block" *ngIf="childAgesByPlan[plan.code]?.length">
+                            <div
+                              style="
+                                display: flex;
+                                align-content: center;
+                                justify-content: end;
+                                flex-wrap: wrap;
+                              "
+                              *ngFor="
+                                let age of childAgesByPlan[plan.code];
+                                let i = index
+                              "
+                              class="mt-2"
+                            >
+                              <label style="margin-right: 5px"
+                                >Child {{ i + 1 }} Age:</label
+                              >
+                              <select
+                                class="select-icon"
+                                [(ngModel)]="childAgesByPlan[plan.code][i]"
+                                (change)="onChildAgeChange(plan.code, plan)"
+                              >
+                                <option [ngValue]="null">0</option>
+                                <option
+                                  *ngFor="let a of ageOptions"
+                                  [value]="a"
+                                >
+                                  {{ a }}
+                                </option>
+                              </select>
+                            </div>
+                          </div>
                       <div
                         class="d-flex justify-content-center margin-top-20px"
                       >
@@ -2900,16 +3067,21 @@
       </div>
 
       <div *ngFor="let room of soldOutRooms; let i = index">
-                <div class="right-popup" [class.show]="isPanelOpenOne">
+        <div class="right-popup" [class.show]="isPanelOpenOne">
           <div class="popup-header">
-            <div style="display: flex; align-items: flex-start;justify-content: space-between;">
-
+            <div
+              style="
+                display: flex;
+                align-items: flex-start;
+                justify-content: space-between;
+              "
+            >
               <p class="popup-heading">
-            {{ selectedRoom?.name }}
-            </p>
+                {{ selectedRoom?.name }}
+              </p>
 
-            <i
-                style="cursor: pointer; font-size: larger;"
+              <i
+                style="cursor: pointer; font-size: larger"
                 (click)="togglePanelOne(selectedRoom, i)"
                 class="fa-solid fa-xmark"
               ></i>
@@ -3114,7 +3286,11 @@
               <div class="col-12 col-lg-5 spacing-manage">
                 <div
                   class="position-relative bg-white rounded-4 overflow-hidden shadow"
-                  style="border: 1px solid #e0e0e0; border-radius: 20px;cursor: pointer;"
+                  style="
+                    border: 1px solid #e0e0e0;
+                    border-radius: 20px;
+                    cursor: pointer;
+                  "
                 >
                   <!-- Top Badge -->
                   <div
@@ -3127,7 +3303,7 @@
                   <!-- Room Image -->
                   <!-- Fallback image if imageList is empty or undefined -->
                   <img
-                  (click)="togglePanelOne(room, i)"
+                    (click)="togglePanelOne(room, i)"
                     *ngIf="!room.imageList || room.imageList.length === 0"
                     src="https://themissionneighbourhood.com/images/no-image.png"
                     class="w-100"
@@ -3140,7 +3316,7 @@
 
                   <!-- Show single image if only one or two images but they are same -->
                   <img
-                  (click)="togglePanelOne(room, i)"
+                    (click)="togglePanelOne(room, i)"
                     *ngIf="
                       room.imageList?.length > 0 &&
                       (room.imageList.length === 1 ||
@@ -3158,7 +3334,7 @@
 
                   <!-- Show carousel only if there are 2+ unique images -->
                   <div
-                  (click)="togglePanelOne(room, i)"
+                    (click)="togglePanelOne(room, i)"
                     *ngIf="
                       room.imageList?.length > 1 &&
                       room.imageList[0]?.url !== room.imageList[1]?.url
@@ -3270,7 +3446,11 @@
               <div class="col-12 col-lg-5 spacing-manage">
                 <div
                   class="position-relative bg-white rounded-4 overflow-hidden shadow"
-                  style="border: 1px solid #e0e0e0; border-radius: 20px; cursor: pointer;"
+                  style="
+                    border: 1px solid #e0e0e0;
+                    border-radius: 20px;
+                    cursor: pointer;
+                  "
                 >
                   <!-- Top Badge -->
                   <div
@@ -3283,7 +3463,7 @@
                   <!-- Room Image -->
                   <!-- Fallback image if imageList is empty or undefined -->
                   <img
-                  (click)="togglePanelOne(room, i)"
+                    (click)="togglePanelOne(room, i)"
                     *ngIf="!room.imageList || room.imageList.length === 0"
                     src="https://themissionneighbourhood.com/images/no-image.png"
                     class="w-100"
@@ -3296,7 +3476,7 @@
 
                   <!-- Show single image if only one or two images but they are same -->
                   <img
-                  (click)="togglePanelOne(room, i)"
+                    (click)="togglePanelOne(room, i)"
                     *ngIf="
                       room.imageList?.length > 0 &&
                       (room.imageList.length === 1 ||
@@ -3314,7 +3494,7 @@
 
                   <!-- Show carousel only if there are 2+ unique images -->
                   <div
-                  (click)="togglePanelOne(room, i)"
+                    (click)="togglePanelOne(room, i)"
                     *ngIf="
                       room.imageList?.length > 1 &&
                       room.imageList[0]?.url !== room.imageList[1]?.url
@@ -3465,16 +3645,69 @@
           <div class="room-details">
             <div class="room-title">{{ plan.roomName }}</div>
             <small class="text-muted">
-              {{ plan.planName }} · {{ plan.adults }} Adults,
+              {{ plan.planCodeName }} · {{ plan.adults }} Adults,
               {{ plan.children }} Children </small
             ><br />
             <small class="text-muted"
               >{{ plan.nights }} Nights .
               {{ plan.selectedRoomnumber }} room(s)</small
             >
+            <div
+              class="nights-dropdown"
+              (click)="toggleDropdownNights(i)"
+              *ngIf="activeForGoogleHotelCenter"
+            >
+              <small class="text-muted"
+                >Per-Day Price Breakdown
+                <i
+                  class="fa-solid"
+                  [ngClass]="isOpen ? 'fa-angle-up' : 'fa-angle-down'"
+                ></i>
+              </small>
+              <small class="text-muted" *ngIf="taxArray && taxArray.length">
+                Tax Fee: ₹{{ taxArray[i] | number : "1.2-2" }}
+              </small>
+            </div>
+
+            <div *ngIf="isOpen" class="dropdown-menuOne">
+              <div style="display: block">
+                <div *ngFor="let item of daterangefilter; let i = index">
+                  <small class="text-muted">
+                    {{ item }}
+                  </small>
+                  &nbsp; &nbsp;
+                  <small
+                    class="text-muted"
+                    *ngFor="let price of [planPrice[i]]"
+                  >
+                    ₹{{ price | number : "1.2-2" }}
+                  </small>
+                </div>
+              </div>
+            </div>
           </div>
-          <div class="d-flex align-items-start">
+          <div
+            class="d-flex align-items-start"
+            *ngIf="!activeForGoogleHotelCenter"
+          >
             <div class="room-price">₹ {{ plan.price | number : "1.2-2" }}</div>
+            &nbsp; &nbsp;
+            <div
+              style="cursor: pointer; font-size: 18px; margin-top: 0px"
+              (click)="removePlan(i)"
+              title="Remove"
+            >
+              <i class="fa-regular fa-circle-xmark"></i>
+            </div>
+          </div>
+
+          <div
+            class="d-flex align-items-start"
+            *ngIf="activeForGoogleHotelCenter"
+          >
+            <div class="room-price">
+              ₹ {{ totalEachPlanPrice | number : "1.2-2" }}
+            </div>
             &nbsp; &nbsp;
             <div
               style="cursor: pointer; font-size: 18px; margin-top: 0px"
@@ -3486,7 +3719,10 @@
           </div>
         </div>
 
-        <hr *ngIf="selectedPlansSummary.length > 0" />
+        <hr
+          style="margin-top: 0px; margin-bottom: 10px"
+          *ngIf="selectedPlansSummary.length > 0"
+        />
 
         <!-- Add-ons -->
         <div class="mb-3" *ngIf="propertyServiceListDataOne.length > 0">
