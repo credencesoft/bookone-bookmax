@@ -58,11 +58,17 @@
       <div class="mb-0" style="font-size: 18px; color: #615d5d">
         A copy of this reservation has been sent to {{ booking.email }} & your
         reservation number
-        <span *ngFor="let booking of bookingsResponseList; let last = last"
-          >{{ booking?.propertyReservationNumber }}
-          <span *ngIf="!last">, </span></span
-        >
-        .
+                <span *ngIf="booking?.groupBookingReference">
+        <span >
+          {{ booking?.groupBookingReference }}
+        </span>
+      </span>
+
+      <span *ngIf="!booking?.groupBookingReference">
+        <span >
+          {{ booking?.propertyReservationNumber }}
+        </span>
+      </span>.
       </div>
       <div style="color: #615d5d; font-weight: bold; font-size: 17px">
         Note: Please check your spam folder if you don't see it, or find it on
@@ -77,11 +83,14 @@
       >
         <div class="mb-1"><span class="highlight-text">Booking ID</span></div>
         <div class="mb-0">
+          <span *ngIf="booking?.groupBookingId">
           <b
             id="textToCopy"
-            *ngFor="let booking of bookingsResponseList; let last = last"
-            >{{ booking?.id }}<span *ngIf="!last">, </span></b
-          >
+            >{{ booking?.groupBookingId }}</b></span>
+
+          <span *ngIf="!booking?.groupBookingId"><b
+            id="textToCopy"
+            >{{ booking?.id }}</b></span>
           <img
             src="assets/images/CopyVoucher.png"
             alt=""
@@ -643,11 +652,17 @@
    <div class="mb-0" style="font-size: 18px; color: #615d5d">
         A copy of this reservation has been sent to {{ booking.email }} & your
         reservation number
-        <span *ngFor="let booking of bookingsResponseList; let last = last"
-          >{{ booking?.propertyReservationNumber }}
-          <span *ngIf="!last">, </span></span
-        >
-        .
+         <span *ngIf="booking?.groupBookingReference">
+        <span >
+          {{ booking?.groupBookingReference }}
+        </span>
+      </span>
+
+      <span *ngIf="!booking?.groupBookingReference">
+        <span >
+          {{ booking?.propertyReservationNumber }}
+        </span>
+      </span>.
         </div>
     <div style="color: #615d5d; font-weight: bold; font-size: 13px">
       Note: Please check your spam folder if you don't see it, or find it on
@@ -658,11 +673,14 @@
   <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;">
     <div style="color: #615d5d; font-size: 18px">Booking ID</div>
     <div style="font-weight: bold; font-size: 17px">
-       <b
+       <span *ngIf="booking?.groupBookingId">
+          <b
             id="textToCopy"
-            *ngFor="let booking of bookingsResponseList; let last = last"
-            >{{ booking?.id }}<span *ngIf="!last">, </span></b
-          >
+            >{{ booking?.groupBookingId }}</b></span>
+
+          <span *ngIf="!booking?.groupBookingId"><b
+            id="textToCopy"
+            >{{ booking?.id }}</b></span>
       <img
         src="assets/images/CopyVoucher.png"
         alt=""

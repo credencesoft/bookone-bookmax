@@ -2230,9 +2230,9 @@
                                 <i class="fa-solid fa-minus"></i>
                               </div>
                               <div>
-                                {{
-                                  selectedGuestsByPlan[plan.code]?.children || 0
-                                }}
+
+                                  {{ getChildCount(plan.code) }}
+
                               </div>
                               <div
                                 class="cursor-pointer plus-btn"
@@ -2276,7 +2276,7 @@
                                       childAgesByPlan[plan.code].length > 1
                                     "
                               >
-                                <option [ngValue]="null">0</option>
+                                <option [ngValue]="null" disabled>0</option>
                                 <option
                                   *ngFor="let a of ageOptions"
                                   [value]="a"
@@ -2427,9 +2427,7 @@
                               <i class="fa-solid fa-minus"></i>
                             </div>
                             <div>
-                              {{
-                                selectedGuestsByPlan[plan.code]?.children || 0
-                              }}
+                              {{ getChildCount(plan.code) }}
                             </div>
                             <div
                               class="cursor-pointer plus-btn"
@@ -2462,8 +2460,13 @@
                                 class="select-icon"
                                 [(ngModel)]="childAgesByPlan[plan.code][i]"
                                 (change)="onChildAgeChange(plan.code, plan)"
+                                [disabled]="
+                                      i === 0 &&
+                                      childAgesByPlan[plan.code][0] !== null &&
+                                      childAgesByPlan[plan.code].length > 1
+                                    "
                               >
-                                <option [ngValue]="null">0</option>
+                                <option [ngValue]="null" disabled>0</option>
                                 <option
                                   *ngFor="let a of ageOptions"
                                   [value]="a"
@@ -2795,9 +2798,7 @@
                                 <i class="fa-solid fa-minus"></i>
                               </div>
                               <div>
-                                {{
-                                  selectedGuestsByPlan[plan.code]?.children || 0
-                                }}
+                                {{ getChildCount(plan.code) }}
                               </div>
                               <div
                                 class="cursor-pointer plus-btn"
@@ -2835,8 +2836,13 @@
                                 class="select-icon"
                                 [(ngModel)]="childAgesByPlan[plan.code][i]"
                                 (change)="onChildAgeChange(plan.code, plan)"
+                                [disabled]="
+                                      i === 0 &&
+                                      childAgesByPlan[plan.code][0] !== null &&
+                                      childAgesByPlan[plan.code].length > 1
+                                    "
                               >
-                                <option [ngValue]="null">0</option>
+                                <option [ngValue]="null" disabled>0</option>
                                 <option
                                   *ngFor="let a of ageOptions"
                                   [value]="a"
@@ -2988,9 +2994,7 @@
                               <i class="fa-solid fa-minus"></i>
                             </div>
                             <div>
-                              {{
-                                selectedGuestsByPlan[plan.code]?.children || 0
-                              }}
+                              {{ getChildCount(plan.code) }}
                             </div>
                             <div
                               class="cursor-pointer plus-btn"
@@ -3023,8 +3027,13 @@
                                 class="select-icon"
                                 [(ngModel)]="childAgesByPlan[plan.code][i]"
                                 (change)="onChildAgeChange(plan.code, plan)"
+                                [disabled]="
+                                      i === 0 &&
+                                      childAgesByPlan[plan.code][0] !== null &&
+                                      childAgesByPlan[plan.code].length > 1
+                                    "
                               >
-                                <option [ngValue]="null">0</option>
+                                <option [ngValue]="null" disabled>0</option>
                                 <option
                                   *ngFor="let a of ageOptions"
                                   [value]="a"

@@ -263,6 +263,7 @@ export class BookingComponent implements OnInit {
   totalPlanChildren: number = 0;
   bookingsResponseList: any[] = [];
   termsAccepted = false;
+  groupBookingId: number;
   constructor(
     private token: TokenStorage,
     private ngZone: NgZone,
@@ -433,6 +434,15 @@ export class BookingComponent implements OnInit {
 
   ngOnInit() {
     this.clearFormField(this.booking);
+       const bookingSummaryStr = sessionStorage.getItem('bookingSummaryDetails');
+    const bookingSummary = bookingSummaryStr
+      ? JSON.parse(bookingSummaryStr)
+      : null;
+        const plans = bookingSummary.selectedPlansSummary;
+          if (plans.length >= 2) {
+        this.groupBookingId = Math.floor(100000 + Math.random() * 900000);
+        console.log('Generated Group Booking ID:', this.groupBookingId);
+      }
     this.otaPlanPrice = this.token.getLandingPrice();
     this.otaTaxAmount = this.token.getAllTaxArray();
     this.googleCenter = this.token.getBookingEngineBoolean();
@@ -663,6 +673,8 @@ export class BookingComponent implements OnInit {
       booking.propertyReservationNumber;
     externalreservation.contactNumber = booking.mobile;
     externalreservation.propertyBusinessEmail = booking.businessEmail;
+    externalreservation.noOfChildrenAbove5Years =  booking.noOfChildren;
+    externalreservation.noOfChildrenBelow5Years = booking.noOfChildrenUnder5years;
     externalreservation.externalTransactionId =
       this.propertyData.shortName + '-BE-' + booking.id;
     externalreservation.createdBy = 'hotelmate';
@@ -670,7 +682,8 @@ export class BookingComponent implements OnInit {
     roomdetailss.checkoutDate = booking.toDate;
     roomdetailss.noOfRooms = booking.noOfRooms;
     roomdetailss.noOfadult = booking.noOfPersons;
-    roomdetailss.noOfchild = booking.noOfChildren;
+    roomdetailss.noOfchild = booking.noOfChildrenUnder5years + booking.noOfChildren;
+
     roomdetailss.plan = booking.roomRatePlanName;
     roomdetailss.roomRate = booking.roomPrice;
     roomdetailss.roomTypeId = booking.roomId;
@@ -3197,7 +3210,11 @@ if (bookingSummaryStr) {
     booking.lastName = this.booking.lastName;
     booking.mobile = this.booking.mobile;
     booking.email = this.booking.email;
-    booking.noOfChildren = plan.children;
+    booking.noOfChildren = plan.childrenAbove5years;
+    if(this.groupBookingId){
+      booking.groupBookingId = this.groupBookingId;
+    }
+    booking.noOfChildrenUnder5years = plan.childrenBelow5years;
     booking.noOfNights = plan.nights;
     booking.noOfRooms = Number(plan.selectedRoomnumber);
     booking.netAmount = plan.price;
@@ -3210,7 +3227,7 @@ if (bookingSummaryStr) {
     booking.discountAmount = 0;
     booking.extraChildCharge = plan.extraPersonChildCountAmount || 0;
     booking.extraPersonCharge = plan.extraPersonCharge || 0;
-    booking.roomTariffBeforeDiscount = plan.price;
+    booking.roomTariffBeforeDiscount = plan.actualRoomPrice;
     booking.totalAmount = plan.price + plan.taxPercentageperroom;
     booking.bookingAmount = booking.totalAmount;
     booking.payableAmount = this.showTheSelectedCoupon
@@ -3231,7 +3248,7 @@ if (bookingSummaryStr) {
     booking.roomPrice = plan.actualRoomPrice;
     booking.totalServiceAmount = this.totalServiceCost || 0;
     booking.taxAmount = booking.gstAmount;
-    booking.totalRoomTariffBeforeDiscount = plan.price;
+    booking.totalRoomTariffBeforeDiscount = plan.actualRoomPrice;
     booking.noOfExtraPerson = plan.extraCountAdult;
     booking.noOfExtraChild = plan.extraCountChild;
     booking.purposeOfVisit = '';

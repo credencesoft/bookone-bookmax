@@ -58,8 +58,7 @@
       </div>
       <div class="mb-0" style="font-size: 18px; color: #615d5d">
         A confirmation has been sent to {{booking.email}} & your reservation number is <span *ngFor="let booking of bookingsResponseList; let last = last"
-          >{{ booking?.propertyReservationNumber }}
-          <span *ngIf="!last">, </span></span>.
+          ><span *ngIf="last && booking?.groupBookingReference ">{{ booking?.groupBookingReference }}</span> <span *ngIf="last && !booking?.groupBookingReference ">{{ booking?.propertyReservationNumber }}</span></span>.
 
       </div>
       <div
@@ -80,7 +79,7 @@
       >
         <div class="mb-1"><span class="highlight-text">Booking ID</span></div>
         <div class="mb-0"><b id="textToCopyOne" *ngFor="let booking of bookingsResponseList; let last = last"
-            >{{ booking?.id }}<span *ngIf="!last">, </span></b>
+            ><span *ngIf="last && booking?.groupBookingId ">{{ booking?.groupBookingId }}</span> <span *ngIf="last && !booking?.groupBookingId ">{{ booking?.id }}</span></b>
           <img
           src="assets/images/CopyVoucher.png"
           alt=""
@@ -638,9 +637,8 @@
     Your booking is confirmed.
     </div>
     <div class="mb-0" style="margin-top: 10px; font-size: 13px; color: #615d5d">
-      A confirmation has been sent to {{booking.email}} & your reservation number i<span *ngFor="let booking of bookingsResponseList; let last = last"
-          >{{ booking?.propertyReservationNumber }}
-          <span *ngIf="!last">, </span></span>.
+      A confirmation has been sent to {{booking.email}} & your reservation number is <span *ngFor="let booking of bookingsResponseList; let last = last"
+          ><span *ngIf="last && booking?.groupBookingReference ">{{ booking?.groupBookingReference }}</span> <span *ngIf="last && !booking?.groupBookingReference ">{{ booking?.propertyReservationNumber }}</span></span>.
     </div>
     <div
       style="
@@ -657,7 +655,7 @@
     <div style="color: #615d5d; font-size: 18px">Booking ID</div>
     <div style="font-weight: bold; font-size: 17px">
       <b id="textToCopy" *ngFor="let booking of bookingsResponseList; let last = last"
-            >{{ booking?.id }}<span *ngIf="!last">, </span></b
+            ><span *ngIf="last && booking?.groupBookingId ">{{ booking?.groupBookingId }}</span> <span *ngIf="last && !booking?.groupBookingId ">{{ booking?.id }}</span></b
           >
       <img
       src="assets/images/CopyVoucher.png"

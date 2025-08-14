@@ -1619,8 +1619,6 @@ onIncrement(planCode: string, type: 'adults' | 'children', plan: any) {
     const below2yearslimit = 2 * selectedRooms;
    const above5Count = this.childAgesByPlan[planCode].filter(a => a !== null && a > 5).length;
   const under2Count = this.childAgesByPlan[planCode].filter(a => a !== null && a <= 2).length;
-    // const totalSelected = Object.values(this.selectedGuestsByPlan).reduce((sum, val) => sum + val.adults, 0);
-    // if (this.selectedGuestsByPlan[planCode].adults < limit && totalSelected < this.totalAdults)
     if (above5Count < limit) {
   if (this.childAgesByPlan[planCode].some(a => a === null)) {
     this.showTemporaryError(planCode, 'Please select age for all existing children first.');
@@ -1697,7 +1695,9 @@ onChildAgeChange(planCode: string, plan: any) {
   //   this.showTemporaryError(planCode, 'Only 2 children under 2 years allowed.');
   // }
 }
-
+getChildCount(planCode: string) {
+  return (this.childAgesByPlan[planCode] || []).filter(age => age > 0).length;
+}
 resetLastChangedAge(planCode: string) {
   const lastIndex = this.childAgesByPlan[planCode].length - 1;
   this.childAgesByPlan[planCode][lastIndex] = null;
@@ -2056,6 +2056,8 @@ resetLastChangedAge(planCode: string) {
     const extraPersonChildCountAmount = this.extraChildrenCharge;
     const extraCountAdult = this.extraAdultCount ? this.extraAdultCount : 0;
     const extraCountChild = this.extraChildCount ? this.extraChildCount : 0;
+    const childrenBelow5years = below5Count;
+    const childrenAbove5years = above5Count;
 
     if (this.businessUser.taxDetails.length > 0) {
       this.businessUser.taxDetails.forEach((element) => {
@@ -2128,7 +2130,7 @@ resetLastChangedAge(planCode: string) {
       roomId,
       planName,
       adults: selectedGuests.adults,
-      children: above5Count + below5Count || 0,
+      children: this.getChildCount(planCode) || 0,
       nights,
       price,
       selectedRoomnumber,
@@ -2136,7 +2138,9 @@ resetLastChangedAge(planCode: string) {
       taxpercentage,
       extraCountChild,
       extraCountAdult,
-      planCodeName
+      planCodeName,
+      childrenAbove5years,
+      childrenBelow5years
     };
 
     const index = this.selectedPlansSummary.findIndex(
