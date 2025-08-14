@@ -3225,8 +3225,8 @@ textarea {
 }
 
 .Fillpaybtn {
-  background-color:black;
-  color: white !important;
+  background-color: var(--secondary, #0b01cc);
+  color: var(--tertiary) !important;
   border: none;
   padding: 10px 10px;
   border-radius: 4px;
