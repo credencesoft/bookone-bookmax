@@ -1,5 +1,5 @@
 .vertical-nav {
-  background-color: #1e1f20;
+    background-color: var(--secondary, #0b01cc);
   position: fixed;
   top: 0;
   left: 0;

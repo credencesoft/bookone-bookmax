@@ -115,7 +115,7 @@
   width: 100%;
 }
 .color-text {
-  color: #0b01cc;
+  background-color: var(--secondary, #0b01cc);
 }
 .default-color {
   color: #4a4a4a;
@@ -137,7 +137,7 @@
   top: 0;
 }
 .business-text {
-  background-color: #fff;
+  background-color: var(--tertiary) !important;;
   padding: 5px 10px;
 }
 .stepper {
@@ -196,16 +196,16 @@
   padding: 5px;
   font-family: "Poppins";
   font-size: smaller;
-  background-color: #0b01cc;
-  color: #fff;
+  background-color: var(--secondary, #0b01cc);
+  color: var(--tertiary) !important;;
 }
 .checkavailability-div {
   display: flex;
   justify-content: end;
 }
 .checkavaialabilyy-btn {
-  background-color: #0b01cc;
-  color: #fff;
+  background-color: var(--secondary, #0b01cc);
+  color: var(--tertiary) !important;;
   font-family: "Poppins";
   border: none;
   padding: 7px;
@@ -228,7 +228,7 @@
   padding-bottom: 15px;
 }
 .apply-coupon-btn {
-  background-color: #fff;
+  background-color: var(--tertiary) !important;;
   border: none;
   padding: 5px;
   padding-left: 10px;
@@ -241,11 +241,11 @@
   background: linear-gradient(90deg, #020024 0%, #090979 35%, #0b00d2 100%);
 }
 .promo-heading {
-  color: #fff;
+  color: var(--tertiary) !important;;
   font-family: "Poppins";
 }
 .code-coupon {
-  color: #fff;
+  color: var(--tertiary) !important;;
   font-family: "Poppins";
   font-size: smaller;
 }
@@ -269,12 +269,12 @@
   display: block;
 }
 .smart-card {
-  background-color: #031eaa;
+  background-color: var(--secondary, #0b01cc);
   border-radius: 50%;
   padding: 3px;
 }
 .smart-recommend {
-  color: #031eaa;
+  color: var(--secondary, #0b01cc);
   font-weight: 600;
   font-family: "Poppins";
 }
@@ -335,8 +335,8 @@
   margin-top: 20px;
 }
 .select-mannual {
-  background-color: #031eaa;
-  color: #fff;
+  background-color: var(--secondary, #0b01cc);
+  color: var(--tertiary) !important;;
   font-family: "Poppins";
   border: none;
   padding: 10px 20px;
@@ -417,8 +417,8 @@
   gap: 10px;
 }
 .card-title {
-background-color: #090979;
- color: #fff;
+  background-color: var(--secondary, #0b01cc);
+ color: var(--tertiary) !important;;
  border-top-left-radius: 20px;
  border-top-right-radius: 20px;
  padding: 8px 16px;
@@ -454,24 +454,24 @@ background-color: #090979;
   font-family: "Poppins";
   font-weight: 400;
   font-size: 13px;
-  color: #fff;
+  color: var(--tertiary) !important;;
 }
 .ViewDetails {
   font-size: 11px;
   font-family: "Poppins";
-  color: #fff;
+  color: var(--tertiary) !important;;
   cursor: pointer;
 }
 .pricing {
   font-family: "Poppins";
   font-weight: 400;
   font-size: 13px;
-  color: #fff;
+  color: var(--tertiary) !important;;
 }
 .perNight {
   font-size: 10px;
   font-family: "Poppins";
-  color: #fff;
+  color: var(--tertiary) !important;;
 }
 .margin-top-30px {
   margin-top: 30px;
@@ -511,8 +511,8 @@ background-color: #090979;
 }
 .minus-btn {
   padding: 1px 7px;
-  background-color: #090979;
-  color: #fff;
+  background-color: var(--secondary, #0b01cc);
+  color: var(--tertiary) !important;;
   border-top-left-radius: 5px;
   border-bottom-left-radius: 5px;
 }
@@ -521,8 +521,8 @@ background-color: #090979;
 }
 .plus-btn {
   padding: 1px 7px;
-  background-color: #090979;
-  color: #fff;
+  background-color: var(--secondary, #0b01cc);
+  color: var(--tertiary) !important;;
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
 }
@@ -549,8 +549,8 @@ background-color: #090979;
   margin-top: 40px;
 }
 .btn-add {
-  background-color: #031eaa;
-  color: #fff;
+  background-color: var(--secondary, #0b01cc);
+  color: var(--tertiary) !important;;
   font-family: "Poppins";
   border: none;
   padding: 6px 16px;
@@ -562,8 +562,8 @@ background-color: #090979;
 }
 .selected {
   padding: 4px 11px;
-  background-color: #090979;
-  color: #fff;
+  background-color: var(--secondary, #0b01cc);
+  color: var(--tertiary) !important;;
   border-radius: 10px;
   cursor: pointer;
 }
@@ -593,11 +593,11 @@ display: flex;
 }
 .last-rooms {
   background-color: #5797e9;
-  color: #fff;
+  color: var(--tertiary) !important;;
 }
 .sold-rooms {
   background-color: red;
-  color: #fff;
+  color: var(--tertiary) !important;;
 }
 .booking-card {
   border-radius: 16px;
@@ -629,7 +629,7 @@ display: flex;
 }
 
 .btn-book-now {
-      background: #090979;
+  background-color: var(--secondary, #0b01cc);
   color: white;
   font-weight: 600;
   border-radius: 8px;
@@ -638,9 +638,9 @@ display: flex;
 }
 
 .btn-book-now:hover {
-      background: #fff;
-      color: #090979;
-      border: 1px solid #090979;
+      background: var(--tertiary) !important;;
+      color: var(--secondary, #0b01cc);
+      border: 1px solid var(--secondary, #0b01cc);
 }
 
 /* Custom checkboxes */
@@ -665,7 +665,7 @@ display: flex;
   top: 2px;
   height: 16px;
   width: 16px;
-  background-color: #fff;
+  background-color: var(--tertiary) !important;;
   border: 2px solid #aaa;
   border-radius: 3px;
 }
@@ -698,7 +698,7 @@ display: flex;
 .date-guest-box {
   border: 1px solid #d1d5db; /* light gray */
   border-radius: 10px;
-  background-color: #fff;
+  background-color: var(--tertiary) !important;;
   font-size: 14px;
 }
 
@@ -736,7 +736,7 @@ display: flex;
 
     .gt-arrow {
       background-color: #0029ff;
-      color: #fff;
+      color: var(--tertiary) !important;;
       border: none;
       border-radius: 50%;
       width: 36px;
@@ -766,7 +766,7 @@ display: flex;
 
       .gt-card {
         flex: 0 0 250px;
-        background: #fff;
+        background: var(--tertiary) !important;;
         border-radius: 12px;
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
         padding: 1rem;
@@ -840,7 +840,7 @@ display: flex;
   height: 40px;
   border-radius: 50%;
   background-color: #5b3c35; // or dynamic color if needed
-  color: #fff;
+  color: var(--tertiary) !important;;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -856,7 +856,7 @@ display: flex;
     margin-bottom: 30px;
 }
 .view-more-segment a {
-  color: #090979;
+  color: var(--secondary, #0b01cc);
 }
 .error-text {
   text-align: center;
@@ -895,7 +895,7 @@ display: flex;
   }
 
   .nearby-card {
-    background: #fff;
+    background: var(--tertiary) !important;;
     border-radius: 16px;
     overflow: hidden;
     text-align: center;
@@ -965,22 +965,22 @@ display: flex;
 
     &.left {
       background-color: #f9fcff;
-      color: #031eaa;
+      background-color: var(--secondary, #0b01cc);
       border: 1px solid #eaeaea;
     }
 
     &.left:hover {
-      background-color: #031eaa;
+        background-color: var(--secondary, #0b01cc);
       color: #ffffff;
     }
 
     &.right {
       background-color: #f9fcff;
-      color: #031eaa;
+        background-color: var(--secondary, #0b01cc);
       border: 1px solid #eaeaea;
     }
     &.right:hover {
-      background-color: #031eaa;
+        background-color: var(--secondary, #0b01cc);
       color: #ffffff;
     }
 
@@ -1008,7 +1008,7 @@ display: flex;
 }
 .text-white {
   color: #fff !important;
-  background-color: #0b01cc !important;
+  background-color: var(--secondary, #0b01cc) !important;
 }
 .main-img {
   width: 100%;
@@ -1042,7 +1042,7 @@ display: flex;
   height: 100vh;
 }
 .see-more {
-  background-color: #fff;
+  background-color: var(--tertiary) !important;;
   color: #000;
   font-family: "Poppins";
   font-weight: 500;
@@ -1057,8 +1057,8 @@ display: flex;
   font-weight: 600;
 }
 .dates-seemore {
-  background-color: #031eaa;
-  color: #fff;
+    background-color: var(--secondary, #0b01cc);
+  color: var(--tertiary) !important;;
   border: none;
   padding: 8px 29px;
   border-radius: 8px;
@@ -1093,7 +1093,7 @@ display: flex;
   right: 0;
   height: 100%;
   width: 500px;
-  background: #fff;
+  background: var(--tertiary) !important;;
   transform: translateY(-100%);
   transition: transform 0.4s ease-in-out;
   z-index: 1050;
@@ -1125,7 +1125,7 @@ display: flex;
     background-color: #F9FAFB;
 }
 .scroll-highlight .card-title {
-  background-color: #09c;
+  background-color: var(--primary) !important;
   transition: box-shadow 0.5s ease;
 }
 
@@ -1138,22 +1138,22 @@ display: flex;
 
 .popup-plan {
     font-family: "Poppins";
-    color: #031EAA;
+    color: var(--secondary, #0b01cc);
     font-size: 1.1rem;
     font-weight: 600;
 }
 .select-plan {
       width: 100%;
         padding: 10px 11px;
-    background-color: #090979;
-    color: #fff;
+      background-color: var(--secondary, #0b01cc);
+    color: var(--tertiary) !important;;
     border-radius: 10px;
     cursor: pointer;
 }
 .select-plan:hover {
-  border: 1px solid #090979;
-  color: #090979 !important;
-  background-color: #fff;
+  border: 1px solid var(--secondary, #0b01cc);
+  color: var(--secondary, #0b01cc) !important;
+  background-color: var(--tertiary) !important;;
 }
 
 .close-btn {
@@ -1235,14 +1235,14 @@ display: flex;
 .tooltip-one {
   position: relative;
   display: inline-block;
-  color: #090979;
+  color: var(--secondary, #0b01cc);
   cursor: pointer;
 }
 
 .tooltip-one .tooltiptext {
   visibility: hidden;
   background-color: black;
-  color: #fff;
+  color: var(--tertiary) !important;;
   text-align: center;
   border-radius: 6px;
   padding: 5px 0;
@@ -1405,7 +1405,7 @@ text-align: center;
         top: 90%;
         position: fixed;
         z-index: 2000;
-        background-color: #fff;
+        background-color: var(--tertiary) !important;;
         width: 100%;
 }
 .btn-summary-change {
@@ -1414,9 +1414,9 @@ text-align: center;
     margin: auto;
     border: none;
     font-family: 'Poppins';
-    background-color: #0b01cc;
+    background-color: var(--secondary, #0b01cc);
     padding: 11px 31px;
-    color: #fff;
+    color: var(--tertiary) !important;;
     letter-spacing: 2.3px;
     border-radius: 8px;
 }
@@ -1426,7 +1426,7 @@ text-align: center;
 .tooltip-one .tooltiptext {
     visibility: hidden;
     background-color: black;
-    color: #fff;
+    color: var(--tertiary) !important;;
     text-align: center;
     border-radius: 6px;
     padding: 5px 0;
@@ -1552,7 +1552,7 @@ text-align: center;
         top: 90%;
         position: fixed;
         z-index: 2000;
-        background-color: #fff;
+        background-color: var(--tertiary) !important;;
         width: 100%;
 }
 .btn-summary-change {
@@ -1561,9 +1561,9 @@ text-align: center;
     margin: auto;
     border: none;
     font-family: 'Poppins';
-    background-color: #0b01cc;
+    background-color: var(--secondary, #0b01cc);
     padding: 11px 31px;
-    color: #fff;
+    color: var(--tertiary) !important;;
     letter-spacing: 2.3px;
     border-radius: 8px;
 }
