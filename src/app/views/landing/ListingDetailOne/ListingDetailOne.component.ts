@@ -1603,9 +1603,9 @@ onIncrement(planCode: string, type: 'adults' | 'children', plan: any) {
     this.childAgesByPlan[planCode] = [];
   }
   if (type === 'adults') {
-    const limit = plan.maximumOccupancy * selectedRooms;
-    // const totalSelected = Object.values(this.selectedGuestsByPlan).reduce((sum, val) => sum + val.adults, 0);
-    // if (this.selectedGuestsByPlan[planCode].adults < limit && totalSelected < this.totalAdults)
+  const above5Count = this.childAgesByPlan[planCode].filter(a => a !== null && a > 5).length;
+  const under2Count = this.childAgesByPlan[planCode].filter(a => a !== null && a <= 2).length;
+    const limit = plan.maximumOccupancy + plan.noOfChildren - (above5Count) * selectedRooms;
     if (this.selectedGuestsByPlan[planCode].adults < limit) {
       this.selectedGuestsByPlan[planCode].adults++;
     } else {
@@ -1615,7 +1615,7 @@ onIncrement(planCode: string, type: 'adults' | 'children', plan: any) {
   }
 
   if (type === 'children') {
-    const limit = plan.noOfChildren * selectedRooms;
+    const limit = plan.maximumOccupancy + plan.noOfChildren - this.selectedGuestsByPlan[planCode].adults * selectedRooms;
     const below2yearslimit = 2 * selectedRooms;
    const above5Count = this.childAgesByPlan[planCode].filter(a => a !== null && a > 5).length;
   const under2Count = this.childAgesByPlan[planCode].filter(a => a !== null && a <= 2).length;
@@ -1686,7 +1686,8 @@ onDecrement(planCode: string, type: 'adults' | 'children') {
 
 
 onChildAgeChange(planCode: string, plan: any) {
-  const limit = plan.noOfChildren;
+    const selectedRooms = this.selectedRoomsByPlan[planCode] || 0;
+  const limit = plan.maximumOccupancy + plan.noOfChildren - this.selectedGuestsByPlan[planCode].adults * selectedRooms;
   const above5Count = this.childAgesByPlan[planCode].filter(a => a !== null && a > 5).length;
   const under2Count = this.childAgesByPlan[planCode].filter(a => a !== null && a <= 2).length;
 
