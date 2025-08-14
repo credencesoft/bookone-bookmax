@@ -1753,7 +1753,7 @@ resetLastChangedAge(planCode: string) {
       el.classList.add('scroll-highlight');
       setTimeout(() => {
         el.classList.remove('scroll-highlight');
-      }, 3000);
+      }, 5000);
     }
   }, 100); // slight delay ensures DOM updates
 }
