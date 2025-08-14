@@ -133,6 +133,7 @@ textToCopyOne: string = 'This is some text to copy';
      expanded: boolean = false;
        totalPlanAdults: number = 0;
   totalPlanChildren: number = 0;
+  groupBookingId: number;
   constructor(
     private http: HttpClient,
     private token: TokenStorage,
@@ -307,7 +308,15 @@ textToCopyOne: string = 'This is some text to copy';
   }
 
   ngOnInit() {
-
+        const bookingSummaryStr = sessionStorage.getItem('bookingSummaryDetails');
+    const bookingSummary = bookingSummaryStr
+      ? JSON.parse(bookingSummaryStr)
+      : null;
+        const plans = bookingSummary.selectedPlansSummary;
+          if (plans.length >= 2) {
+        this.groupBookingId = Math.floor(100000 + Math.random() * 900000);
+        console.log('Generated Group Booking ID:', this.groupBookingId);
+      }
     this.acRoute.queryParams.subscribe((params) => {
       if (params["businessUser"] !== undefined) {
         this.businessUser = JSON.parse(params["businessUser"]);
@@ -549,7 +558,6 @@ checkValidCouponOrNot(couponList?){
     }
 
     const plans = bookingSummary.selectedPlansSummary;
-
     const processPlan = (index: number) => {
       if (index >= plans.length) return;
       const currentPlan = plans[index];
@@ -571,6 +579,9 @@ checkValidCouponOrNot(couponList?){
     booking.roomName = plan.roomName;
     booking.roomType = plan.roomName;
     booking.planCode = plan.planName;
+    if(this.groupBookingId) {
+      booking.groupBookingId = this.groupBookingId;
+    }
       const bookingSummaryStr = sessionStorage.getItem('bookingSummaryDetails');
             if (bookingSummaryStr) {
           this.bookingSummaryDetails = JSON.parse(bookingSummaryStr);
@@ -607,7 +618,8 @@ checkValidCouponOrNot(couponList?){
     booking.lastName = this.booking.lastName;
     booking.mobile = this.booking.mobile;
     booking.email = this.booking.email;
-    booking.noOfChildren = plan.children;
+    booking.noOfChildren = plan.childrenAbove5years;
+    booking.noOfChildrenUnder5years = plan.childrenBelow5years;
     booking.noOfNights = plan.nights;
     booking.noOfRooms = Number(plan.selectedRoomnumber);
     booking.netAmount = plan.price;
@@ -1132,7 +1144,9 @@ checkValidCouponOrNot(couponList?){
     externalreservation.firstName = booking.firstName;
     externalreservation.lastName = booking.lastName;
     externalreservation.bookoneReservationId =
-      booking.propertyReservationNumber;
+    booking.propertyReservationNumber;
+   externalreservation.noOfChildrenAbove5Years =  booking.noOfChildren;
+    externalreservation.noOfChildrenBelow5Years = booking.noOfChildrenUnder5years;
     externalreservation.contactNumber = booking.mobile;
     externalreservation.propertyBusinessEmail = booking.businessEmail;
     externalreservation.externalTransactionId =
@@ -1142,7 +1156,7 @@ checkValidCouponOrNot(couponList?){
     roomdetailss.checkoutDate = booking.toDate;
     roomdetailss.noOfRooms = booking.noOfRooms;
     roomdetailss.noOfadult = booking.noOfPersons;
-    roomdetailss.noOfchild = booking.noOfChildren;
+    roomdetailss.noOfchild = booking.noOfChildrenUnder5years + booking.noOfChildren;
     roomdetailss.plan = booking.roomRatePlanName;
     roomdetailss.roomRate = booking.roomPrice;
     roomdetailss.roomTypeId = booking.roomId;

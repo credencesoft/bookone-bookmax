@@ -42,5 +42,8 @@ export class externalReservationDtoList {
   taxAmount: Number;
   totalAmount: Number;
   updatedTimestamp: string;
+  discountAmount:number;
+  noOfChildrenBelow5Years: any;
+  noOfChildrenAbove5Years: any;
   constructor() {}
 }
