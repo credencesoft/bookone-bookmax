@@ -808,7 +808,7 @@
 
                   <div>₹ {{ plan.price - (plan.extraPersonAdultCountAmount + plan.extraPersonChildCountAmount) | number : "1.2-2" }}</div>
                 </div>
-                <div class="d-flex justify-content-between line-height-27px" *ngIf="plan.extraPersonAdultCountAmount > 0">
+                <div class="d-flex justify-content-between line-height-27px" *ngIf="plan.extraPersonAdultCountAmount + plan.extraPersonChildCountAmount > 0">
                   <div class="color-graying">Extra Pax Charges</div>
 
                   <div>₹ {{plan.extraPersonAdultCountAmount + plan.extraPersonChildCountAmount}} </div>
@@ -1082,7 +1082,10 @@
                     booking.notes
                   }}</textarea>
                 </div>
-
+                <label class="label-changes" style="display: flex; gap:10px; justify-content: left; align-items: center;">
+                    <input [(ngModel)]="termsAccepted" class="checkbox-terms" type="checkbox" required>
+                    I agree to the Terms & Conditions and Privacy Policy.
+                  </label>
                 <!-- View Coupon section -->
                 <!-- <div
                   class="coupons-giftcards"
@@ -1172,7 +1175,7 @@
             type="button"
             style="font-size: 19px"
             [disabled]="
-              (!paymentLoader || !submitButtonDisable) && !validateFrom()
+              (!paymentLoader || !submitButtonDisable) && !validateFrom() || !termsAccepted
             "
             *ngIf="value === false"
             (click)="createAllEnquiries()"
@@ -1184,7 +1187,7 @@
             type="button"
             style="font-size: 19px"
             [disabled]="
-              (!paymentLoader || !submitButtonDisable) && !validateFrom()
+              (!paymentLoader || !submitButtonDisable) && !validateFrom()|| !termsAccepted
             "
             *ngIf="
               value === true &&
@@ -1202,7 +1205,7 @@
             type="button"
             style="font-size: 19px"
             [disabled]="
-              (!paymentLoader || !submitButtonDisable) && !validateFrom()
+              (!paymentLoader || !submitButtonDisable) && !validateFrom()|| !termsAccepted
             "
             *ngIf="
               value === true &&
@@ -1218,7 +1221,7 @@
             type="button"
             style="font-size: 19px"
             [disabled]="
-              (!paymentLoader || !submitButtonDisable) && !validateFrom()
+              (!paymentLoader || !submitButtonDisable) && !validateFrom()|| !termsAccepted
             "
             *ngIf="
               value === true &&
@@ -1380,7 +1383,7 @@
 
                   <div>₹ {{ plan.price - (plan.extraPersonAdultCountAmount + plan.extraPersonChildCountAmount) | number : "1.2-2" }}</div>
                 </div>
-                <div class="d-flex justify-content-between line-height-27px" *ngIf="plan.extraPersonAdultCountAmount > 0">
+                <div class="d-flex justify-content-between line-height-27px" *ngIf="plan.extraPersonAdultCountAmount + plan.extraPersonChildCountAmount > 0">
                   <div class="color-graying">Extra Pax Charges</div>
 
                   <div>₹ {{plan.extraPersonAdultCountAmount + plan.extraPersonChildCountAmount}} </div>
@@ -1655,6 +1658,10 @@
                   }}</textarea>
                 </div>
 
+                <label class="label-changes" style="display: flex; gap:10px; justify-content: left; align-items: start;">
+                    <input [(ngModel)]="termsAccepted" class="checkbox-terms" type="checkbox" required>
+                    I agree to the Terms & Conditions and Privacy Policy.
+                  </label>
                 <!-- View Coupon section -->
                 <!-- <div
                   class="coupons-giftcards"
@@ -1744,7 +1751,7 @@
             type="button"
             style="font-size: 19px"
             [disabled]="
-              (!paymentLoader || !submitButtonDisable) && !validateFrom()
+              (!paymentLoader || !submitButtonDisable) && !validateFrom() || !termsAccepted
             "
             *ngIf="value === false"
             (click)="createAllEnquiries()"
@@ -1756,7 +1763,7 @@
             type="button"
             style="font-size: 19px"
             [disabled]="
-              (!paymentLoader || !submitButtonDisable) && !validateFrom()
+              (!paymentLoader || !submitButtonDisable) && !validateFrom()|| !termsAccepted
             "
             *ngIf="
               value === true &&
@@ -1774,7 +1781,7 @@
             type="button"
             style="font-size: 19px"
             [disabled]="
-              (!paymentLoader || !submitButtonDisable) && !validateFrom()
+              (!paymentLoader || !submitButtonDisable) && !validateFrom()|| !termsAccepted
             "
             *ngIf="
               value === true &&
@@ -1790,7 +1797,7 @@
             type="button"
             style="font-size: 19px"
             [disabled]="
-              (!paymentLoader || !submitButtonDisable) && !validateFrom()
+              (!paymentLoader || !submitButtonDisable) && !validateFrom()|| !termsAccepted
             "
             *ngIf="
               value === true &&

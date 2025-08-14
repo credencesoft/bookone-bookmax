@@ -262,6 +262,7 @@ export class BookingComponent implements OnInit {
   totalPlanAdults: number = 0;
   totalPlanChildren: number = 0;
   bookingsResponseList: any[] = [];
+  termsAccepted = false;
   constructor(
     private token: TokenStorage,
     private ngZone: NgZone,
