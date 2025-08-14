@@ -2462,6 +2462,11 @@
                                 class="select-icon"
                                 [(ngModel)]="childAgesByPlan[plan.code][i]"
                                 (change)="onChildAgeChange(plan.code, plan)"
+                                [disabled]="
+                                      i === 0 &&
+                                      childAgesByPlan[plan.code][0] !== null &&
+                                      childAgesByPlan[plan.code].length > 1
+                                    "
                               >
                                 <option [ngValue]="null">0</option>
                                 <option
@@ -2835,6 +2840,11 @@
                                 class="select-icon"
                                 [(ngModel)]="childAgesByPlan[plan.code][i]"
                                 (change)="onChildAgeChange(plan.code, plan)"
+                                [disabled]="
+                                      i === 0 &&
+                                      childAgesByPlan[plan.code][0] !== null &&
+                                      childAgesByPlan[plan.code].length > 1
+                                    "
                               >
                                 <option [ngValue]="null">0</option>
                                 <option
@@ -3023,6 +3033,11 @@
                                 class="select-icon"
                                 [(ngModel)]="childAgesByPlan[plan.code][i]"
                                 (change)="onChildAgeChange(plan.code, plan)"
+                                [disabled]="
+                                      i === 0 &&
+                                      childAgesByPlan[plan.code][0] !== null &&
+                                      childAgesByPlan[plan.code].length > 1
+                                    "
                               >
                                 <option [ngValue]="null">0</option>
                                 <option
