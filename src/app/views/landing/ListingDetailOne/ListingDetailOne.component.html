@@ -538,6 +538,7 @@
                 <div class="special-sectionOne">
                   <div>
                     <input
+                    class="input-coupon"
                       style="
                         width: 100%;
                         border: none;
@@ -561,7 +562,9 @@
                     />
                   </div>
                   <div class="applycoupon">
-                    <button class="applycoupon-button">Apply Coupon</button>
+                    <button class="applycoupon-button"
+                     [disabled]="!enteredCoupon || enteredCoupon.trim().toUpperCase() !== validCouponCode.toUpperCase()"
+                    (click)="onYesClick()">Apply Coupon</button>
                   </div>
                 </div>
               </div>
@@ -1102,7 +1105,7 @@
             </div>
           </div>
         </div>
-        <ng-container *ngIf="isLoading">
+        <ng-container *ngIf="smartLoading">
           <div
             class="card smart-recommend-card skeleton-card"
             *ngFor="let skeleton of [1, 2]"
@@ -1121,7 +1124,7 @@
             </div>
           </div>
         </ng-container>
-        <ng-container
+        <!-- <ng-container
           *ngIf="this.activeForGoogleHotelCenter == true && !isLoading"
         >
           <div
@@ -1193,32 +1196,51 @@
               </div>
             </div>
           </div>
-        </ng-container>
+        </ng-container> -->
 
-        <!-- <div class="card smart-recommend-card">
-          <div class="d-flex justify-content-center" style="gap: 8px">
-            <div class="width-49 left-shift">
+        <div class="card smart-recommend-card" *ngIf="smartRecommendations?.bestFitOptions?.length">
+          <ng-container *ngFor="let room of smartRecommendations?.bestFitOptions">
+            <ng-container *ngFor="let plan of room.plans">
+              <div class="d-flex justify-content-center" style="gap: 8px">
+            <div class="width-49 left-shift" >
               <h5 class="recommend-font">
-                <img src=" assets/images/sofa.svg" alt="" width="35px" />&nbsp;
-                Comfort Combo
+                <img src=" assets/images/best-fit.svg" alt="" />&nbsp;
+                Best Fit Options
               </h5>
-              <div class="line-height">
-                1&nbsp;&nbsp;&nbsp;&nbsp; x&nbsp;&nbsp;&nbsp;&nbsp; Family Suite
+              <div class="line-height pricing-best-fit">
+               &nbsp; &nbsp;  ₹ {{plan?.totalPrice}}
               </div>
               <div class="line-height">
-                1&nbsp;&nbsp;&nbsp;&nbsp; x&nbsp;&nbsp;&nbsp;&nbsp; Deluxe Room
+               &nbsp; &nbsp; &nbsp; &nbsp; Total for {{DiffDate}} nights
               </div>
+              <div class="line-height">&nbsp; &nbsp; &nbsp; &nbsp; <img src=" assets/images/best-fit-star.svg" alt=""  />&nbsp;  <small>Ideal for {{plan.idealFor.join(', ')}}</small></div>
             </div>
             <div style="border-right: 1px solid #d9d9d9"></div>
-            <div class="width-49 left-shift">
-              <div class="text-sm">Price :</div>
-              <div class="font-small line-height35">
-                <b class="pricing-recommd">₹ 5,093</b>&nbsp; per night + taxes
-              </div>
-              <div class="font-small">Occupancy :</div>
-              <div class="occupancy-data">4 Adults + 2 Child(ren)</div>
+            <div class="width-49 left-shift" >
+            <div class="margin-bottom-10px"> &nbsp; &nbsp; &nbsp;<img src=" assets/images/best-fit-bed.svg" alt=""  />&nbsp;  <small>{{room?.availableCount}} room(s) left</small></div>
+                      <div
+
+          class="room-box-best-fit d-block justify-content-between mb-4"
+        >
+          <div class="room-details">
+            <div class="room-title">{{room?.roomName }}</div>
+              <ng-container >
+                <div>
+                  ₹{{ plan.pricePerNight }} per night
+                </div>
+              </ng-container>
+          </div>
+
+        </div>
+                  <div style="display: flex; justify-content: end; margin-top: 10px; margin-bottom: 10px;">
+            <button class="select-mannual">Select Combo→</button>
+          </div>
             </div>
           </div>
+            </ng-container>
+
+          </ng-container>
+
         </div>
 
         <div class="card smart-recommend-card-two">
@@ -1248,7 +1270,7 @@
               <div class="occupancy-data">4 Adults + 2 Child(ren)</div>
             </div>
           </div>
-        </div> -->
+        </div>
 
         <div class="d-flex justify-content-end margin-top-20px">
           <button class="select-mannual" (click)="scrollToAccommodationDash()">
@@ -1573,6 +1595,9 @@
       </div>
     </div>
   </div>
+<div class="container my-4">
+
+</div>
 
   <div class="margin-top-40px display-flex">
     <div class="col-12 col-lg-7">
@@ -3614,7 +3639,7 @@
 
     <div class="side-images website-web-vision">
       <div class="card booking-card sticky-card">
-        <h5 class="font-weight-bold mb-3">Booking Summary</h5>
+        <h5 class="font-weight-bold mb-3">Booking Summary &nbsp;&nbsp;<span *ngIf="enteredCoupon && specialDiscountPercentage" class="badge badge-success badge-successOne px-2 py-1 mr-2"> <img src=" assets/images/coupon-image-change.svg" alt="" /> &nbsp; Coupon Applied!</span></h5>
 
         <!-- Dates & Guests -->
           <small *ngIf="!isBookingAllowed()" class="text-danger">
@@ -3774,6 +3799,12 @@
             <span>Rooms Total</span>
             <span>₹{{ getTotalPlanPrice() | number : "1.2-2" }}</span>
           </div>
+
+          <div class="d-flex justify-content-between" *ngIf="specialDiscountPercentage">
+            <span>Discount ({{specialDiscountPercentage}})%</span>
+            <span>₹{{ (getTotalPlanPrice() * specialDiscountPercentage)/100  | number : "1.2-2" }}</span>
+          </div>
+
           <div
             class="d-flex justify-content-between"
             *ngIf="getTotalAfterTaxAmountFacility() > 0"
@@ -3791,11 +3822,18 @@
             class="d-flex justify-content-between font-weight-bold total-amount"
           >
             <span>Total Amount</span>
-            <span
-              >₹{{
-                getTotalPlanPrice() +
+            <span *ngIf="specialDiscountPercentage">
+              ₹{{
+                (getTotalPlanPrice() +
                   getTotalAfterTaxAmountFacility() +
-                  getTotalTaxPrice() | number : "1.2-2"
+                  getTotalTaxPrice()) - ((this.getTotalPlanPrice() * this.specialDiscountPercentage)/100) | number : "1.2-2"
+              }}
+            </span>
+            <span *ngIf="!specialDiscountPercentage"
+              >₹{{
+                (getTotalPlanPrice() +
+                  getTotalAfterTaxAmountFacility() +
+                  getTotalTaxPrice()) | number : "1.2-2"
               }}</span
             >
           </div>

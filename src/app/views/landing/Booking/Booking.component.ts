@@ -264,6 +264,10 @@ export class BookingComponent implements OnInit {
   bookingsResponseList: any[] = [];
   termsAccepted = false;
   groupBookingId: number;
+    smartRecommendations: any;
+  specialDiscountPercentage: any;
+  specialDiscountData: any;
+  enteredCoupon: any;
   constructor(
     private token: TokenStorage,
     private ngZone: NgZone,
@@ -434,6 +438,19 @@ export class BookingComponent implements OnInit {
 
   ngOnInit() {
     this.clearFormField(this.booking);
+    const couponCodeValues = sessionStorage.getItem('selectedPromoData');
+
+if (couponCodeValues) {
+  const parsed = JSON.parse(couponCodeValues); // convert to object
+  this.specialDiscountData = JSON.parse(couponCodeValues);
+    console.log("this.privatePromotionData", this.specialDiscountData);
+if (parsed.couponCode) {
+  this.enteredCoupon = parsed.couponCode;
+}
+if (parsed.discountPercentage) {
+      this.specialDiscountPercentage = parsed.discountPercentage;
+    }
+}
        const bookingSummaryStr = sessionStorage.getItem('bookingSummaryDetails');
     const bookingSummary = bookingSummaryStr
       ? JSON.parse(bookingSummaryStr)
@@ -2805,26 +2822,7 @@ if (bookingSummaryStr) {
       ? JSON.parse(bookingSummaryStr)
       : null;
 
-    if (this.showTheSelectedCoupon) {
-      const finalPrice = this.calculateDiscountedPrice(
-        this.storedActualNetAmount,
-        this.selectedCouponList.discountPercentage
-      );
-      this.booking.netAmount = finalPrice;
-      this.booking.gstAmount =
-        (this.booking.netAmount * this.booking.taxPercentage) / 100;
-      this.booking.discountPercentage =
-        this.selectedCouponList.discountPercentage;
-      this.booking.discountAmount =
-        this.storedActualNetAmount - this.appliedCoupon;
-      this.booking.beforeTaxAmount = this.storedActualNetAmount;
-      this.booking.taxAmount =
-        (this.booking.netAmount * this.booking.taxPercentage) / 100;
-      this.booking.couponCode = this.selectedCouponList.couponCode;
-      this.booking.promotionName = this.selectedCouponList.name;
-    } else {
-      this.booking.discountPercentage = 0;
-    }
+
     console.log('Coupon Applied Data is  PayLater==========>', this.booking);
     this.loadingOne = true;
     this.payment.paymentMode = 'Cash';
@@ -3031,7 +3029,6 @@ if (bookingSummaryStr) {
               ' Code: ' +
               response.body.failureMessage;
             this.showDanger(this.contentDialog);
-
             this.changeDetectorRefs.detectChanges();
           } else {
             this.paymentLoader = false;
@@ -3199,7 +3196,6 @@ if (bookingSummaryStr) {
 
   createBooking(plan: any, bookingSummary: any, callback?: () => void) {
     const booking: any = {};
-
     booking.roomRatePlanName = plan.planCodeName;
     booking.roomName = plan.roomName;
     booking.roomType = plan.roomName;
@@ -3226,7 +3222,7 @@ if (bookingSummaryStr) {
     booking.discountPercentage = 0;
     booking.discountAmount = 0;
     booking.extraChildCharge = plan.extraPersonChildCountAmount || 0;
-    booking.extraPersonCharge = plan.extraPersonCharge || 0;
+    booking.extraPersonCharge = plan.extraPersonAdultCountAmount || 0;
     booking.roomTariffBeforeDiscount = plan.actualRoomPrice;
     booking.totalAmount = plan.price + plan.taxPercentageperroom;
     booking.bookingAmount = booking.totalAmount;
@@ -3261,8 +3257,23 @@ if (bookingSummaryStr) {
         (item) =>
           item.name === 'CGST' || item.name === 'SGST' || item.name === 'GST'
       );
-    booking.taxPercentage = plan.taxpercentage;
 
+    booking.taxPercentage = plan.taxpercentage;
+        if (this.specialDiscountData) {
+      const finalPrice = (plan.price) ;
+      booking.netAmount = finalPrice;
+      booking.gstAmount = ((finalPrice - (plan.price * this.specialDiscountData?.discountPercentage)/100 ) * plan.taxpercentage) /100;
+      booking.discountPercentage = this.specialDiscountData.discountPercentage;
+      booking.discountAmount = ((plan.price * this.specialDiscountData?.discountPercentage)/100);
+      booking.beforeTaxAmount = plan.price;
+      booking.taxAmount = ((finalPrice - (plan.price * this.specialDiscountData?.discountPercentage)/100 ) * plan.taxpercentage) /100;
+      booking.couponCode = this.specialDiscountData.couponCode;
+      booking.promotionName = this.specialDiscountData.name;
+      booking.payableAmount =  (plan.price - (plan.price * this.specialDiscountData?.discountPercentage)/100) + ((((plan.price)- (plan.price * this.specialDiscountData?.discountPercentage)/100 ) * plan.taxpercentage) /100);
+      booking.totalAmount = (plan.price - (plan.price * this.specialDiscountData?.discountPercentage)/100) + ((((plan.price)- (plan.price * this.specialDiscountData?.discountPercentage)/100 ) * plan.taxpercentage) /100);
+    } else {
+      this.booking.discountPercentage = 0;
+    }
     Logger.log('createBooking ', JSON.stringify(booking));
 
     this.paymentLoader = true;

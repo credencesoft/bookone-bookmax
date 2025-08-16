@@ -795,7 +795,7 @@
               >
                 <div class="line-height-27px d-flex justify-content-between">
                   <div class="font-weight-600">
-                    {{ plan.roomName }}
+                    {{ plan.roomName }} &nbsp;&nbsp; <span *ngIf="specialDiscountData" class="badge badge-success badge-successTwo px-2 py-1 mr-2"> <img src=" assets/images/coupon-image-change.svg" alt="" /> &nbsp; Coupon Applied!</span>
                   </div>
                   <div class="nights">
                     {{ plan.selectedRoomnumber }} Rooms(s)
@@ -813,20 +813,42 @@
 
                   <div>₹ {{plan.extraPersonAdultCountAmount + plan.extraPersonChildCountAmount}} </div>
                 </div>
-                <div class="d-flex justify-content-between line-height-27px">
+                <div class="d-flex justify-content-between line-height-27px" *ngIf="this.specialDiscountData?.discountPercentage">
+                  <div class="color-graying">Discount ({{this.specialDiscountData?.discountPercentage}})%</div>
+
+                  <div>₹ {{(plan.price * this.specialDiscountData?.discountPercentage)/100}} </div>
+                </div>
+                <div *ngIf="this.specialDiscountData?.discountPercentage" class="d-flex justify-content-between line-height-27px">
+                  <div class="color-graying">Tax & Services</div>
+
+                  <div>
+                    ₹ {{ (((plan.price)- (plan.price * this.specialDiscountData?.discountPercentage)/100 ) * plan.taxpercentage) /100  | number : "1.2-2" }}
+                  </div>
+                </div>
+                <div *ngIf="!this.specialDiscountData?.discountPercentage" class="d-flex justify-content-between line-height-27px">
                   <div class="color-graying">Tax & Services</div>
 
                   <div>
                     ₹ {{ plan.taxPercentageperroom | number : "1.2-2" }}
                   </div>
                 </div>
-                <div class="d-flex justify-content-between line-height-27px">
+                <div *ngIf="!this.specialDiscountData?.discountPercentage" class="d-flex justify-content-between line-height-27px">
                   <div class="color-graying font-weight-600">Total</div>
 
                   <div class="font-weight-600">
                     ₹
                     {{
                       plan.price + plan.taxPercentageperroom | number : "1.2-2"
+                    }}
+                  </div>
+                </div>
+                <div *ngIf="this.specialDiscountData?.discountPercentage" class="d-flex justify-content-between line-height-27px">
+                  <div class="color-graying font-weight-600">Total</div>
+
+                  <div class="font-weight-600">
+                    ₹
+                    {{
+                      (plan.price - (plan.price * this.specialDiscountData?.discountPercentage)/100) + ((((plan.price)- (plan.price * this.specialDiscountData?.discountPercentage)/100 ) * plan.taxpercentage) /100)| number : "1.2-2"
                     }}
                   </div>
                 </div>

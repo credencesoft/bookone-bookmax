@@ -18,7 +18,10 @@ export class PaylaterConfirmComponent {
   promocodeListChip: any[] = []; // Used for handled to get the promo list and stored in this variable.
   textToCopy: string = 'This is some text to copy';
   textToCopyOne: string = 'This is some text to copy';
-
+  smartRecommendations: any;
+  specialDiscountPercentage: any;
+  specialDiscountData: any;
+  smartLoading: boolean = true;
   savedServices: any;
   taxPercentage: number;
   currency: any;
@@ -53,6 +56,16 @@ export class PaylaterConfirmComponent {
     this.propertyDetails = this.token.getProperty();
     this.bookingone = this.token.getBookingData();
     this.booking = this.token.getBookingDataObj();
+    const couponCodeValues = sessionStorage.getItem('selectedPromoData');
+
+      if (couponCodeValues) {
+        const parsed = JSON.parse(couponCodeValues); // convert to object
+        this.specialDiscountData = JSON.parse(couponCodeValues);
+          console.log("this.privatePromotionData", this.specialDiscountData);
+      if (parsed.discountPercentage) {
+            this.specialDiscountPercentage = parsed.discountPercentage;
+          }
+      }
     if (this.bookingone.taxDetails?.length > 0) {
       this.bookingone.taxDetails.forEach((element) => {
         if (element.name === 'GST') {

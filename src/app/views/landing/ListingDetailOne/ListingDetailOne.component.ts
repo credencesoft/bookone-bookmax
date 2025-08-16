@@ -51,7 +51,7 @@ import { ScrollBar } from '@ng-bootstrap/ng-bootstrap/util/scrollbar';
 import { Observable } from 'rxjs';
 // import { forEach } from 'cypress/types/lodash';
 import { PropertyServiceDTO } from 'src/app/model/PropertyServices';
-import { HotelBookingService } from 'src/services/hotel-booking.service';
+import { HotelBookingService, RecommendationPayload } from 'src/services/hotel-booking.service';
 import { ListingService } from 'src/services/listing.service';
 import { ReviewService } from 'src/services/review.service';
 import { BlogPostService } from 'src/services/blog-post.service';
@@ -174,6 +174,10 @@ export class ListingDetailOneComponent implements OnInit {
 showBookingSummary: boolean = false;
   soldOutRooms: any;
   paramsroomId: any;
+  smartRecommendations: any;
+  specialDiscountPercentage: any;
+  specialDiscountData: any;
+  smartLoading: boolean = true;
   toggleListingDetails() {
     this.showListingDetails = !this.showListingDetails;
   }
@@ -1212,8 +1216,23 @@ guestDataArray: Array<{
   }
 
   ngOnInit() {
-    localStorage.removeItem('selectedPromoData');
     localStorage.removeItem('selectPromo');
+
+const couponCodeValues = sessionStorage.getItem('selectedPromoData');
+
+if (couponCodeValues) {
+  const parsed = JSON.parse(couponCodeValues); // convert to object
+  this.specialDiscountData = JSON.parse(couponCodeValues);
+    console.log("this.privatePromotionData", this.specialDiscountData);
+if (parsed.couponCode) {
+  this.enteredCoupon = parsed.couponCode;
+  this.validCouponCode = parsed.couponCode;
+}
+if (parsed.discountPercentage) {
+      this.specialDiscountPercentage = parsed.discountPercentage;
+    }
+}
+
     this.restoreGuestSelectionsFromSummary();
 const storedBooking = sessionStorage.getItem('bookingSummaryDetails');
 if (storedBooking) {
@@ -2169,6 +2188,37 @@ resetLastChangedAge(planCode: string) {
 
 
 }
+onSelectPlanFromSmartCard(plan: any): void {
+  const planCode = plan.planCode;
+
+  // find the rate from availableRooms
+  const rate = this.getRateByPlanCodeSmartCard(planCode);
+  if (!rate) {
+    console.warn('No matching rate found for planCode:', planCode);
+    return;
+  }
+
+  // 1. Assign default selection
+  this.selectedRoomsByPlan[planCode] = 1;
+  this.selectedGuestsByPlan[planCode] = {
+    adults: 2,
+    children: 0,
+  };
+
+  // 2. Trigger plan selection with rate
+  this.onPlanSelect(planCode, rate);
+  this.isPanelOpen = false;
+
+  // 3. Scroll to the plan card — even if it's already in view
+  setTimeout(() => {
+    const el = document.getElementById('plan-' + planCode);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      el.classList.add('scroll-highlight');
+      setTimeout(() => el.classList.remove('scroll-highlight'), 3000);
+    }
+  }, 100);
+}
 
 
 onSelectPlanFromPopup(plan: any): void {
@@ -2207,6 +2257,21 @@ getRateByPlanCode(planCode: string) {
   }
   return null;
 }
+
+getRateByPlanCodeSmartCard(planCode: string) {
+  if (!this.availableRooms) return null;
+
+  for (const room of this.availableRooms) {
+    for (const rate of room?.ratesAndAvailabilityDtos || []) {
+      const plan = rate.roomRatePlans.find(p => p.code === planCode);
+      if (plan) {
+        return rate;
+      }
+    }
+  }
+  return null;
+}
+
 
 //   removePlan(index: number): void {
 //   if (index > -1) {
@@ -3954,6 +4019,7 @@ console.log("product",product)
 
     return false;
   }
+
   getReview(id) {
     this.loader = true;
     this.listingService.getAllReview(id).subscribe(
@@ -4489,7 +4555,27 @@ onBookNow() {
   const selectedAddOns = this.propertyServiceListDataOne
     .filter(item => this.selectedFacilityNames.includes(item.name));
 
-  const bookingData = {
+    if(this.specialDiscountData){
+        const bookingData = {
+    fromDate: this.booking.fromDate,
+    toDate: this.booking.toDate,
+    totalAdults: this.totalAdults,
+    totalChildren: this.totalChildren,
+    totalNights: this.DiffDate,
+    selectedPlansSummary: this.selectedPlansSummary,
+    propertyServiceListDataOne: selectedAddOns, // ✅ only selected items
+    totalPlanPrice: this.getTotalPlanPrice(),
+    totaltaxfacilityAmount: this.getTotalTaxFacility(),
+    totalAddOnsPrice: this.getTotalAfterTaxAmountFacility() + this.getTotalTaxFacility(),
+    totalTax: this.getTotalTaxPrice(),
+    totalAmount:
+      (this.getTotalPlanPrice() +
+      this.getTotalAfterTaxAmountFacility() +
+      this.getTotalTaxPrice()) - ((this.getTotalPlanPrice() * this.specialDiscountPercentage)/100),
+  };
+      sessionStorage.setItem('bookingSummaryDetails', JSON.stringify(bookingData));
+    } else {
+        const bookingData = {
     fromDate: this.booking.fromDate,
     toDate: this.booking.toDate,
     totalAdults: this.totalAdults,
@@ -4506,8 +4592,11 @@ onBookNow() {
       this.getTotalAfterTaxAmountFacility() +
       this.getTotalTaxPrice(),
   };
+    sessionStorage.setItem('bookingSummaryDetails', JSON.stringify(bookingData));
+    }
 
-  sessionStorage.setItem('bookingSummaryDetails', JSON.stringify(bookingData));
+
+
   this.router.navigate(['/booking']);
 }
   opendate() {
@@ -4843,6 +4932,7 @@ onBookNow() {
   }
 
   checkingAvailability() {
+    this.smartLoading = true;
     if (this.activeForGoogleHotelCenter === true) {
       this.showDiv = false;
     }
@@ -4919,7 +5009,6 @@ onBookNow() {
       .subscribe(
         (response) => {
           this.loaderHotelBooking = false;
-
           this.availableRooms = response.body.roomList;
                     this.availableRooms = this.availableRooms.filter(room =>
           room.ratesAndAvailabilityDtos?.length > 0 &&
@@ -4937,6 +5026,27 @@ onBookNow() {
             (room.ratesAndAvailabilityDtos[0]?.stopSellOTA != null && room.ratesAndAvailabilityDtos[0]?.stopSellOTA !== false)
           );
           this.SubAvailableRooms = response.body.roomList;
+          const queryParams = {
+             noOfChildren: this.children,
+             noOfAdults: this.booking.noOfPersons,
+            checkInDate: this.booking.fromDate,
+            checkOutDate: this.booking.toDate,
+            noOfRooms: this.rooms,
+          };
+
+          const roomList = response.body.roomList;
+
+          this.hotelBookingService.getRecommendations(queryParams, roomList).subscribe({
+            next: (res) => {
+              this.smartLoading = false;
+              this.smartRecommendations = res;
+              console.log('Recommendations:', res);
+            },
+            error: (err) => {
+               this.smartLoading = false;
+              console.error('Error fetching recommendations:', err);
+            }
+          });
 
           // Sort the rooms so that rooms with the "Economy" rate plan come first
           // const sortedRooms = this.availableRooms.sort((a, b) => {
@@ -5285,12 +5395,30 @@ get totalEachPlanPrice(): number {
   }
 
   getTotalTaxPrice(): number {
-    return (
+    if(this.specialDiscountData){
+      return (
+    this.selectedPlansSummary?.reduce((sum, plan) => {
+      const price = plan?.price || 0;
+      const taxPercent = plan?.taxpercentage || 0;
+      let discountedPrice = price;
+      if (this.specialDiscountData?.discountPercentage) {
+        const discountAmount = (price * this.specialDiscountData.discountPercentage) / 100;
+        discountedPrice -= discountAmount;
+      }
+      const taxAmount = (discountedPrice * taxPercent) / 100;
+
+      return sum + taxAmount;
+    }, 0) || 0
+  );
+    } else {
+                return (
       this.selectedPlansSummary?.reduce(
         (sum, plan) => sum + (plan?.taxPercentageperroom || 0),
         0
       ) || 0
     );
+    }
+
   }
 
   getTotalTaxFee(): number {
@@ -5975,12 +6103,25 @@ getAvailableRoomsForGHC(availableRooms: any[]) {
       this.couponApplied = true;
       this.couponSuccessApplied = true;
 
-      localStorage.setItem(
+      sessionStorage.setItem(
         'selectedPromoData',
         JSON.stringify(this.privatePromotionData)
       );
-      localStorage.setItem('selectPromo', 'true');
+      sessionStorage.setItem('selectPromo', 'true');
+      const couponCodeValues = sessionStorage.getItem('selectedPromoData');
 
+      if (couponCodeValues) {
+        const parsed = JSON.parse(couponCodeValues); // convert to object
+        this.specialDiscountData = JSON.parse(couponCodeValues);
+          console.log("this.privatePromotionData", this.specialDiscountData);
+      if (parsed.couponCode) {
+        this.enteredCoupon = parsed.couponCode;
+        this.validCouponCode = parsed.couponCode;
+      }
+      if (parsed.discountPercentage) {
+            this.specialDiscountPercentage = parsed.discountPercentage;
+          }
+      }
       // Optional: delay scroll and close
       setTimeout(() => {
         this.isPopupOpen = false;
