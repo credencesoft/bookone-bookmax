@@ -1,6 +1,7 @@
-import { HttpClient, HttpHeaders } from "@angular/common/http";
+import { HttpClient, HttpHeaders, HttpParams } from "@angular/common/http";
 import {  Injectable } from "@angular/core";
-import { API_URL_BOOKONE, API_URL_IN, API_URL_IO, API_URL_NZ, API_URL_PROMOTION, APP_ID } from "src/app/app.component";
+import { Observable } from "rxjs";
+import { API_URL_BOOKONE, API_URL_IN, API_URL_IO, API_URL_NZ, API_URL_PROMOTION, APP_ID,API_URL_RECOMMEND } from "src/app/app.component";
 import { MessageDto } from "src/app/model/MessageDto";
 import { PropertyServiceDTO } from "src/app/model/PropertyServices";
 import { Booking } from "src/app/model/booking";
@@ -14,10 +15,18 @@ import { WhatsappDto } from "src/app/model/whatsappDto";
 import { environment } from "src/environments/environment";
 import { TokenStorage } from "src/token.storage";
 
-
+export interface RecommendationPayload {
+    noOfChildren: number;
+    noOfAdults: number;
+    noOfRooms: number;
+    checkInDate: string;
+    checkOutDate: string;
+    roomList: Room[];
+}
 @Injectable({
   providedIn: 'root',
 })
+
 export class HotelBookingService {
   API_URL: string;
   apiUrlOne: string;
@@ -52,6 +61,24 @@ export class HotelBookingService {
       { headers: headers }
     );
   }
+  getRecommendations(queryParams: {
+    noOfChildren: number;
+    noOfAdults: number;
+    noOfRooms: number;
+    checkInDate: string;
+    checkOutDate: string;
+  }, roomList: Room[]): Observable<any> {
+    const params = new HttpParams()
+      .set('noOfChildren', queryParams.noOfChildren)
+      .set('noOfAdults', queryParams.noOfAdults)
+      .set('noOfRooms', queryParams.noOfRooms)
+      .set('checkInDate', queryParams.checkInDate)
+      .set('checkOutDate', queryParams.checkOutDate);
+
+    return this.http.post(API_URL_RECOMMEND + '/api/recommend', { roomList }, { params });
+  }
+
+
   send(message: MessageDto) {
     this.setApi();
     return this.http.post<MessageDto[]>(
