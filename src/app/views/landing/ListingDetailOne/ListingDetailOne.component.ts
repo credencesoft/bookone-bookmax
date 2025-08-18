@@ -174,10 +174,11 @@ export class ListingDetailOneComponent implements OnInit {
 showBookingSummary: boolean = false;
   soldOutRooms: any;
   paramsroomId: any;
-  smartRecommendations: any;
   specialDiscountPercentage: any;
   specialDiscountData: any;
   smartLoading: boolean = true;
+  categories: { key: string, label: string }[] = [];
+currentPage = 0; // page index
   toggleListingDetails() {
     this.showListingDetails = !this.showListingDetails;
   }
@@ -884,6 +885,15 @@ guestDataArray: Array<{
   childAges: number[];
   roomCount: number;
 }> = [];
+  smartRecommendations: any = {
+    bestFitOptions: [],
+    luxuryOptions: [],
+    comfortOptions: [],
+    budgetOptions: []
+  };
+
+  pageIndex = 0;   // current "page"
+  pageSize = 2;    // show 2 at a time
 
   constructor(
     private listingService: ListingService,
@@ -1220,6 +1230,7 @@ guestDataArray: Array<{
 
 const couponCodeValues = sessionStorage.getItem('selectedPromoData');
 
+
 if (couponCodeValues) {
   const parsed = JSON.parse(couponCodeValues); // convert to object
   this.specialDiscountData = JSON.parse(couponCodeValues);
@@ -1390,6 +1401,26 @@ if (storedBooking) {
       this.adults + this.additionalRooms.reduce((sum, r) => sum + r.adults, 0)
     );
   }
+  nextPage() {
+  if (this.currentPage < this.totalPages - 1) {
+    this.currentPage++;
+  }
+}
+prevPage() {
+  if (this.currentPage > 0) {
+    this.currentPage--;
+  }
+}
+
+get totalPages() {
+  // 2 categories per page
+  return Math.ceil(this.categories.length / 2);
+}
+
+get currentCategories() {
+  const start = this.currentPage * 2;
+  return this.categories.slice(start, start + 2);
+}
 restoreGuestSelectionsFromSummary() {
   // ✅ Restore selectedPlansSummary
   const savedSummary = sessionStorage.getItem('bookingSummaryDetails');
@@ -1624,7 +1655,7 @@ onIncrement(planCode: string, type: 'adults' | 'children', plan: any) {
   if (type === 'adults') {
   const above5Count = this.childAgesByPlan[planCode].filter(a => a !== null && a > 5).length;
   const under2Count = this.childAgesByPlan[planCode].filter(a => a !== null && a <= 2).length;
-    const limit = plan.maximumOccupancy + plan.noOfChildren - (above5Count) * selectedRooms;
+    const limit = (plan.maximumOccupancy + plan.noOfChildren - (above5Count)) * selectedRooms;
     if (this.selectedGuestsByPlan[planCode].adults < limit) {
       this.selectedGuestsByPlan[planCode].adults++;
     } else {
@@ -1634,19 +1665,20 @@ onIncrement(planCode: string, type: 'adults' | 'children', plan: any) {
   }
 
   if (type === 'children') {
-    const limit = plan.maximumOccupancy + plan.noOfChildren - this.selectedGuestsByPlan[planCode].adults * selectedRooms;
+    const limit = ((plan.maximumOccupancy + plan.noOfChildren) - this.selectedGuestsByPlan[planCode].adults) * selectedRooms;
     const below2yearslimit = 2 * selectedRooms;
+    const under2Count = this.childAgesByPlan[planCode].filter(a => a !== null && a <= 2).length;
    const above5Count = this.childAgesByPlan[planCode].filter(a => a !== null && a > 5).length;
-  const under2Count = this.childAgesByPlan[planCode].filter(a => a !== null && a <= 2).length;
+    if (under2Count > below2yearslimit) {
+    this.showTemporaryError(planCode, `Only ${below2yearslimit} children under 5 years allowed.`);
+    return;
+  }
     if (above5Count < limit) {
   if (this.childAgesByPlan[planCode].some(a => a === null)) {
     this.showTemporaryError(planCode, 'Please select age for all existing children first.');
     return;
   }
-  if (under2Count > below2yearslimit) {
-    this.showTemporaryError(planCode, `Only ${below2yearslimit} children under 5 years allowed.`);
-    return;
-  }
+
   this.selectedGuestsByPlan[planCode].children++;
   this.childAgesByPlan[planCode].push(null);
     } else {
@@ -2190,7 +2222,6 @@ resetLastChangedAge(planCode: string) {
 }
 onSelectPlanFromSmartCard(plan: any): void {
   const planCode = plan.planCode;
-
   // find the rate from availableRooms
   const rate = this.getRateByPlanCodeSmartCard(planCode);
   if (!rate) {
@@ -2199,9 +2230,9 @@ onSelectPlanFromSmartCard(plan: any): void {
   }
 
   // 1. Assign default selection
-  this.selectedRoomsByPlan[planCode] = 1;
+  this.selectedRoomsByPlan[planCode] = this.rooms;
   this.selectedGuestsByPlan[planCode] = {
-    adults: 2,
+    adults: this.booking.noOfPersons,
     children: 0,
   };
 
@@ -4478,6 +4509,12 @@ console.log("product",product)
       element.scrollIntoView({ behavior: 'smooth' });
     }
   }
+    scrollToSmartDash() {
+    const element = document.getElementById('smartOne');
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  }
 adjustDates() {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
@@ -5041,6 +5078,20 @@ onBookNow() {
               this.smartLoading = false;
               this.smartRecommendations = res;
               console.log('Recommendations:', res);
+                this.categories = [];
+
+                if (this.smartRecommendations?.bestFitOptions?.length) {
+                  this.categories.push({ key: 'bestFitOptions', label: 'Best-Fit' });
+                }
+                if (this.smartRecommendations?.luxuryOptions?.length) {
+                  this.categories.push({ key: 'luxuryOptions', label: 'Luxury' });
+                }
+                if (this.smartRecommendations?.comfortOptions?.length) {
+                  this.categories.push({ key: 'comfortOptions', label: 'Comfort' });
+                }
+                if (this.smartRecommendations?.budgetOptions?.length) {
+                  this.categories.push({ key: 'budgetOptions', label: 'Budget' });
+                }
             },
             error: (err) => {
                this.smartLoading = false;

@@ -538,7 +538,7 @@
                 <div class="special-sectionOne">
                   <div>
                     <input
-                    class="input-coupon"
+                      class="input-coupon"
                       style="
                         width: 100%;
                         border: none;
@@ -562,9 +562,17 @@
                     />
                   </div>
                   <div class="applycoupon">
-                    <button class="applycoupon-button"
-                     [disabled]="!enteredCoupon || enteredCoupon.trim().toUpperCase() !== validCouponCode.toUpperCase()"
-                    (click)="onYesClick()">Apply Coupon</button>
+                    <button
+                      class="applycoupon-button"
+                      [disabled]="
+                        !enteredCoupon ||
+                        enteredCoupon.trim().toUpperCase() !==
+                          validCouponCode.toUpperCase()
+                      "
+                      (click)="onYesClick()"
+                    >
+                      Apply Coupon
+                    </button>
                   </div>
                 </div>
               </div>
@@ -970,12 +978,12 @@
       </div>
     </div>
   </div>
-  <div class="checkavailability-div">
+  <div class="checkavailability-div" id="smartOne">
     <button
       class="checkavaialabilyy-btn"
       (click)="
         checkingAvailability();
-        scrollToAccommodationDash();
+        scrollToSmartDash();
         clicked();
         landingTaxAmount();
         checkavailabilityCall()
@@ -1033,7 +1041,7 @@
   </p-carousel>
 </div>
 
-<div class="container-div margin-bottom-40px">
+<div class="container-div margin-bottom-40px" >
   <div class="website-web-vision">
     <div class="row margin-top-40px">
       <div class="col-12 col-lg-7">
@@ -1096,13 +1104,15 @@
           </div>
           <div>
             <div class="smart-recommend">
-              Smart Recommendations &nbsp;
-              <span class="coming-soon">Coming Soon</span>
+              Smart Recommendations
             </div>
-            <div class="smart-recommend-1">
-              Not sure what to book? These room options are the best fit for
-              your stay – selected just for you.
+            <div class="smart-recommend-1" *ngIf="smartLoading">
+              Please wait we are fetching the best options for you!
             </div>
+              <div class="smart-recommend-1" *ngIf="!smartLoading">
+              {{smartRecommendations.urgencyMessage}}
+            </div>
+
           </div>
         </div>
         <ng-container *ngIf="smartLoading">
@@ -1124,153 +1134,97 @@
             </div>
           </div>
         </ng-container>
-        <!-- <ng-container
-          *ngIf="this.activeForGoogleHotelCenter == true && !isLoading"
-        >
-          <div
-            class="card smart-recommend-card"
-            *ngFor="let room of sortedRooms; let i = index"
-            [ngStyle]="{
-              'background-color': i % 2 === 0 ? '#f8f8ff' : '#f1fff4'
-            }"
-          >
-            <div class="d-flex justify-content-center" style="gap: 8px">
-              <div class="width-49 left-shift">
-                <h5 class="recommend-font">
-                  {{ room.name }}
-                </h5>
-                <div class="line-height">
-                  {{ room.roomsAvailable }} room(s) available
-                </div>
-              </div>
-              <div style="border-right: 1px solid #d9d9d9"></div>
-              <div class="width-49 left-shift">
-                <div class="text-sm">Price :</div>
-                <div class="font-small line-height35">
-                  <b class="pricing-recommd">₹ {{ room.roomOnlyPrice }}</b
-                  >&nbsp; per night + taxes
-                </div>
-                <div class="font-small">
-                  Occupancy :
-                  <span class="occupancy-data"
-                    >{{ room.minimumOccupancy }} Adults</span
-                  >
-                </div>
-              </div>
-            </div>
-          </div>
-        </ng-container>
 
-        <ng-container
-          *ngIf="!isLoading && this.activeForGoogleHotelCenter == false"
-        >
-          <div
-            class="card smart-recommend-card"
-            *ngFor="let room of sortedRoomsOne; let i = index"
-            [ngStyle]="{
-              'background-color': i % 2 === 0 ? '#f8f8ff' : '#f1fff4'
-            }"
-          >
-            <div class="d-flex justify-content-center" style="gap: 8px">
-              <div class="width-49 left-shift">
-                <h5 class="recommend-font">
-                  {{ room.name }}
-                </h5>
-                <div class="line-height">
-                  {{ room.roomsAvailable }} room(s) available
-                </div>
-              </div>
-              <div style="border-right: 1px solid #d9d9d9"></div>
-              <div class="width-49 left-shift">
-                <div class="text-sm">Price :</div>
-                <div class="font-small line-height35">
-                  <b class="pricing-recommd">₹ {{ room.roomOnlyPrice }}</b
-                  >&nbsp; per night + taxes
-                </div>
-                <div class="font-small">
-                  Occupancy :
-                  <span class="occupancy-data"
-                    >{{ room.minimumOccupancy }} Adults</span
-                  >
-                </div>
-              </div>
-            </div>
-          </div>
-        </ng-container> -->
-
-        <div class="card smart-recommend-card" *ngIf="smartRecommendations?.bestFitOptions?.length">
-          <ng-container *ngFor="let room of smartRecommendations?.bestFitOptions">
-            <ng-container *ngFor="let plan of room.plans">
+<ng-container *ngIf="!smartLoading">
+  <div *ngFor="let cat of currentCategories">
+  <div
+    class="card smart-recommend-card"
+    [ngClass]="'smart-recommend-card-' + cat.key.replace('Options', '')"
+  >
+    <ng-container
+      *ngFor="let room of smartRecommendations[cat.key]; let last = last"
+    >
+      <ng-container *ngIf="last">
+        <ng-container *ngFor="let plan of room.plans">
               <div class="d-flex justify-content-center" style="gap: 8px">
-            <div class="width-49 left-shift" >
-              <h5 class="recommend-font">
-                <img src=" assets/images/best-fit.svg" alt="" />&nbsp;
-                Best Fit Options
-              </h5>
-              <div class="line-height pricing-best-fit">
-               &nbsp; &nbsp;  ₹ {{plan?.totalPrice}}
-              </div>
-              <div class="line-height">
-               &nbsp; &nbsp; &nbsp; &nbsp; Total for {{DiffDate}} nights
-              </div>
-              <div class="line-height">&nbsp; &nbsp; &nbsp; &nbsp; <img src=" assets/images/best-fit-star.svg" alt=""  />&nbsp;  <small>Ideal for {{plan.idealFor.join(', ')}}</small></div>
-            </div>
-            <div style="border-right: 1px solid #d9d9d9"></div>
-            <div class="width-49 left-shift" >
-            <div class="margin-bottom-10px"> &nbsp; &nbsp; &nbsp;<img src=" assets/images/best-fit-bed.svg" alt=""  />&nbsp;  <small>{{room?.availableCount}} room(s) left</small></div>
-                      <div
-
-          class="room-box-best-fit d-block justify-content-between mb-4"
-        >
-          <div class="room-details">
-            <div class="room-title">{{room?.roomName }}</div>
-              <ng-container >
-                <div>
-                  ₹{{ plan.pricePerNight }} per night
+                <div class="width-49 left-shift">
+                  <h5 class="recommend-font" *ngIf="cat.key === 'bestFitOptions'">
+                    <img src=" assets/images/best-fit.svg" alt="" />&nbsp; Best
+                    Fit Options
+                  </h5>
+                  <h5 class="recommend-font" *ngIf="cat.key === 'luxuryOptions'">
+                    <img src=" assets/images/luxury-crown.svg" alt="" />&nbsp;
+                    Luxury Combo
+                  </h5>
+                  <h5 class="recommend-font" *ngIf="cat.key === 'comfortOptions'">
+                      <img src="assets/images/sofa.svg" alt="" />&nbsp; Comfort
+                      Combo
+                    </h5>
+                    <h5 class="recommend-font" *ngIf="cat.key === 'budgetOptions'">
+                    <img src=" assets/images/budget.svg" alt="" />&nbsp; Budget
+                    Combo
+                  </h5>
+                  <div class="line-height pricing-best-fit">
+                    &nbsp; &nbsp; ₹ {{ plan?.totalPrice }}
+                  </div>
+                  <div class="line-height">
+                    &nbsp; &nbsp; &nbsp; &nbsp; Total for {{ DiffDate }} nights
+                  </div>
+                  <div class="line-height">
+                    &nbsp; &nbsp; &nbsp; &nbsp;
+                    <img src=" assets/images/combo-star-one.svg" alt="" />&nbsp;
+                    <small>Ideal for {{ plan.idealFor.join(", ") }}</small>
+                  </div>
                 </div>
-              </ng-container>
-          </div>
-
-        </div>
-                  <div style="display: flex; justify-content: end; margin-top: 10px; margin-bottom: 10px;">
-            <button class="select-mannual">Select Combo→</button>
-          </div>
-            </div>
-          </div>
+                <div style="border-right: 1px solid #d9d9d9"></div>
+                <div class="width-49 left-shift">
+                  <div class="margin-bottom-10px">
+                    &nbsp; &nbsp; &nbsp;<img
+                      src=" assets/images/combo-ded-one.svg"
+                      alt=""
+                    />&nbsp;
+                    <small>{{ room?.availableCount }} room(s) left</small>
+                  </div>
+                  <div
+                    class="room-box-best-fit d-block justify-content-between mb-4"
+                  >
+                    <div class="room-details">
+                      <div class="room-title">{{ room?.roomName }}</div>
+                      <ng-container>
+                        <div>₹{{ plan.pricePerNight }} per night</div>
+                      </ng-container>
+                    </div>
+                  </div>
+                  <div
+                    style="
+                      display: flex;
+                      justify-content: end;
+                      margin-top: 10px;
+                      margin-bottom: 10px;
+                    "
+                  >
+                    <button
+                      (click)="onSelectPlanFromSmartCard(plan)"
+                      class="select-mannual"
+                    >
+                      Select Combo→
+                    </button>
+                  </div>
+                </div>
+              </div>
             </ng-container>
+      </ng-container>
+    </ng-container>
+  </div>
+</div>
+<!-- Pagination Controls -->
+<div class="d-flex justify-content-end mt-3" style="gap: 10px">
+  <button class="next-carasoul" [disabled]="currentPage === 0" (click)="prevPage()"> <i class="fa-solid fa-arrow-left"></i></button>
+  <button class="next-carasoul" [disabled]="currentPage >= totalPages - 1" (click)="nextPage()"><i class="fa-solid fa-arrow-right"></i></button>
+</div>
+</ng-container>
 
-          </ng-container>
 
-        </div>
-
-        <div class="card smart-recommend-card-two">
-          <div class="d-flex justify-content-center" style="gap: 8px">
-            <div class="width-49 left-shift">
-              <h5 class="recommend-font">
-                <img
-                  src=" assets/images/budget.svg"
-                  alt=""
-                  width="35px"
-                />&nbsp; Comfort Combo
-              </h5>
-              <div class="line-height">
-                1&nbsp;&nbsp;&nbsp;&nbsp; x&nbsp;&nbsp;&nbsp;&nbsp; Family Suite
-              </div>
-              <div class="line-height">
-                1&nbsp;&nbsp;&nbsp;&nbsp; x&nbsp;&nbsp;&nbsp;&nbsp; Deluxe Room
-              </div>
-            </div>
-            <div style="border-right: 1px solid #d9d9d9"></div>
-            <div class="width-49 left-shift">
-              <div class="text-sm">Price :</div>
-              <div class="font-small line-height35">
-                <b class="pricing-recommd">₹ 5,093</b>&nbsp; per night + taxes
-              </div>
-              <div class="font-small">Occupancy :</div>
-              <div class="occupancy-data">4 Adults + 2 Child(ren)</div>
-            </div>
-          </div>
-        </div>
 
         <div class="d-flex justify-content-end margin-top-20px">
           <button class="select-mannual" (click)="scrollToAccommodationDash()">
@@ -1377,7 +1331,7 @@
       </div>
     </div>
     <div class="d-flex scroll-container">
-      <ng-container *ngIf="isLoading">
+      <ng-container *ngIf="smartLoading">
         <div
           class="card smart-recommend-card skeleton-card"
           style="width: 100%"
@@ -1397,78 +1351,291 @@
           </div>
         </div>
       </ng-container>
-      <ng-container
-        *ngIf="this.activeForGoogleHotelCenter == true && !isLoading"
-      >
-        <div
-          class="card smart-recommend-card"
-          *ngFor="let room of sortedRooms; let i = index"
-          [ngStyle]="{
-            'background-color': i % 2 === 0 ? '#f8f8ff' : '#f1fff4'
-          }"
+  <div
+          class="card smart-recommend-card-best-fit"
+          *ngIf="smartRecommendations?.bestFitOptions?.length"
         >
-          <div class="d-flex justify-content-center" style="gap: 8px">
-            <div class="width-49 left-shift">
-              <h5 class="recommend-font">
-                {{ room.name }}
-              </h5>
-              <div class="line-height">
-                {{ room.roomsAvailable }} room(s) available
+          <ng-container
+            *ngFor="let room of smartRecommendations?.bestFitOptions;
+              let last = last"
+          >
+          <ng-container *ngIf="last">
+            <ng-container *ngFor="let plan of room.plans">
+              <div class="d-flex justify-content-center" style="gap: 8px">
+                <div class="width-49 left-shift">
+                  <h5 class="recommend-font">
+                    <img src=" assets/images/best-fit.svg" alt="" />&nbsp; Best
+                    Fit Options
+                  </h5>
+                  <div class="line-height pricing-best-fit">
+                    &nbsp; &nbsp; ₹ {{ plan?.totalPrice }}
+                  </div>
+                  <div class="line-height">
+                    &nbsp; &nbsp; &nbsp; &nbsp; Total for {{ DiffDate }} nights
+                  </div>
+                  <div class="line-height">
+                    &nbsp; &nbsp; &nbsp; &nbsp;
+                    <img src=" assets/images/combo-star-one.svg" alt="" />&nbsp;
+                    <small>Ideal for {{ plan.idealFor.join(", ") }}</small>
+                  </div>
+                </div>
+                <div style="border-right: 1px solid #d9d9d9"></div>
+                <div class="width-49 left-shift">
+                  <div class="margin-bottom-10px">
+                    &nbsp; &nbsp; &nbsp;<img
+                      src=" assets/images/combo-ded-one.svg"
+                      alt=""
+                    />&nbsp;
+                    <small>{{ room?.availableCount }} room(s) left</small>
+                  </div>
+                  <div
+                    class="room-box-best-fit d-block justify-content-between mb-4"
+                  >
+                    <div class="room-details">
+                      <div class="room-title">{{ room?.roomName }}</div>
+                      <ng-container>
+                        <div>₹{{ plan.pricePerNight }} per night</div>
+                      </ng-container>
+                    </div>
+                  </div>
+                  <div
+                    style="
+                      display: flex;
+                      justify-content: end;
+                      margin-top: 10px;
+                      margin-bottom: 10px;
+                    "
+                  >
+                    <button
+                      (click)="onSelectPlanFromSmartCard(plan)"
+                      class="select-mannual"
+                    >
+                      Select Combo→
+                    </button>
+                  </div>
+                </div>
               </div>
-            </div>
-            <div style="border-right: 1px solid #d9d9d9"></div>
-            <div class="width-49 left-shift">
-              <div class="text-sm">Price :</div>
-              <div class="font-small line-height35">
-                <b class="pricing-recommd">₹ {{ room.roomOnlyPrice }}</b
-                >&nbsp; per night + taxes
-              </div>
-              <div class="font-small">
-                Occupancy :
-                <span class="occupancy-data"
-                  >{{ room.minimumOccupancy }} Adults</span
-                >
-              </div>
-            </div>
-          </div>
+            </ng-container>
+          </ng-container>
+
+          </ng-container>
         </div>
-      </ng-container>
-      <ng-container
-        *ngIf="!isLoading && this.activeForGoogleHotelCenter == false"
-      >
+
         <div
-          class="card smart-recommend-card"
-          *ngFor="let room of sortedRoomsOne; let i = index"
-          [ngStyle]="{
-            'background-color': i % 2 === 0 ? '#f8f8ff' : '#f1fff4'
-          }"
+          class="card smart-recommend-card-luxury"
+          *ngIf="smartRecommendations?.luxuryOptions?.length"
         >
-          <div class="d-flex justify-content-center" style="gap: 8px">
-            <div class="width-49 left-shift">
-              <h5 class="recommend-font">
-                {{ room.name }}
-              </h5>
-              <div class="line-height">
-                {{ room.roomsAvailable }} room(s) available
+          <ng-container
+            *ngFor="let room of smartRecommendations?.luxuryOptions;
+              let last = last"
+          >
+          <ng-container *ngIf="last">
+              <ng-container *ngFor="let plan of room.plans">
+              <div class="d-flex justify-content-center" style="gap: 8px">
+                <div class="width-49 left-shift">
+                  <h5 class="recommend-font">
+                    <img src=" assets/images/luxury-crown.svg" alt="" />&nbsp;
+                    Luxury Combo
+                  </h5>
+                  <div class="line-height pricing-best-fit">
+                    &nbsp; &nbsp; ₹ {{ plan?.totalPrice }}
+                  </div>
+                  <div class="line-height">
+                    &nbsp; &nbsp; &nbsp; &nbsp; Total for {{ DiffDate }} nights
+                  </div>
+                  <div class="line-height">
+                    &nbsp; &nbsp; &nbsp; &nbsp;
+                    <img src=" assets/images/luxury-star.svg" alt="" />&nbsp;
+                    <small>Ideal for {{ plan.idealFor.join(", ") }}</small>
+                  </div>
+                </div>
+                <div style="border-right: 1px solid #d9d9d9"></div>
+                <div class="width-49 left-shift">
+                  <div class="margin-bottom-10px">
+                    &nbsp; &nbsp; &nbsp;<img
+                      src=" assets/images/luxury-bed.svg"
+                      alt=""
+                    />&nbsp;
+                    <small>{{ room?.availableCount }} room(s) left</small>
+                  </div>
+                  <div
+                    class="room-box-best-fit-luxury d-block justify-content-between mb-4"
+                  >
+                    <div class="room-details">
+                      <div class="room-title">{{ room?.roomName }}</div>
+                      <ng-container>
+                        <div>₹{{ plan.pricePerNight }} per night</div>
+                      </ng-container>
+                    </div>
+                  </div>
+                  <div
+                    style="
+                      display: flex;
+                      justify-content: end;
+                      margin-top: 10px;
+                      margin-bottom: 10px;
+                    "
+                  >
+                    <button
+                      (click)="onSelectPlanFromSmartCard(plan)"
+                      class="select-mannual"
+                    >
+                      Select Combo→
+                    </button>
+                  </div>
+                </div>
               </div>
-            </div>
-            <div style="border-right: 1px solid #d9d9d9"></div>
-            <div class="width-49 left-shift">
-              <div class="text-sm">Price :</div>
-              <div class="font-small line-height35">
-                <b class="pricing-recommd">₹ {{ room.roomOnlyPrice }}</b
-                >&nbsp; per night + taxes
-              </div>
-              <div class="font-small">
-                Occupancy :
-                <span class="occupancy-data"
-                  >{{ room.minimumOccupancy }} Adults</span
-                >
-              </div>
-            </div>
-          </div>
+            </ng-container>
+          </ng-container>
+
+          </ng-container>
         </div>
-      </ng-container>
+
+        <div
+          class="card smart-recommend-card-comfort"
+          *ngIf="smartRecommendations?.comfortOptions?.length"
+        >
+          <ng-container
+            *ngFor="
+              let room of smartRecommendations?.comfortOptions;
+              let last = last
+            "
+          >
+            <ng-container *ngIf="last">
+              <ng-container *ngFor="let plan of room.plans">
+                <div class="d-flex justify-content-center" style="gap: 8px">
+                  <div class="width-49 left-shift">
+                    <h5 class="recommend-font">
+                      <img src="assets/images/sofa.svg" alt="" />&nbsp; Comfort
+                      Combo
+                    </h5>
+                    <div class="line-height pricing-best-fit">
+                      &nbsp; &nbsp; ₹ {{ plan?.totalPrice }}
+                    </div>
+                    <div class="line-height">
+                      &nbsp; &nbsp; &nbsp; &nbsp; Total for
+                      {{ DiffDate }} nights
+                    </div>
+                    <div class="line-height">
+                      &nbsp; &nbsp; &nbsp; &nbsp;
+                      <img
+                        src=" assets/images/best-fit-star.svg"
+                        alt=""
+                      />&nbsp;
+                      <small>Ideal for {{ plan.idealFor.join(", ") }}</small>
+                    </div>
+                  </div>
+                  <div style="border-right: 1px solid #d9d9d9"></div>
+                  <div class="width-49 left-shift">
+                    <div class="margin-bottom-10px">
+                      &nbsp; &nbsp; &nbsp;<img
+                        src=" assets/images/best-fit-bed.svg"
+                        alt=""
+                      />&nbsp;
+                      <small>{{ room?.availableCount }} room(s) left</small>
+                    </div>
+                    <div
+                      class="room-box-best-fit-comfort d-block justify-content-between mb-4"
+                    >
+                      <div class="room-details">
+                        <div class="room-title">{{ room?.roomName }}</div>
+                        <ng-container>
+                          <div>₹{{ plan.pricePerNight }} per night</div>
+                        </ng-container>
+                      </div>
+                    </div>
+                    <div
+                      style="
+                        display: flex;
+                        justify-content: end;
+                        margin-top: 10px;
+                        margin-bottom: 10px;
+                      "
+                    >
+                      <button
+                        (click)="onSelectPlanFromSmartCard(plan)"
+                        class="select-mannual"
+                      >
+                        Select Combo→
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </ng-container>
+            </ng-container>
+          </ng-container>
+        </div>
+
+        <div
+          class="card smart-recommend-card-comfort"
+          *ngIf="smartRecommendations?.budgetOptions?.length"
+        >
+          <ng-container *ngFor="let room of smartRecommendations.budgetOptions;
+              let last = last">
+            <ng-container *ngIf="last">
+              <ng-container *ngFor="let plan of room.plans">
+              <div class="d-flex justify-content-center" style="gap: 8px">
+                <div class="width-49 left-shift">
+                  <h5 class="recommend-font">
+                    <img src=" assets/images/budget.svg" alt="" />&nbsp; Budget
+                    Combo
+                  </h5>
+                  <div class="line-height pricing-best-fit">
+                    &nbsp; &nbsp; ₹ {{ plan?.totalPrice }}
+                  </div>
+                  <div class="line-height">
+                    &nbsp; &nbsp; &nbsp; &nbsp; Total for {{ DiffDate }} nights
+                  </div>
+                  <div class="line-height">
+                    &nbsp; &nbsp; &nbsp; &nbsp;
+                    <img
+                      src=" assets/images/budget-combo-star.svg"
+                      alt=""
+                    />&nbsp;
+                    <small>Ideal for {{ plan.idealFor.join(", ") }}</small>
+                  </div>
+                </div>
+                <div style="border-right: 1px solid #d9d9d9"></div>
+                <div class="width-49 left-shift">
+                  <div class="margin-bottom-10px">
+                    &nbsp; &nbsp; &nbsp;<img
+                      src=" assets/images/budget-combo-bed.svg"
+                      alt=""
+                    />&nbsp;
+                    <small>{{ room?.availableCount }} room(s) left</small>
+                  </div>
+                  <div
+                    class="room-box-best-fit-comfort d-block justify-content-between mb-4"
+                  >
+                    <div class="room-details">
+                      <div class="room-title">{{ room?.roomName }}</div>
+                      <ng-container>
+                        <div>₹{{ plan.pricePerNight }} per night</div>
+                      </ng-container>
+                    </div>
+                  </div>
+                  <div
+                    style="
+                      display: flex;
+                      justify-content: end;
+                      margin-top: 10px;
+                      margin-bottom: 10px;
+                    "
+                  >
+                    <button
+                      (click)="onSelectPlanFromSmartCard(plan)"
+                      class="select-mannual"
+                    >
+                      Select Combo→
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </ng-container>
+            </ng-container>
+
+          </ng-container>
+        </div>
     </div>
   </div>
 
@@ -1595,9 +1762,7 @@
       </div>
     </div>
   </div>
-<div class="container my-4">
-
-</div>
+  <div class="container my-4"></div>
 
   <div class="margin-top-40px display-flex">
     <div class="col-12 col-lg-7">
@@ -2240,8 +2405,12 @@
                               </div>
                             </div>
                           </div>
-                          <div class="tooltip-one"><i class="fa-solid fa-circle-info"></i>
-                            <span class="tooltiptext">Additional charges apply after {{plan.minimumOccupancy}} adults.</span>
+                          <div class="tooltip-one">
+                            <i class="fa-solid fa-circle-info"></i>
+                            <span class="tooltiptext"
+                              >Additional charges apply after
+                              {{ plan.minimumOccupancy }} adults.</span
+                            >
                           </div>
                         </div>
                         <div class="d-block">
@@ -2255,9 +2424,7 @@
                                 <i class="fa-solid fa-minus"></i>
                               </div>
                               <div>
-
-                                  {{ getChildCount(plan.code) }}
-
+                                {{ getChildCount(plan.code) }}
                               </div>
                               <div
                                 class="cursor-pointer plus-btn"
@@ -2268,9 +2435,12 @@
                                 <i class="fa-solid fa-plus"></i>
                               </div>
                             </div>
-                            <div class="tooltip-one"><i class="fa-solid fa-circle-info"></i>
-                            <span class="tooltiptext">Maximum Children {{plan.noOfChildren}}.</span>
-                          </div>
+                            <div class="tooltip-one">
+                              <i class="fa-solid fa-circle-info"></i>
+                              <span class="tooltiptext"
+                                >Maximum Children {{ plan.noOfChildren }}.</span
+                              >
+                            </div>
                           </div>
 
                           <!-- Show age selectors for each child -->
@@ -2288,7 +2458,12 @@
                               "
                               class="mt-2"
                             >
-                              <label style="margin-right: 5px; margin-bottom: 0px; margin-top: 2px;"
+                              <label
+                                style="
+                                  margin-right: 5px;
+                                  margin-bottom: 0px;
+                                  margin-top: 2px;
+                                "
                                 >Child {{ i + 1 }} Age:</label
                               >
                               <select
@@ -2296,10 +2471,10 @@
                                 [(ngModel)]="childAgesByPlan[plan.code][i]"
                                 (change)="onChildAgeChange(plan.code, plan)"
                                 [disabled]="
-                                      i === 0 &&
-                                      childAgesByPlan[plan.code][0] !== null &&
-                                      childAgesByPlan[plan.code].length > 1
-                                    "
+                                  i === 0 &&
+                                  childAgesByPlan[plan.code][0] !== null &&
+                                  childAgesByPlan[plan.code].length > 1
+                                "
                               >
                                 <option [ngValue]="null" disabled>0</option>
                                 <option
@@ -2417,8 +2592,16 @@
                             />
                           </div>
                           <div>
-                            <div class="margin-bottom-5px">Adult <span class="tooltip-one"><i class="fa-solid fa-circle-info"></i>
-                            <span class="tooltiptext">Additional charges apply after {{plan.minimumOccupancy}} adults.</span></span></div>
+                            <div class="margin-bottom-5px">
+                              Adult
+                              <span class="tooltip-one"
+                                ><i class="fa-solid fa-circle-info"></i>
+                                <span class="tooltiptext"
+                                  >Additional charges apply after
+                                  {{ plan.minimumOccupancy }} adults.</span
+                                ></span
+                              >
+                            </div>
                             <div class="d-flex increament-bg">
                               <div
                                 class="cursor-pointer minus-btn"
@@ -2441,9 +2624,15 @@
                           </div>
                         </div>
                         <div class="d-block room-number">
-                          <div class="margin-bottom-5px">Child <span class="tooltip-one"><i class="fa-solid fa-circle-info"></i>
-                            <span class="tooltiptext">Maximum Children {{plan.noOfChildren}}.</span>
-                          </span></div>
+                          <div class="margin-bottom-5px">
+                            Child
+                            <span class="tooltip-one"
+                              ><i class="fa-solid fa-circle-info"></i>
+                              <span class="tooltiptext"
+                                >Maximum Children {{ plan.noOfChildren }}.</span
+                              >
+                            </span>
+                          </div>
                           <div class="d-flex increament-bg">
                             <div
                               class="cursor-pointer minus-btn"
@@ -2461,46 +2650,45 @@
                               <i class="fa-solid fa-plus"></i>
                             </div>
                           </div>
-
                         </div>
                       </div>
-                      <div class="d-block" *ngIf="childAgesByPlan[plan.code]?.length">
-                            <div
-                              style="
-                                display: flex;
-                                align-content: center;
-                                justify-content: end;
-                                flex-wrap: wrap;
-                              "
-                              *ngFor="
-                                let age of childAgesByPlan[plan.code];
-                                let i = index
-                              "
-                              class="mt-2"
-                            >
-                              <label style="margin-right: 5px"
-                                >Child {{ i + 1 }} Age:</label
-                              >
-                              <select
-                                class="select-icon"
-                                [(ngModel)]="childAgesByPlan[plan.code][i]"
-                                (change)="onChildAgeChange(plan.code, plan)"
-                                [disabled]="
-                                      i === 0 &&
-                                      childAgesByPlan[plan.code][0] !== null &&
-                                      childAgesByPlan[plan.code].length > 1
-                                    "
-                              >
-                                <option [ngValue]="null" disabled>0</option>
-                                <option
-                                  *ngFor="let a of ageOptions"
-                                  [value]="a"
-                                >
-                                  {{ a }}
-                                </option>
-                              </select>
-                            </div>
-                          </div>
+                      <div
+                        class="d-block"
+                        *ngIf="childAgesByPlan[plan.code]?.length"
+                      >
+                        <div
+                          style="
+                            display: flex;
+                            align-content: center;
+                            justify-content: end;
+                            flex-wrap: wrap;
+                          "
+                          *ngFor="
+                            let age of childAgesByPlan[plan.code];
+                            let i = index
+                          "
+                          class="mt-2"
+                        >
+                          <label style="margin-right: 5px"
+                            >Child {{ i + 1 }} Age:</label
+                          >
+                          <select
+                            class="select-icon"
+                            [(ngModel)]="childAgesByPlan[plan.code][i]"
+                            (change)="onChildAgeChange(plan.code, plan)"
+                            [disabled]="
+                              i === 0 &&
+                              childAgesByPlan[plan.code][0] !== null &&
+                              childAgesByPlan[plan.code].length > 1
+                            "
+                          >
+                            <option [ngValue]="null" disabled>0</option>
+                            <option *ngFor="let a of ageOptions" [value]="a">
+                              {{ a }}
+                            </option>
+                          </select>
+                        </div>
+                      </div>
                       <div
                         class="d-flex justify-content-center margin-top-20px"
                       >
@@ -2808,8 +2996,12 @@
                               </div>
                             </div>
                           </div>
-                          <div class="tooltip-one"><i class="fa-solid fa-circle-info"></i>
-                            <span class="tooltiptext">Additional charges apply after {{plan.minimumOccupancy}} adults.</span>
+                          <div class="tooltip-one">
+                            <i class="fa-solid fa-circle-info"></i>
+                            <span class="tooltiptext"
+                              >Additional charges apply after
+                              {{ plan.minimumOccupancy }} adults.</span
+                            >
                           </div>
                         </div>
                         <div class="d-block">
@@ -2834,9 +3026,12 @@
                                 <i class="fa-solid fa-plus"></i>
                               </div>
                             </div>
-                            <div class="tooltip-one"><i class="fa-solid fa-circle-info"></i>
-                            <span class="tooltiptext">Maximum Children {{plan.noOfChildren}}.</span>
-                          </div>
+                            <div class="tooltip-one">
+                              <i class="fa-solid fa-circle-info"></i>
+                              <span class="tooltiptext"
+                                >Maximum Children {{ plan.noOfChildren }}.</span
+                              >
+                            </div>
                           </div>
 
                           <!-- Show age selectors for each child -->
@@ -2862,10 +3057,10 @@
                                 [(ngModel)]="childAgesByPlan[plan.code][i]"
                                 (change)="onChildAgeChange(plan.code, plan)"
                                 [disabled]="
-                                      i === 0 &&
-                                      childAgesByPlan[plan.code][0] !== null &&
-                                      childAgesByPlan[plan.code].length > 1
-                                    "
+                                  i === 0 &&
+                                  childAgesByPlan[plan.code][0] !== null &&
+                                  childAgesByPlan[plan.code].length > 1
+                                "
                               >
                                 <option [ngValue]="null" disabled>0</option>
                                 <option
@@ -2983,8 +3178,16 @@
                             />
                           </div>
                           <div>
-                            <div class="margin-bottom-5px">Adult <span class="tooltip-one"><i class="fa-solid fa-circle-info"></i>
-                            <span class="tooltiptext">Additional charges apply after {{plan.minimumOccupancy}} adults.</span></span></div>
+                            <div class="margin-bottom-5px">
+                              Adult
+                              <span class="tooltip-one"
+                                ><i class="fa-solid fa-circle-info"></i>
+                                <span class="tooltiptext"
+                                  >Additional charges apply after
+                                  {{ plan.minimumOccupancy }} adults.</span
+                                ></span
+                              >
+                            </div>
                             <div class="d-flex increament-bg">
                               <div
                                 class="cursor-pointer minus-btn"
@@ -3005,12 +3208,17 @@
                               </div>
                             </div>
                           </div>
-
                         </div>
                         <div class="d-block room-number">
-                          <div class="margin-bottom-5px">Child <span class="tooltip-one"><i class="fa-solid fa-circle-info"></i>
-                            <span class="tooltiptext">Maximum Children {{plan.noOfChildren}}.</span>
-                          </span></div>
+                          <div class="margin-bottom-5px">
+                            Child
+                            <span class="tooltip-one"
+                              ><i class="fa-solid fa-circle-info"></i>
+                              <span class="tooltiptext"
+                                >Maximum Children {{ plan.noOfChildren }}.</span
+                              >
+                            </span>
+                          </div>
                           <div class="d-flex increament-bg">
                             <div
                               class="cursor-pointer minus-btn"
@@ -3028,46 +3236,45 @@
                               <i class="fa-solid fa-plus"></i>
                             </div>
                           </div>
-
                         </div>
                       </div>
-                      <div class="d-block" *ngIf="childAgesByPlan[plan.code]?.length">
-                            <div
-                              style="
-                                display: flex;
-                                align-content: center;
-                                justify-content: end;
-                                flex-wrap: wrap;
-                              "
-                              *ngFor="
-                                let age of childAgesByPlan[plan.code];
-                                let i = index
-                              "
-                              class="mt-2"
-                            >
-                              <label style="margin-right: 5px"
-                                >Child {{ i + 1 }} Age:</label
-                              >
-                              <select
-                                class="select-icon"
-                                [(ngModel)]="childAgesByPlan[plan.code][i]"
-                                (change)="onChildAgeChange(plan.code, plan)"
-                                [disabled]="
-                                      i === 0 &&
-                                      childAgesByPlan[plan.code][0] !== null &&
-                                      childAgesByPlan[plan.code].length > 1
-                                    "
-                              >
-                                <option [ngValue]="null" disabled>0</option>
-                                <option
-                                  *ngFor="let a of ageOptions"
-                                  [value]="a"
-                                >
-                                  {{ a }}
-                                </option>
-                              </select>
-                            </div>
-                          </div>
+                      <div
+                        class="d-block"
+                        *ngIf="childAgesByPlan[plan.code]?.length"
+                      >
+                        <div
+                          style="
+                            display: flex;
+                            align-content: center;
+                            justify-content: end;
+                            flex-wrap: wrap;
+                          "
+                          *ngFor="
+                            let age of childAgesByPlan[plan.code];
+                            let i = index
+                          "
+                          class="mt-2"
+                        >
+                          <label style="margin-right: 5px"
+                            >Child {{ i + 1 }} Age:</label
+                          >
+                          <select
+                            class="select-icon"
+                            [(ngModel)]="childAgesByPlan[plan.code][i]"
+                            (change)="onChildAgeChange(plan.code, plan)"
+                            [disabled]="
+                              i === 0 &&
+                              childAgesByPlan[plan.code][0] !== null &&
+                              childAgesByPlan[plan.code].length > 1
+                            "
+                          >
+                            <option [ngValue]="null" disabled>0</option>
+                            <option *ngFor="let a of ageOptions" [value]="a">
+                              {{ a }}
+                            </option>
+                          </select>
+                        </div>
+                      </div>
                       <div
                         class="d-flex justify-content-center margin-top-20px"
                       >
@@ -3639,10 +3846,18 @@
 
     <div class="side-images website-web-vision">
       <div class="card booking-card sticky-card">
-        <h5 class="font-weight-bold mb-3">Booking Summary &nbsp;&nbsp;<span *ngIf="enteredCoupon && specialDiscountPercentage" class="badge badge-success badge-successOne px-2 py-1 mr-2"> <img src=" assets/images/coupon-image-change.svg" alt="" /> &nbsp; Coupon Applied!</span></h5>
+        <h5 class="font-weight-bold mb-3">
+          Booking Summary &nbsp;&nbsp;<span
+            *ngIf="enteredCoupon && specialDiscountPercentage"
+            class="badge badge-success badge-successOne px-2 py-1 mr-2"
+          >
+            <img src=" assets/images/coupon-image-change.svg" alt="" /> &nbsp;
+            Coupon Applied!</span
+          >
+        </h5>
 
         <!-- Dates & Guests -->
-          <small *ngIf="!isBookingAllowed()" class="text-danger">
+        <small *ngIf="!isBookingAllowed()" class="text-danger">
           Please select minimum {{ rooms }} room(s) to proceed.
         </small>
         <div class="date-guest-box mb-4">
@@ -3800,9 +4015,17 @@
             <span>₹{{ getTotalPlanPrice() | number : "1.2-2" }}</span>
           </div>
 
-          <div class="d-flex justify-content-between" *ngIf="specialDiscountPercentage">
-            <span>Discount ({{specialDiscountPercentage}})%</span>
-            <span>₹{{ (getTotalPlanPrice() * specialDiscountPercentage)/100  | number : "1.2-2" }}</span>
+          <div
+            class="d-flex justify-content-between"
+            *ngIf="specialDiscountPercentage"
+          >
+            <span>Discount ({{ specialDiscountPercentage }})%</span>
+            <span
+              >₹{{
+                (getTotalPlanPrice() * specialDiscountPercentage) / 100
+                  | number : "1.2-2"
+              }}</span
+            >
           </div>
 
           <div
@@ -3824,16 +4047,18 @@
             <span>Total Amount</span>
             <span *ngIf="specialDiscountPercentage">
               ₹{{
-                (getTotalPlanPrice() +
+                getTotalPlanPrice() +
                   getTotalAfterTaxAmountFacility() +
-                  getTotalTaxPrice()) - ((this.getTotalPlanPrice() * this.specialDiscountPercentage)/100) | number : "1.2-2"
+                  getTotalTaxPrice() -
+                  (this.getTotalPlanPrice() * this.specialDiscountPercentage) /
+                    100 | number : "1.2-2"
               }}
             </span>
             <span *ngIf="!specialDiscountPercentage"
               >₹{{
-                (getTotalPlanPrice() +
+                getTotalPlanPrice() +
                   getTotalAfterTaxAmountFacility() +
-                  getTotalTaxPrice()) | number : "1.2-2"
+                  getTotalTaxPrice() | number : "1.2-2"
               }}</span
             >
           </div>
