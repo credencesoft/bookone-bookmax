@@ -398,6 +398,7 @@ textToCopyOne: string = 'This is some text to copy';
     sessionStorage.removeItem('BOOKINGDATAOJC');
     sessionStorage.removeItem('bookingSummary');
     sessionStorage.removeItem('EnquiryResponseList');
+        sessionStorage.clear();
   }
   calculateTotalGuestsFromPlans() {
     this.totalPlanAdults =

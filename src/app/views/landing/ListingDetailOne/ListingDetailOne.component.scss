@@ -210,6 +210,28 @@
   background-color: var(--secondary, #0b01cc);
   color: var(--tertiary) !important;;
 }
+.applycoupon-button {
+  border: none;
+  border-radius: 6px;
+  padding: 5px 12px;
+  font-family: "Poppins";
+  font-size: smaller;
+  background-color: var(--secondary, #0b01cc);
+  color: var(--tertiary, #fff) !important;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.applycoupon-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.applycoupon-button.button-invalid {
+  background-color: red !important;
+  color: #fff !important;
+}
+
 .checkavailability-div {
 display: flex;
     justify-content: end;
