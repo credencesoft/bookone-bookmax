@@ -181,6 +181,7 @@ showBookingSummary: boolean = false;
 currentPage = 0; // page index
   successMessagewhatsapp: string;
   errorMessagewhatsapp: string;
+  errorMessagePrivate: string;
   toggleListingDetails() {
     this.showListingDetails = !this.showListingDetails;
   }
@@ -6175,6 +6176,7 @@ getAvailableRoomsForGHC(availableRooms: any[]) {
       (offer) => offer.promotionAppliedFor === 'Private'
     );
 
+
     // Check if enteredCoupon matches any couponCode (case-insensitive)
     const matchedOffer = privateOffers.find(
       (offer) =>
@@ -6219,6 +6221,7 @@ onYesClick() {
     if (bookingFrom >= promoStart && bookingTo <= promoEnd) {
       // ✅ Booking is within promo period → Apply
       this.successMessagePrivate = 'Applied';
+      this.errorMessagePrivate = '';  // clear error
       this.selectedPromotion = true;
       this.isValidPrivateCoupon = true;
       this.couponApplied = true;
@@ -6263,8 +6266,11 @@ onYesClick() {
         }
       }, 1000);
     } else {
-      // ❌ Booking outside promo period → Reject
       this.successMessagePrivate = '';
+      this.errorMessagePrivate = 'Validity Expired';
+      setTimeout(() => {
+      this.errorMessagePrivate = '';
+    }, 3000);
       this.isValidPrivateCoupon = false;
       this.couponApplied = false;
       this.couponSuccessApplied = false;

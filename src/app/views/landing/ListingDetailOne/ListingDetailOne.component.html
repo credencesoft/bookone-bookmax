@@ -589,6 +589,7 @@
                   <div class="special-code-One">Unlock your deal</div>
                 </div>
                 <div class="special-sectionOne">
+                  <small class="text-danger" *ngIf="errorMessagePrivate">{{errorMessagePrivate}}</small>
                   <div>
                     <input
                       class="input-coupon"
@@ -619,9 +620,14 @@
                       class="applycoupon-button"
                       [disabled]="
                         !enteredCoupon ||
-                        enteredCoupon.trim().toUpperCase() !==
-                          validCouponCode.toUpperCase()
+                        enteredCoupon.trim().toUpperCase() !== validCouponCode.toUpperCase()
                       "
+                      [ngClass]="{
+                        'button-invalid':
+                          enteredCoupon &&
+                          enteredCoupon.trim() !== '' &&
+                          enteredCoupon.trim().toUpperCase() !== validCouponCode.toUpperCase()
+                      }"
                       (click)="onYesClick()"
                     >
                       Apply Coupon

@@ -159,6 +159,7 @@ export class PaylaterConfirmComponent {
     sessionStorage.removeItem('BOOKINGDATAOJC');
     sessionStorage.removeItem('bookingSummary');
     sessionStorage.removeItem('EnquiryResponseList');
+        sessionStorage.clear();
   }
 
   // Strip HTML and get first 20 words, then wrap in a span

@@ -268,6 +268,7 @@ export class BookingComponent implements OnInit {
   specialDiscountPercentage: any;
   specialDiscountData: any;
   enteredCoupon: any;
+  showTermsUniquePopup: boolean = false;
   constructor(
     private token: TokenStorage,
     private ngZone: NgZone,
@@ -516,7 +517,13 @@ if (parsed.discountPercentage) {
   getFirstWords(text: string, count: number): string {
     return text.split(' ').slice(0, count).join(' ');
   }
+openTermsUniquePopup() {
+  this.showTermsUniquePopup = true;
+}
 
+closeTermsUniquePopup() {
+  this.showTermsUniquePopup = false;
+}
   toggleViewMore(index: number, event: Event): void {
     event.preventDefault(); // prevent page jump
     this.expanded[index] = !this.expanded[index];
@@ -1019,9 +1026,9 @@ if (parsed.discountPercentage) {
     );
     this.currency = this.businessUser.localCurrency.toUpperCase();
     this.getOfferDetails();
-
+this.getPropertyDetailsById(this.bookingData.propertyId);
     // if (this.bookingData.propertyId != null && this.bookingData.propertyId != undefined) {
-    //   this.getPropertyDetailsById(this.bookingData.propertyId);
+
     // }
     this.mobileWallet = this.businessUser.mobileWallet;
     this.bankAccount = this.businessUser.bankAccount;
