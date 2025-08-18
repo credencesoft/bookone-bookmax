@@ -300,11 +300,49 @@
   width: 49%;
 }
 .smart-recommend-card {
-    padding: 16px 12px;
+  padding: 16px 12px;
     margin-top: 20px;
     font-family: "Poppins";
     border: 1px solid #D9D9D9;
     box-shadow: 0 10px 16px rgba(0, 0, 0, 0.2);
+
+}
+.smart-recommend-card-bestFit {
+padding: 16px 12px;
+    margin-top: 20px;
+    font-family: "Poppins";
+    border: 1px solid #D9D9D9;
+    box-shadow: 0 10px 16px rgba(0, 0, 0, 0.2);
+    background-color: #F2FBFF;
+}
+.smart-recommend-card-comfort {
+padding: 16px 12px;
+    margin-top: 20px;
+    font-family: "Poppins";
+    border: 1px solid #D9D9D9;
+    box-shadow: 0 10px 16px rgba(0, 0, 0, 0.2);
+    background-color: #FAFAFF;
+}
+.smart-recommend-card-luxury {
+padding: 16px 12px;
+    margin-top: 20px;
+    font-family: "Poppins";
+    border: 1px solid #D9D9D9;
+    box-shadow: 0 10px 16px rgba(0, 0, 0, 0.2);
+    background-color: #FFFBEF;
+}
+.smart-recommend-card-budget {
+padding: 16px 12px;
+    margin-top: 20px;
+    font-family: "Poppins";
+    border: 1px solid #D9D9D9;
+    box-shadow: 0 10px 16px rgba(0, 0, 0, 0.2);
+    background-color: #F8FFFA;
+}
+.next-carasoul {
+      background-color: var(--secondary, #0b01cc);
+    color: var(--tertiary) !important;
+    border: none !important;
 }
 .smart-recommend-card-two {
   padding: 20px 15px;
@@ -688,8 +726,16 @@ position: absolute;
 }
 
 .room-box-best-fit {
-    border-left: 3px solid #D8B4FE; /* Tailwind blue-700 */
-  padding-left: 12px;
+     border-left: 3px solid #5BCEFF;
+    padding-left: 12px;
+}
+.room-box-best-fit-luxury {
+     border-left: 3px solid #FDDF7B;
+    padding-left: 12px;
+}
+.room-box-best-fit-comfort {
+     border-left: 3px solid #D8B4FE;
+    padding-left: 12px;
 }
 .pricing-best-fit{
       font-size: 26px;
