@@ -4,7 +4,54 @@
 >
 </app-Header-Listingdetailsone>
 <div class="popup-overlay" *ngIf="isPanelOpen"></div>
+  <div class="whatsapp-popup-overlay" *ngIf="showWhatsappPopup">
+  <div class="whatsapp-popup-container">
+    <div class="whatsapp-popup-left">
+      <img src="assets/images/whatsapp-banner.svg" alt="Hotel" class="whatsapp-popup-bg" />
+      <div class="whatsapp-popup-left-content">
+         <img
+        *ngIf="businessUser?.logoUrl"
+        [src]="businessUser?.logoUrl"
+        alt="Logo"
+        class="logo-imageUser"
+      />
+        <h2 style="    color: #fff; margin-top: 15%; margin-bottom: 25%;">Find Your Perfect Stay <br />Across India, Anytime!</h2>
+        <p>Explore handpicked hotels, resorts, and homestays with unbeatable Indian hospitality.</p>
+      </div>
+    </div>
 
+    <div class="whatsapp-popup-right">
+      <div *ngIf="successMessagewhatsapp" style="margin-top: 30%; margin-bottom: 30%;" class="success-message">
+        ✅ {{ successMessagewhatsapp }}
+      </div>
+
+      <div *ngIf="errorMessagewhatsapp" class="error-message">
+        ❌ {{ errorMessagewhatsapp }}
+      </div>
+      <ng-container *ngIf="!successMessagewhatsapp">
+              <h3>Book Your Stay in Just a Few Taps</h3>
+      <p>Get personalised hotel options, exclusive rates, and instant booking — sent straight to your WhatsApp.</p>
+
+      <label for="whatsappNumber">WhatsApp Number</label>
+      <input type="text" id="whatsappNumber" placeholder="Enter your number" [(ngModel)]="whatsappNumber" />
+
+      <button class="whatsapp-btn-primary" (click)="sendWhatsappMessage()" [disabled]="isLoadingWhatsapp">
+        <ng-container *ngIf="!isLoadingWhatsapp">
+          <img src="assets/images/whatsapp-icons.svg" /> Book Now via WhatsApp
+        </ng-container>
+        <ng-container *ngIf="isLoadingWhatsapp">
+          <span class="loader"></span> Sending...
+        </ng-container>
+      </button>
+      </ng-container>
+
+
+      <button class="whatsapp-btn-secondary"(click)="closeWhatsappPopup()" >Continue on the website</button>
+
+      <button class="whatsapp-btn-close" (click)="closeWhatsappPopup()">✕</button>
+    </div>
+  </div>
+</div>
 <!-- Mobile Trigger -->
 <div class="website-mob-vision">
   <div class="stciky-top">
@@ -166,6 +213,8 @@
 </p-dialog>
 
 <div class="container-div">
+
+
   <div
     *ngIf="
       (availableRooms?.length >= 0 && availability == true) || !availability
@@ -978,7 +1027,15 @@
       </div>
     </div>
   </div>
+
   <div class="checkavailability-div" id="smartOne">
+     <button
+      class="Whatsapp-btn"
+      (click)="openWhatsappPopup()"
+    >
+    <img src="assets/images/new-img.svg" class="nevsvg"/>
+      <img src="assets/images/whatsapp-icons.svg" /> Book Now via WhatsApp
+    </button>
     <button
       class="checkavaialabilyy-btn"
       (click)="
@@ -1320,8 +1377,7 @@
         </div>
         <div>
           <div class="smart-recommend">
-            Smart Recommendations &nbsp;
-            <span class="coming-soon">Coming Soon</span>
+            Smart Recommendations
           </div>
           <div class="smart-recommend-1">
             Not sure what to book? These room options are the best fit for your
