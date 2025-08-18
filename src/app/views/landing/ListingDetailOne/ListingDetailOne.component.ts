@@ -179,6 +179,8 @@ showBookingSummary: boolean = false;
   smartLoading: boolean = true;
   categories: { key: string, label: string }[] = [];
 currentPage = 0; // page index
+  successMessagewhatsapp: string;
+  errorMessagewhatsapp: string;
   toggleListingDetails() {
     this.showListingDetails = !this.showListingDetails;
   }
@@ -894,7 +896,9 @@ guestDataArray: Array<{
 
   pageIndex = 0;   // current "page"
   pageSize = 2;    // show 2 at a time
-
+  showWhatsappPopup = false;
+  whatsappNumber = '';
+  isLoadingWhatsapp: boolean = false;
   constructor(
     private listingService: ListingService,
     private reviewService: ReviewService,
@@ -1400,6 +1404,59 @@ if (storedBooking) {
     return (
       this.adults + this.additionalRooms.reduce((sum, r) => sum + r.adults, 0)
     );
+  }
+    openWhatsappPopup() {
+    this.showWhatsappPopup = true;
+    console.log("this.showWhatsappPopup",this.showWhatsappPopup)
+  }
+sendWhatsappMessage() {
+   this.isLoadingWhatsapp = true;
+  if (!this.whatsappNumber) {
+    this.errorMessagewhatsapp = 'Please enter your WhatsApp number';
+    this.successMessagewhatsapp = '';
+    return;
+  }
+
+  const apiUrl = `https://notification.uat.bookone.io/api/whatsapp/generate?propertyId=1965&propertyName=Production Property&mobileNumber=${this.whatsappNumber}`;
+
+  this.http.get(apiUrl, { observe: 'response', responseType: 'json' }).subscribe({
+    next: (response) => {
+      console.log("Full HTTP Response:", response);   // 👈 will log headers, status, body
+
+      if (response.status === 200) {
+         this.isLoadingWhatsapp = false;
+        this.successMessagewhatsapp = 'A message has been sent to your WhatsApp.';
+        this.errorMessagewhatsapp = '';
+      } else {
+        this.errorMessagewhatsapp = 'Something went wrong. Please try again.';
+        this.successMessagewhatsapp = '';
+      }
+    },
+    error: (error) => {
+      console.log("response", error);
+       this.isLoadingWhatsapp = false;
+      if(error.status === 200) {
+        this.successMessagewhatsapp = 'A message has been sent to your WhatsApp';
+        this.errorMessagewhatsapp = '';
+    setTimeout(() => {
+      this.closeWhatsappPopup();
+    }, 3000);
+      } else {
+      this.errorMessagewhatsapp = 'Failed to send WhatsApp message.';
+      this.successMessagewhatsapp = '';
+      }
+
+    }
+  });
+}
+
+
+  closeWhatsappPopup() {
+    this.showWhatsappPopup = false;
+      this.whatsappNumber = '';
+  this.successMessagewhatsapp = '';
+  this.errorMessagewhatsapp = '';
+  this.isLoadingWhatsapp = false;
   }
   nextPage() {
   if (this.currentPage < this.totalPages - 1) {
