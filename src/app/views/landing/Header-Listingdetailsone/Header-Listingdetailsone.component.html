@@ -49,7 +49,7 @@
       </a>
     </li>
     <hr *ngIf="businessUser?.website && socialmedialist?.blogPageUrl" />
-    <li class="nav-item">
+    <!-- <li class="nav-item">
       <a
         *ngIf="businessUser?.website && socialmedialist?.csr"
         [href]="socialmedialist?.csr"
@@ -58,8 +58,8 @@
       >
         <i class="fas fa-info-circle"></i> CSR
       </a>
-    </li>
-    <hr *ngIf="businessUser?.website && socialmedialist?.csr" />
+    </li> -->
+    <!-- <hr *ngIf="businessUser?.website && socialmedialist?.csr" /> -->
     <li class="nav-item">
       <a
         *ngIf="businessUser?.website && socialmedialist?.contact"
@@ -134,34 +134,31 @@
     </div>
 
     <div class="header-section-content">
-      <div>
+      <div *ngIf="businessUser?.website">
         <a
-          *ngIf="businessUser?.website"
           [href]="businessUser.website"
           target="_top"
           style="color: white"
           >Home</a
         >
       </div>
-      <div>
+      <div *ngIf="businessUser?.website && socialmedialist?.aboutUs">
         <a
-          *ngIf="businessUser?.website && socialmedialist?.aboutUs"
           [href]="socialmedialist?.aboutUs"
           target="_top"
           style="color: white"
           >About Us</a
         >
       </div>
-      <div>
+      <div *ngIf="businessUser?.website && socialmedialist?.blogPageUrl">
         <a
-          *ngIf="businessUser?.website && socialmedialist?.blogPageUrl"
           [href]="socialmedialist?.blogPageUrl"
           target="_top"
           style="color: white"
           >Blogs</a
         >
       </div>
-      <div>
+      <!-- <div>
         <a
           *ngIf="businessUser?.website && socialmedialist?.csr"
           [href]="socialmedialist?.csr"
@@ -169,60 +166,60 @@
           style="color: white"
           >CSR</a
         >
-      </div>
-      <div>
+      </div> -->
+      <div *ngIf="businessUser?.website && socialmedialist?.contact">
         <a
-          *ngIf="businessUser?.website && socialmedialist?.contact"
           [href]="socialmedialist?.contact"
           target="_top"
           style="color: white"
           >Contact</a
         >
       </div>
-      <div>
+      <!-- <div *ngIf="businessUser?.website && socialmedialist?.termsAndConditions">
         <a
-          *ngIf="businessUser?.website && socialmedialist?.termsAndConditions"
           [href]="socialmedialist?.termsAndConditions"
           target="_top"
           style="color: white"
           >Terms & Conditions</a
         >
       </div>
-      <div>
+      <div *ngIf="businessUser?.website && socialmedialist?.privacyPolicy">
         <a
-          *ngIf="businessUser?.website && socialmedialist?.privacyPolicy"
           [href]="socialmedialist?.privacyPolicy"
           target="_top"
           style="color: white"
           >Privacy Policy</a
         >
       </div>
-      <div>
+      <div *ngIf="businessUser?.website && socialmedialist?.paymentTerms">
         <a
-          *ngIf="businessUser?.website && socialmedialist?.paymentTerms"
+
           [href]="socialmedialist?.paymentTerms"
           target="_top"
           style="color: white"
           >Payment Terms</a
         >
-      </div>
+      </div> -->
     </div>
 
     <!-- Right Section: Book Now Button -->
-    <div style="margin-left: auto">
-      <button
+     <div style="display: flex; gap:10px">
+      <a
+      class="blinking-unique-btn"
+      [href]="'tel:' + businessUser?.mobile"
+    >
+      <i class="fa-solid fa-phone-volume" style="rotate: -28deg; margin-right: 6px;"></i>
+      {{ businessUser?.mobile }}
+    </a>
+
+            <button
         class="blinking-unique-btn"
         (click)="scrollToAccommodation($event)"
-        style="
-          background-color: #fff;
-          color: black !important;
-          border: none;
-          padding: 6px 22px;
-        "
       >
         Book Now
       </button>
     </div>
+
   </div>
 </nav>
 
@@ -274,12 +271,6 @@
               <button
         class="blinking-unique-btn"
         (click)="scrollToAccommodation($event)"
-        style="
-          background-color: #fff;
-          color: black !important;
-          border: none;
-          padding: 6px 22px;
-        "
       >
         Book Now
       </button>

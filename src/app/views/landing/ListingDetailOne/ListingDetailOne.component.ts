@@ -1035,6 +1035,7 @@ guestDataArray: Array<{
         children: plan.children
       };
       this.selectedRoomsByPlan[plan.planName] = plan.selectedRoomnumber;
+
     });
   }
     // this.toDate = calendar.getNext(calendar.getToday(), 'd', 10);
@@ -1859,9 +1860,9 @@ resetLastChangedAge(planCode: string) {
 
       // Optionally add a highlight effect
       el.classList.add('scroll-highlight');
-      setTimeout(() => {
-        el.classList.remove('scroll-highlight');
-      }, 5000);
+      // setTimeout(() => {
+      //   el.classList.remove('scroll-highlight');
+      // }, 5000);
     }
   }, 100); // slight delay ensures DOM updates
 }
@@ -2303,7 +2304,7 @@ onSelectPlanFromSmartCard(plan: any): void {
     if (el) {
       el.scrollIntoView({ behavior: 'smooth', block: 'center' });
       el.classList.add('scroll-highlight');
-      setTimeout(() => el.classList.remove('scroll-highlight'), 3000);
+      // setTimeout(() => el.classList.remove('scroll-highlight'), 3000);
     }
   }, 100);
 }
@@ -2330,9 +2331,9 @@ onSelectPlanFromPopup(plan: any): void {
 
       // Optionally add a highlight effect
       el.classList.add('scroll-highlight');
-      setTimeout(() => {
-        el.classList.remove('scroll-highlight');
-      }, 3000);
+      // setTimeout(() => {
+      //   el.classList.remove('scroll-highlight');
+      // }, 3000);
     }
   }, 100); // slight delay ensures DOM updates
 }
@@ -6108,9 +6109,9 @@ getAvailableRoomsForGHC(availableRooms: any[]) {
 
                   // Optionally add a highlight effect
                   el.classList.add('scroll-highlight');
-                  setTimeout(() => {
-                    el.classList.remove('scroll-highlight');
-                  }, 3000);
+                  // setTimeout(() => {
+                  //   el.classList.remove('scroll-highlight');
+                  // }, 3000);
                 }
               }, 100); // slight delay ensures DOM updates
           });
@@ -6146,6 +6147,7 @@ getAvailableRoomsForGHC(availableRooms: any[]) {
 
     if (privateOffers.length > 0) {
       this.validCouponCode = privateOffers[0].couponCode;
+
     }
   }
 
@@ -6190,21 +6192,32 @@ getAvailableRoomsForGHC(availableRooms: any[]) {
     }
   }
 
-  onYesClick() {
-    this.privateOffers2 = this.offersList.filter(
-      (offer) => offer.promotionAppliedFor === 'Private'
-    );
+onYesClick() {
+  this.privateOffers2 = this.offersList.filter(
+    (offer) => offer.promotionAppliedFor === 'Private'
+  );
 
-    const matchingOffer = this.privateOffers2.find(
-      (item) =>
-        item.couponCode?.trim().toUpperCase() ===
-        this.enteredCoupon?.trim().toUpperCase()
-    );
+  const matchingOffer = this.privateOffers2.find(
+    (item) =>
+      item.couponCode?.trim().toUpperCase() ===
+      this.enteredCoupon?.trim().toUpperCase()
+  );
 
-    if (matchingOffer) {
-      this.privatePromotionData = matchingOffer;
-      this.privateOffersMinimumAmount = matchingOffer.minimumOrderAmount;
+  if (matchingOffer) {
+    this.privatePromotionData = matchingOffer;
+    this.privateOffersMinimumAmount = matchingOffer.minimumOrderAmount;
 
+    // convert booking dates to timestamps
+    const bookingFrom = new Date(this.booking.fromDate).getTime();
+    const bookingTo = new Date(this.booking.toDate).getTime();
+
+    // convert promo dates (already timestamps, but ensure they're numbers)
+    const promoStart = Number(matchingOffer.startDate);
+    const promoEnd = Number(matchingOffer.endDate);
+
+    // check if booking dates fall within the promo period
+    if (bookingFrom >= promoStart && bookingTo <= promoEnd) {
+      // ✅ Booking is within promo period → Apply
       this.successMessagePrivate = 'Applied';
       this.selectedPromotion = true;
       this.isValidPrivateCoupon = true;
@@ -6216,20 +6229,28 @@ getAvailableRoomsForGHC(availableRooms: any[]) {
         JSON.stringify(this.privatePromotionData)
       );
       sessionStorage.setItem('selectPromo', 'true');
-      const couponCodeValues = sessionStorage.getItem('selectedPromoData');
 
+      const couponCodeValues = sessionStorage.getItem('selectedPromoData');
       if (couponCodeValues) {
-        const parsed = JSON.parse(couponCodeValues); // convert to object
-        this.specialDiscountData = JSON.parse(couponCodeValues);
-          console.log("this.privatePromotionData", this.specialDiscountData);
-      if (parsed.couponCode) {
-        this.enteredCoupon = parsed.couponCode;
-        this.validCouponCode = parsed.couponCode;
+        const parsed = JSON.parse(couponCodeValues);
+        this.specialDiscountData = parsed;
+
+        console.log(
+          "Coupon valid for dates:",
+          new Date(this.specialDiscountData.startDate),
+          "to",
+          new Date(this.specialDiscountData.endDate)
+        );
+
+        if (parsed.couponCode) {
+          this.enteredCoupon = parsed.couponCode;
+          this.validCouponCode = parsed.couponCode;
+        }
+        if (parsed.discountPercentage) {
+          this.specialDiscountPercentage = parsed.discountPercentage;
+        }
       }
-      if (parsed.discountPercentage) {
-            this.specialDiscountPercentage = parsed.discountPercentage;
-          }
-      }
+
       // Optional: delay scroll and close
       setTimeout(() => {
         this.isPopupOpen = false;
@@ -6242,10 +6263,18 @@ getAvailableRoomsForGHC(availableRooms: any[]) {
         }
       }, 1000);
     } else {
-      console.log('No matching coupon found.');
-      // Optionally show error state or feedback here
+      // ❌ Booking outside promo period → Reject
+      this.successMessagePrivate = '';
+      this.isValidPrivateCoupon = false;
+      this.couponApplied = false;
+      this.couponSuccessApplied = false;
+      console.log('Booking dates are outside coupon validity period.');
     }
+  } else {
+    console.log('No matching coupon found.');
   }
+}
+
 
   onYesClickMobileView() {
     this.privateOffers2 = this.offersList.filter(
