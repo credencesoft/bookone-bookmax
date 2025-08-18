@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Location } from '@angular/common';
 import { TokenStorage } from 'src/token.storage';
 import { BusinessUser } from 'src/app/model/user';
@@ -27,7 +27,8 @@ export class HeaderListingdetailsoneComponent implements OnInit {
   propertydetails:BusinessUser;
   PropertyUrl: string;
   showheader: boolean =false;
-
+  websiteUrlBookingEngine: boolean =  false;
+  urlLocation: boolean;
 
 
   // gotopropertydetail() {
@@ -52,6 +53,7 @@ export class HeaderListingdetailsoneComponent implements OnInit {
   constructor(private router: Router,
     private location: Location,
     private token:TokenStorage,
+    private acRoute: ActivatedRoute,
   ) {
     // this.propertydetails = this.token.getProperty();
     // //console.log("propertydata="+ JSON.stringify(this.propertydetails))
@@ -72,7 +74,14 @@ export class HeaderListingdetailsoneComponent implements OnInit {
 
    }
  ngAfterViewInit() {
-
+                    this.acRoute.queryParams.subscribe((params) => {
+                if (params['bookingEngine'] !== undefined) {
+                  this.urlLocation = params['bookingEngine'];
+                  let websitebookingURL = 'true';
+                  this.websiteUrlBookingEngine = true;
+                  console.log("websiteUrlBookingEngine",this.websiteUrlBookingEngine)
+                }
+    });
  }
   ngOnInit() {
     this.website = this.businessUser?.website;

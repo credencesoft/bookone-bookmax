@@ -13,8 +13,14 @@
     color: white;
     flex-grow: 1;
     justify-content: center;
-    font-family: "Poppins", sans-serif;
+    font-family: "Barlow";
     letter-spacing: 1px;
+        font-family: 'Barlow';
+    text-transform: uppercase;
+    font-weight: 400;
+    letter-spacing: 1px;
+    transition: color .3s ease;
+    font-size: 18px;
 }
 .close-btn {
   background: none;
@@ -137,16 +143,22 @@ hr {
   /* Unique blink button styles */
 .blinking-unique-btn {
   padding: 5px;
-  border-radius: 12px;
+  border-radius: 21px;
   border: 0px solid #6C8003;
   color: #fff !important;
   font-size: 16px;
   font-weight: bold;
   cursor: pointer;
-
-
+          background-color: var(--secondary, #0b01cc);
+          color:  var(--tertiary, #fff);
+          border: none;
+          padding: 10px 27px;
+letter-spacing: 1px;
 }
-
+.blinking-unique-btn:hover {
+background-color: var(--tertiary, #fff);
+color: var(--secondary, #0b01cc) !important;
+}
 
 /* Visit Website Section */
 .unique-container {
