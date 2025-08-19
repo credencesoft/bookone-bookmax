@@ -1418,7 +1418,7 @@
         </div>
       </ng-container>
   <div
-          class="card smart-recommend-card-best-fit"
+          class="card smart-recommend-card-bestFit"
           *ngIf="smartRecommendations?.bestFitOptions?.length"
         >
           <ng-container
@@ -1633,7 +1633,7 @@
         </div>
 
         <div
-          class="card smart-recommend-card-comfort"
+          class="card smart-recommend-card-budget"
           *ngIf="smartRecommendations?.budgetOptions?.length"
         >
           <ng-container *ngFor="let room of smartRecommendations.budgetOptions;
@@ -2423,7 +2423,7 @@
                             class="select-icon"
                             id="inputGroupSelect01"
                             [(ngModel)]="selectedRoomsByPlan[plan.code]"
-                            (ngModelChange)="onRoomSelect(plan.code, $event)"
+                            (ngModelChange)="onRoomSelect(room.name, plan.code, $event)"
                           >
                             <!-- Ensure default is assigned -->
                             <ng-container
@@ -2431,10 +2431,8 @@
                             ></ng-container>
 
                             <option
-                              *ngFor="
-                                let count of getRoomOptions(rates.noOfAvailable)
-                              "
-                              [value]="count"
+                              *ngFor="let count of getRoomOptions(rates.noOfAvailable, room.name, plan.code)"
+                              [ngValue]="count"
                               [disabled]="count === 0"
                             >
                               {{ count === 0 ? "0" : count }}
@@ -2631,7 +2629,7 @@
                             class="select-icon"
                             id="inputGroupSelect01"
                             [(ngModel)]="selectedRoomsByPlan[plan.code]"
-                            (ngModelChange)="onRoomSelect(plan.code, $event)"
+                            (ngModelChange)="onRoomSelect(room.name, plan.code, $event)"
                           >
                             <!-- Ensure default is assigned -->
                             <ng-container
@@ -2639,10 +2637,8 @@
                             ></ng-container>
 
                             <option
-                              *ngFor="
-                                let count of getRoomOptions(rates.noOfAvailable)
-                              "
-                              [value]="count"
+                              *ngFor="let count of getRoomOptions(rates.noOfAvailable, room.name, plan.code)"
+                              [ngValue]="count"
                               [disabled]="count === 0"
                             >
                               {{ count === 0 ? "0" : count }}
@@ -3014,7 +3010,7 @@
                             class="select-icon"
                             id="inputGroupSelect01"
                             [(ngModel)]="selectedRoomsByPlan[plan.code]"
-                            (ngModelChange)="onRoomSelect(plan.code, $event)"
+                            (ngModelChange)="onRoomSelect(room.name, plan.code, $event)"
                           >
                             <!-- Ensure default is assigned -->
                             <ng-container
@@ -3022,10 +3018,8 @@
                             ></ng-container>
 
                             <option
-                              *ngFor="
-                                let count of getRoomOptions(rates.noOfAvailable)
-                              "
-                              [value]="count"
+                              *ngFor="let count of getRoomOptions(rates.noOfAvailable, room.name, plan.code)"
+                              [ngValue]="count"
                               [disabled]="count === 0"
                             >
                               {{ count === 0 ? "0" : count }}
@@ -3217,7 +3211,7 @@
                             class="select-icon"
                             id="inputGroupSelect01"
                             [(ngModel)]="selectedRoomsByPlan[plan.code]"
-                            (ngModelChange)="onRoomSelect(plan.code, $event)"
+                            (ngModelChange)="onRoomSelect(room.name, plan.code, $event)"
                           >
                             <!-- Ensure default is assigned -->
                             <ng-container
@@ -3225,10 +3219,8 @@
                             ></ng-container>
 
                             <option
-                              *ngFor="
-                                let count of getRoomOptions(rates.noOfAvailable)
-                              "
-                              [value]="count"
+                              *ngFor="let count of getRoomOptions(rates.noOfAvailable, room.name, plan.code)"
+                              [ngValue]="count"
                               [disabled]="count === 0"
                             >
                               {{ count === 0 ? "0" : count }}

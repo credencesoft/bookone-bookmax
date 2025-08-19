@@ -1581,22 +1581,32 @@ showSliderPopup() {
   return selectedRooms >= this.rooms;
 }
 
-  getRoomOptions(noOfAvailable: number): number[] {
-    const options = [0];
-    for (let i = 1; i <= noOfAvailable; i++) {
-      options.push(i);
-    }
-    return options;
-  }
+getRoomOptions(totalAvailable: number, roomName: string, currentPlanCode: string): number[] {
+  // Filter only plans that belong to this room
+  const usedRooms = Object.entries(this.selectedRoomsByPlan)
+    .filter(([code]) => code !== currentPlanCode && code.startsWith(roomName + '_'))
+    .reduce((sum, [, count]) => sum + (Number(count) || 0), 0);
+
+  const currentKey = roomName + '_' + currentPlanCode;
+  const currentSelection = Number(this.selectedRoomsByPlan[currentKey]) || 0;
+
+  const remaining = totalAvailable - usedRooms;
+  const maxAllowed = Math.max(currentSelection, remaining);
+
+  return Array.from({ length: maxAllowed + 1 }, (_, i) => i);
+}
+
   setDefaultRoomIfMissing(planCode: string): boolean {
     if (this.selectedRoomsByPlan[planCode] === undefined) {
       this.selectedRoomsByPlan[planCode] = 0;
     }
     return true;
   }
-  onRoomSelect(planCode: string, count: number) {
-    this.selectedRoomsByPlan[planCode] = count;
-  }
+ onRoomSelect(roomName: string, planCode: string, count: number | string) {
+  const key = roomName + '_' + planCode;
+  this.selectedRoomsByPlan[key] = Number(count) || 0;
+}
+
   getRemainingRooms(): number {
     const totalSelected = Object.values(this.selectedRoomsByPlan).reduce(
       (a, b) => a + b,
