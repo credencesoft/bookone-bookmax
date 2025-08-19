@@ -1606,6 +1606,15 @@ padding-bottom: 20px;
 .special-code-One {
   font-weight: 400;
 }
+.Whatsapp-btn {
+    background-color: #03A410;
+    color: #fff;
+    font-family: "Poppins";
+    border: none;
+    padding: 7px 19px;
+    border-radius: 7px;
+    width: 100%;
+}
 .applycoupon {
   margin-top: 10px;
   display: flex;
@@ -1689,6 +1698,15 @@ text-align: center;
     margin-left: -140px !important;
     white-space: nowrap;
     padding: 10px 10px;
+}
+.checkavailability-div {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+.Whatsapp-btn {
+    width: 100%;
 }
 .checkAva6 {
     width: 50%;
@@ -1818,6 +1836,11 @@ text-align: center;
     color: var(--tertiary) !important;;
     letter-spacing: 2.3px;
     border-radius: 8px;
+}
+.nevsvg {
+    position: relative;
+    margin-left: -50px !important;
+    margin-top: -21px !important;
 }
 }
 
