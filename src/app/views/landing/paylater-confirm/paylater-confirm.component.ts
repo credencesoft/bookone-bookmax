@@ -151,7 +151,16 @@ export class PaylaterConfirmComponent {
     event.preventDefault();
     this.expanded = !this.expanded;
   }
-
+    ngOnDestroy() {
+    sessionStorage.removeItem('bookingsResponseList');
+    sessionStorage.removeItem('bookingSummaryDetails');
+    sessionStorage.removeItem('booking');
+    sessionStorage.removeItem('BOOKINGDATAOJC');
+    sessionStorage.removeItem('bookingSummary');
+    sessionStorage.removeItem('EnquiryResponseList');
+    sessionStorage.removeItem('selectedPromoData');
+    window.location.href = this.PropertyUrl;
+  }
   backone() {
     sessionStorage.removeItem('bookingsResponseList');
     sessionStorage.removeItem('bookingSummaryDetails');

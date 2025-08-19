@@ -131,7 +131,25 @@ export class BookingVoucherComponent {
     sessionStorage.removeItem('booking');
     sessionStorage.removeItem('BOOKINGDATAOJC');
     sessionStorage.removeItem('bookingSummary');
+    sessionStorage.removeItem('bookingsResponseList');
+    sessionStorage.removeItem('bookingSummaryDetails');
+    sessionStorage.removeItem('booking');
+    sessionStorage.removeItem('BOOKINGDATAOJC');
+    sessionStorage.removeItem('bookingSummary');
+    sessionStorage.removeItem('EnquiryResponseList');
+    sessionStorage.removeItem('selectedPromoData');
     sessionStorage.clear();
+  }
+
+      ngOnDestroy() {
+    sessionStorage.removeItem('bookingsResponseList');
+    sessionStorage.removeItem('bookingSummaryDetails');
+    sessionStorage.removeItem('booking');
+    sessionStorage.removeItem('BOOKINGDATAOJC');
+    sessionStorage.removeItem('bookingSummary');
+    sessionStorage.removeItem('EnquiryResponseList');
+    sessionStorage.removeItem('selectedPromoData');
+    window.location.href = this.PropertyUrl;
   }
 
   // Strip HTML and get first 20 words, then wrap in a span
