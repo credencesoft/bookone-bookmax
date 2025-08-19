@@ -15,7 +15,7 @@
         alt="Logo"
         class="logo-imageUser"
       />
-        <h2 style="    color: #fff; margin-top: 15%; margin-bottom: 25%;">Find Your Perfect Stay <br />Across India, Anytime!</h2>
+        <h2 class="custom-cards-sectioned" style="    color: #fff; margin-top: 15%; margin-bottom: 25%;">Find Your Perfect Stay <br />Across India, Anytime!</h2>
         <p>Explore handpicked hotels, resorts, and homestays with unbeatable Indian hospitality.</p>
       </div>
     </div>
@@ -33,7 +33,21 @@
       <p>Get personalised hotel options, exclusive rates, and instant booking — sent straight to your WhatsApp.</p>
 
       <label for="whatsappNumber">WhatsApp Number</label>
-      <input type="text" id="whatsappNumber" placeholder="Enter your number" [(ngModel)]="whatsappNumber" />
+        <input
+          type="text"
+          id="whatsappNumber"
+          placeholder="Enter your number"
+          [(ngModel)]="whatsappNumber"
+          name="whatsappNumber"
+          #whatsappCtrl="ngModel"
+          pattern="^[0-9]{10}$"
+          required
+          [ngClass]="{ 'invalid-border': whatsappCtrl.invalid && whatsappCtrl.touched }"
+        />
+
+        <div *ngIf="whatsappCtrl.invalid && whatsappCtrl.touched" class="error-msg">
+          Please enter a valid 10-digit WhatsApp number.
+        </div>
 
       <button class="whatsapp-btn-primary" (click)="sendWhatsappMessage()" [disabled]="isLoadingWhatsapp">
         <ng-container *ngIf="!isLoadingWhatsapp">

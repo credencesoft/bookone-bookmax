@@ -1510,10 +1510,53 @@ position: absolute;
 .tooltip-one:hover .tooltiptext {
   visibility: visible;
 }
+.invalid-border {
+  border: 2px solid red !important;
+}
+
+.error-msg {
+    color: red;
+    font-size: 12px;
+    margin-top: -11px;
+    margin-bottom: 10px;
+}
+
 @media (max-width: 1180px) {
   .website-web-vision {
     display: none;
   }
+    .custom-cards-sectioned {
+    margin-bottom: 19% !important;
+  }
+  .whatsapp-popup-container {
+    display: block;
+    background: #fff;
+    border-radius: 12px;
+    max-width: 900px;
+    width: 90%;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    position: relative;
+    flex-wrap: wrap;
+}
+.whatsapp-popup-left {
+    position: relative;
+    width: 100%;
+    color: #fff;
+}
+.whatsapp-popup-right {
+    width: 100%;
+    padding: 30px;
+}
+.logo-imageUser {
+    width: auto;
+    height: 68px;
+    margin-right: 10px;
+    margin-left: 14px;
+    position: absolute;
+    left: -9%;
+    top: -20%;
+}
   .gallery-thumbs {
     flex-direction: column;
     width: 161px;
@@ -1848,6 +1891,7 @@ text-align: center;
 
 
 @media (min-width: 1181px){
+
   .website-mob-vision {
     display: none;
   }
