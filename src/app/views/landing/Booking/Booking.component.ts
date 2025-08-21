@@ -3260,7 +3260,7 @@ if (bookingSummaryStr) {
     booking.roomPrice = plan.actualRoomPrice;
     booking.totalServiceAmount = this.totalServiceCost || 0;
     booking.taxAmount = booking.gstAmount;
-    booking.totalRoomTariffBeforeDiscount = plan.actualRoomPrice * plan.nights;
+    booking.totalRoomTariffBeforeDiscount = plan.actualRoomPrice * plan.nights * plan.selectedRoomnumber;
     booking.noOfExtraPerson = plan.extraCountAdult;
     booking.noOfExtraChild = plan.extraCountChild;
     booking.purposeOfVisit = '';

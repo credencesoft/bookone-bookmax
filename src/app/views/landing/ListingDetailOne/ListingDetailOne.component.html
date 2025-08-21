@@ -975,44 +975,6 @@
                     </div>
                   </div>
                 </div>
-
-                <div class="special-offer">
-                  <div class="special-section">
-                    <div class="special-code">
-                      Got an exclusive code?
-                      <span class="special-code-One">Unlock your deal</span>
-                    </div>
-                  </div>
-                  <div class="special-sectionOne">
-                    <div>
-                      <input
-                        style="
-                          width: 100%;
-                          border: none;
-                          border-radius: 6px;
-                          padding: 5px;
-                        "
-                        type="text"
-                        [(ngModel)]="enteredCoupon"
-                        (ngModelChange)="onCouponInputChange($event)"
-                        [ngClass]="{
-                          'valid-input':
-                            enteredCoupon &&
-                            enteredCoupon.trim().toUpperCase() ===
-                              validCouponCode.toUpperCase(),
-                          'invalid-input':
-                            enteredCoupon &&
-                            enteredCoupon.trim() !== '' &&
-                            enteredCoupon.trim().toUpperCase() !==
-                              validCouponCode.toUpperCase()
-                        }"
-                      />
-                    </div>
-                    <div class="applycoupon">
-                      <button class="applycoupon-button">Apply Coupon</button>
-                    </div>
-                  </div>
-                </div>
               </div>
             </div>
           </div>
