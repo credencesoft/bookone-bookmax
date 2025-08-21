@@ -1032,7 +1032,7 @@
 
   </div>
 </div>
-<!-- <div *ngIf="showAllTheOfferList?.length > 0">
+<div *ngIf="showAllTheOfferList?.length > 0">
   <p-carousel
     class="carousel-section"
     [value]="showAllTheOfferList"
@@ -1055,9 +1055,6 @@
                     {{ product.name }} Special Offer
                   </h4>
                   <div class="code-coupon">
-                    <span class="use-code-text"
-                      >Apply code "{{ product.couponCode }}" &
-                    </span>
                     <span class="promo-code"
                       >Grab up to {{ product.discountPercentage }}% off</span
                     >
@@ -1068,7 +1065,7 @@
                     class="apply-coupon-btn"
                     (click)="couponAppliedBanner(product)"
                   >
-                    Apply Coupon
+                    Get Coupon
                   </button>
                 </div>
               </div>
@@ -1078,7 +1075,7 @@
       </div>
     </ng-template>
   </p-carousel>
-</div> -->
+</div>
 
 <div class="container-div margin-bottom-40px" >
   <div class="website-web-vision">
@@ -1246,7 +1243,7 @@
                       (click)="onSelectPlanFromSmartCard(plan)"
                       class="select-mannual"
                     >
-                      Select Combo→
+                      Choose <i class="fa-solid fa-arrow-right"></i>
                     </button>
                   </div>
                 </div>
@@ -1267,7 +1264,7 @@
 
         <div class="d-flex justify-content-end margin-top-20px">
           <button class="select-mannual" (click)="scrollToAccommodationDash()">
-            Select Manually
+            Make Your Own Selection
           </button>
         </div>
       </div>
@@ -1448,7 +1445,7 @@
                       (click)="onSelectPlanFromSmartCard(plan)"
                       class="select-mannual"
                     >
-                      Select Combo→
+                      Choose <i class="fa-solid fa-arrow-right"></i>
                     </button>
                   </div>
                 </div>
@@ -1518,7 +1515,7 @@
                       (click)="onSelectPlanFromSmartCard(plan)"
                       class="select-mannual"
                     >
-                      Select Combo→
+                      Choose <i class="fa-solid fa-arrow-right"></i>
                     </button>
                   </div>
                 </div>
@@ -1594,7 +1591,7 @@
                         (click)="onSelectPlanFromSmartCard(plan)"
                         class="select-mannual"
                       >
-                        Select Combo→
+                        Choose <i class="fa-solid fa-arrow-right"></i>
                       </button>
                     </div>
                   </div>
@@ -1664,7 +1661,7 @@
                       (click)="onSelectPlanFromSmartCard(plan)"
                       class="select-mannual"
                     >
-                      Select Combo→
+                      Choose <i class="fa-solid fa-arrow-right"></i>
                     </button>
                   </div>
                 </div>
@@ -4078,6 +4075,57 @@
             </div>
           </ng-container>
         </div>
+        <div class="margin-bottom-10px">
+                  <small class="special-code">Got an exclusive code? <span class="special-code-One">Unlock your deal</span></small> <br/>
+                  <small class="text-danger" *ngIf="errorMessagePrivate">{{errorMessagePrivate}}</small>
+                </div>
+                <div class="special-sectionOne">
+
+                  <div style="width: 100%;">
+                    <input
+                      class="input-coupon"
+                      style="
+                            width: 100%;
+                              border: none;
+                              border-radius: 6px;
+                              padding: 5px;
+                              background-color: #F4F4F4;
+                      "
+                      type="text"
+                      [(ngModel)]="enteredCoupon"
+                      (ngModelChange)="onCouponInputChange($event)"
+                      [ngClass]="{
+                        'valid-input':
+                          enteredCoupon &&
+                          enteredCoupon.trim().toUpperCase() ===
+                            validCouponCode.toUpperCase(),
+                        'invalid-input':
+                          enteredCoupon &&
+                          enteredCoupon.trim() !== '' &&
+                          enteredCoupon.trim().toUpperCase() !==
+                            validCouponCode.toUpperCase()
+                      }"
+                    />
+                  </div>
+                  <div class="applycoupon">
+                    <button
+                      class="applycoupon-button"
+                      [disabled]="
+                        !enteredCoupon ||
+                        enteredCoupon.trim().toUpperCase() !== validCouponCode.toUpperCase()
+                      "
+                      [ngClass]="{
+                        'button-invalid':
+                          enteredCoupon &&
+                          enteredCoupon.trim() !== '' &&
+                          enteredCoupon.trim().toUpperCase() !== validCouponCode.toUpperCase()
+                      }"
+                      (click)="onYesClick()"
+                    >
+                      <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                  </div>
+                </div>
 
         <!-- Summary -->
         <div class="mb-3" *ngIf="selectedPlansSummary.length > 0">
