@@ -225,16 +225,17 @@ border: none;
     background-color: var(--secondary, #0b01cc);
     color: var(--tertiary, #fff) !important;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+transition: background-color 0.3s ease;
     border-radius: 0px 6px 6px 0px;
     margin-left: -10px;
-        position: absolute;
-    z-index: 27;
-    bottom: 71px;
+    position: sticky;
+    z-index: 31;
+    bottom: 61px;
+    margin-bottom: 6px;
 }
 
 .applycoupon-button:disabled {
-  opacity: 0.6;
+  // opacity: 0.6;
   cursor: not-allowed;
 }
 
