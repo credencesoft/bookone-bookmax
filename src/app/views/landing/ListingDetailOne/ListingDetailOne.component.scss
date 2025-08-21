@@ -175,13 +175,16 @@ background-color: #f5f5f5;
   font-weight: 600;
 }
 .special-code-One {
-  font-family: "Poppins";
+    font-family: "Poppins";
+    font-weight: 400;
 }
 .special-section {
   width: 60%;
 }
 .special-sectionOne {
-  width: 40%;
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
 }
 .container-div {
   margin: auto;
@@ -214,15 +217,20 @@ background-color: #f5f5f5;
   color: var(--tertiary) !important;;
 }
 .applycoupon-button {
-  border: none;
-  border-radius: 6px;
-  padding: 5px 12px;
-  font-family: "Poppins";
-  font-size: smaller;
-  background-color: var(--secondary, #0b01cc);
-  color: var(--tertiary, #fff) !important;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
+border: none;
+    /* border-radius: 6px; */
+    padding: 9px 15px;
+    font-family: "Poppins";
+    font-size: smaller;
+    background-color: var(--secondary, #0b01cc);
+    color: var(--tertiary, #fff) !important;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    border-radius: 0px 6px 6px 0px;
+    margin-left: -10px;
+        position: absolute;
+    z-index: 27;
+    bottom: 71px;
 }
 
 .applycoupon-button:disabled {
@@ -553,12 +561,13 @@ padding: 16px 12px;
   margin-top: 20px;
 }
 .select-mannual {
-  background-color: var(--secondary, #0b01cc);
-  color: var(--tertiary) !important;;
-  font-family: "Poppins";
-  border: none;
-  padding: 10px 20px;
-  border-radius: 8px;
+    background-color: var(--secondary, #0b01cc);
+    color: var(--tertiary) !important;
+    font-family: "Poppins";
+    border: none;
+    padding: 6px 20px;
+    border-radius: 8px;
+
 }
 .gap-20px {
   gap: 10px;
