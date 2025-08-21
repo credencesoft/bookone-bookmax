@@ -303,7 +303,8 @@
             <table style="width: 100%">
               <tr>
                 <td>{{ booking.roomRatePlanName }}</td>
-                <td>₹{{ booking.roomPrice | number : "1.2-2" }}</td>
+
+                <td>₹{{ (booking.beforeTaxAmount -  (booking.extraPersonCharge))  | number : "1.2-2" }}</td>
               </tr>
               <tr *ngIf="booking.extraPersonCharge > 0">
                 <td>Extra Person Charges</td>
@@ -934,7 +935,7 @@
             <table style="width: 100%">
               <tr>
                 <td>{{ booking.roomRatePlanName }}</td>
-                <td>₹{{ booking.roomPrice | number : "1.2-2" }}</td>
+                <td>₹{{ (booking.beforeTaxAmount -  (booking.extraPersonCharge))  | number : "1.2-2" }}</td>
               </tr>
               <tr *ngIf="booking.extraPersonCharge > 0">
                 <td>Extra Person Charges</td>

@@ -20,16 +20,19 @@ export class HeaderListingdetailsoneComponent implements OnInit {
   showListingDetails: boolean = false;
   website: string;
   logoUrl: string;
-
-
-
+  dynamicText: string;
+  dynamicCity: string;
+  dynamicStreetName: string;
+  dynamicLocality: string;
   propertyname: string;
+    dynamicCountryName: string;
+  dynamicStreetNumber: string;
   propertydetails:BusinessUser;
   PropertyUrl: string;
   showheader: boolean =false;
   websiteUrlBookingEngine: boolean =  false;
   urlLocation: boolean;
-
+  dynamicPropertyId: number;
 
   // gotopropertydetail() {
   //   let PropertyUrl = this.token.getPropertyUrl();
@@ -82,6 +85,7 @@ export class HeaderListingdetailsoneComponent implements OnInit {
                   console.log("websiteUrlBookingEngine",this.websiteUrlBookingEngine)
                 }
     });
+
  }
   ngOnInit() {
     this.website = this.businessUser?.website;
@@ -104,6 +108,44 @@ export class HeaderListingdetailsoneComponent implements OnInit {
     //console.log('new link is',this.propertyname);
 
 
+  }
+  openWhatsapp() {
+  const url = this.getWhatsappShareUrl();
+  window.open(url, '_blank'); // opens WhatsApp link in new tab/app
+}
+    getWhatsappShareUrl(): string {
+    const baseUrl = 'https://api.whatsapp.com/send';
+    const phoneNumber = '919004126958';
+    this.dynamicText = this.businessUser.name;
+    this.dynamicPropertyId = this.businessUser.id;
+    this.dynamicCity = this.businessUser?.address?.city;
+    this.dynamicStreetName = this.businessUser.address?.streetName;
+    this.dynamicLocality = this.businessUser.address?.locality;
+    this.dynamicStreetNumber = this.businessUser.address?.streetNumber;
+    this.dynamicCountryName = this.businessUser.address?.country;
+    // The recipient's phone number (optional)
+    const message =
+      '*This is an Enquiry from :* The HotelMate Website' +
+      '\nHotel Name: ' +
+      this.dynamicText +
+      ',' +
+      '\nProperty Id: ' +
+      this.dynamicPropertyId +
+      ',' +
+      '\nAddress: ' +
+      this.dynamicStreetNumber +
+      ',' +
+      this.dynamicStreetName +
+      ',' +
+      this.dynamicLocality +
+      ',' +
+      this.dynamicCity +
+      ',' +
+      this.dynamicCountryName; // The dynamic text you want to include
+
+    return (
+      baseUrl + '?phone=' + phoneNumber + '&text=' + encodeURIComponent(message)
+    );
   }
   toggleListItems() {
     this.showListItems = !this.showListItems;

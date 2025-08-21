@@ -1,5 +1,9 @@
 <!-- Vertical navbar -->
-
+  <df-messenger location="asia-south1" project-id="impactful-name-306810"
+    agent-id="e2f46998-246d-4046-aee3-65c992b363ea" intent="PROPERTY" storage-option="none" language-code="en"
+    max-query-length="-1">
+    <df-messenger-chat-bubble id="chatbot" chat-subtitle="Powered by BookOne"></df-messenger-chat-bubble>
+  </df-messenger>
 <!-- Vertical Navbar -->
 <div class="vertical-nav" id="sidebar" *ngIf="isdone">
   <div>
@@ -203,21 +207,40 @@
     </div>
 
     <!-- Right Section: Book Now Button -->
-     <div style="display: flex; gap:10px">
-      <a
+     <div style="    display: flex; gap: 10px; align-items: center;">
+
+      <div>
+         <a
+          [href]="getWhatsappShareUrl()"
+          target="_blank"
+          class="Whatsapp-btn-header"
+        >
+          <img src="assets/images/whatsapp-icons.svg" style="margin-right: 6px;" /> Book via WhatsApp
+        </a>
+      </div>
+         <div>
+          <a
       class="blinking-unique-btn"
       [href]="'tel:' + businessUser?.mobile"
     >
-      <i class="fa-solid fa-phone-volume" style="rotate: -28deg; margin-right: 6px;"></i>
-      {{ businessUser?.mobile }}
+      <img src="assets/images/call-us-header.svg" style="margin-right: 6px;"/>
+      Call Now
     </a>
+         </div>
+         <!-- <div>
+          <a style="background-color: #fff; border-radius: 50%; padding: 15px 12px;">
+      <img src="assets/images/robot-icon.svg" style="height:37px" />
+    </a>
+         </div> -->
 
-            <button
+
+
+            <!-- <button
         class="blinking-unique-btn"
         (click)="scrollToAccommodation($event)"
       >
         Book Now
-      </button>
+      </button> -->
     </div>
 
   </div>
