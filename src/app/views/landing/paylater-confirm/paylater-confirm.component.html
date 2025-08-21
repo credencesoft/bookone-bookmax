@@ -1,4 +1,8 @@
+<app-Header-Listingdetailsone [businessUser]="businessUser">
+</app-Header-Listingdetailsone>
+
 <div class="desktop-view-booking-voucher">
+  <div class="container-div">
   <div class="responsive-wrapper">
     <div class="row">
       <div class="col-12 col-md-6 offset-md-6">
@@ -36,497 +40,259 @@
       </div>
     </div>
 
-    <div class="text-center mb-4">
-      <span
-        style="
-          font-weight: bold !important;
-          color: #000 !important;
-          font-size: 35px !important;
-        "
-        >Almost There!</span
-      >
-      <div
-        class="mb-0"
-        style="
-          font-weight: bold !important;
-          color: #000 !important;
-          font-size: 21px !important;
-        "
-      >
-        Your reservation is currently on hold.
-      </div>
-      <div class="mb-0" style="font-size: 18px; color: #615d5d">
-        A copy of this reservation has been sent to {{ booking.email }} & your
-        reservation number
-                <span *ngIf="booking?.groupBookingReference">
-        <span >
-          {{ booking?.groupBookingReference }}
-        </span>
-      </span>
-
-      <span *ngIf="!booking?.groupBookingReference">
-        <span >
-          {{ booking?.propertyReservationNumber }}
-        </span>
-      </span>.
-      </div>
-      <div style="color: #615d5d; font-weight: bold; font-size: 17px">
-        Note: Please check your spam folder if you don't see it, or find it on
-        WhatsApp.
-      </div>
-    </div>
-
-    <div class="row mb-4" style="justify-content: center">
-      <div
-        class="col-md-4"
-        style="text-align: center; flex: 0 0 25.333333%; max-width: 25.333333%"
-      >
-        <div class="mb-1"><span class="highlight-text">Booking ID</span></div>
-        <div class="mb-0">
-          <span *ngIf="booking?.groupBookingId">
-          <b
-            id="textToCopy"
-            >{{ booking?.groupBookingId }}</b></span>
-
-          <span *ngIf="!booking?.groupBookingId"><b
-            id="textToCopy"
-            >{{ booking?.id }}</b></span>
-          <img
-            src="assets/images/CopyVoucher.png"
-            alt=""
-            height="15px"
-            width="15px"
-            style="margin-right: 3px; margin-left: 5px"
-            (click)="copyText()"
-          />
-          <a
-            href="https://thehotelmate.co/history"
-            style="
-              margin-left: 5px;
-              font-size: 13px;
-              color: #1465cf;
-              text-decoration: none;
-            "
-            >Check Details</a
-          >
-        </div>
-      </div>
-      <div
-        class="col-md-4"
-        style="text-align: center; flex: 0 0 25.333333%; max-width: 25.333333%"
-      >
-        <div class="mb-1">
-          <span class="highlight-text">Payment Status</span>
-        </div>
-        <div class="mb-0">
-          <span class="status-badge status-unpaid" style="font-size: 13px"
-            >Unpaid</span
-          >
-        </div>
-      </div>
-      <div
-        class="col-md-4"
-        style="text-align: center; flex: 0 0 25.333333%; max-width: 25.333333%"
-      >
-        <div class="mb-1">
-          <span class="highlight-text">Reservation Status</span>
-        </div>
-        <div class="mb-0">
-          <span class="status-badge status-enquiry" style="font-size: 13px"
-            >On Hold</span
-          >
-        </div>
-      </div>
-    </div>
-
     <div
-      class="row"
-      style="
-        display: flex;
-        justify-content: center;
-        gap: 30px;
-        margin-top: 20px;
-      "
+      class="d-flex"
+      style="align-items: center; gap: 30px; margin-top: 20px;"
     >
-      <div class="col-8" style="flex: 0 0 38%; max-width: 38%">
-        <div
-          class="row mb-3"
-          style="display: flex; justify-content: center; margin-top: 15px"
+      <div class="col-6 text-left mb-4 font-change">
+        <span
+          style="
+            font-weight: 600 !important;
+            color: #000 !important;
+            font-size: 35px !important;
+          "
+          >Almost There!</span
         >
-          <div
-            class="col-md-6"
-            style="
-              min-width: 40% !important;
-              flex: 0 0 40%;
-              text-align: center;
-              border-right: 2px solid #d9d9d9;
-            "
-          >
-            <div style="display: flex; gap: 26px; justify-content: center">
-              <div>
-                <img
-                  src="assets/images/checkin-book-calender.svg"
-                  alt="icon"
-                  width="20"
-                  height="20"
-                  style="margin-right: 3px"
-                />
-              </div>
-              <div *ngIf="booking.fromDate">
-                <b> Check-in date </b> <br />
-                <div>{{ booking.fromDate | date : "d MMM" }}</div>
-              </div>
-            </div>
-          </div>
-          <div
-            class="col-md-6"
-            style="min-width: 40% !important; flex: 0 0 40%; text-align: center"
-            *ngIf="booking.toDate"
-          >
-            <div>
-              <b> Check-Out date</b> <br />
-              <div>{{ booking.toDate | date : "d MMM" }}</div>
-            </div>
-          </div>
+        <div
+          class="mb-0"
+          style="
+            font-weight: 600 !important;
+            color: #2563EB !important;
+            font-size: 19px !important;
+            margin-top: -5px;
 
-          <div
-            class="col-md-6"
-            style="
-              min-width: 40% !important;
-              flex: 0 0 40%;
-              text-align: center;
-              margin-top: 10px;
-            "
-            *ngIf="booking.noOfPersons || booking.noOfChildren"
-          >
-            <div>
-              <b> Occupancy: </b>
-            </div>
-          </div>
-          <div
-            class="col-md-6"
-            style="
-              min-width: 40% !important;
-              flex: 0 0 40%;
-              text-align: center;
-              margin-top: 10px;
-            "
-          >
-            <div>
-              <div>
-                {{ totalPlanAdults }} Adults, {{ totalPlanChildren }} Children
-              </div>
-            </div>
-          </div>
-
-          <div
-            class="col-md-6"
-            style="
-              min-width: 40% !important;
-              flex: 0 0 40%;
-              text-align: center;
-              margin-top: 10px;
-            "
-          >
-            <div>
-              <b> Nights: </b>
-            </div>
-          </div>
-          <div
-            class="col-md-6"
-            style="
-              min-width: 40% !important;
-              flex: 0 0 40%;
-              text-align: center;
-              margin-top: 10px;
-            "
-          >
-            <div>
-              <div>{{ bookingSummaryDetails?.totalNights }}</div>
-            </div>
-          </div>
+          "
+        >
+          Your reservation is currently on hold.
+        </div>
+        <div style="color: #615d5d; font-weight: 600; font-size: 13px">
+          We’ve sent your enquiry details to your mail. <br />
+          Didn’t receive it yet? It might be in your spam folder — or simply
+          check WhatsApp.
         </div>
       </div>
 
-      <div class="col-4">
-        <div>
-          <h2
-            style="
-              font-weight: bold !important;
-              color: #000 !important;
-              font-size: 26px !important;
-            "
-          >
-            {{ propertyDetails.name }}
-          </h2>
-          <h5>
-            {{ propertyDetails.address.city }},{{
-              propertyDetails.address.state
-            }}, {{ propertyDetails.address.country }}
-          </h5>
-          <h4 style="font-size: 15px; margin-bottom: 0px">
-            <span
-              [innerHTML]="
-                expanded
-                  ? propertyDetails.businessDescription
-                  : getFirstWords(propertyDetails.businessDescription, 20)
-              "
-            ></span>
-            <span><a
-            *ngIf="shouldShowViewMore(propertyDetails.businessDescription)"
-            href="#"
-            (click)="toggleViewMore($event)"
-          >
-            {{ expanded ? "View less" : "View more" }}
-          </a></span>
-          </h4>
-
-
-        </div>
-      </div>
-    </div>
-
-    <div
-      class="row mb-4"
-      style="display: flex; justify-content: center; gap: 30px"
-    >
-      <div class="col-8" style="flex: 0 0 38%; max-width: 38%">
-        <!-- <div style="text-align: right;">Enquiry created at {{ booking.createdDate | date: 'hh:mm a, dd/MM/yyyy' }}</div> -->
-
-        <div class="details-card">
-          <ng-container
-            *ngFor="let booking of bookingsResponseList; let last = last"
-          >
-            <h5 style="font-weight: 600;">
-              {{ booking.roomName }} x {{ booking.noOfRooms }}
-            </h5>
-            <table style="width: 100%">
-              <tr>
-                <td>{{ booking.roomRatePlanName }}</td>
-
-                <td>₹{{ (booking.beforeTaxAmount -  (booking.extraPersonCharge))  | number : "1.2-2" }}</td>
-              </tr>
-              <tr *ngIf="booking.extraPersonCharge > 0">
-                <td>Extra Person Charges</td>
-                <td>₹{{ booking.extraPersonCharge }}</td>
-              </tr>
-              <tr *ngIf="booking.extraChildCharge > 0">
-                <td>Extra Child Charges</td>
-                <td>₹{{ booking.extraChildCharge }}</td>
-              </tr>
-              <tr>
-                <td>Tax Fees:</td>
-                <td>₹ {{ booking.taxAmount | number : "1.2-2" }}</td>
-              </tr>
-
-              <tr>
-                <td>Total Payable Amount</td>
-                <td>₹ {{ booking.totalAmount | number : "1.2-2" }}</td>
-              </tr>
-            </table>
-            <hr *ngIf="!last" style="border: 1px solid #e5e7eb" />
-
-            <!-- <p style="font-size: 18px">Add-on Services:</p> -->
-            <div class="addon-services" *ngIf="savedServices?.length > 0">
-              <h4 style="font-weight: bold">Add-on Services</h4>
-              <table style="border: none; width: 100%">
-                <tr *ngFor="let fac of savedServices">
-                  <td>
-                    <div
-                      class="d-flex"
-                      *ngIf="
-                        fac.name !== null &&
-                        fac.name !== undefined &&
-                        fac.serviceType !== 'Distance' &&
-                        fac.serviceType !== 'RestaurantHotel' &&
-                        fac.serviceType !== 'DistanceRailway'
-                      "
-                    >
-                      <div style="display: flex; gap: 4px">
-                        <img
-                          *ngIf="!fac.imageUrl"
-                          src="https://static.thenounproject.com/png/3421816-200.png"
-                          alt="icon"
-                          style="width: 26px; height: 23px"
-                        />
-
-                        <img
-                          *ngIf="fac.imageUrl"
-                          [src]="fac.imageUrl"
-                          alt="icon"
-                          style="width: 26px; height: 23px"
-                        />
-
-                        <br />
-
-                        <div>
-                          {{ fac.name }} * {{ fac.quantity }} <br />
-
-                          <b
-                            *ngIf="
-                              fac.servicePrice !== null &&
-                              fac.servicePrice !== undefined &&
-                              fac.servicePrice > 0 &&
-                              fac.taxAmount !== null &&
-                              fac.taxAmount !== undefined
-                            "
-                          >
-                            {{
-                              fac.servicePrice
-                                | currency : currency : "symbol" : "1.2-2"
-                            }}
-                            +
-                            {{
-                              fac.taxAmount
-                                | currency : currency : "symbol" : "1.2-2"
-                            }}
-                            ({{ fac.taxPercentage }}% tax)
-                          </b>
-                          <b
-                            *ngIf="
-                              fac.servicePrice == null ||
-                              fac.servicePrice == undefined ||
-                              fac.servicePrice == 0
-                            "
-                            style="text-align: right"
-                            >{{
-                              0 | currency : currency : "symbol" : "1.2-2"
-                            }}</b
-                          >
-                        </div>
-                      </div>
-                    </div>
-                  </td>
-                  <td
-                    *ngIf="
-                      fac.servicePrice !== null ||
-                      fac.servicePrice !== undefined
-                    "
-                    style="text-align: right"
-                  >
-                    {{
-                      fac.afterTaxAmount * fac.quantity
-                        | currency : currency : "symbol" : "1.2-2"
-                    }}
-                  </td>
-                </tr>
-              </table>
-            </div>
-          </ng-container>
-        </div>
-      </div>
-      <div class="col-4">
-         <div class="details-card" style="padding: 20px; border-radius: 15px; margin-bottom: 20px;">
-          <h5 class="headimg-color"> <img
-                      src="assets/images/payment-sum.svg"
-                      alt=""
-                      width="20"
-                      height="20"
-                      style="margin-right: 5px;"
-                    /> Payment Summary</h5>
-
-          <div class="d-flex justify-content-between line-height-27px">
-                <div class="color-graying">Total Room Price</div>
-
-                <div style="color: #3B82F6;font-weight: 500;" >
-                  ₹
-                  {{ bookingSummaryDetails?.totalPlanPrice | number : "1.2-2" }}
-                </div>
-              </div>
-
-              <div class="d-flex justify-content-between line-height-27px">
-                <div class="color-graying">Total Room Tax & Services</div>
-
-                <div style="font-weight: 500;" >
-                  ₹ {{ bookingSummaryDetails?.totalTax | number : "1.2-2" }}
-                </div>
-              </div>
-
-              <div class="d-flex justify-content-between line-height-27px" *ngIf="bookingSummaryDetails?.totalAddOnsPrice - bookingSummaryDetails?.totaltaxfacilityAmount > 0">
-                <div class="color-graying">Total Add-on Services Price</div>
-
-                <div style="font-weight: 500;">
-                  ₹
-                  {{
-                    bookingSummaryDetails?.totalAddOnsPrice - bookingSummaryDetails?.totaltaxfacilityAmount | number : "1.2-2"
-                  }}
-                </div>
-              </div>
-
-              <div class="d-flex justify-content-between line-height-27px" *ngIf="bookingSummaryDetails?.totaltaxfacilityAmount > 0">
-                <div class="color-graying">Total Add-on Services Tax Fees</div>
-
-                <div style="font-weight: 500;">
-                  ₹
-                  {{
-                    bookingSummaryDetails?.totaltaxfacilityAmount | number : "1.2-2"
-                  }}
-                </div>
-              </div>
-               <div class="d-flex justify-content-between line-height-27px">
-                <div class="font-weight-600" style="font-size: 1rem;">Total Amount</div>
-
-                <div class="font-weight-600" style="font-size: 1rem;">
-                  ₹ {{ bookingSummaryDetails?.totalAmount | number : "1.2-2" }}
-                </div>
-              </div>
-        </div>
-
-        <div class="details-card" style="padding: 20px; border-radius: 15px">
-          <h5>
-            <img
-              src="assets/images/guest-booking-details.svg"
-              alt=""
-              width="18"
-              height="18"
-            />
-            Guest Details
-          </h5>
-          <table style="width: 100%">
-            <tr
-              *ngIf="
-                booking.firstName != null && booking.firstName != undefined
-              "
+      <div style="justify-content: center; display: flex; gap: 20px">
+        <div
+          class="card"
+          style="
+            text-align: center;
+            background-color: #eff6ff;
+            padding: 26px 19px;
+          "
+        >
+          <div class="mb-2">
+            <span class="highlight-text">Current Status</span>
+          </div>
+          <div class="mb-0">
+            <span class="status-badge status-enquiry" style="font-size: 13px"
+              >Enquiry</span
             >
-              <td>Guest Name:</td>
-              <td>{{ booking.firstName }} {{ booking.lastName }}</td>
-            </tr>
+          </div>
+        </div>
+        <div
+          class="card"
+          style="
+            text-align: center;
+            background-color: #eff6ff;
+            padding: 26px 19px;
+          "
+        >
+          <div class="mb-2">
+            <span class="highlight-text">Payment Status</span>
+          </div>
+          <div class="mb-0">
+            <span class="status-badge status-unpaid" style="font-size: 13px"
+              ><i class="fa-solid fa-ban"></i> Unpaid</span
+            >
+          </div>
+        </div>
+        <div
+          class="card"
+          style="
+            text-align: center;
+            background-color: #eff6ff;
+            padding: 26px 19px;
+          "
+        >
+          <div class="mb-2">
+            <span class="highlight-text"
+              >Enquiry ID
+              <img
+                src="assets/images/CopyVoucher.png"
+                alt=""
+                height="15px"
+                width="15px"
+                style="    margin-right: 3px; margin-left: 5px; cursor: pointer;"
+                (click)="copyText()"
+            /></span>
+          </div>
+          <div class="mb-0" style="text-align: left">
+            <span *ngIf="booking?.groupBookingId">
+              <b id="textToCopy">{{ booking?.groupBookingId }}</b></span
+            >
 
-            <tr *ngIf="booking.email != null && booking.email != undefined">
-              <td>Email Address:</td>
-              <td>{{ booking.email }}</td>
-            </tr>
+            <span *ngIf="!booking?.groupBookingId"
+              ><b id="textToCopy">{{ booking?.id }}</b></span
+            >
+          </div>
+            <a
+              href="https://thehotelmate.co/history"
+              style="font-size: 11px; color: #1465cf; text-decoration: none; text-align: left;"
+              >Check Details</a
+            >
+        </div>
+      </div>
+    </div>
+    <div style="display: flex; justify-content: center; gap:30px; margin-top: 20px;" >
+      <button class="needassistance"><i class="fa-solid fa-phone" style="margin-right: 4px;"></i>Need Assistance?</button>
+       <button class="saveCopy"><i class="fa-solid fa-download" style="margin-right: 4px;"></i>Save a Copy</button>
+    </div>
 
-            <tr *ngIf="booking.mobile != null && booking.mobile != undefined">
-              <td>Phone Number:</td>
-              <td>{{ booking.mobile }}</td>
-            </tr>
+    <div class="d-flex justify-content-center" style=" margin-top: 30px;">
+      <div class="col-8">
+        <div class="card enquiry-details-card">
+          <h4 class="heading-enquiry"><i style="color:#1465cf" class="fa-solid fa-file"></i>&nbsp; Enquiry Details </h4>
+          <div class="d-flex justify-content-between" style="border-bottom: 1px solid #F3F4F6;gap: 20px; margin-top: 10px;">
+              <div class="d-flex justify-content-between" style="width: 49%; padding-bottom: 10px;">
+                <div>Enquiry ID:</div>
+            <div><span *ngIf="booking?.groupBookingId">
+              <b >{{ booking?.groupBookingId }}</b></span
+            >
 
-            <tr *ngIf="booking.notes != null && booking.notes != undefined">
-              <td>Notes:</td>
-              <td>{{ booking.notes }}</td>
-            </tr>
-          </table>
+            <span *ngIf="!booking?.groupBookingId"
+              ><b >{{ booking?.id }}</b></span
+            ></div>
+              </div>
+              <div class="d-flex justify-content-between">
+              </div>
+          </div>
+          <div class="d-flex justify-content-between" style="border-bottom: 1px solid #F3F4F6;gap: 20px; margin-top: 10px;">
+              <div class="d-flex justify-content-between" style="width: 50%; padding-bottom: 10px;">
+                <div>Check-in Date:</div>
+            <div><span *ngIf="booking.fromDate">
+              <b >{{ booking.fromDate | date : "d MMM" }}</b></span
+            >
+              </div>
+              </div>
+              <div class="d-flex justify-content-between" style="width: 50%; padding-bottom: 10px;">
+                <div>Check Out Date:</div>
+            <div><span *ngIf="booking.toDate">
+              <b >{{ booking.toDate | date : "d MMM" }}</b></span
+            ></div>
+              </div>
+          </div>
+          <div class="d-flex justify-content-between" style="border-bottom: 1px solid #F3F4F6; gap: 20px; margin-top: 10px;">
+               <div class="d-flex justify-content-between" style="width: 50%; padding-bottom: 10px;">
+                <div>Guests:</div>
+            <div><span >
+              <b >{{ totalPlanAdults }} Adults, {{ totalPlanChildren }} Children</b></span
+            >
+              </div>
+              </div>
+              <div class="d-flex justify-content-between" style="width: 50%; padding-bottom: 10px;">
+                <div>Nights:</div>
+            <div><span >
+              <b >{{ bookingSummaryDetails?.totalNights }}</b></span
+            ></div>
+              </div>
+          </div>
+
+        </div>
+
+      </div>
+      <div class="col-4">
+         <div class="card enquiry-details-card">
+          <h4 class="heading-enquiry"><i style="color:#1465cf" class="fa-solid fa-user"></i>&nbsp; Guest Details </h4>
+          <div class="d-flex justify-content-between" style="border-bottom: 1px solid #F3F4F6;gap: 20px; margin-top: 10px;">
+              <div class="d-flex justify-content-between" style=" padding-bottom: 10px;     width: 100%;">
+                <div>Name:</div>
+            <div><span >
+              <b >{{ booking.firstName }} {{ booking.lastName }}</b></span
+            ></div>
+              </div>
+          </div>
+          <div class="d-flex justify-content-between" style="border-bottom: 1px solid #F3F4F6;gap: 20px; margin-top: 10px;">
+              <div class="d-flex justify-content-between" style=" padding-bottom: 10px;    width: 100%;">
+                <div>Email:</div>
+            <div><span >
+              <b >{{ booking.email }}</b></span
+            >
+              </div>
+              </div>
+
+          </div>
+          <div class="d-flex justify-content-between" style="border-bottom: 1px solid #F3F4F6; gap: 20px; margin-top: 10px;">
+               <div class="d-flex justify-content-between" style=" padding-bottom: 10px;    width: 100%;">
+                <div>Mobile No:</div>
+            <div><span >
+              <b >{{ booking.mobile }}</b></span
+            >
+              </div>
+              </div>
+          </div>
+
         </div>
       </div>
     </div>
 
-    <div class="footer-link">
-      <a (click)="backone()" href="{{ PropertyUrl }}" style="font-weight: bold; font-size: 18px"
-        >Go back to home page</a
-      >
-      <div style="display: flex; justify-content: center">
-        <div style="width: 181px; border-bottom: 2px solid gray"></div>
-      </div>
-    </div>
-    <div class="mt-2" style="text-align: center">
-      For urgent bookings (same-day or next-morning check-ins), please call us
-      directly at <strong>90407 85705</strong> for prompt assistance.
+      <div class="col-12" style=" margin-top: 30px;">
+         <div class="card enquiry-details-card">
+          <h4 class="heading-enquiry"><i style="color:#1465cf" class="fa-solid fa-bed"></i> &nbsp; Enquiry Details </h4>
+          <div class="booking-summary-container">
+    <table class="booking-summary-table">
+      <thead>
+        <tr style="border-bottom: 1px solid #E5E7EB; border-radius: 10px; background-color: #f9f9f9;">
+          <th>Selection</th>
+          <th>Price</th>
+          <th>Nights</th>
+          <th>Count</th>
+          <th>Extra Pax</th>
+          <th>Extra Child</th>
+          <th>Sub Total</th>
+          <th>Tax</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let booking of bookingsResponseList; let last = last">
+          <td>{{booking.roomRatePlanName}}</td>
+          <td>₹{{
+                    booking.beforeTaxAmount - booking.extraPersonCharge
+                      | number : "1.2-2"
+                  }}</td>
+          <td>{{ bookingSummaryDetails?.totalNights }}</td>
+          <td>{{ booking.noOfRooms }}</td>
+          <td>₹{{ booking.extraPersonCharge | number : "1.2-2" }}</td>
+          <td>₹{{ booking.extraChildCharge | number : "1.2-2" }}</td>
+          <td>₹{{ booking.beforeTaxAmount | number : "1.2-2"}}</td>
+          <td>₹{{ booking.taxAmount | number : "1.2-2" }}</td>
+          <td>₹{{ booking.totalAmount | number : "1.2-2" }}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="booking-summary-footer">
+      <div>Subtotal: ₹ {{ bookingSummaryDetails?.totalPlanPrice | number : "1.2-2" }}</div>
+      <div *ngIf="booking.discountPercentage">Discount ({{booking.discountPercentage}}%): -₹ {{ booking?.discountAmount | number : "1.2-2" }}</div>
+      <div>Total GST: ₹ {{ bookingSummaryDetails?.totalTax | number : "1.2-2" }}</div>
+      <div *ngIf="bookingSummaryDetails?.totalAddOnsPrice">Total Add-on Services Price: ₹ {{
+                bookingSummaryDetails?.totalAddOnsPrice -
+                  bookingSummaryDetails?.totaltaxfacilityAmount
+                  | number : "1.2-2"
+              }}</div>
+      <div *ngIf="bookingSummaryDetails?.totaltaxfacilityAmount">Total Add-on Services Tax Fees:
+        ₹{{bookingSummaryDetails?.totaltaxfacilityAmount | number : "1.2-2"}}</div>
+      <div class="booking-summary-total">Total Amount:  ₹ {{ bookingSummaryDetails?.totalAmount | number : "1.2-2" }}</div>
+
     </div>
   </div>
-  <div class="note-sectionOne" style="padding-left: 80px; padding-right: 80px">
+
+        </div>
+      </div>
+        <div class="note-sectionOne" style="padding-left: 80px; padding-right: 80px">
     <h5>Please note:</h5>
-    <ul>
+    <ul style="line-height: 30px;">
       <li>
         Confirmation: The Hotel Mate team will contact you to confirm your
         booking.
@@ -570,33 +336,15 @@
 
         <div style="padding: 20px">
           <div
-            [innerHTML]="
-              isReadMore[i]
-                ? bServiceDtoList?.policy
-                : (bServiceDtoList?.policy | slice : 0 : 200) + '...'
-            "
+            [innerHTML]="bServiceDtoList?.policy "
           ></div>
-          <div style="padding: 10px">
-            <span
-              style="
-                color: #221950;
-                font-weight: bold;
-                font-size: 15px;
-                cursor: pointer;
-                float: right;
-              "
-              (click)="toggleReadMore(i)"
-            >
-              {{ isReadMore[i] ? "View Less" : "View More" }}
-            </span>
-          </div>
         </div>
       </div>
     </div>
   </div>
-</div>
+  </div>
 <div class="popup-container" *ngIf="copyTextOne">
-  <div class="popup-content">Reservation ID copied successfully!</div>
+  <div class="popup-content">Enquiry ID copied successfully!</div>
 </div>
 
 <div class="mobile-view-booking-voucher">
@@ -661,38 +409,39 @@
     >
       Your reservation is currently on hold.
     </div>
-   <div class="mb-0" style="font-size: 18px; color: #615d5d">
-        A copy of this reservation has been sent to {{ booking.email }} & your
-        reservation number
-         <span *ngIf="booking?.groupBookingReference">
-        <span >
+    <div class="mb-0" style="font-size: 18px; color: #615d5d">
+      A copy of this reservation has been sent to {{ booking.email }} & your
+      reservation number
+      <span *ngIf="booking?.groupBookingReference">
+        <span>
           {{ booking?.groupBookingReference }}
         </span>
       </span>
 
       <span *ngIf="!booking?.groupBookingReference">
-        <span >
+        <span>
           {{ booking?.propertyReservationNumber }}
-        </span>
-      </span>.
-        </div>
+        </span> </span
+      >.
+    </div>
     <div style="color: #615d5d; font-weight: bold; font-size: 13px">
       Note: Please check your spam folder if you don't see it, or find it on
       WhatsApp.
     </div>
   </div>
 
-  <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;">
+  <div
+    style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap"
+  >
     <div style="color: #615d5d; font-size: 18px">Booking ID</div>
     <div style="font-weight: bold; font-size: 17px">
-       <span *ngIf="booking?.groupBookingId">
-          <b
-            id="textToCopy"
-            >{{ booking?.groupBookingId }}</b></span>
+      <span *ngIf="booking?.groupBookingId">
+        <b id="textToCopy">{{ booking?.groupBookingId }}</b></span
+      >
 
-          <span *ngIf="!booking?.groupBookingId"><b
-            id="textToCopy"
-            >{{ booking?.id }}</b></span>
+      <span *ngIf="!booking?.groupBookingId"
+        ><b id="textToCopy">{{ booking?.id }}</b></span
+      >
       <img
         src="assets/images/CopyVoucher.png"
         alt=""
@@ -888,162 +637,160 @@
       margin-bottom: 15px;
     "
   >
-     <h5>
-            <img
-              src="assets/images/guest-booking-details.svg"
-              alt=""
-              width="18"
-              height="18"
-            />
-            Guest Details
-          </h5>
-          <table style="width: 100%">
-            <tr
-              *ngIf="
-                booking.firstName != null && booking.firstName != undefined
-              "
-            >
-              <td>Guest Name:</td>
-              <td>{{ booking.firstName }} {{ booking.lastName }}</td>
-            </tr>
+    <h5>
+      <img
+        src="assets/images/guest-booking-details.svg"
+        alt=""
+        width="18"
+        height="18"
+      />
+      Guest Details
+    </h5>
+    <table style="width: 100%">
+      <tr *ngIf="booking.firstName != null && booking.firstName != undefined">
+        <td>Guest Name:</td>
+        <td>{{ booking.firstName }} {{ booking.lastName }}</td>
+      </tr>
 
-            <tr *ngIf="booking.email != null && booking.email != undefined">
-              <td>Email Address:</td>
-              <td>{{ booking.email }}</td>
-            </tr>
+      <tr *ngIf="booking.email != null && booking.email != undefined">
+        <td>Email Address:</td>
+        <td>{{ booking.email }}</td>
+      </tr>
 
-            <tr *ngIf="booking.mobile != null && booking.mobile != undefined">
-              <td>Phone Number:</td>
-              <td>{{ booking.mobile }}</td>
-            </tr>
+      <tr *ngIf="booking.mobile != null && booking.mobile != undefined">
+        <td>Phone Number:</td>
+        <td>{{ booking.mobile }}</td>
+      </tr>
 
-            <tr *ngIf="booking.notes != null && booking.notes != undefined">
-              <td>Notes:</td>
-              <td>{{ booking.notes }}</td>
-            </tr>
-          </table>
+      <tr *ngIf="booking.notes != null && booking.notes != undefined">
+        <td>Notes:</td>
+        <td>{{ booking.notes }}</td>
+      </tr>
+    </table>
   </div>
 
   <div class="col-12">
     <div class="details-cardOne">
-       <ng-container
-            *ngFor="let booking of bookingsResponseList; let last = last"
-          >
-            <h5 style="font-weight: 600;">
-              {{ booking.roomName }} x {{ booking.noOfRooms }}
-            </h5>
-            <table style="width: 100%">
-              <tr>
-                <td>{{ booking.roomRatePlanName }}</td>
-                <td>₹{{ (booking.beforeTaxAmount -  (booking.extraPersonCharge))  | number : "1.2-2" }}</td>
-              </tr>
-              <tr *ngIf="booking.extraPersonCharge > 0">
-                <td>Extra Person Charges</td>
-                <td>₹{{ booking.extraPersonCharge }}</td>
-              </tr>
-              <tr *ngIf="booking.extraChildCharge > 0">
-                <td>Extra Child Charges</td>
-                <td>₹{{ booking.extraChildCharge }}</td>
-              </tr>
-              <tr>
-                <td>Tax Fees:</td>
-                <td>₹ {{ booking.taxAmount | number : "1.2-2" }}</td>
-              </tr>
+      <ng-container
+        *ngFor="let booking of bookingsResponseList; let last = last"
+      >
+        <h5 style="font-weight: 600">
+          {{ booking.roomName }} x {{ booking.noOfRooms }}
+        </h5>
+        <table style="width: 100%">
+          <tr>
+            <td>{{ booking.roomRatePlanName }}</td>
+            <td>
+              ₹{{
+                booking.beforeTaxAmount - booking.extraPersonCharge
+                  | number : "1.2-2"
+              }}
+            </td>
+          </tr>
+          <tr *ngIf="booking.extraPersonCharge > 0">
+            <td>Extra Person Charges</td>
+            <td>₹{{ booking.extraPersonCharge }}</td>
+          </tr>
+          <tr *ngIf="booking.extraChildCharge > 0">
+            <td>Extra Child Charges</td>
+            <td>₹{{ booking.extraChildCharge }}</td>
+          </tr>
+          <tr>
+            <td>Tax Fees:</td>
+            <td>₹ {{ booking.taxAmount | number : "1.2-2" }}</td>
+          </tr>
 
-              <tr>
-                <td>Total Payable Amount</td>
-                <td>₹ {{ booking.totalAmount | number : "1.2-2" }}</td>
-              </tr>
-            </table>
-            <hr *ngIf="!last" style="border: 1px solid #e5e7eb" />
+          <tr>
+            <td>Total Payable Amount</td>
+            <td>₹ {{ booking.totalAmount | number : "1.2-2" }}</td>
+          </tr>
+        </table>
+        <hr *ngIf="!last" style="border: 1px solid #e5e7eb" />
 
-            <!-- <p style="font-size: 18px">Add-on Services:</p> -->
-            <div class="addon-services" *ngIf="savedServices?.length > 0">
-              <h4 style="font-weight: bold">Add-on Services</h4>
-              <table style="border: none; width: 100%">
-                <tr *ngFor="let fac of savedServices">
-                  <td>
-                    <div
-                      class="d-flex"
-                      *ngIf="
-                        fac.name !== null &&
-                        fac.name !== undefined &&
-                        fac.serviceType !== 'Distance' &&
-                        fac.serviceType !== 'RestaurantHotel' &&
-                        fac.serviceType !== 'DistanceRailway'
-                      "
-                    >
-                      <div style="display: flex; gap: 4px">
-                        <img
-                          *ngIf="!fac.imageUrl"
-                          src="https://static.thenounproject.com/png/3421816-200.png"
-                          alt="icon"
-                          style="width: 26px; height: 23px"
-                        />
+        <!-- <p style="font-size: 18px">Add-on Services:</p> -->
+        <div class="addon-services" *ngIf="savedServices?.length > 0">
+          <h4 style="font-weight: bold">Add-on Services</h4>
+          <table style="border: none; width: 100%">
+            <tr *ngFor="let fac of savedServices">
+              <td>
+                <div
+                  class="d-flex"
+                  *ngIf="
+                    fac.name !== null &&
+                    fac.name !== undefined &&
+                    fac.serviceType !== 'Distance' &&
+                    fac.serviceType !== 'RestaurantHotel' &&
+                    fac.serviceType !== 'DistanceRailway'
+                  "
+                >
+                  <div style="display: flex; gap: 4px">
+                    <img
+                      *ngIf="!fac.imageUrl"
+                      src="https://static.thenounproject.com/png/3421816-200.png"
+                      alt="icon"
+                      style="width: 26px; height: 23px"
+                    />
 
-                        <img
-                          *ngIf="fac.imageUrl"
-                          [src]="fac.imageUrl"
-                          alt="icon"
-                          style="width: 26px; height: 23px"
-                        />
+                    <img
+                      *ngIf="fac.imageUrl"
+                      [src]="fac.imageUrl"
+                      alt="icon"
+                      style="width: 26px; height: 23px"
+                    />
 
-                        <br />
+                    <br />
 
-                        <div>
-                          {{ fac.name }} * {{ fac.quantity }} <br />
+                    <div>
+                      {{ fac.name }} * {{ fac.quantity }} <br />
 
-                          <b
-                            *ngIf="
-                              fac.servicePrice !== null &&
-                              fac.servicePrice !== undefined &&
-                              fac.servicePrice > 0 &&
-                              fac.taxAmount !== null &&
-                              fac.taxAmount !== undefined
-                            "
-                          >
-                            {{
-                              fac.servicePrice
-                                | currency : currency : "symbol" : "1.2-2"
-                            }}
-                            +
-                            {{
-                              fac.taxAmount
-                                | currency : currency : "symbol" : "1.2-2"
-                            }}
-                            ({{ fac.taxPercentage }}% tax)
-                          </b>
-                          <b
-                            *ngIf="
-                              fac.servicePrice == null ||
-                              fac.servicePrice == undefined ||
-                              fac.servicePrice == 0
-                            "
-                            style="text-align: right"
-                            >{{
-                              0 | currency : currency : "symbol" : "1.2-2"
-                            }}</b
-                          >
-                        </div>
-                      </div>
+                      <b
+                        *ngIf="
+                          fac.servicePrice !== null &&
+                          fac.servicePrice !== undefined &&
+                          fac.servicePrice > 0 &&
+                          fac.taxAmount !== null &&
+                          fac.taxAmount !== undefined
+                        "
+                      >
+                        {{
+                          fac.servicePrice
+                            | currency : currency : "symbol" : "1.2-2"
+                        }}
+                        +
+                        {{
+                          fac.taxAmount
+                            | currency : currency : "symbol" : "1.2-2"
+                        }}
+                        ({{ fac.taxPercentage }}% tax)
+                      </b>
+                      <b
+                        *ngIf="
+                          fac.servicePrice == null ||
+                          fac.servicePrice == undefined ||
+                          fac.servicePrice == 0
+                        "
+                        style="text-align: right"
+                        >{{ 0 | currency : currency : "symbol" : "1.2-2" }}</b
+                      >
                     </div>
-                  </td>
-                  <td
-                    *ngIf="
-                      fac.servicePrice !== null ||
-                      fac.servicePrice !== undefined
-                    "
-                    style="text-align: right"
-                  >
-                    {{
-                      fac.afterTaxAmount * fac.quantity
-                        | currency : currency : "symbol" : "1.2-2"
-                    }}
-                  </td>
-                </tr>
-              </table>
-            </div>
-          </ng-container>
+                  </div>
+                </div>
+              </td>
+              <td
+                *ngIf="
+                  fac.servicePrice !== null || fac.servicePrice !== undefined
+                "
+                style="text-align: right"
+              >
+                {{
+                  fac.afterTaxAmount * fac.quantity
+                    | currency : currency : "symbol" : "1.2-2"
+                }}
+              </td>
+            </tr>
+          </table>
+        </div>
+      </ng-container>
 
       <div *ngIf="savedServices?.length > 0">
         <div style="font-size: 18px">Add-on Services:</div>
@@ -1129,65 +876,79 @@
       </div>
     </div>
 
-
     <div class="details-cardOne" style="margin-top: 20px">
-        <h5 class="headimg-color"> <img
-                      src="assets/images/payment-sum.svg"
-                      alt=""
-                      width="20"
-                      height="20"
-                      style="margin-right: 5px;"
-                    /> Payment Summary</h5>
+      <h5 class="headimg-color">
+        <img
+          src="assets/images/payment-sum.svg"
+          alt=""
+          width="20"
+          height="20"
+          style="margin-right: 5px"
+        />
+        Payment Summary
+      </h5>
 
-        <div class="d-flex justify-content-between line-height-27px">
-                <div class="color-graying">Total Room Price</div>
+      <div class="d-flex justify-content-between line-height-27px">
+        <div class="color-graying">Total Room Price</div>
 
-                <div style="color: #3B82F6;font-weight: 500;" >
-                  ₹
-                  {{ bookingSummaryDetails?.totalPlanPrice | number : "1.2-2" }}
-                </div>
-              </div>
+        <div style="color: #3b82f6; font-weight: 500">
+          ₹
+          {{ bookingSummaryDetails?.totalPlanPrice | number : "1.2-2" }}
+        </div>
+      </div>
 
-              <div class="d-flex justify-content-between line-height-27px">
-                <div class="color-graying">Total Room Tax & Services</div>
+      <div class="d-flex justify-content-between line-height-27px">
+        <div class="color-graying">Total Room Tax & Services</div>
 
-                <div style="font-weight: 500;" >
-                  ₹ {{ bookingSummaryDetails?.totalTax | number : "1.2-2" }}
-                </div>
-              </div>
+        <div style="font-weight: 500">
+          ₹ {{ bookingSummaryDetails?.totalTax | number : "1.2-2" }}
+        </div>
+      </div>
 
-              <div class="d-flex justify-content-between line-height-27px" *ngIf="bookingSummaryDetails?.totalAddOnsPrice - bookingSummaryDetails?.totaltaxfacilityAmount > 0">
-                <div class="color-graying">Total Add-on Services Price</div>
+      <div
+        class="d-flex justify-content-between line-height-27px"
+        *ngIf="
+          bookingSummaryDetails?.totalAddOnsPrice -
+            bookingSummaryDetails?.totaltaxfacilityAmount >
+          0
+        "
+      >
+        <div class="color-graying">Total Add-on Services Price</div>
 
-                <div style="font-weight: 500;">
-                  ₹
-                  {{
-                    bookingSummaryDetails?.totalAddOnsPrice - bookingSummaryDetails?.totaltaxfacilityAmount | number : "1.2-2"
-                  }}
-                </div>
-              </div>
+        <div style="font-weight: 500">
+          ₹
+          {{
+            bookingSummaryDetails?.totalAddOnsPrice -
+              bookingSummaryDetails?.totaltaxfacilityAmount | number : "1.2-2"
+          }}
+        </div>
+      </div>
 
-              <div class="d-flex justify-content-between line-height-27px" *ngIf="bookingSummaryDetails?.totaltaxfacilityAmount > 0">
-                <div class="color-graying">Total Add-on Services Tax Fees</div>
+      <div
+        class="d-flex justify-content-between line-height-27px"
+        *ngIf="bookingSummaryDetails?.totaltaxfacilityAmount > 0"
+      >
+        <div class="color-graying">Total Add-on Services Tax Fees</div>
 
-                <div style="font-weight: 500;">
-                  ₹
-                  {{
-                    bookingSummaryDetails?.totaltaxfacilityAmount | number : "1.2-2"
-                  }}
-                </div>
-              </div>
-               <div class="d-flex justify-content-between line-height-27px">
-                <div class="font-weight-600" style="font-size: 1rem;">Total Amount</div>
+        <div style="font-weight: 500">
+          ₹
+          {{ bookingSummaryDetails?.totaltaxfacilityAmount | number : "1.2-2" }}
+        </div>
+      </div>
+      <div class="d-flex justify-content-between line-height-27px">
+        <div class="font-weight-600" style="font-size: 1rem">Total Amount</div>
 
-                <div class="font-weight-600" style="font-size: 1rem;">
-                  ₹ {{ bookingSummaryDetails?.totalAmount | number : "1.2-2" }}
-                </div>
-              </div>
+        <div class="font-weight-600" style="font-size: 1rem">
+          ₹ {{ bookingSummaryDetails?.totalAmount | number : "1.2-2" }}
+        </div>
+      </div>
     </div>
 
     <div class="footer-link">
-      <a (click)="backone()" href="{{ PropertyUrl }}" style="font-weight: bold; font-size: 16px"
+      <a
+        (click)="backone()"
+        href="{{ PropertyUrl }}"
+        style="font-weight: bold; font-size: 16px"
         >Go back to home page</a
       >
       <div style="display: flex; justify-content: center">
