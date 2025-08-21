@@ -817,12 +817,19 @@
                     {{ plan.planCodeName }} x {{ plan.selectedRoomnumber }}
                   </div>
 
-                  <div>
+                  <div *ngIf="activeGoogleCenter">
+                    ₹
+                    {{
+                      (plan.price - ((plan.extraPersonAdultCountAmount +
+                          plan.extraPersonChildCountAmount) )) | number : "1.2-2"
+                    }}
+                  </div>
+                  <div *ngIf="!activeGoogleCenter">
                     ₹
                     {{
                       plan.price -
-                        (plan.extraPersonAdultCountAmount +
-                          plan.extraPersonChildCountAmount) | number : "1.2-2"
+                        ((plan.extraPersonAdultCountAmount +
+                        plan.extraPersonChildCountAmount)) | number : "1.2-2"
                     }}
                   </div>
                 </div>
@@ -839,8 +846,8 @@
                   <div>
                     ₹
                     {{
-                      plan.extraPersonAdultCountAmount +
-                        plan.extraPersonChildCountAmount
+                      ((plan.extraPersonAdultCountAmount +
+                        plan.extraPersonChildCountAmount))
                     }}
                   </div>
                 </div>

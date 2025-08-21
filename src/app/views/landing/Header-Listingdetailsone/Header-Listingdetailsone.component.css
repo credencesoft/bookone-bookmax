@@ -143,23 +143,35 @@ hr {
   /* Unique blink button styles */
 .blinking-unique-btn {
   padding: 5px;
-  border-radius: 21px;
+  border-radius: 12px;
   border: 0px solid #6C8003;
   color: #fff !important;
   font-size: 16px;
   font-weight: bold;
   cursor: pointer;
-          background-color: var(--secondary, #0b01cc);
-          color:  var(--tertiary, #fff);
+          background-color: #2563EB !important;
+          color:  #fff !important;
           border: none;
-          padding: 10px 27px;
-letter-spacing: 1px;
+    padding: 14px 28px;
+    letter-spacing: 1px;
+
 }
 .blinking-unique-btn:hover {
 background-color: var(--tertiary, #fff);
 color: var(--secondary, #0b01cc) !important;
 }
-
+.Whatsapp-btn-header {
+    background: linear-gradient(90deg, #22C55E 0%, #16A34A 100%);
+    color: #fff;
+    font-family: "Poppins";
+    border: none;
+    padding: 14px 28px;
+    letter-spacing: 1px;
+border-radius: 12px;
+}
+/* df-messenger-chat-bubble {
+  display: none !important;
+} */
 /* Visit Website Section */
 .unique-container {
   position: absolute;

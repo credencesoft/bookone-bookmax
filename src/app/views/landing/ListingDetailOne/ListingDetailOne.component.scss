@@ -1,22 +1,24 @@
 .checkAvaCard {
-  background-color: #f5f5f5;
-  margin-bottom: 18px;
-  width: 100%;
-  padding-top: 10px;
-  padding-bottom: 10px;
-  padding-left: 26px;
-  box-shadow: 0 10px 10px rgba(0, 0, 0, 0.15) !important;
+background-color: #f5f5f5;
+    margin-bottom: 18px;
+    width: 100%;
+    padding-top: 9px;
+    padding-bottom: 8px;
+    padding-left: 26px;
+    box-shadow: 0 10px 10px rgba(0, 0, 0, 0.15) !important;
+    margin-top: 20px;
 }
 .checkAva2 {
-  margin-left: 10px;
-  margin-top: 10px;
+    margin-left: 10px;
+    margin-top: 10px;
+    margin-bottom: -7px;
 }
 
 .checkAva3 {
   background-color: #fff;
   padding: 0px;
   padding-top: 8px;
-  margin-bottom: 11px;
+  margin-bottom: 22px;
   border-top-left-radius: 6px;
   border-bottom-left-radius: 6px;
   width: 19%;
@@ -62,7 +64,7 @@
   background-color: #fff;
   padding: 0px;
   padding-top: 8px;
-  margin-bottom: 11px;
+  margin-bottom: 22px;
   border-top-right-radius: 6px;
   border-bottom-right-radius: 6px;
   display: flex;
@@ -73,10 +75,10 @@
   background-color: #fff;
   padding: 0px;
   padding-top: 8px;
-  margin-bottom: 11px;
+    margin-bottom: 22px;
   border-radius: 6px;
   margin-left: 20px;
-  width: 26%;
+  width: 30%;
 }
 .checkAva7 {
   padding-top: 0px;
@@ -381,6 +383,7 @@ width: auto;
     border: none;
     padding: 7px 19px;
     border-radius: 7px;
+    width:20%;
 }
 .Whatsapp-btn {
     background-color: #03A410;
@@ -1520,6 +1523,10 @@ position: absolute;
     font-size: 12px;
     margin-top: -11px;
     margin-bottom: 10px;
+}
+.margin-changes {
+      margin-bottom: 22px;
+    margin-left: 20px;
 }
 
 @media (max-width: 1180px) {

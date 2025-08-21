@@ -44,6 +44,8 @@ export class PaylaterConfirmComponent {
   totalPlanChildren: number = 0;
   bookingsResponseList: any;
   expanded: boolean = false;
+    url: string;
+    activeGoogleCenter: boolean = false;
   constructor(
     private token: TokenStorage,
     private hotelBookingService: HotelBookingService,
@@ -205,9 +207,10 @@ export class PaylaterConfirmComponent {
   }
   async getPropertyDetailsById(id: number) {
     // debugger
-    // this.token.saveBookingEngineBoolean('googlehotelcenter')
-
-    // //console.log("id isequal to" + id)
+    this.url = this.token.getBookingEngineBoolean();
+    if (this.url === 'googlehotelcenter') {
+      this.activeGoogleCenter = true;
+    }
     try {
       const data = await this.listingService?.findByPropertyId(id).toPromise();
       if (data.status === 200) {
