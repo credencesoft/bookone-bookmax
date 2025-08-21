@@ -3874,13 +3874,7 @@
     <div class="side-images website-web-vision">
       <div class="card booking-card sticky-card">
         <h5 class="font-weight-bold mb-3">
-          Booking Summary &nbsp;&nbsp;<span
-            *ngIf="enteredCoupon && specialDiscountPercentage"
-            class="badge badge-success badge-successOne px-2 py-1 mr-2"
-          >
-            <img src=" assets/images/coupon-image-change.svg" alt="" /> &nbsp;
-            Coupon Applied!</span
-          >
+          Booking Summary &nbsp;&nbsp;
         </h5>
 
         <!-- Dates & Guests -->
@@ -4075,7 +4069,7 @@
             </div>
           </ng-container>
         </div>
-        <div class="margin-bottom-10px">
+        <div >
                   <small class="special-code">Got an exclusive code? <span class="special-code-One">Unlock your deal</span></small> <br/>
                   <small class="text-danger" *ngIf="errorMessagePrivate">{{errorMessagePrivate}}</small>
                 </div>
@@ -4126,9 +4120,10 @@
                     </button>
                   </div>
                 </div>
+               <small class="message-coupon" *ngIf="this.specialDiscountData">Coupon {{this.specialDiscountData.couponCode}} Applied Successfully!</small>
 
         <!-- Summary -->
-        <div class="mb-3" *ngIf="selectedPlansSummary.length > 0">
+        <div class="mb-3 font-size-13px" *ngIf="selectedPlansSummary.length > 0">
           <div class="d-flex justify-content-between" *ngIf="!activeForGoogleHotelCenter">
             <span>Rooms Total</span>
             <span>₹{{ getTotalPlanPrice() | number : "1.2-2" }}</span>
@@ -4144,10 +4139,12 @@
           >
             <span>Discount ({{ specialDiscountPercentage }})%</span>
             <span
-              >₹{{
+              >
+              <small>Coupon <img src=" assets/images/coupon-tag.svg" alt="" /><b style="color:#16A34A; font-weight: 400;">{{this.specialDiscountData.couponCode}}</b> &nbsp; </small>
+              <b style="color:#16A34A; font-weight: 400;">-₹{{
                 (getTotalPlanPrice() * specialDiscountPercentage) / 100
                   | number : "1.2-2"
-              }}</span
+              }}</b></span
             >
           </div>
 

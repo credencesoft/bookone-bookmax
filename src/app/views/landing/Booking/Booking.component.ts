@@ -269,6 +269,7 @@ export class BookingComponent implements OnInit {
   specialDiscountData: any;
   enteredCoupon: any;
   showTermsUniquePopup: boolean = false;
+  showPrivacyUniquePopup: boolean = false;
   constructor(
     private token: TokenStorage,
     private ngZone: NgZone,
@@ -520,9 +521,16 @@ if (parsed.discountPercentage) {
 openTermsUniquePopup() {
   this.showTermsUniquePopup = true;
 }
-
+openPrivacyUniquePopup() {
+  this.showPrivacyUniquePopup = true;
+}
+closePrivacyUniquePopup() {
+  this.showPrivacyUniquePopup = false;
+    this.showTermsUniquePopup = false;
+}
 closeTermsUniquePopup() {
   this.showTermsUniquePopup = false;
+    this.showPrivacyUniquePopup = false;
 }
   toggleViewMore(index: number, event: Event): void {
     event.preventDefault(); // prevent page jump
