@@ -678,8 +678,8 @@
     <div class="container-div" style="margin-top: 20px">
       <div class="booking-summary-container">
         <div class="row" style="margin: 0px !important">
-          <div class="col-8 padding-left0px padding-right-0px">
-            <div class="card" style="padding: 30px">
+          <div class="col-7 padding-left0px padding-right-0px">
+            <div class="rooms-cards-pricing card" style="padding: 30px; margin-bottom: 20px;">
               <h5 class="margin-botton-20px booking-d-heading">
                 <img
                   src="assets/images/calemder-frame.svg"
@@ -779,14 +779,293 @@
                   </div>
                 </div>
               </div>
-              <hr
-                style="
-                  border: 1px solid #e5e7eb;
-                  margin-top: 20px;
-                  margin-bottom: 20px;
-                "
-              />
 
+            </div>
+            <!-- Fill Your Details Section -->
+            <form
+              (ngSubmit)="orderForm?.form.valid && onSubmit(orderForm)"
+              #orderForm="ngForm"
+              *ngIf="!bookingConfirmed"
+            >
+              <div
+                class="rooms-cards-pricing card p-4 mx-auto booking-heading"
+                style="
+                  border-radius: 10px;
+                  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                "
+              >
+                <h5 class="headimg-color">
+                  <img
+                    src="assets/images/guest-booking-details.svg"
+                    alt=""
+                    width="18"
+                    height="18"
+                    style="margin-right: 5px"
+                  />
+                  Guest Details
+                </h5>
+                <div class="d-flex justify-content-between gap-20px">
+                  <div class="mb-3" style="width:50%">
+                    <label class="label-changes" for="firstName"
+                      >First Name
+                    </label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="firstName"
+                      name="firstName"
+                      [(ngModel)]="booking.firstName"
+                      #firstName="ngModel"
+                      required
+                    />
+                    <span
+                      class="text-danger small"
+                      *ngIf="
+                        (firstName.touched || orderForm.submitted) &&
+                        firstName.errors?.required
+                      "
+                    >
+                      First Name is required
+                    </span>
+                  </div>
+
+                  <div class="mb-3" style="width:50%">
+                    <label class="label-changes" for="lastName"
+                      >Last Name
+                    </label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="lastName"
+                      name="lastName"
+                      [(ngModel)]="booking.lastName"
+                      #lastName="ngModel"
+                      required
+                    />
+                    <span
+                      class="text-danger small"
+                      *ngIf="
+                        (lastName.touched || orderForm.submitted) &&
+                        lastName.errors?.required
+                      "
+                    >
+                      Last Name is required
+                    </span>
+                  </div>
+                </div>
+
+                <div class="mb-3">
+                  <label class="label-changes" for="email"
+                    >Email Address
+                  </label>
+                  <input
+                    type="email"
+                    class="form-control"
+                    id="email"
+                    name="email"
+                    [(ngModel)]="booking.email"
+                    #email="ngModel"
+                    required
+                    email
+                  />
+                  <span
+                    class="text-danger small"
+                    *ngIf="
+                      (email.touched || orderForm.submitted) &&
+                      email.errors?.required
+                    "
+                  >
+                    Email is required
+                  </span>
+                  <span
+                    class="text-danger small"
+                    *ngIf="
+                      (email.touched || orderForm.submitted) &&
+                      email.errors?.email
+                    "
+                  >
+                    Enter a valid email
+                  </span>
+                </div>
+
+                <div class="mb-3">
+                  <label class="label-changes" for="mobile"
+                    >Mobile Number
+                  </label>
+                  <input
+                    type="tel"
+                    maxlength="10"
+                    class="form-control"
+                    [(ngModel)]="booking.mobile"
+                    id="mobile"
+                    name="mobile"
+                    required
+                    style="height: 2.5rem"
+                    (ngModelChange)="validateMobile()"
+                  />
+                  <span class="text-danger" *ngIf="mobileHasError">
+                    Invalid Phone number
+                  </span>
+                </div>
+
+                <div class="mb-3">
+                  <label class="label-changes" for="notes">Special Notes</label>
+                  <textarea
+                    class="form-control"
+                    placeholder="Any special requests or preferences..."
+                    id="notes"
+                    >{{ booking.notes }}</textarea
+                  >
+                </div>
+
+                <!-- View Coupon section -->
+                <!-- <div
+                  class="coupons-giftcards"
+                  (click)="openPromoListData()"
+                  *ngIf="!selectedPromotionCheck"
+                >
+                  <span>
+                    <i class="fas fa-gift"></i>
+                    View Coupons & Gift Cards
+                  </span>
+                </div> -->
+
+                <div
+                  style="
+                    width: 100%;
+                    text-align: left;
+                    font-size: 14px;
+                    color: #333;
+                    margin-top: 10px;
+                  "
+                  *ngIf="showTheSelectedCoupon && !selectedPromotionCheck"
+                >
+                  <div
+                    style="
+                      background-color: #ffffff;
+                      border-radius: 10px;
+                      padding: 10px;
+                      margin-bottom: 10px;
+                      box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+                    "
+                  >
+                    <div style="display: flex; column-gap: 340px">
+                      <strong *ngIf="selectedCouponList.couponCode"
+                        >Coupon Code: {{ selectedCouponList.couponCode }} (<span
+                          *ngIf="selectedCouponList.discountPercentage"
+                          style="color: red"
+                          >{{ selectedCouponList.discountPercentage }}%
+                          OFF)</span
+                        ></strong
+                      >
+                      <span
+                        *ngIf="showTheSelectedCoupon"
+                        style="height: 0px"
+                        (click)="clearSelectedCoupons()"
+                        ><i class="bi bi-trash"></i
+                      ></span>
+                    </div>
+                    <div style="display: flex; column-gap: 330px">
+                      <div>
+                        <span *ngIf="selectedCouponList.minimumOrderAmount"
+                          >Minimum Order:
+                          {{
+                            selectedCouponList.minimumOrderAmount
+                              | currency : currency : "symbol" : "1.2-2"
+                          }}</span
+                        ><br />
+                        <span *ngIf="selectedCouponList.endDate"
+                          >Valid until:
+                          {{
+                            selectedCouponList.endDate | date : "d MMMMy"
+                          }}</span
+                        >
+                      </div>
+                      <!-- Image on the right side -->
+                      <img
+                        *ngIf="selectedCouponList.imageList?.[0]?.url"
+                        [src]="selectedCouponList.imageList[0].url"
+                        alt="image"
+                        style="
+                          width: 40px;
+                          height: 40px;
+                          object-fit: cover;
+                          border-radius: 5px;
+                          position: relative;
+                        "
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </form>
+
+          </div>
+          <div class="col-5 padding-right-0px">
+            <div class="rooms-cards-pricing card" style="margin-bottom: 20px">
+              <h5 class="headimg-color">
+                <img
+                  src="assets/images/payment-sum.svg"
+                  alt=""
+                  width="20"
+                  height="20"
+                  style="margin-right: 5px"
+                />
+                Payment Summary
+              </h5>
+
+              <div class="d-flex justify-content-between line-height-27px">
+                <div class="color-graying">Total Room Price</div>
+
+                <div style="color: #3b82f6; font-weight: 500">
+                  ₹
+                  {{ bookingSummaryDetails?.totalPlanPrice | number : "1.2-2" }}
+                </div>
+              </div>
+
+              <div class="d-flex justify-content-between line-height-27px">
+                <div class="color-graying">Total Tax on Room Price</div>
+
+                <div style="font-weight: 500">
+                  ₹ {{ bookingSummaryDetails?.totalTax | number : "1.2-2" }}
+                </div>
+              </div>
+
+              <div class="d-flex justify-content-between line-height-27px">
+                <div class="color-graying">Total Add-on Services Price</div>
+
+                <div style="font-weight: 500">
+                  ₹
+                  {{
+                    bookingSummaryDetails?.totalAddOnsPrice -
+                      bookingSummaryDetails?.totaltaxfacilityAmount
+                      | number : "1.2-2"
+                  }}
+                </div>
+              </div>
+
+              <div class="d-flex justify-content-between line-height-27px">
+                <div class="color-graying">Total Tax on Services</div>
+
+                <div style="font-weight: 500">
+                  ₹
+                  {{
+                    bookingSummaryDetails?.totaltaxfacilityAmount
+                      | number : "1.2-2"
+                  }}
+                </div>
+              </div>
+              <div class="d-flex justify-content-between line-height-27px">
+                <div class="font-weight-600" style="font-size: 1rem">
+                  Total Amount
+                </div>
+
+                <div class="font-weight-600" style="font-size: 1rem">
+                  ₹ {{ bookingSummaryDetails?.totalAmount | number : "1.2-2" }}
+                </div>
+              </div>
+            </div>
+            <div class="rooms-cards-pricing card">
               <div
                 class="booking-heading"
                 *ngFor="
@@ -1004,213 +1283,16 @@
                 </div>
               </div>
             </div>
+
           </div>
-          <div class="col-4 padding-right-0px">
-            <div class="rooms-cards-pricing card" style="margin-bottom: 20px">
-              <h5 class="headimg-color">
-                <img
-                  src="assets/images/payment-sum.svg"
-                  alt=""
-                  width="20"
-                  height="20"
-                  style="margin-right: 5px"
-                />
-                Payment Summary
-              </h5>
-
-              <div class="d-flex justify-content-between line-height-27px">
-                <div class="color-graying">Total Room Price</div>
-
-                <div style="color: #3b82f6; font-weight: 500">
-                  ₹
-                  {{ bookingSummaryDetails?.totalPlanPrice | number : "1.2-2" }}
-                </div>
-              </div>
-
-              <div class="d-flex justify-content-between line-height-27px">
-                <div class="color-graying">Total Tax on Room Price</div>
-
-                <div style="font-weight: 500">
-                  ₹ {{ bookingSummaryDetails?.totalTax | number : "1.2-2" }}
-                </div>
-              </div>
-
-              <div class="d-flex justify-content-between line-height-27px">
-                <div class="color-graying">Total Add-on Services Price</div>
-
-                <div style="font-weight: 500">
-                  ₹
-                  {{
-                    bookingSummaryDetails?.totalAddOnsPrice -
-                      bookingSummaryDetails?.totaltaxfacilityAmount
-                      | number : "1.2-2"
-                  }}
-                </div>
-              </div>
-
-              <div class="d-flex justify-content-between line-height-27px">
-                <div class="color-graying">Total Tax on Services</div>
-
-                <div style="font-weight: 500">
-                  ₹
-                  {{
-                    bookingSummaryDetails?.totaltaxfacilityAmount
-                      | number : "1.2-2"
-                  }}
-                </div>
-              </div>
-              <div class="d-flex justify-content-between line-height-27px">
-                <div class="font-weight-600" style="font-size: 1rem">
-                  Total Amount
-                </div>
-
-                <div class="font-weight-600" style="font-size: 1rem">
-                  ₹ {{ bookingSummaryDetails?.totalAmount | number : "1.2-2" }}
-                </div>
-              </div>
-            </div>
-            <!-- Fill Your Details Section -->
-            <form
-              (ngSubmit)="orderForm?.form.valid && onSubmit(orderForm)"
-              #orderForm="ngForm"
-              *ngIf="!bookingConfirmed"
-            >
-              <div
-                class="card p-4 mx-auto booking-heading"
-                style="
-                  border-radius: 10px;
-                  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-                "
-              >
-                <h5 class="headimg-color">
-                  <img
-                    src="assets/images/guest-booking-details.svg"
-                    alt=""
-                    width="18"
-                    height="18"
-                    style="margin-right: 5px"
-                  />
-                  Guest Details
-                </h5>
-                <div class="d-flex justify-content-between gap-20px">
-                  <div class="mb-3">
-                    <label class="label-changes" for="firstName"
-                      >First Name
-                    </label>
-                    <input
-                      type="text"
-                      class="form-control"
-                      id="firstName"
-                      name="firstName"
-                      [(ngModel)]="booking.firstName"
-                      #firstName="ngModel"
-                      required
-                    />
-                    <span
-                      class="text-danger small"
-                      *ngIf="
-                        (firstName.touched || orderForm.submitted) &&
-                        firstName.errors?.required
-                      "
-                    >
-                      First Name is required
-                    </span>
-                  </div>
-
-                  <div class="mb-3">
-                    <label class="label-changes" for="lastName"
-                      >Last Name
-                    </label>
-                    <input
-                      type="text"
-                      class="form-control"
-                      id="lastName"
-                      name="lastName"
-                      [(ngModel)]="booking.lastName"
-                      #lastName="ngModel"
-                      required
-                    />
-                    <span
-                      class="text-danger small"
-                      *ngIf="
-                        (lastName.touched || orderForm.submitted) &&
-                        lastName.errors?.required
-                      "
-                    >
-                      Last Name is required
-                    </span>
-                  </div>
-                </div>
-
-                <div class="mb-3">
-                  <label class="label-changes" for="email"
-                    >Email Address
-                  </label>
-                  <input
-                    type="email"
-                    class="form-control"
-                    id="email"
-                    name="email"
-                    [(ngModel)]="booking.email"
-                    #email="ngModel"
-                    required
-                    email
-                  />
-                  <span
-                    class="text-danger small"
-                    *ngIf="
-                      (email.touched || orderForm.submitted) &&
-                      email.errors?.required
-                    "
-                  >
-                    Email is required
-                  </span>
-                  <span
-                    class="text-danger small"
-                    *ngIf="
-                      (email.touched || orderForm.submitted) &&
-                      email.errors?.email
-                    "
-                  >
-                    Enter a valid email
-                  </span>
-                </div>
-
-                <div class="mb-3">
-                  <label class="label-changes" for="mobile"
-                    >Mobile Number
-                  </label>
-                  <input
-                    type="tel"
-                    maxlength="10"
-                    class="form-control"
-                    [(ngModel)]="booking.mobile"
-                    id="mobile"
-                    name="mobile"
-                    required
-                    style="height: 2.5rem"
-                    (ngModelChange)="validateMobile()"
-                  />
-                  <span class="text-danger" *ngIf="mobileHasError">
-                    Invalid Phone number
-                  </span>
-                </div>
-
-                <div class="mb-3">
-                  <label class="label-changes" for="notes">Special Notes</label>
-                  <textarea
-                    class="form-control"
-                    placeholder="Any special requests or preferences..."
-                    id="notes"
-                    >{{ booking.notes }}</textarea
-                  >
-                </div>
-                <label
+        </div>
+        <div style="margin: auto; padding: 20px">
+          <label
                   class="label-changes"
                   style="
                     display: flex;
                     gap: 10px;
-                    justify-content: left;
+                    justify-content: center;
                     align-items: center;
                   "
                 >
@@ -1220,97 +1302,17 @@
                     type="checkbox"
                     required
                   />
-                  I agree to the
+                  I accept the
                   <span
                     class="terms-unique-link"
                     (click)="openTermsUniquePopup()"
                     >Terms & Conditions</span
-                  >.
+                  > and <span
+                    class="terms-unique-link"
+                    (click)="openPrivacyUniquePopup()"
+                    >Privacy Policy</span
+                  >of this booking.
                 </label>
-                <!-- View Coupon section -->
-                <!-- <div
-                  class="coupons-giftcards"
-                  (click)="openPromoListData()"
-                  *ngIf="!selectedPromotionCheck"
-                >
-                  <span>
-                    <i class="fas fa-gift"></i>
-                    View Coupons & Gift Cards
-                  </span>
-                </div> -->
-
-                <div
-                  style="
-                    width: 100%;
-                    text-align: left;
-                    font-size: 14px;
-                    color: #333;
-                    margin-top: 10px;
-                  "
-                  *ngIf="showTheSelectedCoupon && !selectedPromotionCheck"
-                >
-                  <div
-                    style="
-                      background-color: #ffffff;
-                      border-radius: 10px;
-                      padding: 10px;
-                      margin-bottom: 10px;
-                      box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
-                    "
-                  >
-                    <div style="display: flex; column-gap: 340px">
-                      <strong *ngIf="selectedCouponList.couponCode"
-                        >Coupon Code: {{ selectedCouponList.couponCode }} (<span
-                          *ngIf="selectedCouponList.discountPercentage"
-                          style="color: red"
-                          >{{ selectedCouponList.discountPercentage }}%
-                          OFF)</span
-                        ></strong
-                      >
-                      <span
-                        *ngIf="showTheSelectedCoupon"
-                        style="height: 0px"
-                        (click)="clearSelectedCoupons()"
-                        ><i class="bi bi-trash"></i
-                      ></span>
-                    </div>
-                    <div style="display: flex; column-gap: 330px">
-                      <div>
-                        <span *ngIf="selectedCouponList.minimumOrderAmount"
-                          >Minimum Order:
-                          {{
-                            selectedCouponList.minimumOrderAmount
-                              | currency : currency : "symbol" : "1.2-2"
-                          }}</span
-                        ><br />
-                        <span *ngIf="selectedCouponList.endDate"
-                          >Valid until:
-                          {{
-                            selectedCouponList.endDate | date : "d MMMMy"
-                          }}</span
-                        >
-                      </div>
-                      <!-- Image on the right side -->
-                      <img
-                        *ngIf="selectedCouponList.imageList?.[0]?.url"
-                        [src]="selectedCouponList.imageList[0].url"
-                        alt="image"
-                        style="
-                          width: 40px;
-                          height: 40px;
-                          object-fit: cover;
-                          border-radius: 5px;
-                          position: relative;
-                        "
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </form>
-          </div>
-        </div>
-        <div style="margin: auto; padding: 20px">
           <button
             class="Fillpaybtn"
             type="button"
@@ -2028,6 +2030,25 @@
         <button
           class="terms-unique-btn terms-unique-btn-primary"
           (click)="closeTermsUniquePopup()"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+     <div class="terms-unique-overlay" *ngIf="showPrivacyUniquePopup">
+    <div class="terms-unique-content">
+      <h3>Privacy Policy</h3>
+      <ng-container *ngFor="let bServiceDtoList of policies; let i = index">
+        <div
+          class="terms-unique-body"
+          [innerHTML]="bServiceDtoList?.policy"
+        ></div>
+      </ng-container>
+      <div class="terms-unique-footer">
+        <button
+          class="terms-unique-btn terms-unique-btn-primary"
+          (click)="closePrivacyUniquePopup()"
         >
           Close
         </button>
