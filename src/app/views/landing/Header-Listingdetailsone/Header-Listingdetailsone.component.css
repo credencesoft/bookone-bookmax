@@ -249,13 +249,10 @@ border-radius: 12px;
     .back-button i {
       font-size: 1.2em;
     }
+
   }
 
-  df-messenger {
-    z-index: 1011;
-    position: fixed;
-    bottom: 99px !important;
-  }
+
 
 
 
@@ -321,12 +318,22 @@ border-radius: 12px;
         margin-bottom: 20px !important;
         margin-top: 54px !important;
     }
+   df-messenger {
+    z-index: 1011;
+    position: fixed;
+    bottom: 99px !important;
+  }
     }
 
     @media (min-width: 1181px) {
       .mobile-view-ui {
         display: none;
       }
+            df-messenger {
+    z-index: 1011;
+    position: fixed;
+    bottom: 20px !important;
+  }
     }
 
     @media (min-width: 1181px) and (max-width: 1460px) {
