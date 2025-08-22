@@ -333,7 +333,7 @@ currentPage = 0; // page index
   dateSelected = false;
   locationSelected = false;
   resourceSelected = false;
-
+promoSelected = false;
   places: any = [
     {
       image: 'assets/images/most-img-4.jpg',
@@ -1514,7 +1514,7 @@ restoreGuestSelectionsFromSummary() {
   this.rooms = 1 + this.additionalRooms.length;
 }
 bookingSummaryView(){
-  this.showBookingSummary = true
+  this.showBookingSummary = !this.showBookingSummary;
 }
   onDialogVisibleChange(visible: boolean) {
     console.log('visibleChange ->', visible);
@@ -5884,6 +5884,55 @@ get totalEachPlanPrice(): number {
         const discountAmount = (price * this.specialDiscountData.discountPercentage) / 100;
         discountedPrice -= discountAmount;
       }
+          if (this.businessUser.taxDetails.length > 0) {
+      this.businessUser.taxDetails.forEach((element) => {
+        if (element.name === 'GST') {
+          this.booking.taxDetails = [];
+          this.booking.taxDetails.push(element);
+          this.taxPercentage = element.percentage;
+          this.booking.taxPercentage = this.taxPercentage;
+
+          if (
+            plan?.code === 'GHC' &&
+            this.activeForGoogleHotelCenter === true
+          ) {
+            if (element.taxSlabsList.length > 0) {
+              element.taxSlabsList.forEach((element2) => {
+                if (
+                  element2.maxAmount >
+                    discountedPrice &&
+                  element2.minAmount < discountedPrice
+                ) {
+                  this.taxPercentage = element2.percentage;
+                  this.booking.taxPercentage = this.taxPercentage;
+                } else if (
+                  element2.maxAmount <
+                  discountedPrice
+                ) {
+                  this.taxPercentage = element2.percentage;
+                  this.booking.taxPercentage = this.taxPercentage;
+                }
+              });
+            }
+          } else {
+            if (element.taxSlabsList.length > 0) {
+              element.taxSlabsList.forEach((element2) => {
+                if (
+                  element2.maxAmount > discountedPrice &&
+                  element2.minAmount < discountedPrice
+                ) {
+                  this.taxPercentage = element2.percentage;
+                  this.booking.taxPercentage = this.taxPercentage;
+                } else if (element2.maxAmount < discountedPrice) {
+                  this.taxPercentage = element2.percentage;
+                  this.booking.taxPercentage = this.taxPercentage;
+                }
+              });
+            }
+          }
+        }
+      });
+    }
       const taxAmount = (discountedPrice * taxPercent) / 100;
 
       return sum + taxAmount;
@@ -6537,8 +6586,22 @@ getAvailableRoomsForGHC(availableRooms: any[]) {
   // }
 
   onCouponInputChange(event: string) {
+    const couponCodeValues = sessionStorage.getItem('selectedPromoData');
     this.enteredCoupon = event.trim();
-
+        if (couponCodeValues) {
+      const parsed = JSON.parse(couponCodeValues); // convert to object
+      this.specialDiscountData = JSON.parse(couponCodeValues);
+        console.log("this.privatePromotionData", this.specialDiscountData);
+    if (parsed.couponCode) {
+      this.enteredCoupon = parsed.couponCode;
+      this.validCouponCode = parsed.couponCode;
+    }
+    if (parsed.discountPercentage) {
+          this.specialDiscountPercentage = parsed.discountPercentage;
+        }
+    } else {
+      this.specialDiscountData = [];
+    }
     // Filter Private offers
     const privateOffers = this.offersList.filter(
       (offer) => offer.promotionAppliedFor === 'Private'
@@ -6561,6 +6624,19 @@ getAvailableRoomsForGHC(availableRooms: any[]) {
       this.privatePromotionData = null;
     }
   }
+  applyCoupon(product: any, couponSection: HTMLElement) {
+  // ✅ set coupon code
+  sessionStorage.removeItem('selectedPromoData');
+  sessionStorage.removeItem('selectPromo');
+  this.enteredCoupon = product.couponCode;
+
+  // ✅ scroll into view smoothly
+  couponSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+  // ✅ trigger apply
+  this.onYesClick();
+   this.promoSelected = sessionStorage.getItem('selectPromo') === 'true';
+}
 
 onYesClick() {
   this.privateOffers2 = this.offersList.filter(
@@ -6600,7 +6676,7 @@ onYesClick() {
         JSON.stringify(this.privatePromotionData)
       );
       sessionStorage.setItem('selectPromo', 'true');
-
+       this.promoSelected = sessionStorage.getItem('selectPromo') === 'true';
       const couponCodeValues = sessionStorage.getItem('selectedPromoData');
       if (couponCodeValues) {
         const parsed = JSON.parse(couponCodeValues);

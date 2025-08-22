@@ -1088,7 +1088,7 @@
                     >
                   </div>
                   <div class="nights">
-                    {{ plan.selectedRoomnumber }} Rooms(s)
+                    {{ plan.selectedRoomnumber }} Room(s)
                   </div>
                 </div>
                 <div class="d-flex justify-content-between line-height-27px">
@@ -1507,7 +1507,7 @@
                 "
               />
 
-              <div
+             <div
                 class="booking-heading"
                 *ngFor="
                   let plan of bookingSummaryDetails.selectedPlansSummary;
@@ -1516,10 +1516,20 @@
               >
                 <div class="line-height-27px d-flex justify-content-between">
                   <div class="font-weight-600">
-                    {{ plan.roomName }}
+                    {{ plan.roomName }} &nbsp;&nbsp;
+                    <span
+                      *ngIf="specialDiscountData"
+                      class="badge badge-success badge-successTwo px-2 py-1 mr-2"
+                    >
+                      <img
+                        src=" assets/images/coupon-image-change.svg"
+                        alt=""
+                      />
+                      &nbsp; Coupon Applied!</span
+                    >
                   </div>
                   <div class="nights">
-                    {{ plan.selectedRoomnumber }} Rooms(s)
+                    {{ plan.selectedRoomnumber }} Room(s)
                   </div>
                 </div>
                 <div class="d-flex justify-content-between line-height-27px">
@@ -1527,12 +1537,19 @@
                     {{ plan.planCodeName }} x {{ plan.selectedRoomnumber }}
                   </div>
 
-                  <div>
+                  <div *ngIf="activeGoogleCenter">
+                    ₹
+                    {{
+                      (plan.price - ((plan.extraPersonAdultCountAmount +
+                          plan.extraPersonChildCountAmount) )) | number : "1.2-2"
+                    }}
+                  </div>
+                  <div *ngIf="!activeGoogleCenter">
                     ₹
                     {{
                       plan.price -
-                        (plan.extraPersonAdultCountAmount +
-                          plan.extraPersonChildCountAmount) | number : "1.2-2"
+                        ((plan.extraPersonAdultCountAmount +
+                        plan.extraPersonChildCountAmount)) | number : "1.2-2"
                     }}
                   </div>
                 </div>
@@ -1549,25 +1566,90 @@
                   <div>
                     ₹
                     {{
-                      plan.extraPersonAdultCountAmount +
-                        plan.extraPersonChildCountAmount
+                      ((plan.extraPersonAdultCountAmount +
+                        plan.extraPersonChildCountAmount))
                     }}
                   </div>
                 </div>
-                <div class="d-flex justify-content-between line-height-27px">
+                <div
+                  class="d-flex justify-content-between line-height-27px"
+                  *ngIf="this.specialDiscountData?.discountPercentage"
+                >
+                  <div class="color-graying">
+                    Discount ({{
+                      this.specialDiscountData?.discountPercentage
+                    }})%
+                  </div>
+
+                  <div>
+                    ₹
+                    {{
+                      (plan.price *
+                        this.specialDiscountData?.discountPercentage) /
+                        100
+                    }}
+                  </div>
+                </div>
+                <div
+                  *ngIf="this.specialDiscountData?.discountPercentage"
+                  class="d-flex justify-content-between line-height-27px"
+                >
+                  <div class="color-graying">Tax & Services</div>
+
+                  <div>
+                    ₹
+                    {{
+                      ((plan.price -
+                        (plan.price *
+                          this.specialDiscountData?.discountPercentage) /
+                          100) *
+                        plan.taxpercentage) /
+                        100 | number : "1.2-2"
+                    }}
+                  </div>
+                </div>
+                <div
+                  *ngIf="!this.specialDiscountData?.discountPercentage"
+                  class="d-flex justify-content-between line-height-27px"
+                >
                   <div class="color-graying">Tax & Services</div>
 
                   <div>
                     ₹ {{ plan.taxPercentageperroom | number : "1.2-2" }}
                   </div>
                 </div>
-                <div class="d-flex justify-content-between line-height-27px">
+                <div
+                  *ngIf="!this.specialDiscountData?.discountPercentage"
+                  class="d-flex justify-content-between line-height-27px"
+                >
                   <div class="color-graying font-weight-600">Total</div>
 
                   <div class="font-weight-600">
                     ₹
                     {{
                       plan.price + plan.taxPercentageperroom | number : "1.2-2"
+                    }}
+                  </div>
+                </div>
+                <div
+                  *ngIf="this.specialDiscountData?.discountPercentage"
+                  class="d-flex justify-content-between line-height-27px"
+                >
+                  <div class="color-graying font-weight-600">Total</div>
+
+                  <div class="font-weight-600">
+                    ₹
+                    {{
+                      plan.price -
+                        (plan.price *
+                          this.specialDiscountData?.discountPercentage) /
+                          100 +
+                        ((plan.price -
+                          (plan.price *
+                            this.specialDiscountData?.discountPercentage) /
+                            100) *
+                          plan.taxpercentage) /
+                          100 | number : "1.2-2"
                     }}
                   </div>
                 </div>
@@ -1666,7 +1748,7 @@
               </div>
 
               <div class="d-flex justify-content-between line-height-27px">
-                <div class="color-graying">Total Room Tax & Services</div>
+                <div class="color-graying">Total Tax on Room Price</div>
 
                 <div style="font-weight: 500">
                   ₹ {{ bookingSummaryDetails?.totalTax | number : "1.2-2" }}
@@ -1687,7 +1769,7 @@
               </div>
 
               <div class="d-flex justify-content-between line-height-27px">
-                <div class="color-graying">Total Add-on Services Tax Fees</div>
+                <div class="color-graying">Total Tax on Services</div>
 
                 <div style="font-weight: 500">
                   ₹
@@ -1848,9 +1930,10 @@
                   class="label-changes"
                   style="
                     display: flex;
-                    gap: 10px;
+                    gap: 7px;
                     justify-content: left;
                     align-items: start;
+                    flex-wrap: wrap;
                   "
                 >
                   <input
@@ -1859,7 +1942,16 @@
                     type="checkbox"
                     required
                   />
-                  I agree to the Terms & Conditions and Privacy Policy.
+                  I accept the
+                  <span
+                    class="terms-unique-link"
+                    (click)="openTermsUniquePopup()"
+                    >Terms & Conditions</span
+                  > and <span
+                    class="terms-unique-link"
+                    (click)="openPrivacyUniquePopup()"
+                    >Privacy Policy</span
+                  >of this booking.
                 </label>
                 <!-- View Coupon section -->
                 <!-- <div

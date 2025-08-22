@@ -642,7 +642,13 @@ padding: 16px 12px;
   padding: 30px 10px;
   border-radius: 20px;
 }
-
+.sum-section {
+      text-align: left;
+    margin-left: 20px;
+    font-size: 23px;
+    font-weight: 600;
+    font-family: 'Poppins';
+}
 .side-images {
   width: 27%;
   display: flex;
@@ -1614,6 +1620,10 @@ position: absolute;
     width: 400px !important;
   }
 }
+.rotate-icon {
+  transform: rotate(180deg);
+  transition: transform 0.3s ease-in-out;
+}
 
 @media (min-width: 601px) and  (max-width: 1180px){
 .checkAva6 {
@@ -1649,8 +1659,8 @@ position: absolute;
     justify-content: center;
 }
 .applycoupon-button {
-    padding: 8px 16px;
-    margin-top: 5px;
+        padding: 13px 16px;
+        margin-top: -3px;
 }
 .special-section {
     width: 100%;
@@ -1744,11 +1754,11 @@ text-align: center;
         z-index: 2000;
         background-color: var(--tertiary) !important;;
         width: 100%;
+        display: flex;
+        justify-content: space-between;
 }
 .btn-summary-change {
   display: flex;
-    justify-content: center;
-    margin: auto;
     border: none;
     font-family: 'Poppins';
     background-color: var(--secondary, #0b01cc);
@@ -1756,6 +1766,7 @@ text-align: center;
     color: var(--tertiary) !important;;
     letter-spacing: 2.3px;
     border-radius: 8px;
+    margin-right: 20px;
 }
 }
 
@@ -1816,10 +1827,10 @@ text-align: center;
 .applycoupon {
     justify-content: center;
 }
-.applycoupon-button {
-    padding: 8px 16px;
-    margin-top: 5px;
-}
+    .applycoupon-button {
+        padding: 13px 16px;
+        margin-top: -3px;
+    }
 .special-section {
     width: 100%;
 }
@@ -1900,11 +1911,11 @@ text-align: center;
         z-index: 2000;
         background-color: var(--tertiary) !important;;
         width: 100%;
+        display: flex;
+        justify-content: space-between;
 }
 .btn-summary-change {
   display: flex;
-    justify-content: center;
-    margin: auto;
     border: none;
     font-family: 'Poppins';
     background-color: var(--secondary, #0b01cc);

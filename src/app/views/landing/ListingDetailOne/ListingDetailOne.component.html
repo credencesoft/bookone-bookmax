@@ -3,6 +3,50 @@
   (onBookNowClick)="onBookNowClick()"
 >
 </app-Header-Listingdetailsone>
+<div *ngIf="showAllTheOfferList?.length > 0">
+  <p-carousel
+    class="carousel-section"
+    [value]="showAllTheOfferList"
+    [numVisible]="1"
+    [numScroll]="1"
+    [responsiveOptions]="responsiveOptions"
+    [autoplay]="true"
+    [autoplayInterval]="3000"
+    [showNavigators]="false"
+    class="top-carasoul"
+  >
+    <ng-template let-product pTemplate="item">
+      <div class="product-item">
+        <div class="product-item-content">
+          <div class="offer-container">
+            <div class="container-div">
+              <div class="promo-section">
+                <div class="promo-code-container">
+                  <h4 class="promo-heading">
+                    {{ product.name }} Special Offer
+                  </h4>
+                  <div class="code-coupon">
+                    <span class="promo-code"
+                      >Grab up to {{ product.discountPercentage }}% off</span
+                    >
+                  </div>
+                </div>
+                <div class="applycoupon">
+                  <button
+                    class="apply-coupon-btn"
+                    (click)="applyCoupon(product, couponSection)"
+                  >
+                    Get Coupon
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-template>
+  </p-carousel>
+</div>
 <div class="popup-overlay" *ngIf="isPanelOpen"></div>
   <div class="whatsapp-popup-overlay" *ngIf="showWhatsappPopup">
   <div class="whatsapp-popup-container">
@@ -67,11 +111,47 @@
   </div>
 </div>
 <!-- Mobile Trigger -->
-<div class="website-mob-vision">
+<div class="website-mob-vision" *ngIf=" getTotalPlanPrice() > 0">
   <div class="stciky-top">
+    <div class="sum-section" *ngIf="!activeForGoogleHotelCenter">
+           <span *ngIf="specialDiscountPercentage">
+              ₹{{
+                getTotalPlanPrice() +
+                  getTotalAfterTaxAmountFacility() +
+                  getTotalTaxPrice() -
+                  (this.getTotalPlanPrice() * this.specialDiscountPercentage) /
+                    100 | number : "1.2-2"
+              }}
+            </span>
+            <span *ngIf="!specialDiscountPercentage"
+              >₹{{
+                getTotalPlanPrice() +
+                  getTotalAfterTaxAmountFacility() +
+                  getTotalTaxPrice() | number : "1.2-2"
+              }}</span
+            >
+    </div>
+    <div class="sum-section" *ngIf="activeForGoogleHotelCenter">
+        <span *ngIf="specialDiscountPercentage">
+              ₹{{
+                getTotalPlanPrice() +
+                  getTotalAfterTaxAmountFacility() +
+                  getTotalTaxPrice() -
+                  (this.getTotalPlanPrice() * this.specialDiscountPercentage) /
+                    100 | number : "1.2-2"
+              }}
+            </span>
+            <span *ngIf="!specialDiscountPercentage"
+              >₹{{ getGrandTotal() | number:'1.2-2' }}</span
+            >
+    </div>
+
     <button class="btn-summary-change" (click)="bookingSummaryView()">
-      Booking Summary
-    </button>
+  <i
+    class="fa-solid fa-angle-up"
+    [class.rotate-icon]="showBookingSummary"
+  ></i>
+</button>
   </div>
 </div>
 
@@ -92,131 +172,337 @@
   [dismissableMask]="true"
   [breakpoints]="{ '768px': '100%' }"
 >
-  <div>
-    <!-- Dates & Guests -->
-    <div class="date-guest-box mb-4">
-      <div class="row no-gutters border-bottom">
-        <div class="col-6 pr-2 border-right padding-10px">
-          <small class="text-uppercase font-weight-bold text-muted"
-            >Check-in</small
-          ><br />
-          <span class="text-dark">{{
-            this.booking.fromDate | date : "dd-MM-YYYY"
-          }}</span>
-        </div>
-        <div class="col-6 pl-2 padding-10px">
-          <small class="text-uppercase font-weight-bold text-muted"
-            >Checkout</small
-          ><br />
-          <span class="text-dark">{{
-            this.booking.toDate | date : "dd-MM-YYYY"
-          }}</span>
-        </div>
-      </div>
-      <div
-        class="pt-2 d-flex justify-content-between align-items-center padding-10px"
-      >
-        <div>
-          <small class="text-uppercase font-weight-bold text-muted"
-            >Guests</small
-          ><br />
-          <span class="text-primary"
-            >{{ totalAdults }} adults, {{ totalChildren }} children</span
+  <div class="container-div">
+            <!-- Dates & Guests -->
+        <small *ngIf="!isBookingAllowed()" class="text-danger">
+          Please select minimum {{ rooms }} room(s) to proceed.
+        </small>
+        <div class="date-guest-box mb-4">
+          <div class="row no-gutters border-bottom">
+            <div class="col-6 pr-2 border-right padding-10px">
+              <small class="text-uppercase font-weight-bold text-muted"
+                >Check-in</small
+              ><br />
+              <span class="text-dark">{{
+                this.booking.fromDate | date : "dd-MM-YYYY"
+              }}</span>
+            </div>
+            <div class="col-6 pl-2 padding-10px">
+              <small class="text-uppercase font-weight-bold text-muted"
+                >Checkout</small
+              ><br />
+              <span class="text-dark">{{
+                this.booking.toDate | date : "dd-MM-YYYY"
+              }}</span>
+            </div>
+          </div>
+          <div
+            class="pt-2 d-flex justify-content-between align-items-center padding-10px"
           >
+            <div>
+              <small class="text-uppercase font-weight-bold text-muted"
+                >Guests</small
+              ><br />
+              <span class="text-primary"
+                >{{ totalAdults }} adults, {{ totalChildren }} children</span
+              >
+            </div>
+            <!-- or use a Bootstrap icon -->
+          </div>
         </div>
-        <i class="fa fa-chevron-down"></i>
-        <!-- or use a Bootstrap icon -->
-      </div>
-    </div>
 
-    <div
-      *ngFor="let plan of selectedPlansSummary; let i = index"
-      class="room-box d-flex justify-content-between mb-4"
-    >
-      <div class="room-details">
-        <div class="room-title">{{ plan.roomName }}</div>
-        <small class="text-muted">
-          {{ plan.planName }} · {{ plan.adults }} Adults,
-          {{ plan.children }} Children </small
-        ><br />
-        <small class="text-muted"
-          >{{ plan.nights }} Nights .
-          {{ plan.selectedRoomnumber }} room(s)</small
+        <ng-container  *ngFor="let plan of selectedPlansSummary; let i = index">
+          <div
+          class="room-box mb-4"
         >
-      </div>
-      <div class="d-flex align-items-start">
-        <div class="room-price">₹ {{ plan.price | number : "1.2-2" }}</div>
-        &nbsp; &nbsp;
-        <div
-          style="cursor: pointer; font-size: 18px; margin-top: 0px"
-          (click)="removePlan(i)"
-          title="Remove"
-        >
-          <i class="fa-regular fa-circle-xmark"></i>
+          <div class="room-details">
+            <div class="d-flex justify-content-between" style="gap:10px">
+              <div>
+                <div class="room-title">{{ plan.roomName }}</div>
+
+            <small class="text-muted">
+              {{ plan.planCodeName }} · {{ plan.adults }} Adults,
+              {{ plan.children }} Children </small
+            ><br />
+            <small class="text-muted"
+              >{{ plan.nights }} Nights .
+              {{ plan.selectedRoomnumber }} room(s)</small
+            >
+              </div>
+
+                        <div
+            class="d-flex align-items-start"
+          >
+             <div class="room-price">
+            <ng-container *ngIf="!activeForGoogleHotelCenter">
+              ₹ {{ plan.price | number : "1.2-2" }}
+            </ng-container>
+
+            <ng-container *ngIf="activeForGoogleHotelCenter">
+              <ng-container *ngIf="plan.planName === 'GHC'; else nonGhcPrice">
+                ₹ {{
+                  getTotalGhCPrice(plan) | number : "1.2-2"
+                }}
+              </ng-container>
+              <ng-template #nonGhcPrice>
+                ₹ {{
+                  getTotalNonGhCPrice(plan) | number : "1.2-2"
+                }}
+              </ng-template>
+            </ng-container>
+          </div>
+            &nbsp; &nbsp;
+            <div
+              style="cursor: pointer; font-size: 18px; margin-top: 0px"
+              (click)="removePlan(i)"
+              title="Remove"
+            >
+              <i class="fa-regular fa-circle-xmark"></i>
+            </div>
+          </div>
+            </div>
+
+            <div
+              class="nights-dropdown"
+              (click)="toggleDropdownNights(i)"
+              *ngIf="activeForGoogleHotelCenter"
+            >
+              <small class="text-muted"
+                >Per-Day Price Breakdown
+                <i
+                  class="fa-solid"
+                  [ngClass]="isOpen ? 'fa-angle-up' : 'fa-angle-down'"
+                ></i>
+              </small>
+              <!-- <small class="text-muted" *ngIf="taxArray && taxArray.length">
+                Tax Fee: ₹{{ taxArray[i] | number : "1.2-2" }}
+              </small> -->
+            </div>
+
+            <div *ngIf="isOpen" class="dropdown-menuOne">
+              <div style="display: block" *ngIf="plan.planName === 'GHC'">
+                <div *ngFor="let item of daterangefilter; let i = index">
+                  <small class="text-muted">
+                    {{ item }}
+                  </small>
+                  &nbsp; &nbsp;
+                  <small
+                    class="text-muted"
+                    *ngFor="let price of [planPrice[i]]"
+                  >
+                    ₹{{ (price * plan.selectedRoomnumber) + (plan.SingleDayextraPersonAdultCountAmount + plan.SingleDayextraPersonChildCountAmount)  | number : "1.2-2" }} <br/>
+                    <b *ngIf="(price * plan.selectedRoomnumber) + (plan.SingleDayextraPersonAdultCountAmount + plan.SingleDayextraPersonChildCountAmount)">
+                    Tax Fees:
+                  </b>  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                    <b *ngIf="(price * plan.selectedRoomnumber) + (plan.SingleDayextraPersonAdultCountAmount + plan.SingleDayextraPersonChildCountAmount)">
+                    ₹{{
+                  calculateTaxAmount(((price * plan.selectedRoomnumber) + (plan.SingleDayextraPersonAdultCountAmount + plan.SingleDayextraPersonChildCountAmount)), plan)
+                  | number : "1.2-2"
+                }}
+                  </b>
+                  </small>
+
+
+                </div>
+              </div>
+              <div style="display: block" *ngIf="plan.planName != 'GHC'">
+                <div *ngFor="let item of daterangefilter; let i = index">
+                  <small class="text-muted">
+                    {{ item }}
+                  </small>
+                  &nbsp; &nbsp; &nbsp;
+                  <small
+                    class="text-muted"
+                  >
+                    ₹{{ (plan.actualRoomPrice * plan.selectedRoomnumber) + (plan.SingleDayextraPersonAdultCountAmount + plan.SingleDayextraPersonChildCountAmount) | number : "1.2-2" }}  <br/>
+                    <b *ngIf="(plan.actualRoomPrice * plan.selectedRoomnumber) + (plan.SingleDayextraPersonAdultCountAmount + plan.SingleDayextraPersonChildCountAmount)">
+                    Tax Fees:
+                  </b>  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                    <b *ngIf="(plan.actualRoomPrice * plan.selectedRoomnumber) + (plan.SingleDayextraPersonAdultCountAmount + plan.SingleDayextraPersonChildCountAmount)">
+                    ₹{{
+                  calculateTaxAmount(((plan.actualRoomPrice * plan.selectedRoomnumber) + (plan.SingleDayextraPersonAdultCountAmount + plan.SingleDayextraPersonChildCountAmount)), plan)
+                  | number : "1.2-2"
+                }}
+                  </b>
+                  </small>
+                </div>
+              </div>
+            </div>
+
+          </div>
         </div>
-      </div>
-    </div>
+        </ng-container>
 
-    <hr *ngIf="selectedPlansSummary.length > 0" />
+        <hr
+          style="margin-top: 0px; margin-bottom: 10px"
+          *ngIf="selectedPlansSummary.length > 0"
+        />
 
-    <!-- Add-ons -->
-    <div class="mb-3" *ngIf="propertyServiceListDataOne.length > 0 ">
-      <div class="font-weight-semibold mb-2">Add-ons</div>
+        <!-- Add-ons -->
+        <div class="mb-3" *ngIf="propertyServiceListDataOne.length > 0 && !activeForGoogleHotelCenter">
+          <div class="font-weight-semibold mb-2">Add-ons</div>
 
-      <ng-container
-        *ngFor="
-          let fac of propertyServiceListDataOne
-            | slice : 0 : (viewMore ? propertyServiceListDataOne.length : 4);
-          let i = index
-        "
-      >
-        <div class="custom-checkbox mb-2">
-          <label>
-            <input
-              type="checkbox"
-              [checked]="selectedFacilityNames.includes(fac.name)"
-              (change)="onFacilityToggle(fac.name, $event.target.checked)"
-            />
-            <span class="checkmark"></span>
-            {{ fac.name }}
-          </label>
+          <ng-container
+            *ngFor="
+              let fac of propertyServiceListDataOne
+                | slice
+                  : 0
+                  : (viewMore ? propertyServiceListDataOne.length : 4);
+              let i = index
+            "
+          >
+            <div class="custom-checkbox mb-2">
+              <label>
+                <input
+                  type="checkbox"
+                  [checked]="selectedFacilityNames.includes(fac.name)"
+                  (change)="onFacilityToggle(fac.name, $event.target.checked)"
+                />
+                <span class="checkmark"></span>
+                {{ fac.name }}
+              </label>
+            </div>
+          </ng-container>
         </div>
-      </ng-container>
-    </div>
+        <div >
+                  <small class="special-code">Have a coupon code? <span class="special-code-One">Apply & grab your discount.</span></small> <br/>
+                  <small class="text-danger" *ngIf="errorMessagePrivate">{{errorMessagePrivate}}</small>
+                </div>
+                <div class="special-sectionOne">
 
-    <!-- Summary -->
-    <div class="mb-3" *ngIf="selectedPlansSummary.length > 0">
-      <div class="d-flex justify-content-between">
-        <span>Rooms Total</span>
-        <span>₹{{ getTotalPlanPrice() | number : "1.2-2" }}</span>
-      </div>
-      <div
-        class="d-flex justify-content-between"
-        *ngIf="getTotalAfterTaxAmountFacility() > 0"
-      >
-        <span>Add-ons Total</span>
-        <span>₹{{ getTotalAfterTaxAmountFacility() | number : "1.2-2" }}</span>
-      </div>
-      <div class="d-flex justify-content-between mb-2">
-        <span>Tax & Services</span>
-        <span>₹{{ getTotalTaxPrice() | number : "1.2-2" }}</span>
-      </div>
-      <div class="d-flex justify-content-between font-weight-bold total-amount">
-        <span>Total Amount</span>
-        <span
-          >₹{{
-            getTotalPlanPrice() +
-              getTotalAfterTaxAmountFacility() +
-              getTotalTaxPrice() | number : "1.2-2"
-          }}</span
-        >
-      </div>
-    </div>
-    <small *ngIf="!isBookingAllowed()" class="text-danger">
-      Please select minimum {{ rooms }} room(s) to proceed.
-    </small>
-    <!-- Book Now -->
+                  <div style="width: 100%;">
+                    <input
+                      class="input-coupon"
+                      style="
+                            width: 100%;
+                              border: none;
+                              border-radius: 6px;
+                              padding: 5px;
+                              background-color: #F4F4F4;
+                      "
+                      type="text"
+                      [(ngModel)]="enteredCoupon"
+                      (ngModelChange)="onCouponInputChange($event)"
+                      [ngClass]="{
+                        'valid-input':
+                          enteredCoupon &&
+                          enteredCoupon.trim().toUpperCase() ===
+                            validCouponCode.toUpperCase(),
+                        'invalid-input':
+                          enteredCoupon &&
+                          enteredCoupon.trim() !== '' &&
+                          enteredCoupon.trim().toUpperCase() !==
+                            validCouponCode.toUpperCase()
+                      }"
+                    />
+                  </div>
+                  <div class="applycoupon" >
+                    <button
+                      class="applycoupon-button"
+                      [disabled]="
+                        !enteredCoupon ||
+                        enteredCoupon.trim().toUpperCase() !== validCouponCode.toUpperCase()
+                      "
+                      [ngClass]="{
+                        'button-invalid':
+                          enteredCoupon &&
+                          enteredCoupon.trim() !== '' &&
+                          enteredCoupon.trim().toUpperCase() !== validCouponCode.toUpperCase()
+                      }"
+                      (click)="onYesClick()"
+                    >
+                      <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                  </div>
+                </div>
+               <small class="message-coupon" *ngIf="promoSelected">Coupon {{this.specialDiscountData.couponCode}} Applied Successfully!</small>
+
+        <!-- Summary -->
+        <div class="mb-3 font-size-13px" *ngIf="selectedPlansSummary.length > 0">
+          <div class="d-flex justify-content-between" *ngIf="!activeForGoogleHotelCenter">
+            <span>Rooms Total</span>
+            <span>₹{{ getTotalPlanPrice() | number : "1.2-2" }}</span>
+          </div>
+          <div class="d-flex justify-content-between" *ngIf="activeForGoogleHotelCenter">
+            <span>Rooms Total</span>
+            <span>₹{{ getGrandSubtotal() | number:'1.2-2' }}</span>
+          </div>
+
+          <div
+            class="d-flex justify-content-between"
+            *ngIf="specialDiscountPercentage"
+          >
+            <span>Discount ({{ specialDiscountPercentage }})%</span>
+            <span
+              >
+              <small>Coupon <img src=" assets/images/coupon-tag.svg" alt="" /><b style="color:#16A34A; font-weight: 400;">{{this.specialDiscountData.couponCode}}</b> &nbsp; </small>
+              <b style="color:#16A34A; font-weight: 400;">-₹{{
+                (getTotalPlanPrice() * specialDiscountPercentage) / 100
+                  | number : "1.2-2"
+              }}</b></span
+            >
+          </div>
+
+          <div
+            class="d-flex justify-content-between"
+            *ngIf="getTotalAfterTaxAmountFacility() > 0"
+          >
+            <span>Add-ons Total</span>
+            <span
+              >₹{{ getTotalAfterTaxAmountFacility() | number : "1.2-2" }}</span
+            >
+          </div>
+          <div class="d-flex justify-content-between mb-2" *ngIf="!activeForGoogleHotelCenter">
+            <span>Tax & Services</span>
+            <span>₹{{ getTotalTaxPrice() | number : "1.2-2" }}</span>
+          </div>
+          <div class="d-flex justify-content-between mb-2" *ngIf="activeForGoogleHotelCenter">
+            <span>Tax & Services</span>
+            <span>₹{{ getGrandTaxTotal() | number:'1.2-2' }}</span>
+          </div>
+          <div
+            class="d-flex justify-content-between font-weight-bold total-amount"
+            *ngIf="!activeForGoogleHotelCenter"
+          >
+            <span>Total Amount</span>
+            <span *ngIf="specialDiscountPercentage">
+              ₹{{
+                getTotalPlanPrice() +
+                  getTotalAfterTaxAmountFacility() +
+                  getTotalTaxPrice() -
+                  (this.getTotalPlanPrice() * this.specialDiscountPercentage) /
+                    100 | number : "1.2-2"
+              }}
+            </span>
+            <span *ngIf="!specialDiscountPercentage"
+              >₹{{
+                getTotalPlanPrice() +
+                  getTotalAfterTaxAmountFacility() +
+                  getTotalTaxPrice() | number : "1.2-2"
+              }}</span
+            >
+          </div>
+          <div
+            class="d-flex justify-content-between font-weight-bold total-amount"
+            *ngIf="activeForGoogleHotelCenter"
+          >
+            <span>Total Amount</span>
+            <span *ngIf="specialDiscountPercentage">
+              ₹{{
+                getTotalPlanPrice() +
+                  getTotalAfterTaxAmountFacility() +
+                  getTotalTaxPrice() -
+                  (this.getTotalPlanPrice() * this.specialDiscountPercentage) /
+                    100 | number : "1.2-2"
+              }}
+            </span>
+            <span *ngIf="!specialDiscountPercentage"
+              >₹{{ getGrandTotal() | number:'1.2-2' }}</span
+            >
+          </div>
+        </div>
     <button
+    style="margin-bottom: 50px;"
       class="btn btn-book-now btn-block"
       [disabled]="!isBookingAllowed()"
       (click)="onBookNow()"
@@ -975,6 +1261,19 @@
                     </div>
                   </div>
                 </div>
+
+                  <button
+                  class="checkavaialabilyy-btn margin-changes"
+                  (click)="
+                    checkingAvailability();
+                    scrollToSmartDash();
+                    clicked();
+                    landingTaxAmount();
+                    checkavailabilityCall()
+                  "
+                >
+                  <img style="margin-right: 7px;" src="assets/images/search-img.png" /> Book Now
+                </button>
               </div>
             </div>
           </div>
@@ -994,50 +1293,7 @@
 
   </div>
 </div>
-<div *ngIf="showAllTheOfferList?.length > 0">
-  <p-carousel
-    class="carousel-section"
-    [value]="showAllTheOfferList"
-    [numVisible]="1"
-    [numScroll]="1"
-    [responsiveOptions]="responsiveOptions"
-    [autoplay]="true"
-    [autoplayInterval]="3000"
-    [showNavigators]="false"
-    class="top-carasoul"
-  >
-    <ng-template let-product pTemplate="item">
-      <div class="product-item">
-        <div class="product-item-content">
-          <div class="offer-container">
-            <div class="container-div">
-              <div class="promo-section">
-                <div class="promo-code-container">
-                  <h4 class="promo-heading">
-                    {{ product.name }} Special Offer
-                  </h4>
-                  <div class="code-coupon">
-                    <span class="promo-code"
-                      >Grab up to {{ product.discountPercentage }}% off</span
-                    >
-                  </div>
-                </div>
-                <div class="applycoupon">
-                  <button
-                    class="apply-coupon-btn"
-                    (click)="couponAppliedBanner(product)"
-                  >
-                    Get Coupon
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </ng-template>
-  </p-carousel>
-</div>
+
 
 <div class="container-div margin-bottom-40px" >
   <div class="website-web-vision">
@@ -3873,7 +4129,6 @@
                 >{{ totalAdults }} adults, {{ totalChildren }} children</span
               >
             </div>
-            <i class="fa fa-chevron-down"></i>
             <!-- or use a Bootstrap icon -->
           </div>
         </div>
@@ -4032,7 +4287,7 @@
           </ng-container>
         </div>
         <div >
-                  <small class="special-code">Got an exclusive code? <span class="special-code-One">Unlock your deal</span></small> <br/>
+                  <small class="special-code">Have a coupon code? <span class="special-code-One">Apply & grab your discount.</span></small> <br/>
                   <small class="text-danger" *ngIf="errorMessagePrivate">{{errorMessagePrivate}}</small>
                 </div>
                 <div class="special-sectionOne">
@@ -4063,7 +4318,7 @@
                       }"
                     />
                   </div>
-                  <div class="applycoupon">
+                  <div class="applycoupon" #couponSection>
                     <button
                       class="applycoupon-button"
                       [disabled]="
@@ -4082,7 +4337,7 @@
                     </button>
                   </div>
                 </div>
-               <small class="message-coupon" *ngIf="this.specialDiscountData">Coupon {{this.specialDiscountData.couponCode}} Applied Successfully!</small>
+               <small class="message-coupon" *ngIf="promoSelected">Coupon {{this.specialDiscountData.couponCode}} Applied Successfully!</small>
 
         <!-- Summary -->
         <div class="mb-3 font-size-13px" *ngIf="selectedPlansSummary.length > 0">

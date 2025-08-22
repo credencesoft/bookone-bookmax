@@ -234,7 +234,7 @@ border-radius: 12px;
 
 
     .navbar-toggler {
-      margin-right: 44px;
+      margin-right: 8px;
     }
 
     .title-nav {
@@ -251,7 +251,11 @@ border-radius: 12px;
     }
   }
 
-
+  df-messenger {
+    z-index: 1011;
+    position: fixed;
+    bottom: 99px !important;
+  }
 
 
 

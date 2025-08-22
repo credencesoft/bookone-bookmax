@@ -164,6 +164,7 @@ export class PaylaterConfirmComponent {
     window.location.href = this.PropertyUrl;
   }
   backone() {
+    window.location.href = this.PropertyUrl;
     sessionStorage.removeItem('bookingsResponseList');
     sessionStorage.removeItem('bookingSummaryDetails');
     sessionStorage.removeItem('booking');
