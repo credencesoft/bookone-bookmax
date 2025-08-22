@@ -18,7 +18,7 @@
               <i class="fa-solid fa-angle-left"></i> &nbsp; Go Back
             </div>
             <div class="assistance-section">
-              <div style="display: flex">
+              <div style="display: flex" (click)="callNow()">
                 <div><strong>Need Assistance?</strong></div>
                 <div
                   class="contact-info"
@@ -33,7 +33,7 @@
                       style="margin-right: 3px; transform: rotate(3deg)"
                     />
 
-                    9040785705</span
+                    {{businessUser?.mobile}}</span
                   >
                 </div>
               </div>
@@ -168,11 +168,12 @@
           margin-top: 20px;
         "
       >
-        <button class="needassistance">
-          <i class="fa-solid fa-phone" style="margin-right: 4px"></i>Need
-          Assistance?
-        </button>
-        <button class="saveCopy">
+       <button class="needassistance" (click)="callNow()">
+      <i class="fa-solid fa-phone" style="margin-right: 4px"></i>
+      Need Assistance?
+    </button>
+
+        <button class="saveCopy" (click)="onGenerateVouchers()">
           <i class="fa-solid fa-download" style="margin-right: 4px"></i>Save a
           Copy
         </button>
@@ -515,7 +516,7 @@
             <div (click)="backone()" class="backNavigation">
               <i class="fa-solid fa-angle-left"></i> &nbsp; Go Back
             </div>
-            <div class="assistance-section">
+            <div class="assistance-section" (click)="callNow()">
               <div style="display: flex">
                 <div><strong>Need Assistance?</strong></div>
                 <div
@@ -640,11 +641,11 @@
           margin-top: 20px;
         "
       >
-        <button class="needassistance">
+        <button class="needassistance" (click)="callNow()">
           <i class="fa-solid fa-phone" style="margin-right: 4px"></i>Need
           Assistance?
         </button>
-        <button class="saveCopy">
+        <button class="saveCopy" (click)="onGenerateVouchers()">
           <i class="fa-solid fa-download" style="margin-right: 4px"></i>Save a
           Copy
         </button>

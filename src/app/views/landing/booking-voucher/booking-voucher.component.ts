@@ -124,6 +124,12 @@ export class BookingVoucherComponent {
     // Toggle the read more/less flag for the clicked policy
     this.isReadMore[index] = !this.isReadMore[index];
   }
+  callNow() {
+  if (this.businessUser?.mobile) {
+    window.location.href = 'tel:' + this.businessUser.mobile;
+  }
+}
+
   toggleViewMore(event: Event): void {
     event.preventDefault();
     this.expanded = !this.expanded;

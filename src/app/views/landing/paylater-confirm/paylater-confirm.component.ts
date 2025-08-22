@@ -146,6 +146,35 @@ export class PaylaterConfirmComponent {
     // console.log('bookingsResponseList', this.bookingsResponseList);
   }
 }
+callNow() {
+  if (this.businessUser?.mobile) {
+    window.location.href = 'tel:' + this.businessUser.mobile;
+  }
+}
+onGenerateVouchers() {
+  if (!this.bookingsResponseList || this.bookingsResponseList.length === 0) {
+    console.warn('No booking details found');
+    return;
+  }
+
+  this.bookingsResponseList.forEach((booking: any) => {
+    this.hotelBookingService.generateBookingVoucher(booking.id).subscribe({
+      next: (response) => {
+        console.log(`Voucher generated for bookingId ${booking.id}:`, response);
+
+        if (response.voucherUrl) {
+          // Open each voucher in a new browser tab
+          window.open(response.voucherUrl, '_blank');
+        }
+      },
+      error: (err) => {
+        console.error(`Error generating voucher for bookingId ${booking.id}:`, err);
+      }
+    });
+  });
+}
+
+
 
   calculateServiceHours() {
     this.accommodationService =

@@ -87,6 +87,11 @@ export class HotelBookingService {
       { observe: 'response' }
     );
   }
+generateBookingVoucher(bookingId: number): Observable<any> {
+  return this.http.get<any>(`${this.API_URL}/api/thm/generateBookingVoucher?bookingId=${bookingId}`);
+}
+
+
   verifyAuthorisationToken(message: MessageDto) {
     this.setApi();
     let headers = new HttpHeaders({

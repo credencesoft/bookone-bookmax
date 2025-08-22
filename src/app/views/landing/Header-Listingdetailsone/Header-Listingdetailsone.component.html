@@ -138,12 +138,15 @@
       *ngIf="businessUser?.logoUrl"
       style="display: flex; align-items: center"
     >
-      <img
-        class="logo-image"
-        [src]="businessUser?.logoUrl"
-        alt="Business Logo"
-        style="height: 68px"
-      />
+    <a [href]="businessUser?.website" target="_blank">
+        <img
+          class="logo-image"
+          [src]="businessUser?.logoUrl"
+          alt="Business Logo"
+          style="height: 68px"
+        />
+      </a>
+
     </div>
 
     <div class="header-section-content">
@@ -282,12 +285,15 @@
         *ngIf="businessUser?.logoUrl"
         style="display: flex; align-items: center"
       >
+      <a [href]="businessUser?.website" target="_blank">
         <img
           class="logo-image"
           [src]="businessUser?.logoUrl"
           alt="Business Logo"
           style="height: 49px"
         />
+      </a>
+
       </div>
     </div>
 
