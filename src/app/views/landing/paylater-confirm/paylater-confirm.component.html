@@ -1437,7 +1437,7 @@
                 <div>Nights:</div>
                 <div>
                   <span>
-                    <b>{{ bookingSummaryDetails?.totalNights }}</b></span
+                    <b>{{ booking?.noOfNights }}</b></span
                   >
                 </div>
               </div>
@@ -1525,7 +1525,7 @@
                       <ng-container *ngFor="let booking of bookingsResponseList; let last = last">
               <div class="d-flex justify-content-between">
               <div style="font-weight: bold;">{{ booking.roomRatePlanName }}</div>
-              <div>{{ bookingSummaryDetails?.totalNights }} Night(s)</div>
+              <div>{{ booking?.noOfNights }} Night(s)</div>
             </div>
             <div class="d-flex justify-content-between">
                 <div>Room Count</div>
@@ -1543,6 +1543,12 @@
                 <div>Sub Total</div>
                 <div>₹{{ booking.beforeTaxAmount | number : "1.2-2" }}</div>
             </div>
+            <div class="d-flex justify-content-between" *ngIf="booking.discountAmount">
+              <div *ngIf="booking.discountPercentage">Discount ({{booking.discountPercentage}}%)</div>
+              <div *ngIf="booking.discountAmount">-₹{{ booking.discountAmount | number : "1.2-2" }}</div>
+
+            </div>
+
             <div class="d-flex justify-content-between">
                 <div>Tax</div>
                 <div>₹{{ booking.taxAmount | number : "1.2-2" }}</div>
