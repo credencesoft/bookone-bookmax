@@ -269,7 +269,7 @@
                 <div>Nights:</div>
                 <div>
                   <span>
-                    <b>{{ bookingSummaryDetails?.totalNights }}</b></span
+                    <b>{{ booking?.noOfNights }}</b></span
                   >
                 </div>
               </div>
@@ -369,6 +369,7 @@
                   <th>Extra Pax</th>
                   <th>Extra Child</th>
                   <th>Sub Total</th>
+                  <th *ngIf="booking.discountPercentage">Discount ({{booking.discountPercentage}}%)</th>
                   <th>Tax</th>
                   <th>Total</th>
                 </tr>
@@ -384,11 +385,12 @@
                         | number : "1.2-2"
                     }}
                   </td>
-                  <td>{{ bookingSummaryDetails?.totalNights }}</td>
+                  <td>{{ booking?.noOfNights }}</td>
                   <td>{{ booking.noOfRooms }}</td>
                   <td>₹{{ booking.extraPersonCharge | number : "1.2-2" }}</td>
                   <td>₹{{ booking.extraChildCharge | number : "1.2-2" }}</td>
                   <td>₹{{ booking.beforeTaxAmount | number : "1.2-2" }}</td>
+                  <td *ngIf="booking.discountAmount">-₹{{ booking.discountAmount | number : "1.2-2" }}</td>
                   <td>₹{{ booking.taxAmount | number : "1.2-2" }}</td>
                   <td>₹{{ booking.totalAmount | number : "1.2-2" }}</td>
                 </tr>
@@ -399,10 +401,6 @@
               <div>
                 Subtotal: ₹
                 {{ bookingSummaryDetails?.totalPlanPrice | number : "1.2-2" }}
-              </div>
-              <div *ngIf="booking.discountPercentage">
-                Discount ({{ booking.discountPercentage }}%): -₹
-                {{ booking?.discountAmount | number : "1.2-2" }}
               </div>
               <div>
                 Total GST: ₹
