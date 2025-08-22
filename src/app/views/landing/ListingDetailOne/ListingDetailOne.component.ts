@@ -6638,6 +6638,11 @@ getAvailableRoomsForGHC(availableRooms: any[]) {
    this.promoSelected = sessionStorage.getItem('selectPromo') === 'true';
 }
 
+removeCoupon(){
+    sessionStorage.removeItem('selectedPromoData');
+  sessionStorage.removeItem('selectPromo');
+}
+
 onYesClick() {
   this.privateOffers2 = this.offersList.filter(
     (offer) => offer.promotionAppliedFor === 'Private'
