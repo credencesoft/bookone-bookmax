@@ -146,6 +146,11 @@ export class PaylaterConfirmComponent {
     // console.log('bookingsResponseList', this.bookingsResponseList);
   }
 }
+callNow() {
+  if (this.businessUser?.mobile) {
+    window.location.href = 'tel:' + this.businessUser.mobile;
+  }
+}
 
   calculateServiceHours() {
     this.accommodationService =

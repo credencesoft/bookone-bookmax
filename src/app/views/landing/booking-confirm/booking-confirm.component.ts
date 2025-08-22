@@ -1540,6 +1540,12 @@ checkValidCouponOrNot(couponList?){
     this.paymentLoader = false;
 
   }
+callNow() {
+  if (this.businessUser?.mobile) {
+    window.location.href = 'tel:' + this.businessUser.mobile;
+  }
+}
+
   copyTexttwo() {
 
     // Find the element
