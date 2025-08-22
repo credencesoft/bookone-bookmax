@@ -1,6 +1,6 @@
 .status-badge {
-  border-radius: 20px;
-    padding: 5px 35px;
+    border-radius: 20px;
+    padding: 5px 20px;
     font-weight: bold;
   color: #fff;
 }
@@ -160,14 +160,23 @@ margin-bottom: 10px;
   }
 }
 
-@media (max-width: 768px){
+@media (max-width: 1180px){
   .desktop-view-booking-voucher {
     display: none;
   }
+  .needassistance {
+    padding: 6px 12px;
+}
+.enquiry-details-card {
+    padding: 21px;
+    border: 1px solid #E5E7EB;
+    font-family: 'Poppins';
+    line-height: 25px;
+}
 }
 
 
-@media (min-width: 769px){
+@media (min-width: 1181px){
 .mobile-view-booking-voucher {
   display: none;
 }
@@ -207,6 +216,13 @@ margin-bottom: 10px;
   justify-content: center;
   align-items: center;
   z-index: 1000; /* Ensure it appears above other elements */
+}
+
+.backNavigation {
+      font-weight: 600;
+    font-family: 'Poppins';
+    font-size: larger;
+    cursor: pointer;
 }
 
 .popup-content {
@@ -286,13 +302,59 @@ margin-bottom: 10px;
     margin: auto;
     width: 75%;
 }
+.backNavigation {
+    font-weight: 600;
+    font-family: "Poppins";
+    font-size: medium;
+    cursor: pointer;
+    margin-top: 10px;
+}
+.booking-summary-footer {
+   margin-right: 0px;
+    font-family: "Poppins";
+}
+.booking-summary-footer div {
+    margin: 0px 0;
+    font-size: 14px;
+}
+    .booking-summary-footer {
+    text-align: left;
+    }
+.status-badge
+ {
+    border-radius: 20px;
+    padding: 5px 20px;
+}
 }
 
 @media (max-width:600px) {
+      .booking-summary-footer {
+    text-align: left;
+    }
+    .backNavigation {
+    font-weight: 600;
+    font-family: "Poppins";
+    font-size: medium;
+    cursor: pointer;
+    margin-top: 10px;
+}
+    .booking-summary-footer div {
+    margin: 0px 0;
+    font-size: 14px;
+}
+.booking-summary-footer {
+   margin-right: 0px;
+    font-family: "Poppins";
+}
 .container-div {
     margin: auto;
     width: 98%;
 }
+.status-badge
+ {
+    border-radius: 20px;
+    padding: 5px 20px;
+ }
 }
 
 @media (min-width: 1181px) and (max-width: 1299px) {

@@ -1,9 +1,18 @@
 <!-- Vertical navbar -->
-  <df-messenger location="asia-south1" project-id="impactful-name-306810"
-    agent-id="e2f46998-246d-4046-aee3-65c992b363ea" intent="PROPERTY" storage-option="none" language-code="en"
-    max-query-length="-1">
-    <df-messenger-chat-bubble id="chatbot" chat-subtitle="Powered by BookOne"></df-messenger-chat-bubble>
-  </df-messenger>
+<df-messenger
+  location="asia-south1"
+  project-id="impactful-name-306810"
+  agent-id="e2f46998-246d-4046-aee3-65c992b363ea"
+  intent="PROPERTY"
+  storage-option="none"
+  language-code="en"
+  max-query-length="-1"
+>
+  <df-messenger-chat-bubble
+    id="chatbot"
+    chat-subtitle="Powered by BookOne"
+  ></df-messenger-chat-bubble>
+</df-messenger>
 <!-- Vertical Navbar -->
 <div class="vertical-nav" id="sidebar" *ngIf="isdone">
   <div>
@@ -139,18 +148,12 @@
 
     <div class="header-section-content">
       <div *ngIf="businessUser?.website">
-        <a
-          [href]="businessUser.website"
-          target="_top"
-          style="color: white"
+        <a [href]="businessUser.website" target="_top" style="color: white"
           >Home</a
         >
       </div>
       <div *ngIf="businessUser?.website && socialmedialist?.aboutUs">
-        <a
-          [href]="socialmedialist?.aboutUs"
-          target="_top"
-          style="color: white"
+        <a [href]="socialmedialist?.aboutUs" target="_top" style="color: white"
           >About Us</a
         >
       </div>
@@ -172,10 +175,7 @@
         >
       </div> -->
       <div *ngIf="businessUser?.website && socialmedialist?.contact">
-        <a
-          [href]="socialmedialist?.contact"
-          target="_top"
-          style="color: white"
+        <a [href]="socialmedialist?.contact" target="_top" style="color: white"
           >Contact</a
         >
       </div>
@@ -207,42 +207,42 @@
     </div>
 
     <!-- Right Section: Book Now Button -->
-     <div style="    display: flex; gap: 10px; align-items: center;">
-
+    <div style="display: flex; gap: 10px; align-items: center">
       <div>
-         <a
+        <a
           [href]="getWhatsappShareUrl()"
           target="_blank"
           class="Whatsapp-btn-header"
         >
-          <img src="assets/images/whatsapp-icons.svg" style="margin-right: 6px;" /> Book via WhatsApp
+          <img
+            src="assets/images/whatsapp-icons.svg"
+            style="margin-right: 6px"
+          />
+          Book via WhatsApp
         </a>
       </div>
-         <div>
-          <a
-      class="blinking-unique-btn"
-      [href]="'tel:' + businessUser?.mobile"
-    >
-      <img src="assets/images/call-us-header.svg" style="margin-right: 6px;"/>
-      Call Now
-    </a>
-         </div>
-         <!-- <div>
+      <div>
+        <a class="blinking-unique-btn" [href]="'tel:' + businessUser?.mobile">
+          <img
+            src="assets/images/call-us-header.svg"
+            style="margin-right: 6px"
+          />
+          Call Now
+        </a>
+      </div>
+      <!-- <div>
           <a style="background-color: #fff; border-radius: 50%; padding: 15px 12px;">
       <img src="assets/images/robot-icon.svg" style="height:37px" />
     </a>
          </div> -->
 
-
-
-            <!-- <button
+      <!-- <button
         class="blinking-unique-btn"
         (click)="scrollToAccommodation($event)"
       >
         Book Now
       </button> -->
     </div>
-
   </div>
 </nav>
 
@@ -273,31 +273,68 @@
   *ngIf="showheader === true"
 >
   <div
-  class="container-div"
-    style="display: flex; justify-content: space-between; align-items: center;"
+    class="container-div"
+    style="display: flex; justify-content: space-between; align-items: center; gap:14px"
   >
-    <div >
-            <button
-        class="navbar-toggler"
-        *ngIf="businessUser?.website"
-        (click)="toggleListingDetails()"
-        type="button"
-        aria-controls="navbarToggleExternalContent"
-        aria-expanded="false"
-        aria-label="Toggle navigation"
+    <div>
+      <div
+        class="left-section"
+        *ngIf="businessUser?.logoUrl"
+        style="display: flex; align-items: center"
       >
-        <img src="assets/images/nav-toggle.png" alt="Toggle Navigation" />
-      </button>
+        <img
+          class="logo-image"
+          [src]="businessUser?.logoUrl"
+          alt="Business Logo"
+          style="height: 49px"
+        />
+      </div>
     </div>
 
-    <div>
+    <div class="d-flex" style="gap: 14px">
+      <div>
+        <a
+          [href]="getWhatsappShareUrl()"
+          target="_blank"
+          class="Whatsapp-btn-header"
+        >
+          <img
+            src="assets/images/whatsapp-icons.svg"
+            style="margin-right: 6px"
+          />
+        </a>
+      </div>
+      <div>
+        <a class="blinking-unique-btn" [href]="'tel:' + businessUser?.mobile">
+          <img
+            src="assets/images/call-us-header.svg"
+            style="margin-right: 6px"
+          />
+        </a>
+      </div>
+      <div>
+        <button
+          class="navbar-toggler"
+          *ngIf="businessUser?.website"
+          (click)="toggleListingDetails()"
+          type="button"
+          aria-controls="navbarToggleExternalContent"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <img src="assets/images/nav-toggle.png" alt="Toggle Navigation" />
+        </button>
+      </div>
+    </div>
+
+    <!-- <div>
               <button
         class="blinking-unique-btn"
         (click)="scrollToAccommodation($event)"
       >
         Book Now
       </button>
-    </div>
+    </div> -->
   </div>
 </nav>
 
