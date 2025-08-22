@@ -6625,15 +6625,12 @@ getAvailableRoomsForGHC(availableRooms: any[]) {
     }
   }
   applyCoupon(product: any, couponSection: HTMLElement) {
-  // ✅ set coupon code
+
   sessionStorage.removeItem('selectedPromoData');
   sessionStorage.removeItem('selectPromo');
   this.enteredCoupon = product.couponCode;
-
-  // ✅ scroll into view smoothly
   couponSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
-  // ✅ trigger apply
   this.onYesClick();
    this.promoSelected = sessionStorage.getItem('selectPromo') === 'true';
 }

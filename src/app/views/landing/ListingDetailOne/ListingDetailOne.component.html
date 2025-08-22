@@ -3,7 +3,7 @@
   (onBookNowClick)="onBookNowClick()"
 >
 </app-Header-Listingdetailsone>
-<div *ngIf="showAllTheOfferList?.length > 0">
+<div *ngIf="showAllTheOfferList?.length > 0 && !activeForGoogleHotelCenter" >
   <p-carousel
     class="carousel-section"
     [value]="showAllTheOfferList"
@@ -47,6 +47,7 @@
     </ng-template>
   </p-carousel>
 </div>
+
 <div class="popup-overlay" *ngIf="isPanelOpen"></div>
   <div class="whatsapp-popup-overlay" *ngIf="showWhatsappPopup">
   <div class="whatsapp-popup-container">
@@ -364,11 +365,11 @@
             </div>
           </ng-container>
         </div>
-        <div >
+                <div *ngIf="!activeForGoogleHotelCenter" >
                   <small class="special-code">Have a coupon code? <span class="special-code-One">Apply & grab your discount.</span></small> <br/>
                   <small class="text-danger" *ngIf="errorMessagePrivate">{{errorMessagePrivate}}</small>
                 </div>
-                <div class="special-sectionOne">
+                <div class="special-sectionOne" *ngIf="!activeForGoogleHotelCenter">
 
                   <div style="width: 100%;">
                     <input
@@ -4286,11 +4287,11 @@
             </div>
           </ng-container>
         </div>
-        <div >
+                <div *ngIf="!activeForGoogleHotelCenter">
                   <small class="special-code">Have a coupon code? <span class="special-code-One">Apply & grab your discount.</span></small> <br/>
                   <small class="text-danger" *ngIf="errorMessagePrivate">{{errorMessagePrivate}}</small>
                 </div>
-                <div class="special-sectionOne">
+                <div class="special-sectionOne" *ngIf="!activeForGoogleHotelCenter">
 
                   <div style="width: 100%;">
                     <input
