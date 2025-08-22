@@ -38,7 +38,7 @@ export class BookingVoucherComponent {
   totalPlanChildren: number = 0;
   bookingsResponseList: any;
   expanded: boolean = false;
-
+    totalDiscount = 0;
   constructor(
     private token: TokenStorage,
     private hotelBookingService: HotelBookingService,
@@ -83,6 +83,10 @@ export class BookingVoucherComponent {
     const bookingsResponseList = sessionStorage.getItem('EnquiryResponseList');
     if (bookingsResponseList) {
       this.bookingsResponseList = JSON.parse(bookingsResponseList);
+             this.totalDiscount = this.bookingsResponseList.reduce(
+    (sum, booking) => sum + (booking.discountAmount || 0),
+    0
+  );
       this.calculateTotalGuestsFromPlans();
       console.log('EnquiryResponseList', this.bookingsResponseList);
     }
