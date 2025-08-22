@@ -46,6 +46,7 @@ export class PaylaterConfirmComponent {
   expanded: boolean = false;
     url: string;
     activeGoogleCenter: boolean = false;
+    totalDiscount = 0;
   constructor(
     private token: TokenStorage,
     private hotelBookingService: HotelBookingService,
@@ -123,7 +124,9 @@ export class PaylaterConfirmComponent {
   }, 10);
   }
 
-  ngOnInIt() {}
+  ngOnInIt() {
+
+  }
   loadBookingSessionData(): void {
   const bookingDataDetails = sessionStorage.getItem('bookingSummaryDetails');
   if (bookingDataDetails) {
@@ -135,6 +138,10 @@ export class PaylaterConfirmComponent {
   const bookingsResponseList = sessionStorage.getItem('bookingsResponseList');
   if (bookingsResponseList) {
     this.bookingsResponseList = JSON.parse(bookingsResponseList);
+          this.totalDiscount = this.bookingsResponseList.reduce(
+    (sum, booking) => sum + (booking.discountAmount || 0),
+    0
+  );
     this.calculateTotalGuestsFromPlans();
     // console.log('bookingsResponseList', this.bookingsResponseList);
   }

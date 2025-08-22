@@ -134,6 +134,7 @@ textToCopyOne: string = 'This is some text to copy';
        totalPlanAdults: number = 0;
   totalPlanChildren: number = 0;
   groupBookingId: number;
+      totalDiscount = 0;
   constructor(
     private http: HttpClient,
     private token: TokenStorage,
@@ -379,6 +380,10 @@ textToCopyOne: string = 'This is some text to copy';
   const bookingDataDetails = sessionStorage.getItem('bookingSummaryDetails');
   if (bookingDataDetails) {
     this.bookingSummaryDetails = JSON.parse(bookingDataDetails);
+    this.totalDiscount = this.bookingsResponseList.reduce(
+    (sum, booking) => sum + (booking.discountAmount || 0),
+    0
+  );
     this.calculateTotalGuestsFromPlans();
     // console.log('bookingSummaryDetails', this.bookingSummaryDetails);
   }
