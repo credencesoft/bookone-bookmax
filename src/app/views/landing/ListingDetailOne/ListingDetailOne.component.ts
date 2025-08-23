@@ -5895,7 +5895,8 @@ get totalEachPlanPrice(): number {
   }
 
   getTotalTaxPrice(): number {
-    if(this.specialDiscountData){
+    if(this.selectedPlansSummary){
+          if(this.specialDiscountData){
       return (
     this.selectedPlansSummary?.reduce((sum, plan) => {
       const price = plan?.price || 0;
@@ -5905,8 +5906,8 @@ get totalEachPlanPrice(): number {
         const discountAmount = (price * this.specialDiscountData.discountPercentage) / 100;
         discountedPrice -= discountAmount;
       }
-          if (this.businessUser.taxDetails.length > 0) {
-      this.businessUser.taxDetails.forEach((element) => {
+          if (this.businessUser?.taxDetails?.length > 0) {
+      this.businessUser?.taxDetails.forEach((element) => {
         if (element.name === 'GST') {
           this.booking.taxDetails = [];
           this.booking.taxDetails.push(element);
@@ -5966,6 +5967,7 @@ get totalEachPlanPrice(): number {
         0
       ) || 0
     );
+    }
     }
 
   }

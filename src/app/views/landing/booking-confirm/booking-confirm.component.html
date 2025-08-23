@@ -371,7 +371,7 @@
                   <th>Extra Pax</th>
                   <th>Extra Child</th>
                   <th>Sub Total</th>
-                  <th *ngIf="booking.discountPercentage">Discount ({{booking.discountPercentage}}%)</th>
+                  <th *ngIf="specialDiscountData">Discount ({{specialDiscountData?.discountPercentage}}%)</th>
                   <th>Tax</th>
                   <th>Total</th>
                 </tr>
@@ -846,7 +846,7 @@
                 <div>₹{{ booking.beforeTaxAmount | number : "1.2-2" }}</div>
             </div>
             <div class="d-flex justify-content-between" *ngIf="booking.discountAmount">
-              <div *ngIf="booking.discountPercentage">Discount ({{booking.discountPercentage}}%)</div>
+              <div *ngIf="specialDiscountData?.discountPercentage">Discount ({{specialDiscountData?.discountPercentage?.discountPercentage}}%)</div>
               <div *ngIf="booking.discountAmount">-₹{{ booking.discountAmount | number : "1.2-2" }}</div>
 
             </div>

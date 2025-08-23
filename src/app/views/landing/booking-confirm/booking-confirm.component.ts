@@ -135,6 +135,8 @@ textToCopyOne: string = 'This is some text to copy';
   totalPlanChildren: number = 0;
   groupBookingId: number;
       totalDiscount = 0;
+  specialDiscountData: any;
+  specialDiscountPercentage: any;
   constructor(
     private http: HttpClient,
     private token: TokenStorage,
@@ -309,6 +311,16 @@ textToCopyOne: string = 'This is some text to copy';
   }
 
   ngOnInit() {
+        const couponCodeValues = sessionStorage.getItem('selectedPromoData');
+
+if (couponCodeValues) {
+  const parsed = JSON.parse(couponCodeValues); // convert to object
+  this.specialDiscountData = JSON.parse(couponCodeValues);
+    console.log("this.privatePromotionData", this.specialDiscountData);
+    if (parsed.discountPercentage) {
+          this.specialDiscountPercentage = parsed.discountPercentage;
+        }
+    }
         const bookingSummaryStr = sessionStorage.getItem('bookingSummaryDetails');
     const bookingSummary = bookingSummaryStr
       ? JSON.parse(bookingSummaryStr)
@@ -680,6 +692,19 @@ checkValidCouponOrNot(couponList?){
           item.name === 'CGST' || item.name === 'SGST' || item.name === 'GST'
       );
     booking.taxPercentage = plan.taxpercentage;
+          if (this.specialDiscountData) {
+      const finalPrice = (plan.price) ;
+      booking.netAmount = finalPrice;
+      booking.gstAmount = ((finalPrice - (plan.price * this.specialDiscountData?.discountPercentage)/100 ) * plan.taxpercentage) /100;
+      booking.discountPercentage = this.specialDiscountData.discountPercentage;
+      booking.discountAmount = ((plan.price * this.specialDiscountData?.discountPercentage)/100);
+      booking.beforeTaxAmount = plan.price;
+      booking.taxAmount = ((finalPrice - (plan.price * this.specialDiscountData?.discountPercentage)/100 ) * plan.taxpercentage) /100;
+      booking.couponCode = this.specialDiscountData.couponCode;
+      booking.promotionName = this.specialDiscountData.name;
+      booking.payableAmount =  (plan.price - (plan.price * this.specialDiscountData?.discountPercentage)/100) + ((((plan.price)- (plan.price * this.specialDiscountData?.discountPercentage)/100 ) * plan.taxpercentage) /100);
+      booking.totalAmount = (plan.price - (plan.price * this.specialDiscountData?.discountPercentage)/100) + ((((plan.price)- (plan.price * this.specialDiscountData?.discountPercentage)/100 ) * plan.taxpercentage) /100);
+    }
 
     Logger.log('createBooking ', JSON.stringify(booking));
 
