@@ -1135,7 +1135,7 @@
                   </div>
                 </div>
                 <div
-                  *ngIf="!this.specialDiscountData?.discountPercentage"
+                  *ngIf="!this.specialDiscountData?.discountPercentage && !activeGoogleCenter"
                   class="d-flex justify-content-between line-height-27px"
                 >
                   <div class="color-graying font-weight-600">Total</div>
@@ -1189,7 +1189,8 @@
                 </div>
               </div>
 
-              <div class="d-flex justify-content-between line-height-27px">
+              <div class="d-flex justify-content-between line-height-27px" *ngIf="bookingSummaryDetails?.totalAddOnsPrice -
+                      bookingSummaryDetails?.totaltaxfacilityAmount > 0">
                 <div class="color-graying">Total Add-on Services Price</div>
 
                 <div style="font-weight: 500">
@@ -1202,7 +1203,7 @@
                 </div>
               </div>
 
-              <div class="d-flex justify-content-between line-height-27px">
+              <div class="d-flex justify-content-between line-height-27px" *ngIf="bookingSummaryDetails?.totaltaxfacilityAmount > 0">
                 <div class="color-graying">Total Tax on Services</div>
 
                 <div style="font-weight: 500">
@@ -1583,7 +1584,7 @@
                   </div>
                 </div>
                 <div
-                  *ngIf="this.specialDiscountData?.discountPercentage"
+                  *ngIf="this.specialDiscountData?.discountPercentage && !activeGoogleCenter"
                   class="d-flex justify-content-between line-height-27px"
                 >
                   <div class="color-graying font-weight-600">Total</div>
@@ -1608,73 +1609,6 @@
               </div>
             </div>
 
-            <div
-              class="rooms-cards-pricing card"
-              style="margin-top: 20px; border: 1px solid #f3f4f6"
-              *ngIf="
-                bookingSummaryDetails?.propertyServiceListDataOne?.length > 0
-              "
-            >
-              <h5
-                class="line-height-27px font-weight-600"
-                style="color: #1f2937"
-              >
-                <img
-                  src="assets/images/add-onservice.svg"
-                  alt=""
-                  width="18"
-                  height="18"
-                  style="margin-right: 5px"
-                />
-                Add-on Services
-              </h5>
-              <div
-                *ngIf="
-                  bookingSummaryDetails?.propertyServiceListDataOne?.length > 0
-                "
-              >
-                <div
-                  class="d-flex justify-content-between line-height-27px fac-div"
-                  *ngFor="
-                    let fac of bookingSummaryDetails?.propertyServiceListDataOne;
-                    let i = index
-                  "
-                >
-                  <div class="d-block align-item-center">
-                    <div class="font-weight-600 headimg-color-One">
-                      {{ fac.name }}
-                    </div>
-
-                    <div class="fac-description">
-                      <!-- Description handling -->
-                      <span *ngIf="!expanded[i]">
-                        {{ getFirstWords(fac.description, 5) }}...
-                        <a
-                          style="color: #031eaa; cursor: pointer"
-                          (click)="toggleViewMore(i, $event)"
-                          >View more</a
-                        >
-                      </span>
-                      <span *ngIf="expanded[i]">
-                        {{ fac.description }}
-                        <a
-                          style="color: #031eaa; cursor: pointer"
-                          (click)="toggleViewMore(i, $event)"
-                          >View less</a
-                        >
-                      </span>
-                    </div>
-                  </div>
-
-                  <div
-                    class="font-weight-600"
-                    style="width: 30%; text-align: end"
-                  >
-                    ₹ {{ fac.afterTaxAmount | number : "1.2-2" }}
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
           <div class="col-12 padding-right-0px padding-left0px margin-top-20px">
             <div class="rooms-cards-pricing card" style="margin-bottom: 20px">
@@ -1706,7 +1640,8 @@
                 </div>
               </div>
 
-              <div class="d-flex justify-content-between line-height-27px">
+              <div class="d-flex justify-content-between line-height-27px" *ngIf="bookingSummaryDetails?.totalAddOnsPrice -
+                      bookingSummaryDetails?.totaltaxfacilityAmount > 0">
                 <div class="color-graying">Total Add-on Services Price</div>
 
                 <div style="font-weight: 500">
@@ -1719,7 +1654,7 @@
                 </div>
               </div>
 
-              <div class="d-flex justify-content-between line-height-27px">
+              <div class="d-flex justify-content-between line-height-27px" *ngIf="bookingSummaryDetails?.totaltaxfacilityAmount > 0">
                 <div class="color-graying">Total Tax on Services</div>
 
                 <div style="font-weight: 500">
