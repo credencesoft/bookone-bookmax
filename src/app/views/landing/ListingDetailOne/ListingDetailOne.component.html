@@ -2281,8 +2281,7 @@
                     <div class="d-flex justify-content-between margin-top-20px">
                       <h4 class="popup-plan font-weight-bold">
                         {{
-                          plan.amount * DiffDate
-                            | currency : currency : "symbol" : "1.2-2"
+                          plan.amount | currency : currency : "symbol" : "1.2-2"
                         }}
                       </h4>
                       <p style="font-size: smaller">per night + taxes</p>
@@ -2338,8 +2337,7 @@
                     <div class="d-flex justify-content-between margin-top-20px">
                       <h4 class="popup-plan font-weight-bold">
                         {{
-                          plan.amount * DiffDate
-                            | currency : currency : "symbol" : "1.2-2"
+                          plan.amount | currency : currency : "symbol" : "1.2-2"
                         }}
                       </h4>
                       <p style="font-size: smaller">per night + taxes</p>
@@ -2545,6 +2543,7 @@
                       let p = index
                     "
                     [attr.id]="'plan-' + plan.code"
+                    [ngClass]="{ 'scroll-highlight': isPlanSelected(plan.code) }"
                   >
                     <!-- web view Plans sub-Section -->
                     <div class="card-title website-web-vision">
@@ -2790,8 +2789,7 @@
                               activeForGoogleHotelCenter && plan.code === "GHC"
                                 ? (this.totalplanPrice
                                   | currency : currency : "symbol" : "1.2-2")
-                                : (plan.amount * DiffDate
-                                  | currency : currency : "symbol" : "1.2-2")
+                                : (plan.amount | currency : currency : "symbol" : "1.2-2")
                             }}
                           </div>
                           <div class="perNight">per night + taxes</div>
@@ -3132,9 +3130,11 @@
                       let p = index
                     "
                     [attr.id]="'plan-' + plan.code"
+                    [ngClass]="{ 'scroll-highlight': isPlanSelected(plan.code) }"
                   >
+
                     <!-- web view Plans sub-Section -->
-                    <div class="card-title website-web-vision">
+                    <div class="card-title website-web-vision" >
                       <div
                         class="d-flex justify-content-between align-item-center"
                         style="gap: 20px"
@@ -3171,8 +3171,7 @@
                               activeForGoogleHotelCenter && plan.code === "GHC"
                                 ? (this.totalplanPrice
                                   | currency : currency : "symbol" : "1.2-2")
-                                : (plan.amount * DiffDate
-                                  | currency : currency : "symbol" : "1.2-2")
+                                : (plan.amount | currency : currency : "symbol" : "1.2-2")
                             }}
                           </div>
                           <div class="perNight">per night + taxes</div>
@@ -3372,8 +3371,7 @@
                               activeForGoogleHotelCenter && plan.code === "GHC"
                                 ? (this.totalplanPrice
                                   | currency : currency : "symbol" : "1.2-2")
-                                : (plan.amount * DiffDate
-                                  | currency : currency : "symbol" : "1.2-2")
+                                : (plan.amount | currency : currency : "symbol" : "1.2-2")
                             }}
                           </div>
                           <div class="perNight">per night + taxes</div>
@@ -3661,8 +3659,7 @@
                     <div class="d-flex justify-content-between margin-top-20px">
                       <h4 class="popup-plan font-weight-bold">
                         {{
-                          plan.amount * DiffDate
-                            | currency : currency : "symbol" : "1.2-2"
+                          plan.amount| currency : currency : "symbol" : "1.2-2"
                         }}
                       </h4>
                       <p style="font-size: smaller">per night + taxes</p>
@@ -3718,9 +3715,7 @@
                     <div class="d-flex justify-content-between margin-top-20px">
                       <h4 class="popup-plan font-weight-bold">
                         {{
-                          plan.amount * DiffDate
-                            | currency : currency : "symbol" : "1.2-2"
-                        }}
+                          plan.amount}}
                       </h4>
                       <p style="font-size: smaller">per night + taxes</p>
                     </div>
