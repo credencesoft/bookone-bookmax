@@ -1013,61 +1013,9 @@
                 />
                 Payment Summary
               </h5>
-
-              <div class="d-flex justify-content-between line-height-27px">
-                <div class="color-graying">Total Room Price</div>
-
-                <div style="color: #3b82f6; font-weight: 500">
-                  ₹
-                  {{ bookingSummaryDetails?.totalPlanPrice | number : "1.2-2" }}
-                </div>
-              </div>
-
-              <div class="d-flex justify-content-between line-height-27px">
-                <div class="color-graying">Total Tax on Room Price</div>
-
-                <div style="font-weight: 500">
-                  ₹ {{ bookingSummaryDetails?.totalTax | number : "1.2-2" }}
-                </div>
-              </div>
-
-              <div class="d-flex justify-content-between line-height-27px">
-                <div class="color-graying">Total Add-on Services Price</div>
-
-                <div style="font-weight: 500">
-                  ₹
-                  {{
-                    bookingSummaryDetails?.totalAddOnsPrice -
-                      bookingSummaryDetails?.totaltaxfacilityAmount
-                      | number : "1.2-2"
-                  }}
-                </div>
-              </div>
-
-              <div class="d-flex justify-content-between line-height-27px">
-                <div class="color-graying">Total Tax on Services</div>
-
-                <div style="font-weight: 500">
-                  ₹
-                  {{
-                    bookingSummaryDetails?.totaltaxfacilityAmount
-                      | number : "1.2-2"
-                  }}
-                </div>
-              </div>
-              <div class="d-flex justify-content-between line-height-27px">
-                <div class="font-weight-600" style="font-size: 1rem">
-                  Total Amount
-                </div>
-
-                <div class="font-weight-600" style="font-size: 1rem">
-                  ₹ {{ bookingSummaryDetails?.totalAmount | number : "1.2-2" }}
-                </div>
-              </div>
-            </div>
-            <div class="rooms-cards-pricing card">
               <div
                 class="booking-heading"
+                style="padding: 10px;"
                 *ngFor="
                   let plan of bookingSummaryDetails.selectedPlansSummary;
                   let last = last
@@ -1097,22 +1045,31 @@
                   </div>
 
                   <div *ngIf="activeGoogleCenter">
-                    ₹
+                    <div style="text-align: end;">
+                      ₹
                     {{
-                      (plan.price - ((plan.extraPersonAdultCountAmount +
-                          plan.extraPersonChildCountAmount) )) | number : "1.2-2"
+                      plan.price | number : "1.2-2"
                     }}
+                    </div>
+                    <div style=" text-align: end; margin-top: -5px;" *ngIf="
+                    plan.extraPersonAdultCountAmount +
+                      plan.extraPersonChildCountAmount >
+                    0">Inclusive of Extra Pax</div>
                   </div>
-                  <div *ngIf="!activeGoogleCenter">
-                    ₹
+                  <div *ngIf="!activeGoogleCenter" style="display: block;">
+                    <div style="text-align: end;">
+                      ₹
                     {{
-                      plan.price -
-                        ((plan.extraPersonAdultCountAmount +
-                        plan.extraPersonChildCountAmount)) | number : "1.2-2"
+                      plan.price | number : "1.2-2"
                     }}
+                    </div>
+                    <div style=" text-align: end; margin-top: -5px;" *ngIf="
+                    plan.extraPersonAdultCountAmount +
+                      plan.extraPersonChildCountAmount >
+                    0">Inclusive of Extra Pax</div>
                   </div>
                 </div>
-                <div
+                <!-- <div
                   class="d-flex justify-content-between line-height-27px"
                   *ngIf="
                     plan.extraPersonAdultCountAmount +
@@ -1129,7 +1086,7 @@
                         plan.extraPersonChildCountAmount))
                     }}
                   </div>
-                </div>
+                </div> -->
                 <div
                   class="d-flex justify-content-between line-height-27px"
                   *ngIf="this.specialDiscountData?.discountPercentage"
@@ -1214,72 +1171,57 @@
                 </div>
                 <hr *ngIf="!last" style="border: 1px solid #e5e7eb" />
               </div>
-            </div>
+              <div style=" padding: 10px; background-color: #F9FAFB; border-radius: 10px;">
+                <div class="d-flex justify-content-between line-height-27px">
+                <div class="color-graying">Total Room Price</div>
 
-            <div
-              class="rooms-cards-pricing card"
-              style="margin-top: 20px; border: 1px solid #f3f4f6"
-              *ngIf="
-                bookingSummaryDetails?.propertyServiceListDataOne?.length > 0
-              "
-            >
-              <h5
-                class="line-height-27px font-weight-600"
-                style="color: #1f2937"
-              >
-                <img
-                  src="assets/images/add-onservice.svg"
-                  alt=""
-                  width="18"
-                  height="18"
-                  style="margin-right: 5px"
-                />
-                Add-on Services
-              </h5>
-              <div
-                *ngIf="
-                  bookingSummaryDetails?.propertyServiceListDataOne?.length > 0
-                "
-              >
-                <div
-                  class="d-flex justify-content-between line-height-27px fac-div"
-                  *ngFor="
-                    let fac of bookingSummaryDetails?.propertyServiceListDataOne;
-                    let i = index
-                  "
-                >
-                  <div class="d-block align-item-center">
-                    <div class="font-weight-600 headimg-color-One">
-                      {{ fac.name }}
-                    </div>
+                <div style="color: #3b82f6; font-weight: 500">
+                  ₹
+                  {{ bookingSummaryDetails?.totalPlanPrice | number : "1.2-2" }}
+                </div>
+              </div>
 
-                    <div class="fac-description">
-                      <!-- Description handling -->
-                      <span *ngIf="!expanded[i]">
-                        {{ getFirstWords(fac.description, 5) }}...
-                        <a
-                          style="color: #031eaa; cursor: pointer"
-                          (click)="toggleViewMore(i, $event)"
-                          >View more</a
-                        >
-                      </span>
-                      <span *ngIf="expanded[i]">
-                        {{ fac.description }}
-                        <a
-                          style="color: #031eaa; cursor: pointer"
-                          (click)="toggleViewMore(i, $event)"
-                          >View less</a
-                        >
-                      </span>
-                    </div>
-                  </div>
+              <div class="d-flex justify-content-between line-height-27px">
+                <div class="color-graying">Total Tax on Room Price</div>
 
-                  <div
-                    class="font-weight-600"
-                    style="width: 30%; text-align: end"
-                  >
-                    ₹ {{ fac.afterTaxAmount | number : "1.2-2" }}
-                  </div>
+                <div style="font-weight: 500">
+                  ₹ {{ bookingSummaryDetails?.totalTax | number : "1.2-2" }}
+                </div>
+              </div>
+
+              <div class="d-flex justify-content-between line-height-27px">
+                <div class="color-graying">Total Add-on Services Price</div>
+
+                <div style="font-weight: 500">
+                  ₹
+                  {{
+                    bookingSummaryDetails?.totalAddOnsPrice -
+                      bookingSummaryDetails?.totaltaxfacilityAmount
+                      | number : "1.2-2"
+                  }}
+                </div>
+              </div>
+
+              <div class="d-flex justify-content-between line-height-27px">
+                <div class="color-graying">Total Tax on Services</div>
+
+                <div style="font-weight: 500">
+                  ₹
+                  {{
+                    bookingSummaryDetails?.totaltaxfacilityAmount
+                      | number : "1.2-2"
+                  }}
+                </div>
+              </div>
+              </div>
+
+              <div class="d-flex justify-content-between line-height-27px" style="margin-top: 10px;">
+                <div class="font-weight-600" style="font-size: 1rem">
+                  Total Amount
+                </div>
+
+                <div class="font-weight-600" style="font-size: 1rem">
+                  ₹ {{ bookingSummaryDetails?.totalAmount | number : "1.2-2" }}
                 </div>
               </div>
             </div>
@@ -1538,22 +1480,31 @@
                   </div>
 
                   <div *ngIf="activeGoogleCenter">
-                    ₹
+                    <div style="text-align: end;">
+                      ₹
                     {{
-                      (plan.price - ((plan.extraPersonAdultCountAmount +
-                          plan.extraPersonChildCountAmount) )) | number : "1.2-2"
+                      plan.price | number : "1.2-2"
                     }}
+                    </div>
+                    <div style=" text-align: end; margin-top: -5px;" *ngIf="
+                    plan.extraPersonAdultCountAmount +
+                      plan.extraPersonChildCountAmount >
+                    0">Inclusive of Extra Pax</div>
                   </div>
                   <div *ngIf="!activeGoogleCenter">
-                    ₹
+                    <div style="text-align: end;">
+                      ₹
                     {{
-                      plan.price -
-                        ((plan.extraPersonAdultCountAmount +
-                        plan.extraPersonChildCountAmount)) | number : "1.2-2"
+                      plan.price | number : "1.2-2"
                     }}
+                    </div>
+                    <div style=" text-align: end; margin-top: -5px;" *ngIf="
+                    plan.extraPersonAdultCountAmount +
+                      plan.extraPersonChildCountAmount >
+                    0">Inclusive of Extra Pax</div>
                   </div>
                 </div>
-                <div
+                <!-- <div
                   class="d-flex justify-content-between line-height-27px"
                   *ngIf="
                     plan.extraPersonAdultCountAmount +
@@ -1570,7 +1521,7 @@
                         plan.extraPersonChildCountAmount))
                     }}
                   </div>
-                </div>
+                </div> -->
                 <div
                   class="d-flex justify-content-between line-height-27px"
                   *ngIf="this.specialDiscountData?.discountPercentage"
