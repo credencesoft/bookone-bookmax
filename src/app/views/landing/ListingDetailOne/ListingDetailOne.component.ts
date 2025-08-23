@@ -1716,8 +1716,7 @@ onIncrement(planCode: string, type: 'adults' | 'children', plan: any) {
   }
   if (type === 'adults') {
   const above5Count = this.childAgesByPlan[planCode].filter(a => a !== null && a > 5).length;
-  const under2Count = this.childAgesByPlan[planCode].filter(a => a !== null && a <= 2).length;
-    const limit = (plan.maximumOccupancy + plan.noOfChildren - (above5Count)) * selectedRooms;
+    const limit = (plan.maximumOccupancy ) * selectedRooms;
     if (this.selectedGuestsByPlan[planCode].adults < limit) {
       this.selectedGuestsByPlan[planCode].adults++;
     } else {
@@ -1727,7 +1726,7 @@ onIncrement(planCode: string, type: 'adults' | 'children', plan: any) {
   }
 
   if (type === 'children') {
-    const limit = ((plan.maximumOccupancy + plan.noOfChildren) - this.selectedGuestsByPlan[planCode].adults) * selectedRooms;
+    const limit = ((plan.maximumOccupancy + plan.noOfChildren) * selectedRooms) - this.selectedGuestsByPlan[planCode].adults;
     const below2yearslimit = 2 * selectedRooms;
     const under2Count = this.childAgesByPlan[planCode].filter(a => a !== null && a <= 2).length;
    const above5Count = this.childAgesByPlan[planCode].filter(a => a !== null && a > 5).length;
@@ -1736,13 +1735,12 @@ onIncrement(planCode: string, type: 'adults' | 'children', plan: any) {
     return;
   }
     if (above5Count < limit) {
-  if (this.childAgesByPlan[planCode].some(a => a === null)) {
-    this.showTemporaryError(planCode, 'Please select age for all existing children first.');
-    return;
-  }
-
-  this.selectedGuestsByPlan[planCode].children++;
-  this.childAgesByPlan[planCode].push(null);
+      if (this.childAgesByPlan[planCode].some(a => a === null)) {
+        this.showTemporaryError(planCode, 'Please select age for all existing children first.');
+        return;
+      }
+      this.selectedGuestsByPlan[planCode].children++;
+      this.childAgesByPlan[planCode].push(null);
     } else {
       this.showTemporaryError(planCode, `Max children above 5 years allowed is ${limit}.`);
     }

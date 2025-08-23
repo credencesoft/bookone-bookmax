@@ -9,43 +9,13 @@
           <div
             style="
               display: flex;
-              justify-content: space-between;
+              justify-content: left;
               align-items: center;
+              margin-top: 10px;
             "
           >
             <div (click)="backone()" class="backNavigation">
               <i class="fa-solid fa-angle-left"></i> &nbsp; Go Back
-            </div>
-            <div class="assistance-section">
-              <div style="display: flex">
-                <div><strong>Need Assistance?</strong></div>
-                <div
-                  class="contact-info"
-                  style="display: flex; margin-top: 0px; margin-left: 10px"
-                >
-                  <span
-                    ><img
-                      src="assets/images/chatsym.png"
-                      alt=""
-                      height="20px"
-                      width="20px"
-                      style="margin-right: 3px; transform: rotate(3deg)"
-                    />
-
-                    9040785705</span
-                  >
-                </div>
-              </div>
-              <div
-                style="margin-bottom: -19px; margin-top: -12px"
-                *ngIf="accommodationService[0]?.checkInTime"
-              >
-                Working Hours:
-                <span
-                  >{{ accommodationService[0]?.checkInTime }} AM to
-                  {{ accommodationService[0]?.checkOutTime }} PM</span
-                >
-              </div>
             </div>
           </div>
         </div>
