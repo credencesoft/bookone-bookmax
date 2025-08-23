@@ -90,7 +90,10 @@ export class HotelBookingService {
 generateBookingVoucher(bookingId: number): Observable<any> {
   return this.http.get<any>(`${this.API_URL}/api/thm/generateBookingVoucher?bookingId=${bookingId}`);
 }
-
+downloadVoucher(fileUrl: string) {
+  const apiUrl = `${this.API_URL}/api/thm/downloadPdf?fileUrl=${encodeURIComponent(fileUrl)}`;
+  return this.http.get(apiUrl, { responseType: 'blob' });
+}
 
   verifyAuthorisationToken(message: MessageDto) {
     this.setApi();

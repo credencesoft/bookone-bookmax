@@ -1583,8 +1583,20 @@ onGenerateVouchers() {
         console.log(`Voucher generated for bookingId ${booking.id}:`, response);
 
         if (response.voucherUrl) {
-          // Open each voucher in a new browser tab
-          window.open(response.voucherUrl, '_blank');
+          // ✅ Call backend API to download directly
+          this.hotelBookingService.downloadVoucher(response.voucherUrl).subscribe({
+            next: (blob) => {
+              const downloadUrl = window.URL.createObjectURL(blob);
+              const a = document.createElement('a');
+              a.href = downloadUrl;
+              a.download = `voucher-${booking.id}.pdf`; // filename
+              a.click();
+              window.URL.revokeObjectURL(downloadUrl);
+            },
+            error: (err) => {
+              console.error(`Error downloading voucher for bookingId ${booking.id}:`, err);
+            }
+          });
         }
       },
       error: (err) => {
