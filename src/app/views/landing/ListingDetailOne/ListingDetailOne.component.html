@@ -2276,6 +2276,7 @@
                   Max Occupancy: {{ selectedRoom?.maximumOccupancy }}
                 </div>
               </div>
+
               <ng-container
                 *ngIf="selectedRoom?.ratesAndAvailabilityDtos?.length > 0 &&
             i === 0 && selectedRoom?.ratesAndAvailabilityDtos != null && selectedRoom?.ratesAndAvailabilityDtos?.[0]?.stopSellOBE == null && selectedRoom?.ratesAndAvailabilityDtos?.[0]?.stopSellOBE == false
@@ -2283,7 +2284,7 @@
               >
                 <ng-container
                   *ngFor="
-                    let rates of selectedRoom?.ratesAndAvailabilityDtos;
+                    let rates of selectedRoom?.ratesAndAvailabilityDtos | slice:0:1;
                     let r = index
                   "
                 >
@@ -2346,7 +2347,7 @@
               >
                 <ng-container
                   *ngFor="
-                    let rates of selectedRoom?.ratesAndAvailabilityDtos;
+                    let rates of selectedRoom?.ratesAndAvailabilityDtos | slice:0:1;
                     let r = index
                   "
                 >
