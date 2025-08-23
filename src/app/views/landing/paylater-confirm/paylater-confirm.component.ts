@@ -148,7 +148,7 @@ export class PaylaterConfirmComponent {
 }
 callNow() {
   if (this.businessUser?.mobile) {
-    window.location.href = 'tel:' + this.businessUser.mobile;
+    window.location.href = 'tel:' + 9040785705;
   }
 }
 onGenerateVouchers() {

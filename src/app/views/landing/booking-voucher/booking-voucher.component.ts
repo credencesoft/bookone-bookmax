@@ -125,8 +125,8 @@ export class BookingVoucherComponent {
     this.isReadMore[index] = !this.isReadMore[index];
   }
   callNow() {
-  if (this.businessUser?.mobile) {
-    window.location.href = 'tel:' + this.businessUser.mobile;
+   if (this.businessUser?.mobile) {
+    window.location.href = 'tel:' + 9040785705;
   }
 }
 

@@ -1566,8 +1566,8 @@ checkValidCouponOrNot(couponList?){
 
   }
 callNow() {
-  if (this.businessUser?.mobile) {
-    window.location.href = 'tel:' + this.businessUser.mobile;
+    if (this.businessUser?.mobile) {
+    window.location.href = 'tel:' + 9040785705;
   }
 }
 
