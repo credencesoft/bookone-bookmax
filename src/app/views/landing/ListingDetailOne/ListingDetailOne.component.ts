@@ -3975,10 +3975,7 @@ if (roomKey) {
               this.token.saveBookingRoomPrice(this.booking.roomPrice);
               if (this.booking.planCode === 'GHC') {
                 this.token.saveLandingPrice(
-                  this.totalplanPrice +
-                    this.booking.extraPersonCharge +
-                    this.booking.extraChildCharge
-                );
+                  this.totalplanPrice);
               } else {
                 this.token.saveLandingPrice(this.booking.netAmount);
               }
@@ -5848,7 +5845,13 @@ onBookNow() {
     this.token.clearAllTaxArray();
     this.getTotalTaxFee();
   }
+isPlanSelected(planName: string): boolean {
+  console.log("planName",planName)
+  return this.selectedPlansSummary.some(
+    (p) => p.planName === planName
+  );
 
+}
 
 
   toggleDropdownNights(index) {
