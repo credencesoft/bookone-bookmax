@@ -163,7 +163,9 @@
     </div>
 
     <button class="btn-summary-change" (click)="bookingSummaryView()">
+      Details &nbsp;
   <i
+  style="margin-top: 4px;"
     class="fa-solid fa-angle-up"
     [class.rotate-icon]="showBookingSummary"
   ></i>
@@ -2737,11 +2739,6 @@
                                 class="select-icon"
                                 [(ngModel)]="childAgesByPlan[plan.code][i]"
                                 (change)="onChildAgeChange(plan.code, plan)"
-                                [disabled]="
-                                  i === 0 &&
-                                  childAgesByPlan[plan.code][0] !== null &&
-                                  childAgesByPlan[plan.code].length > 1
-                                "
                               >
                                 <option [ngValue]="null" disabled>0</option>
                                 <option
@@ -2940,11 +2937,6 @@
                             class="select-icon"
                             [(ngModel)]="childAgesByPlan[plan.code][i]"
                             (change)="onChildAgeChange(plan.code, plan)"
-                            [disabled]="
-                              i === 0 &&
-                              childAgesByPlan[plan.code][0] !== null &&
-                              childAgesByPlan[plan.code].length > 1
-                            "
                           >
                             <option [ngValue]="null" disabled>0</option>
                             <option *ngFor="let a of ageOptions" [value]="a">
@@ -3319,11 +3311,6 @@
                                 class="select-icon"
                                 [(ngModel)]="childAgesByPlan[plan.code][i]"
                                 (change)="onChildAgeChange(plan.code, plan)"
-                                [disabled]="
-                                  i === 0 &&
-                                  childAgesByPlan[plan.code][0] !== null &&
-                                  childAgesByPlan[plan.code].length > 1
-                                "
                               >
                                 <option [ngValue]="null" disabled>0</option>
                                 <option
@@ -3522,11 +3509,6 @@
                             class="select-icon"
                             [(ngModel)]="childAgesByPlan[plan.code][i]"
                             (change)="onChildAgeChange(plan.code, plan)"
-                            [disabled]="
-                              i === 0 &&
-                              childAgesByPlan[plan.code][0] !== null &&
-                              childAgesByPlan[plan.code].length > 1
-                            "
                           >
                             <option [ngValue]="null" disabled>0</option>
                             <option *ngFor="let a of ageOptions" [value]="a">

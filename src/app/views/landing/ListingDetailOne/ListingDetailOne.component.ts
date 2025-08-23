@@ -938,7 +938,6 @@ guestDataArray: Array<{
     let currenturl = window.location.href;
     let flag = currenturl.includes('bookingEngine');
     this.token.savePropertyUrl(currenturl);
-    //console.log (currenturl)
     this.serviceDto = new PropertyServiceDTO();
     this.businessServiceDto = new BusinessServiceDtoList();
     this.businessService = new BusinessServiceDtoList();
@@ -1030,7 +1029,6 @@ guestDataArray: Array<{
     this.selectedRoomsByPlan = {};
 
     this.selectedPlansSummary.forEach(plan => {
-      // console.log('plan is',plan);
       this.selectedGuestsByPlan[plan.planName] = {
         adults: plan.adults,
         children: plan.children
@@ -1049,7 +1047,6 @@ guestDataArray: Array<{
     }
     this.acRoute.url.subscribe((urlSegments) => {
       this.currentUrl = window.location.href; // Use window.location.href to get the full URL
-      console.log(this.currentUrl);
     });
     if (
       this.token.getBookingData() !== null &&
@@ -1104,7 +1101,6 @@ guestDataArray: Array<{
       this.rooms = this.booking.noOfRooms;
 
       this.taxPercentage = this.booking.taxPercentage;
-      console.log('this.booking.taxPercentage', this.booking.taxPercentage);
     } else {
       this.fromDate = this.calendar.getToday();
       this.toDate = this.calendar.getNext(this.calendar.getToday(), 'd', 1);
@@ -1202,8 +1198,6 @@ guestDataArray: Array<{
       if (!params['hotelID'] && !params['BookingEngine']) {
         this.getDynamicNameFromUrl(this.currentUrl);
       }
-      // //console.log(this.adults);
-      // this.updateTag();
     });
 
     this.allExtraPersonCharge = this.booking.extraPersonCharge;
@@ -1240,7 +1234,6 @@ const couponCodeValues = sessionStorage.getItem('selectedPromoData');
 if (couponCodeValues) {
   const parsed = JSON.parse(couponCodeValues); // convert to object
   this.specialDiscountData = JSON.parse(couponCodeValues);
-    console.log("this.privatePromotionData", this.specialDiscountData);
 if (parsed.couponCode) {
   this.enteredCoupon = parsed.couponCode;
   this.validCouponCode = parsed.couponCode;
@@ -1302,8 +1295,6 @@ if (storedBooking) {
     });
     if (this.city != null && this.city != undefined) {
       this.offerService.getPropertyListByCity(this.city).subscribe((res) => {
-        // this.accommodationData = res.body.filter(entry => entry.businessType === 'Accommodation');
-        // //console.log(this.accommodationData)
         this.restaurantData = res.body.filter(
           (entry) => entry.businessType === 'Restaurants'
         );
@@ -1347,14 +1338,11 @@ if (storedBooking) {
         this.accommodationData.forEach((element) => {
           if (this.bookingengineurl === 'true') {
             this.value = element.websiteinstantBooking;
-            console.log('this.value', this.value);
           } else if (this.value !== true) {
             this.value = element.instantBooking;
-            console.log('this.value', this.value);
           }
         });
       }
-      // //console.log("property details are" + JSON.stringify(this.propertyDetail))
     }
     if (this.token.getBookingCity() !== null) {
       this.bookingCity = this.token.getBookingCity();
@@ -1409,7 +1397,6 @@ if (storedBooking) {
   }
     openWhatsappPopup() {
     this.showWhatsappPopup = true;
-    console.log("this.showWhatsappPopup",this.showWhatsappPopup)
   }
 sendWhatsappMessage() {
    this.isLoadingWhatsapp = true;
@@ -1423,7 +1410,6 @@ sendWhatsappMessage() {
 
   this.http.get(apiUrl, { observe: 'response', responseType: 'json' }).subscribe({
     next: (response) => {
-      console.log("Full HTTP Response:", response);   // 👈 will log headers, status, body
 
       if (response.status === 200) {
          this.isLoadingWhatsapp = false;
@@ -1435,7 +1421,6 @@ sendWhatsappMessage() {
       }
     },
     error: (error) => {
-      console.log("response", error);
        this.isLoadingWhatsapp = false;
       if(error.status === 200) {
         this.successMessagewhatsapp = 'A message has been sent to your WhatsApp';
@@ -1517,16 +1502,12 @@ bookingSummaryView(){
   this.showBookingSummary = !this.showBookingSummary;
 }
   onDialogVisibleChange(visible: boolean) {
-    console.log('visibleChange ->', visible);
-    // keep the model in sync (usually unnecessary when using two-way binding,
-    // but this is a robust fallback)
     this.showBookingSummary = visible;
     this.cd.detectChanges();
   }
 
   // onHide should fire when the dialog is dismissed (mask, close button, ESC)
   onDialogHide() {
-    console.log('onHide fired');
     this.showBookingSummary = false; // ensure state is cleared
     this.cd.detectChanges(); // needed if your component uses OnPush
   }
@@ -1612,7 +1593,6 @@ getRoomOptions(totalAvailable: number, roomName: string, currentPlanCode: string
       (a, b) => a + b,
       0
     );
-    console.log('============>gg', this.selectedRoomsByPlan);
     return this.rooms - totalSelected;
   }
 
@@ -2060,8 +2040,6 @@ resetLastChangedAge(planCode: string) {
   // }
 
   onPlanSelect(planCode: string, rates: any) {
-    // console.log('plancode is',planCode);
-    // console.log('rates is',rates);
       const selectedRooms = this.selectedRoomsByPlan[planCode];
   const selectedGuests = this.selectedGuestsByPlan[planCode];
   const plan = rates.roomRatePlans.find((p) => p.code === planCode);
@@ -2126,11 +2104,9 @@ resetLastChangedAge(planCode: string) {
 
       this.extraAdultCount = extraAdults;
       this.extraAdultCharge = extraAdults * ele1.extraChargePerPerson;
-      console.log('extraAdultCharge is',this.extraAdultCharge);
 
       this.extraChildCount = extraChildren;
       this.extraChildrenCharge = extraChildren * ele1.extraChargePerChild;
-      console.log('extraChildrenCharge is',this.extraChildrenCharge);
     }
   });
 
@@ -2266,7 +2242,6 @@ resetLastChangedAge(planCode: string) {
       this.selectedPlansSummary.push(summaryEntry);
     }
 
-    // console.log('summaryEntry', summaryEntry);
 
     sessionStorage.setItem(
       'bookingSummaryDetails',
@@ -2625,10 +2600,8 @@ removePlan(index: number): void {
         this.accommodationData.forEach((element) => {
           if (this.bookingengineurl === 'true') {
             this.value = element.websiteinstantBooking;
-            // console.log("this.value", this.value)
           } else if (this.value !== true) {
             this.value = element.instantBooking;
-            // console.log("this.value", this.value)
           }
         });
       }
@@ -2637,7 +2610,6 @@ removePlan(index: number): void {
       this.showHideFlag = true;
     }
 
-    // console.log('Footer Value : ' + event);
     this.changeDetectorRefs.detectChanges();
   }
   fetchAndProcessRoomsData() {
@@ -2828,7 +2800,7 @@ if (roomKey) {
     if (this.counterl > 0) {
       this.counterl--;
     }
-    // console.log("count"+this.counterl )
+
     this.serviceDto = new PropertyServiceDTO();
     this.serviceDto = lunchservice;
     this.serviceDto.count = this.counterl;
@@ -2877,7 +2849,7 @@ if (roomKey) {
 
     this.serviceDto = new PropertyServiceDTO();
 
-    // console.log('add service:' + JSON.stringify(this.addServiceList));
+
     this.totalTaxAmount = 0;
     this.totalExtraAmount = 0;
     this.totalBeforeTaxAmount = 0;
@@ -2940,7 +2912,7 @@ if (roomKey) {
     if (this.counterb > 0) {
       this.counterb--;
     }
-    // console.log("count"+this.counterb )
+
     this.serviceDto = new PropertyServiceDTO();
     this.serviceDto = breakfastservice;
     this.serviceDto.count = this.counterb;
@@ -2990,7 +2962,7 @@ if (roomKey) {
 
     this.serviceDto = new PropertyServiceDTO();
 
-    // console.log('add service:' + JSON.stringify(this.addServiceList));
+
     this.totalTaxAmount = 0;
     this.totalExtraAmount = 0;
     this.totalBeforeTaxAmount = 0;
@@ -3010,7 +2982,7 @@ if (roomKey) {
     if (this.counterd > 0) {
       this.counterd--;
     }
-    // console.log("count"+this.counterd )
+
     this.serviceDto = new PropertyServiceDTO();
     this.serviceDto = dinnerservice;
     this.serviceDto.count = this.counterd;
@@ -3059,7 +3031,7 @@ if (roomKey) {
 
     this.serviceDto = new PropertyServiceDTO();
 
-    // console.log('add service:' + JSON.stringify(this.addServiceList));
+
     this.totalTaxAmount = 0;
     this.totalExtraAmount = 0;
     this.totalBeforeTaxAmount = 0;
@@ -3243,7 +3215,6 @@ if (roomKey) {
           this.shortrooms = response.body.roomList;
           this.checkAvailabilityStatus = response.body.available;
           this.booking.bookingAmount = response.body.bookingAmount;
-          // console.log("check availability");
 
           // this.booking.extraPersonCharge = response.body.extraPersonCharge;
 
@@ -3285,8 +3256,6 @@ if (roomKey) {
     this.router.navigate(['privacy']);
   }
   submitForm(form: NgForm) {
-    // debugger;
-    //console.log("this is clicked");
     Logger.log(JSON.stringify(this.subscriptions));
     const TO_EMAIL = 'reservation@thehotelmate.co';
     // const TO_EMAIL = 'abir.sayeed@gmail.com';
@@ -3431,7 +3400,6 @@ if (roomKey) {
     this.metaService.updateTag({ name: 'title', content: title });
     this.titleService.setTitle(title);
     this.metaService.updateTag({ name: 'keywords', content: keywords });
-    // console.log("the hotelamate" + keywords)
     this.metaService.updateTag({
       name: 'description',
       content: this.description,
@@ -3440,7 +3408,6 @@ if (roomKey) {
     // fb
 
     this.metaService.updateTag({ property: 'og:title', content: ogTitle });
-    // console.log("ogTitle :" + ogTitle )
     this.metaService.updateTag(
       {
         property: 'og:description',
@@ -3448,9 +3415,7 @@ if (roomKey) {
       },
       `property='og:description'`
     );
-    //  console.log("ogdescription : " +description)
     this.metaService.updateTag({ property: 'og:image', content: ogImage });
-    // console.log("ogImage : " +ogImage)
     this.metaService.updateTag({ property: 'og:url', content: ogUrl });
     this.metaService.updateTag(
       {
@@ -3459,9 +3424,8 @@ if (roomKey) {
       },
       `property='og:site_name'`
     );
-    // console.log('site_name : ' + ogSiteName);
     this.metaService.updateTag({ property: 'og:image', content: ogImage });
-    // console.log('ogImage :' + ogImage);
+
 
     // twitter
     this.metaService.updateTag({ name: 'twitter:title', content: ogTitle });
@@ -3496,8 +3460,7 @@ if (roomKey) {
     this.enddate = new Date(toDate.year, toDate.month - 1, toDate.day);
 
     this.startDate = new Date(fromDate.year, fromDate.month - 1, fromDate.day);
-    // console.log('this.fromDate: ', this.startDate);
-    // console.log('this.toDate: ', this.enddate);
+
     this.DiffDate = Math.floor(
       (Date.UTC(
         this.enddate.getFullYear(),
@@ -3525,9 +3488,7 @@ if (roomKey) {
   // }
 
   async getPropertyDetailsById(id: number) {
-    // this.token.saveBookingEngineBoolean('googlehotelcenter')
 
-    // //console.log("id isequal to" + id)
     try {
       this.loader = true;
       const data = await this.listingService?.findByPropertyId(id).toPromise();
@@ -3725,13 +3686,9 @@ if (roomKey) {
     }
   }
 
-  couponAppliedBanner(product:any){
-// console.log("product",product)
-  }
 
   increament(breakfastservice) {
     this.counterb = this.counterb + 1;
-    // console.log("count"+this.counterb )
     this.serviceDto = new PropertyServiceDTO();
     this.serviceDto = breakfastservice;
     this.serviceDto.count = this.counterb;
@@ -3781,7 +3738,6 @@ if (roomKey) {
 
     this.serviceDto = new PropertyServiceDTO();
 
-    // console.log('add service:' + JSON.stringify(this.addServiceList));
     this.totalTaxAmount = 0;
     this.totalExtraAmount = 0;
     this.totalBeforeTaxAmount = 0;
@@ -3799,7 +3755,7 @@ if (roomKey) {
   }
   increamentL(lunchservice) {
     this.counterl = this.counterl + 1;
-    // console.log("count"+this.counterl )
+
     this.serviceDto = new PropertyServiceDTO();
     this.serviceDto = lunchservice;
     this.serviceDto.count = this.counterl;
@@ -3848,7 +3804,6 @@ if (roomKey) {
 
     this.serviceDto = new PropertyServiceDTO();
 
-    // console.log('add service:' + JSON.stringify(this.addServiceList));
     this.totalTaxAmount = 0;
     this.totalExtraAmount = 0;
     this.totalBeforeTaxAmount = 0;
@@ -3866,7 +3821,6 @@ if (roomKey) {
   }
   increamentD(dinnerservice) {
     this.counterd = this.counterd + 1;
-    // console.log("count"+this.counterd )
     this.serviceDto = new PropertyServiceDTO();
     this.serviceDto = dinnerservice;
     this.serviceDto.count = this.counterd;
@@ -3915,7 +3869,6 @@ if (roomKey) {
 
     this.serviceDto = new PropertyServiceDTO();
 
-    // console.log('add service:' + JSON.stringify(this.addServiceList));
     this.totalTaxAmount = 0;
     this.totalExtraAmount = 0;
     this.totalBeforeTaxAmount = 0;
@@ -3946,13 +3899,6 @@ if (roomKey) {
             const personsPerRoom = Math.ceil(
               this.booking.noOfPersons / this.booking.noOfRooms
             );
-            // if (this.booking.noOfPersons < this.booking.noOfRooms) {
-            //   console.log("dsffghkj")
-            //   this.showError = true;
-            //   this.errorMessage = `The number of guests cannot be less than the number of rooms selected. Please add more guests or reduce the number of rooms.`;
-            //   this.showErrorPopup();
-            //   return; // Stop execution if this condition fails
-            // }
             if (personsPerRoom > ele1.maximumOccupancy) {
               this.roomOccupancy = ele1.maximumOccupancy;
               const requiredRooms = Math.ceil(
@@ -4019,12 +3965,10 @@ if (roomKey) {
             }
           });
 
-          // //console.log("property service list"+ JSON.stringify(this.propertyServiceListData))
           this.policies = this.businessUser.businessServiceDtoList.filter(
             (ele) => ele.name === 'Accommodation'
           );
-          // this.policies = this.businessUser.businessServiceDtoList => this.businessUser.businessServiceDtoList.every(ele => ele.policy === null &&  ele.policy === undefined);
-          // //console.log("policies are :" +JSON.stringify (this.policies))
+
           this.updateTag();
           this.changeDetectorRefs.detectChanges();
           this.token.saveProperty(this.businessUser);
@@ -4032,7 +3976,7 @@ if (roomKey) {
           if (this.urlLocation !== undefined && this.urlLocation !== null) {
             this.triggerEventService.newEvent(this.urlLocation);
           }
-          // //console.log("no of adults :" + this.adults)
+
           this.dangerousUrl =
             'https://siteminder-git-main-rekha-credencesoft.vercel.app/propertyId/' +
             this.businessUser.id;
@@ -4115,7 +4059,7 @@ if (roomKey) {
             this.booking.taxPercentage != undefined
           ) {
             this.taxPercentage = this.booking.taxPercentage;
-            // //console.log('frodm' + this.taxPercentage);
+
           } else {
             this.taxPercentage = 0;
           }
@@ -4232,7 +4176,6 @@ getOfferList(seo: string) {
         }
 
         this.showAllTheOfferList = this.checkValidCouponOrNot(this.offersList);
-        console.log('this.offersList', this.offersList);
         this.changeDetectorRefs.detectChanges();
       });
   } else {
@@ -4253,7 +4196,6 @@ getOfferList(seo: string) {
         }
 
         this.showAllTheOfferList = this.checkValidCouponOrNot(this.offersList);
-        console.log('this.offersList', this.offersList);
         this.changeDetectorRefs.detectChanges();
       });
   }
@@ -4790,7 +4732,6 @@ getOfferList(seo: string) {
       const yOffset = -2000; // Adjust this value as needed
       const y = element.getBoundingClientRect().top + window.scrollY + yOffset;
       window.scrollTo({ top: y, behavior: 'smooth' });
-      console.log('Scroll target position:', y);
 
       const card = document.getElementById('slideCard');
       if (card && card.classList.contains('active')) {
@@ -4824,7 +4765,7 @@ adjustDates() {
     }
   }
   scrollToService() {
-    console.log('lkjhgfgh');
+
     const element = document.getElementById('serv');
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
@@ -5501,7 +5442,6 @@ onBookNow() {
             next: (res) => {
               this.smartLoading = false;
               this.smartRecommendations = res;
-              console.log('Recommendations:', res);
                 this.categories = [];
 
                 if (this.smartRecommendations?.bestFitOptions?.length) {
@@ -5654,12 +5594,10 @@ onBookNow() {
 
                 if (element2.otaName === 'GHC') {
                   this.planPrice.push(element2.price * this.booking.noOfRooms);
-                  console.log("element2.price",element2.price)
                   let extraPerson = this.extraAdultCharge;
                   let extraChild = this.extraChildrenCharge;
                   let noOfNights = Number(this.booking.noOfNights);
-                     console.log('extraPerson is',extraPerson);
-                    console.log('extraChild is',extraChild);
+
 
                   let totalPrice =
                     Number(element2.price) +
@@ -5674,14 +5612,14 @@ onBookNow() {
                     this.taxAmount =
                       ((totalPrice * this.booking.noOfRooms) * 12) / 100;
                     this.taxArray.push(this.taxAmount);
-                    console.log('taxArray is',this.taxArray);
+
                   }
 
                   if (totalPrice > 7501) {
                     this.taxAmount =
                       ((totalPrice * this.booking.noOfRooms) * 18) / 100;
                     this.taxArray.push(this.taxAmount);
-                     console.log('taxArray is',this.taxArray);
+
                   }
 
                   this.totalplanPrice = this.planPrice.reduce(
@@ -5846,7 +5784,6 @@ onBookNow() {
     this.getTotalTaxFee();
   }
 isPlanSelected(planName: string): boolean {
-  console.log("planName",planName)
   return this.selectedPlansSummary.some(
     (p) => p.planName === planName
   );
@@ -6696,13 +6633,6 @@ onYesClick() {
         const parsed = JSON.parse(couponCodeValues);
         this.specialDiscountData = parsed;
 
-        console.log(
-          'Coupon valid for dates:',
-          new Date(this.specialDiscountData.startDate),
-          'to',
-          new Date(this.specialDiscountData.endDate)
-        );
-
         if (parsed.couponCode) {
           this.enteredCoupon = parsed.couponCode;
           this.validCouponCode = parsed.couponCode;
@@ -6732,10 +6662,8 @@ onYesClick() {
       this.isValidPrivateCoupon = false;
       this.couponApplied = false;
       this.couponSuccessApplied = false;
-      console.log('Booking dates are outside coupon validity period.');
     }
   } else {
-    console.log('No matching coupon found.');
   }
 }
 
@@ -6809,7 +6737,6 @@ onYesClick() {
   }
 
   onNoClick() {
-    console.log('data is not present');
     this.isPopupOpen = false;
   }
 

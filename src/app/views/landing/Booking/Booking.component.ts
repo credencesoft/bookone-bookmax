@@ -326,9 +326,9 @@ export class BookingComponent implements OnInit {
     }
     if (this.token.getProperty() !== null) {
       this.propertyData = this.token.getProperty();
-      console.log('propertyData issss', this.propertyData);
+
       this.propertyData.shortName = this.token.getProperty().shortName;
-      console.log('propertyData shortName issss', this.propertyData.shortName);
+
     }
 
     this.savedServices = this.token.getSelectedServices();
@@ -337,7 +337,7 @@ export class BookingComponent implements OnInit {
     if (bookingDataDetails) {
       this.bookingSummaryDetails = JSON.parse(bookingDataDetails);
       this.calculateTotalGuestsFromPlans();
-      console.log('bookingSummaryDetails', this.bookingSummaryDetails);
+
     }
 
     setTimeout(() => {
@@ -429,7 +429,7 @@ export class BookingComponent implements OnInit {
     }
 
     this.PropertyUrl = this.token.getPropertyUrl();
-    console.log('property url:' + this.PropertyUrl);
+
     let isBookingEngine = false;
 
     if (this.PropertyUrl && this.PropertyUrl.includes('bookingEngine')) {
@@ -445,7 +445,6 @@ export class BookingComponent implements OnInit {
 if (couponCodeValues) {
   const parsed = JSON.parse(couponCodeValues); // convert to object
   this.specialDiscountData = JSON.parse(couponCodeValues);
-    console.log("this.privatePromotionData", this.specialDiscountData);
 if (parsed.couponCode) {
   this.enteredCoupon = parsed.couponCode;
 }
@@ -460,7 +459,6 @@ if (parsed.discountPercentage) {
         const plans = bookingSummary.selectedPlansSummary;
           if (plans.length >= 2) {
         this.groupBookingId = Math.floor(100000 + Math.random() * 900000);
-        console.log('Generated Group Booking ID:', this.groupBookingId);
       }
     this.otaPlanPrice = this.token.getLandingPrice();
     this.otaTaxAmount = this.token.getAllTaxArray();
@@ -663,7 +661,6 @@ closeTermsUniquePopup() {
   }
 
   getSubscriptions(booking: any) {
-    console.log('booking', booking);
     this.hotelBookingService
       .getSubscriptions(booking.propertyId)
       .subscribe((res) => {
@@ -675,7 +672,7 @@ closeTermsUniquePopup() {
         if (foundSubscription) {
           this.externalReservation(booking);
         } else {
-          console.log('BookOne Subscription is not found');
+
         }
       });
   }
@@ -939,8 +936,7 @@ closeTermsUniquePopup() {
     this.enddate = new Date(toDate.year, toDate.month - 1, toDate.day);
 
     this.startDate = new Date(fromDate.year, fromDate.month - 1, fromDate.day);
-    // console.log('this.fromDate: ', this.startDate);
-    // console.log('this.toDate: ', this.enddate);
+
     this.DiffDate = Math.floor(
       (Date.UTC(
         this.enddate.getFullYear(),
@@ -1048,11 +1044,7 @@ this.getPropertyDetailsById(this.bookingData.propertyId);
           this.booking.taxDetails.push(element);
           this.taxPercentage = element.percentage;
           this.booking.taxPercentage = this.taxPercentage;
-          // console.log("this.taxPercentage0" +this.taxPercentage)
-          // if (this.bookingCity != null && this.bookingCity != undefined) {
-          //   this.booking.roomPrice = Number(this.bookingCity)
 
-          // }
           if (this.bookingCity != null && this.bookingCity != undefined) {
             this.booking.roomPrice = Number(this.bookingCity);
           }
@@ -1435,14 +1427,9 @@ if (bookingSummaryStr) {
   ) {
     // Get the 0th index plan
     const firstPlan = this.bookingSummaryDetails.selectedPlansSummary[0];
-    console.log('First plan pushed:', firstPlan);
   }
 }
     this.enquiryForm = new EnquiryDto();
-    console.log(
-      'this.token.getProperty().address',
-      this.token.getProperty().address.city
-    );
     if (
       this.token.getProperty().address != null &&
       this.token.getProperty().address != undefined &&
@@ -1489,7 +1476,6 @@ if (bookingSummaryStr) {
           ) {
             // Get the 0th index plan
             const firstPlan = this.bookingSummaryDetails.selectedPlansSummary[0];
-            console.log('First plan pushed:', firstPlan);
                 if (this.businessServiceDto.advanceAmountPercentage === 50) {
               this.enquiryForm.advanceAmount = Number(
                 Number((((firstPlan?.taxPercentageperroom + firstPlan?.price) / 100) * 50).toFixed(2))
@@ -1643,7 +1629,6 @@ if (bookingSummaryStr) {
     this.hotelBookingService.accommodationEnquiry(this.enquiryForm).subscribe(
       (response) => {
         this.equitycreatedData = response.body;
-        console.log('dfgvhbjnk' + JSON.stringify(this.equitycreatedData));
         this.isEnquiry = true;
         this.paymentLoader = false;
         this.paymentLoader = false;
@@ -1812,7 +1797,6 @@ if (bookingSummaryStr) {
           ) {
             // Get the 0th index plan
             const firstPlan = this.bookingSummaryDetails.selectedPlansSummary[0];
-            console.log('First plan pushed:', firstPlan);
             if (firstPlan.planCodeName ===  enquiryForm.roomRatePlanName) {
                               if (this.businessServiceDto.advanceAmountPercentage === 50) {
               enquiryForm.advanceAmount = Number(
@@ -1879,7 +1863,6 @@ if (bookingSummaryStr) {
   ) {
     // Get the 0th index plan
     const firstPlan = this.bookingSummaryDetails.selectedPlansSummary[0];
-    console.log('First plan pushed:', firstPlan);
         if (this.showTheSelectedCoupon) {
       const finalPrice = this.calculateDiscountedPrice(
         this.storedActualNetAmount,
@@ -1900,10 +1883,6 @@ if (bookingSummaryStr) {
     } else {
       this.booking.discountPercentage = 0;
     }
-    console.log(
-      'Coupon Applied Data is  Pay and check==========>',
-      this.booking
-    );
     this.bookingroomPrice = firstPlan?.actualRoomPrice;
     this.createAllEnquiriesBooking();
     this.payment.callbackUrl =
@@ -2114,7 +2093,6 @@ if (bookingSummaryStr) {
 
       this.cardPaymentAvailable = true;
     } else if (this.businessUser.paymentGateway === 'phonepe') {
-      console.log('booking', this.booking);
       this.payment.paymentMode = 'UPI';
       this.payment.status = 'NotPaid';
       this.payment.businessServiceName = 'Accommodation';
@@ -2838,7 +2816,6 @@ if (bookingSummaryStr) {
       : null;
 
 
-    console.log('Coupon Applied Data is  PayLater==========>', this.booking);
     this.loadingOne = true;
     this.payment.paymentMode = 'Cash';
     this.payment.status = 'NotPaid';
@@ -4747,8 +4724,6 @@ if (bookingSummaryStr) {
           } else {
             // The payment succeeded!
             loading(false);
-
-            console.log(JSON.stringify(result));
 
             orderComplete();
           }
