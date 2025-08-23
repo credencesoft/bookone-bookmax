@@ -212,7 +212,7 @@
         </a>
       </div>
       <div>
-        <a class="blinking-unique-btn" [href]="'tel:' + businessUser?.mobile">
+        <a class="blinking-unique-btn" [href]="'tel:' + (websiteUrlBookingEngine ? businessUser?.mobile : '9040785705')">
           <img
             src="assets/images/call-us-header.svg"
             style="margin-right: 6px"
@@ -298,7 +298,7 @@
         </a>
       </div>
       <div>
-        <a class="blinking-unique-btn" [href]="'tel:' + businessUser?.mobile">
+        <a class="blinking-unique-btn" [href]="'tel:' + (websiteUrlBookingEngine ? businessUser?.mobile : '9040785705')">
           <img
             src="assets/images/call-us-header.svg"
             style="margin-right: 6px"
