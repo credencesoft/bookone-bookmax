@@ -325,7 +325,17 @@ display: flex;
   margin-bottom: 6px;
   display: block;
 }
-
+   df-messenger {
+          --df-messenger-send-icon-color:var(--secondary);
+      --df-messenger-message-bot-background: var(--secondary);
+      --df-messenger-message-bot-font-color:hsla(31, 91%, 82%, 0.982);
+      --df-messenger-chat-scroll-button-font-color:var(--tertiary);
+      --df-messenger-chat-scroll-button-background:var(--secondary)
+      --df-messenger-chat-bubble-background:var(--secondary);
+      /* Set custom background image */
+      --df-messenger-chips-background:var(--secondary);
+      --df-messenger-chips-font-color:var(--tertiary);
+   }
 .whatsapp-popup-right input {
   width: 100%;
   padding: 10px;
@@ -1563,6 +1573,11 @@ position: absolute;
   .website-web-vision {
     display: none;
   }
+     df-messenger {
+    z-index: 1011;
+    position: fixed;
+    bottom: 99px !important;
+  }
     .custom-cards-sectioned {
     margin-bottom: 19% !important;
   }
@@ -1947,6 +1962,11 @@ text-align: center;
 
   .website-mob-vision {
     display: none;
+  }
+  df-messenger {
+    z-index: 1011;
+    position: fixed;
+    bottom: 20px !important;
   }
   .display-flex {
     display: flex;

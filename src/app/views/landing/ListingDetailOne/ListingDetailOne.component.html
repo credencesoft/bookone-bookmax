@@ -2272,9 +2272,14 @@
                     let r = index
                   "
                 >
+                <ng-container *ngFor="let plan of rates?.roomRatePlans; let p = index">
                   <div
                     class="popup-card"
-                    *ngFor="let plan of rates?.roomRatePlans; let p = index"
+                  *ngIf="
+                    room.id === rates.roomId &&
+                    r < 1 &&
+                    (rates.stopSellOBE === false || rates.stopSellOBE === null)
+                  "
                   >
                     <h4 class="popup-plan">{{ plan.name }}</h4>
 
@@ -2315,6 +2320,8 @@
                       </button>
                     </div>
                   </div>
+                </ng-container>
+
                 </ng-container>
               </ng-container>
 
@@ -2328,9 +2335,10 @@
                     let r = index
                   "
                 >
+                <ng-container *ngFor="let plan of rates?.roomRatePlans; let p = index">
                   <div
                     class="popup-card"
-                    *ngFor="let plan of rates?.roomRatePlans; let p = index"
+
                   >
                     <h4 class="popup-plan">{{ plan.name }}</h4>
 
@@ -2372,18 +2380,10 @@
                     </div>
                   </div>
                 </ng-container>
+
+                </ng-container>
               </ng-container>
-              <ng-container
-                *ngIf="selectedRoom?.ratesAndAvailabilityDtos === null"
-              >
-                <h4 class="not-available">No Plans Available</h4>
-              </ng-container>
-              <ng-container
-                *ngIf="selectedRoom?.ratesAndAvailabilityDtos?.[0]?.stopSellOBE != null && selectedRoom?.ratesAndAvailabilityDtos?.[0]?.stopSellOBE !== false
-          || selectedRoom?.ratesAndAvailabilityDtos?.[0]?.stopSellOTA != null && selectedRoom?.ratesAndAvailabilityDtos?.[0]?.stopSellOTA !== false"
-              >
-                <h4 class="not-available">No Plans Available</h4>
-              </ng-container>
+
             </div>
           </div>
         </div>
@@ -3631,6 +3631,7 @@
               <hr
                 style="border: 1px solid #e5e7eb; margin-top: 10px !important"
               />
+
               <div class="d-flex justify-content-between margin-bottom-10px">
                 <div>Available Plans</div>
 
@@ -3639,117 +3640,7 @@
                   Max Occupancy: {{ selectedRoom?.maximumOccupancy }}
                 </div>
               </div>
-              <ng-container
-                *ngIf="selectedRoom?.ratesAndAvailabilityDtos?.length > 0 &&
-            i === 0 && selectedRoom?.ratesAndAvailabilityDtos != null && selectedRoom?.ratesAndAvailabilityDtos?.[0]?.stopSellOBE == null && selectedRoom?.ratesAndAvailabilityDtos?.[0]?.stopSellOBE == false
-          || selectedRoom?.ratesAndAvailabilityDtos?.[0]?.stopSellOTA == null && selectedRoom?.ratesAndAvailabilityDtos?.[0]?.stopSellOTA == false"
-              >
-                <ng-container
-                  *ngFor="
-                    let rates of selectedRoom?.ratesAndAvailabilityDtos;
-                    let r = index
-                  "
-                >
-                  <div
-                    class="popup-card"
-                    *ngFor="let plan of rates?.roomRatePlans; let p = index"
-                  >
-                    <h4 class="popup-plan">{{ plan.name }}</h4>
 
-                    <div class="d-flex justify-content-between margin-top-20px">
-                      <h4 class="popup-plan font-weight-bold">
-                        {{
-                          plan.amount| currency : currency : "symbol" : "1.2-2"
-                        }}
-                      </h4>
-                      <p style="font-size: smaller">per night + taxes</p>
-                    </div>
-                    <div class="d-flex justify-content-between">
-                      <div
-                        class="d-flex"
-                        style="align-items: center; gap: 10px"
-                      >
-                        <img src=" assets/images/adult-img.svg" alt="" />
-                        <p style="font-size: smaller; margin-bottom: 0px">
-                          Extra Adult Charge:
-                        </p>
-                      </div>
-                      <div
-                        class="d-flex"
-                        style="align-items: center; gap: 10px"
-                      >
-                        <img src=" assets/images/child-img.svg" alt="" />
-                        <p style="font-size: smaller; margin-bottom: 0px">
-                          Extra Child Charge:
-                        </p>
-                      </div>
-                    </div>
-                    <div class="margin-top-10px">
-                      <button
-                        class="btn select-plan"
-                        (click)="onSelectPlanFromPopup(plan)"
-                      >
-                        Select Plan
-                      </button>
-                    </div>
-                  </div>
-                </ng-container>
-              </ng-container>
-
-              <ng-container
-                *ngIf="selectedRoom?.ratesAndAvailabilityDtos?.length>0 && i>0 && this.isDiabled && selectedRoom?.ratesAndAvailabilityDtos?.[0]?.roomRatePlans?.length > 0 && (selectedRoom?.ratesAndAvailabilityDtos?.[0]?.stopSellOBE === null || selectedRoom?.ratesAndAvailabilityDtos?.[0]?.stopSellOBE === false) &&
-       (selectedRoom?.ratesAndAvailabilityDtos?.[0]?.stopSellOTA === null || selectedRoom?.ratesAndAvailabilityDtos?.[0]?.stopSellOTA === false) "
-              >
-                <ng-container
-                  *ngFor="
-                    let rates of selectedRoom?.ratesAndAvailabilityDtos;
-                    let r = index
-                  "
-                >
-                  <div
-                    class="popup-card"
-                    *ngFor="let plan of rates?.roomRatePlans; let p = index"
-                  >
-                    <h4 class="popup-plan">{{ plan.name }}</h4>
-
-                    <div class="d-flex justify-content-between margin-top-20px">
-                      <h4 class="popup-plan font-weight-bold">
-                        {{
-                          plan.amount}}
-                      </h4>
-                      <p style="font-size: smaller">per night + taxes</p>
-                    </div>
-                    <div class="d-flex justify-content-between">
-                      <div
-                        class="d-flex"
-                        style="align-items: center; gap: 10px"
-                      >
-                        <img src=" assets/images/adult-img.svg" alt="" />
-                        <p style="font-size: smaller; margin-bottom: 0px">
-                          Extra Adult Charge:
-                        </p>
-                      </div>
-                      <div
-                        class="d-flex"
-                        style="align-items: center; gap: 10px"
-                      >
-                        <img src=" assets/images/child-img.svg" alt="" />
-                        <p style="font-size: smaller; margin-bottom: 0px">
-                          Extra Child Charge:
-                        </p>
-                      </div>
-                    </div>
-                    <div class="margin-top-10px">
-                      <button
-                        class="btn select-plan"
-                        (click)="onSelectPlanFromPopup(plan)"
-                      >
-                        Select Plan
-                      </button>
-                    </div>
-                  </div>
-                </ng-container>
-              </ng-container>
               <ng-container
                 *ngIf="selectedRoom?.ratesAndAvailabilityDtos === null"
               >
