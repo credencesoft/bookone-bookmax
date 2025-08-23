@@ -4213,37 +4213,55 @@ if (roomKey) {
   //       this.showAllTheOfferList = this.checkValidCouponOrNot(filteredOffers);
   //   });
   // }
-  getOfferList(seo: string) {
-    if (this.activeForGoogleHotelCenter === true) {
-      this.offerService
-        .getOfferListFindByName('Platform Promotion')
-        .subscribe((response) => {
-          if (response.body && response.body.length > 0) {
-            this.offersList.push(response.body[0]);
-          } else {
-            this.offersList = [];
-          }
-          this.showAllTheOfferList = this.checkValidCouponOrNot(
-            this.offersList
-          );
-          this.changeDetectorRefs.detectChanges();
-        });
-    } else {
-      this.offerService
-        .getOfferListFindBySeoFriendlyName(seo)
-        .subscribe((data) => {
-          if (data.body && data.body.length > 0) {
-            this.offersList = data.body;
-          } else {
-            this.offersList = [];
-          }
-          this.showAllTheOfferList = this.checkValidCouponOrNot(
-            this.offersList
-          );
-          this.changeDetectorRefs.detectChanges();
-        });
-    }
+getOfferList(seo: string) {
+  const bookingStart = new Date(this.booking.fromDate + 'T00:00:00');
+  const bookingEnd = new Date(this.booking.toDate + 'T23:59:59');
+ if (this.activeForGoogleHotelCenter === true) {
+    this.offerService
+      .getOfferListFindByName('Platform Promotion')
+      .subscribe((response) => {
+        if (response.body && response.body.length > 0) {
+          const validOffers = response.body.filter((offer: any) => {
+            const offerStart = new Date(Number(offer.startDate)); // timestamp → Date
+            const offerEnd = new Date(Number(offer.endDate));
+
+            // ✅ Containment check
+            return offerStart <= bookingStart && offerEnd >= bookingEnd;
+          });
+
+          this.offersList.push(...validOffers);
+        } else {
+          this.offersList = [];
+        }
+
+        this.showAllTheOfferList = this.checkValidCouponOrNot(this.offersList);
+        console.log('this.offersList', this.offersList);
+        this.changeDetectorRefs.detectChanges();
+      });
+  } else {
+    this.offerService
+      .getOfferListFindBySeoFriendlyName(seo)
+      .subscribe((data) => {
+        if (data.body && data.body.length > 0) {
+          const validOffers = data.body.filter((offer: any) => {
+            const offerStart = new Date(Number(offer.startDate));
+            const offerEnd = new Date(Number(offer.endDate));
+
+            return offerStart <= bookingStart && offerEnd >= bookingEnd;
+          });
+
+          this.offersList = validOffers;
+        } else {
+          this.offersList = [];
+        }
+
+        this.showAllTheOfferList = this.checkValidCouponOrNot(this.offersList);
+        console.log('this.offersList', this.offersList);
+        this.changeDetectorRefs.detectChanges();
+      });
   }
+}
+
 
   checkValidCouponOrNot(couponList?) {
     try {
@@ -6585,67 +6603,58 @@ getAvailableRoomsForGHC(availableRooms: any[]) {
   //   }
   // }
 
-  onCouponInputChange(event: string) {
-    const couponCodeValues = sessionStorage.getItem('selectedPromoData');
-    this.enteredCoupon = event.trim();
-        if (couponCodeValues) {
-      const parsed = JSON.parse(couponCodeValues); // convert to object
-      this.specialDiscountData = JSON.parse(couponCodeValues);
-        console.log("this.privatePromotionData", this.specialDiscountData);
-    if (parsed.couponCode) {
-      this.enteredCoupon = parsed.couponCode;
-      this.validCouponCode = parsed.couponCode;
-    }
-    if (parsed.discountPercentage) {
-          this.specialDiscountPercentage = parsed.discountPercentage;
-        }
-    } else {
-      this.specialDiscountData = [];
-    }
-    // Filter Private offers
-    const privateOffers = this.offersList.filter(
-      (offer) => offer.promotionAppliedFor === 'Private'
-    );
+onCouponInputChange(event: string) {
+  this.enteredCoupon = event.trim();
 
-
-    // Check if enteredCoupon matches any couponCode (case-insensitive)
-    const matchedOffer = privateOffers.find(
-      (offer) =>
-        offer.couponCode?.trim().toUpperCase() ===
-        this.enteredCoupon.toUpperCase()
-    );
-
-    // If match found, store it as valid
-    if (matchedOffer) {
-      this.validCouponCode = matchedOffer.couponCode;
-      this.privatePromotionData = matchedOffer; // optional, if you need it later
-    } else {
-      this.validCouponCode = ''; // reset if not matched
-      this.privatePromotionData = null;
-    }
+  if (!this.enteredCoupon) {
+    this.resetCoupon();
+    return;
   }
+
+  const matchedOffer = this.offersList.find(
+    (offer) =>
+      offer.couponCode?.trim().toUpperCase() ===
+      this.enteredCoupon.toUpperCase()
+  );
+
+  if (matchedOffer) {
+
+    this.validCouponCode = matchedOffer.couponCode;
+    this.privatePromotionData = matchedOffer;
+    this.specialDiscountData = matchedOffer;
+    this.specialDiscountPercentage = matchedOffer.discountPercentage || null;
+
+    sessionStorage.setItem('selectedPromoData', JSON.stringify(matchedOffer));
+    sessionStorage.setItem('selectPromo', 'true');
+    this.promoSelected = true;
+  } else {
+    this.resetCoupon();
+  }
+}
+  private resetCoupon() {
+  this.validCouponCode = '';
+  this.privatePromotionData = null;
+  this.specialDiscountData = null;
+  this.specialDiscountPercentage = null;
+  this.promoSelected = false;
+
+  sessionStorage.removeItem('selectedPromoData');
+  sessionStorage.removeItem('selectPromo');
+}
   applyCoupon(product: any, couponSection: HTMLElement) {
 
   sessionStorage.removeItem('selectedPromoData');
   sessionStorage.removeItem('selectPromo');
   this.enteredCoupon = product.couponCode;
-  couponSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  // couponSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
   this.onYesClick();
    this.promoSelected = sessionStorage.getItem('selectPromo') === 'true';
 }
 
-removeCoupon(){
-    sessionStorage.removeItem('selectedPromoData');
-  sessionStorage.removeItem('selectPromo');
-}
 
 onYesClick() {
-  this.privateOffers2 = this.offersList.filter(
-    (offer) => offer.promotionAppliedFor === 'Private'
-  );
-
-  const matchingOffer = this.privateOffers2.find(
+  const matchingOffer = this.offersList.find(
     (item) =>
       item.couponCode?.trim().toUpperCase() ===
       this.enteredCoupon?.trim().toUpperCase()
@@ -6655,19 +6664,16 @@ onYesClick() {
     this.privatePromotionData = matchingOffer;
     this.privateOffersMinimumAmount = matchingOffer.minimumOrderAmount;
 
-    // convert booking dates to timestamps
     const bookingFrom = new Date(this.booking.fromDate).getTime();
     const bookingTo = new Date(this.booking.toDate).getTime();
 
-    // convert promo dates (already timestamps, but ensure they're numbers)
     const promoStart = Number(matchingOffer.startDate);
     const promoEnd = Number(matchingOffer.endDate);
 
-    // check if booking dates fall within the promo period
-    if (bookingFrom >= promoStart && bookingTo <= promoEnd) {
-      // ✅ Booking is within promo period → Apply
+    if (promoStart <= bookingFrom && promoEnd >= bookingTo) {
+      // ✅ Booking is fully inside promo period → Apply
       this.successMessagePrivate = 'Applied';
-      this.errorMessagePrivate = '';  // clear error
+      this.errorMessagePrivate = '';
       this.selectedPromotion = true;
       this.isValidPrivateCoupon = true;
       this.couponApplied = true;
@@ -6678,16 +6684,17 @@ onYesClick() {
         JSON.stringify(this.privatePromotionData)
       );
       sessionStorage.setItem('selectPromo', 'true');
-       this.promoSelected = sessionStorage.getItem('selectPromo') === 'true';
+      this.promoSelected = sessionStorage.getItem('selectPromo') === 'true';
+
       const couponCodeValues = sessionStorage.getItem('selectedPromoData');
       if (couponCodeValues) {
         const parsed = JSON.parse(couponCodeValues);
         this.specialDiscountData = parsed;
 
         console.log(
-          "Coupon valid for dates:",
+          'Coupon valid for dates:',
           new Date(this.specialDiscountData.startDate),
-          "to",
+          'to',
           new Date(this.specialDiscountData.endDate)
         );
 
@@ -6700,7 +6707,7 @@ onYesClick() {
         }
       }
 
-      // Optional: delay scroll and close
+      // Optional: auto-scroll and close popup
       setTimeout(() => {
         this.isPopupOpen = false;
         const offerSection23 = document.getElementById('accmdOne');
@@ -6715,8 +6722,8 @@ onYesClick() {
       this.successMessagePrivate = '';
       this.errorMessagePrivate = 'Validity Expired';
       setTimeout(() => {
-      this.errorMessagePrivate = '';
-    }, 3000);
+        this.errorMessagePrivate = '';
+      }, 3000);
       this.isValidPrivateCoupon = false;
       this.couponApplied = false;
       this.couponSuccessApplied = false;
@@ -6726,6 +6733,7 @@ onYesClick() {
     console.log('No matching coupon found.');
   }
 }
+
 
 
   onYesClickMobileView() {
