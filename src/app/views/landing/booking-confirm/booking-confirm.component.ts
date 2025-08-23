@@ -1701,6 +1701,17 @@ onGenerateVouchers() {
   }
 
   sendWhatsappMessageToTHM(booking) {
+          this.parameterss2 = [];
+  this.parameterss15 = [];
+  this.components = [];
+  this.parametertype2 = new Para();
+  this.parametertype20 = new Para();
+ this.parameterss2 =[];
+    this.parameterss3 = [];
+    this.parameterss15 = [];
+  this.components = [];
+    this.parameterss =[];
+    this.parameterss1 = [];
     this.whatsappForm.messaging_product = 'whatsapp';
     this.whatsappForm.recipient_type = 'individual';
     this.template.name = '';
