@@ -224,7 +224,7 @@
                 <div>Check-in Date:</div>
                 <div>
                   <span *ngIf="booking.checkInDate">
-                    <b>{{ booking.checkInDate | date : "d MMM" }}</b></span
+                    <b>{{ booking.checkInDate | date: "d MMM yyyy" }}</b></span
                   >
                 </div>
               </div>
@@ -235,7 +235,7 @@
                 <div>Check Out Date:</div>
                 <div>
                   <span *ngIf="booking.checkOutDate">
-                    <b>{{ booking.checkOutDate | date : "d MMM" }}</b></span
+                    <b>{{ booking.checkOutDate | date: "d MMM yyyy" }}</b></span
                   >
                 </div>
               </div>
@@ -674,7 +674,7 @@
                 <div>Check-in Date:</div>
                 <div>
                   <span *ngIf="booking.fromDate">
-                    <b>{{ booking.fromDate | date : "d MMM" }}</b></span
+                    <b>{{ booking.fromDate | date: "d MMM yyyy" }}</b></span
                   >
                 </div>
               </div>
@@ -685,7 +685,7 @@
                 <div>Check Out Date:</div>
                 <div>
                   <span *ngIf="booking.toDate">
-                    <b>{{ booking.toDate | date : "d MMM" }}</b></span
+                    <b>{{ booking.toDate | date: "d MMM yyyy" }}</b></span
                   >
                 </div>
               </div>

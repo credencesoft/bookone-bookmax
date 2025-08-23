@@ -362,10 +362,7 @@
 
           <ng-container
             *ngFor="
-              let fac of propertyServiceListDataOne
-                | slice
-                  : 0
-                  : (viewMore ? propertyServiceListDataOne.length : 4);
+              let fac of propertyServiceListDataOne;
               let i = index
             "
           >
@@ -2155,30 +2152,15 @@
             <div *ngIf="isRestaurant || distance || DistanceRailway">
               <dl>
                 <dt style="margin-bottom: 18px" *ngIf="DistanceRailway">
-                  <img
-                    src=" assets/images/trains.svg"
-                    alt=""
-                    height="27px"
-                    width="27px"
-                  />
+                  <i class="fa-solid fa-forward"></i> &nbsp;
                   {{ DistanceRailway.name }}
                 </dt>
                 <dt style="margin-bottom: 18px" *ngIf="distance">
-                  <img
-                    src=" assets/images/Map.svg"
-                    alt=""
-                    height="20px"
-                    width="25px"
-                  />
+                  <i class="fa-solid fa-forward"></i> &nbsp;
                   {{ distance.name }}
                 </dt>
                 <dt style="margin-bottom: 18px" *ngIf="isRestaurant">
-                  <img
-                    src=" assets/images/forward.svg"
-                    alt=""
-                    height="20px"
-                    width="25px"
-                  />
+                  <i class="fa-solid fa-forward"></i> &nbsp;
                   {{ isRestaurant.name }}
                 </dt>
               </dl>
@@ -4151,10 +4133,7 @@
 
           <ng-container
             *ngFor="
-              let fac of propertyServiceListDataOne
-                | slice
-                  : 0
-                  : (viewMore ? propertyServiceListDataOne.length : 4);
+              let fac of propertyServiceListDataOne;
               let i = index
             "
           >

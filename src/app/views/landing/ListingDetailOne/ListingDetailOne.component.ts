@@ -706,7 +706,8 @@ promoSelected = false;
   urlLocation: boolean;
   isHotelMate: boolean = true;
   showAll: boolean = false;
-
+showMoreAddons: boolean = false;
+selectedAddonNames: string[] = [];
   checkinDay: number;
   propertyDetail: any;
   checkinMonth: number;
@@ -1390,6 +1391,18 @@ if (storedBooking) {
     localStorage.removeItem('landingrice');
   }
 
+  toggleMoreAddons() {
+  this.showMoreAddons = !this.showMoreAddons;
+}
+onAddonToggle(addonName: string, checked: boolean) {
+  if (checked) {
+    if (!this.selectedAddonNames.includes(addonName)) {
+      this.selectedAddonNames.push(addonName);
+    }
+  } else {
+    this.selectedAddonNames = this.selectedAddonNames.filter(name => name !== addonName);
+  }
+}
   get totalAdults(): number {
     return (
       this.adults + this.additionalRooms.reduce((sum, r) => sum + r.adults, 0)
@@ -5693,6 +5706,7 @@ onBookNow() {
           if (facilities !== null && facilities !== undefined) {
             facilities.forEach((fac) => {
               // console.log("Image url: "+fac.imageUrl)
+              console.log("facilities",facilities)
               if (fac.name == 'Breakfast (Adult)' || fac.name == 'Breakfast') {
                 this.breakfast = fac;
               }
