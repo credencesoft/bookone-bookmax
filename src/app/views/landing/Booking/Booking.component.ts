@@ -3225,8 +3225,8 @@ if (bookingSummaryStr) {
     booking.fromDate = bookingSummary.fromDate;
     booking.toDate = bookingSummary.toDate;
     booking.currency = this.businessUser.localCurrency;
-    booking.fromTime = Number(this.token.getFromTime());
-    booking.toTime = Number(this.token.getToTime());
+    booking.fromTime = new Date(bookingSummary.fromDate).getTime();
+    booking.toTime = new Date(bookingSummary.toDate).getTime();
     booking.modeOfPayment = this.payment.paymentMode;
     booking.externalSite = 'WebSite';
     booking.businessName = this.businessUser.name;
