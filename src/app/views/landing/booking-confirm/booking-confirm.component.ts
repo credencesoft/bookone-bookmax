@@ -1115,30 +1115,38 @@ checkValidCouponOrNot(couponList?){
     this.accommodationService = this.businessUser.businessServiceDtoList.filter(service => service.name === "Accommodation");
     // console.log(" this.accommodationService" + JSON.stringify( this.accommodationService))
   }
-  changeTheme(primary: string, secondary: string, tertiary: string) {
-    document.documentElement.style.setProperty('--primary', primary);
+   changeTheme(primary?: string, secondary?: string, tertiary?: string) {
+  // Default colors if none are passed
+  const defaultPrimary = "#232A45";   // blue
+  const defaultSecondary = "#0B01CC"; // green
+  const defaultTertiary = "#fff";  // yellow
 
-    document.documentElement.style.setProperty('--secondary', secondary);
-    document.documentElement.style.setProperty('--tertiary', tertiary);
-    document.documentElement.style.setProperty('--button-primary', tertiary);
-    document.documentElement.style.setProperty(
-      '--primary-gradient',
-      'linear-gradient( 180deg, ' + tertiary + ', ' + secondary + ')'
-    );
-    document.documentElement.style.setProperty(
-      '--secondary-gradient',
-      'linear-gradient( 312deg, ' + primary + ', ' + secondary + ')'
-    );
-    document.documentElement.style.setProperty(
-      '--secondary-one-gradient',
-      'linear-gradient( 180deg, ' + primary + ', ' + secondary + ')'
-    );
+  const p = primary || defaultPrimary;
+  const s = secondary || defaultSecondary;
+  const t = tertiary || defaultTertiary;
 
-    document.documentElement.style.setProperty(
-      '--third-gradient',
-      'linear-gradient( 180deg, ' + primary + ', ' + secondary + ')'
-    );
-  }
+  document.documentElement.style.setProperty('--primary', p);
+  document.documentElement.style.setProperty('--secondary', s);
+  document.documentElement.style.setProperty('--tertiary', t);
+  document.documentElement.style.setProperty('--button-primary', t);
+
+  document.documentElement.style.setProperty(
+    '--primary-gradient',
+    `linear-gradient(180deg, ${t}, ${s})`
+  );
+  document.documentElement.style.setProperty(
+    '--secondary-gradient',
+    `linear-gradient(312deg, ${p}, ${s})`
+  );
+  document.documentElement.style.setProperty(
+    '--secondary-one-gradient',
+    `linear-gradient(180deg, ${p}, ${s})`
+  );
+  document.documentElement.style.setProperty(
+    '--third-gradient',
+    `linear-gradient(180deg, ${p}, ${s})`
+  );
+}
 
   getSubscriptions(booking: any) {
     // console.log('booking', booking);
