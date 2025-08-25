@@ -2357,12 +2357,36 @@ getSubtotalNonGhCPrice(plan: any): number {
 
 getTotalGhCPrice(plan: any): number {
   const subtotal = this.getSubtotalGhCPrice(plan);
-  return subtotal + this.calculateTaxAmount(subtotal, plan);
+  let taxTotalOne = 0;
+    this.selectedPlansSummary.forEach((plan: any) => {
+    if (plan.planName === 'GHC') {
+      this.daterangefilter?.forEach((nights, i) => {
+        const priceArray = [this.planPrice[i]];
+        priceArray.forEach((price) => {
+          taxTotalOne += this.calculateTaxAmount(price * plan.selectedRoomnumber + (plan.SingleDayextraPersonAdultCountAmount + plan.SingleDayextraPersonChildCountAmount), plan);
+        });
+      });
+
+    }
+  });
+  return subtotal + taxTotalOne;
 }
 
 getTotalNonGhCPrice(plan: any): number {
   const subtotal = this.getSubtotalNonGhCPrice(plan);
-  return subtotal + this.calculateTaxAmount(subtotal, plan);
+    let taxTotalTwo = 0;
+    this.selectedPlansSummary.forEach((plan: any) => {
+    if (plan.planName != 'GHC') {
+      this.daterangefilter?.forEach((_, i) => {
+      taxTotalTwo += this.calculateTaxAmount(
+        (plan.actualRoomPrice * plan.selectedRoomnumber) +
+        (plan.SingleDayextraPersonAdultCountAmount + plan.SingleDayextraPersonChildCountAmount),
+        plan
+      );
+    });
+    }
+  });
+  return subtotal + taxTotalTwo;
 }
 
 getGrandTotal(): number {
@@ -2404,9 +2428,21 @@ getGrandTaxTotal(): number {
 
   this.selectedPlansSummary.forEach((plan: any) => {
     if (plan.planName === 'GHC') {
-      taxTotal += this.getTaxGhCPrice(plan);
+      this.daterangefilter?.forEach((nights, i) => {
+        const priceArray = [this.planPrice[i]];
+        priceArray.forEach((price) => {
+          taxTotal += this.calculateTaxAmount(price * plan.selectedRoomnumber + (plan.SingleDayextraPersonAdultCountAmount + plan.SingleDayextraPersonChildCountAmount), plan);
+        });
+      });
+
     } else {
-      taxTotal += this.getTaxNonGhCPrice(plan);
+       this.daterangefilter?.forEach((_, i) => {
+      taxTotal += this.calculateTaxAmount(
+        (plan.actualRoomPrice * plan.selectedRoomnumber) +
+        (plan.SingleDayextraPersonAdultCountAmount + plan.SingleDayextraPersonChildCountAmount),
+        plan
+      );
+    });
     }
   });
 
@@ -4955,28 +4991,53 @@ onBookNow() {
         if (plan.planName === 'GHC') {
                 const actualRoomPrice =
       (this.planPrice[0] || 0);
+        let taxTotalOne = 0;
+    this.selectedPlansSummary.forEach((plan: any) => {
+    if (plan.planName === 'GHC') {
+      this.daterangefilter?.forEach((nights, i) => {
+        const priceArray = [this.planPrice[i]];
+        priceArray.forEach((price) => {
+          taxTotalOne += this.calculateTaxAmount(price * plan.selectedRoomnumber + (plan.SingleDayextraPersonAdultCountAmount + plan.SingleDayextraPersonChildCountAmount), plan);
+        });
+      });
+
+    }
+  });
       return {
         ...plan,
         actualRoomPrice: actualRoomPrice,
         price: newPrice,
-        taxPercentageperroom: newTax
+        taxPercentageperroom: taxTotalOne
       };
         } else {
+              let taxTotalTwo = 0;
+              this.selectedPlansSummary.forEach((plan: any) => {
+              if (plan.planName != 'GHC') {
+                this.daterangefilter?.forEach((_, i) => {
+                taxTotalTwo += this.calculateTaxAmount(
+                  (plan.actualRoomPrice * plan.selectedRoomnumber) +
+                  (plan.SingleDayextraPersonAdultCountAmount + plan.SingleDayextraPersonChildCountAmount),
+                  plan
+                );
+              });
+              }
+            });
       return {
+
         ...plan,
         price: newPricNonGHC,
-        taxPercentageperroom: newTaxNonGHC
+        taxPercentageperroom: taxTotalTwo
       };
         }
     });
   }
 
   const totalPlanPrice = bookingSummary.selectedPlansSummary
-    ? bookingSummary.selectedPlansSummary.reduce((sum: number, p: any) => sum + p.price, 0)
+    ? this.getGrandSubtotal()
     : this.getTotalPlanPrice();
 
   const totalTax = bookingSummary.selectedPlansSummary
-    ? bookingSummary.selectedPlansSummary.reduce((sum: number, p: any) => sum + (p.taxPercentageperroom || 0), 0)
+    ? this.getGrandTaxTotal()
     : this.getTotalTaxPrice();
 
   const selectedAddOns = this.propertyServiceListDataOne
