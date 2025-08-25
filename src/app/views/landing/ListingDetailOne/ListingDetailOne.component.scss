@@ -1568,7 +1568,10 @@ position: absolute;
       margin-bottom: 22px;
     margin-left: 20px;
 }
-
+.booking-summary-dialog .p-dialog-header {
+  color: #000 !important;           /* white text */
+  font-weight: bold;
+}
 @media (max-width: 1180px) {
   .website-web-vision {
     display: none;
