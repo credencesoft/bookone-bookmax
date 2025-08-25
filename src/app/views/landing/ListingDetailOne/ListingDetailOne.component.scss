@@ -1646,14 +1646,6 @@ position: absolute;
     height: 400px;
     width: 400px !important;
   }
-  .selected {
-    padding: 7px 19px;
-    background-color: var(--primary, #0b01cc);
-    color: var(--tertiary) !important;
-    border-radius: 10px;
-    cursor: pointer;
-    font-size: 17px;
-}
 }
 .rotate-icon {
   transform: rotate(180deg);

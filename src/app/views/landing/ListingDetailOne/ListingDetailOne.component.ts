@@ -1251,7 +1251,6 @@ if (storedBooking) {
   if(bookingData?.propertyServiceListDataOne) {
     this.selectedFacilityNames = bookingData?.propertyServiceListDataOne?.map(item => item.name);
   }
-
 }
 
 
@@ -1391,45 +1390,9 @@ if (storedBooking) {
     //  this.getTotalTaxFee();
     localStorage.removeItem('landingrice');
   }
-getTotalAdults(): number {
-  return this.selectedPlansSummary.reduce((sum, plan) => sum + (plan.adults || 0), 0);
-}
 
-getTotalChildren(): number {
-  return this.selectedPlansSummary.reduce((sum, plan) => sum + (plan.children || 0), 0);
-}
   toggleMoreAddons() {
   this.showMoreAddons = !this.showMoreAddons;
-}
-removeSession() {
-  sessionStorage.removeItem('bookingSummaryDetails');
-const storedBooking = sessionStorage.getItem('bookingSummaryDetails');
-if (storedBooking) {
-  const bookingData = JSON.parse(storedBooking);
-  if(bookingData?.propertyServiceListDataOne) {
-    this.selectedFacilityNames = bookingData?.propertyServiceListDataOne?.map(item => item.name);
-  }
-
-}
-    const savedBooking = sessionStorage.getItem('bookingSummaryDetails');
-  if (savedBooking) {
-    const data = JSON.parse(savedBooking);
-    this.selectedPlansSummary = data.selectedPlansSummary || [];
-
-    // Rebuild selectedGuestsByPlan and selectedRoomsByPlan
-    this.selectedGuestsByPlan = {};
-    this.selectedRoomsByPlan = {};
-
-    this.selectedPlansSummary.forEach(plan => {
-      this.selectedGuestsByPlan[plan.planName] = {
-        adults: plan.adults,
-        children: plan.children
-      };
-      this.selectedRoomsByPlan[plan.planName] = plan.selectedRoomnumber;
-
-    });
-  }
-  this.selectedPlansSummary = [];
 }
 onAddonToggle(addonName: string, checked: boolean) {
   if (checked) {
@@ -1867,10 +1830,6 @@ resetLastChangedAge(planCode: string) {
     }, 200); // 200ms delay to avoid flicker
   }
 
-  closing() {
-    this.roomsAndOccupancy = false;
-  }
-
   closeChanges(){
     this.roomsAndOccupancy = false;
   }
@@ -2092,7 +2051,6 @@ resetLastChangedAge(planCode: string) {
   // }
 
   onPlanSelect(planCode: string, rates: any) {
-
       const selectedRooms = this.selectedRoomsByPlan[planCode];
   const selectedGuests = this.selectedGuestsByPlan[planCode];
   const plan = rates.roomRatePlans.find((p) => p.code === planCode);
@@ -2302,8 +2260,6 @@ resetLastChangedAge(planCode: string) {
         selectedPlansSummary: this.selectedPlansSummary
       })
     );
-  } else {
-    this.showTemporaryError(planCode, `Please add minimum 1 adult`);
   }
 }
           else {
@@ -5747,6 +5703,8 @@ onBookNow() {
 
           if (facilities !== null && facilities !== undefined) {
             facilities.forEach((fac) => {
+              // console.log("Image url: "+fac.imageUrl)
+              console.log("facilities",facilities)
               if (fac.name == 'Breakfast (Adult)' || fac.name == 'Breakfast') {
                 this.breakfast = fac;
               }
