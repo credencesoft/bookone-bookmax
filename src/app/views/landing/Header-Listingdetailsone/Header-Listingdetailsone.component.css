@@ -29,9 +29,8 @@
 }
 
 .logo-imagetwo {
-  width: 94px;
-  height: 94px;
-  border-radius: 50%;
+    width: auto;
+    height: 94px;
   margin-right: 10px;
   object-fit: fill;
   margin-left: 14px;
