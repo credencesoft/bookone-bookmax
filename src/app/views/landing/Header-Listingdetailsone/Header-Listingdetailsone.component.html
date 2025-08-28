@@ -34,7 +34,7 @@
         target="_top"
         class="nav-link"
       >
-        <i class="fas fa-info-circle"></i> About Us
+        <i class="fas fa-info-circle"></i> About
       </a>
     </li>
     <hr *ngIf="businessUser?.website && socialmedialist?.aboutUs" />
@@ -144,7 +144,7 @@
       </div>
       <div *ngIf="businessUser?.website && socialmedialist?.aboutUs">
         <a [href]="socialmedialist?.aboutUs" target="_top" style="color: white"
-          >About Us</a
+          >About</a
         >
       </div>
       <div *ngIf="businessUser?.website && socialmedialist?.blogPageUrl">
@@ -217,7 +217,7 @@
             src="assets/images/call-us-header.svg"
             style="margin-right: 6px"
           />
-          Call Now
+           {{ websiteUrlBookingEngine ? businessUser?.mobile : '9040785705' }}
         </a>
       </div>
       <!-- <div>

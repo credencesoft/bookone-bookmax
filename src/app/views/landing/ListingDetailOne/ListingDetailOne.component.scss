@@ -1994,6 +1994,11 @@ text-align: center;
   .font-size-13px {
       font-size: 13px;
 }
+.header-section-content {
+    display: flex;
+    gap: 36px !important;
+    font-size: 20px !important;
+}
 .increament-bg {
     gap: 12px;
 }

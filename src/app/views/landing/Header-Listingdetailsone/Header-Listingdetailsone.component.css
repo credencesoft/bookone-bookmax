@@ -8,19 +8,21 @@
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5);
 }
 .header-section-content {
-      display: flex;
-    gap: 30px;
-    color: white;
+    display: flex
+;
+    gap: 57px;
+    color: #fff;
     flex-grow: 1;
     justify-content: center;
-    font-family: "Barlow";
-    letter-spacing: 1px;
-        font-family: 'Barlow';
+    font-family: Barlow;
     text-transform: uppercase;
     font-weight: 400;
     letter-spacing: 1px;
     transition: color .3s ease;
-    font-size: 18px;
+    font-size: 22px;
+}
+.header-section-content a:hover {
+  color: var(--secondary, #0b01cc) !important;
 }
 .close-btn {
   background: none;
