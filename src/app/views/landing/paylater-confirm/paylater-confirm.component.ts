@@ -47,6 +47,7 @@ export class PaylaterConfirmComponent {
     url: string;
     activeGoogleCenter: boolean = false;
     totalDiscount = 0;
+  websiteUrlBookingEngine: boolean = false;
   constructor(
     private token: TokenStorage,
     private hotelBookingService: HotelBookingService,
@@ -121,6 +122,7 @@ export class PaylaterConfirmComponent {
     }
       setInterval(() => {
     this.loadBookingSessionData();
+    this.checkBookingEngineFlag();
   }, 10);
   }
 
@@ -146,8 +148,15 @@ export class PaylaterConfirmComponent {
     // console.log('bookingsResponseList', this.bookingsResponseList);
   }
 }
+checkBookingEngineFlag(): void {
+  const bookingEngineFlag = sessionStorage.getItem('BookingEngine');
+  this.websiteUrlBookingEngine = bookingEngineFlag === 'true';
+  console.log(this.websiteUrlBookingEngine,this.websiteUrlBookingEngine)
+}
 callNow() {
-  if (this.businessUser?.mobile) {
+  if (this.businessUser?.mobile && this.websiteUrlBookingEngine) {
+    window.location.href = 'tel:' + this.businessUser?.mobile;
+  } else {
     window.location.href = 'tel:' + 9040785705;
   }
 }

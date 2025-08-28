@@ -39,6 +39,7 @@ export class BookingVoucherComponent {
   bookingsResponseList: any;
   expanded: boolean = false;
     totalDiscount = 0;
+      websiteUrlBookingEngine: boolean = false;
   constructor(
     private token: TokenStorage,
     private hotelBookingService: HotelBookingService,
@@ -90,6 +91,9 @@ export class BookingVoucherComponent {
       this.calculateTotalGuestsFromPlans();
       console.log('EnquiryResponseList', this.bookingsResponseList);
     }
+          setInterval(() => {
+    this.checkBookingEngineFlag();
+  }, 10);
   }
 
   ngOnInIt() {}
@@ -127,6 +131,11 @@ export class BookingVoucherComponent {
       // Handle the error appropriately, if needed.
     }
   }
+  checkBookingEngineFlag(): void {
+  const bookingEngineFlag = sessionStorage.getItem('BookingEngine');
+  this.websiteUrlBookingEngine = bookingEngineFlag === 'true';
+  console.log(this.websiteUrlBookingEngine,this.websiteUrlBookingEngine)
+}
     changeTheme(primary?: string, secondary?: string, tertiary?: string) {
   // Default colors if none are passed
   const defaultPrimary = "#232A45";   // blue
@@ -164,7 +173,9 @@ export class BookingVoucherComponent {
     this.isReadMore[index] = !this.isReadMore[index];
   }
   callNow() {
-   if (this.businessUser?.mobile) {
+    if (this.businessUser?.mobile && this.websiteUrlBookingEngine) {
+    window.location.href = 'tel:' + this.businessUser?.mobile;
+  } else {
     window.location.href = 'tel:' + 9040785705;
   }
 }
@@ -175,6 +186,7 @@ export class BookingVoucherComponent {
   }
 
   backone() {
+    window.location.href = this.PropertyUrl;
     sessionStorage.removeItem('EnquiryResponseList');
     sessionStorage.removeItem('bookingSummaryDetails');
     sessionStorage.removeItem('booking');

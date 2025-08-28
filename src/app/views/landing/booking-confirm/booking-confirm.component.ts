@@ -137,6 +137,7 @@ textToCopyOne: string = 'This is some text to copy';
       totalDiscount = 0;
   specialDiscountData: any;
   specialDiscountPercentage: any;
+    websiteUrlBookingEngine: boolean = false;
   constructor(
     private http: HttpClient,
     private token: TokenStorage,
@@ -183,6 +184,7 @@ textToCopyOne: string = 'This is some text to copy';
       );
             setInterval(() => {
     this.loadBookingSessionData();
+    this.checkBookingEngineFlag();
         if (this.token.getBookingData() != null && this.token.getBookingData() != undefined)
     {
       this.booking = this.token.getBookingData();
@@ -420,6 +422,7 @@ if (couponCodeValues) {
   }
 
   backone() {
+    window.location.href = this.PropertyUrl;
     sessionStorage.removeItem('bookingsResponseList');
     sessionStorage.removeItem('bookingSummaryDetails');
     sessionStorage.removeItem('booking');
@@ -1573,8 +1576,15 @@ checkValidCouponOrNot(couponList?){
     this.paymentLoader = false;
 
   }
+  checkBookingEngineFlag(): void {
+  const bookingEngineFlag = sessionStorage.getItem('BookingEngine');
+  this.websiteUrlBookingEngine = bookingEngineFlag === 'true';
+  console.log(this.websiteUrlBookingEngine,this.websiteUrlBookingEngine)
+}
 callNow() {
-    if (this.businessUser?.mobile) {
+  if (this.businessUser?.mobile && this.websiteUrlBookingEngine) {
+    window.location.href = 'tel:' + this.businessUser?.mobile;
+  } else {
     window.location.href = 'tel:' + 9040785705;
   }
 }

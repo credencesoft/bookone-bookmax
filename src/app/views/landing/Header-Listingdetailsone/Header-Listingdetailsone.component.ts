@@ -60,6 +60,17 @@ export class HeaderListingdetailsoneComponent implements OnInit {
   ) {
     // this.propertydetails = this.token.getProperty();
     // //console.log("propertydata="+ JSON.stringify(this.propertydetails))
+   this.checkBookingEngineFlag();
+  setInterval(() => {
+    this.checkBookingEngineFlag();
+        this.website = this.businessUser?.website;
+      this.businessUser?.socialMediaLinks?.forEach(element => {
+        this.socialmedialist=element
+      });
+      if (this.businessUser != null ) {
+        this.showheader = true
+      }
+  }, 1000);
     this.PropertyUrl = this.token.getPropertyUrl();
     //console.log("property url:" + this.PropertyUrl)
     this.website = this.businessUser?.website;
@@ -83,6 +94,7 @@ export class HeaderListingdetailsoneComponent implements OnInit {
                   let websitebookingURL = 'true';
                   this.websiteUrlBookingEngine = true;
                   console.log("websiteUrlBookingEngine",this.websiteUrlBookingEngine)
+                  sessionStorage.setItem('BookingEngine', 'true');
                 }
     });
 
@@ -92,7 +104,11 @@ export class HeaderListingdetailsoneComponent implements OnInit {
 
     //console.log('new link is',this.website);
   }
-
+checkBookingEngineFlag(): void {
+  const bookingEngineFlag = sessionStorage.getItem('BookingEngine');
+  this.websiteUrlBookingEngine = bookingEngineFlag === 'true';
+  console.log(this.websiteUrlBookingEngine,this.websiteUrlBookingEngine)
+}
   toggleListingDetails() {
     this.showListingDetails = !this.showListingDetails;
     this.isdone = true;

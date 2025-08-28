@@ -1140,7 +1140,11 @@ guestDataArray: Array<{
         let websitebookingURL = 'true';
         this.websiteUrlBookingEngine = true;
         this.token.savewebsitebookingURL(websitebookingURL);
+
       }
+        if (params['bookingEngine'] === undefined) {
+                  sessionStorage.removeItem('BookingEngine');
+        }
 
       if (params['hotelID'] !== undefined) {
         this.hotelID = params['hotelID'];
