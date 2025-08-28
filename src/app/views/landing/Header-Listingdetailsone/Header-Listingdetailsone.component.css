@@ -157,10 +157,7 @@ hr {
     letter-spacing: 1px;
 
 }
-.blinking-unique-btn:hover {
-background-color: var(--tertiary, #fff);
-color: var(--secondary, #0b01cc) !important;
-}
+
 .Whatsapp-btn-header {
     background: linear-gradient(90deg, #22C55E 0%, #16A34A 100%);
     color: #fff;
