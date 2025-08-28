@@ -2460,10 +2460,13 @@
               </div>
 
               <ng-container
-                *ngIf="selectedRoom?.ratesAndAvailabilityDtos?.length > 0 &&
-            i === 0 && selectedRoom?.ratesAndAvailabilityDtos != null && selectedRoom?.ratesAndAvailabilityDtos?.[0]?.stopSellOBE == null && selectedRoom?.ratesAndAvailabilityDtos?.[0]?.stopSellOBE == false
-          || selectedRoom?.ratesAndAvailabilityDtos?.[0]?.stopSellOTA == null && selectedRoom?.ratesAndAvailabilityDtos?.[0]?.stopSellOTA == false"
-              >
+                 *ngIf="
+            selectedRoom?.ratesAndAvailabilityDtos?.length > 0 &&
+            i === 0 &&
+            this.isDiabled && (selectedRoom.ratesAndAvailabilityDtos?.[0]?.stopSellOBE === null || selectedRoom?.ratesAndAvailabilityDtos?.[0]?.stopSellOBE === false) &&
+       (selectedRoom?.ratesAndAvailabilityDtos?.[0]?.stopSellOTA === null || selectedRoom?.ratesAndAvailabilityDtos?.[0]?.stopSellOTA === false)
+          "
+        >
                 <ng-container
                   *ngFor="
                     let rates of selectedRoom?.ratesAndAvailabilityDtos
@@ -2498,21 +2501,23 @@
                       </div>
                       <div class="d-flex justify-content-between">
                         <div
+                        *ngIf="plan?.extraChargePerPerson"
                           class="d-flex"
                           style="align-items: center; gap: 10px"
                         >
                           <img src=" assets/images/adult-img.svg" alt="" />
                           <p style="font-size: smaller; margin-bottom: 0px">
-                            Extra Adult Charge:
+                            Extra Adult Charge:  {{plan?.extraChargePerPerson | currency : currency : "symbol" : "1.2-2"}}
                           </p>
                         </div>
                         <div
+                        *ngIf="plan?.extraChargePerChild"
                           class="d-flex"
                           style="align-items: center; gap: 10px"
                         >
                           <img src=" assets/images/child-img.svg" alt="" />
                           <p style="font-size: smaller; margin-bottom: 0px">
-                            Extra Child Charge:
+                            Extra Child Charge: {{plan?.extraChargePerChild | currency : currency : "symbol" : "1.2-2"}}
                           </p>
                         </div>
                       </div>
@@ -2559,21 +2564,23 @@
                       </div>
                       <div class="d-flex justify-content-between">
                         <div
+                        *ngIf="plan?.extraChargePerPerson"
                           class="d-flex"
                           style="align-items: center; gap: 10px"
                         >
                           <img src=" assets/images/adult-img.svg" alt="" />
                           <p style="font-size: smaller; margin-bottom: 0px">
-                            Extra Adult Charge:
+                            Extra Adult Charge:  {{plan?.extraChargePerPerson | currency : currency : "symbol" : "1.2-2"}}
                           </p>
                         </div>
                         <div
+                        *ngIf="plan?.extraChargePerChild"
                           class="d-flex"
                           style="align-items: center; gap: 10px"
                         >
                           <img src=" assets/images/child-img.svg" alt="" />
                           <p style="font-size: smaller; margin-bottom: 0px">
-                            Extra Child Charge:
+                            Extra Child Charge: {{plan?.extraChargePerChild | currency : currency : "symbol" : "1.2-2"}}
                           </p>
                         </div>
                       </div>
