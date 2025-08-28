@@ -2984,8 +2984,8 @@
                             [title]="plan.name"
                           >
                             {{
-                              plan.name.split(" ").length > 1
-                                ? plan.name.split(" ").slice(0, 1).join(" ") +
+                              plan.name.split(" ").length > 2
+                                ? plan.name.split(" ").slice(0, 2).join(" ") +
                                   "..."
                                 : plan.name
                             }}
@@ -3578,8 +3578,8 @@
                             [title]="plan.name"
                           >
                             {{
-                              plan.name.split(" ").length > 1
-                                ? plan.name.split(" ").slice(0, 1).join(" ") +
+                              plan.name.split(" ").length > 2
+                                ? plan.name.split(" ").slice(0, 2).join(" ") +
                                   "..."
                                 : plan.name
                             }}
