@@ -6,7 +6,7 @@ export class RoomDetail {
   noOfchild: Number;
   plan: string;
   roomRate: Number;
-  roomTypeId: string;
+  roomTypeId: any;
   roomTypeName: string
   constructor() { }
 }

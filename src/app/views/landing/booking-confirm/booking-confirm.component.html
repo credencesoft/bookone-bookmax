@@ -1,519 +1,464 @@
-<div class="desktop-view-booking-voucher" *ngIf="paymentSucess === true">
-  <div class="responsive-wrapper">
-    <div class="row">
-      <div class="col-12 col-md-6 offset-md-6">
-        <div class="assistance-section">
-          <div style="display: flex">
-            <div><strong>Need Assistance?</strong></div>
-            <div
-              class="contact-info"
-              style="display: flex; margin-top: 0px; margin-left: 10px"
-            >
 
-              <span
-                ><img
-                  src="assets/images/chatsym.png"
-                  alt=""
-                  height="20px"
-                  width="20px"
-                  style="margin-right: 3px; transform: rotate(3deg)"
-                />
-                9040785705</span
+<app-Header-Listingdetailsone [businessUser]="businessUser">
+</app-Header-Listingdetailsone>
+
+<div class="desktop-view-booking-voucher" *ngIf="paymentSucess === true">
+  <div class="container-div">
+    <div class="responsive-wrapper">
+      <div class="row">
+        <div class="col-12">
+          <div
+            style="
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+            "
+          >
+            <div (click)="backone()" class="backNavigation">
+              <i class="fa-solid fa-angle-left"></i> &nbsp; Go Back
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <div
+        class="d-flex"
+        style="align-items: center; gap: 30px; margin-top: 20px"
+      >
+        <div class="col-6 text-left mb-4 font-change">
+          <span
+            style="
+              font-weight: 600 !important;
+              color: #000 !important;
+              font-size: 35px !important;
+            "
+            >Great News!</span
+          >
+          <div
+            class="mb-0"
+            style="
+              font-weight: 600 !important;
+              color: #2563eb !important;
+              font-size: 19px !important;
+              margin-top: -5px;
+            "
+          >
+            Your booking is confirmed.
+          </div>
+          <div style="color: #615d5d; font-weight: 600; font-size: 13px">
+            We’ve sent your booking details to your mail. <br />
+            Didn’t receive it yet? It might be in your spam folder — or simply
+            check WhatsApp.
+          </div>
+        </div>
+
+        <div style="justify-content: center; display: flex; gap: 20px">
+          <div
+            class="card"
+            style="
+              text-align: center;
+              background-color: #eff6ff;
+              padding: 26px 19px;
+            "
+          >
+            <div class="mb-2">
+              <span class="highlight-text">Current Status</span>
+            </div>
+            <div class="mb-0">
+              <span class="status-badge status-enquiry" style="font-size: 13px"
+                >Confirmed</span
               >
             </div>
           </div>
-          <p style="margin-bottom: -19px; margin-top: -12px" *ngIf="accommodationService[0]?.checkInTime">
-            Working Hours: <span>{{accommodationService[0]?.checkInTime}} AM to {{accommodationService[0]?.checkOutTime}} PM</span>
-          </p>
-        </div>
-      </div>
-    </div>
-
-    <div class="text-center mb-4">
-      <span
-        style="
-          font-weight: bold !important;
-          color: #000 !important;
-          font-size: 35px !important;
-        "
-        >Great News!</span
-      >
-      <div
-        class="mb-0"
-        style="
-          font-weight: bold !important;
-          color: #000 !important;
-          font-size: 21px !important;
-
-        "
-      >
-      Your booking is confirmed.
-      </div>
-      <div class="mb-0" style="font-size: 18px; color: #615d5d">
-        A confirmation has been sent to {{booking.email}} & your reservation number is {{booking.propertyReservationNumber}}.
-
-      </div>
-      <div
-        style="
-          color: #615d5d;
-          font-weight: bold;
-          font-size: 17px;
-        "
-      >
-      Note: Please check your spam folder or WhatsApp if you don’t see it.
-      </div>
-    </div>
-
-    <div class="row mb-4" style="justify-content: center">
-      <div
-        class="col-md-4"
-        style="text-align: center; flex: 0 0 25.333333%; max-width: 25.333333%"
-      >
-        <div class="mb-1"><span class="highlight-text">Booking ID</span></div>
-        <div class="mb-0"><b id="textToCopyOne">{{this.booking.id}}</b>
-          <img
-          src="assets/images/CopyVoucher.png"
-          alt=""
-          height="15px"
-          width="15px"
-          style="margin-right: 3px; margin-left: 7px;"
-          (click)="copyTextfour()"
-        />
-        <br/>
-        <a href="https://thehotelmate.co/history" style="margin-left: 5px; font-size: 13px; color: #1465cf; text-decoration: none;font-weight: bold;"
-        >Check Details</a>
-      </div>
-      </div>
-      <div
-        class="col-md-4"
-        style="text-align: center; flex: 0 0 25.333333%; max-width: 25.333333%"
-      >
-        <div class="mb-1"><span class="highlight-text">Payment Status</span></div>
-        <div class="mb-0">
-          <span class="status-badge status-paid" style="font-size: 13px"
-            >Paid</span
-          >
-        </div>
-      </div>
-      <div
-        class="col-md-4"
-        style="text-align: center; flex: 0 0 25.333333%; max-width: 25.333333%"
-      >
-        <div class="mb-1">
-          <span class="highlight-text">Reservation Status</span>
-        </div>
-        <div class="mb-0">
-          <span class="status-badge status-confirm" style="font-size: 13px"
-            >Confirmed</span
-          >
-        </div>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-8" style=" flex: 0 0 58%;
-    max-width: 58%;">
-        <div
-          class="row mb-3"
-          style="display: flex; justify-content: center; margin-top: 15px"
-        >
-
           <div
-            class="col-md-6"
+            class="card"
             style="
-              min-width: 40% !important;
-              flex: 0 0 40%;
               text-align: center;
-              border-right: 2px solid #d9d9d9;
+              background-color: #eff6ff;
+              padding: 26px 19px;
             "
           >
-
-            <div style="display: flex; gap: 26px; justify-content: center">
-              <div>
-                <img
-                  src="assets/images/CalendarVoucher.png"
-                  alt=""
-                  height="20px"
-                  width="20px"
-                  style="margin-right: 3px; transform: rotate(3deg)"
-                />
-              </div>
-              <div *ngIf="booking.fromDate">
-                <b> Check-In date </b> <br />
-                <p>{{ booking.fromDate  | date: 'd MMM' }}</p>
-              </div>
+            <div class="mb-2">
+              <span class="highlight-text">Payment Status</span>
+            </div>
+            <div class="mb-0">
+              <span class="status-badge status-paid" style="font-size: 13px"
+                > Paid</span
+              >
             </div>
           </div>
           <div
-            class="col-md-6"
-            style="min-width: 40% !important; flex: 0 0 40%; text-align: center"
-            *ngIf="booking.toDate"
-          >
-            <div>
-              <b> Check-Out date </b> <br />
-              <p>{{ booking.toDate  | date: 'd MMM' }}</p>
-            </div>
-          </div>
-
-          <div
-            class="col-md-6"
-            style="min-width: 40% !important; flex: 0 0 40%; text-align: center; margin-top: 10px;"
-            *ngIf="booking.noOfPersons || booking.noOfChildren"
-          >
-            <div>
-              <b> Occupancy: </b>
-            </div>
-          </div>
-          <div
-            class="col-md-6"
-            style="min-width: 40% !important; flex: 0 0 40%; text-align: center; margin-top: 10px;"
-            *ngIf="booking.noOfPersons || booking.noOfChildren"
-          >
-            <div>
-              <p>
-                {{ booking.noOfPersons }} Adults,
-                {{ booking.noOfChildren }} Children
-              </p>
-            </div>
-          </div>
-          <div
-            class="col-md-6"
-            style="min-width: 40% !important; flex: 0 0 40%; text-align: center; margin-top: 10px;"
-            *ngIf="booking.noOfRooms"
-          >
-            <div>
-              <b> Rooms: </b>
-            </div>
-          </div>
-          <div
-            class="col-md-6"
-            style="min-width: 40% !important; flex: 0 0 40%; text-align: center; margin-top: 10px;"
-            *ngIf="booking.noOfRooms"
-          >
-            <div>
-              <p>{{ booking.noOfRooms }}</p>
-            </div>
-          </div>
-
-          <div
-            class="col-md-6"
-            style="min-width: 40% !important; flex: 0 0 40%; text-align: center; margin-top: 10px;"
-            *ngIf="booking.noOfNights"
-          >
-            <div>
-              <b> Nights: </b>
-            </div>
-          </div>
-          <div
-            class="col-md-6"
-            style="min-width: 40% !important; flex: 0 0 40%; text-align: center; margin-top: 10px;"
-            *ngIf="booking.noOfNights"
-          >
-            <div>
-              <p>{{ booking.noOfNights }}</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-4" style="margin-top: 20px">
-        <div>
-          <h2
+            class="card"
             style="
-              font-weight: bold !important;
-              color: #000 !important;
-              font-size: 26px !important;
+              text-align: center;
+              background-color: #eff6ff;
+              padding: 26px 19px;
             "
           >
-            {{ businessUser.name }}
-          </h2>
-          <h5>
-            {{ businessUser.address.city }},{{
-              businessUser.address.state
-            }}, {{ businessUser.address.country }}
-          </h5>
-          <h4
-            class="text-muted"
-            style="font-size: 15px"
-            [innerHTML]="businessUser.businessDescription"
-          >
-            {{ businessUser.businessDescription }}
-          </h4>
+            <div class="mb-2">
+              <span class="highlight-text"
+                >Booking ID
+                <img
+                  src="assets/images/CopyVoucher.png"
+                  alt=""
+                  height="15px"
+                  width="15px"
+                  style="margin-right: 3px; margin-left: 5px; cursor: pointer"
+                  (click)="copyTexttwo()"
+              /></span>
+            </div>
+            <div class="mb-0" style="text-align: left" *ngFor="let booking of bookingsResponseList; let last = last">
+              <span *ngIf="booking?.groupBookingId && last">
+                <b id="copyTexttwo">{{ booking?.groupBookingId }}</b></span
+              >
+
+              <span *ngIf="!booking?.groupBookingId && last"
+                ><b id="copyTexttwo">{{ booking?.id }}</b></span
+              >
+            </div>
+            <a
+              href="https://thehotelmate.co/history"
+              style="
+                font-size: 11px;
+                color: #1465cf;
+                text-decoration: none;
+                text-align: left;
+              "
+              >Check Details</a
+            >
+          </div>
         </div>
       </div>
-    </div>
+      <div
+        style="
+          display: flex;
+          justify-content: center;
+          gap: 30px;
+          margin-top: 20px;
+        "
+      >
+       <button class="needassistance" (click)="callNow()">
+      <i class="fa-solid fa-phone" style="margin-right: 4px"></i>
+      Need Assistance?
+    </button>
 
-    <div
-      class="row mb-4"
-      style="display: flex; justify-content: center; gap: 30px"
-    >
-      <div class="col-8" style="flex: 0 0 38%; max-width: 38%">
-        <div style="text-align: right;" *ngIf="booking.createdDate != null">Booking created at {{ booking.createdDate | date: 'hh:mm a, dd/MM/yyyy' }}</div>
-
-        <div class="details-card">
-          <p style="font-size: 21px">
-            {{ booking.roomName }} x {{ booking.noOfRooms }}
-          </p>
-          <table style="width: 88%;">
-            <tr>
-              <td>{{ booking.roomRatePlanName }}</td>
-              <td>₹{{booking?.beforeTaxAmount}}</td>
-            </tr>
-            <tr *ngIf="booking.extraPersonCharge > 0">
-              <td>Extra Person Charges</td>
-              <td>₹{{ booking.extraPersonCharge }}</td>
-            </tr>
-            <tr *ngIf="booking.extraChildCharge > 0">
-              <td>Extra Child Charges</td>
-              <td>₹{{ booking.extraChildCharge }}</td>
-            </tr>
-          </table>
-
-
-
-          <!-- <p style="font-size: 18px">Add-on Services:</p> -->
-          <div class="addon-services" *ngIf="savedServices?.length >0">
-            <h4 style="font-weight: bold;">Add-on Services</h4>
-            <table style=" border: none; width:100%">
-              <tr *ngFor="let fac of savedServices">
-                <td>
-                  <div class="d-flex "
-                    *ngIf="fac.name !== null && fac.name !== undefined && fac.serviceType !== 'Distance' && fac.serviceType !== 'RestaurantHotel' && fac.serviceType !== 'DistanceRailway'">
-                    <div style="display: flex; gap:4px">
-
-                      <img *ngIf="!fac.imageUrl" src="https://static.thenounproject.com/png/3421816-200.png" alt="icon"
-                        style=" width: 26px;height: 23px;">
-
-
-                      <img *ngIf="fac.imageUrl" [src]="fac.imageUrl" alt="icon" style="width: 26px;height: 23px;">
-
-                      <br>
-
-                      <div>{{fac.name }} * {{fac.quantity}} <br>
-
-                        <b
-                          *ngIf="fac.servicePrice !== null && fac.servicePrice !== undefined && fac.servicePrice > 0 && fac.taxAmount !== null && fac.taxAmount !== undefined">
-                          {{fac.servicePrice | currency : currency : "symbol" : "1.2-2"}} +
-                          {{fac.taxAmount | currency : currency : "symbol" : "1.2-2"}} ({{fac.taxPercentage}}% tax)
-                        </b>
-                        <b *ngIf="fac.servicePrice == null || fac.servicePrice == undefined || fac.servicePrice == 0"
-                          style="text-align: right;">{{0 | currency : currency : "symbol" : "1.2-2"}}</b>
-
-                      </div>
-                    </div>
-                  </div>
-                </td>
-                <td *ngIf="fac.servicePrice !== null || fac.servicePrice !== undefined" style="text-align: right;">
-                  {{fac.afterTaxAmount * fac.quantity | currency : currency : "symbol" : "1.2-2"}}</td>
-              </tr>
-            </table>
-          </div>
-
-        </div>
-
-        <div class="details-card" style="margin-top: 20px">
-          <table style="width: 88%">
-            <tr>
-
-              <td>Tax Fees:</td>
-              <td>₹ {{ bookinddata.taxAmount | number: '1.2-2'}}</td>
-            </tr>
-
-            <tr>
-              <td>Total Payable Amount</td>
-              <td>₹ {{ booking.totalAmount | number: '1.2-2'}}</td>
-            </tr>
-            <tr>
-              <td>Advance Amount</td>
-               <td>₹{{ booking.advanceAmount | number: '1.2-2'}}</td>
-            </tr>
-            <tr>
-              <td>Due Amount</td>
-              <td>₹{{ booking.totalAmount - booking.advanceAmount | number: '1.2-2'}}</td>
-            </tr>
-          </table>
-        </div>
+        <button class="saveCopy" (click)="onGenerateVouchers()">
+          <i class="fa-solid fa-download" style="margin-right: 4px"></i>Save a
+          Copy
+        </button>
       </div>
-      <div class="col-4">
-        <div class="coupon-box mb-4">
-          <div style="display: flex; gap: 10px">
-            <div>
-              <img
-                src="assets/images/Tag.png"
-                alt=""
-                style="
-                  margin-right: 0px;
-                  transform: rotate(-2deg);
-                  height: 43px;
-                  width: 43px;
-                  margin-top: 10px;
-                "
-              />
-            </div>
-            <div  *ngIf="promocodeListChip.length >0 ">
-              <h5 style="color: #fff; font-weight: bold; font-size: 24px">
-                Save More On Your Booking!
-              </h5>
-              <ul>
-                <ng-container *ngFor="let coupon of promocodeListChip; let i = index">
-                  <li *ngIf="i === 0 || showMore">
-                    <p style="margin-top: -7px">
-                      Claim Coupon Code: <strong>{{ coupon.couponCode }}</strong>
-                    </p>
-                    <p style="margin-top: -10px">
-                      Share this coupon code when confirming your reservation to save
-                      {{ coupon.discountPercentage }}%!
-                    </p>
-                  </li>
-                </ng-container>
-              </ul>
 
-
-
-
-              <!-- View More / View Less Button -->
-              <span  style="float:right" (click)="toggleView()">
-                {{ showMore ? 'View Less..' : 'View More..' }}
-              </span>
-
-            </div>
-             <!-- No Coupons Message -->
-    <!-- No Coupons Card -->
-    <div *ngIf="promocodeListChip.length === 0 && (storedPromo == null || storedPromo == undefined) ">
-          <strong style="font-size: 18px; color: #fff !important">No Coupon Available  :(</strong>
-
-        <div style=" font-size: 14px; color: #fff !important">
-          Unfortunately, this property does not have any active coupons at the moment.
-        </div>
-        <!-- <a
-          href="/deals"
-          style="margin-top: 10px; display: inline-block; color: #0066cc; text-decoration: underline; font-weight: bold;"
-        >
-          Explore Other Deals
-        </a> -->
-
-    </div>
-    <div *ngIf="selectedPromo">
-      <strong style="font-size: 18px;color: #fff !important"> {{selectedPromo?.couponCode}} Coupon Code is
-Applied!</strong>
-<div style="font-size: 14px;color: #fff !important">
-  You’re Saving ₹ {{booking.discountAmount}} on this booking!
-</div>
-
-<div>
-  Complete your booking now to save big on your stay.
-</div>
-</div>
-
-          </div>
-
-        </div>
-
-        <div
-          style="background-color: #f5f5f5; padding: 20px; border-radius: 15px"
-        >
-          <h5>
-            <img
-              src="assets/images/User.png"
-              alt=""
-              style="height: 26px; width: 26px"
-            />
-            Guest Details
-          </h5>
-          <table style="width: 88%">
-            <tr
-              *ngIf="
-                booking.firstName != null && booking.firstName != undefined
+      <div class="d-flex justify-content-center" style="margin-top: 30px">
+        <div class="col-8">
+          <div class="card enquiry-details-card">
+            <h4 class="heading-enquiry">
+              <i style="color: #1465cf" class="fa-solid fa-file"></i>&nbsp;
+              Booking Details
+            </h4>
+            <div
+              class="d-flex justify-content-between"
+              style="
+                border-bottom: 1px solid #f3f4f6;
+                gap: 20px;
+                margin-top: 10px;
               "
             >
-            <td>Guest Name:</td>
-            <td>{{ booking.firstName }}&nbsp;{{ booking.lastName }}</td>
-            </tr>
+              <div
+                class="d-flex justify-content-between"
+                style="width: 49%; padding-bottom: 10px"
+              >
+                <div>Booking ID:</div>
+                <div *ngFor="let booking of bookingsResponseList; let last = last">
+                  <span *ngIf="booking?.groupBookingId && last">
+                    <b>{{ booking?.groupBookingId }}</b></span
+                  >
 
-            <tr *ngIf="booking.email != null && booking.email != undefined">
-              <td>Email Address:</td>
-              <td>{{ booking.email }}</td>
-            </tr>
-
-            <tr *ngIf="booking.mobile != null && booking.mobile != undefined">
-              <td>Phone Number:</td>
-              <td>{{ booking.mobile }}</td>
-            </tr>
-
-            <tr *ngIf="booking.notes != null && booking.notes != undefined">
-              <td>Notes:</td>
-              <td>{{ booking.notes }}</td>
-            </tr>
-          </table>
+                  <span *ngIf="!booking?.groupBookingId && last"
+                    ><b>{{ booking?.id }}</b></span
+                  >
+                </div>
+              </div>
+              <div class="d-flex justify-content-between"></div>
+            </div>
+            <div
+              class="d-flex justify-content-between"
+              style="
+                border-bottom: 1px solid #f3f4f6;
+                gap: 20px;
+                margin-top: 10px;
+              "
+            >
+              <div
+                class="d-flex justify-content-between"
+                style="width: 50%; padding-bottom: 10px"
+              >
+                <div>Check-in Date:</div>
+                <div>
+                  <span *ngIf="booking.fromDate">
+                    <b>{{ booking.fromDate | date: "d MMM yyyy" }}</b></span
+                  >
+                </div>
+              </div>
+              <div
+                class="d-flex justify-content-between"
+                style="width: 50%; padding-bottom: 10px"
+              >
+                <div>Check Out Date:</div>
+                <div>
+                  <span *ngIf="booking.toDate">
+                    <b>{{ booking.toDate | date: "d MMM yyyy" }}</b></span
+                  >
+                </div>
+              </div>
+            </div>
+            <div
+              class="d-flex justify-content-between"
+              style="
+                border-bottom: 1px solid #f3f4f6;
+                gap: 20px;
+                margin-top: 10px;
+              "
+            >
+              <div
+                class="d-flex justify-content-between"
+                style="width: 50%; padding-bottom: 10px"
+              >
+                <div>Guests:</div>
+                <div>
+                  <span>
+                    <b
+                      >{{ totalPlanAdults }} Adults,
+                      {{ totalPlanChildren }} Children</b
+                    ></span
+                  >
+                </div>
+              </div>
+              <div
+                class="d-flex justify-content-between"
+                style="width: 50%; padding-bottom: 10px"
+              >
+                <div>Nights:</div>
+                <div>
+                  <span>
+                    <b>{{ booking?.noOfNights }}</b></span
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-4">
+          <div class="card enquiry-details-card">
+            <h4 class="heading-enquiry">
+              <i style="color: #1465cf" class="fa-solid fa-user"></i>&nbsp;
+              Guest Details
+            </h4>
+            <div
+              class="d-flex justify-content-between"
+              style="
+                border-bottom: 1px solid #f3f4f6;
+                gap: 20px;
+                margin-top: 10px;
+              "
+            >
+              <div
+                class="d-flex justify-content-between"
+                style="padding-bottom: 10px; width: 100%"
+              >
+                <div>Name:</div>
+                <div>
+                  <span>
+                    <b>{{ booking.firstName }} {{ booking.lastName }}</b></span
+                  >
+                </div>
+              </div>
+            </div>
+            <div
+              class="d-flex justify-content-between"
+              style="
+                border-bottom: 1px solid #f3f4f6;
+                gap: 20px;
+                margin-top: 10px;
+              "
+            >
+              <div
+                class="d-flex justify-content-between"
+                style="padding-bottom: 10px; width: 100%"
+              >
+                <div>Email:</div>
+                <div>
+                  <span>
+                    <b>{{ booking.email }}</b></span
+                  >
+                </div>
+              </div>
+            </div>
+            <div
+              class="d-flex justify-content-between"
+              style="
+                border-bottom: 1px solid #f3f4f6;
+                gap: 20px;
+                margin-top: 10px;
+              "
+            >
+              <div
+                class="d-flex justify-content-between"
+                style="padding-bottom: 10px; width: 100%"
+              >
+                <div>Mobile No:</div>
+                <div>
+                  <span>
+                    <b>{{ booking.mobile }}</b></span
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="footer-link">
-      <a href="{{PropertyUrl}}" style="font-weight: bold; font-size: 18px"
-        >Go back to home page</a
-      >
-      <div style="display: flex; justify-content: center">
-        <div style="width: 181px; border-bottom: 2px solid gray"></div>
-      </div>
-    </div>
-    <div class="mt-2" style="text-align: center">
-      For urgent bookings (same-day or next-morning check-ins), please call us
-      directly at <strong>9040785705</strong> for prompt assistance.
-    </div>
-  </div>
-  <div class="note-section" style="padding-left: 80px; padding-right: 80px;">
-    <h5>Please note:</h5>
-    <ul>
-      <li>
-        Confirmation: The Hotel Mate team will contact you to confirm your
-        booking.
-      </li>
-      <li>
-        Price Changes: Prices are subject to change due to hotel demand. We will
-        do our best to offer the Best Available Rate.
-      </li>
-      <li>
-        Room Availability: If rooms are unavailable, we may offer alternative
-        accommodations upon your request.
-      </li>
-      <li>
-        Advance Payment: In accordance with the hotel’s policy, you may be
-        required to pay an advance amount (minimum 20% to full payment).
-      </li>
-      <li>
-        Payment and Booking Confirmation: We will provide you with a payment
-        link or scanner. Once payment is received, we will confirm your
-        reservation and send a booking confirmation voucher via email and/or
-        WhatsApp.
-      </li>
-      <li>
-        Last Minute Bookings: If this is a last-minute booking, meaning the
-        check-in date is the same as the date of booking or early check-in the
-        next day, please call us.
-      </li>
-      <li>
-        Paid Booking: In the event that payment has already been made, and we
-        are unable to confirm the booking, we will refund the full amount (minus
-        payment gateway charges).
-      </li>
-      <li>
-        Email Confirmation: Please check your spam folder for the email
-        confirmation, as it may sometimes be found there.
-      </li>
-    </ul>
-    <div *ngFor="let bServiceDtoList of policies; let i = index">
-      <div *ngIf="bServiceDtoList?.policy">
-        <h5 *ngIf="policies">Property rules:</h5>
+      <div class="col-12" style="margin-top: 30px">
+        <div class="card enquiry-details-card">
+          <h4 class="heading-enquiry">
+            <i style="color: #1465cf" class="fa-solid fa-bed"></i> &nbsp;
+            Booking Details
+          </h4>
+          <div class="booking-summary-container">
+            <table class="booking-summary-table">
+              <thead>
+                <tr
+                  style="
+                    border-bottom: 1px solid #e5e7eb;
+                    border-radius: 10px;
+                    background-color: #f9f9f9;
+                  "
+                >
+                  <th>Selection</th>
+                  <th>Price</th>
+                  <th>Nights</th>
+                  <th>Count</th>
+                  <th>Extra Pax</th>
+                  <th>Extra Child</th>
+                  <th>Sub Total</th>
+                  <th *ngIf="specialDiscountData">Discount ({{specialDiscountData?.discountPercentage}}%)</th>
+                  <th>Tax</th>
+                  <th>Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  *ngFor="let booking of bookingsResponseList; let last = last"
+                >
+                  <td>{{ booking.roomRatePlanName }}</td>
+                  <td>
+                    ₹{{
+                      booking.beforeTaxAmount - booking.extraPersonCharge
+                        | number : "1.2-2"
+                    }}
+                  </td>
+                  <td>{{ booking?.noOfNights }}</td>
+                  <td>{{ booking.noOfRooms }}</td>
+                  <td>₹{{ booking.extraPersonCharge | number : "1.2-2" }}</td>
+                  <td>₹{{ booking.extraChildCharge | number : "1.2-2" }}</td>
+                  <td>₹{{ booking.beforeTaxAmount | number : "1.2-2" }}</td>
+                  <td *ngIf="booking.discountAmount">-₹{{ booking.discountAmount | number : "1.2-2" }}</td>
+                  <td>₹{{ booking.taxAmount | number : "1.2-2" }}</td>
+                  <td>₹{{ booking.totalAmount | number : "1.2-2" }}</td>
+                </tr>
+              </tbody>
+            </table>
 
-        <div style="padding: 20px;">
-          <div [innerHTML]="isReadMore[i] ? bServiceDtoList?.policy : (bServiceDtoList?.policy | slice:0:200) + '...'">
+            <div class="booking-summary-footer">
+              <div>
+                Final Room Tariff: &nbsp;&nbsp; ₹
+                {{ bookingSummaryDetails?.totalPlanPrice - totalDiscount  | number : "1.2-2" }}
+              </div>
+              <div>
+                Total GST: &nbsp;&nbsp; ₹
+                {{ bookingSummaryDetails?.totalTax | number : "1.2-2" }}
+              </div>
+              <div *ngIf="bookingSummaryDetails?.totalAddOnsPrice">
+                Total Add-on Services Price: &nbsp;&nbsp; ₹
+                {{
+                  bookingSummaryDetails?.totalAddOnsPrice -
+                    bookingSummaryDetails?.totaltaxfacilityAmount
+                    | number : "1.2-2"
+                }}
+              </div>
+              <div *ngIf="bookingSummaryDetails?.totaltaxfacilityAmount">
+                Total Add-on Services Tax Fees: &nbsp;&nbsp; ₹{{
+                  bookingSummaryDetails?.totaltaxfacilityAmount
+                    | number : "1.2-2"
+                }}
+              </div>
+                <div class="booking-summary-total">
+                Total Amount: &nbsp;&nbsp; ₹
+                {{ bookingSummaryDetails?.totalAmount | number : "1.2-2" }}
+              </div>
+              <div class="booking-summary-total">
+                Advance Amount: &nbsp;&nbsp; ₹
+                {{booking.advanceAmount | number : "1.2-2" }}
+              </div>
+
+              <div class="booking-summary-total">
+                Due Amount: &nbsp;&nbsp; ₹
+                {{ bookingSummaryDetails?.totalAmount - booking.advanceAmount | number : "1.2-2" }}
+              </div>
+            </div>
           </div>
-          <div style="padding: 10px;">
-            <span style="color: #221950; font-weight: bold; font-size: 15px; cursor: pointer;float:right"
-              (click)="toggleReadMore(i)">
-              {{ isReadMore[i] ? 'View Less' : 'View More' }}
-            </span>
+        </div>
+      </div>
+      <div
+        class="note-sectionOne"
+        style="padding-left: 80px; padding-right: 80px"
+      >
+        <h5>Please note:</h5>
+        <ul style="line-height: 30px">
+          <li>
+            Confirmation: The Hotel Mate team will contact you to confirm your
+            booking.
+          </li>
+          <li>
+            Price Changes: Prices are subject to change due to hotel demand. We
+            will do our best to offer the Best Available Rate.
+          </li>
+          <li>
+            Room Availability: If rooms are unavailable, we may offer
+            alternative accommodations upon your request.
+          </li>
+          <li>
+            Advance Payment: In accordance with the hotel's policy, you may be
+            required to pay an advance amount (minimum 20% to full payment).
+          </li>
+          <li>
+            Payment and Booking Confirmation: We will provide you with a payment
+            link or scanner. Once payment is received, we will confirm your
+            reservation and send a booking confirmation voucher via email and/or
+            WhatsApp.
+          </li>
+          <li>
+            Last Minute Bookings: If this is a last minute booking, meaning the
+            check-in date is the same as the date of booking or early check-in
+            the next day, please call us.
+          </li>
+          <li>
+            Paid Booking: In the event that payment has already been made, and
+            we are unable to confirm the booking, we will refund the full amount
+            (minus payment gateway charges).
+          </li>
+          <li>
+            Email Confirmation: Please check your spam folder for the email
+            confirmation, as it may sometimes be found there.
+          </li>
+        </ul>
+        <div *ngFor="let bServiceDtoList of policies; let i = index">
+          <div *ngIf="bServiceDtoList?.policy">
+            <div class="property-rules" *ngIf="policies">Property rules:</div>
+
+            <div style="padding: 20px">
+              <div [innerHTML]="bServiceDtoList?.policy"></div>
+            </div>
           </div>
         </div>
       </div>
@@ -527,510 +472,440 @@ Applied!</strong>
   </div>
 </div>
 <div class="mobile-view-booking-voucher" *ngIf="paymentSucess === true">
-  <div style="margin-top: 10px">
-    <div style="display: flex; justify-content: right; font-size: 12px">
-      <div><strong>Need Assistance?</strong></div>
-       <div
-        class="contact-info"
-        style="
-          display: flex;
-          margin-top: 0px;
-          margin-left: 10px;
-          gap: 10px;
-          font-size: 12px;
-        "
-      >
-        <span
-          ><img
-            src="assets/images/chatsym.png"
-            alt=""
-            height="15px"
-            width="15px"
-            style="margin-right: 3px; transform: rotate(3deg)"
-          />
-          9040785705</span
-        >
-      </div>
-    </div>
-    <div
-      style="
-        margin-bottom: -19px;
-        text-align: right;
-        font-size: 12px;
-        margin-right: 5px;
-      " *ngIf="accommodationService[0]?.checkInTime"
-    >
-      Working Hours: <span>{{accommodationService[0]?.checkInTime}} AM to {{accommodationService[0]?.checkOutTime}} PM</span>
-    </div>
-  </div>
+  <div class="container-div">
+    <div class="responsive-wrapper">
+      <div class="row">
+        <div class="col-12">
+          <div
+            style="
+              display: flex;
+              justify-content: left;
+              align-items: center;
+              margin-top: 10px;
+            "
+          >
+            <div (click)="backone()" class="backNavigation">
+              <i class="fa-solid fa-angle-left"></i> &nbsp; Go Back
+            </div>
 
-  <div class="text-center mb-4" style="margin-top: 30px">
-    <span
-      style="
-        font-weight: bold !important;
-        color: #000 !important;
-        font-size: 25px !important;
-      "
-      >Great News!</span
-    >
-    <div
-      class="mb-0"
-      style="
-        font-weight: bold !important;
-        color: #000 !important;
-        font-size: 16px !important;
-      "
-    >
-    Your booking is confirmed.
-    </div>
-    <div class="mb-0" style="margin-top: 10px; font-size: 13px; color: #615d5d">
-      A confirmation has been sent to {{booking.email}} & your reservation number is {{booking.propertyReservationNumber}}.
-    </div>
-    <div
-      style="
-        color: #615d5d;
-        font-weight: bold;
-        font-size: 13px;
-      "
-    >
-    Note: Please check your spam folder or WhatsApp if you don’t see it.
-    </div>
-  </div>
-
-  <div style="display: flex; justify-content: center; gap: 20px">
-    <div style="color: #615d5d; font-size: 18px">Booking ID</div>
-    <div style="font-weight: bold; font-size: 17px">
-      <b id="textToCopy">{{this.booking.id}}</b>
-      <img
-      src="assets/images/CopyVoucher.png"
-      alt=""
-      height="15px"
-      width="15px"
-      style="margin-right: 3px !important; margin-left: 5px !important;"
-      (click)="copyTexttwo()"
-    />
-    <a href="https://thehotelmate.co/history" style="margin-left: 5px; font-size: 13px; color: #1465cf; text-decoration: none;"
-    >Check Details</a>
-    </div>
-  </div>
-
-  <div
-    class="details-cardOne"
-    style="margin-left: 10px; margin-right: 10px; margin-top: 18px"
-  >
-    <div style="display: flex; justify-content: center; gap: 45px">
-      <div>
-        <div>Payment Status</div>
-        <div style="display: flex; justify-content: center; margin-top: 5px">
-          <div class="mb-0">
-            <span class="status-badge status-paid" style="font-size: 13px"
-              >Paid</span
-            >
           </div>
         </div>
       </div>
-      <div>
-        <div>Reservation Status</div>
-        <div style="display: flex; justify-content: center; margin-top: 5px">
-          <div class="mb-0">
-            <span class="status-badge status-confirm" style="font-size: 13px"
-              > Confirmed</span
-            >
+
+      <div
+        class="d-flex"
+        style="align-items: center; margin-top: 20px; flex-wrap: wrap;"
+      >
+        <div class="col-12 text-left mb-4 font-change">
+          <span
+            style="
+              font-weight: 600 !important;
+              color: #000 !important;
+              font-size: 35px !important;
+            "
+            >Great News!</span
+          >
+          <div
+            class="mb-0"
+            style="
+              font-weight: 600 !important;
+              color: #2563eb !important;
+              font-size: 19px !important;
+              margin-top: -5px;
+            "
+          >
+            Your booking is confirmed.
+          </div>
+          <div style="color: #615d5d; font-weight: 600; font-size: 13px">
+            We’ve sent your booking details to your mail. <br />
+            Didn’t receive it yet? It might be in your spam folder — or simply
+            check WhatsApp.
           </div>
         </div>
-      </div>
-    </div>
-  </div>
 
-  <div style="margin-left: 20px; margin-top: 20px">
-    <h2
-      style="
-        font-weight: bold !important;
-        color: #000 !important;
-        font-size: 20px !important;
-        margin-bottom: 0px;
-      "
-    >
-    {{businessUser.name}}
-    </h2>
-    <h5 style="font-size: 15px; margin-bottom: 0px">{{businessUser.address.city}},{{businessUser.address.state}}, {{businessUser.address.country}}</h5>
-    <h4 style="font-size: 15px; margin-bottom: 0px" [innerHTML]="businessUser.businessDescription">
-      {{businessUser.businessDescription}}
-    </h4>
-  </div>
+        <div style="width: 100%;">
 
-  <div class="mb-3">
-    <div style="display: flex; margin-top: 20px">
-      <div
-        class="col-md-6"
-        style="
-          min-width: 50% !important;
-          flex: 0 0 50%;
-          text-align: center;
-          border-right: 2px solid #d9d9d9;
-        "
-      >
-        <div style="display: flex; gap: 26px; justify-content: center">
-          <div>
-            <img
-              src="assets/images/CalendarVoucher.png"
-              alt=""
-              height="20px"
-              width="20px"
-              style="margin-right: 3px"
-            />
-          </div>
-          <div style="font-size: 14px">
-            <b> Check-in date </b> <br />
-            <p>{{booking.fromDate  | date: 'd MMM'}}</p>
-          </div>
-        </div>
-      </div>
-      <div
-        class="col-md-6"
-        style="min-width: 50% !important; flex: 0 0 50%; text-align: center"
-      >
-        <div style="font-size: 14px">
-          <b> Check-Out date </b> <br />
-          <p>{{booking.toDate  | date: 'd MMM'}}</p>
-        </div>
-      </div>
-    </div>
+          <div class="card" style="
+              text-align: center;
+              background-color: #eff6ff;
+              padding: 15px 15px;
 
-    <div style="display: flex; margin-top: 10px">
-      <div
-        class="col-md-6"
-        style="min-width: 50% !important; flex: 0 0 50%; text-align: center"
-      >
-        <div>
-          <b> Occupancy: </b>
-        </div>
-      </div>
-      <div
-        class="col-md-6"
-        style="min-width: 50% !important; flex: 0 0 50%; text-align: center"
-      >
-        <div>
-          <p>{{booking.noOfPersons}} Adults, {{booking.noOfChildren}} Children</p>
-        </div>
-      </div>
-    </div>
+            ">
+            <div class="d-flex justify-content-between" >
+              <div>
+                <div class="mb-1 highlight-text">Enquiry ID</div>
+                <div *ngFor="let booking of bookingsResponseList; let last = last"><span *ngIf="booking?.groupBookingId && last">
+                <b id="copyTexttwo">{{ booking?.groupBookingId }}</b></span
+              >
 
-    <div style="display: flex; margin-top: 10px">
-      <div
-        class="col-md-6"
-        style="min-width: 50% !important; flex: 0 0 50%; text-align: center"
-      >
-        <div>
-          <b> Rooms: </b>
-        </div>
-      </div>
-      <div
-        class="col-md-6"
-        style="min-width: 50% !important; flex: 0 0 50%; text-align: center; "
-      >
-        <div>
-          <div>{{booking.noOfRooms}}</div>
-        </div>
-      </div>
-    </div>
-
-    <div style="display: flex; margin-top: 10px">
-      <div
-        class="col-md-6"
-        style="min-width: 50% !important; flex: 0 0 50%; text-align: center;  "
-      >
-        <div>
-          <b> Nights: </b>
-        </div>
-      </div>
-      <div
-        class="col-md-6"
-        style="min-width: 50% !important; flex: 0 0 50%; text-align: center;  "
-      >
-        <div>
-          <div>{{booking.noOfNights}}</div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div
-    style="
-      color: #615d5d;
-      text-align: right;
-      margin-bottom: 3px;
-      margin-right: 18px;
-      font-size: 12px;
-    "  *ngIf="booking.createdDate != null"
-  >
- Booking created at {{ booking.createdDate | date: 'hh:mm a, dd/MM/yyyy' }}
-  </div>
-  <div
-    style="
-      background-color: #f5f5f5;
-      padding: 20px;
-      border-radius: 15px;
-      margin-left: 20px;
-      margin-right: 20px;
-      margin-bottom: 15px;
-    "
-  >
-    <h5>
-      <img
-        src="assets/images/User.png"
-        alt=""
-        style="height: 26px; width: 26px"
-      />
-      Guest Details
-    </h5>
-    <table style="width: 100%">
-      <tr>
-        <td>Guest Name:</td>
-        <td>{{ booking.firstName }}&nbsp;{{ booking.lastName }}</td>
-      </tr>
-
-      <tr>
-        <td>Email Address:</td>
-        <td>{{booking.email}}</td>
-      </tr>
-
-      <tr>
-        <td>Phone Number:</td>
-        <td>{{booking.mobile}}</td>
-      </tr>
-
-      <tr>
-        <td>Notes:</td>
-        <td>{{booking.notes}}</td>
-      </tr>
-    </table>
-  </div>
-
-  <div class="col-12">
-    <div class="details-cardOne">
-      <p style="font-size: 17px; font-weight: bold">{{booking.roomName}} x {{booking.noOfRooms}}</p>
-      <table style="width: 88%">
-        <tr>
-          <td>{{booking.roomRatePlanName}}</td>
-          <td>₹{{booking?.beforeTaxAmount}}</td>
-        </tr>
-        <tr *ngIf="booking.extraPersonCharge > 0">
-          <td>Extra Pax Charges</td>
-          <td>₹{{booking.extraPersonCharge}}</td>
-        </tr>
-        <tr *ngIf="booking.extraChildCharge > 0">
-          <td>Extra Child Charges</td>
-          <td>₹{{booking.extraChildCharge}}</td>
-        </tr>
-      </table>
-
-
-
-      <div *ngIf="savedServices?.length >0">
-        <p style="font-size: 18px">Add-on Services:</p>
-
-      <table style=" border: none; width:100%">
-        <tr *ngFor="let fac of savedServices">
-          <td>
-            <div class="d-flex "
-              *ngIf="fac.name !== null && fac.name !== undefined && fac.serviceType !== 'Distance' && fac.serviceType !== 'RestaurantHotel' && fac.serviceType !== 'DistanceRailway'">
-              <div style="display: flex; gap:4px">
-
-                <img *ngIf="!fac.imageUrl" src="https://static.thenounproject.com/png/3421816-200.png" alt="icon"
-                  style=" width: 26px;height: 23px;">
-
-
-                <img *ngIf="fac.imageUrl" [src]="fac.imageUrl" alt="icon" style="width: 26px;height: 23px;">
-
-                <br>
-
-                <p>{{fac.name }} * {{fac.quantity}} <br>
-
-                  <b
-                    *ngIf="fac.servicePrice !== null && fac.servicePrice !== undefined && fac.servicePrice > 0 && fac.taxAmount !== null && fac.taxAmount !== undefined">
-                    {{fac.servicePrice | currency : currency : "symbol" : "1.2-2"}} +
-                    {{fac.taxAmount | currency : currency : "symbol" : "1.2-2"}} ({{fac.taxPercentage}}% tax)
-                  </b>
-                  <b *ngIf="fac.servicePrice == null || fac.servicePrice == undefined || fac.servicePrice == 0"
-                    style="text-align: right;">{{0 | currency : currency : "symbol" : "1.2-2"}}</b>
-
-                </p>
+              <span *ngIf="!booking?.groupBookingId && last"
+                ><b id="copyTexttwo">{{ booking?.id }}</b></span
+              ></div>
+              <div><a
+              href="https://thehotelmate.co/history"
+              style="
+                font-size: 11px;
+                color: #1465cf;
+                text-decoration: none;
+                text-align: left;
+              "
+              >Check Details </a
+            > <span><img
+                  src="assets/images/CopyVoucher.png"
+                  alt=""
+                  height="15px"
+                  width="15px"
+                  style="margin-right: 3px; margin-left: 5px; cursor: pointer"
+                  (click)="copyTexttwo()"
+              /></span></div>
+              </div>
+              <div>
+                  <div class="mb-1 highlight-text">Current Status</div>
+                  <div> <span class="status-badge status-enquiry" style="font-size: 13px"
+                >Confirmed</span
+              >
+               <span class="status-badge status-paid" style="font-size: 13px"
+                > Paid</span
+              ></div>
               </div>
             </div>
-          </td>
-          <td *ngIf="fac.servicePrice !== null || fac.servicePrice !== undefined" style="text-align: right;">
-            {{fac.afterTaxAmount * fac.quantity | currency : currency : "symbol" : "1.2-2"}}</td>
-        </tr>
-      </table>
-      </div>
-    </div>
 
-    <div class="coupon-box mb-4" style="margin-top: 20px">
-      <div style="display: flex; gap: 10px">
-        <div>
-          <img
-            src="assets/images/Tag.png"
-            alt=""
-            style="
-              margin-right: 0px;
-              transform: rotate(-2deg);
-              width: 85px;
-              margin-top: 9px !important;
-            "
-          />
-        </div>
-        <div  *ngIf="promocodeListChip.length >0 ">
-          <h5 style="color: #fff; font-weight: bold; font-size: 24px">
-            Save More On Your Booking!
-          </h5>
-          <ul>
-            <ng-container *ngFor="let coupon of promocodeListChip; let i = index">
-              <li *ngIf="i === 0 || showMore">
-                <div style="color: #fff !important">
-                  Claim Coupon Code: <strong>{{ coupon.couponCode }}</strong>
-                </div>
-                <div style="color: #fff !important">
-                  Share this coupon code when confirming your reservation to save
-                  {{ coupon.discountPercentage }}%!
-                </div>
-              </li>
-            </ng-container>
-          </ul>
-
-
-
-
-          <!-- View More / View Less Button -->
-          <span  style="float:right" (click)="toggleView()">
-            {{ showMore ? 'View Less..' : 'View More..' }}
-          </span>
+          </div>
 
         </div>
-         <!-- No Coupons Message -->
-<!-- No Coupons Card -->
-<div *ngIf="promocodeListChip.length === 0 && (storedPromo == null || storedPromo == undefined) ">
-      <strong style="font-size: 18px;color: #fff !important">No Coupon Available :(</strong>
-
-    <div style=" font-size: 14px;color: #fff !important">
-      Unfortunately, this property does not have any active coupons at the moment.
-    </div>
-    <!-- <a
-      href="/deals"
-      style="margin-top: 10px; display: inline-block; color: #0066cc; text-decoration: underline; font-weight: bold;"
-    >
-      Explore Other Deals
-    </a> -->
-
-</div>
-<div *ngIf="selectedPromo">
-  <strong style="font-size: 18px;color: #fff !important"> {{selectedPromo?.couponCode}} Coupon Code is
-Applied!</strong>
-<div style=" font-size: 14px;color: #fff !important">
-You’re Saving ₹ {{booking.discountAmount}} on this booking!
-</div>
-
-<div>
-Complete your booking now to save big on your stay.
-</div>
-</div>
       </div>
-    </div>
-
-    <div class="details-cardOne" style="margin-top: 20px">
-      <table style="width: 88%">
-        <tr>
-          <td>Tax Fees:</td>
-          <td>₹ {{bookinddata.taxAmount | number: '1.2-2'}}</td>
-        </tr>
-        <tr>
-          <td>Total Payable Amount</td>
-          <td>₹ {{booking.totalAmount | number: '1.2-2'}}</td>
-        </tr>
-        <tr>
-          <td>Advance Amount</td>
-           <td>₹{{ booking.advanceAmount | number: '1.2-2'}}</td>
-        </tr>
-
-
-        <tr>
-          <td>Due Amount</td>
-           <td>₹{{ booking.totalAmount - booking.advanceAmount | number: '1.2-2'}}</td>
-        </tr>
-      </table>
-    </div>
-
-    <div class="footer-link">
-      <a href="{{PropertyUrl}}" style="font-weight: bold; font-size: 16px"
-        >Go back to home page</a
+      <div
+        style="
+          display: flex;
+          justify-content: center;
+          gap: 30px;
+          margin-top: 20px;
+        "
       >
-      <div style="display: flex; justify-content: center">
-        <div style="width: 181px; border-bottom: 2px solid gray"></div>
+        <button class="needassistance" (click)="callNow()">
+          <i class="fa-solid fa-phone" style="margin-right: 4px"></i>Need
+          Assistance?
+        </button>
+        <button class="saveCopy" (click)="onGenerateVouchers()">
+          <i class="fa-solid fa-download" style="margin-right: 4px"></i>Save a
+          Copy
+        </button>
       </div>
-    </div>
-    <div class="mt-2" style="text-align: center">
-      For urgent bookings (same-day or next-morning check-ins), please call us
-      directly at <strong>9040785705</strong> for prompt assistance.
-    </div>
 
-    <div class="note-sectionOne">
-      <h5 style=" font-weight: bold;">Please note:</h5>
-      <ul>
-        <li>
-          Confirmation: The Hotel Mate team will contact you to confirm your
-          booking.
-        </li>
-        <li>
-          Price Changes: Prices are subject to change due to hotel demand. We will
-          do our best to offer the Best Available Rate.
-        </li>
-        <li>
-          Room Availability: If rooms are unavailable, we may offer alternative
-          accommodations upon your request.
-        </li>
-        <li>
-          Advance Payment: In accordance with the hotel’s policy, you may be
-          required to pay an advance amount (minimum 20% to full payment).
-        </li>
-        <li>
-          Payment and Booking Confirmation: We will provide you with a payment
-          link or scanner. Once payment is received, we will confirm your
-          reservation and send a booking confirmation voucher via email and/or
-          WhatsApp.
-        </li>
-        <li>
-          Last Minute Bookings: If this is a last-minute booking, meaning the
-          check-in date is the same as the date of booking or early check-in the
-          next day, please call us.
-        </li>
-        <li>
-          Paid Booking: In the event that payment has already been made, and we
-          are unable to confirm the booking, we will refund the full amount (minus
-          payment gateway charges).
-        </li>
-        <li>
-          Email Confirmation: Please check your spam folder for the email
-          confirmation, as it may sometimes be found there.
-        </li>
-      </ul>
-      <div *ngFor="let bServiceDtoList of policies; let i = index">
-        <div *ngIf="bServiceDtoList?.policy">
-          <h5 *ngIf="policies">Property rules:</h5>
+      <div class="d-flex justify-content-center" style="margin-top: 30px; flex-wrap: wrap;">
+        <div class="col-12">
+          <div class="card enquiry-details-card">
+            <h4 class="heading-enquiry">
+              <i style="color: #1465cf" class="fa-solid fa-file"></i>&nbsp;
+              Booking Details
+            </h4>
 
-          <div style="padding: 20px;">
-            <div [innerHTML]="isReadMore[i] ? bServiceDtoList?.policy : (bServiceDtoList?.policy | slice:0:200) + '...'">
+            <div
+              class="d-flex justify-content-between"
+              style="
+                border-bottom: 1px solid #f3f4f6;
+                margin-top: 10px;
+              "
+            >
+              <div
+                class="d-flex justify-content-between"
+                style="width: 100%; padding-bottom: 10px; flex-wrap: wrap;"
+              >
+                <div>Booking ID:</div>
+                <div *ngFor="let booking of bookingsResponseList; let last = last">
+                  <span *ngIf="booking?.groupBookingId && last">
+                    <b>{{ booking?.groupBookingId }}</b></span
+                  >
+
+                  <span *ngIf="!booking?.groupBookingId && last"
+                    ><b>{{ booking?.id }}</b></span
+                  >
+                </div>
+              </div>
             </div>
-            <div style="padding: 10px;">
-              <span style="color: #221950; font-weight: bold; font-size: 15px; cursor: pointer;float:right"
-                (click)="toggleReadMore(i)">
-                {{ isReadMore[i] ? 'View Less' : 'View More' }}
-              </span>
+            <div
+              class="d-flex justify-content-between"
+              style="
+                border-bottom: 1px solid #f3f4f6; flex-wrap: wrap;
+              "
+            >
+              <div
+                class="d-flex justify-content-between"
+                style="width: 100%; padding-bottom: 10px;"
+              >
+                <div>Check-in Date:</div>
+                <div>
+                  <span *ngIf="booking.fromDate">
+                    <b>{{ booking.fromDate | date: "d MMM yyyy" }}</b></span
+                  >
+                </div>
+              </div>
+              <div
+                class="d-flex justify-content-between"
+                style="width: 100%; padding-bottom: 10px"
+              >
+                <div>Check Out Date:</div>
+                <div>
+                  <span *ngIf="booking.toDate">
+                    <b>{{ booking.toDate | date: "d MMM yyyy" }}</b></span
+                  >
+                </div>
+              </div>
+            </div>
+            <div
+              class="d-flex justify-content-between"
+              style="
+                border-bottom: 1px solid #f3f4f6;
+                flex-wrap: wrap;
+              "
+            >
+              <div
+                class="d-flex justify-content-between"
+                style="width: 100%; padding-bottom: 10px; "
+              >
+                <div>Guests:</div>
+                <div>
+                  <span>
+                    <b
+                      >{{ totalPlanAdults }} Adults,
+                      {{ totalPlanChildren }} Children</b
+                    ></span
+                  >
+                </div>
+              </div>
+              <div
+                class="d-flex justify-content-between"
+                style="width: 100%; padding-bottom: 10px"
+              >
+                <div>Nights:</div>
+                <div>
+                  <span>
+                    <b>{{ booking?.noOfNights }}</b></span
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-12" style="margin-top: 30px;">
+          <div class="card enquiry-details-card">
+            <h4 class="heading-enquiry">
+              <i style="color: #1465cf" class="fa-solid fa-user"></i>&nbsp;
+              Guest Details
+            </h4>
+            <div
+              class="d-flex justify-content-between"
+              style="
+                border-bottom: 1px solid #f3f4f6;
+                gap: 20px;
+                margin-top: 10px;
+              "
+            >
+              <div
+                class="d-flex justify-content-between"
+                style="padding-bottom: 10px; width: 100%"
+              >
+                <div>Name:</div>
+                <div>
+                  <span>
+                    <b>{{ booking.firstName }} {{ booking.lastName }}</b></span
+                  >
+                </div>
+              </div>
+            </div>
+            <div
+              class="d-flex justify-content-between"
+              style="
+                border-bottom: 1px solid #f3f4f6;
+                gap: 20px;
+                margin-top: 10px;
+              "
+            >
+              <div
+                class="d-flex justify-content-between"
+                style="padding-bottom: 10px; width: 100%"
+              >
+                <div>Email:</div>
+                <div>
+                  <span>
+                    <b>{{ booking.email }}</b></span
+                  >
+                </div>
+              </div>
+            </div>
+            <div
+              class="d-flex justify-content-between"
+              style="
+                border-bottom: 1px solid #f3f4f6;
+                gap: 20px;
+                margin-top: 10px;
+              "
+            >
+              <div
+                class="d-flex justify-content-between"
+                style="padding-bottom: 10px; width: 100%"
+              >
+                <div>Mobile No:</div>
+                <div>
+                  <span>
+                    <b>{{ booking.mobile }}</b></span
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12" style="margin-top: 30px">
+        <div class="card enquiry-details-card">
+          <h4 class="heading-enquiry">
+            <i style="color: #1465cf" class="fa-solid fa-bed"></i> &nbsp;
+            Booking Details
+          </h4>
+
+          <div class="booking-summary-container">
+                      <ng-container *ngFor="let booking of bookingsResponseList; let last = last">
+              <div class="d-flex justify-content-between">
+              <div style="font-weight: bold;">{{ booking.roomRatePlanName }}</div>
+              <div>{{ booking?.noOfNights }} Night(s)</div>
+            </div>
+            <div class="d-flex justify-content-between">
+                <div>Room Count</div>
+                <div>{{ booking.noOfRooms }}</div>
+            </div>
+            <div class="d-flex justify-content-between">
+                <div>Extra Pax</div>
+                <div>₹{{ booking.extraPersonCharge | number : "1.2-2" }}</div>
+            </div>
+            <div class="d-flex justify-content-between">
+                <div>Extra Child</div>
+                <div>₹{{ booking.extraChildCharge | number : "1.2-2" }}</div>
+            </div>
+            <div class="d-flex justify-content-between">
+                <div>Sub Total</div>
+                <div>₹{{ booking.beforeTaxAmount | number : "1.2-2" }}</div>
+            </div>
+            <div class="d-flex justify-content-between" *ngIf="booking.discountAmount">
+              <div *ngIf="specialDiscountData?.discountPercentage">Discount ({{specialDiscountData?.discountPercentage?.discountPercentage}}%)</div>
+              <div *ngIf="booking.discountAmount">-₹{{ booking.discountAmount | number : "1.2-2" }}</div>
+
+            </div>
+
+            <div class="d-flex justify-content-between">
+                <div>Tax</div>
+                <div>₹{{ booking.taxAmount | number : "1.2-2" }}</div>
+            </div>
+            <hr style="border: 1px solid #E5E7EB; margin-top: 5px; margin-bottom: 5px;">
+            <div class="d-flex justify-content-between" style="font-weight: bold;">
+                <div>Total Amount</div>
+                <div>₹{{ booking.totalAmount | number : "1.2-2" }}</div>
+            </div>
+          </ng-container>
+          </div>
+        </div>
+      </div>
+      <div class="col-12" style="margin-top: 30px">
+         <div class="card enquiry-details-card" style=" background-color: #16A34A1A; padding-top: 0px;">
+                      <div class="booking-summary-footer">
+                        <div class="d-flex justify-content-between" >
+                            <div>Final Room Tariff:</div>
+                            <div>₹ {{ bookingSummaryDetails?.totalPlanPrice - totalDiscount  | number : "1.2-2" }}</div>
+                        </div>
+                         <div class="d-flex justify-content-between" >
+                            <div>Total GST:</div>
+                            <div>₹  {{ bookingSummaryDetails?.totalTax | number : "1.2-2" }}</div>
+                        </div>
+                        <div class="d-flex justify-content-between" *ngIf="bookingSummaryDetails?.totalAddOnsPrice > 0">
+                            <div>Total Add-on Services Price:</div>
+                            <div>₹ {{
+                            bookingSummaryDetails?.totalAddOnsPrice -
+                              bookingSummaryDetails?.totaltaxfacilityAmount
+                              | number : "1.2-2"
+                            }}</div>
+                        </div>
+                        <div class="d-flex justify-content-between" *ngIf="bookingSummaryDetails?.totaltaxfacilityAmount > 0">
+                          <div>Total Add-on Services Tax Fees:</div>
+                          <div>₹{{
+                              bookingSummaryDetails?.totaltaxfacilityAmount
+                                | number : "1.2-2"
+                            }}</div>
+                        </div>
+                        <div class="d-flex justify-content-between" style="font-weight: 600; color:#16A34A">
+                          <div>Total Amount:</div>
+                          <div>₹{{ bookingSummaryDetails?.totalAmount | number : "1.2-2" }}</div>
+                        </div>
+                        <div class="d-flex justify-content-between" style="font-weight: 600; color:#16A34A">
+                          <div>Advance Amount:</div>
+                          <div>₹{{booking.advanceAmount | number : "1.2-2" }}</div>
+                        </div>
+                        <hr style="border: 1px solid #E5E7EB; margin-top: 10px; margin-bottom: 10px;">
+                         <div class="d-flex justify-content-between" style="font-weight: 600; color:#16A34A">
+                          <div>Due Amount:</div>
+                          <div>₹{{ bookingSummaryDetails?.totalAmount - booking.advanceAmount | number : "1.2-2" }}</div>
+                        </div>
+              <div>
+              </div>
+            </div>
+         </div>
+      </div>
+      <div
+        class="note-sectionOne"
+      >
+        <h5>Please note:</h5>
+        <ul style="line-height: 30px">
+          <li>
+            Confirmation: The Hotel Mate team will contact you to confirm your
+            booking.
+          </li>
+          <li>
+            Price Changes: Prices are subject to change due to hotel demand. We
+            will do our best to offer the Best Available Rate.
+          </li>
+          <li>
+            Room Availability: If rooms are unavailable, we may offer
+            alternative accommodations upon your request.
+          </li>
+          <li>
+            Advance Payment: In accordance with the hotel's policy, you may be
+            required to pay an advance amount (minimum 20% to full payment).
+          </li>
+          <li>
+            Payment and Booking Confirmation: We will provide you with a payment
+            link or scanner. Once payment is received, we will confirm your
+            reservation and send a booking confirmation voucher via email and/or
+            WhatsApp.
+          </li>
+          <li>
+            Last Minute Bookings: If this is a last minute booking, meaning the
+            check-in date is the same as the date of booking or early check-in
+            the next day, please call us.
+          </li>
+          <li>
+            Paid Booking: In the event that payment has already been made, and
+            we are unable to confirm the booking, we will refund the full amount
+            (minus payment gateway charges).
+          </li>
+          <li>
+            Email Confirmation: Please check your spam folder for the email
+            confirmation, as it may sometimes be found there.
+          </li>
+        </ul>
+        <div *ngFor="let bServiceDtoList of policies; let i = index">
+          <div *ngIf="bServiceDtoList?.policy">
+            <div class="property-rules" *ngIf="policies">Property rules:</div>
+
+            <div style="padding: 20px">
+              <div [innerHTML]="bServiceDtoList?.policy"></div>
             </div>
           </div>
         </div>
       </div>
     </div>
+
   </div>
 </div>
+
 <div *ngIf="paymentSucess === false && paymenterror === false && payment?.gatewayPaymentStatus != 'Failed'" >
   <div class="d-flex justify-content-center align-items-center vh-100 bg-light">
     <div class="card shadow-lg" style="width: 24rem;">
@@ -1057,7 +932,7 @@ Complete your booking now to save big on your stay.
       <p class="card-text text-muted">
         We have received your payment but we are experiencing technical issues processing your booking.
       </p>
-      <a href="{{PropertyUrl}}" class="btn btn-primary btn-sm me-2">Go Back</a>
+      <a (click)="backone()" href="{{PropertyUrl}}" class="btn btn-primary btn-sm me-2">Go Back</a>
       <a href="tel:9040785705" class="btn btn-primary btn-sm me-2" style="font-size: 14px;">Contact Support</a>
     </div>
 
@@ -1077,7 +952,7 @@ Complete your booking now to save big on your stay.
       <p class="card-text text-muted">
         We have not yet received your payment. Please ensure the payment is completed to proceed with your booking.
       </p>
-      <a href="{{PropertyUrl}}" class="btn btn-primary btn-sm me-2" style="margin-right: 10px;font-size: 14px;">Retry booking</a>
+      <a (click)="backone()" href="{{PropertyUrl}}" class="btn btn-primary btn-sm me-2" style="margin-right: 10px;font-size: 14px;">Retry booking</a>
       <a href="tel:9040785705" class="btn btn-primary btn-sm me-2" style="font-size: 14px;">Contact Support</a>
     </div>
 

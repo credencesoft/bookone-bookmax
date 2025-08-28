@@ -4,164 +4,239 @@
 <div class="vertical-nav" id="sidebar" *ngIf="isdone">
   <div>
     <button class="close-btn" (click)="closeNavbar()">
-      <img src="/assets/images/x-mark.png" alt="Close">
+      <img src="/assets/images/x-mark.png" alt="Close" />
     </button>
   </div>
 
-
-  <ul class="nav-menu" >
-
-
-
+  <ul class="nav-menu">
     <li class="nav-item">
-      <img *ngIf="businessUser?.logoUrl" [src]="businessUser?.logoUrl" alt="Logo" class="logo-imagetwo">
-      <a *ngIf="businessUser?.website" [href]="this.website" target="_top" class="nav-link">
+      <img
+        *ngIf="businessUser?.logoUrl"
+        [src]="businessUser?.logoUrl"
+        alt="Logo"
+        class="logo-imagetwo"
+      />
+      <a
+        *ngIf="businessUser?.website"
+        [href]="this.website"
+        target="_top"
+        class="nav-link"
+      >
         <i class="fas fa-home"></i> Home
       </a>
     </li>
-    <hr *ngIf="businessUser?.website">
-
+    <hr *ngIf="businessUser?.website" />
 
     <li class="nav-item">
-      <a *ngIf="businessUser?.website && socialmedialist?.aboutUs" [href]="socialmedialist?.aboutUs" target="_top" class="nav-link">
-        <i class="fas fa-info-circle"></i> About Us
+      <a
+        *ngIf="businessUser?.website && socialmedialist?.aboutUs"
+        [href]="socialmedialist?.aboutUs"
+        target="_top"
+        class="nav-link"
+      >
+        <i class="fas fa-info-circle"></i> About
       </a>
     </li>
-    <hr *ngIf="businessUser?.website && socialmedialist?.aboutUs">
+    <hr *ngIf="businessUser?.website && socialmedialist?.aboutUs" />
     <li class="nav-item">
-      <a *ngIf="businessUser?.website && socialmedialist?.blogPageUrl" [href]="socialmedialist?.blogPageUrl" target="_top" class="nav-link">
+      <a
+        *ngIf="businessUser?.website && socialmedialist?.blogPageUrl"
+        [href]="socialmedialist?.blogPageUrl"
+        target="_top"
+        class="nav-link"
+      >
         <i class="fas fa-info-circle"></i> Blogs
       </a>
     </li>
-    <hr *ngIf="businessUser?.website && socialmedialist?.blogPageUrl">
-     <li class="nav-item">
-      <a *ngIf="businessUser?.website && socialmedialist?.csr" [href]="socialmedialist?.csr" target="_top" class="nav-link">
+    <hr *ngIf="businessUser?.website && socialmedialist?.blogPageUrl" />
+    <!-- <li class="nav-item">
+      <a
+        *ngIf="businessUser?.website && socialmedialist?.csr"
+        [href]="socialmedialist?.csr"
+        target="_top"
+        class="nav-link"
+      >
         <i class="fas fa-info-circle"></i> CSR
       </a>
-    </li>
-    <hr *ngIf="businessUser?.website && socialmedialist?.csr">
-     <li class="nav-item">
-      <a *ngIf="businessUser?.website && socialmedialist?.contact" [href]="socialmedialist?.contact" target="_top" class="nav-link">
+    </li> -->
+    <!-- <hr *ngIf="businessUser?.website && socialmedialist?.csr" /> -->
+    <li class="nav-item">
+      <a
+        *ngIf="businessUser?.website && socialmedialist?.contact"
+        [href]="socialmedialist?.contact"
+        target="_top"
+        class="nav-link"
+      >
         <i class="fas fa-info-circle"></i> Contact
       </a>
     </li>
-    <hr *ngIf="businessUser?.website && socialmedialist?.contact">
+    <!-- <hr *ngIf="businessUser?.website && socialmedialist?.contact" />
 
     <li class="nav-item">
-      <a *ngIf="businessUser?.website && socialmedialist?.termsAndConditions" href="{{socialmedialist?.termsAndConditions}}" class="nav-link">
+      <a
+        *ngIf="businessUser?.website && socialmedialist?.termsAndConditions"
+        href="{{ socialmedialist?.termsAndConditions }}"
+        class="nav-link"
+      >
         <i class="fas fa-file-contract"></i> Terms & Conditions
       </a>
     </li>
-    <hr *ngIf="businessUser?.website && socialmedialist?.termsAndConditions">
+    <hr *ngIf="businessUser?.website && socialmedialist?.termsAndConditions" />
 
     <li class="nav-item">
-      <a *ngIf="businessUser?.website && socialmedialist?.privacyPolicy" href="{{socialmedialist?.privacyPolicy}}" class="nav-link">
+      <a
+        *ngIf="businessUser?.website && socialmedialist?.privacyPolicy"
+        href="{{ socialmedialist?.privacyPolicy }}"
+        class="nav-link"
+      >
         <i class="fas fa-user-secret"></i> Privacy Policy
       </a>
     </li>
-    <hr *ngIf="businessUser?.website && socialmedialist?.privacyPolicy">
+    <hr *ngIf="businessUser?.website && socialmedialist?.privacyPolicy" />
 
     <li class="nav-item">
-      <a *ngIf="businessUser?.website && socialmedialist?.paymentTerms" href="{{socialmedialist?.paymentTerms}}" class="nav-link">
+      <a
+        *ngIf="businessUser?.website && socialmedialist?.paymentTerms"
+        href="{{ socialmedialist?.paymentTerms }}"
+        class="nav-link"
+      >
         <i class="fas fa-credit-card"></i> Payment Terms
       </a>
     </li>
-    <hr *ngIf="businessUser?.website && socialmedialist?.paymentTerms">
-
-
-
-
-
+    <hr *ngIf="businessUser?.website && socialmedialist?.paymentTerms" /> -->
   </ul>
 </div>
 
-<!-- Top Navbar -->
-<!-- <nav class="navbar navbar-dark top-navbar desktop-view-ui" *ngIf="showheader === true" >
-  <div class="container-div" style="display: flex; justify-content: space-between; align-items: center;    margin-left: 60px; margin-right: 60px;">
-    <div class="left-section" style="display: flex; align-items: center;"  *ngIf="businessUser?.logoUrl">
-      <img class="logo-image" [src]="businessUser?.logoUrl" alt="Business Logo" style=" height: 68px; margin-right: 85px;">
+<nav
+  class="navbar navbar-dark top-navbar desktop-view-ui"
+  *ngIf="showheader === true"
+>
+  <div
+    class="container-div"
+    style="
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: auto;
+    "
+  >
+    <div
+      class="left-section"
+      *ngIf="businessUser?.logoUrl"
+      style="display: flex; align-items: center"
+    >
+    <a [href]="businessUser?.website" target="_blank">
+        <img
+          class="logo-image"
+          [src]="businessUser?.logoUrl"
+          alt="Business Logo"
+          style="height: 68px"
+        />
+      </a>
+
     </div>
 
-    <div style="display: flex;
-    gap: 48px;
-    color: white;">
-      <div>
-  <a *ngIf="businessUser?.website" [href]="businessUser.website" target="_top" style="color: white;">Home</a>
-</div>
+    <div class="header-section-content">
+      <div *ngIf="businessUser?.website">
+        <a [href]="businessUser.website" target="_top" style="color: white"
+          >Home</a
+        >
+      </div>
+      <div *ngIf="businessUser?.website && socialmedialist?.aboutUs">
+        <a [href]="socialmedialist?.aboutUs" target="_top" style="color: white"
+          >About</a
+        >
+      </div>
+      <div *ngIf="businessUser?.website && socialmedialist?.blogPageUrl">
+        <a
+          [href]="socialmedialist?.blogPageUrl"
+          target="_top"
+          style="color: white"
+          >Blogs</a
+        >
+      </div>
+      <!-- <div>
+        <a
+          *ngIf="businessUser?.website && socialmedialist?.csr"
+          [href]="socialmedialist?.csr"
+          target="_top"
+          style="color: white"
+          >CSR</a
+        >
+      </div> -->
+      <div *ngIf="businessUser?.website && socialmedialist?.contact">
+        <a [href]="socialmedialist?.contact" target="_top" style="color: white"
+          >Contact</a
+        >
+      </div>
+      <!-- <div *ngIf="businessUser?.website && socialmedialist?.termsAndConditions">
+        <a
+          [href]="socialmedialist?.termsAndConditions"
+          target="_top"
+          style="color: white"
+          >Terms & Conditions</a
+        >
+      </div>
+      <div *ngIf="businessUser?.website && socialmedialist?.privacyPolicy">
+        <a
+          [href]="socialmedialist?.privacyPolicy"
+          target="_top"
+          style="color: white"
+          >Privacy Policy</a
+        >
+      </div>
+      <div *ngIf="businessUser?.website && socialmedialist?.paymentTerms">
+        <a
 
-      <div>
-        <a *ngIf="businessUser?.website && socialmedialist?.aboutUs" [href]="socialmedialist?.aboutUs" target="_top" style="color: white;">About Us</a>
-      </div>
-       <div>
-        <a *ngIf="businessUser?.website && socialmedialist?.blogPageUrl" [href]="socialmedialist?.blogPageUrl" target="_top" style="color: white;">Blogs</a>
-      </div>
-       <div>
-        <a *ngIf="businessUser?.website && socialmedialist?.csr" [href]="socialmedialist?.csr" target="_top" style="color: white;">CSR</a>
-      </div>
-       <div>
-        <a *ngIf="businessUser?.website && socialmedialist?.contact" [href]="socialmedialist?.contact" target="_top" style="color: white;">Contact</a>
-      </div>
-      <div>
-        <a *ngIf="businessUser?.website && socialmedialist?.termsAndConditions" [href]="socialmedialist?.termsAndConditions" target="_top" style="color: white;">Terms & Conditions</a>
-      </div>
-      <div>
-        <a *ngIf="businessUser?.website && socialmedialist?.privacyPolicy" [href]="socialmedialist?.privacyPolicy"  target="_top" style="color: white;">Privacy Policy</a>
-      </div>
-      <div>
-        <a *ngIf="businessUser?.website && socialmedialist?.paymentTerms" [href]="socialmedialist?.paymentTerms" target="_top" style="color: white;">Payment Terms</a>
-      </div>
-    </div>
-
-    <div style="margin-right: 30px;">
-      <button class="blinking-unique-btn" (click)="scrollToAccommodation($event)" style="background-color: black; color: white !important; border: none; padding: 10px 20px;">Book Now</button>
-    </div>
-  </div>
-</nav> -->
-<nav class="navbar navbar-dark top-navbar desktop-view-ui" *ngIf="showheader === true">
-  <div class="container-div" style="display: flex; justify-content: space-between; align-items: center; margin-left: 60px; margin-right: 60px; width: 100%;">
-
-    <div class="left-section" *ngIf="businessUser?.logoUrl" style="display: flex; align-items: center;">
-      <img class="logo-image" [src]="businessUser?.logoUrl" alt="Business Logo" style="height: 68px;">
-    </div>
-
-    <div style="display: flex; gap: 48px; color: white; flex-grow: 1; justify-content: center;">
-      <div>
-        <a *ngIf="businessUser?.website" [href]="businessUser.website" target="_top" style="color: white;">Home</a>
-      </div>
-      <div>
-        <a *ngIf="businessUser?.website && socialmedialist?.aboutUs" [href]="socialmedialist?.aboutUs" target="_top" style="color: white;">About Us</a>
-      </div>
-      <div>
-        <a *ngIf="businessUser?.website && socialmedialist?.blogPageUrl" [href]="socialmedialist?.blogPageUrl" target="_top" style="color: white;">Blogs</a>
-      </div>
-      <div>
-        <a *ngIf="businessUser?.website && socialmedialist?.csr" [href]="socialmedialist?.csr" target="_top" style="color: white;">CSR</a>
-      </div>
-      <div>
-        <a *ngIf="businessUser?.website && socialmedialist?.contact" [href]="socialmedialist?.contact" target="_top" style="color: white;">Contact</a>
-      </div>
-      <div>
-        <a *ngIf="businessUser?.website && socialmedialist?.termsAndConditions" [href]="socialmedialist?.termsAndConditions" target="_top" style="color: white;">Terms & Conditions</a>
-      </div>
-      <div>
-        <a *ngIf="businessUser?.website && socialmedialist?.privacyPolicy" [href]="socialmedialist?.privacyPolicy" target="_top" style="color: white;">Privacy Policy</a>
-      </div>
-      <div>
-        <a *ngIf="businessUser?.website && socialmedialist?.paymentTerms" [href]="socialmedialist?.paymentTerms" target="_top" style="color: white;">Payment Terms</a>
-      </div>
+          [href]="socialmedialist?.paymentTerms"
+          target="_top"
+          style="color: white"
+          >Payment Terms</a
+        >
+      </div> -->
     </div>
 
     <!-- Right Section: Book Now Button -->
-    <!-- <div style="margin-left: auto;">
-      <button class="blinking-unique-btn" (click)="scrollToAccommodation($event)" style="background-color: black; color: white !important; border: none; padding: 10px 20px;">Book Now</button>
-    </div> -->
+    <div style="display: flex; gap: 10px; align-items: center">
+      <div>
+        <a
+          [href]="getWhatsappShareUrl()"
+          target="_blank"
+          class="Whatsapp-btn-header"
+        >
+          <img
+            src="assets/images/whatsapp-icons.svg"
+            style="margin-right: 6px"
+          />
+          Book via WhatsApp
+        </a>
+      </div>
+      <div>
+        <a class="blinking-unique-btn" [href]="'tel:' + (websiteUrlBookingEngine ? businessUser?.mobile : '9040785705')">
+          <img
+            src="assets/images/call-us-header.svg"
+            style="margin-right: 6px"
+          />
+           {{ websiteUrlBookingEngine ? businessUser?.mobile : '9040785705' }}
+        </a>
+      </div>
+      <!-- <div>
+          <a style="background-color: #fff; border-radius: 50%; padding: 15px 12px;">
+      <img src="assets/images/robot-icon.svg" style="height:37px" />
+    </a>
+         </div> -->
 
+      <!-- <button
+        class="blinking-unique-btn"
+        (click)="scrollToAccommodation($event)"
+      >
+        Book Now
+      </button> -->
+    </div>
   </div>
 </nav>
 
-
-
-    <!-- <nav class="navbar navbar-dark top-navbar mobile-view-ui" *ngIf="showheader === true">
+<!-- <nav class="navbar navbar-dark top-navbar mobile-view-ui" *ngIf="showheader === true">
       <div class="container-div">
         <div class="left-section">
             <img class="logo-image" [src]="businessUser?.logoUrl" alt="Business Logo">
@@ -183,41 +258,81 @@
 
     </nav> -->
 
-    <nav class="navbar navbar-dark top-navbar mobile-view-ui" *ngIf="showheader === true">
-  <div class="container-div" style="display: flex; justify-content: space-between; align-items: center;">
-
-    <!-- Left Section: Always rendered -->
-    <div class="left-section" style="min-width: 80px; min-height: 60px; display: flex; align-items: center;">
-      <img
+<nav
+  class="navbar navbar-dark top-navbar mobile-view-ui"
+  *ngIf="showheader === true"
+>
+  <div
+    class="container-div"
+    style="display: flex; justify-content: space-between; align-items: center; gap:14px"
+  >
+    <div>
+      <div
+        class="left-section"
         *ngIf="businessUser?.logoUrl"
-        class="logo-image"
-        [src]="businessUser.logoUrl"
-        alt="Business Logo"
-        style="height: 50px;">
+        style="display: flex; align-items: center"
+      >
+      <a [href]="businessUser?.website" target="_blank">
+        <img
+          class="logo-image"
+          [src]="businessUser?.logoUrl"
+          alt="Business Logo"
+          style="height: 49px; width: auto !important"
+        />
+      </a>
+
+      </div>
     </div>
 
-    <!-- Right Section: Always visible (if businessUser?.website exists) -->
-    <div style="display: flex; gap: 7px;">
-      <button
-        class="navbar-toggler"
-        *ngIf="businessUser?.website"
-        (click)="toggleListingDetails()"
-        type="button"
-        aria-controls="navbarToggleExternalContent"
-        aria-expanded="false"
-        aria-label="Toggle navigation">
-        <img src="assets/images/nav-toggle.png" alt="Toggle Navigation">
+    <div class="d-flex" style="gap: 14px">
+      <div>
+        <a
+          [href]="getWhatsappShareUrl()"
+          target="_blank"
+          class="Whatsapp-btn-header"
+        >
+          <img
+            src="assets/images/whatsapp-icons.svg"
+            style="margin-right: 6px"
+          />
+        </a>
+      </div>
+      <div>
+        <a class="blinking-unique-btn" [href]="'tel:' + (websiteUrlBookingEngine ? businessUser?.mobile : '9040785705')">
+          <img
+            src="assets/images/call-us-header.svg"
+            style="margin-right: 6px"
+          />
+        </a>
+      </div>
+      <div>
+        <button
+          class="navbar-toggler"
+          *ngIf="businessUser?.website"
+          (click)="toggleListingDetails()"
+          type="button"
+          aria-controls="navbarToggleExternalContent"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <img src="assets/images/nav-toggle.png" alt="Toggle Navigation" />
+        </button>
+      </div>
+    </div>
+
+    <!-- <div>
+              <button
+        class="blinking-unique-btn"
+        (click)="scrollToAccommodation($event)"
+      >
+        Book Now
       </button>
-    </div>
-
+    </div> -->
   </div>
 </nav>
 
-
 <!-- Styles -->
-
 
 <!-- <div class="banner-container" *ngIf="!businessUser?.website">
   <img src="assets/images/BookOne Website Bannerr.png" alt="Website Banner" class="banner-image">
 </div> -->
-

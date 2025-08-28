@@ -127,6 +127,7 @@ import { CheckoutRazorpayComponent } from './checkout-razorpay/checkout-razorpay
 import { TermsAndConditionComponent } from './terms-and-condition/terms-and-condition.component';
 import { CancellationPolicyComponent } from './cancellation-policy/cancellation-policy.component';
 import { AboutUsComponent } from './about-us/about-us.component';
+import { CalendarModule } from 'primeng/calendar';
 
 
 @NgModule({
@@ -151,6 +152,7 @@ import { AboutUsComponent } from './about-us/about-us.component';
     MatRadioModule,
     MatFormFieldModule,
     MatTableModule,
+    CalendarModule,
   ],
   declarations: [
     LandingV1Component,
