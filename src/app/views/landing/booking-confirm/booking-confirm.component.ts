@@ -1272,6 +1272,8 @@ checkValidCouponOrNot(couponList?){
   this.paymentLoader = true;
 
   enquiryResponseList.forEach((enquiry, index) => {
+    enquiry.bookingId = this.token.getBookingDataObj().id;
+    enquiry.bookingReservationId = this.token.getBookingDataObj().propertyReservationNumber;
     // Update the status
     enquiry.status = 'Booked';
     enquiry.propertyId = 107;
