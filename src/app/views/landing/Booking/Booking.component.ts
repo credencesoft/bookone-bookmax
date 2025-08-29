@@ -3304,6 +3304,7 @@ if (bookingSummaryStr) {
         //  setTimeout(() => {
         //       this.accommodationEnquiryBookingData();
         //     }, 3000);
+        this.createAllPayLaterEnquiries();
         this.router.navigate(['/reservation-confirm-page']);
 
         this.loadingOne = false;
@@ -3432,6 +3433,8 @@ if (bookingSummaryStr) {
     enquiryForm.propertyId = 107;
     enquiryForm.bookingPropertyId = this.token.getProperty().id;
     enquiryForm.propertyName = this.token.getProperty().name;
+    enquiryForm.bookingReservationId = this.token.getBookingDataObj().propertyReservationNumber;
+    enquiryForm.bookingId = this.token.getBookingDataObj().id;
     enquiryForm.taxDetails = this.token
       .getProperty()
       .taxDetails.filter((item) => ['CGST', 'SGST', 'GST'].includes(item.name));
