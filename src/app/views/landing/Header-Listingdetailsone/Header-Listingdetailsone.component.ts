@@ -76,7 +76,6 @@ export class HeaderListingdetailsoneComponent implements OnInit {
     this.website = this.businessUser?.website;
 
     setTimeout(() => {
-      console.log("businessUser",this.businessUser)
     this.website = this.businessUser?.website;
       this.businessUser?.socialMediaLinks?.forEach(element => {
         this.socialmedialist=element
@@ -107,7 +106,6 @@ export class HeaderListingdetailsoneComponent implements OnInit {
 checkBookingEngineFlag(): void {
   const bookingEngineFlag = sessionStorage.getItem('BookingEngine');
   this.websiteUrlBookingEngine = bookingEngineFlag === 'true';
-  console.log(this.websiteUrlBookingEngine,this.websiteUrlBookingEngine)
 }
   toggleListingDetails() {
     this.showListingDetails = !this.showListingDetails;

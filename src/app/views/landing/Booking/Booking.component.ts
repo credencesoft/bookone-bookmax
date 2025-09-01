@@ -270,6 +270,7 @@ export class BookingComponent implements OnInit {
   enteredCoupon: any;
   showTermsUniquePopup: boolean = false;
   showPrivacyUniquePopup: boolean = false;
+  thmEnquiryDataList: Booking;
   constructor(
     private token: TokenStorage,
     private ngZone: NgZone,
@@ -1543,7 +1544,7 @@ if (bookingSummaryStr) {
     this.enquiryForm.discountAmountPercentage = this.booking.discountPercentage;
     this.enquiryForm.status = 'Enquiry';
     this.enquiryForm.specialNotes = this.booking.notes;
-    this.enquiryForm.propertyId = 107;
+    this.enquiryForm.propertyId = 763;
     this.enquiryForm.currency = this.token.getProperty().localCurrency;
     this.enquiryForm.taxDetails = this.token
       .getProperty()
@@ -1754,7 +1755,7 @@ if (bookingSummaryStr) {
     enquiryForm.accommodationType = this.token.getProperty().businessType;
     enquiryForm.status = 'Enquiry';
     enquiryForm.specialNotes = booking.notes || '';
-    enquiryForm.propertyId = 107;
+    enquiryForm.propertyId = 763;
     enquiryForm.bookingPropertyId = this.token.getProperty().id;
     enquiryForm.propertyName = this.token.getProperty().name;
     enquiryForm.taxDetails = this.token
@@ -3159,33 +3160,64 @@ if (bookingSummaryStr) {
       }
     );
   }
-  createAllBookings() {
-    this.createAllPayLaterEnquiries();
-    const bookingSummaryStr = sessionStorage.getItem('bookingSummaryDetails');
-    const bookingSummary = bookingSummaryStr
-      ? JSON.parse(bookingSummaryStr)
-      : null;
+  // createAllBookings() {
+  //   this.createAllPayLaterEnquiries();
+  //   const bookingSummaryStr = sessionStorage.getItem('bookingSummaryDetails');
+  //   const bookingSummary = bookingSummaryStr
+  //     ? JSON.parse(bookingSummaryStr)
+  //     : null;
 
-    if (!bookingSummary || !bookingSummary.selectedPlansSummary?.length) {
-      console.error('No valid booking summary found.');
+  //   if (!bookingSummary || !bookingSummary.selectedPlansSummary?.length) {
+  //     console.error('No valid booking summary found.');
+  //     return;
+  //   }
+
+  //   const plans = bookingSummary.selectedPlansSummary;
+
+  //   const processPlan = (index: number) => {
+  //     if (index >= plans.length) return;
+  //     const currentPlan = plans[index];
+
+  //     this.createBooking(currentPlan, bookingSummary, () => {
+  //       setTimeout(() => {
+  //         processPlan(index + 1);
+  //       }, 1000);
+  //     });
+  //   };
+
+  //   processPlan(0);
+  // }
+
+  createAllBookings() {
+  const bookingSummaryStr = sessionStorage.getItem('bookingSummaryDetails');
+  const bookingSummary = bookingSummaryStr
+    ? JSON.parse(bookingSummaryStr)
+    : null;
+
+  if (!bookingSummary || !bookingSummary.selectedPlansSummary?.length) {
+    console.error('No valid booking summary found.');
+    return;
+  }
+
+  const plans = bookingSummary.selectedPlansSummary;
+
+  const processPlan = (index: number) => {
+    if (index >= plans.length) {
+      this.createAllPayLaterEnquiries();
       return;
     }
 
-    const plans = bookingSummary.selectedPlansSummary;
+    const currentPlan = plans[index];
 
-    const processPlan = (index: number) => {
-      if (index >= plans.length) return;
-      const currentPlan = plans[index];
+    this.createBooking(currentPlan, bookingSummary, () => {
+      setTimeout(() => {
+        processPlan(index + 1);
+      }, 1000);
+    });
+  };
 
-      this.createBooking(currentPlan, bookingSummary, () => {
-        setTimeout(() => {
-          processPlan(index + 1);
-        }, 1000);
-      });
-    };
-
-    processPlan(0);
-  }
+  processPlan(0);
+}
 
   createBooking(plan: any, bookingSummary: any, callback?: () => void) {
     const booking: any = {};
@@ -3275,7 +3307,8 @@ if (bookingSummaryStr) {
       this.paymentLoader = false;
       if (response.status === 200) {
         const savedBooking = response.body;
-        const existingBookingsStr = sessionStorage.getItem(
+        if(savedBooking){
+          const existingBookingsStr = sessionStorage.getItem(
           'bookingsResponseList'
         );
         const existingBookings = existingBookingsStr
@@ -3297,14 +3330,14 @@ if (bookingSummaryStr) {
         );
         this.getSubscriptions(savedBooking);
         this.sendWhatsappMessageToTHM(savedBooking);
-        this.sendWhatsappMessageToTHM1(savedBooking);
-        this.sendWhatsappMessageToTHM2(savedBooking);
-        this.sendWhatsappMessageToTHM3(savedBooking);
-        // this.sendWhatsappMessageToTHM4(savedBooking);
+        // this.sendWhatsappMessageToTHM1(savedBooking);
+        // this.sendWhatsappMessageToTHM2(savedBooking);
+        // this.sendWhatsappMessageToTHM3(savedBooking);
+        // // this.sendWhatsappMessageToTHM4(savedBooking);
         //  setTimeout(() => {
         //       this.accommodationEnquiryBookingData();
         //     }, 3000);
-        this.createAllPayLaterEnquiries();
+        // this.createAllPayLaterEnquiries();
         this.router.navigate(['/reservation-confirm-page']);
 
         this.loadingOne = false;
@@ -3315,6 +3348,7 @@ if (bookingSummaryStr) {
         this.payment.amount = booking.totalAmount;
 
         Logger.log('payment ' + JSON.stringify(this.payment));
+        }
 
         if (callback) callback();
       } else {
@@ -3344,7 +3378,11 @@ if (bookingSummaryStr) {
 
   async submitFormPaylaterCRM(plan: any, bookingSummary: any) {
     const booking: any = this.booking;
+      const bookingsStr = sessionStorage.getItem('bookingsResponseList');
+  const bookings = bookingsStr ? JSON.parse(bookingsStr) : [];
 
+  // Match booking based on roomId (or another unique property)
+  const matchedBooking = bookings.find((b: any) => b.roomId === plan.roomId);
     if (this.showTheSelectedCoupon) {
       const finalPrice = this.calculateDiscountedPrice(
         this.storedActualNetAmount,
@@ -3430,11 +3468,11 @@ if (bookingSummaryStr) {
     enquiryForm.accommodationType = this.token.getProperty().businessType;
     enquiryForm.status = 'Booked';
     enquiryForm.specialNotes = booking.notes || '';
-    enquiryForm.propertyId = 107;
+    enquiryForm.propertyId = 763;
     enquiryForm.bookingPropertyId = this.token.getProperty().id;
     enquiryForm.propertyName = this.token.getProperty().name;
-    enquiryForm.bookingReservationId = this.token.getBookingDataObj().propertyReservationNumber;
-    enquiryForm.bookingId = this.token.getBookingDataObj().id;
+    enquiryForm.bookingReservationId = matchedBooking?.propertyReservationNumber || '';
+    enquiryForm.bookingId =  matchedBooking?.id || '';
     enquiryForm.taxDetails = this.token
       .getProperty()
       .taxDetails.filter((item) => ['CGST', 'SGST', 'GST'].includes(item.name));
@@ -4925,7 +4963,7 @@ if (bookingSummaryStr) {
     this.enquiryForm.discountAmountPercentage = this.booking.discountPercentage;
     this.enquiryForm.status = 'Booked';
     this.enquiryForm.specialNotes = this.booking.notes;
-    this.enquiryForm.propertyId = 107;
+    this.enquiryForm.propertyId = 763;
 
     this.enquiryForm.totalAmount = this.booking.totalAmount;
     // this.enquiryForm.taxDetails = this.booking.taxDetails;
@@ -5309,7 +5347,7 @@ if (bookingSummaryStr) {
     enquiryForm.accommodationType = this.token.getProperty().businessType;
     enquiryForm.status = 'Enquiry';
     enquiryForm.specialNotes = booking.notes || '';
-    enquiryForm.propertyId = 107;
+    enquiryForm.propertyId = 763;
     enquiryForm.bookingPropertyId = this.token.getProperty().id;
     enquiryForm.propertyName = this.token.getProperty().name;
     enquiryForm.taxDetails = this.token
@@ -5344,6 +5382,68 @@ if (bookingSummaryStr) {
     enquiryForm.taxPercentage = plan.taxpercentage;
 
     this.paymentLoader = true;
+        const bookingForm = new Booking();
+    bookingForm.businessEmail = this.token.getProperty().email;
+    bookingForm.businessName = this.token.getProperty().name;
+    bookingForm.firstName = booking.firstName;
+    bookingForm.lastName = booking.lastName;
+    bookingForm.email = booking.email;
+    bookingForm.mobile = booking.mobile;
+    bookingForm.toDate = booking.toDate;
+    bookingForm.fromDate = booking.fromDate;
+    bookingForm.noOfPersons = plan.adults;
+    bookingForm.noOfExtraPerson = plan.extraCountAdult;
+    bookingForm.roomId = plan.roomId;
+    bookingForm.payableAmount = plan.price + plan.taxPercentageperroom;
+    bookingForm.roomName = plan.roomName;
+    bookingForm.extraPersonCharge = plan.extraPersonAdultCountAmount;
+    bookingForm.extraChildCharge = plan.extraPersonChildCountAmount;
+    bookingForm.noOfExtraChild = plan.extraCountChild;
+
+    bookingForm.roomPrice = plan.actualRoomPrice;
+
+    bookingForm.externalSite = 'WebSite';
+    bookingForm.couponCode = booking.couponCode;
+    bookingForm.promotionName = booking.promotionName;
+    bookingForm.discountAmount = booking.discountAmount;
+    bookingForm.beforeTaxAmount = plan.price;
+
+    bookingForm.mobile =
+      this.token.getProperty().whatsApp || this.token.getProperty().mobile;
+
+    bookingForm.roomName = plan.roomName;
+    bookingForm.roomRatePlanName = plan.planCodeName;
+    bookingForm.createdDate = new Date().getTime();
+
+    // Combine date and time
+    const checkInDateTimeOne = new Date(
+      `${bookingForm.fromDate} ${this.fromTime}`
+    ).getTime();
+    const checkOutDateTimeOne = new Date(
+      `${bookingForm.toDate} ${this.toTime}`
+    ).getTime();
+    bookingForm.fromTime = checkInDateTimeOne;
+    bookingForm.toTime = checkOutDateTimeOne;
+    this.token.saveTime(String(checkInDateTimeOne));
+    this.token.saveToTime(String(checkOutDateTimeOne));
+
+    bookingForm.noOfRooms = Number(plan.selectedRoomnumber);
+    bookingForm.noOfChildren = plan.children;
+    bookingForm.propertyId = 763;
+    bookingForm.propertyId = this.token.getProperty().id;
+    bookingForm.taxDetails = this.token
+      .getProperty()
+      .taxDetails.filter((item) => ['CGST', 'SGST', 'GST'].includes(item.name));
+    bookingForm.taxAmount = plan.taxPercentageperroom;
+
+    bookingForm.totalAmount = plan.price + plan.taxPercentageperroom;
+    bookingForm.discountPercentage = booking.discountPercentage;
+    bookingForm.noOfNights = plan.nights;
+    bookingForm.taxPercentage = plan.taxpercentage;
+    bookingForm.roomTariffBeforeDiscount = plan.actualRoomPrice;
+    bookingForm.totalRoomTariffBeforeDiscount = plan.actualRoomPrice * plan.nights * plan.selectedRoomnumber;
+    bookingForm.totalBookingAmount = bookingForm.totalRoomTariffBeforeDiscount;
+    this.saveEnquiryTHM(bookingForm);
     try {
       const response: HttpResponse<EnquiryDto> = await this.hotelBookingService
         .accommodationEnquiry(enquiryForm)
@@ -5401,6 +5501,26 @@ if (bookingSummaryStr) {
     return false;
   }
 
+    saveEnquiryTHM(booking: Booking) {
+
+    const createBookingObsr = this.hotelBookingService
+      .saveEnquireTHM(booking)
+      .subscribe((response) => {
+        if (response.status === 200) {
+          this.thmEnquiryDataList = response.body;
+        const thmData = sessionStorage.getItem('EnquiryTHMList');
+        // const existingEnquiriesThm = thmData ? JSON.parse(thmData) : [];
+
+        // existingEnquiriesThm.push(this.thmEnquiryDataList);
+
+        // sessionStorage.setItem(
+        //   'EnquiryTHMList',
+        //   JSON.stringify(existingEnquiriesThm)
+        // );
+        }
+
+      });
+  }
 
 
   propertyenquiryemails(enquiryForm) {

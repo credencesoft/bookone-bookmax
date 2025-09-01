@@ -151,7 +151,6 @@ export class PaylaterConfirmComponent {
 checkBookingEngineFlag(): void {
   const bookingEngineFlag = sessionStorage.getItem('BookingEngine');
   this.websiteUrlBookingEngine = bookingEngineFlag === 'true';
-  console.log(this.websiteUrlBookingEngine,this.websiteUrlBookingEngine)
 }
 callNow() {
   if (this.businessUser?.mobile && this.websiteUrlBookingEngine) {

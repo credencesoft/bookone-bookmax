@@ -87,6 +87,11 @@ export class HotelBookingService {
       { observe: 'response' }
     );
   }
+    saveEnquireTHM(booking: Booking) {
+    return this.http.post<Booking>(this.API_URL + "/api/booking/enquire", booking, {
+      observe: "response",
+    });
+  }
 generateBookingVoucher(bookingId: number): Observable<any> {
   return this.http.get<any>(`${this.API_URL}/api/thm/generateBookingVoucher?bookingId=${bookingId}`);
 }

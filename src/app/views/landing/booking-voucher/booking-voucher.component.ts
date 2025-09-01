@@ -134,7 +134,6 @@ export class BookingVoucherComponent {
   checkBookingEngineFlag(): void {
   const bookingEngineFlag = sessionStorage.getItem('BookingEngine');
   this.websiteUrlBookingEngine = bookingEngineFlag === 'true';
-  console.log(this.websiteUrlBookingEngine,this.websiteUrlBookingEngine)
 }
     changeTheme(primary?: string, secondary?: string, tertiary?: string) {
   // Default colors if none are passed

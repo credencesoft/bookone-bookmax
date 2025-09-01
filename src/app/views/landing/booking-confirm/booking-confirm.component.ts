@@ -591,7 +591,10 @@ checkValidCouponOrNot(couponList?){
 
     const plans = bookingSummary.selectedPlansSummary;
     const processPlan = (index: number) => {
-      if (index >= plans.length) return;
+       if (index >= plans.length) {
+      this.updateEnquiryStatusToBooked();
+      return;
+    }
       const currentPlan = plans[index];
 
       this.createBooking(currentPlan, bookingSummary, () => {
@@ -739,9 +742,9 @@ checkValidCouponOrNot(couponList?){
         );
         this.getSubscriptions(savedBooking);
         this.sendWhatsappMessageToTHM(savedBooking);
-        this.sendWhatsappMessageToTHM3(savedBooking);
-        this.sendWhatsappMessageToTHM2(savedBooking);
-        this.sendWhatsappMessageToTHM1(savedBooking);
+        // this.sendWhatsappMessageToTHM3(savedBooking);
+        // this.sendWhatsappMessageToTHM2(savedBooking);
+        // this.sendWhatsappMessageToTHM1(savedBooking);
                   // this.sendWhatsappMessageToTHM1();
           // this.sendWhatsappMessageToTHM2();
           // this.sendWhatsappMessageToTHM3();
@@ -750,7 +753,7 @@ checkValidCouponOrNot(couponList?){
         this.payment.referenceNumber = savedBooking.propertyReservationNumber;
         this.payment.externalReference = savedBooking.externalBookingID;
         this.payment.amount = booking.totalAmount;
-                    this.updateEnquiryStatusToBooked();
+
 
                             this.hotelBookingService
             .savePayment(this.payment)
@@ -1272,11 +1275,14 @@ checkValidCouponOrNot(couponList?){
   this.paymentLoader = true;
 
   enquiryResponseList.forEach((enquiry, index) => {
-    enquiry.bookingId = this.token.getBookingDataObj().id;
-    enquiry.bookingReservationId = this.token.getBookingDataObj().propertyReservationNumber;
+  const bookingsStr = sessionStorage.getItem('bookingsResponseList');
+  const bookings = bookingsStr ? JSON.parse(bookingsStr) : [];
+  const matchedBooking = bookings.find((b: any) => b.roomId === enquiry.roomId);
+    enquiry.bookingId = matchedBooking?.id;
+    enquiry.bookingReservationId = matchedBooking?.propertyReservationNumber;
     // Update the status
     enquiry.status = 'Booked';
-    enquiry.propertyId = 107;
+    enquiry.propertyId = 763;
     this.paymentSucess = true
 
     this.hotelBookingService.accommodationEnquiry(enquiry).subscribe({
@@ -1587,7 +1593,6 @@ checkValidCouponOrNot(couponList?){
   checkBookingEngineFlag(): void {
   const bookingEngineFlag = sessionStorage.getItem('BookingEngine');
   this.websiteUrlBookingEngine = bookingEngineFlag === 'true';
-  console.log(this.websiteUrlBookingEngine,this.websiteUrlBookingEngine)
 }
 callNow() {
   if (this.businessUser?.mobile && this.websiteUrlBookingEngine) {
