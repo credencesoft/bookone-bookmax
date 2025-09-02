@@ -2161,7 +2161,7 @@ if (bookingSummaryStr) {
 
       this.cardPaymentAvailable = true;
     } else if (this.businessUser.paymentGateway === 'razorpay') {
-      this.payment.paymentMode = 'UPI';
+      this.payment.paymentMode = 'Razorpay';
       this.payment.status = 'NotPaid';
       this.payment.businessServiceName = 'Accommodation';
       this.payment.firstName = this.booking.firstName;

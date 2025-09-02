@@ -1198,7 +1198,7 @@ checkValidCouponOrNot(couponList?){
     externalreservation.amountBeforeTax = booking.beforeTaxAmount;
     externalreservation.channelId = '9';
     externalreservation.lastModifiedBy = 'hotelmate';
-    externalreservation.modeOfPayment = 'Cash';
+    externalreservation.modeOfPayment = this.payment?.paymentMode;
     externalreservation.otaReservationId =
       this.propertyData.shortName + '-BE-' + booking.id;
     externalreservation.propertyId = booking.propertyId.toString();
