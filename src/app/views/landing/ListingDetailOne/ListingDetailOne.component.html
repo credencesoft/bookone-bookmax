@@ -2631,10 +2631,18 @@
                 >
                   <!-- Top Badge -->
                   <div
+                  *ngIf="rates.noOfAvailable <= 5"
                     style="z-index: 1"
                     class="position-absolute top-0 start-0 m-2 px-3 py-1 last-rooms rounded-pill small"
                   >
                     Last {{ rates.noOfAvailable }} room(s)
+                  </div>
+                  <div
+                  *ngIf="rates.noOfAvailable > 5"
+                    style="z-index: 1"
+                    class="position-absolute top-0 start-0 m-2 px-3 py-1 last-rooms rounded-pill small"
+                  >
+                    Fast-selling
                   </div>
 
                   <!-- Room Image -->
@@ -3235,12 +3243,19 @@
                 >
                   <!-- Top Badge -->
                   <div
+                  *ngIf="rates.noOfAvailable <= 5"
                     style="z-index: 1"
                     class="position-absolute top-0 start-0 m-2 px-3 py-1 last-rooms rounded-pill small"
                   >
                     Last {{ rates.noOfAvailable }} room(s)
                   </div>
-
+                  <div
+                  *ngIf="rates.noOfAvailable > 5"
+                    style="z-index: 1"
+                    class="position-absolute top-0 start-0 m-2 px-3 py-1 last-rooms rounded-pill small"
+                  >
+                    Fast-selling
+                  </div>
                   <!-- Room Image -->
                   <!-- Fallback image if imageList is empty or undefined -->
                   <img
