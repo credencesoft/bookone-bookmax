@@ -1520,7 +1520,7 @@
         </div>
       </div>
       <div class="col-5">
-        <div class="d-flex align-items-start" style="gap: 8px">
+        <div class="d-flex align-items-start" style="gap: 8px" *ngIf="smartRecommendationsBoolean">
           <div>
             <div class="smart-card">
               <img
@@ -1530,7 +1530,7 @@
               />
             </div>
           </div>
-          <div>
+          <div *ngIf="smartRecommendationsBoolean">
             <div class="smart-recommend">Smart Recommendations</div>
             <div class="smart-recommend-1" *ngIf="smartLoading">
               Please wait we are fetching the best options for you!
@@ -1540,7 +1540,7 @@
             </div>
           </div>
         </div>
-        <ng-container *ngIf="smartLoading">
+        <ng-container *ngIf="smartLoading && smartRecommendationsBoolean">
           <div
             class="card smart-recommend-card skeleton-card"
             *ngFor="let skeleton of [1, 2]"
@@ -1560,7 +1560,7 @@
           </div>
         </ng-container>
 
-        <ng-container *ngIf="!smartLoading">
+        <ng-container *ngIf="!smartLoading && smartRecommendationsBoolean">
           <div *ngFor="let cat of currentCategories">
             <div
               class="card smart-recommend-card"
@@ -1686,7 +1686,7 @@
           </div>
         </ng-container>
 
-        <div class="d-flex justify-content-end margin-top-20px">
+        <div class="d-flex justify-content-end margin-top-20px" *ngIf="smartRecommendationsBoolean">
           <button class="select-mannual" (click)="scrollToAccommodationDash()">
             Make Your Own Selection
           </button>
@@ -1775,7 +1775,7 @@
     </p-dialog>
 
     <div class="col-12">
-      <div class="d-flex align-items-start" style="gap: 8px; margin-top: 15px">
+      <div *ngIf="smartRecommendationsBoolean" class="d-flex align-items-start" style="gap: 8px; margin-top: 15px">
         <div style="width: 16%" class="smart-cion">
           <div class="smart-card">
             <img
@@ -1794,8 +1794,8 @@
         </div>
       </div>
     </div>
-    <div class="d-flex scroll-container">
-      <ng-container *ngIf="smartLoading">
+    <div class="d-flex scroll-container" *ngIf="smartRecommendationsBoolean">
+      <ng-container *ngIf="smartLoading && smartRecommendationsBoolean">
         <div
           class="card smart-recommend-card skeleton-card"
           style="width: 100%"

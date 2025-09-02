@@ -182,6 +182,7 @@ currentPage = 0; // page index
   successMessagewhatsapp: string;
   errorMessagewhatsapp: string;
   errorMessagePrivate: string;
+  smartRecommendationsBoolean: any;
   toggleListingDetails() {
     this.showListingDetails = !this.showListingDetails;
   }
@@ -1336,6 +1337,20 @@ if (storedBooking) {
     this.city = this.token.getProperty()?.address?.city;
     if (this.token.getProperty() !== null) {
       this.propertyDetail = this.token.getProperty();
+          if (
+      this.token.getProperty() !== undefined &&
+      this.token.getProperty() !== null
+    ) {
+      this.propertyData = this.token.getProperty();
+                   this.accommodationData =
+          this.propertyData.businessServiceDtoList?.filter(
+            (entry) => entry.name === 'Accommodation'
+          );
+        this.accommodationData.forEach((element) => {
+          this.smartRecommendationsBoolean = element.smartRecommendation;
+        });
+    }
+
       if (this.activeForGoogleHotelCenter === true) {
         this.accommodationData =
           this.propertyDetail.businessServiceDtoList?.filter(
