@@ -33,6 +33,8 @@ export class HeaderListingdetailsoneComponent implements OnInit {
   websiteUrlBookingEngine: boolean =  false;
   urlLocation: boolean;
   dynamicPropertyId: number;
+  dynamicSource: any;
+  externalSite: string;
 
   // gotopropertydetail() {
   //   let PropertyUrl = this.token.getPropertyUrl();
@@ -137,6 +139,7 @@ checkBookingEngineFlag(): void {
     this.dynamicLocality = this.businessUser.address?.locality;
     this.dynamicStreetNumber = this.businessUser.address?.streetNumber;
     this.dynamicCountryName = this.businessUser.address?.country;
+    this.externalSite = 'WebSite';
     // The recipient's phone number (optional)
     const message =
       '*This is an Enquiry from :* The HotelMate Website' +
@@ -145,6 +148,9 @@ checkBookingEngineFlag(): void {
       ',' +
       '\nProperty Id: ' +
       this.dynamicPropertyId +
+      ',' +
+      '\nexternalSite: ' +
+      this.externalSite +
       ',' +
       '\nAddress: ' +
       this.dynamicStreetNumber +
