@@ -2455,7 +2455,7 @@ getGrandTaxTotal(): number {
       });
 
     } else {
-       this.daterangefilter?.forEach((_, i) => {
+       this.daterangefilterSeo?.forEach((_, i) => {
       taxTotal += this.calculateTaxAmount(
         (plan.actualRoomPrice * plan.selectedRoomnumber) +
         (plan.SingleDayextraPersonAdultCountAmount + plan.SingleDayextraPersonChildCountAmount),
