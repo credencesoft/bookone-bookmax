@@ -1,4 +1,5 @@
-<df-messenger
+<div [ngClass]="{ 'background-image-website': businessUser?.id === 1965 }">
+  <df-messenger
   location="asia-south1"
   project-id="impactful-name-306810"
   agent-id="e2f46998-246d-4046-aee3-65c992b363ea"
@@ -679,7 +680,7 @@
   </p-dialog>
 </div>
 
-<div class="container-div">
+  <div class="container-div">
   <div
     *ngIf="
       (availableRooms?.length >= 0 && availability == true) || !availability
@@ -4750,7 +4751,7 @@
   <!-- nearby section ends -->
 
   <!-- Add terms and conditions starts here -->
-  <div class="margin-top-30px" *ngIf="policies?.length > 0">
+  <div class="margin-top-30px margin-bottom-30px" *ngIf="policies?.length > 0">
     <div class="row mr-0 ml-0">
       <div class="col-lg-12 pl-0 pr-0">
         <div
@@ -4799,6 +4800,8 @@
   </div>
   <!-- Add terms and conditions end here -->
 </div>
+
+
 <script async src="https://www.googletagmanager.com/gtag/js?id=AW-10904222935"
     ng-if="bookingConfirmed && isEnquiry"></script>
   <script>
@@ -4808,3 +4811,5 @@
 
     gtag('config', 'AW-10904222935');
   </script>
+</div>
+

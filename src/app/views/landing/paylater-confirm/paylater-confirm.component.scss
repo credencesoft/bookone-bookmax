@@ -297,6 +297,15 @@ margin-bottom: 10px;
       color: #0096d6;
       font-size: 16px;
     }
+    .background-image-website {
+    background: url("https://mayurhotels.in/assets/images/page_bg.jpg") no-repeat center top fixed;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center top;
+    background-attachment: fixed;
+    min-height: 100vh;
+    width: 100%;
+}
 @media (min-width: 601px) and (max-width: 1180px) {
   .container-div {
     margin: auto;

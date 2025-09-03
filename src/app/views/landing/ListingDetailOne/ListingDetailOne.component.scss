@@ -913,7 +913,18 @@ display: flex;
       color: var(--secondary, #0b01cc);
       border: 1px solid var(--secondary, #0b01cc);
 }
-
+.background-image-website {
+    background: url("https://mayurhotels.in/assets/images/page_bg.jpg") no-repeat center top fixed;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center top;
+    background-attachment: fixed;
+    min-height: 100vh;
+    width: 100%;
+}
+.margin-bottom-30px {
+  margin-bottom: 30px;
+}
 /* Custom checkboxes */
 .custom-checkbox label {
   position: relative;
@@ -1589,6 +1600,9 @@ position: absolute;
   .website-web-vision {
     display: none;
   }
+  .terms-container {
+    margin-bottom: 190px !important;
+}
      df-messenger {
     z-index: 1011;
     position: fixed;
@@ -1983,7 +1997,9 @@ text-align: center;
 
 
 @media (min-width: 1181px){
-
+.terms-container {
+    margin-bottom: 68px !important;
+}
   .website-mob-vision {
     display: none;
   }
