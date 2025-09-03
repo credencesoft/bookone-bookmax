@@ -2396,7 +2396,7 @@ getTotalNonGhCPrice(plan: any): number {
     let taxTotalTwo = 0;
     this.selectedPlansSummary.forEach((plan: any) => {
     if (plan.planName != 'GHC') {
-      this.daterangefilter?.forEach((_, i) => {
+      this.daterangefilterSeo?.forEach((_, i) => {
       taxTotalTwo += this.calculateTaxAmount(
         (plan.actualRoomPrice * plan.selectedRoomnumber) +
         (plan.SingleDayextraPersonAdultCountAmount + plan.SingleDayextraPersonChildCountAmount),
@@ -2455,7 +2455,7 @@ getGrandTaxTotal(): number {
       });
 
     } else {
-       this.daterangefilter?.forEach((_, i) => {
+       this.daterangefilterSeo?.forEach((_, i) => {
       taxTotal += this.calculateTaxAmount(
         (plan.actualRoomPrice * plan.selectedRoomnumber) +
         (plan.SingleDayextraPersonAdultCountAmount + plan.SingleDayextraPersonChildCountAmount),
@@ -5032,7 +5032,7 @@ onBookNow() {
               let taxTotalTwo = 0;
               this.selectedPlansSummary.forEach((plan: any) => {
               if (plan.planName != 'GHC') {
-                this.daterangefilter?.forEach((_, i) => {
+                this.daterangefilterSeo?.forEach((_, i) => {
                 taxTotalTwo += this.calculateTaxAmount(
                   (plan.actualRoomPrice * plan.selectedRoomnumber) +
                   (plan.SingleDayextraPersonAdultCountAmount + plan.SingleDayextraPersonChildCountAmount),
@@ -5665,7 +5665,11 @@ onBookNow() {
         (response) => {
           this.loaderHotelBooking = false;
           this.availableRooms = response.body.roomList;
-                    this.availableRooms = this.availableRooms.filter(room =>
+            this.availableRooms = response.body.roomList.sort(
+            (a: any, b: any) => b.roomOnlyPrice - a.roomOnlyPrice
+          );
+
+          this.availableRooms = this.availableRooms.filter(room =>
           room.ratesAndAvailabilityDtos?.length > 0 &&
           (room.ratesAndAvailabilityDtos[0]?.stopSellOBE === null || room.ratesAndAvailabilityDtos[0]?.stopSellOBE === false) &&
           (room.ratesAndAvailabilityDtos[0]?.stopSellOTA === null || room.ratesAndAvailabilityDtos[0]?.stopSellOTA === false)
