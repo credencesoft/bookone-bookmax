@@ -693,8 +693,10 @@ closeTermsUniquePopup() {
     externalreservation.channelId = '9';
     externalreservation.lastModifiedBy = 'hotelmate';
     externalreservation.modeOfPayment = 'Cash';
-    externalreservation.otaReservationId =
-      this.propertyData.shortName + '-BE-' + booking.id;
+    let propertyReservationNumber = booking.propertyReservationNumber;
+    let updatedCode = propertyReservationNumber.replace("-B-", "-BE-");
+    externalreservation.otaReservationId = updatedCode;
+    console.log('externalreservation.otaReservationId is',externalreservation.otaReservationId);
     externalreservation.propertyId = booking.propertyId.toString();
     externalreservation.propertyName = booking.businessName;
     externalreservation.firstName = booking.firstName;
@@ -3556,6 +3558,8 @@ if (bookingSummaryStr) {
     return iconMap[name.trim()] || 'fa-circle-question'; // fallback icon
   }
   sendWhatsappMessageToTHM(booking) {
+    let propertyReservationNumber = booking.propertyReservationNumber;
+    let updatedCode = propertyReservationNumber.replace("-B-", "-BE-");
       this.parameterss2 = [];
   this.parameterss15 = [];
   this.components = [];
@@ -3586,7 +3590,7 @@ if (bookingSummaryStr) {
 
     this.parametertype2 = new Para();
     (this.parametertype2.type = 'text'),
-      (this.parametertype2.text = String(booking.propertyReservationNumber));
+      (this.parametertype2.text = updatedCode);
     this.parameterss2.push(this.parametertype2);
 
     this.parametertype2 = new Para();
@@ -3695,6 +3699,8 @@ if (bookingSummaryStr) {
       );
   }
   sendWhatsappMessageToTHM1(booking) {
+      let propertyReservationNumber = booking.propertyReservationNumber;
+    let updatedCode = propertyReservationNumber.replace("-B-", "-BE-");
       this.parameterss2 = [];
   this.parameterss15 = [];
   this.components = [];
@@ -3725,7 +3731,7 @@ if (bookingSummaryStr) {
 
     this.parametertype2 = new Para();
     (this.parametertype2.type = 'text'),
-      (this.parametertype2.text = String(booking.propertyReservationNumber));
+      (this.parametertype2.text = updatedCode);
     this.parameterss2.push(this.parametertype2);
 
     this.parametertype2 = new Para();
@@ -3835,6 +3841,8 @@ if (bookingSummaryStr) {
   }
 
   sendWhatsappMessageToTHM2(booking) {
+     let propertyReservationNumber = booking.propertyReservationNumber;
+    let updatedCode = propertyReservationNumber.replace("-B-", "-BE-");
       this.parameterss2 = [];
   this.parameterss15 = [];
   this.components = [];
@@ -3865,7 +3873,7 @@ if (bookingSummaryStr) {
 
     this.parametertype2 = new Para();
     (this.parametertype2.type = 'text'),
-      (this.parametertype2.text = String(booking.propertyReservationNumber));
+      (this.parametertype2.text = updatedCode);
     this.parameterss2.push(this.parametertype2);
 
     this.parametertype2 = new Para();
@@ -3974,6 +3982,8 @@ if (bookingSummaryStr) {
       );
   }
     sendWhatsappMessageToTHM3(booking) {
+       let propertyReservationNumber = booking.propertyReservationNumber;
+    let updatedCode = propertyReservationNumber.replace("-B-", "-BE-");
       this.parameterss2 = [];
   this.parameterss15 = [];
   this.components = [];
@@ -4004,7 +4014,7 @@ if (bookingSummaryStr) {
 
     this.parametertype2 = new Para();
     (this.parametertype2.type = 'text'),
-      (this.parametertype2.text = String(booking.propertyReservationNumber));
+      (this.parametertype2.text = updatedCode);
     this.parameterss2.push(this.parametertype2);
 
     this.parametertype2 = new Para();
