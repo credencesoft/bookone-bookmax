@@ -5665,7 +5665,11 @@ onBookNow() {
         (response) => {
           this.loaderHotelBooking = false;
           this.availableRooms = response.body.roomList;
-                    this.availableRooms = this.availableRooms.filter(room =>
+            this.availableRooms = response.body.roomList.sort(
+            (a: any, b: any) => b.roomOnlyPrice - a.roomOnlyPrice
+          );
+
+          this.availableRooms = this.availableRooms.filter(room =>
           room.ratesAndAvailabilityDtos?.length > 0 &&
           (room.ratesAndAvailabilityDtos[0]?.stopSellOBE === null || room.ratesAndAvailabilityDtos[0]?.stopSellOBE === false) &&
           (room.ratesAndAvailabilityDtos[0]?.stopSellOTA === null || room.ratesAndAvailabilityDtos[0]?.stopSellOTA === false)
