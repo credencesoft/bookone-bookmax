@@ -5690,31 +5690,61 @@ onBookNow() {
           };
 
           const roomList = response.body.roomList;
-
-          this.hotelBookingService.getRecommendations(queryParams, roomList).subscribe({
+          if(this.smartRecommendationsBoolean) {
+            this.hotelBookingService.getRecommendations(queryParams, roomList).subscribe({
             next: (res) => {
               this.smartLoading = false;
               this.smartRecommendations = res;
                 this.categories = [];
+['bestFitOptions', 'luxuryOptions', 'comfortOptions', 'budgetOptions'].forEach(cat => {
+          if (this.smartRecommendations?.[cat]) {
+            this.smartRecommendations[cat].forEach((room: any) => {
+              room.plans.sort((a: any, b: any) => a.totalPrice - b.totalPrice);
+            });
+          }
+        });
 
-                if (this.smartRecommendations?.bestFitOptions?.length) {
-                  this.categories.push({ key: 'bestFitOptions', label: 'Best-Fit' });
-                }
-                if (this.smartRecommendations?.luxuryOptions?.length) {
-                  this.categories.push({ key: 'luxuryOptions', label: 'Luxury' });
-                }
-                if (this.smartRecommendations?.comfortOptions?.length) {
-                  this.categories.push({ key: 'comfortOptions', label: 'Comfort' });
-                }
-                if (this.smartRecommendations?.budgetOptions?.length) {
-                  this.categories.push({ key: 'budgetOptions', label: 'Budget' });
-                }
+        // Build and sort categories
+        const tempCategories: { key: string; label: string; minPrice: number }[] = [];
+
+        if (this.smartRecommendations?.bestFitOptions?.length) {
+          tempCategories.push({
+            key: 'bestFitOptions',
+            label: 'Best-Fit',
+            minPrice: this.getCategoryMinPrice(this.smartRecommendations.bestFitOptions)
+          });
+        }
+        if (this.smartRecommendations?.luxuryOptions?.length) {
+          tempCategories.push({
+            key: 'luxuryOptions',
+            label: 'Luxury',
+            minPrice: this.getCategoryMinPrice(this.smartRecommendations.luxuryOptions)
+          });
+        }
+        if (this.smartRecommendations?.comfortOptions?.length) {
+          tempCategories.push({
+            key: 'comfortOptions',
+            label: 'Comfort',
+            minPrice: this.getCategoryMinPrice(this.smartRecommendations.comfortOptions)
+          });
+        }
+        if (this.smartRecommendations?.budgetOptions?.length) {
+          tempCategories.push({
+            key: 'budgetOptions',
+            label: 'Budget',
+            minPrice: this.getCategoryMinPrice(this.smartRecommendations.budgetOptions)
+          });
+        }
+
+        this.categories = tempCategories.sort((a, b) => b.minPrice - a.minPrice);
             },
             error: (err) => {
                this.smartLoading = false;
               console.error('Error fetching recommendations:', err);
             }
           });
+          }
+
 
           // Sort the rooms so that rooms with the "Economy" rate plan come first
           // const sortedRooms = this.availableRooms.sort((a, b) => {
@@ -6034,6 +6064,37 @@ onBookNow() {
     // this.sortAndLimitRoomsOne();
     this.token.clearAllTaxArray();
     this.getTotalTaxFee();
+  }
+    getCategoryMinPrice(optionRooms: any[]): number {
+    let min = Infinity;
+    optionRooms.forEach(room => {
+      room.plans.forEach((plan: any) => {
+        if (plan.totalPrice < min) {
+          min = plan.totalPrice;
+        }
+      });
+    });
+    return min;
+  }
+
+  // get cheapest plan from a category
+  getCheapestPlan(categoryKey: string) {
+    const rooms = this.smartRecommendations[categoryKey] || [];
+    let cheapestPlan: any = null;
+
+    rooms.forEach(room => {
+      room.plans.forEach((plan: any) => {
+        if (!cheapestPlan || plan.totalPrice < cheapestPlan.totalPrice) {
+          cheapestPlan = {
+            ...plan,
+            roomName: room.roomName,
+            availableCount: room.availableCount
+          };
+        }
+      });
+    });
+
+    return cheapestPlan;
   }
 isPlanSelected(planName: string): boolean {
   return this.selectedPlansSummary.some(
