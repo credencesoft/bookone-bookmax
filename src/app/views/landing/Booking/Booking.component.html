@@ -1,3 +1,5 @@
+<div [ngClass]="{ 'background-image-website': businessUser?.id === 1965 }">
+
 <div class="pt-5" *ngIf="!bookingConfirmed && !isEnquiry" style="display: none">
   <div
     class="container-fluid pt-5"
@@ -660,7 +662,7 @@
 <!-- Booking Summry section -->
 <div *ngIf="!bookingConfirmed">
 
-  <div class="booking-checkout-web-view">
+    <div class="booking-checkout-web-view">
     <div style="margin-top: 10px">
       <div
         class="d-flex align-items-center container-div"
@@ -2040,3 +2042,4 @@
   <span class="loader-booking "></span>
 </div>
 
+</div>

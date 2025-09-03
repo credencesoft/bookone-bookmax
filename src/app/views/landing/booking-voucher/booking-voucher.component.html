@@ -1,4 +1,5 @@
-<app-Header-Listingdetailsone [businessUser]="businessUser">
+<div [ngClass]="{ 'background-image-website': businessUser?.id === 1965 }">
+  <app-Header-Listingdetailsone [businessUser]="businessUser">
 </app-Header-Listingdetailsone>
 
 <div class="popup-container" *ngIf="copyTextOne">
@@ -937,3 +938,5 @@
     <div class="popup-container" *ngIf="copyTextOne">
       <div class="popup-content">Enquiry ID copied successfully!</div>
     </div>
+</div>
+
