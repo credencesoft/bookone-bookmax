@@ -2396,7 +2396,7 @@ getTotalNonGhCPrice(plan: any): number {
     let taxTotalTwo = 0;
     this.selectedPlansSummary.forEach((plan: any) => {
     if (plan.planName != 'GHC') {
-      this.daterangefilter?.forEach((_, i) => {
+      this.daterangefilterSeo?.forEach((_, i) => {
       taxTotalTwo += this.calculateTaxAmount(
         (plan.actualRoomPrice * plan.selectedRoomnumber) +
         (plan.SingleDayextraPersonAdultCountAmount + plan.SingleDayextraPersonChildCountAmount),
@@ -5032,7 +5032,7 @@ onBookNow() {
               let taxTotalTwo = 0;
               this.selectedPlansSummary.forEach((plan: any) => {
               if (plan.planName != 'GHC') {
-                this.daterangefilter?.forEach((_, i) => {
+                this.daterangefilterSeo?.forEach((_, i) => {
                 taxTotalTwo += this.calculateTaxAmount(
                   (plan.actualRoomPrice * plan.selectedRoomnumber) +
                   (plan.SingleDayextraPersonAdultCountAmount + plan.SingleDayextraPersonChildCountAmount),
