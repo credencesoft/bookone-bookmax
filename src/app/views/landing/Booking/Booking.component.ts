@@ -1544,7 +1544,7 @@ if (bookingSummaryStr) {
     this.enquiryForm.discountAmountPercentage = this.booking.discountPercentage;
     this.enquiryForm.status = 'Enquiry';
     this.enquiryForm.specialNotes = this.booking.notes;
-    this.enquiryForm.propertyId = 107;
+    this.enquiryForm.propertyId = 763;
     this.enquiryForm.currency = this.token.getProperty().localCurrency;
     this.enquiryForm.taxDetails = this.token
       .getProperty()
@@ -1755,7 +1755,7 @@ if (bookingSummaryStr) {
     enquiryForm.accommodationType = this.token.getProperty().businessType;
     enquiryForm.status = 'Enquiry';
     enquiryForm.specialNotes = booking.notes || '';
-    enquiryForm.propertyId = 107;
+    enquiryForm.propertyId = 763;
     enquiryForm.bookingPropertyId = this.token.getProperty().id;
     enquiryForm.propertyName = this.token.getProperty().name;
     enquiryForm.taxDetails = this.token
@@ -1904,21 +1904,28 @@ if (bookingSummaryStr) {
       this.payment.propertyId = this.businessUser.id;
       this.booking.taxAmount = firstPlan?.taxPercentageperroom;
       if (this.businessServiceDto.advanceAmountPercentage === 100) {
-        this.payment.taxAmount = Number(
+         this.payment.taxAmount = Number(
           (
-            Number(firstPlan?.taxPercentageperroom.toFixed(2))
+            Number(this.bookingSummaryDetails?.totalTax.toFixed(2))
           ).toFixed(2)
         );
         this.payment.netReceivableAmount = Number(
           (
-            Number(firstPlan?.price.toFixed(2)) +
-            Number(firstPlan?.taxPercentageperroom.toFixed(2))
+            Number((this.bookingSummaryDetails?.totalAmount).toFixed(2))
           ).toFixed(2)
         );
-        this.payment.transactionAmount = this.payment.netReceivableAmount;
-        this.payment.amount = this.payment.netReceivableAmount;
-        this.booking.advanceAmount = this.payment.netReceivableAmount;
-        this.payment.transactionChargeAmount = this.payment.netReceivableAmount;
+        this.payment.transactionAmount = Number(
+          Number((this.bookingSummaryDetails?.totalAmount).toFixed(2))
+        );
+        this.payment.amount = Number(
+          Number((this.bookingSummaryDetails?.totalAmount).toFixed(2))
+        );
+        this.booking.advanceAmount = Number(
+          Number((this.bookingSummaryDetails?.totalAmount).toFixed(2))
+        );
+        this.payment.transactionChargeAmount = Number(
+          Number((this.bookingSummaryDetails?.totalAmount).toFixed(2))
+        );
       } else if (this.businessServiceDto.advanceAmountPercentage === 50) {
         this.payment.taxAmount = Number(
           (
@@ -2113,21 +2120,28 @@ if (bookingSummaryStr) {
       // this.booking.advanceAmount = Number((Number(((this.booking.totalAmount / 100) * 20).toFixed(2)) + Number(((this.totalExtraAmount / 100) * 20).toFixed(2))).toFixed(2));
       // this.payment.transactionChargeAmount = Number((Number(((this.booking.totalAmount / 100) * 20).toFixed(2)) + Number(((this.totalExtraAmount /100) * 20).toFixed(2))).toFixed(2));
       if (this.businessServiceDto.advanceAmountPercentage === 100) {
-        this.payment.taxAmount = Number(
+         this.payment.taxAmount = Number(
           (
-            Number(firstPlan?.taxPercentageperroom.toFixed(2))
+            Number(this.bookingSummaryDetails?.totalTax.toFixed(2))
           ).toFixed(2)
         );
         this.payment.netReceivableAmount = Number(
           (
-            Number(firstPlan?.taxPercentageperroom.toFixed(2)) +
-            Number(firstPlan?.price.toFixed(2))
+            Number((this.bookingSummaryDetails?.totalAmount).toFixed(2))
           ).toFixed(2)
         );
-        this.payment.transactionAmount = this.payment.netReceivableAmount;
-        this.payment.amount = this.payment.netReceivableAmount;
-        this.booking.advanceAmount = this.payment.netReceivableAmount;
-        this.payment.transactionChargeAmount = this.payment.netReceivableAmount;
+        this.payment.transactionAmount = Number(
+          Number((this.bookingSummaryDetails?.totalAmount).toFixed(2))
+        );
+        this.payment.amount = Number(
+          Number((this.bookingSummaryDetails?.totalAmount).toFixed(2))
+        );
+        this.booking.advanceAmount = Number(
+          Number((this.bookingSummaryDetails?.totalAmount).toFixed(2))
+        );
+        this.payment.transactionChargeAmount = Number(
+          Number((this.bookingSummaryDetails?.totalAmount).toFixed(2))
+        );
       } else {
         this.payment.taxAmount = Number(
           (
@@ -2176,25 +2190,25 @@ if (bookingSummaryStr) {
       if (this.businessServiceDto.advanceAmountPercentage === 100) {
         this.payment.taxAmount = Number(
           (
-            Number(firstPlan?.taxPercentageperroom.toFixed(2))
+            Number(this.bookingSummaryDetails?.totalTax.toFixed(2))
           ).toFixed(2)
         );
         this.payment.netReceivableAmount = Number(
           (
-            Number((firstPlan?.taxPercentageperroom + firstPlan?.price).toFixed(2))
+            Number((this.bookingSummaryDetails?.totalAmount).toFixed(2))
           ).toFixed(2)
         );
         this.payment.transactionAmount = Number(
-          Number((firstPlan?.taxPercentageperroom + firstPlan?.price).toFixed(2))
+          Number((this.bookingSummaryDetails?.totalAmount).toFixed(2))
         );
         this.payment.amount = Number(
-          Number((firstPlan?.taxPercentageperroom + firstPlan?.price).toFixed(2))
+          Number((this.bookingSummaryDetails?.totalAmount).toFixed(2))
         );
         this.booking.advanceAmount = Number(
-          Number((firstPlan?.taxPercentageperroom + firstPlan?.price).toFixed(2))
+          Number((this.bookingSummaryDetails?.totalAmount).toFixed(2))
         );
         this.payment.transactionChargeAmount = Number(
-          Number((firstPlan?.taxPercentageperroom + firstPlan?.price).toFixed(2))
+          Number((this.bookingSummaryDetails?.totalAmount).toFixed(2))
         );
       } else if (this.businessServiceDto.advanceAmountPercentage === 50) {
         this.payment.taxAmount = Number(
@@ -3468,7 +3482,7 @@ if (bookingSummaryStr) {
     enquiryForm.accommodationType = this.token.getProperty().businessType;
     enquiryForm.status = 'Booked';
     enquiryForm.specialNotes = booking.notes || '';
-    enquiryForm.propertyId = 107;
+    enquiryForm.propertyId = 763;
     enquiryForm.bookingPropertyId = this.token.getProperty().id;
     enquiryForm.propertyName = this.token.getProperty().name;
     enquiryForm.bookingReservationId = matchedBooking?.propertyReservationNumber || '';
@@ -4963,7 +4977,7 @@ if (bookingSummaryStr) {
     this.enquiryForm.discountAmountPercentage = this.booking.discountPercentage;
     this.enquiryForm.status = 'Booked';
     this.enquiryForm.specialNotes = this.booking.notes;
-    this.enquiryForm.propertyId = 107;
+    this.enquiryForm.propertyId = 763;
 
     this.enquiryForm.totalAmount = this.booking.totalAmount;
     // this.enquiryForm.taxDetails = this.booking.taxDetails;
@@ -5347,7 +5361,7 @@ if (bookingSummaryStr) {
     enquiryForm.accommodationType = this.token.getProperty().businessType;
     enquiryForm.status = 'Enquiry';
     enquiryForm.specialNotes = booking.notes || '';
-    enquiryForm.propertyId = 107;
+    enquiryForm.propertyId = 763;
     enquiryForm.bookingPropertyId = this.token.getProperty().id;
     enquiryForm.propertyName = this.token.getProperty().name;
     enquiryForm.taxDetails = this.token
@@ -5429,7 +5443,7 @@ if (bookingSummaryStr) {
 
     bookingForm.noOfRooms = Number(plan.selectedRoomnumber);
     bookingForm.noOfChildren = plan.children;
-    bookingForm.propertyId = 107;
+    bookingForm.propertyId = 763;
     bookingForm.propertyId = this.token.getProperty().id;
     bookingForm.taxDetails = this.token
       .getProperty()

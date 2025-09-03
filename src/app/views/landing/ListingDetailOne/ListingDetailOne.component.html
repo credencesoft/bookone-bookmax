@@ -2519,13 +2519,26 @@
               <div class="col-12 col-lg-7 spacing-manage">
                 <div class="d-flex justify-content-between">
                   <h3 class="margin-top-mobile-30px">{{ room.name }}</h3>
-                  <div>
+                  <div class="d-flex" style="gap:15px">
+                    <div>
                     <img
                       src=" assets/images/profile-pic.svg"
                       alt=""
                       width="17px"
                     />{{ room.maximumOccupancy }}
                   </div>
+                  <div *ngIf="room.noOfChild > 0">
+                    <div style="display: flex; align-items: center;">
+                      <img
+                      src=" assets/images/child.svg"
+                      alt=""
+                      width="14px"
+                      style="margin-right: 2px;"
+                    />{{ room.noOfChild }}
+                    </div>
+                  </div>
+                  </div>
+
                   <!-- <div>380 sq.ft</div> -->
                 </div>
                 <div class="d-block">
@@ -3130,12 +3143,24 @@
               <div class="col-12 col-lg-7 spacing-manage">
                 <div class="d-flex justify-content-between">
                   <h3 class="margin-top-mobile-30px">{{ room.name }}</h3>
-                  <div>
+                  <div class="d-flex" style="gap:15px">
+                    <div>
                     <img
                       src=" assets/images/profile-pic.svg"
                       alt=""
                       width="17px"
                     />{{ room.maximumOccupancy }}
+                  </div>
+                  <div *ngIf="room.noOfChild > 0">
+                    <div style="display: flex; align-items: center;">
+                      <img
+                      src=" assets/images/child.svg"
+                      alt=""
+                      width="14px"
+                      style="margin-right: 2px;"
+                    />{{ room.noOfChild }}
+                    </div>
+                  </div>
                   </div>
                 </div>
                 <div class="d-block">
@@ -3806,12 +3831,24 @@
               <div class="col-12 col-lg-7 spacing-manage">
                 <div class="d-flex justify-content-between">
                   <h3 class="margin-top-mobile-30px">{{ room.name }}</h3>
-                  <div>
+                  <div class="d-flex" style="gap:15px">
+                    <div>
                     <img
                       src=" assets/images/profile-pic.svg"
                       alt=""
                       width="17px"
                     />{{ room.maximumOccupancy }}
+                  </div>
+                  <div *ngIf="room.noOfChild > 0">
+                    <div style="display: flex; align-items: center;">
+                      <img
+                      src=" assets/images/child.svg"
+                      alt=""
+                      width="14px"
+                      style="margin-right: 2px;"
+                    />{{ room.noOfChild }}
+                    </div>
+                  </div>
                   </div>
                 </div>
                 <div class="d-block margin-top-30px">
@@ -3966,12 +4003,24 @@
               <div class="col-12 col-lg-7 spacing-manage">
                 <div class="d-flex justify-content-between">
                   <h3 class="margin-top-mobile-30px">{{ room.name }}</h3>
-                  <div>
+                  <div class="d-flex" style="gap:15px">
+                    <div>
                     <img
                       src=" assets/images/profile-pic.svg"
                       alt=""
                       width="17px"
                     />{{ room.maximumOccupancy }}
+                  </div>
+                  <div *ngIf="room.noOfChild > 0">
+                    <div style="display: flex; align-items: center;">
+                      <img
+                      src=" assets/images/child.svg"
+                      alt=""
+                      width="14px"
+                      style="margin-right: 2px;"
+                    />{{ room.noOfChild }}
+                    </div>
+                  </div>
                   </div>
                 </div>
                 <div class="d-block margin-top-30px">

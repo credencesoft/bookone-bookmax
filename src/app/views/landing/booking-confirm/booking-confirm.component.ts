@@ -635,7 +635,7 @@ checkValidCouponOrNot(couponList?){
               );
             } else if (this.businessServiceDto.advanceAmountPercentage === 100) {
               booking.advanceAmount = Number(
-                Number((firstPlan?.taxPercentageperroom + firstPlan?.price).toFixed(2))
+                Number((plan.price + plan.taxPercentageperroom).toFixed(2))
               );
             } else {
               booking.advanceAmount = Number(
@@ -647,6 +647,11 @@ checkValidCouponOrNot(couponList?){
             }
           }
         }
+    if (this.businessServiceDto.advanceAmountPercentage === 100) {
+              booking.advanceAmount = Number(
+                Number((plan.price + plan.taxPercentageperroom).toFixed(2))
+              );
+    }
     booking.roomId = plan.roomId;
     booking.noOfPersons = plan.adults;
     booking.firstName = this.booking.firstName;
