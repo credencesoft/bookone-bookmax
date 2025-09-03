@@ -109,6 +109,25 @@ checkBookingEngineFlag(): void {
   const bookingEngineFlag = sessionStorage.getItem('BookingEngine');
   this.websiteUrlBookingEngine = bookingEngineFlag === 'true';
 }
+  getFormattedNumber(): string {
+    const rawNumber = this.websiteUrlBookingEngine
+      ? this.businessUser?.mobile
+      : '9040785705';
+
+    if (!rawNumber) return '';
+
+    // Remove non-digits
+    let digits = rawNumber.replace(/\D/g, '');
+
+    // If it's 10 digits → format like 8100 21 21 21
+    if (digits.length === 10) {
+      return digits.replace(/(\d{4})(\d{2})(\d{2})(\d{2})/, '$1 $2 $3 $4');
+    }
+
+    // Otherwise just return original
+    return rawNumber;
+  }
+
   toggleListingDetails() {
     this.showListingDetails = !this.showListingDetails;
     this.isdone = true;
