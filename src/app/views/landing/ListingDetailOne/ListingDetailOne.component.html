@@ -1520,7 +1520,7 @@
         </div>
       </div>
       <div class="col-5">
-        <div class="d-flex align-items-start" style="gap: 8px">
+        <div class="d-flex align-items-start" style="gap: 8px" *ngIf="smartRecommendationsBoolean">
           <div>
             <div class="smart-card">
               <img
@@ -1530,7 +1530,7 @@
               />
             </div>
           </div>
-          <div>
+          <div *ngIf="smartRecommendationsBoolean">
             <div class="smart-recommend">Smart Recommendations</div>
             <div class="smart-recommend-1" *ngIf="smartLoading">
               Please wait we are fetching the best options for you!
@@ -1540,7 +1540,7 @@
             </div>
           </div>
         </div>
-        <ng-container *ngIf="smartLoading">
+        <ng-container *ngIf="smartLoading && smartRecommendationsBoolean">
           <div
             class="card smart-recommend-card skeleton-card"
             *ngFor="let skeleton of [1, 2]"
@@ -1560,7 +1560,7 @@
           </div>
         </ng-container>
 
-        <ng-container *ngIf="!smartLoading">
+        <ng-container *ngIf="!smartLoading && smartRecommendationsBoolean">
           <div *ngFor="let cat of currentCategories">
             <div
               class="card smart-recommend-card"
@@ -1575,7 +1575,7 @@
                 "
               >
                 <ng-container *ngIf="last">
-                  <ng-container *ngFor="let plan of room.plans">
+                  <ng-container *ngIf="getCheapestPlan(cat.key) as plan">
                     <div class="d-flex justify-content-center" style="gap: 8px">
                       <div class="width-49 left-shift">
                         <h5
@@ -1633,7 +1633,8 @@
                             src=" assets/images/combo-ded-one.svg"
                             alt=""
                           />&nbsp;
-                          <small>{{ room?.availableCount }} room(s) left</small>
+                          <small  *ngIf="room.availableCount > 5" >Fast-selling</small>
+                          <small  *ngIf="room.availableCount <= 5">{{ room?.availableCount }} room(s) left</small>
                         </div>
                         <div
                           class="room-box-best-fit d-block justify-content-between mb-4"
@@ -1686,7 +1687,7 @@
           </div>
         </ng-container>
 
-        <div class="d-flex justify-content-end margin-top-20px">
+        <div class="d-flex justify-content-end margin-top-20px" *ngIf="smartRecommendationsBoolean">
           <button class="select-mannual" (click)="scrollToAccommodationDash()">
             Make Your Own Selection
           </button>
@@ -1775,7 +1776,7 @@
     </p-dialog>
 
     <div class="col-12">
-      <div class="d-flex align-items-start" style="gap: 8px; margin-top: 15px">
+      <div *ngIf="smartRecommendationsBoolean" class="d-flex align-items-start" style="gap: 8px; margin-top: 15px">
         <div style="width: 16%" class="smart-cion">
           <div class="smart-card">
             <img
@@ -1794,8 +1795,8 @@
         </div>
       </div>
     </div>
-    <div class="d-flex scroll-container">
-      <ng-container *ngIf="smartLoading">
+    <div class="d-flex scroll-container" *ngIf="smartRecommendationsBoolean">
+      <ng-container *ngIf="smartLoading && smartRecommendationsBoolean">
         <div
           class="card smart-recommend-card skeleton-card"
           style="width: 100%"
@@ -1815,293 +1816,66 @@
           </div>
         </div>
       </ng-container>
-      <div
-        class="card smart-recommend-card-bestFit"
-        *ngIf="smartRecommendations?.bestFitOptions?.length"
-      >
-        <ng-container
-          *ngFor="
-            let room of smartRecommendations?.bestFitOptions;
-            let last = last
-          "
-        >
-          <ng-container *ngIf="last">
-            <ng-container *ngFor="let plan of room.plans">
-              <div class="d-flex justify-content-center" style="gap: 8px">
-                <div class="width-49 left-shift">
-                  <h5 class="recommend-font">
-                    <img src=" assets/images/best-fit.svg" alt="" />&nbsp; Best
-                    Fit Options
-                  </h5>
-                  <div class="line-height pricing-best-fit">
-                    &nbsp; &nbsp; ₹ {{ plan?.totalPrice }}
-                  </div>
-                  <div class="line-height">
-                    &nbsp; &nbsp; &nbsp; &nbsp; Total for {{ DiffDate }} nights
-                  </div>
-                  <div class="line-height">
-                    &nbsp; &nbsp; &nbsp; &nbsp;
-                    <img src=" assets/images/combo-star-one.svg" alt="" />&nbsp;
-                    <small>Ideal for {{ plan.idealFor.join(", ") }}</small>
-                  </div>
-                </div>
-                <div style="border-right: 1px solid #d9d9d9"></div>
-                <div class="width-49 left-shift">
-                  <div class="margin-bottom-10px">
-                    &nbsp; &nbsp; &nbsp;<img
-                      src=" assets/images/combo-ded-one.svg"
-                      alt=""
-                    />&nbsp;
-                    <small>{{ room?.availableCount }} room(s) left</small>
-                  </div>
-                  <div
-                    class="room-box-best-fit d-block justify-content-between mb-4"
-                  >
-                    <div class="room-details">
-                      <div class="room-title">{{ room?.roomName }}</div>
-                      <ng-container>
-                        <div>₹{{ plan.pricePerNight }} per night</div>
-                      </ng-container>
-                    </div>
-                  </div>
-                  <div
-                    style="
-                      display: flex;
-                      justify-content: end;
-                      margin-top: 10px;
-                      margin-bottom: 10px;
-                    "
-                  >
-                    <button
-                      (click)="onSelectPlanFromSmartCard(plan)"
-                      class="select-mannual"
-                    >
-                      Choose <i class="fa-solid fa-arrow-right"></i>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </ng-container>
-          </ng-container>
-        </ng-container>
-      </div>
+      <div *ngFor="let cat of categories" class="card smart-recommend-card" [ngClass]="'smart-recommend-card-' + cat.key.replace('Options','')">
+  <ng-container *ngFor="let room of smartRecommendations[cat.key]; let last = last">
+    <ng-container *ngIf="last">
+      <ng-container *ngFor="let plan of room.plans">
+        <div class="d-flex justify-content-center" style="gap: 8px">
+          <div class="width-49 left-shift">
 
-      <div
-        class="card smart-recommend-card-luxury"
-        *ngIf="smartRecommendations?.luxuryOptions?.length"
-      >
-        <ng-container
-          *ngFor="
-            let room of smartRecommendations?.luxuryOptions;
-            let last = last
-          "
-        >
-          <ng-container *ngIf="last">
-            <ng-container *ngFor="let plan of room.plans">
-              <div class="d-flex justify-content-center" style="gap: 8px">
-                <div class="width-49 left-shift">
-                  <h5 class="recommend-font">
-                    <img src=" assets/images/luxury-crown.svg" alt="" />&nbsp;
-                    Luxury Combo
-                  </h5>
-                  <div class="line-height pricing-best-fit">
-                    &nbsp; &nbsp; ₹ {{ plan?.totalPrice }}
-                  </div>
-                  <div class="line-height">
-                    &nbsp; &nbsp; &nbsp; &nbsp; Total for {{ DiffDate }} nights
-                  </div>
-                  <div class="line-height">
-                    &nbsp; &nbsp; &nbsp; &nbsp;
-                    <img src=" assets/images/luxury-star.svg" alt="" />&nbsp;
-                    <small>Ideal for {{ plan.idealFor.join(", ") }}</small>
-                  </div>
-                </div>
-                <div style="border-right: 1px solid #d9d9d9"></div>
-                <div class="width-49 left-shift">
-                  <div class="margin-bottom-10px">
-                    &nbsp; &nbsp; &nbsp;<img
-                      src=" assets/images/luxury-bed.svg"
-                      alt=""
-                    />&nbsp;
-                    <small>{{ room?.availableCount }} room(s) left</small>
-                  </div>
-                  <div
-                    class="room-box-best-fit-luxury d-block justify-content-between mb-4"
-                  >
-                    <div class="room-details">
-                      <div class="room-title">{{ room?.roomName }}</div>
-                      <ng-container>
-                        <div>₹{{ plan.pricePerNight }} per night</div>
-                      </ng-container>
-                    </div>
-                  </div>
-                  <div
-                    style="
-                      display: flex;
-                      justify-content: end;
-                      margin-top: 10px;
-                      margin-bottom: 10px;
-                    "
-                  >
-                    <button
-                      (click)="onSelectPlanFromSmartCard(plan)"
-                      class="select-mannual"
-                    >
-                      Choose <i class="fa-solid fa-arrow-right"></i>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </ng-container>
-          </ng-container>
-        </ng-container>
-      </div>
+            <!-- Category headings with icons -->
+            <h5 class="recommend-font" *ngIf="cat.key === 'bestFitOptions'">
+              <img src="assets/images/best-fit.svg" alt="" />&nbsp; Best Fit Options
+            </h5>
+            <h5 class="recommend-font" *ngIf="cat.key === 'luxuryOptions'">
+              <img src="assets/images/luxury-crown.svg" alt="" />&nbsp; Luxury Combo
+            </h5>
+            <h5 class="recommend-font" *ngIf="cat.key === 'comfortOptions'">
+              <img src="assets/images/sofa.svg" alt="" />&nbsp; Comfort Combo
+            </h5>
+            <h5 class="recommend-font" *ngIf="cat.key === 'budgetOptions'">
+              <img src="assets/images/budget.svg" alt="" />&nbsp; Budget Combo
+            </h5>
 
-      <div
-        class="card smart-recommend-card-comfort"
-        *ngIf="smartRecommendations?.comfortOptions?.length"
-      >
-        <ng-container
-          *ngFor="
-            let room of smartRecommendations?.comfortOptions;
-            let last = last
-          "
-        >
-          <ng-container *ngIf="last">
-            <ng-container *ngFor="let plan of room.plans">
-              <div class="d-flex justify-content-center" style="gap: 8px">
-                <div class="width-49 left-shift">
-                  <h5 class="recommend-font">
-                    <img src="assets/images/sofa.svg" alt="" />&nbsp; Comfort
-                    Combo
-                  </h5>
-                  <div class="line-height pricing-best-fit">
-                    &nbsp; &nbsp; ₹ {{ plan?.totalPrice }}
-                  </div>
-                  <div class="line-height">
-                    &nbsp; &nbsp; &nbsp; &nbsp; Total for
-                    {{ DiffDate }} nights
-                  </div>
-                  <div class="line-height">
-                    &nbsp; &nbsp; &nbsp; &nbsp;
-                    <img src=" assets/images/best-fit-star.svg" alt="" />&nbsp;
-                    <small>Ideal for {{ plan.idealFor.join(", ") }}</small>
-                  </div>
-                </div>
-                <div style="border-right: 1px solid #d9d9d9"></div>
-                <div class="width-49 left-shift">
-                  <div class="margin-bottom-10px">
-                    &nbsp; &nbsp; &nbsp;<img
-                      src=" assets/images/best-fit-bed.svg"
-                      alt=""
-                    />&nbsp;
-                    <small>{{ room?.availableCount }} room(s) left</small>
-                  </div>
-                  <div
-                    class="room-box-best-fit-comfort d-block justify-content-between mb-4"
-                  >
-                    <div class="room-details">
-                      <div class="room-title">{{ room?.roomName }}</div>
-                      <ng-container>
-                        <div>₹{{ plan.pricePerNight }} per night</div>
-                      </ng-container>
-                    </div>
-                  </div>
-                  <div
-                    style="
-                      display: flex;
-                      justify-content: end;
-                      margin-top: 10px;
-                      margin-bottom: 10px;
-                    "
-                  >
-                    <button
-                      (click)="onSelectPlanFromSmartCard(plan)"
-                      class="select-mannual"
-                    >
-                      Choose <i class="fa-solid fa-arrow-right"></i>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </ng-container>
-          </ng-container>
-        </ng-container>
-      </div>
+            <!-- Price & details -->
+            <div class="line-height pricing-best-fit">&nbsp; &nbsp; ₹ {{ plan?.totalPrice }}</div>
+            <div class="line-height">&nbsp; &nbsp; &nbsp; &nbsp; Total for {{ DiffDate }} nights</div>
+            <div class="line-height">
+              &nbsp; &nbsp; &nbsp; &nbsp;
+              <img src="assets/images/combo-star-one.svg" alt="" />&nbsp;
+              <small>Ideal for {{ plan.idealFor.join(', ') }}</small>
+            </div>
+          </div>
 
-      <div
-        class="card smart-recommend-card-budget"
-        *ngIf="smartRecommendations?.budgetOptions?.length"
-      >
-        <ng-container
-          *ngFor="
-            let room of smartRecommendations.budgetOptions;
-            let last = last
-          "
-        >
-          <ng-container *ngIf="last">
-            <ng-container *ngFor="let plan of room.plans">
-              <div class="d-flex justify-content-center" style="gap: 8px">
-                <div class="width-49 left-shift">
-                  <h5 class="recommend-font">
-                    <img src=" assets/images/budget.svg" alt="" />&nbsp; Budget
-                    Combo
-                  </h5>
-                  <div class="line-height pricing-best-fit">
-                    &nbsp; &nbsp; ₹ {{ plan?.totalPrice }}
-                  </div>
-                  <div class="line-height">
-                    &nbsp; &nbsp; &nbsp; &nbsp; Total for {{ DiffDate }} nights
-                  </div>
-                  <div class="line-height">
-                    &nbsp; &nbsp; &nbsp; &nbsp;
-                    <img
-                      src=" assets/images/budget-combo-star.svg"
-                      alt=""
-                    />&nbsp;
-                    <small>Ideal for {{ plan.idealFor.join(", ") }}</small>
-                  </div>
-                </div>
-                <div style="border-right: 1px solid #d9d9d9"></div>
-                <div class="width-49 left-shift">
-                  <div class="margin-bottom-10px">
-                    &nbsp; &nbsp; &nbsp;<img
-                      src=" assets/images/budget-combo-bed.svg"
-                      alt=""
-                    />&nbsp;
-                    <small>{{ room?.availableCount }} room(s) left</small>
-                  </div>
-                  <div
-                    class="room-box-best-fit-comfort d-block justify-content-between mb-4"
-                  >
-                    <div class="room-details">
-                      <div class="room-title">{{ room?.roomName }}</div>
-                      <ng-container>
-                        <div>₹{{ plan.pricePerNight }} per night</div>
-                      </ng-container>
-                    </div>
-                  </div>
-                  <div
-                    style="
-                      display: flex;
-                      justify-content: end;
-                      margin-top: 10px;
-                      margin-bottom: 10px;
-                    "
-                  >
-                    <button
-                      (click)="onSelectPlanFromSmartCard(plan)"
-                      class="select-mannual"
-                    >
-                      Choose <i class="fa-solid fa-arrow-right"></i>
-                    </button>
-                  </div>
-                </div>
+          <div style="border-right: 1px solid #d9d9d9"></div>
+
+          <!-- Room Details -->
+          <div class="width-49 left-shift">
+            <div class="margin-bottom-10px">
+              &nbsp; &nbsp; &nbsp;<img src="assets/images/combo-ded-one.svg" alt="" />&nbsp;
+               <small  *ngIf="room.availableCount > 5" >Fast-selling</small>
+               <small  *ngIf="room.availableCount <= 5">{{ room?.availableCount }} room(s) left</small>
+            </div>
+            <div class="room-box d-block justify-content-between mb-4" [ngClass]="'room-box-best-fit-' + cat.key.replace('Options','')">
+              <div class="room-details">
+                <div class="room-title">{{ room?.roomName }}</div>
+                <ng-container>
+                  <div>₹{{ plan.pricePerNight }} per night</div>
+                </ng-container>
               </div>
-            </ng-container>
-          </ng-container>
-        </ng-container>
-      </div>
+            </div>
+            <div style="display: flex; justify-content: end; margin-top: 10px; margin-bottom: 10px;">
+              <button (click)="onSelectPlanFromSmartCard(plan)" class="select-mannual">
+                Choose <i class="fa-solid fa-arrow-right"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+    </ng-container>
+  </ng-container>
+</div>
+
     </div>
   </div>
 
@@ -2631,10 +2405,18 @@
                 >
                   <!-- Top Badge -->
                   <div
+                  *ngIf="rates.noOfAvailable <= 5"
                     style="z-index: 1"
                     class="position-absolute top-0 start-0 m-2 px-3 py-1 last-rooms rounded-pill small"
                   >
                     Last {{ rates.noOfAvailable }} room(s)
+                  </div>
+                  <div
+                  *ngIf="rates.noOfAvailable > 5"
+                    style="z-index: 1"
+                    class="position-absolute top-0 start-0 m-2 px-3 py-1 last-rooms rounded-pill small"
+                  >
+                    Fast-selling
                   </div>
 
                   <!-- Room Image -->
@@ -3235,12 +3017,19 @@
                 >
                   <!-- Top Badge -->
                   <div
+                  *ngIf="rates.noOfAvailable <= 5"
                     style="z-index: 1"
                     class="position-absolute top-0 start-0 m-2 px-3 py-1 last-rooms rounded-pill small"
                   >
                     Last {{ rates.noOfAvailable }} room(s)
                   </div>
-
+                  <div
+                  *ngIf="rates.noOfAvailable > 5"
+                    style="z-index: 1"
+                    class="position-absolute top-0 start-0 m-2 px-3 py-1 last-rooms rounded-pill small"
+                  >
+                    Fast-selling
+                  </div>
                   <!-- Room Image -->
                   <!-- Fallback image if imageList is empty or undefined -->
                   <img

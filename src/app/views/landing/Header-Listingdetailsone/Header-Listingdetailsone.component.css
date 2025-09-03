@@ -143,29 +143,55 @@ hr {
 
   /* Unique blink button styles */
 .blinking-unique-btn {
-  padding: 5px;
-  border-radius: 12px;
-  border: 0px solid #6C8003;
-  color: #fff !important;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
-          background-color: #2563EB !important;
-          color:  #fff !important;
-          border: none;
+    padding: 5px;
+    border-radius: 12px;
+    border: 0px solid #6C8003;
+    color: #fff !important;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    background-color: var(--secondary, #0b01cc);
+    color:  var(--tertiary) !important;
+    border: none;
     padding: 14px 28px;
-    letter-spacing: 1px;
-
+    letter-spacing: 3px;
+    display: flex;
+    font-family: Barlow;
+    font-size: 22px;
+    font-weight: 400;
+    align-items: center;
+    padding: 10px 20px 10px 22px;
+    border-radius: 100px;
 }
-
+.blinking-unique-btn:hover {
+    background-color: var(--tertiary, #0b01cc);
+    color:  var(--secondary) !important;
+}
+.icon-embed-small-01 {
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 1.7rem;
+    height: 1.7rem;
+    display: flex
+;
+}
 .Whatsapp-btn-header {
     background: linear-gradient(90deg, #22C55E 0%, #16A34A 100%);
-    color: #fff;
-    font-family: "Poppins";
+    color:  var(--tertiary) !important;
     border: none;
     padding: 14px 28px;
     letter-spacing: 1px;
 border-radius: 12px;
+    letter-spacing: 3px;
+    display: flex;
+    font-family: Barlow;
+    font-size: 22px;
+    font-weight: 400;
+    align-items: center;
+    padding: 10px 20px 10px 22px;
+    border-radius: 100px;
+    text-transform: uppercase;
 }
 /* df-messenger-chat-bubble {
   display: none !important;
@@ -294,6 +320,10 @@ border-radius: 12px;
     .container-div {
       width:95%
     }
+    .icon-embed-small-01 {
+    width: 1.5rem !important;
+    height: 1.5rem !important;
+}
         .vertical-nav{
               width: 100%;
         height: 130vh;
@@ -329,6 +359,15 @@ border-radius: 12px;
     @media (min-width: 1181px) and (max-width: 1460px) {
 .container-div {
   width: 96%;
+}
+.Whatsapp-btn-header {
+      font-size: 20px !important;
+}
+.blinking-unique-btn {
+    font-size: 20px !important;
+}
+.header-section-content {
+    font-size: 20px;
 }
     }
  @media (min-width: 1461px) and (max-width: 1800px) {

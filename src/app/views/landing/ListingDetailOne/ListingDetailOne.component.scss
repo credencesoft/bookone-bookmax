@@ -850,9 +850,21 @@ display: flex;
   margin-bottom: 10px;
 }
 .last-rooms {
-  background-color: #5797e9;
-  color: var(--tertiary) !important;;
+  background-color: var(--secondary, #0b01cc);
+  color: var(--tertiary) !important;
 }
+.btn-book-now:disabled {
+  background-color: var(--primary, #0b01cc);
+  color: var(--tertiary) !important;
+  cursor: not-allowed;
+  opacity: 1;
+}
+.btn-book-now:disabled:hover {
+  background: var(--tertiary) !important;
+  color: var(--primary, #0b01cc) !important;
+  border: 1px solid var(--primary, #0b01cc) !important;
+}
+
 .sold-rooms {
   background-color: red;
   color: var(--tertiary) !important;;
@@ -893,6 +905,7 @@ display: flex;
   border-radius: 8px;
   padding: 10px 0;
   transition: 0.3s;
+  font-family: 'Poppins';
 }
 
 .btn-book-now:hover {

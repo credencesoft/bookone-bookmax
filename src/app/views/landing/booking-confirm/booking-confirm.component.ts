@@ -742,9 +742,9 @@ checkValidCouponOrNot(couponList?){
         );
         this.getSubscriptions(savedBooking);
         this.sendWhatsappMessageToTHM(savedBooking);
-        // this.sendWhatsappMessageToTHM3(savedBooking);
-        // this.sendWhatsappMessageToTHM2(savedBooking);
-        // this.sendWhatsappMessageToTHM1(savedBooking);
+        this.sendWhatsappMessageToTHM3(savedBooking);
+        this.sendWhatsappMessageToTHM2(savedBooking);
+        this.sendWhatsappMessageToTHM1(savedBooking);
                   // this.sendWhatsappMessageToTHM1();
           // this.sendWhatsappMessageToTHM2();
           // this.sendWhatsappMessageToTHM3();
@@ -1198,7 +1198,7 @@ checkValidCouponOrNot(couponList?){
     externalreservation.amountBeforeTax = booking.beforeTaxAmount;
     externalreservation.channelId = '9';
     externalreservation.lastModifiedBy = 'hotelmate';
-    externalreservation.modeOfPayment = 'Cash';
+    externalreservation.modeOfPayment = this.payment?.paymentMode;
     externalreservation.otaReservationId =
       this.propertyData.shortName + '-BE-' + booking.id;
     externalreservation.propertyId = booking.propertyId.toString();
@@ -1282,7 +1282,7 @@ checkValidCouponOrNot(couponList?){
     enquiry.bookingReservationId = matchedBooking?.propertyReservationNumber;
     // Update the status
     enquiry.status = 'Booked';
-    enquiry.propertyId = 763;
+    enquiry.propertyId = 107;
     this.paymentSucess = true
 
     this.hotelBookingService.accommodationEnquiry(enquiry).subscribe({
