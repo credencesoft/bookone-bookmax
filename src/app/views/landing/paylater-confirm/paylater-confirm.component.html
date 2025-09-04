@@ -799,9 +799,9 @@
                             <div>Final Room Tariff:</div>
                             <div>₹ {{ bookingSummaryDetails?.totalPlanPrice - totalDiscount  | number : "1.2-2" }}</div>
                         </div>
-                        <div class="d-flex justify-content-between" >
+                         <div class="d-flex justify-content-between" >
                             <div>Total GST:</div>
-                            <div>₹ {{bookingSummaryDetails?.totalTax | number : "1.2-2" }}</div>
+                            <div>₹ {{ bookingSummaryDetails?.totalTax | number : "1.2-2" }}</div>
                         </div>
                         <div class="d-flex justify-content-between" *ngIf="bookingSummaryDetails?.totalAddOnsPrice > 0">
                             <div>Total Add-on Services Price:</div>
