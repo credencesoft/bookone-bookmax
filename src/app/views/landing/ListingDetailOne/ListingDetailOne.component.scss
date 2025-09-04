@@ -627,6 +627,7 @@ padding: 16px 12px;
 .padding-20px {
   padding: 30px;
 }
+
 .rooms-heading-starts {
   font-weight: 500;
   font-family: "Poppins";
@@ -2020,6 +2021,9 @@ text-align: center;
   .font-size-13px {
       font-size: 13px;
 }
+.ideal-text {
+      font-size: 11px;
+}
 .header-section-content {
     display: flex;
     gap: 36px !important;
@@ -2067,6 +2071,9 @@ text-align: center;
     .font-size-13px {
       font-size: 13px;
 }
+.ideal-text {
+      font-size: 11px;
+}
   .card-data {
     font-size: 11px;
 }
@@ -2113,6 +2120,9 @@ text-align: center;
 @media (min-width: 1461px) and (max-width: 1800px) {
     .font-size-13px {
       font-size: 13px;
+}
+.ideal-text {
+      font-size: 12px;
 }
   .container-div {
     width: 1360px;
