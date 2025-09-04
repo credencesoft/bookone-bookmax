@@ -1346,7 +1346,7 @@ if (storedBooking) {
           this.propertyData.businessServiceDtoList?.filter(
             (entry) => entry.name === 'Accommodation'
           );
-        this.accommodationData.forEach((element) => {
+        this.accommodationData?.forEach((element) => {
           this.smartRecommendationsBoolean = element.smartRecommendation;
         });
     }
@@ -2117,8 +2117,6 @@ resetLastChangedAge(planCode: string) {
   const plan = rates.roomRatePlans.find((p) => p.code === planCode);
 
   if (!plan) return;
-
-  // ✅ Convert all ages to numbers to avoid string comparison issues
   const childAges = (this.childAgesByPlan[planCode] || []).map(a => Number(a));
   const below5Count = childAges.filter(a => !isNaN(a) && a <= 5).length;
   const above5Count = childAges.filter(a => !isNaN(a) && a > 5).length;
