@@ -1,4 +1,4 @@
-<div [ngClass]="{ 'background-image-website': businessUser?.id === 1965 }">
+<div [ngClass]="{ 'background-image-website': businessUser?.id === 3063 }">
 <app-Header-Listingdetailsone [businessUser]="businessUser">
 </app-Header-Listingdetailsone>
 
@@ -533,7 +533,7 @@
             ">
             <div class="d-flex justify-content-between" >
               <div>
-                <div class="mb-1 highlight-text">Enquiry ID</div>
+                <div class="mb-1 highlight-text">Booking ID:</div>
                 <div *ngFor="let booking of bookingsResponseList; let last = last"><span *ngIf="booking?.groupBookingId && last">
                 <b id="copyTexttwo">{{ booking?.groupBookingId }}</b></span
               >

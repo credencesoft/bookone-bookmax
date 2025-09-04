@@ -1204,8 +1204,9 @@ checkValidCouponOrNot(couponList?){
     externalreservation.channelId = '9';
     externalreservation.lastModifiedBy = 'hotelmate';
     externalreservation.modeOfPayment = this.payment?.paymentMode;
-    externalreservation.otaReservationId =
-      this.propertyData.shortName + '-BE-' + booking.id;
+     let propertyReservationNumber = booking.propertyReservationNumber;
+    let updatedCode = propertyReservationNumber.replace("-B-", "-BE-");
+    externalreservation.otaReservationId = updatedCode;
     externalreservation.propertyId = booking.propertyId.toString();
     externalreservation.propertyName = booking.businessName;
     externalreservation.firstName = booking.firstName;
@@ -1749,6 +1750,8 @@ onGenerateVouchers() {
   }
 
   sendWhatsappMessageToTHM(booking) {
+    let propertyReservationNumber = booking.propertyReservationNumber;
+    let updatedCode = propertyReservationNumber.replace("-B-", "-BE-");
         this.parameterss2 = [];
   this.parameterss15 = [];
   this.components = [];
@@ -1805,7 +1808,7 @@ onGenerateVouchers() {
 
             this.parametertype2 = new Para();
             this.parametertype2.type = 'text',
-            this.parametertype2.text = String(booking.propertyReservationNumber);
+            this.parametertype2.text = updatedCode;
             this.parameterss2.push(this.parametertype2);
 
             this.parametertype2 = new Para();
@@ -1907,6 +1910,8 @@ onGenerateVouchers() {
               });
   }
   sendWhatsappMessageToTHM1(booking) {
+    let propertyReservationNumber = booking.propertyReservationNumber;
+    let updatedCode = propertyReservationNumber.replace("-B-", "-BE-");
        this.parameterss2 = [];
   this.parameterss15 = [];
   this.components = [];
@@ -1963,7 +1968,7 @@ onGenerateVouchers() {
 
             this.parametertype2 = new Para();
             this.parametertype2.type = 'text',
-            this.parametertype2.text = String(booking.propertyReservationNumber);
+            this.parametertype2.text = updatedCode;
             this.parameterss2.push(this.parametertype2);
 
             this.parametertype2 = new Para();
@@ -2065,6 +2070,8 @@ onGenerateVouchers() {
               });
   }
     sendWhatsappMessageToTHM2(booking) {
+       let propertyReservationNumber = booking.propertyReservationNumber;
+    let updatedCode = propertyReservationNumber.replace("-B-", "-BE-");
      this.parameterss2 = [];
   this.parameterss15 = [];
   this.components = [];
@@ -2121,7 +2128,7 @@ onGenerateVouchers() {
 
             this.parametertype2 = new Para();
             this.parametertype2.type = 'text',
-            this.parametertype2.text = String(booking.propertyReservationNumber);
+            this.parametertype2.text = updatedCode;
             this.parameterss2.push(this.parametertype2);
 
             this.parametertype2 = new Para();
@@ -2224,6 +2231,8 @@ onGenerateVouchers() {
   }
 
     sendWhatsappMessageToTHM3(booking) {
+          let propertyReservationNumber = booking.propertyReservationNumber;
+    let updatedCode = propertyReservationNumber.replace("-B-", "-BE-");
           this.parameterss2 = [];
   this.parameterss15 = [];
   this.components = [];
@@ -2280,7 +2289,7 @@ onGenerateVouchers() {
 
             this.parametertype2 = new Para();
             this.parametertype2.type = 'text',
-            this.parametertype2.text = String(booking.propertyReservationNumber);
+            this.parametertype2.text = updatedCode;
             this.parameterss2.push(this.parametertype2);
 
             this.parametertype2 = new Para();

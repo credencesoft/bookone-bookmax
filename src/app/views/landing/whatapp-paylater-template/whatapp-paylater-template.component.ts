@@ -47,7 +47,7 @@ export class WhatappPaylaterTemplateComponent implements OnInit {
      private token: TokenStorage,
        private listingService: ListingService,
         private router: Router,
-
+        private hotelBookingService: HotelBookingService,
   ) {
     this.businessUser = new BusinessUser();
     this.bookingOne = this.token.getBookingData();
@@ -123,8 +123,36 @@ export class WhatappPaylaterTemplateComponent implements OnInit {
       console.error("An error occurred:", error);
     }
   }
+callNow() {
+    window.location.href = 'tel:' + 9040785705;
+}
+onGenerateVouchers() {
 
+    this.hotelBookingService.generateBookingVoucher(this.booking.id).subscribe({
+      next: (response) => {
+        console.log(`Voucher generated for bookingId ${this.booking.id}:`, response);
 
+        if (response.voucherUrl) {
+          this.hotelBookingService.downloadVoucher(response.voucherUrl).subscribe({
+            next: (blob) => {
+              const downloadUrl = window.URL.createObjectURL(blob);
+              const a = document.createElement('a');
+              a.href = downloadUrl;
+              a.download = `voucher-${this.booking.id}.pdf`; // filename
+              a.click();
+              window.URL.revokeObjectURL(downloadUrl);
+            },
+            error: (err) => {
+              console.error(`Error downloading voucher for bookingId ${this.booking.id}:`, err);
+            }
+          });
+        }
+      },
+      error: (err) => {
+        console.error(`Error generating voucher for bookingId ${this.booking.id}:`, err);
+      }
+    });
+}
   async getpropertyByid(propertyId:number) {
     try {
       const response = await this.listingService.findByPropertyId(this.propertyId).toPromise();
