@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Booking } from 'src/app/model/booking';
 import { BusinessOfferDto } from 'src/app/model/businessOfferDto';
@@ -40,7 +40,7 @@ export class WhatappPaylaterTemplateComponent implements OnInit {
   taxPercentage: number;
   // totalPercentage: number;
   showMore:boolean  =false
-
+  socialmedialist:any;
   constructor(
     private acRoute: ActivatedRoute,
     private hotelbooking:HotelBookingService,
@@ -48,6 +48,7 @@ export class WhatappPaylaterTemplateComponent implements OnInit {
        private listingService: ListingService,
         private router: Router,
         private hotelBookingService: HotelBookingService,
+        private changeDetectorRefs: ChangeDetectorRef,
   ) {
     this.businessUser = new BusinessUser();
     this.bookingOne = this.token.getBookingData();
@@ -85,6 +86,7 @@ export class WhatappPaylaterTemplateComponent implements OnInit {
         this.bookingdetails = response.body;
         this.booking = this.bookingdetails.bookingDetails;
         this.savedServices = this.bookingdetails.serviceDetails;
+        await this.getPropertyDetailsById(this.booking.propertyId);
         console.log('booking is',this.booking);
         this.booking.taxDetails.forEach(item=>{
           if(item.name === 'CGST'){
@@ -125,6 +127,86 @@ export class WhatappPaylaterTemplateComponent implements OnInit {
   }
 callNow() {
     window.location.href = 'tel:' + 9040785705;
+}
+     async getPropertyDetailsById(id: number) {
+
+
+        try {
+
+
+          const data = await this.listingService?.findByPropertyId(id).toPromise();
+          if (data.status === 200) {
+            this.businessUser = data.body;
+            this.policies = this.businessUser.businessServiceDtoList.filter(
+              (ele) => ele.name === 'Accommodation'
+            );
+            this.calculateServiceHours()
+            this.businessUser?.socialMediaLinks.forEach(element => {
+              this.socialmedialist=element
+            });
+
+
+
+
+            this.token.saveProperty(this.businessUser);
+            this.currency = this.businessUser.localCurrency.toUpperCase();
+
+
+            // this.businessServiceDto = this.businessUser?.businessServiceDtoList.find(
+            //   (data) => data.name === this.businessUser.businessType
+            // );
+
+
+                    if (this.businessUser.primaryColor !== undefined) {
+          this.changeTheme(
+            this.businessUser.primaryColor,
+            this.businessUser.secondaryColor,
+            this.businessUser.tertiaryColor
+          );
+        }
+
+
+            this.changeDetectorRefs.detectChanges();
+          } else {
+            this.router.navigate(["/404"]);
+          }
+        } catch (error) {
+
+
+          // Handle the error appropriately, if needed.
+        }
+      }
+               changeTheme(primary?: string, secondary?: string, tertiary?: string) {
+  // Default colors if none are passed
+  const defaultPrimary = "#232A45";   // blue
+  const defaultSecondary = "#0B01CC"; // green
+  const defaultTertiary = "#fff";  // yellow
+
+  const p = primary || defaultPrimary;
+  const s = secondary || defaultSecondary;
+  const t = tertiary || defaultTertiary;
+
+  document.documentElement.style.setProperty('--primary', p);
+  document.documentElement.style.setProperty('--secondary', s);
+  document.documentElement.style.setProperty('--tertiary', t);
+  document.documentElement.style.setProperty('--button-primary', t);
+
+  document.documentElement.style.setProperty(
+    '--primary-gradient',
+    `linear-gradient(180deg, ${t}, ${s})`
+  );
+  document.documentElement.style.setProperty(
+    '--secondary-gradient',
+    `linear-gradient(312deg, ${p}, ${s})`
+  );
+  document.documentElement.style.setProperty(
+    '--secondary-one-gradient',
+    `linear-gradient(180deg, ${p}, ${s})`
+  );
+  document.documentElement.style.setProperty(
+    '--third-gradient',
+    `linear-gradient(180deg, ${p}, ${s})`
+  );
 }
 onGenerateVouchers() {
 
