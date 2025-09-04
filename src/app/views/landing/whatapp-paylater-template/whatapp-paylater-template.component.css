@@ -8,16 +8,16 @@
   font-family: 'Poppins';
 }
 .needassistance {
-      background-color: #0b01cc;
-    color: #fff !important;
+         background-color: var(--secondary, #0b01cc);
+    color: var(--tertiary) !important;
     font-family: "Poppins";
     border: none;
     padding: 6px 20px;
     border-radius: 8px;
 }
 .saveCopy {
-      background-color: #0b01cc;
-    color: #fff !important;
+          background-color: var(--secondary, #0b01cc);
+    color: var(--tertiary) !important;
     font-family: "Poppins";
     border: none;
     padding: 6px 20px;
