@@ -715,14 +715,13 @@ closeTermsUniquePopup() {
     roomdetailss.noOfRooms = booking.noOfRooms;
     roomdetailss.noOfadult = booking.noOfPersons;
     roomdetailss.noOfchild = booking.noOfChildrenUnder5years + booking.noOfChildren;
-
     roomdetailss.plan = booking.roomRatePlanName;
     roomdetailss.roomRate = booking.roomPrice;
     roomdetailss.roomTypeId = booking.roomId;
     roomdetailss.roomTypeName = booking.roomName;
     this.reservationRoomDetails.push(roomdetailss);
     externalreservation.roomDetails = this.reservationRoomDetails;
-    this.propertyServices = this.savedServices;
+    this.propertyServices = this.bookingSummaryDetails?.propertyServiceListDataOne;
     this.propertyServices?.forEach((ele) => {
       ele.count = ele.quantity;
       ele.id = null;

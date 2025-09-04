@@ -670,8 +670,8 @@ checkValidCouponOrNot(couponList?){
     booking.dayTrip = false;
     booking.discountPercentage = 0;
     booking.discountAmount = 0;
-    booking.extraChildCharge = plan.extraPersonChildCountAmount || 0;
-    booking.extraPersonCharge = plan.extraPersonCharge || 0;
+    booking.extraChildCharge = (plan.extraPersonChildCountAmount) || 0;
+    booking.extraPersonCharge = ((plan.extraPersonAdultCountAmount)) || 0;
     booking.roomTariffBeforeDiscount = plan.price;
     booking.totalAmount = plan.price + plan.taxPercentageperroom;
     booking.bookingAmount = booking.totalAmount;
@@ -1231,7 +1231,7 @@ checkValidCouponOrNot(couponList?){
     roomdetailss.roomTypeName = booking.roomName;
     this.reservationRoomDetails.push(roomdetailss);
     externalreservation.roomDetails = this.reservationRoomDetails;
-    this.propertyServices = this.savedServices;
+    this.propertyServices = this.bookingSummaryDetails?.propertyServiceListDataOne;
     this.propertyServices?.forEach((ele) => {
       ele.count = ele.quantity;
       ele.id = null;
