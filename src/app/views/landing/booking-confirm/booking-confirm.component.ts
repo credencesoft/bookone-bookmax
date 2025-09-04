@@ -672,7 +672,7 @@ checkValidCouponOrNot(couponList?){
     booking.discountAmount = 0;
     booking.extraChildCharge = (plan.extraPersonChildCountAmount) || 0;
     booking.extraPersonCharge = ((plan.extraPersonAdultCountAmount)) || 0;
-    booking.roomTariffBeforeDiscount = plan.price;
+    booking.roomTariffBeforeDiscount = plan.actualRoomPrice;
     booking.totalAmount = plan.price + plan.taxPercentageperroom;
     booking.bookingAmount = booking.totalAmount;
     booking.payableAmount = booking.totalAmount;
