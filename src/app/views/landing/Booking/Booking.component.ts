@@ -1546,7 +1546,7 @@ if (bookingSummaryStr) {
     this.enquiryForm.discountAmountPercentage = this.booking.discountPercentage;
     this.enquiryForm.status = 'Enquiry';
     this.enquiryForm.specialNotes = this.booking.notes;
-    this.enquiryForm.propertyId = 107;
+    this.enquiryForm.propertyId = 763;
     this.enquiryForm.currency = this.token.getProperty().localCurrency;
     this.enquiryForm.taxDetails = this.token
       .getProperty()
@@ -1757,7 +1757,7 @@ if (bookingSummaryStr) {
     enquiryForm.accommodationType = this.token.getProperty().businessType;
     enquiryForm.status = 'Enquiry';
     enquiryForm.specialNotes = booking.notes || '';
-    enquiryForm.propertyId = 107;
+    enquiryForm.propertyId = 763;
     enquiryForm.bookingPropertyId = this.token.getProperty().id;
     enquiryForm.propertyName = this.token.getProperty().name;
     enquiryForm.taxDetails = this.token
@@ -3485,7 +3485,7 @@ if (bookingSummaryStr) {
     enquiryForm.accommodationType = this.token.getProperty().businessType;
     enquiryForm.status = 'Booked';
     enquiryForm.specialNotes = booking.notes || '';
-    enquiryForm.propertyId = 107;
+    enquiryForm.propertyId = 763;
     enquiryForm.bookingPropertyId = this.token.getProperty().id;
     enquiryForm.propertyName = this.token.getProperty().name;
     enquiryForm.bookingReservationId = matchedBooking?.propertyReservationNumber || '';
@@ -4979,7 +4979,7 @@ if (bookingSummaryStr) {
     this.enquiryForm.discountAmountPercentage = this.booking.discountPercentage;
     this.enquiryForm.status = 'Booked';
     this.enquiryForm.specialNotes = this.booking.notes;
-    this.enquiryForm.propertyId = 107;
+    this.enquiryForm.propertyId = 763;
 
     this.enquiryForm.totalAmount = this.booking.totalAmount;
     // this.enquiryForm.taxDetails = this.booking.taxDetails;
@@ -5363,7 +5363,7 @@ if (bookingSummaryStr) {
     enquiryForm.accommodationType = this.token.getProperty().businessType;
     enquiryForm.status = 'Enquiry';
     enquiryForm.specialNotes = booking.notes || '';
-    enquiryForm.propertyId = 107;
+    enquiryForm.propertyId = 763;
     enquiryForm.bookingPropertyId = this.token.getProperty().id;
     enquiryForm.propertyName = this.token.getProperty().name;
     enquiryForm.taxDetails = this.token
@@ -5445,7 +5445,7 @@ if (bookingSummaryStr) {
 
     bookingForm.noOfRooms = Number(plan.selectedRoomnumber);
     bookingForm.noOfChildren = plan.children;
-    bookingForm.propertyId = 107;
+    bookingForm.propertyId = 763;
     bookingForm.propertyId = this.token.getProperty().id;
     bookingForm.taxDetails = this.token
       .getProperty()
