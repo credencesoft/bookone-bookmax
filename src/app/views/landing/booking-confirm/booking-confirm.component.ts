@@ -133,7 +133,7 @@ textToCopyOne: string = 'This is some text to copy';
      expanded: boolean = false;
        totalPlanAdults: number = 0;
   totalPlanChildren: number = 0;
-  groupBookingId: number;
+  groupBookingId: any;
       totalDiscount = 0;
   specialDiscountData: any;
   specialDiscountPercentage: any;
@@ -329,8 +329,7 @@ if (couponCodeValues) {
       : null;
         const plans = bookingSummary.selectedPlansSummary;
           if (plans.length >= 2) {
-        this.groupBookingId = Math.floor(100000 + Math.random() * 900000);
-        console.log('Generated Group Booking ID:', this.groupBookingId);
+            this.groupBookingId = parseInt(sessionStorage.getItem('groupbookingId') || '0', 10);
       }
     this.acRoute.queryParams.subscribe((params) => {
       if (params["businessUser"] !== undefined) {
@@ -766,8 +765,8 @@ checkValidCouponOrNot(couponList?){
               if (res.status === 200) {
                 // this.openSuccessSnackBar(`Payment Details Saved`);
                 this.paymentLoader = false;
-
-                if (this.booking.payableAmount != this.payment.transactionAmount) {
+                if(this.businessServiceDto.advanceAmountPercentage != 100) {
+                  if (this.booking.payableAmount != this.payment.transactionAmount) {
                   if (this.businessServiceDto.advanceAmountPercentage === 50) {
                     this.payment.id = undefined;
                     this.payment.paymentMode = 'Cash';
@@ -821,6 +820,8 @@ checkValidCouponOrNot(couponList?){
                     }
                   });
                   }
+                }
+
 
 
                 // setTimeout(() => {
@@ -1202,7 +1203,9 @@ checkValidCouponOrNot(couponList?){
     } else {
       externalreservation.paidAmount = 0;
     }
-
+    if(this.groupBookingId) {
+      externalreservation.groupBookingId = this.groupBookingId;
+    }
     externalreservation.amountBeforeTax = booking.beforeTaxAmount;
     externalreservation.channelId = '9';
     externalreservation.lastModifiedBy = 'hotelmate';
