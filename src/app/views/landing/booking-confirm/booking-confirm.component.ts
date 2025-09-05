@@ -138,6 +138,7 @@ textToCopyOne: string = 'This is some text to copy';
   specialDiscountData: any;
   specialDiscountPercentage: any;
     websiteUrlBookingEngine: boolean = false;
+  loadingData: boolean = false;
   constructor(
     private http: HttpClient,
     private token: TokenStorage,
@@ -530,6 +531,7 @@ checkValidCouponOrNot(couponList?){
       }
   }
   getPaymentInfoByReffId(referenceNumber){
+
     this.hotelBookingService.getPaymentByReffId(referenceNumber).subscribe((res) => {
       this.payment = res.body[0];
       if (this.payment?.failureCode === null && this.payment.status == 'Paid') {
@@ -757,6 +759,11 @@ checkValidCouponOrNot(couponList?){
         this.payment.referenceNumber = savedBooking.propertyReservationNumber;
         this.payment.externalReference = savedBooking.externalBookingID;
         this.payment.amount = booking.totalAmount;
+         if (this.businessServiceDto.advanceAmountPercentage === 100) {
+          this.payment.transactionAmount = booking.advanceAmount;
+          this.payment.taxAmount = booking.taxAmount;
+          this.payment.netReceivableAmount = booking.advanceAmount;
+          }
 
 
                             this.hotelBookingService
@@ -821,6 +828,9 @@ checkValidCouponOrNot(couponList?){
                   });
                   }
                 }
+                if(this.businessServiceDto.advanceAmountPercentage === 100){
+                  this.payment.id = undefined;
+                }
 
 
 
@@ -866,7 +876,7 @@ checkValidCouponOrNot(couponList?){
     this.booking.available = true;
     this.booking.payableAmount = this.booking.totalAmount;
     this.booking.currency = this.businessUser.localCurrency;
-    this.booking.paymentId = this.payment.id;
+    // this.booking.paymentId = this.payment.id;
     this.booking.fromTime = Number(this.token.getFromTime());
     this.booking.toTime = Number(this.token.getToTime());
 
