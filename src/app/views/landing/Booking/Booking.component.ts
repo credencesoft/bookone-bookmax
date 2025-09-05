@@ -1918,8 +1918,8 @@ if (bookingSummaryStr) {
       this.payment.currency = this.businessUser.localCurrency;
       this.payment.propertyId = this.businessUser.id;
       this.booking.taxAmount = firstPlan?.taxPercentageperroom;
-      if (this.businessServiceDto.advanceAmountPercentage === 100) {
-         this.payment.taxAmount = Number(
+            if (this.businessServiceDto.advanceAmountPercentage === 100) {
+        this.payment.taxAmount = Number(
           (
             Number(this.bookingSummaryDetails?.totalTax.toFixed(2))
           ).toFixed(2)
@@ -1944,13 +1944,13 @@ if (bookingSummaryStr) {
       } else if (this.businessServiceDto.advanceAmountPercentage === 50) {
         this.payment.taxAmount = Number(
           (
-            firstPlan?.taxPercentageperroom
+            Number(((firstPlan?.taxPercentageperroom / 100) * 50).toFixed(2))
           ).toFixed(2)
         );
         this.payment.netReceivableAmount = Number(
-
           (
-            Number((((firstPlan?.taxPercentageperroom + firstPlan?.price)  / 100) * 50).toFixed(2))).toFixed(2)
+            Number((((firstPlan?.taxPercentageperroom + firstPlan?.price) / 100) * 50).toFixed(2))
+          ).toFixed(2)
         );
         this.payment.transactionAmount = Number(
           Number((((firstPlan?.taxPercentageperroom + firstPlan?.price) / 100) * 50).toFixed(2))
@@ -1968,7 +1968,7 @@ if (bookingSummaryStr) {
       } else {
         this.payment.taxAmount = Number(
           (
-            firstPlan?.taxPercentageperroom
+            Number(((firstPlan?.taxPercentageperroom / 100) * 20).toFixed(2))
           ).toFixed(2)
         );
         this.payment.netReceivableAmount = Number(
@@ -2135,7 +2135,7 @@ if (bookingSummaryStr) {
       // this.booking.advanceAmount = Number((Number(((this.booking.totalAmount / 100) * 20).toFixed(2)) + Number(((this.totalExtraAmount / 100) * 20).toFixed(2))).toFixed(2));
       // this.payment.transactionChargeAmount = Number((Number(((this.booking.totalAmount / 100) * 20).toFixed(2)) + Number(((this.totalExtraAmount /100) * 20).toFixed(2))).toFixed(2));
       if (this.businessServiceDto.advanceAmountPercentage === 100) {
-         this.payment.taxAmount = Number(
+        this.payment.taxAmount = Number(
           (
             Number(this.bookingSummaryDetails?.totalTax.toFixed(2))
           ).toFixed(2)
@@ -2157,6 +2157,30 @@ if (bookingSummaryStr) {
         this.payment.transactionChargeAmount = Number(
           Number((this.bookingSummaryDetails?.totalAmount).toFixed(2))
         );
+      } else if (this.businessServiceDto.advanceAmountPercentage === 50) {
+        this.payment.taxAmount = Number(
+          (
+            Number(((firstPlan?.taxPercentageperroom / 100) * 50).toFixed(2))
+          ).toFixed(2)
+        );
+        this.payment.netReceivableAmount = Number(
+          (
+            Number((((firstPlan?.taxPercentageperroom + firstPlan?.price) / 100) * 50).toFixed(2))
+          ).toFixed(2)
+        );
+        this.payment.transactionAmount = Number(
+          Number((((firstPlan?.taxPercentageperroom + firstPlan?.price) / 100) * 50).toFixed(2))
+        );
+        this.payment.amount = Number(
+          Number((((firstPlan?.taxPercentageperroom + firstPlan?.price) / 100) * 50).toFixed(2))
+        );
+
+        this.booking.advanceAmount = Number(
+          Number((((firstPlan?.taxPercentageperroom + firstPlan?.price) / 100) * 50).toFixed(2))
+        );
+        this.payment.transactionChargeAmount = Number(
+          Number((((firstPlan?.taxPercentageperroom + firstPlan?.price) / 100) * 50).toFixed(2))
+        );
       } else {
         this.payment.taxAmount = Number(
           (
@@ -2168,11 +2192,19 @@ if (bookingSummaryStr) {
             Number((((firstPlan?.taxPercentageperroom + firstPlan?.price) / 100) * 20).toFixed(2))
           ).toFixed(2)
         );
-        this.payment.transactionAmount = this.payment.netReceivableAmount;
-        this.payment.amount = this.payment.netReceivableAmount;
+        this.payment.transactionAmount = Number(
+          Number((((firstPlan?.taxPercentageperroom + firstPlan?.price) / 100) * 20).toFixed(2))
+        );
+        this.payment.amount = Number(
+          Number((((firstPlan?.taxPercentageperroom + firstPlan?.price) / 100) * 20).toFixed(2))
+        );
 
-        this.booking.advanceAmount = this.payment.netReceivableAmount;
-        this.payment.transactionChargeAmount = this.payment.netReceivableAmount;
+        this.booking.advanceAmount = Number(
+          Number((((firstPlan?.taxPercentageperroom + firstPlan?.price) / 100) * 20).toFixed(2))
+        );
+        this.payment.transactionChargeAmount = Number(
+          Number((((firstPlan?.taxPercentageperroom + firstPlan?.price) / 100) * 20).toFixed(2))
+        );
       }
       this.payment.referenceNumber = new Date().getTime().toString();
       this.payment.deliveryChargeAmount = 0;
