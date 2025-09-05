@@ -708,6 +708,9 @@ closeTermsUniquePopup() {
     externalreservation.channelId = '9';
     externalreservation.lastModifiedBy = 'hotelmate';
     externalreservation.modeOfPayment = 'Cash';
+    if(this.groupBookingId) {
+      externalreservation.groupBookingId = this.groupBookingId;
+    }
     let propertyReservationNumber = booking.propertyReservationNumber;
     let updatedCode = propertyReservationNumber.replace("-B-", "-BE-");
     externalreservation.otaReservationId = updatedCode;
@@ -1714,7 +1717,10 @@ if (bookingSummaryStr) {
     this.payment.netReceivableAmount = plan.price + plan.taxPercentageperroom;
     enquiryForm.min = Number(this.payment.netReceivableAmount.toFixed(2));
     enquiryForm.max = Number(this.payment.netReceivableAmount.toFixed(2));
-
+        if(this.groupBookingId){
+      enquiryForm.groupEnquiryId = this.groupBookingId;
+    sessionStorage.setItem('groupbookingId', enquiryForm.groupEnquiryId);
+    }
     enquiryForm.firstName = booking.firstName;
     enquiryForm.lastName = booking.lastName;
     enquiryForm.email = booking.email;
@@ -3522,7 +3528,9 @@ if (bookingSummaryStr) {
     enquiryForm.toTime = checkOutDateTime;
     this.token.saveTime(String(checkInDateTime));
     this.token.saveToTime(String(checkOutDateTime));
-
+            if(this.groupBookingId){
+      enquiryForm.groupEnquiryId = this.groupBookingId;
+    }
     enquiryForm.accountManager = '';
     enquiryForm.consultantPerson = '';
     enquiryForm.noOfRooms = Number(plan.selectedRoomnumber);
@@ -6204,6 +6212,9 @@ if (bookingSummaryStr) {
     enquiryForm.noOfPerson = plan.adults;
     enquiryForm.noOfExtraPerson = plan.extraCountAdult;
     enquiryForm.roomId = plan.roomId;
+    if(this.groupBookingId){
+      enquiryForm.groupEnquiryId = this.groupBookingId;
+    }
     enquiryForm.payableAmount = plan.price + plan.taxPercentageperroom;
     enquiryForm.roomName = plan.roomName;
     enquiryForm.extraPersonCharge = plan.extraPersonAdultCountAmount;
@@ -6338,7 +6349,9 @@ if (bookingSummaryStr) {
       .getProperty()
       .taxDetails.filter((item) => ['CGST', 'SGST', 'GST'].includes(item.name));
     bookingForm.taxAmount = plan.taxPercentageperroom;
-
+    if(this.groupBookingId){
+      bookingForm.groupBookingId = this.groupBookingId;
+    }
     bookingForm.totalAmount = plan.price + plan.taxPercentageperroom;
     bookingForm.discountPercentage = booking.discountPercentage;
     bookingForm.noOfNights = plan.nights;

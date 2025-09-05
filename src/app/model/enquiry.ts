@@ -73,7 +73,7 @@ import { TaxDetails } from "./TaxDetails";
     taxAmount:number;
     extraChildCharge:number;
     bookingCommissionAmount:number;
-
+    groupEnquiryId: any;
     // noOfNights:number;
     // counterName:string;
   }
