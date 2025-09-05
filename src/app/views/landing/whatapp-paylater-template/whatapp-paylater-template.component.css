@@ -364,6 +364,9 @@ margin-bottom: 10px;
     border-radius: 20px;
     padding: 5px 20px;
  }
+  .alignmentChanges {
+  width: 73%;
+ }
 }
 
 @media (min-width: 1181px) and (max-width: 1299px) {

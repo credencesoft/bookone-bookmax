@@ -672,7 +672,7 @@ checkValidCouponOrNot(couponList?){
     booking.discountAmount = 0;
     booking.extraChildCharge = (plan.extraPersonChildCountAmount) || 0;
     booking.extraPersonCharge = ((plan.extraPersonAdultCountAmount)) || 0;
-    booking.roomTariffBeforeDiscount = plan.price;
+    booking.roomTariffBeforeDiscount = plan.actualRoomPrice;
     booking.totalAmount = plan.price + plan.taxPercentageperroom;
     booking.bookingAmount = booking.totalAmount;
     booking.payableAmount = booking.totalAmount;
@@ -1190,6 +1190,9 @@ checkValidCouponOrNot(couponList?){
     externalreservation.checkinDate = booking.fromDate;
     externalreservation.checkoutDate = booking.toDate;
     externalreservation.currency = booking.currency;
+     if(this.groupBookingId) {
+      externalreservation.groupBookingId = this.groupBookingId;
+    }
     externalreservation.email = booking.email;
     externalreservation.couponCode = booking.couponCode;
     externalreservation.promotionName = booking.promotionName;

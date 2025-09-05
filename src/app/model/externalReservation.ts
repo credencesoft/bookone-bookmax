@@ -45,5 +45,6 @@ export class externalReservationDtoList {
   discountAmount:number;
   noOfChildrenBelow5Years: any;
   noOfChildrenAbove5Years: any;
+  groupBookingId: any;
   constructor() {}
 }

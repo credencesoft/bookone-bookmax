@@ -183,6 +183,7 @@ currentPage = 0; // page index
   errorMessagewhatsapp: string;
   errorMessagePrivate: string;
   smartRecommendationsBoolean: any;
+  taxTotalSingle: number;
   toggleListingDetails() {
     this.showListingDetails = !this.showListingDetails;
   }
@@ -2111,7 +2112,6 @@ resetLastChangedAge(planCode: string) {
   // }
 
   onPlanSelect(planCode: string, rates: any) {
-
       const selectedRooms = this.selectedRoomsByPlan[planCode];
   const selectedGuests = this.selectedGuestsByPlan[planCode];
   const plan = rates.roomRatePlans.find((p) => p.code === planCode);
@@ -2261,12 +2261,12 @@ resetLastChangedAge(planCode: string) {
             if (element.taxSlabsList.length > 0) {
               element.taxSlabsList.forEach((element2) => {
                 if (
-                  element2.maxAmount > price &&
-                  element2.minAmount < price
+                  element2.maxAmount > this.actualroompriceCharge &&
+                  element2.minAmount < this.actualroompriceCharge
                 ) {
                   this.taxPercentage = element2.percentage;
                   this.booking.taxPercentage = this.taxPercentage;
-                } else if (element2.maxAmount < price) {
+                } else if (element2.maxAmount < this.actualroompriceCharge) {
                   this.taxPercentage = element2.percentage;
                   this.booking.taxPercentage = this.taxPercentage;
                 }
@@ -2276,9 +2276,17 @@ resetLastChangedAge(planCode: string) {
         }
       });
     }
-
+                  this.taxTotalSingle = 0;
+              this.daterangefilterSeo?.forEach((_, i) => {
+                  this.taxTotalSingle += this.calculateTaxAmount(
+                    (actualRoomPrice * selectedRoomnumber) +
+                    (SingleDayextraPersonAdultCountAmount || 0) +
+                    (SingleDayextraPersonChildCountAmount || 0),
+                    plan
+                  );
+              });
     const taxpercentage = this.booking.taxPercentage;
-    const taxPercentageperroom = (price * this.booking.taxPercentage) / 100;
+    const taxPercentageperroom = this.taxTotalSingle;
 
     const summaryEntry = {
       roomName,
@@ -6214,12 +6222,18 @@ get totalEachPlanPrice(): number {
     }, 0) || 0
   );
     } else {
-                return (
-      this.selectedPlansSummary?.reduce(
-        (sum, plan) => sum + (plan?.taxPercentageperroom || 0),
-        0
-      ) || 0
-    );
+               let taxTotal = 0;
+  this.daterangefilterSeo?.forEach((_, i) => {
+    this.selectedPlansSummary.forEach(plan => {
+      taxTotal += this.calculateTaxAmount(
+        (plan.actualRoomPrice * plan.selectedRoomnumber) +
+        (plan.SingleDayextraPersonAdultCountAmount || 0) +
+        (plan.SingleDayextraPersonChildCountAmount || 0),
+        plan
+      );
+    });
+  });
+  return taxTotal;
     }
     }
 
