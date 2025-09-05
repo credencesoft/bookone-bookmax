@@ -1190,6 +1190,9 @@ checkValidCouponOrNot(couponList?){
     externalreservation.checkinDate = booking.fromDate;
     externalreservation.checkoutDate = booking.toDate;
     externalreservation.currency = booking.currency;
+     if(this.groupBookingId) {
+      externalreservation.groupBookingId = this.groupBookingId;
+    }
     externalreservation.email = booking.email;
     externalreservation.couponCode = booking.couponCode;
     externalreservation.promotionName = booking.promotionName;
