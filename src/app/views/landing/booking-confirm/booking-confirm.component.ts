@@ -531,7 +531,7 @@ checkValidCouponOrNot(couponList?){
       }
   }
   getPaymentInfoByReffId(referenceNumber){
-
+    this.loadingData = true;
     this.hotelBookingService.getPaymentByReffId(referenceNumber).subscribe((res) => {
       this.payment = res.body[0];
       if (this.payment?.failureCode === null && this.payment.status == 'Paid') {
@@ -539,16 +539,10 @@ checkValidCouponOrNot(couponList?){
         this.createAllBookings();
 
       }else{
-        // //Logger.log('create enquiry')
         this.createEnquiry();
       }
     });
-
-
       this.bookingRoomPrice = this.token.getRoomPrice();
-// console.log("this.bookingRoomPrice" +this.bookingRoomPrice)
-
-
   }
 
 
@@ -587,6 +581,7 @@ checkValidCouponOrNot(couponList?){
 
     if (!bookingSummary || !bookingSummary.selectedPlansSummary?.length) {
       console.error('No valid booking summary found.');
+      this.loadingData = false;
       return;
     }
 
@@ -772,6 +767,7 @@ checkValidCouponOrNot(couponList?){
               if (res.status === 200) {
                 // this.openSuccessSnackBar(`Payment Details Saved`);
                 this.paymentLoader = false;
+                this.loadingData = false;
                 if(this.businessServiceDto.advanceAmountPercentage != 100) {
                   if (this.booking.payableAmount != this.payment.transactionAmount) {
                   if (this.businessServiceDto.advanceAmountPercentage === 50) {
@@ -842,6 +838,7 @@ checkValidCouponOrNot(couponList?){
                 //   this.changeDetectorRefs.detectChanges();
                 // }, 5000);
               } else {
+                this.loadingData = false;
                 this.paymentLoader = false;
                 // this.openErrorSnackBar(`Error in updating payment details`);
                 // setTimeout(() => {
@@ -859,6 +856,7 @@ checkValidCouponOrNot(couponList?){
 
         if (callback) callback();
       } else {
+        this.loadingData = false;
         if (callback) callback(); // Proceed even if failed
       }
     });
