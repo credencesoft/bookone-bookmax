@@ -588,6 +588,24 @@ checkValidCouponOrNot(couponList?){
     const plans = bookingSummary.selectedPlansSummary;
     const processPlan = (index: number) => {
        if (index >= plans.length) {
+        const existingBookingsStr = sessionStorage.getItem('bookingsResponseList');
+      const existingBookings = existingBookingsStr
+        ? JSON.parse(existingBookingsStr)
+        : [];
+
+      if (existingBookings.length > 0) {
+        const lastBooking = existingBookings[existingBookings.length - 1];
+        this.hotelBookingService
+          .sendBookingEmailToCustomer(lastBooking.id)
+          .subscribe({
+            next: (emailResponse) => {
+              console.log('Booking email sent successfully:', emailResponse);
+            },
+            error: (err) => {
+              console.error('Failed to send booking email:', err);
+            },
+          });
+      }
       this.updateEnquiryStatusToBooked();
       return;
     }
@@ -711,6 +729,33 @@ checkValidCouponOrNot(couponList?){
       booking.promotionName = this.specialDiscountData.name;
       booking.payableAmount =  (plan.price - (plan.price * this.specialDiscountData?.discountPercentage)/100) + ((((plan.price)- (plan.price * this.specialDiscountData?.discountPercentage)/100 ) * plan.taxpercentage) /100);
       booking.totalAmount = (plan.price - (plan.price * this.specialDiscountData?.discountPercentage)/100) + ((((plan.price)- (plan.price * this.specialDiscountData?.discountPercentage)/100 ) * plan.taxpercentage) /100);
+          if (this.businessServiceDto.advanceAmountPercentage === 100) {
+              booking.advanceAmount = Number(
+                Number((booking.totalAmount).toFixed(2))
+              );
+            }
+
+          if (
+            this.bookingSummaryDetails.selectedPlansSummary &&
+            this.bookingSummaryDetails.selectedPlansSummary.length > 0
+          ) {
+            // Get the 0th index plan
+            const firstPlan = this.bookingSummaryDetails.selectedPlansSummary[0];
+            // console.log('First plan pushed:', firstPlan);
+            if (firstPlan.planCodeName ===  booking.roomRatePlanName) {
+                              if (this.businessServiceDto.advanceAmountPercentage === 50) {
+              booking.advanceAmount = Number(
+                Number((((firstPlan?.finalPrice) / 100) * 50).toFixed(2))
+              );
+            }  else {
+              booking.advanceAmount = Number(
+                Number((((firstPlan?.finalPrice) / 100) * 20).toFixed(2))
+              );
+            }
+            } else {
+              booking.advanceAmount = 0;
+            }
+          }
     }
 
     Logger.log('createBooking ', JSON.stringify(booking));
