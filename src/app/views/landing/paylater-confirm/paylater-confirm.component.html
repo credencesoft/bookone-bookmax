@@ -560,6 +560,28 @@
             Didn’t receive it yet? It might be in your spam folder — or simply
             check WhatsApp.
           </div>
+          <div class="hotel-card-unique d-flex flex-row" style="flex-wrap: wrap;" *ngIf="businessUser?.name">
+            <!-- Right Side: Image -->
+            <div *ngIf="businessUser?.imageList?.length > 0" class="flex-shrink-0" style=" width: 100%; height: 100%;">
+              <img [src]="businessUser?.imageList[0]?.url" >
+            </div>
+            <!-- Left Side: Text Content -->
+            <div class="hotel-card-unique-body flex-fill">
+              <h3 class="hotel-card-unique-title">{{ businessUser?.name }}</h3>
+              <p class="hotel-card-unique-location">
+                <i class="bi bi-geo-alt-fill"></i> {{ businessUser.address?.streetName }},
+          {{ businessUser.address?.city }}, {{ businessUser.address?.state }},
+          {{ businessUser.address?.country }}
+              </p>
+              <div class="hotel-card-unique-text" *ngIf="businessUser.businessDescription">
+              <p [innerHTML]="getTrimmedDescription(businessUser.businessDescription)" style=" text-align: justify;">
+                {{ businessUser.businessDescription }}
+              </p>
+          </div>
+            </div>
+
+
+          </div>
         </div>
 
         <div style="width: 100%;">

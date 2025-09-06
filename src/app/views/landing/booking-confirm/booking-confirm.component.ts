@@ -620,6 +620,16 @@ checkValidCouponOrNot(couponList?){
 
     processPlan(0);
   }
+  getTrimmedDescription(description: string): string {
+  if (!description) return '';
+
+  const words = description.split(/\s+/); // split by spaces
+  if (words.length <= 35) {
+    return description;
+  }
+
+  return words.slice(0, 35).join(' ') + '...';
+}
 
   createBooking(plan: any, bookingSummary: any, callback?: () => void) {
     const booking: any = {};
