@@ -577,12 +577,20 @@ margin-bottom: 10px;
 .hotel-card-unique-body {
     padding: 20px 0px;
 }
+.hotel-card-unique {
+    padding: 10px;
+    padding-top: 21px;
+}
 }
 
 @media (max-width:600px) {
       .booking-summary-footer {
     text-align: left;
     }
+    .hotel-card-unique {
+    padding: 10px;
+    padding-top: 21px;
+}
     .backNavigation {
     font-weight: 600;
     font-family: "Poppins";
