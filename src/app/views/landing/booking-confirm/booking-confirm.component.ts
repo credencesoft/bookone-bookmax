@@ -729,12 +729,6 @@ checkValidCouponOrNot(couponList?){
       booking.promotionName = this.specialDiscountData.name;
       booking.payableAmount =  (plan.price - (plan.price * this.specialDiscountData?.discountPercentage)/100) + ((((plan.price)- (plan.price * this.specialDiscountData?.discountPercentage)/100 ) * plan.taxpercentage) /100);
       booking.totalAmount = (plan.price - (plan.price * this.specialDiscountData?.discountPercentage)/100) + ((((plan.price)- (plan.price * this.specialDiscountData?.discountPercentage)/100 ) * plan.taxpercentage) /100);
-          if (this.businessServiceDto.advanceAmountPercentage === 100) {
-              booking.advanceAmount = Number(
-                Number((booking.totalAmount).toFixed(2))
-              );
-            }
-
           if (
             this.bookingSummaryDetails.selectedPlansSummary &&
             this.bookingSummaryDetails.selectedPlansSummary.length > 0
@@ -756,6 +750,11 @@ checkValidCouponOrNot(couponList?){
               booking.advanceAmount = 0;
             }
           }
+                    if (this.businessServiceDto.advanceAmountPercentage === 100) {
+              booking.advanceAmount = Number(
+                Number((booking.totalAmount).toFixed(2))
+              );
+            }
     }
 
     Logger.log('createBooking ', JSON.stringify(booking));
