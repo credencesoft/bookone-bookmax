@@ -235,6 +235,16 @@ onGenerateVouchers() {
       }
     });
 }
+getTrimmedDescription(description: string): string {
+  if (!description) return '';
+
+  const words = description.split(/\s+/); // split by spaces
+  if (words.length <= 35) {
+    return description;
+  }
+
+  return words.slice(0, 35).join(' ') + '...';
+}
   async getpropertyByid(propertyId:number) {
     try {
       const response = await this.listingService.findByPropertyId(this.propertyId).toPromise();

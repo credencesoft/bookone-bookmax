@@ -148,6 +148,16 @@ export class PaylaterConfirmComponent {
     // console.log('bookingsResponseList', this.bookingsResponseList);
   }
 }
+getTrimmedDescription(description: string): string {
+  if (!description) return '';
+
+  const words = description.split(/\s+/); // split by spaces
+  if (words.length <= 35) {
+    return description;
+  }
+
+  return words.slice(0, 35).join(' ') + '...';
+}
 checkBookingEngineFlag(): void {
   const bookingEngineFlag = sessionStorage.getItem('BookingEngine');
   this.websiteUrlBookingEngine = bookingEngineFlag === 'true';
