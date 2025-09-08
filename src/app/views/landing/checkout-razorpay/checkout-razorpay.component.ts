@@ -37,6 +37,7 @@ export class CheckoutRazorpayComponent {
   contentDialog: any;
   DiffDate;
   currency: string;
+  loading: boolean;
 
   constructor(
     // private readonly checkoutService: CheckoutService,
@@ -157,6 +158,7 @@ initiatePayment() {
 
 
   async processResponse(res: any) {
+    this.loading = true;
   try {
     console.log("response is " + JSON.stringify(res));
     this.payment.status = "Paid";
@@ -186,7 +188,7 @@ initiatePayment() {
         this.bodyMessage = "Payment Details Saved.";
         this.showSuccess(this.contentDialog);
         this.changeDetectorRefs.detectChanges();
-
+        this.loading = false;
         // ✅ Redirect after showing the success message
         this.router.navigate(['/booking-confirm']);
       }, 3000); // Delay redirect by 3 seconds
@@ -194,6 +196,7 @@ initiatePayment() {
       this.paymentLoader = false;
       setTimeout(() => {
         this.isSuccess = false;
+        this.loading = false;
         this.headerTitle = "Error!";
         this.bodyMessage = "Error in updating payment details.";
         this.showDanger(this.contentDialog);
@@ -201,6 +204,7 @@ initiatePayment() {
       }, 9000);
     }
   } catch (error) {
+    this.loading = false;
     console.error("Error:", error);
     // Handle errors here if needed
   }

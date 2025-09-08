@@ -138,7 +138,7 @@ textToCopyOne: string = 'This is some text to copy';
   specialDiscountData: any;
   specialDiscountPercentage: any;
     websiteUrlBookingEngine: boolean = false;
-  loadingData: boolean = false;
+  loadingData: boolean = true;
   constructor(
     private http: HttpClient,
     private token: TokenStorage,
@@ -581,7 +581,6 @@ checkValidCouponOrNot(couponList?){
 
     if (!bookingSummary || !bookingSummary.selectedPlansSummary?.length) {
       console.error('No valid booking summary found.');
-      this.loadingData = false;
       return;
     }
 
@@ -821,7 +820,6 @@ checkValidCouponOrNot(couponList?){
               if (res.status === 200) {
                 // this.openSuccessSnackBar(`Payment Details Saved`);
                 this.paymentLoader = false;
-                this.loadingData = false;
                 if(this.businessServiceDto.advanceAmountPercentage != 100) {
                   if (this.booking.payableAmount != this.payment.transactionAmount) {
                   if (this.businessServiceDto.advanceAmountPercentage === 50) {
@@ -892,7 +890,6 @@ checkValidCouponOrNot(couponList?){
                 //   this.changeDetectorRefs.detectChanges();
                 // }, 5000);
               } else {
-                this.loadingData = false;
                 this.paymentLoader = false;
                 // this.openErrorSnackBar(`Error in updating payment details`);
                 // setTimeout(() => {
@@ -1364,6 +1361,7 @@ checkValidCouponOrNot(couponList?){
         // console.log(`Enquiry ${index + 1} updated successfully:`, response.body);
       },
       error: (err) => {
+      this.loadingData = false;
         console.error(`Error updating enquiry ${index + 1}:`, err);
       },
       complete: () => {
@@ -1372,6 +1370,7 @@ checkValidCouponOrNot(couponList?){
           this.isSuccess = true;
           this.submitButtonDisable = true;
           this.bookingConfirmed = true;
+                this.loadingData = false;
         }
       }
     });
