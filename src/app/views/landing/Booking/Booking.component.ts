@@ -1837,6 +1837,11 @@ if (bookingSummaryStr) {
             } else {
               enquiryForm.advanceAmount = 0;
             }
+            if (this.businessServiceDto.advanceAmountPercentage === 100) {
+              enquiryForm.advanceAmount = Number(
+                Number((enquiryForm.totalAmount).toFixed(2))
+              );
+            }
           }
         }
 
@@ -1875,7 +1880,7 @@ if (bookingSummaryStr) {
     return false;
   }
 
-  payAndCheckout() {
+async  payAndCheckout() {
 const bookingSummaryStr = sessionStorage.getItem('bookingSummaryDetails');
 if (bookingSummaryStr) {
   this.bookingSummaryDetails = JSON.parse(bookingSummaryStr);
@@ -1907,7 +1912,7 @@ if (bookingSummaryStr) {
       this.booking.discountPercentage = 0;
     }
     this.bookingroomPrice = firstPlan?.actualRoomPrice;
-    this.createAllEnquiriesBooking();
+     await this.createAllEnquiriesBooking();
     this.payment.callbackUrl =
       environment.callbackUrl +
       this.booking.propertyReservationNumber +
@@ -2240,6 +2245,7 @@ if (bookingSummaryStr) {
       this.payment.businessEmail = this.businessUser.email;
       this.payment.currency = 'INR';
       this.payment.propertyId = this.businessUser.id;
+      this.payment.orderId = this.equitycreatedData.enquiryId;
       this.booking.taxAmount = firstPlan?.taxPercentageperroom;
       if (this.businessServiceDto.advanceAmountPercentage === 100) {
         this.payment.taxAmount = Number(

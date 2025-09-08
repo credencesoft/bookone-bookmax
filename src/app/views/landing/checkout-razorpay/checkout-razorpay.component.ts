@@ -54,6 +54,13 @@ export class CheckoutRazorpayComponent {
 
      this.booking = this.token.getBookingData();
     this.businessUser = this.token.getPropertyData();
+              if (this.businessUser.primaryColor !== undefined) {
+            this.changeTheme(
+              this.businessUser.primaryColor,
+              this.businessUser.secondaryColor,
+              this.businessUser.tertiaryColor
+            );
+          }
     this.payment = this.token.getPaymentData();
 
     this.currency = this.businessUser.localCurrency;
@@ -64,7 +71,40 @@ export class CheckoutRazorpayComponent {
   script.src = 'https://checkout.razorpay.com/v1/checkout.js';
   script.onload = () => this.initiatePayment();
   document.body.appendChild(script);
+
   }
+    changeTheme(primary?: string, secondary?: string, tertiary?: string) {
+  // Default colors if none are passed
+  const defaultPrimary = "#232A45";   // blue
+  const defaultSecondary = "#0B01CC"; // green
+  const defaultTertiary = "#fff";  // yellow
+
+  const p = primary || defaultPrimary;
+  const s = secondary || defaultSecondary;
+  const t = tertiary || defaultTertiary;
+
+  document.documentElement.style.setProperty('--primary', p);
+  document.documentElement.style.setProperty('--secondary', s);
+  document.documentElement.style.setProperty('--tertiary', t);
+  document.documentElement.style.setProperty('--button-primary', t);
+
+  document.documentElement.style.setProperty(
+    '--primary-gradient',
+    `linear-gradient(180deg, ${t}, ${s})`
+  );
+  document.documentElement.style.setProperty(
+    '--secondary-gradient',
+    `linear-gradient(312deg, ${p}, ${s})`
+  );
+  document.documentElement.style.setProperty(
+    '--secondary-one-gradient',
+    `linear-gradient(180deg, ${p}, ${s})`
+  );
+  document.documentElement.style.setProperty(
+    '--third-gradient',
+    `linear-gradient(180deg, ${p}, ${s})`
+  );
+}
 initiatePayment() {
   if (this.payment.failureMessage !== null) return;
 
@@ -100,7 +140,7 @@ initiatePayment() {
     // Redirect to external URL if it's full path
 
 
-    window.location.href = redirectUrl;
+     window.location.href = '/confirm';
     }
 }
 
