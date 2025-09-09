@@ -274,6 +274,7 @@ export class BookingComponent implements OnInit {
   propertyDataObj: Booking;
   thmMail: string;
   bookingEmailSent:boolean= false;
+  channelManagerIntegration: any;
   constructor(
     private token: TokenStorage,
     private ngZone: NgZone,
@@ -616,9 +617,11 @@ closeTermsUniquePopup() {
   }
 
   showPayNow(): boolean {
+         if (this.channelManagerIntegration) {
+    return true;
+  }
     const propertyUrl = this.token.getPropertyUrl();
     const isBookingEngine = propertyUrl?.includes('bookingEngine');
-
     if (isBookingEngine) {
       return this.businessUser.paymentGateway != null;
     }
@@ -632,6 +635,9 @@ closeTermsUniquePopup() {
   }
 
   showPayLater(): boolean {
+          if (this.channelManagerIntegration) {
+    return false;
+  }
     const propertyUrl = this.token.getPropertyUrl();
     const isBookingEngine = propertyUrl?.includes('bookingEngine');
 
@@ -1025,6 +1031,7 @@ closeTermsUniquePopup() {
       if (item.name === 'Accommodation') {
         this.fromTime = item.checkInTime;
         this.toTime = item.checkOutTime;
+        this.channelManagerIntegration = item.cmIntegration;
       }
     });
 
@@ -3505,7 +3512,7 @@ if (bookingSummaryStr) {
     this.payment.netReceivableAmount = plan.price + plan.taxPercentageperroom;
     enquiryForm.min = Number(this.payment.netReceivableAmount.toFixed(2));
     enquiryForm.max = Number(this.payment.netReceivableAmount.toFixed(2));
-
+    enquiryForm.enquiryType = 'Pay Later';
     enquiryForm.firstName = booking.firstName;
     enquiryForm.lastName = booking.lastName;
     enquiryForm.email = booking.email;
@@ -5989,8 +5996,6 @@ if (bookingSummaryStr) {
   }
 
   async getPropertyDetailsById(id: number) {
-    // debugger
-    // //console.log("id isequal to" + id)
     try {
       this.loader = true;
       const data = await this.listingService?.findByPropertyId(id).toPromise();
@@ -6048,7 +6053,6 @@ if (bookingSummaryStr) {
       }
     } catch (error) {
       this.loader = false;
-      // Handle the error appropriately, if needed.
     }
   }
 
@@ -6266,7 +6270,7 @@ if (bookingSummaryStr) {
     enquiryForm.roomType = plan.roomName;
     enquiryForm.roomRatePlanName = plan.planCodeName;
     enquiryForm.createdDate = new Date().getTime();
-
+    enquiryForm.enquiryType = 'Enquiry';
     // Combine date and time
     const checkInDateTime = new Date(
       `${enquiryForm.checkInDate} ${this.fromTime}`

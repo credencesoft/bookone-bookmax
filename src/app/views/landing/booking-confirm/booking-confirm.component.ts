@@ -1353,8 +1353,9 @@ checkValidCouponOrNot(couponList?){
     enquiry.bookingReservationId = matchedBooking?.propertyReservationNumber;
     // Update the status
     enquiry.status = 'Booked';
+    enquiry.enquiryType = 'Pay Now'
     enquiry.propertyId = 107;
-    this.paymentSucess = true
+    this.paymentSucess = true;
     enquiry.paymentStatus = 'Paid';
     this.hotelBookingService.accommodationEnquiry(enquiry).subscribe({
       next: (response) => {
