@@ -3289,19 +3289,19 @@ if (bookingSummaryStr) {
         ? JSON.parse(existingBookingsStr)
         : [];
 
-      if (existingBookings.length > 0) {
-        const lastBooking = existingBookings[existingBookings.length - 1];
-        this.hotelBookingService
-          .sendBookingEmailToCustomer(lastBooking.id)
-          .subscribe({
-            next: (emailResponse) => {
-              console.log('Booking email sent successfully:', emailResponse);
-            },
-            error: (err) => {
-              console.error('Failed to send booking email:', err);
-            },
-          });
-      }
+      // if (existingBookings.length > 0) {
+      //   const lastBooking = existingBookings[existingBookings.length - 1];
+      //   this.hotelBookingService
+      //     .sendBookingEmailToCustomer(lastBooking.id)
+      //     .subscribe({
+      //       next: (emailResponse) => {
+      //         console.log('Booking email sent successfully:', emailResponse);
+      //       },
+      //       error: (err) => {
+      //         console.error('Failed to send booking email:', err);
+      //       },
+      //     });
+      // }
       this.createAllPayLaterEnquiries();
       return;
     }
