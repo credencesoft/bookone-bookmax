@@ -1356,7 +1356,12 @@ checkValidCouponOrNot(couponList?){
     enquiry.enquiryType = 'Pay Now'
     enquiry.propertyId = 107;
     this.paymentSucess = true;
-    enquiry.paymentStatus = 'Paid';
+    if(enquiry.advanceAmount > 0 && enquiry.advanceAmount < enquiry.totalAmount) {
+      enquiry.paymentStatus = 'PartiallyPaid';
+    } else {
+      enquiry.paymentStatus = 'Paid';
+    }
+
     this.hotelBookingService.accommodationEnquiry(enquiry).subscribe({
       next: (response) => {
         // console.log(`Enquiry ${index + 1} updated successfully:`, response.body);
