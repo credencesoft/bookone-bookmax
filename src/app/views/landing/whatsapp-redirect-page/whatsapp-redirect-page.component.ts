@@ -371,7 +371,16 @@ this.storedPromo = localStorage.getItem('selectPromo');
           // Handle the error appropriately, if needed.
         }
       }
+ getTrimmedDescription(description: string): string {
+  if (!description) return '';
 
+  const words = description.split(/\s+/); // split by spaces
+  if (words.length <= 35) {
+    return description;
+  }
+
+  return words.slice(0, 35).join(' ') + '...';
+}
       copyText() {
 
         // Find the element

@@ -74,6 +74,8 @@ import { TaxDetails } from "./TaxDetails";
     extraChildCharge:number;
     bookingCommissionAmount:number;
     groupEnquiryId: any;
+    paymentStatus: string;
+    enquiryType: string;
     // noOfNights:number;
     // counterName:string;
   }

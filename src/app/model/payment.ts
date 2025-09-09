@@ -48,6 +48,7 @@ export class Payment {
   encryptedData: any;
   lastModifiedDate: any;
   gatewayPaymentStatus: any;
+  orderId: any;
     constructor() {
     }
 }

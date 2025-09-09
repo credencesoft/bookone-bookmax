@@ -25,35 +25,7 @@
               <i class="fa-solid fa-angle-left"></i> &nbsp; Go Back
             </div>
             <div class="assistance-section">
-              <div style="display: flex">
-                <div><strong>Need Assistance?</strong></div>
-                <div
-                  class="contact-info"
-                  style="display: flex; margin-top: 0px; margin-left: 10px"
-                >
-                  <span
-                    ><img
-                      src="assets/images/chatsym.png"
-                      alt=""
-                      height="20px"
-                      width="20px"
-                      style="margin-right: 3px; transform: rotate(3deg)"
-                    />
 
-                    9040785705</span
-                  >
-                </div>
-              </div>
-              <div
-                style="margin-bottom: -19px; margin-top: -12px"
-                *ngIf="accommodationService[0]?.checkInTime"
-              >
-                Working Hours:
-                <span
-                  >{{ accommodationService[0]?.checkInTime }} AM to
-                  {{ accommodationService[0]?.checkOutTime }} PM</span
-                >
-              </div>
             </div>
           </div>
         </div>
@@ -88,9 +60,7 @@
             Didn’t receive it yet? It might be in your spam folder — or simply
             check WhatsApp.
           </div>
-        </div>
-
-        <div style="justify-content: center; display: flex; gap: 20px">
+          <div style=" display: flex; gap: 20px; margin-top: 20px">
           <div
             class="card"
             style="
@@ -162,6 +132,36 @@
               >Check Details</a
             >
           </div>
+        </div>
+        </div>
+
+        <div style="justify-content: center; display: flex; gap: 20px">
+          <div class="d-flex justify-content-center align-items-center">
+
+          <div class="hotel-card-unique d-flex flex-row" *ngIf="businessUser?.name">
+            <!-- Left Side: Text Content -->
+            <div class="hotel-card-unique-body flex-fill">
+              <h3 class="hotel-card-unique-title">{{ businessUser?.name }}</h3>
+              <p class="hotel-card-unique-location">
+                <i class="bi bi-geo-alt-fill"></i> {{ businessUser.address?.streetName }},
+          {{ businessUser.address?.city }}, {{ businessUser.address?.state }},
+          {{ businessUser.address?.country }}
+              </p>
+              <div class="hotel-card-unique-text" *ngIf="businessUser.businessDescription">
+              <p [innerHTML]="getTrimmedDescription(businessUser.businessDescription)" style=" text-align: justify;">
+                {{ businessUser.businessDescription }}
+              </p>
+          </div>
+            </div>
+
+            <!-- Right Side: Image -->
+            <div *ngIf="businessUser?.imageList?.length > 0" class="flex-shrink-0" style="width: 240px;">
+              <img [src]="businessUser?.imageList[0]?.url" >
+            </div>
+          </div>
+
+          <!-- Bootstrap Icons -->
+        </div>
         </div>
       </div>
       <div
@@ -382,7 +382,7 @@
                   <td>{{ booking.roomRatePlanName }}</td>
                   <td>
                     ₹{{
-                      booking.beforeTaxAmount - booking.extraPersonCharge
+                      booking.beforeTaxAmount - (booking.extraPersonCharge - booking.extraChildCharge)
                         | number : "1.2-2"
                     }}
                   </td>
@@ -399,31 +399,48 @@
             </table>
 
             <div class="booking-summary-footer">
-              <div>
-                Final Room Tariff: &nbsp;&nbsp; ₹
-                {{ bookingSummaryDetails?.totalPlanPrice - totalDiscount  | number : "1.2-2" }}
-              </div>
-              <div>
-                Total GST: &nbsp;&nbsp; ₹
-                {{ bookingSummaryDetails?.totalTax | number : "1.2-2" }}
-              </div>
-              <div *ngIf="bookingSummaryDetails?.totalAddOnsPrice">
-                Total Add-on Services Price: &nbsp;&nbsp; ₹
-                {{
+               <div class="footer-borders">
+                <div class="d-flex justify-content-between">
+                  <div>Final Room Tariff:</div>
+                  <div>₹{{ bookingSummaryDetails?.totalPlanPrice - totalDiscount  | number : "1.2-2" }}</div>
+                </div>
+                </div>
+              <div class="footer-borders">
+                <div class="d-flex justify-content-between">
+                  <div>Total GST:</div>
+                  <div>₹ {{ bookingSummaryDetails?.totalTax | number : "1.2-2" }}</div>
+                </div>
+                </div>
+               <div class="footer-borders" *ngIf="bookingSummaryDetails?.totalAddOnsPrice">
+                <div class="d-flex justify-content-between">
+                  <div>
+                    Total Add-on Services Price:
+                  </div>
+                  <div>
+                    ₹{{
                   bookingSummaryDetails?.totalAddOnsPrice -
                     bookingSummaryDetails?.totaltaxfacilityAmount
                     | number : "1.2-2"
                 }}
-              </div>
-              <div *ngIf="bookingSummaryDetails?.totaltaxfacilityAmount">
-                Total Add-on Services Tax Fees: &nbsp;&nbsp; ₹{{
+                  </div>
+                </div>
+                </div>
+                <div class="footer-borders" *ngIf="bookingSummaryDetails?.totaltaxfacilityAmount">
+                <div class="d-flex justify-content-between">
+                  <div>Total Add-on Services Tax Fees:</div>
+                  <div>₹{{
                   bookingSummaryDetails?.totaltaxfacilityAmount
                     | number : "1.2-2"
-                }}
-              </div>
-              <div class="booking-summary-total">
-                Total Amount: &nbsp;&nbsp; ₹
-                {{ bookingSummaryDetails?.totalAmount | number : "1.2-2" }}
+                }}</div>
+                </div>
+                </div>
+                 <div class="booking-summary-total total-borders">
+                <div class="d-flex justify-content-between ">
+                  <div>Total Amount:</div>
+                  <div>₹
+                {{ bookingSummaryDetails?.totalAmount | number : "1.2-2" }}</div>
+                </div>
+
               </div>
             </div>
           </div>
@@ -504,35 +521,7 @@
               <i class="fa-solid fa-angle-left"></i> &nbsp; Go Back
             </div>
             <div class="assistance-section">
-              <div style="display: flex">
-                <div><strong>Need Assistance?</strong></div>
-                <div
-                  class="contact-info"
-                  style="display: flex; margin-top: 0px; margin-left: 10px"
-                >
-                  <span
-                    ><img
-                      src="assets/images/chatsym.png"
-                      alt=""
-                      height="20px"
-                      width="20px"
-                      style="margin-right: 3px; transform: rotate(3deg)"
-                    />
 
-                    9040785705</span
-                  >
-                </div>
-              </div>
-              <div
-                style="margin-bottom: -19px; margin-top: -12px"
-                *ngIf="accommodationService[0]?.checkInTime"
-              >
-                Working Hours:
-                <span
-                  >{{ accommodationService[0]?.checkInTime }} AM to
-                  {{ accommodationService[0]?.checkOutTime }} PM</span
-                >
-              </div>
             </div>
           </div>
         </div>
@@ -542,7 +531,7 @@
         class="d-flex"
         style="align-items: center; margin-top: 20px; flex-wrap: wrap;"
       >
-        <div class="col-12 text-left mb-4 font-change">
+        <div class="col-12 text-left font-change">
           <span
             style="
               font-weight: 600 !important;
@@ -566,6 +555,28 @@
             We’ve sent your enquiry details to your mail. <br />
             Didn’t receive it yet? It might be in your spam folder — or simply
             check WhatsApp.
+          </div>
+          <div class="hotel-card-unique d-flex flex-row" style="flex-wrap: wrap;" *ngIf="businessUser?.name">
+            <!-- Right Side: Image -->
+            <div *ngIf="businessUser?.imageList?.length > 0" class="flex-shrink-0" style=" width: 100%; height: 100%;">
+              <img [src]="businessUser?.imageList[0]?.url" >
+            </div>
+            <!-- Left Side: Text Content -->
+            <div class="hotel-card-unique-body flex-fill">
+              <h3 class="hotel-card-unique-title">{{ businessUser?.name }}</h3>
+              <p class="hotel-card-unique-location">
+                <i class="bi bi-geo-alt-fill"></i> {{ businessUser.address?.streetName }},
+          {{ businessUser.address?.city }}, {{ businessUser.address?.state }},
+          {{ businessUser.address?.country }}
+              </p>
+              <div class="hotel-card-unique-text" *ngIf="businessUser.businessDescription">
+              <p [innerHTML]="getTrimmedDescription(businessUser.businessDescription)" style=" text-align: justify;">
+                {{ businessUser.businessDescription }}
+              </p>
+          </div>
+            </div>
+
+
           </div>
         </div>
 
@@ -807,7 +818,10 @@
                       <ng-container *ngFor="let booking of bookingsResponseList; let last = last">
               <div class="d-flex justify-content-between">
               <div style="font-weight: bold;">{{ booking.roomRatePlanName }}</div>
-              <div>{{ booking?.noOfNights }} Night(s)</div>
+              <div>₹{{
+                      booking.beforeTaxAmount - (booking.extraPersonCharge - booking.extraChildCharge)
+                        | number : "1.2-2"
+                    }}</div>
             </div>
             <div class="d-flex justify-content-between">
                 <div>Room Count</div>

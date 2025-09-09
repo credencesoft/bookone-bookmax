@@ -46,5 +46,6 @@ export class BusinessServiceDtoList {
       openingTime: string;
     }
   ];
+  cmIntegration: any;
   constructor() {}
 }

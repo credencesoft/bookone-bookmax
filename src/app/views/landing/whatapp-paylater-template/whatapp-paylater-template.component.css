@@ -389,12 +389,20 @@ margin-bottom: 10px;
     border-radius: 20px;
     padding: 5px 20px;
 }
+.hotel-card-unique {
+    padding: 10px;
+    padding-top: 21px;
+}
 }
 
 @media (max-width:600px) {
       .booking-summary-footer {
     text-align: left;
     }
+    .hotel-card-unique {
+    padding: 10px;
+    padding-top: 21px;
+}
     .hotel-card-unique-body {
     padding: 20px 0px;
 }
@@ -422,8 +430,9 @@ margin-bottom: 10px;
     border-radius: 20px;
     padding: 5px 20px;
  }
-  .alignmentChanges {
+.alignmentChanges {
   width: 73%;
+  text-align: right;
  }
 }
 
