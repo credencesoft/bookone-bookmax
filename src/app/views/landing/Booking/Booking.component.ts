@@ -1736,6 +1736,7 @@ if (bookingSummaryStr) {
     enquiryForm.checkOutDate = booking.toDate;
     enquiryForm.checkInDate = booking.fromDate;
     enquiryForm.noOfPerson = plan.adults;
+    enquiryForm.enquiryType = 'Pay Now';
     enquiryForm.noOfExtraPerson = plan.extraCountAdult;
     enquiryForm.roomId = plan.roomId;
     enquiryForm.payableAmount = plan.price + plan.taxPercentageperroom;
