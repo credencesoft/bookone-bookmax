@@ -199,12 +199,9 @@
               >
                 <div>Enquiry ID:</div>
                 <div>
-                  <span *ngIf="booking?.groupBookingId">
-                    <b>{{ booking?.groupBookingId }}</b></span
-                  >
 
-                  <span *ngIf="!booking?.groupBookingId"
-                    ><b>{{ booking?.id }}</b></span
+                  <span
+                    ><b>{{booking?.enquiryId}}</b></span
                   >
                 </div>
               </div>
@@ -663,12 +660,8 @@
               >
                 <div>Enquiry ID:</div>
                 <div>
-                  <span *ngIf="booking?.groupBookingId">
-                    <b>{{ booking?.groupBookingId }}</b></span
-                  >
-
-                  <span *ngIf="!booking?.groupBookingId"
-                    ><b>{{ booking?.id }}</b></span
+                  <span >
+                    <b>{{booking?.enquiryId}}</b></span
                   >
                 </div>
               </div>
@@ -685,8 +678,8 @@
               >
                 <div>Check-in Date:</div>
                 <div>
-                  <span *ngIf="booking.fromDate">
-                    <b>{{ booking.fromDate | date: "d MMM yyyy" }}</b></span
+                  <span *ngIf="booking.checkInDate">
+                    <b>{{ booking.checkInDate | date: "d MMM yyyy" }}</b></span
                   >
                 </div>
               </div>
@@ -696,8 +689,8 @@
               >
                 <div>Check Out Date:</div>
                 <div>
-                  <span *ngIf="booking.toDate">
-                    <b>{{ booking.toDate | date: "d MMM yyyy" }}</b></span
+                  <span *ngIf="booking.checkOutDate">
+                    <b>{{ booking.checkOutDate | date: "d MMM yyyy" }}</b></span
                   >
                 </div>
               </div>

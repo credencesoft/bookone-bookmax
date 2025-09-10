@@ -1736,6 +1736,7 @@ if (bookingSummaryStr) {
     enquiryForm.checkOutDate = booking.toDate;
     enquiryForm.checkInDate = booking.fromDate;
     enquiryForm.noOfPerson = plan.adults;
+    enquiryForm.enquiryType = 'Pay Now';
     enquiryForm.noOfExtraPerson = plan.extraCountAdult;
     enquiryForm.roomId = plan.roomId;
     enquiryForm.payableAmount = plan.price + plan.taxPercentageperroom;
@@ -3289,19 +3290,19 @@ if (bookingSummaryStr) {
         ? JSON.parse(existingBookingsStr)
         : [];
 
-      if (existingBookings.length > 0) {
-        const lastBooking = existingBookings[existingBookings.length - 1];
-        this.hotelBookingService
-          .sendBookingEmailToCustomer(lastBooking.id)
-          .subscribe({
-            next: (emailResponse) => {
-              console.log('Booking email sent successfully:', emailResponse);
-            },
-            error: (err) => {
-              console.error('Failed to send booking email:', err);
-            },
-          });
-      }
+      // if (existingBookings.length > 0) {
+      //   const lastBooking = existingBookings[existingBookings.length - 1];
+      //   this.hotelBookingService
+      //     .sendBookingEmailToCustomer(lastBooking.id)
+      //     .subscribe({
+      //       next: (emailResponse) => {
+      //         console.log('Booking email sent successfully:', emailResponse);
+      //       },
+      //       error: (err) => {
+      //         console.error('Failed to send booking email:', err);
+      //       },
+      //     });
+      // }
       this.createAllPayLaterEnquiries();
       return;
     }

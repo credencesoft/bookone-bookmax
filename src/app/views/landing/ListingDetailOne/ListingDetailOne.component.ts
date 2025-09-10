@@ -2381,6 +2381,20 @@ getSubtotalNonGhCPrice(plan: any): number {
 }
 
 getTotalGhCPrice(plan: any): number {
+  if (this.specialDiscountData) {
+            let subtotal = 0;
+              let taxTotalOne = 0;
+        let discountSumPrice = 0;
+        if (this.planPrice?.length) {
+          this.planPrice.forEach((price: number) => {
+            subtotal += (price * plan.selectedRoomnumber) +  (plan.SingleDayextraPersonAdultCountAmount + plan.SingleDayextraPersonChildCountAmount);
+          });
+        }
+        subtotal = subtotal - (((subtotal) * this.specialDiscountData.discountPercentage) / 100);
+        discountSumPrice = ((subtotal) * this.specialDiscountData.discountPercentage) / 100;
+        taxTotalOne += this.calculateTaxAmount((subtotal) + (plan.SingleDayextraPersonAdultCountAmount + plan.SingleDayextraPersonChildCountAmount), plan);
+          return subtotal + taxTotalOne;
+  } else {
   const subtotal = this.getSubtotalGhCPrice(plan);
   let taxTotalOne = 0;
     this.selectedPlansSummary.forEach((plan: any) => {
@@ -2394,11 +2408,23 @@ getTotalGhCPrice(plan: any): number {
 
     }
   });
-  return subtotal + taxTotalOne;
+    return subtotal + taxTotalOne;
+  }
+
+
 }
 
 getTotalNonGhCPrice(plan: any): number {
-  const subtotal = this.getSubtotalNonGhCPrice(plan);
+  if (this.specialDiscountData) {
+        let subtotal = 0;
+        let discountSumPrice = 0;
+        let taxTotalTwo = 0;
+            subtotal += (plan.actualRoomPrice * plan.selectedRoomnumber * plan.nights) +  (plan.SingleDayextraPersonAdultCountAmount + plan.SingleDayextraPersonChildCountAmount);
+        discountSumPrice = ((subtotal) * this.specialDiscountData.discountPercentage) / 100;
+        taxTotalTwo += this.calculateTaxAmount(((subtotal - discountSumPrice)) + (plan.SingleDayextraPersonAdultCountAmount + plan.SingleDayextraPersonChildCountAmount), plan);
+     return (subtotal - discountSumPrice) + taxTotalTwo;
+  } else {
+      const subtotal = this.getSubtotalNonGhCPrice(plan);
     let taxTotalTwo = 0;
     this.selectedPlansSummary.forEach((plan: any) => {
     if (plan.planName != 'GHC') {
@@ -2412,6 +2438,8 @@ getTotalNonGhCPrice(plan: any): number {
     }
   });
   return subtotal + taxTotalTwo;
+  }
+
 }
 
 getGrandTotal(): number {
@@ -2452,7 +2480,7 @@ getGrandTaxTotal(): number {
   let taxTotal = 0;
 
   this.selectedPlansSummary.forEach((plan: any) => {
-    if (plan.planName === 'GHC') {
+    if (plan.planName === 'GHC'&& !this.specialDiscountData) {
       this.daterangefilter?.forEach((nights, i) => {
         const priceArray = [this.planPrice[i]];
         priceArray.forEach((price) => {
@@ -2460,7 +2488,25 @@ getGrandTaxTotal(): number {
         });
       });
 
-    } else {
+    } else if (plan.planName === 'GHC' && this.specialDiscountData) {
+        let subtotal = 0;
+        let discountSumPrice = 0;
+        if (this.planPrice?.length) {
+          this.planPrice.forEach((price: number) => {
+            subtotal += (price * plan.selectedRoomnumber) +  (plan.SingleDayextraPersonAdultCountAmount + plan.SingleDayextraPersonChildCountAmount);
+          });
+        }
+
+        discountSumPrice = ((subtotal) * this.specialDiscountData.discountPercentage) / 100;
+        taxTotal += this.calculateTaxAmount(((subtotal - discountSumPrice)) + (plan.SingleDayextraPersonAdultCountAmount + plan.SingleDayextraPersonChildCountAmount), plan);
+    } else if (plan.planName != 'GHC' && this.specialDiscountData) {
+        let subtotal = 0;
+        let discountSumPrice = 0;
+            subtotal += (plan.actualRoomPrice * plan.selectedRoomnumber * plan.nights) +  (plan.SingleDayextraPersonAdultCountAmount + plan.SingleDayextraPersonChildCountAmount);
+        discountSumPrice = ((subtotal) * this.specialDiscountData.discountPercentage) / 100;
+        taxTotal += this.calculateTaxAmount(((subtotal - discountSumPrice)) + (plan.SingleDayextraPersonAdultCountAmount + plan.SingleDayextraPersonChildCountAmount), plan);
+    }
+    else {
        this.daterangefilterSeo?.forEach((_, i) => {
       taxTotal += this.calculateTaxAmount(
         (plan.actualRoomPrice * plan.selectedRoomnumber) +
@@ -5090,7 +5136,7 @@ onBookNow() {
           this.getTotalTaxFacility(),
     };
     sessionStorage.setItem('bookingSummaryDetails', JSON.stringify(bookingData));
-  } else if(this.specialDiscountData){
+  } else if(this.specialDiscountData && !this.activeForGoogleHotelCenter){
     if (this.specialDiscountData) {
   this.selectedPlansSummary = this.selectedPlansSummary.map(plan => {
     let discountedPrice = plan.price;
@@ -5207,6 +5253,269 @@ onBookNow() {
       taxPercentageperroom: taxAmount,
       finalPrice: discountedPrice + taxAmount
     };
+  });
+}
+        const bookingData = {
+    fromDate: this.booking.fromDate,
+    toDate: this.booking.toDate,
+    totalAdults: this.totalAdults,
+    totalChildren: this.totalChildren,
+    totalNights: this.DiffDate,
+    selectedPlansSummary: this.selectedPlansSummary,
+    propertyServiceListDataOne: selectedAddOns, // ✅ only selected items
+    totalPlanPrice: this.getTotalPlanPrice(),
+    totaltaxfacilityAmount: this.getTotalTaxFacility(),
+    totalAddOnsPrice: this.getTotalAfterTaxAmountFacility() + this.getTotalTaxFacility(),
+    totalTax: this.getTotalTaxPrice(),
+    totalAmount:
+      (this.getTotalPlanPrice() +
+      this.getTotalAfterTaxAmountFacility() +
+      this.getTotalTaxPrice()) - ((this.getTotalPlanPrice() * this.specialDiscountPercentage)/100),
+  };
+      sessionStorage.setItem('bookingSummaryDetails', JSON.stringify(bookingData));
+    } else if(this.specialDiscountData && this.activeForGoogleHotelCenter){
+    if (this.specialDiscountData) {
+  this.selectedPlansSummary = this.selectedPlansSummary.map(plan => {
+    if(plan.name === 'GHC') {
+          let discountedPrice = plan.price;
+
+          if (this.businessUser?.taxDetails?.length > 0) {
+      this.businessUser?.taxDetails.forEach((element) => {
+        if (element.name === 'GST') {
+          this.booking.taxDetails = [];
+          this.booking.taxDetails.push(element);
+          this.taxPercentage = element.percentage;
+          this.booking.taxPercentage = this.taxPercentage;
+
+          if (
+            plan?.code === 'GHC' &&
+            this.activeForGoogleHotelCenter === true
+          ) {
+            if (element.taxSlabsList.length > 0) {
+              element.taxSlabsList.forEach((element2) => {
+                if (
+                  element2.maxAmount >
+                    discountedPrice &&
+                  element2.minAmount < discountedPrice
+                ) {
+                  this.taxPercentage = element2.percentage;
+                  this.booking.taxPercentage = this.taxPercentage;
+                } else if (
+                  element2.maxAmount <
+                  discountedPrice
+                ) {
+                  this.taxPercentage = element2.percentage;
+                  this.booking.taxPercentage = this.taxPercentage;
+                }
+              });
+            }
+          } else {
+            if (element.taxSlabsList.length > 0) {
+              element.taxSlabsList.forEach((element2) => {
+                if (
+                  element2.maxAmount > discountedPrice &&
+                  element2.minAmount < discountedPrice
+                ) {
+                  this.taxPercentage = element2.percentage;
+                  this.booking.taxPercentage = this.taxPercentage;
+                } else if (element2.maxAmount < discountedPrice) {
+                  this.taxPercentage = element2.percentage;
+                  this.booking.taxPercentage = this.taxPercentage;
+                }
+              });
+            }
+          }
+        }
+      });
+    }
+    let discountAmount = 0;
+    let subtotal = 0;
+      if (this.planPrice?.length) {
+          this.planPrice.forEach((price: number) => {
+            subtotal += (price * plan.selectedRoomnumber) +  (plan.SingleDayextraPersonAdultCountAmount + plan.SingleDayextraPersonChildCountAmount);
+          });
+        }
+
+      discountAmount = (subtotal * this.specialDiscountData.discountPercentage) / 100;
+      discountedPrice -= (discountAmount - discountAmount);
+      discountedPrice = subtotal;
+              if (this.businessUser?.taxDetails?.length > 0) {
+      this.businessUser?.taxDetails.forEach((element) => {
+        if (element.name === 'GST') {
+          this.booking.taxDetails = [];
+          this.booking.taxDetails.push(element);
+          this.taxPercentage = element.percentage;
+          this.booking.taxPercentage = this.taxPercentage;
+
+          if (
+            plan?.code === 'GHC' &&
+            this.activeForGoogleHotelCenter === true
+          ) {
+            if (element.taxSlabsList.length > 0) {
+              element.taxSlabsList.forEach((element2) => {
+                if (
+                  element2.maxAmount >
+                    discountedPrice &&
+                  element2.minAmount < discountedPrice
+                ) {
+                  this.taxPercentage = element2.percentage;
+                  this.booking.taxPercentage = this.taxPercentage;
+                } else if (
+                  element2.maxAmount <
+                  discountedPrice
+                ) {
+                  this.taxPercentage = element2.percentage;
+                  this.booking.taxPercentage = this.taxPercentage;
+                }
+              });
+            }
+          } else {
+            if (element.taxSlabsList.length > 0) {
+              element.taxSlabsList.forEach((element2) => {
+                if (
+                  element2.maxAmount > discountedPrice &&
+                  element2.minAmount < discountedPrice
+                ) {
+                  this.taxPercentage = element2.percentage;
+                  this.booking.taxPercentage = this.taxPercentage;
+                } else if (element2.maxAmount < discountedPrice) {
+                  this.taxPercentage = element2.percentage;
+                  this.booking.taxPercentage = this.taxPercentage;
+                }
+              });
+            }
+          }
+        }
+      });
+    }
+    const taxPercent = this.taxPercentage || 0;
+    const taxAmount = (discountedPrice * taxPercent) / 100;
+
+    return {
+      ...plan,
+      discountedPrice,
+      discountAmount,
+      taxpercentage: taxPercent,
+      taxPercentageperroom: taxAmount,
+      finalPrice: discountedPrice + taxAmount
+    };
+    } else {
+          let discountedPrice = plan.price;
+
+          if (this.businessUser?.taxDetails?.length > 0) {
+      this.businessUser?.taxDetails.forEach((element) => {
+        if (element.name === 'GST') {
+          this.booking.taxDetails = [];
+          this.booking.taxDetails.push(element);
+          this.taxPercentage = element.percentage;
+          this.booking.taxPercentage = this.taxPercentage;
+
+          if (
+            plan?.code === 'GHC' &&
+            this.activeForGoogleHotelCenter === true
+          ) {
+            if (element.taxSlabsList.length > 0) {
+              element.taxSlabsList.forEach((element2) => {
+                if (
+                  element2.maxAmount >
+                    discountedPrice &&
+                  element2.minAmount < discountedPrice
+                ) {
+                  this.taxPercentage = element2.percentage;
+                  this.booking.taxPercentage = this.taxPercentage;
+                } else if (
+                  element2.maxAmount <
+                  discountedPrice
+                ) {
+                  this.taxPercentage = element2.percentage;
+                  this.booking.taxPercentage = this.taxPercentage;
+                }
+              });
+            }
+          } else {
+            if (element.taxSlabsList.length > 0) {
+              element.taxSlabsList.forEach((element2) => {
+                if (
+                  element2.maxAmount > discountedPrice &&
+                  element2.minAmount < discountedPrice
+                ) {
+                  this.taxPercentage = element2.percentage;
+                  this.booking.taxPercentage = this.taxPercentage;
+                } else if (element2.maxAmount < discountedPrice) {
+                  this.taxPercentage = element2.percentage;
+                  this.booking.taxPercentage = this.taxPercentage;
+                }
+              });
+            }
+          }
+        }
+      });
+    }
+    let discountAmount = 0;
+      discountAmount = (plan.price * this.specialDiscountData.discountPercentage) / 100;
+      discountedPrice -= discountAmount;
+              if (this.businessUser?.taxDetails?.length > 0) {
+      this.businessUser?.taxDetails.forEach((element) => {
+        if (element.name === 'GST') {
+          this.booking.taxDetails = [];
+          this.booking.taxDetails.push(element);
+          this.taxPercentage = element.percentage;
+          this.booking.taxPercentage = this.taxPercentage;
+
+          if (
+            plan?.code === 'GHC' &&
+            this.activeForGoogleHotelCenter === true
+          ) {
+            if (element.taxSlabsList.length > 0) {
+              element.taxSlabsList.forEach((element2) => {
+                if (
+                  element2.maxAmount >
+                    discountedPrice &&
+                  element2.minAmount < discountedPrice
+                ) {
+                  this.taxPercentage = element2.percentage;
+                  this.booking.taxPercentage = this.taxPercentage;
+                } else if (
+                  element2.maxAmount <
+                  discountedPrice
+                ) {
+                  this.taxPercentage = element2.percentage;
+                  this.booking.taxPercentage = this.taxPercentage;
+                }
+              });
+            }
+          } else {
+            if (element.taxSlabsList.length > 0) {
+              element.taxSlabsList.forEach((element2) => {
+                if (
+                  element2.maxAmount > discountedPrice &&
+                  element2.minAmount < discountedPrice
+                ) {
+                  this.taxPercentage = element2.percentage;
+                  this.booking.taxPercentage = this.taxPercentage;
+                } else if (element2.maxAmount < discountedPrice) {
+                  this.taxPercentage = element2.percentage;
+                  this.booking.taxPercentage = this.taxPercentage;
+                }
+              });
+            }
+          }
+        }
+      });
+    }
+    const taxPercent = this.taxPercentage || 0;
+    const taxAmount = (discountedPrice * taxPercent) / 100;
+
+    return {
+      ...plan,
+      discountedPrice,
+      discountAmount,
+      taxpercentage: taxPercent,
+      taxPercentageperroom: taxAmount,
+      finalPrice: discountedPrice + taxAmount
+    };
+    }
+
   });
 }
         const bookingData = {
