@@ -19,7 +19,7 @@
   (onBookNowClick)="onBookNowClick()"
 >
 </app-Header-Listingdetailsone>
-<div *ngIf="showAllTheOfferList?.length > 0 && !activeForGoogleHotelCenter">
+<div *ngIf="showAllTheOfferList?.length > 0 && !showPayLater()">
   <p-carousel
     class="carousel-section"
     [value]="showAllTheOfferList"
@@ -500,7 +500,7 @@
           </div>
         </ng-container>
       </div>
-      <div *ngIf="!activeForGoogleHotelCenter">
+      <div >
         <small class="special-code"
           >Have a coupon code?
           <span class="special-code-One"
@@ -512,7 +512,7 @@
           errorMessagePrivate
         }}</small>
       </div>
-      <div class="special-sectionOne" *ngIf="!activeForGoogleHotelCenter">
+      <div class="special-sectionOne" >
         <div style="width: 100%">
           <input
             class="input-coupon"
@@ -4338,7 +4338,7 @@
             </div>
           </ng-container>
         </div>
-        <div *ngIf="!activeForGoogleHotelCenter">
+        <div >
           <small class="special-code"
             >Have a coupon code?
             <span class="special-code-One"
@@ -4350,7 +4350,7 @@
             errorMessagePrivate
           }}</small>
         </div>
-        <div class="special-sectionOne" *ngIf="!activeForGoogleHotelCenter">
+        <div class="special-sectionOne" >
           <div style="width: 100%">
             <input
               class="input-coupon"
