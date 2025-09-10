@@ -275,6 +275,7 @@ export class BookingComponent implements OnInit {
   thmMail: string;
   bookingEmailSent:boolean= false;
   channelManagerIntegration: any;
+  isPayNowDisabled: boolean = false;
   constructor(
     private token: TokenStorage,
     private ngZone: NgZone,
@@ -1889,6 +1890,7 @@ if (bookingSummaryStr) {
   }
 
 async  payAndCheckout() {
+  this.isPayNowDisabled = true;
 const bookingSummaryStr = sessionStorage.getItem('bookingSummaryDetails');
 if (bookingSummaryStr) {
   this.bookingSummaryDetails = JSON.parse(bookingSummaryStr);
