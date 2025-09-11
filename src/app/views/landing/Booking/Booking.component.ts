@@ -276,6 +276,7 @@ export class BookingComponent implements OnInit {
   bookingEmailSent:boolean= false;
   channelManagerIntegration: any;
   isPayNowDisabled: boolean = false;
+  websiteUrlBookingEngine: boolean;
   constructor(
     private token: TokenStorage,
     private ngZone: NgZone,
@@ -1745,6 +1746,15 @@ if (bookingSummaryStr) {
     enquiryForm.extraPersonCharge = plan.extraPersonAdultCountAmount;
     enquiryForm.extraChildCharge = plan.extraPersonChildCountAmount;
     enquiryForm.noOfExtraChild = plan.extraCountChild;
+      const bookingEngineFlag = sessionStorage.getItem('BookingEngine');
+      this.websiteUrlBookingEngine = bookingEngineFlag === 'true';
+      if (this.websiteUrlBookingEngine) {
+        enquiryForm.utmSource = "Oragnic";
+        enquiryForm.utmMedium = "BookingEngine"
+      } else  {
+        enquiryForm.utmSource = sessionStorage.getItem('utm_source');
+        enquiryForm.utmMedium = sessionStorage.getItem('utm_medium');
+      }
 
     enquiryForm.roomPrice =
       booking.planCode === 'GHC'
@@ -1890,6 +1900,7 @@ if (bookingSummaryStr) {
   }
 
 async  payAndCheckout() {
+  sessionStorage.removeItem('EnquiryResponseList');
   this.isPayNowDisabled = true;
 const bookingSummaryStr = sessionStorage.getItem('bookingSummaryDetails');
 if (bookingSummaryStr) {
@@ -3530,6 +3541,15 @@ if (bookingSummaryStr) {
     enquiryForm.extraPersonCharge = plan.extraPersonAdultCountAmount;
     enquiryForm.extraChildCharge = plan.extraPersonChildCountAmount;
     enquiryForm.noOfExtraChild = plan.extraCountChild;
+          const bookingEngineFlag = sessionStorage.getItem('BookingEngine');
+      this.websiteUrlBookingEngine = bookingEngineFlag === 'true';
+      if (this.websiteUrlBookingEngine) {
+        enquiryForm.utmSource = "Oragnic";
+        enquiryForm.utmMedium = "BookingEngine"
+      } else  {
+        enquiryForm.utmSource = sessionStorage.getItem('utm_source');
+        enquiryForm.utmMedium = sessionStorage.getItem('utm_medium');
+      }
 
     enquiryForm.roomPrice =
       booking.planCode === 'GHC'
@@ -6252,6 +6272,15 @@ if (bookingSummaryStr) {
     enquiryForm.extraPersonCharge = plan.extraPersonAdultCountAmount;
     enquiryForm.extraChildCharge = plan.extraPersonChildCountAmount;
     enquiryForm.noOfExtraChild = plan.extraCountChild;
+          const bookingEngineFlag = sessionStorage.getItem('BookingEngine');
+      this.websiteUrlBookingEngine = bookingEngineFlag === 'true';
+      if (this.websiteUrlBookingEngine) {
+        enquiryForm.utmSource = "organic";
+        enquiryForm.utmMedium = "bookingEngine"
+      } else  {
+        enquiryForm.utmSource = sessionStorage.getItem('utm_source');
+        enquiryForm.utmMedium = sessionStorage.getItem('utm_medium');
+      }
 
     enquiryForm.roomPrice =
       booking.planCode === 'GHC'
