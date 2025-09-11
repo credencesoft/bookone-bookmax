@@ -1748,12 +1748,19 @@ if (bookingSummaryStr) {
     enquiryForm.noOfExtraChild = plan.extraCountChild;
       const bookingEngineFlag = sessionStorage.getItem('BookingEngine');
       this.websiteUrlBookingEngine = bookingEngineFlag === 'true';
-      if (this.websiteUrlBookingEngine) {
-        enquiryForm.utmSource = "Oragnic";
-        enquiryForm.utmMedium = "BookingEngine"
-      } else  {
+            const utmSessionValue = sessionStorage.getItem('utm_source');
+      if (utmSessionValue && !this.websiteUrlBookingEngine)  {
         enquiryForm.utmSource = sessionStorage.getItem('utm_source');
         enquiryForm.utmMedium = sessionStorage.getItem('utm_medium');
+      } else if (this.websiteUrlBookingEngine && utmSessionValue) {
+        enquiryForm.utmSource = sessionStorage.getItem('utm_source');
+        enquiryForm.utmMedium = sessionStorage.getItem('utm_medium');
+      } else if (this.websiteUrlBookingEngine && !utmSessionValue) {
+        enquiryForm.utmSource = "organic";
+        enquiryForm.utmMedium = "bookingEngine"
+      } else {
+        enquiryForm.utmSource = "organic";
+        enquiryForm.utmMedium = "unknown"
       }
 
     enquiryForm.roomPrice =
@@ -3556,12 +3563,19 @@ if (bookingSummaryStr) {
     enquiryForm.noOfExtraChild = plan.extraCountChild;
           const bookingEngineFlag = sessionStorage.getItem('BookingEngine');
       this.websiteUrlBookingEngine = bookingEngineFlag === 'true';
-      if (this.websiteUrlBookingEngine) {
-        enquiryForm.utmSource = "Oragnic";
-        enquiryForm.utmMedium = "BookingEngine"
-      } else  {
+      const utmSessionValue = sessionStorage.getItem('utm_source');
+      if (utmSessionValue && !this.websiteUrlBookingEngine)  {
         enquiryForm.utmSource = sessionStorage.getItem('utm_source');
         enquiryForm.utmMedium = sessionStorage.getItem('utm_medium');
+      } else if (this.websiteUrlBookingEngine && utmSessionValue) {
+        enquiryForm.utmSource = sessionStorage.getItem('utm_source');
+        enquiryForm.utmMedium = sessionStorage.getItem('utm_medium');
+      } else if (this.websiteUrlBookingEngine && !utmSessionValue) {
+        enquiryForm.utmSource = "organic";
+        enquiryForm.utmMedium = "bookingEngine"
+      } else {
+        enquiryForm.utmSource = "organic";
+        enquiryForm.utmMedium = "unknown"
       }
 
     enquiryForm.roomPrice =
@@ -6300,12 +6314,19 @@ if (bookingSummaryStr) {
     enquiryForm.noOfExtraChild = plan.extraCountChild;
           const bookingEngineFlag = sessionStorage.getItem('BookingEngine');
       this.websiteUrlBookingEngine = bookingEngineFlag === 'true';
-      if (this.websiteUrlBookingEngine) {
-        enquiryForm.utmSource = "organic";
-        enquiryForm.utmMedium = "bookingEngine"
-      } else  {
+      const utmSessionValue = sessionStorage.getItem('utm_source');
+      if (utmSessionValue && !this.websiteUrlBookingEngine)  {
         enquiryForm.utmSource = sessionStorage.getItem('utm_source');
         enquiryForm.utmMedium = sessionStorage.getItem('utm_medium');
+      } else if (this.websiteUrlBookingEngine && utmSessionValue) {
+        enquiryForm.utmSource = sessionStorage.getItem('utm_source');
+        enquiryForm.utmMedium = sessionStorage.getItem('utm_medium');
+      } else if (this.websiteUrlBookingEngine && !utmSessionValue) {
+        enquiryForm.utmSource = "organic";
+        enquiryForm.utmMedium = "bookingEngine"
+      } else {
+        enquiryForm.utmSource = "organic";
+        enquiryForm.utmMedium = "unknown"
       }
 
     enquiryForm.roomPrice =
