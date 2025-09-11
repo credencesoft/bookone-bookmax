@@ -3359,8 +3359,21 @@ if (bookingSummaryStr) {
     booking.fromDate = bookingSummary.fromDate;
     booking.toDate = bookingSummary.toDate;
     booking.currency = this.businessUser.localCurrency;
-    booking.fromTime = new Date(bookingSummary.fromDate).getTime();
-    booking.toTime = new Date(bookingSummary.toDate).getTime();
+        let checkinDateConcat = this.booking.fromDate;
+    let timestamp = this.fromTime;
+    let combinedDateTimeString = checkinDateConcat + ' ' + timestamp;
+    let combinedDateTime = new Date(combinedDateTimeString).getTime();
+    this.combinedDateFromTime = combinedDateTime;
+    let checkoutDateConcat = this.booking.toDate;
+    let timestampcheckout = this.toTime;
+    let combinedCheckouDateTimeString =
+      checkoutDateConcat + ' ' + timestampcheckout;
+    let combinedDateTimeCheckout = new Date(
+      combinedCheckouDateTimeString
+    ).getTime();
+    this.combinedDateToTime = combinedDateTimeCheckout;
+    booking.fromTime = this.combinedDateFromTime;
+    booking.toTime = this.combinedDateToTime;
     booking.modeOfPayment = this.payment.paymentMode;
     booking.externalSite = 'WebSite';
     booking.businessName = this.businessUser.name;
@@ -3559,8 +3572,21 @@ if (bookingSummaryStr) {
     const checkOutDateTime = new Date(
       `${enquiryForm.checkInDate} ${this.toTime}`
     ).getTime();
-    enquiryForm.fromTime = checkInDateTime;
-    enquiryForm.toTime = checkOutDateTime;
+        let checkinDateConcat = this.booking.fromDate;
+    let timestamp = this.fromTime;
+    let combinedDateTimeString = checkinDateConcat + ' ' + timestamp;
+    let combinedDateTime = new Date(combinedDateTimeString).getTime();
+    this.combinedDateFromTime = combinedDateTime;
+    let checkoutDateConcat = this.booking.toDate;
+    let timestampcheckout = this.toTime;
+    let combinedCheckouDateTimeString =
+      checkoutDateConcat + ' ' + timestampcheckout;
+    let combinedDateTimeCheckout = new Date(
+      combinedCheckouDateTimeString
+    ).getTime();
+    this.combinedDateToTime = combinedDateTimeCheckout;
+    enquiryForm.fromTime = this.combinedDateFromTime;
+    enquiryForm.toTime = this.combinedDateToTime;
     this.token.saveTime(String(checkInDateTime));
     this.token.saveToTime(String(checkOutDateTime));
             if(this.groupBookingId){
@@ -6281,8 +6307,21 @@ if (bookingSummaryStr) {
     const checkOutDateTime = new Date(
       `${enquiryForm.checkInDate} ${this.toTime}`
     ).getTime();
-    enquiryForm.fromTime = checkInDateTime;
-    enquiryForm.toTime = checkOutDateTime;
+        let checkinDateConcat = this.booking.fromDate;
+    let timestamp = this.fromTime;
+    let combinedDateTimeString = checkinDateConcat + ' ' + timestamp;
+    let combinedDateTime = new Date(combinedDateTimeString).getTime();
+    this.combinedDateFromTime = combinedDateTime;
+    let checkoutDateConcat = this.booking.toDate;
+    let timestampcheckout = this.toTime;
+    let combinedCheckouDateTimeString =
+      checkoutDateConcat + ' ' + timestampcheckout;
+    let combinedDateTimeCheckout = new Date(
+      combinedCheckouDateTimeString
+    ).getTime();
+    this.combinedDateToTime = combinedDateTimeCheckout;
+    enquiryForm.fromTime = this.combinedDateFromTime;
+    enquiryForm.toTime = this.combinedDateToTime;
     this.token.saveTime(String(checkInDateTime));
     this.token.saveToTime(String(checkOutDateTime));
 
