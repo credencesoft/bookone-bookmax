@@ -6420,7 +6420,7 @@ if (bookingSummaryStr) {
     bookingForm.roomTariffBeforeDiscount = plan.actualRoomPrice;
     bookingForm.totalRoomTariffBeforeDiscount = plan.actualRoomPrice * plan.nights * plan.selectedRoomnumber;
     bookingForm.totalBookingAmount = bookingForm.totalRoomTariffBeforeDiscount;
-    this.saveEnquiryTHM(bookingForm);
+    // this.saveEnquiryTHM(bookingForm);
     try {
       const response: HttpResponse<EnquiryDto> = await this.hotelBookingService
         .accommodationEnquiry(enquiryForm)
