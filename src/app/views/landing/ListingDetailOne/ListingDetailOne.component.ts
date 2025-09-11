@@ -184,6 +184,8 @@ currentPage = 0; // page index
   errorMessagePrivate: string;
   smartRecommendationsBoolean: any;
   taxTotalSingle: number;
+  utmMedium: any;
+  utmSource: any;
   toggleListingDetails() {
     this.showListingDetails = !this.showListingDetails;
   }
@@ -1163,7 +1165,22 @@ guestDataArray: Array<{
       if (params['checkinYear'] !== undefined) {
         this.checkinYear = params['checkinYear'];
       }
+        if (params['utm_medium'] !== undefined) {
+        this.utmMedium = params['utm_medium'];
+        sessionStorage.setItem('utm_medium', this.utmMedium);
+      }
 
+      if (params['utm_medium'] == undefined) {
+        sessionStorage.removeItem('utm_medium');
+      }
+
+      if (params['utm_source'] !== undefined) {
+        this.utmSource = params['utm_source'];
+        sessionStorage.setItem('utm_source', this.utmSource);
+      }
+       if (params['utm_source'] == undefined) {
+        sessionStorage.removeItem('utm_source');
+      }
       if (params['nights'] !== undefined) {
         this.nights = params['nights'];
       }

@@ -76,6 +76,8 @@ import { TaxDetails } from "./TaxDetails";
     groupEnquiryId: any;
     paymentStatus: string;
     enquiryType: string;
+    utmSource: string;
+    utmMedium: string;
     // noOfNights:number;
     // counterName:string;
   }

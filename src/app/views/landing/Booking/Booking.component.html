@@ -444,7 +444,7 @@
           <button
             class="btn btn-primary text-white FB"
             type="button"
-            [disabled]="paymentLoader || submitButtonDisable || !validateFrom()"
+            [disabled]="isPayNowDisabled || paymentLoader || submitButtonDisable || !validateFrom()"
             *ngIf="value === true && businessUser.paymentGateway != null"
             (click)="payAndCheckout()"
           >
@@ -453,7 +453,7 @@
           <button
             class="btn btn-primary text-white FB"
             type="button"
-            [disabled]="paymentLoader || submitButtonDisable || !validateFrom()"
+            [disabled]="isPayNowDisabled || paymentLoader || submitButtonDisable || !validateFrom()"
             (click)="onCashPaymentSubmit()"
             *ngIf="
               businessUser.paymentGateway == null &&
@@ -1311,7 +1311,7 @@
             class="Fillpaybtn"
             type="button"
             style="font-size: 19px"
-            [disabled]="
+            [disabled]="isPayNowDisabled ||
               ((!paymentLoader || !submitButtonDisable) && !validateFrom()) ||
               !termsAccepted
             "
@@ -1978,7 +1978,7 @@
             class="Fillpaybtn"
             type="button"
             style="font-size: 19px"
-            [disabled]="
+            [disabled]=" isPayNowDisabled ||
               ((!paymentLoader || !submitButtonDisable) && !validateFrom()) ||
               !termsAccepted
             "

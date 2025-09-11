@@ -2,7 +2,7 @@
 // import { Email } from './../ecosystem/ecosystem.component';
 // import { Component } from '@angular/core';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
-import { ChangeDetectorRef, Component } from '@angular/core';
+import { ChangeDetectorRef, Component, NgZone } from '@angular/core';
 import { Router } from '@angular/router';
 import { CheckoutService } from 'paytm-blink-checkout-angular';
 import { Subscription } from 'rxjs';
@@ -41,7 +41,7 @@ export class CheckoutRazorpayComponent {
 
   constructor(
     // private readonly checkoutService: CheckoutService,
-
+    private zone: NgZone,
     private token: TokenStorage,
     private hotelBookingService: HotelBookingService,
 
@@ -119,11 +119,13 @@ initiatePayment() {
     order_id: this.payment.razorpayOrderId,
     handler: (response: any) => {
       if (response?.razorpay_payment_id) {
-        this.subs = response;
-        this.processResponse(response);
+        // 👇 Make sure Angular knows about this async callback
+        this.zone.run(() => {
+          this.processResponse(response);
+        });
       }
     },
-    prefill: {
+        prefill: {
       name: this.booking?.firstName,
       email: this.booking?.email,
       contact: this.booking?.mobile
@@ -135,16 +137,13 @@ initiatePayment() {
       color: '#61CE70'
     },
     modal: {
-  ondismiss: () => {
-    console.warn('Payment popup closed by user.');
-    const redirectUrl = sessionStorage?.getItem('PropertyUrl');
-    // Redirect to external URL if it's full path
-
-
-     window.location.href = '/confirm';
+      ondismiss: () => {
+        console.warn('Payment popup closed by user.');
+        this.zone.run(() => {
+          this.router.navigate(['/confirm']); // fallback page
+        });
+      }
     }
-}
-
   };
 
   const razorpayObject = new Razorpay(options);
