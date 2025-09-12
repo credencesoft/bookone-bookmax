@@ -2191,6 +2191,9 @@
                           [src]="image.url"
                           [alt]="image.caption || 'Room Image'"
                           class="w-full border-round border-radius-20px"
+                          style="width: 100%;
+                          height: 300px;
+                          object-fit: cover;"
                         />
                         <div
                           *ngIf="image.caption"
@@ -2251,7 +2254,7 @@
                   "
                 >
                   <ng-container
-                    *ngFor="let plan of rates?.roomRatePlans; let p = index"
+                    *ngFor="let plan of getFilteredPlans(rates?.roomRatePlans); let p = index"
                   >
                     <div
                       class="popup-card"
@@ -2322,7 +2325,7 @@
                   "
                 >
                   <ng-container
-                    *ngFor="let plan of rates?.roomRatePlans; let p = index"
+                    *ngFor="let plan of getFilteredPlans(rates?.roomRatePlans); let p = index"
                   >
                     <div class="popup-card">
                       <h4 class="popup-plan">{{ plan.name }}</h4>
@@ -3651,6 +3654,9 @@
                           [src]="image.url"
                           [alt]="image.caption || 'Room Image'"
                           class="w-full border-round border-radius-20px"
+                          style="width: 100%;
+                                height: 300px;
+                                object-fit: cover;"
                         />
                         <div
                           *ngIf="image.caption"
