@@ -3,6 +3,7 @@ import { Router, NavigationEnd, ActivatedRoute  } from '@angular/router';
 import { Meta, Title } from '@angular/platform-browser';
 import { filter, map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
+declare const dataLayer: any;
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -33,6 +34,18 @@ export class AppComponent implements OnInit {
     // ....
     // SEO metadata
     // this.title.setTitle(this.course.description);
+     this.router.events
+      .pipe(filter(event => event instanceof NavigationEnd))
+      .subscribe((event: NavigationEnd) => {
+        if (typeof dataLayer !== 'undefined') {
+          dataLayer.push({
+            event: 'virtual_pageview',
+            pagePath: event.urlAfterRedirects,
+            pageTitle: document.title,
+            referrer: document.referrer,
+          });
+        }
+      });
 
 
     const appTitle = this.titleService.getTitle();
