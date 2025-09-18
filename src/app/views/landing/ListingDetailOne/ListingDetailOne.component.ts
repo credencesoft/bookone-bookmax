@@ -1168,19 +1168,18 @@ guestDataArray: Array<{
         if (params['utm_medium'] !== undefined) {
         this.utmMedium = params['utm_medium'];
         sessionStorage.setItem('utm_medium', this.utmMedium);
-      }
-
-      if (params['utm_medium'] == undefined) {
+      } else {
         sessionStorage.removeItem('utm_medium');
       }
+
 
       if (params['utm_source'] !== undefined && params['utm_source'] != '') {
         this.utmSource = params['utm_source'];
         sessionStorage.setItem('utm_source', this.utmSource);
-      }
-       if (params['utm_source'] == undefined && params['utm_source'] != '') {
+      } else {
         sessionStorage.removeItem('utm_source');
       }
+
       if (params['nights'] !== undefined) {
         this.nights = params['nights'];
       }
