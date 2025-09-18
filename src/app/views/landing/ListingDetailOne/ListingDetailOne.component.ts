@@ -1139,8 +1139,8 @@ guestDataArray: Array<{
     }
 
     this.acRoute.queryParams.subscribe((params) => {
-      if (params['BookingEngine'] !== undefined) {
-        this.urlLocation = params['BookingEngine'];
+      if (params['bookingEngine'] !== undefined) {
+        this.urlLocation = params['bookingEngine'];
         let websitebookingURL = 'true';
         this.websiteUrlBookingEngine = true;
         this.token.savewebsitebookingURL(websitebookingURL);
@@ -1431,7 +1431,14 @@ if (storedBooking) {
 getTotalAdults(): number {
   return this.selectedPlansSummary.reduce((sum, plan) => sum + (plan.adults || 0), 0);
 }
-
+getFilteredPlans(plans: any[]) {
+  if (!plans) return [];
+  return this.websiteUrlBookingEngine
+    ? plans.filter(
+        p => p.name?.trim().toLowerCase() !== 'economy'
+      )
+    : plans;
+}
 getTotalChildren(): number {
   return this.selectedPlansSummary.reduce((sum, plan) => sum + (plan.children || 0), 0);
 }
@@ -6773,11 +6780,20 @@ get totalEachPlanPrice(): number {
 
   expandedRooms: string[] = [];
 
-  isPlanVisible(filteredPlans: any, roomName: string) {
-    return this.expandedRooms.includes(roomName)
-      ? filteredPlans
-      : filteredPlans.slice(0, 3);
-  }
+isPlanVisible(filteredPlans: any[], roomName: string) {
+  // If websiteBookingEngine is true, remove "Economy" plans first
+  this.websiteUrlBookingEngine;
+  let plans = this.websiteUrlBookingEngine
+    ? filteredPlans.filter(
+        (plan: any) => plan.name?.trim().toLowerCase() !== 'economy'
+      )
+    : filteredPlans;
+
+  // Then handle expanded/collapsed logic
+  return this.expandedRooms.includes(roomName)
+    ? plans
+    : plans.slice(0, 3);
+}
 
   toggleRoomExpansion(roomName: string): void {
     const index = this.expandedRooms.indexOf(roomName);
