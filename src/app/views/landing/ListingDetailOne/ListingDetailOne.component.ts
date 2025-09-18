@@ -1174,11 +1174,11 @@ guestDataArray: Array<{
         sessionStorage.removeItem('utm_medium');
       }
 
-      if (params['utm_source'] !== undefined) {
+      if (params['utm_source'] !== undefined && params['utm_source'] != '') {
         this.utmSource = params['utm_source'];
         sessionStorage.setItem('utm_source', this.utmSource);
       }
-       if (params['utm_source'] == undefined) {
+       if (params['utm_source'] == undefined && params['utm_source'] != '') {
         sessionStorage.removeItem('utm_source');
       }
       if (params['nights'] !== undefined) {
