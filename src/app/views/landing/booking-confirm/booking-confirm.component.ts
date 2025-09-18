@@ -139,6 +139,8 @@ textToCopyOne: string = 'This is some text to copy';
   specialDiscountPercentage: any;
     websiteUrlBookingEngine: boolean = false;
   loadingData: boolean = true;
+  toTime: number;
+  fromTime: number;
   constructor(
     private http: HttpClient,
     private token: TokenStorage,
@@ -702,8 +704,38 @@ checkValidCouponOrNot(couponList?){
     booking.fromDate = bookingSummary.fromDate;
     booking.toDate = bookingSummary.toDate;
     booking.currency = this.businessUser.localCurrency;
-    booking.fromTime = Number(this.token.getFromTime());
-    booking.toTime = Number(this.token.getToTime());
+let checkinDateConcat = this.booking.fromDate;          // e.g. "2025-09-12"
+let fromTimeTimestamp = Number(this.token.getFromTime()); // e.g. 1757660400000
+
+// Step 1: Extract hours/minutes/seconds from the timestamp
+let fromTimeDate = new Date(fromTimeTimestamp);
+let hours = fromTimeDate.getHours();
+let minutes = fromTimeDate.getMinutes();
+let seconds = fromTimeDate.getSeconds();
+
+// Step 2: Build combined datetime using booking date
+let combinedDate = new Date(checkinDateConcat); // midnight of booking date
+combinedDate.setHours(hours, minutes, seconds, 0);
+
+// Step 3: Convert to final timestamp
+this.combinedDateFromTime = combinedDate.getTime();
+let checkoutDateConcat = this.booking.toDate;            // e.g. "2025-09-13"
+let toTimeTimestamp = Number(this.token.getToTime());    // e.g. 1757700000000
+
+// Step 1: Extract hours/minutes/seconds from toTime timestamp
+let toTimeDate = new Date(toTimeTimestamp);
+let toHours = toTimeDate.getHours();
+let toMinutes = toTimeDate.getMinutes();
+let toSeconds = toTimeDate.getSeconds();
+
+// Step 2: Build combined datetime using checkout date
+let combinedCheckoutDate = new Date(checkoutDateConcat); // midnight of checkout date
+combinedCheckoutDate.setHours(toHours, toMinutes, toSeconds, 0);
+
+// Step 3: Convert to final timestamp
+this.combinedDateToTime = combinedCheckoutDate.getTime();
+    booking.fromTime = this.combinedDateFromTime;
+    booking.toTime = this.combinedDateToTime;
     booking.modeOfPayment = this.payment.paymentMode;
     booking.externalSite = 'WebSite';
     booking.businessName = this.businessUser.name;

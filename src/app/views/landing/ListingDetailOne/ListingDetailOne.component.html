@@ -2008,7 +2008,7 @@
 
   <div class="margin-top-40px display-flex">
     <div class="col-12 col-lg-7">
-      <div>
+      <div *ngIf="propertyServiceListData">
         <h4 class="aminities-highlights">Property Highlights</h4>
         <div
           class="card margin-top-20px"
@@ -2116,7 +2116,7 @@
       </div>
     </div>
     <div class="col-12 col-lg-5">
-      <div>
+      <div *ngIf="isRestaurant || distance || DistanceRailway">
         <h4 class="aminities-highlights">About Property</h4>
         <div
           class="card margin-top-20px"
@@ -2191,6 +2191,9 @@
                           [src]="image.url"
                           [alt]="image.caption || 'Room Image'"
                           class="w-full border-round border-radius-20px"
+                          style="width: 100%;
+                          height: 300px;
+                          object-fit: cover;"
                         />
                         <div
                           *ngIf="image.caption"
@@ -2251,7 +2254,7 @@
                   "
                 >
                   <ng-container
-                    *ngFor="let plan of rates?.roomRatePlans; let p = index"
+                    *ngFor="let plan of getFilteredPlans(rates?.roomRatePlans); let p = index"
                   >
                     <div
                       class="popup-card"
@@ -2322,7 +2325,7 @@
                   "
                 >
                   <ng-container
-                    *ngFor="let plan of rates?.roomRatePlans; let p = index"
+                    *ngFor="let plan of getFilteredPlans(rates?.roomRatePlans); let p = index"
                   >
                     <div class="popup-card">
                       <h4 class="popup-plan">{{ plan.name }}</h4>
@@ -3651,6 +3654,9 @@
                           [src]="image.url"
                           [alt]="image.caption || 'Room Image'"
                           class="w-full border-round border-radius-20px"
+                          style="width: 100%;
+                                height: 300px;
+                                object-fit: cover;"
                         />
                         <div
                           *ngIf="image.caption"
@@ -4526,7 +4532,7 @@
   <div class="margin-top-30px">
     <div class="row mr-0 ml-0">
       <div class="col-lg-12 pl-0 pr-0">
-        <div style="margin-top: 20px">
+        <div style="margin-top: 20px" *ngIf="businessUser.businessDescription">
           <div
             style="
               background-color: #e5f9ff80;
