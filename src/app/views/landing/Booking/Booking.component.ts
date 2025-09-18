@@ -1758,6 +1758,9 @@ if (bookingSummaryStr) {
       } else if (this.websiteUrlBookingEngine && !utmSessionValue) {
         enquiryForm.utmSource = "organic";
         enquiryForm.utmMedium = "bookingEngine"
+      } else if (this.activeGoogleCenter && !utmSessionValue) {
+        enquiryForm.utmSource = "organic";
+        enquiryForm.utmMedium = "ghc";
       } else {
         enquiryForm.utmSource = "organic";
         enquiryForm.utmMedium = "unknown"
@@ -3573,6 +3576,9 @@ if (bookingSummaryStr) {
       } else if (this.websiteUrlBookingEngine && !utmSessionValue) {
         enquiryForm.utmSource = "organic";
         enquiryForm.utmMedium = "bookingEngine"
+      } else if (this.activeGoogleCenter && !utmSessionValue) {
+        enquiryForm.utmSource = "organic";
+        enquiryForm.utmMedium = "ghc";
       } else {
         enquiryForm.utmSource = "organic";
         enquiryForm.utmMedium = "unknown"
@@ -6324,6 +6330,9 @@ if (bookingSummaryStr) {
       } else if (this.websiteUrlBookingEngine && !utmSessionValue) {
         enquiryForm.utmSource = "organic";
         enquiryForm.utmMedium = "bookingEngine"
+      }else if (this.activeGoogleCenter && !utmSessionValue) {
+        enquiryForm.utmSource = "organic";
+        enquiryForm.utmMedium = "ghc";
       } else {
         enquiryForm.utmSource = "organic";
         enquiryForm.utmMedium = "unknown"
