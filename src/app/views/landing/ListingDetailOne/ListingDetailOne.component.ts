@@ -938,17 +938,6 @@ guestDataArray: Array<{
     private cd: ChangeDetectorRef
   ) {
         this.acRoute.queryParams.subscribe((params) => {
-      if (params['bookingEngine'] !== undefined) {
-        this.urlLocation = params['bookingEngine'];
-        let websitebookingURL = 'true';
-        this.websiteUrlBookingEngine = true;
-        this.token.savewebsitebookingURL(websitebookingURL);
-
-      }
-        if (params['bookingEngine'] === undefined) {
-                  sessionStorage.removeItem('BookingEngine');
-        }
-
       if (params['hotelID'] !== undefined) {
         this.hotelID = params['hotelID'];
       }
@@ -994,16 +983,25 @@ guestDataArray: Array<{
       if (params['totalAmount'] !== undefined) {
         this.totalAmountParam = params['totalAmount'];
       }
+      if (this.hotelID != null && this.hotelID != undefined) {
+        this.getPropertyDetailsById(this.hotelID);
+        this.personChange();
+      }
+           if (params['bookingEngine'] !== undefined) {
+        this.urlLocation = params['bookingEngine'];
+        let websitebookingURL = 'true';
+        this.websiteUrlBookingEngine = true;
+        this.token.savewebsitebookingURL(websitebookingURL);
+
+      }
+        if (params['bookingEngine'] === undefined) {
+                  sessionStorage.removeItem('BookingEngine');
+        }
 
       this.landingrice = Number(
         (this.totalAmountParam - this.taxAmountParam).toFixed(2)
       );
       this.token.saveLandingPrice(this.landingrice);
-
-      if (this.hotelID != null && this.hotelID != undefined) {
-        this.getPropertyDetailsById(this.hotelID);
-        this.personChange();
-      }
       if (this.checkinDay && this.checkinMonth && this.checkinYear) {
   const year = Number(this.checkinYear);
   const month = Number(this.checkinMonth);
@@ -4888,13 +4886,13 @@ getOfferList(seo: string) {
     return matchedAmounts;
   }
 
-  toggleReviewText(index: number): void {
-    this.expandedReviews[index] = !this.expandedReviews[index];
-  }
-  const = document.getElementsByClassName('booking-summary')[0];
-  if(bookingSummaryElement) {
-    bookingSummaryElement.scrollIntoView();
-  }
+  // toggleReviewText(index: number): void {
+  //   this.expandedReviews[index] = !this.expandedReviews[index];
+  // }
+  // const = document.getElementsByClassName('booking-summary')[0];
+  // if(bookingSummaryElement) {
+  //   bookingSummaryElement.scrollIntoView();
+  // }
 
   getWhatsappShareUrl(): string {
     const baseUrl = 'https://api.whatsapp.com/send';
