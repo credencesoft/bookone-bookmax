@@ -2246,7 +2246,7 @@ resetLastChangedAge(planCode: string) {
           this.booking.taxDetails = [];
           this.booking.taxDetails.push(element);
           this.taxPercentage = element.percentage;
-          this.booking.taxPercentage = this.taxPercentage;
+          // this.booking.taxPercentage = this.taxPercentage;
 
           if (
             plan?.code === 'GHC' &&
@@ -2255,12 +2255,12 @@ resetLastChangedAge(planCode: string) {
             if (element.taxSlabsList.length > 0) {
               element.taxSlabsList.forEach((element2) => {
                 if (
-                  element2.maxAmount >
+                  element2.maxAmount >=
                     price +
                       (extraPersonAdultCountAmount +
                         extraPersonChildCountAmount) /
                         nights &&
-                  element2.minAmount <
+                  element2.minAmount <=
                     this.booking.roomPrice +
                       (extraPersonAdultCountAmount +
                         extraPersonChildCountAmount) /
@@ -2269,14 +2269,14 @@ resetLastChangedAge(planCode: string) {
                   this.taxPercentage = element2.percentage;
                   this.booking.taxPercentage = this.taxPercentage;
                 } else if (
-                  element2.maxAmount <
+                  element2.maxAmount <=
                   price +
                     (extraPersonAdultCountAmount +
                       extraPersonChildCountAmount) /
                       nights
                 ) {
                   this.taxPercentage = element2.percentage;
-                  this.booking.taxPercentage = this.taxPercentage;
+                  // this.booking.taxPercentage = this.taxPercentage;
                 }
               });
             }
@@ -2284,14 +2284,14 @@ resetLastChangedAge(planCode: string) {
             if (element.taxSlabsList.length > 0) {
               element.taxSlabsList.forEach((element2) => {
                 if (
-                  element2.maxAmount > this.actualroompriceCharge &&
-                  element2.minAmount < this.actualroompriceCharge
+                  element2.maxAmount >= this.actualroompriceCharge &&
+                  element2.minAmount <= this.actualroompriceCharge
                 ) {
                   this.taxPercentage = element2.percentage;
-                  this.booking.taxPercentage = this.taxPercentage;
-                } else if (element2.maxAmount < this.actualroompriceCharge) {
+                  // this.booking.taxPercentage = this.taxPercentage;
+                } else if (element2.maxAmount <= this.actualroompriceCharge) {
                   this.taxPercentage = element2.percentage;
-                  this.booking.taxPercentage = this.taxPercentage;
+                  // this.booking.taxPercentage = this.taxPercentage;
                 }
               });
             }
@@ -2299,7 +2299,9 @@ resetLastChangedAge(planCode: string) {
         }
       });
     }
-                  this.taxTotalSingle = 0;
+
+    const taxpercentage = this.taxPercentage;
+                      this.taxTotalSingle = 0;
               this.daterangefilterSeo?.forEach((_, i) => {
                   this.taxTotalSingle += this.calculateTaxAmount(
                     (actualRoomPrice * selectedRoomnumber) +
@@ -2308,7 +2310,6 @@ resetLastChangedAge(planCode: string) {
                     plan
                   );
               });
-    const taxpercentage = this.booking.taxPercentage;
     const taxPercentageperroom = this.taxTotalSingle;
 
     const summaryEntry = {
@@ -2538,15 +2539,15 @@ calculateTaxAmount(basePrice: number, plan: any): number {
             if (element.taxSlabsList.length > 0) {
               element.taxSlabsList.forEach((element2) => {
                 if (
-                  element2.maxAmount >
+                  element2.maxAmount >=
                     basePrice &&
-                  element2.minAmount <
+                  element2.minAmount <=
                     basePrice
                 ) {
                   this.taxPercentage = element2.percentage;
                   this.booking.taxPercentage = this.taxPercentage;
                 } else if (
-                  element2.maxAmount <
+                  element2.maxAmount <=
                   basePrice
                 ) {
                   this.taxPercentage = element2.percentage;
@@ -2558,12 +2559,12 @@ calculateTaxAmount(basePrice: number, plan: any): number {
             if (element.taxSlabsList.length > 0) {
               element.taxSlabsList.forEach((element2) => {
                 if (
-                  element2.maxAmount > basePrice &&
-                  element2.minAmount < basePrice
+                  element2.maxAmount >= basePrice &&
+                  element2.minAmount <= basePrice
                 ) {
                   this.taxPercentage = element2.percentage;
                   this.booking.taxPercentage = this.taxPercentage;
-                } else if (element2.maxAmount < basePrice) {
+                } else if (element2.maxAmount <= basePrice) {
                   this.taxPercentage = element2.percentage;
                   this.booking.taxPercentage = this.taxPercentage;
                 }
@@ -4642,12 +4643,12 @@ getOfferList(seo: string) {
             if (element.taxSlabsList.length > 0) {
               element.taxSlabsList.forEach((element2) => {
                 if (
-                  element2.maxAmount >
+                  element2.maxAmount >=
                     this.booking.roomPrice +
                       (this.booking.extraPersonCharge +
                         this.booking.extraChildCharge) /
                         this.booking.noOfNights &&
-                  element2.minAmount <
+                  element2.minAmount <=
                     this.booking.roomPrice +
                       (this.booking.extraPersonCharge +
                         this.booking.extraChildCharge) /
@@ -4656,7 +4657,7 @@ getOfferList(seo: string) {
                   this.taxPercentage = element2.percentage;
                   this.booking.taxPercentage = this.taxPercentage;
                 } else if (
-                  element2.maxAmount <
+                  element2.maxAmount <=
                   this.booking.roomPrice +
                     (this.booking.extraPersonCharge +
                       this.booking.extraChildCharge) /
@@ -4671,12 +4672,12 @@ getOfferList(seo: string) {
             if (element.taxSlabsList.length > 0) {
               element.taxSlabsList.forEach((element2) => {
                 if (
-                  element2.maxAmount > this.booking.netAmount &&
-                  element2.minAmount < this.booking.netAmount
+                  element2.maxAmount >= this.booking.netAmount &&
+                  element2.minAmount <= this.booking.netAmount
                 ) {
                   this.taxPercentage = element2.percentage;
                   this.booking.taxPercentage = this.taxPercentage;
-                } else if (element2.maxAmount < this.booking.netAmount) {
+                } else if (element2.maxAmount <= this.booking.netAmount) {
                   this.taxPercentage = element2.percentage;
                   this.booking.taxPercentage = this.taxPercentage;
                 }
