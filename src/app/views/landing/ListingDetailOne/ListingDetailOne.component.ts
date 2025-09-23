@@ -987,21 +987,6 @@ guestDataArray: Array<{
         this.getPropertyDetailsById(this.hotelID);
         this.personChange();
       }
-           if (params['bookingEngine'] !== undefined) {
-        this.urlLocation = params['bookingEngine'];
-        let websitebookingURL = 'true';
-        this.websiteUrlBookingEngine = true;
-        this.token.savewebsitebookingURL(websitebookingURL);
-
-      }
-        if (params['bookingEngine'] === undefined) {
-                  sessionStorage.removeItem('BookingEngine');
-        }
-
-      this.landingrice = Number(
-        (this.totalAmountParam - this.taxAmountParam).toFixed(2)
-      );
-      this.token.saveLandingPrice(this.landingrice);
       if (this.checkinDay && this.checkinMonth && this.checkinYear) {
   const year = Number(this.checkinYear);
   const month = Number(this.checkinMonth);
@@ -1018,6 +1003,22 @@ guestDataArray: Array<{
     this.checkoutDate = `${checkin.getFullYear()}-${('0' + (checkin.getMonth() + 1)).slice(-2)}-${('0' + checkin.getDate()).slice(-2)}`;
   }
 }
+           if (params['bookingEngine'] !== undefined) {
+        this.urlLocation = params['bookingEngine'];
+        let websitebookingURL = 'true';
+        this.websiteUrlBookingEngine = true;
+        this.token.savewebsitebookingURL(websitebookingURL);
+
+      }
+        if (params['bookingEngine'] === undefined) {
+                  sessionStorage.removeItem('BookingEngine');
+        }
+
+      this.landingrice = Number(
+        (this.totalAmountParam - this.taxAmountParam).toFixed(2)
+      );
+      this.token.saveLandingPrice(this.landingrice);
+
       if (!params['hotelID'] && !params['BookingEngine']) {
         this.getDynamicNameFromUrl(this.currentUrl);
       }
