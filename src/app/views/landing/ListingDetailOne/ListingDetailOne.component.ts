@@ -11,6 +11,8 @@ import {
   ViewChild,
   EventEmitter,
   Output,
+  PLATFORM_ID,
+  Inject,
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
@@ -21,7 +23,7 @@ import {
   NgbDateStruct,
   NgbModal,
 } from '@ng-bootstrap/ng-bootstrap';
-import { DatePipe, Location, ViewportScroller } from '@angular/common';
+import { DatePipe, isPlatformBrowser, Location, ViewportScroller } from '@angular/common';
 import { Booking } from 'src/app/model/booking';
 import { BusinessServiceDtoList } from 'src/app/model/businessServiceDtoList';
 import { DateModel } from 'src/app/model/dateModel';
@@ -85,6 +87,7 @@ interface RoomOne {
   encapsulation: ViewEncapsulation.None,
 })
 export class ListingDetailOneComponent implements OnInit {
+  isLoadingProperty : boolean;
   roomLowestPrices: { [roomId: string]: number | null } = {};
   roomLowestPricesBookingEngine: { [roomId: string]: number | null } = {};
   additionalRooms: RoomOne[] = [];
@@ -935,7 +938,8 @@ guestDataArray: Array<{
     private metaService: Meta,
     private sanitizer: DomSanitizer,
     private viewportScroller: ViewportScroller,
-    private cd: ChangeDetectorRef
+    private cd: ChangeDetectorRef,
+    @Inject(PLATFORM_ID) private platformId: Object,
   ) {
         this.acRoute.queryParams.subscribe((params) => {
       if (params['hotelID'] !== undefined) {
@@ -971,6 +975,7 @@ guestDataArray: Array<{
       }
       if (params['Children'] !== undefined) {
         this.childno = params['Children'];
+        this.children = Number(this.childno);
       }
       if (params['userCurrency'] !== undefined) {
         this.currency = params['userCurrency'];
@@ -1104,7 +1109,12 @@ guestDataArray: Array<{
            if ( this.adults == null && this.adults == undefined ) {
           this.adults = 1
         }
-      this.children = 0;
+        if (this.childno == null && this.childno == undefined) {
+          this.children = 0;
+        } else {
+          this.children = Number(this.childno);
+        }
+
       this.noOfrooms = 1;
       this.rooms = 1;
 
@@ -1198,7 +1208,12 @@ guestDataArray: Array<{
           this.adults = totalAdults - additionalAdults;
 
           // Optional for children
-          const totalChildren = this.booking.noOfChildren || 0;
+          if (this.childno == null && this.childno == undefined) {
+          this.children = 0;
+        } else {
+          this.children = Number(this.childno);
+        }
+          const totalChildren = this.children || 0;
           const additionalChildren = this.additionalRooms?.reduce(
             (sum, room) => sum + (room.children || 0),
             0
@@ -1208,7 +1223,6 @@ guestDataArray: Array<{
         }
       }
 
-      this.children = this.booking.noOfChildren;
       this.rooms = this.booking.noOfRooms;
 
       this.taxPercentage = this.booking.taxPercentage;
@@ -1218,7 +1232,11 @@ guestDataArray: Array<{
            if ( this.adults == null && this.adults == undefined ) {
       this.adults = 1
      }
-      this.children = 0;
+     if (this.childno == null && this.childno == undefined) {
+          this.children = 0;
+        } else {
+          this.children = Number(this.childno);
+        }
       this.noOfrooms = 1;
       this.rooms = 1;
     }
@@ -1513,6 +1531,14 @@ onAddonToggle(addonName: string, checked: boolean) {
       this.adults + this.additionalRooms.reduce((sum, r) => sum + r.adults, 0)
     );
   }
+
+get totalChildren(): number {
+  const childno = Number(this.children); // ensures number
+  const additionalChildren = this.additionalRooms.reduce(
+    (sum, r) => sum + Number(r.children || 0), 0
+  );
+  return childno + additionalChildren;
+}
     openWhatsappPopup() {
     this.showWhatsappPopup = true;
   }
@@ -1665,12 +1691,7 @@ showSliderPopup() {
     this.isPanelOpen = false;
   }
 
-  get totalChildren(): number {
-    return (
-      this.children +
-      this.additionalRooms.reduce((sum, r) => sum + r.children, 0)
-    );
-  }
+
   isBookingAllowed(): boolean {
   const selectedRooms = this.selectedPlansSummary?.reduce(
     (total, plan) => total + (plan.selectedRoomnumber || 0),
@@ -3653,12 +3674,14 @@ if (roomKey) {
   // }
 
   async getPropertyDetailsById(id: number) {
-
+    this.isLoadingProperty = true;
+ this.loader = true;
     try {
       this.loader = true;
       const data = await this.listingService?.findByPropertyId(id).toPromise();
       if (data.status === 200) {
         this.businessUser = data.body;
+        this.isLoadingProperty = false;
         this.generateAndSetSchema();
         this.getOfferList(this.businessUser.seoFriendlyName);
         this.getGoogleReview(this.businessUser.id);
@@ -3843,11 +3866,15 @@ if (roomKey) {
         this.loader = false;
         this.changeDetectorRefs.detectChanges();
       } else {
-        this.router.navigate(['/error']);
+        this.isLoadingProperty = false;
+        this.router.navigate(["/error"]);
       }
     } catch (error) {
+       if (isPlatformBrowser(this.platformId)) {
+      this.router.navigate(["/error"]);
+      }
+      this.isLoadingProperty = false;
       this.loader = false;
-      this.router.navigate(['/error']);
       // Handle the error appropriately, if needed.
     }
   }
