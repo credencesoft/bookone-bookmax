@@ -1101,7 +1101,9 @@ guestDataArray: Array<{
       this.todayDate = calendar.getToday();
       this.selectedServices = [];
       this.toDate = this.calendar.getNext(this.calendar.getToday(), 'd', 1);
-      this.adults = 1;
+           if ( this.adults == null && this.adults == undefined ) {
+          this.adults = 1
+        }
       this.children = 0;
       this.noOfrooms = 1;
       this.rooms = 1;
@@ -1185,7 +1187,7 @@ guestDataArray: Array<{
         if (bookingData) {
           this.booking = bookingData;
 
-          const totalAdults = this.booking.noOfPersons || 1;
+          const totalAdults = this.adults || 1;
 
 
           const additionalAdults = this.additionalRooms?.reduce(
@@ -1213,7 +1215,9 @@ guestDataArray: Array<{
     } else {
       this.fromDate = this.calendar.getToday();
       this.toDate = this.calendar.getNext(this.calendar.getToday(), 'd', 1);
-      this.adults = 1;
+           if ( this.adults == null && this.adults == undefined ) {
+      this.adults = 1
+     }
       this.children = 0;
       this.noOfrooms = 1;
       this.rooms = 1;
