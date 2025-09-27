@@ -376,7 +376,8 @@
                 <tr
                   *ngFor="let booking of bookingsResponseList; let last = last"
                 >
-                  <td>{{ booking.roomRatePlanName }}</td>
+                  <td><b>{{booking.roomName}} </b> <br/>
+                    {{ booking.roomRatePlanName }}</td>
                   <td>
                     ₹{{
                       booking.beforeTaxAmount - (booking.extraPersonCharge - booking.extraChildCharge)
@@ -810,7 +811,8 @@
           <div class="booking-summary-container">
                       <ng-container *ngFor="let booking of bookingsResponseList; let last = last">
               <div class="d-flex justify-content-between">
-              <div style="font-weight: bold;">{{ booking.roomRatePlanName }}</div>
+              <div ><b>{{booking.roomName}} </b> <br/>
+                    {{ booking.roomRatePlanName }}</div>
               <div>₹{{
                       booking.beforeTaxAmount - (booking.extraPersonCharge - booking.extraChildCharge)
                         | number : "1.2-2"

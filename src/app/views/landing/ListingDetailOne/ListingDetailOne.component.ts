@@ -11,6 +11,8 @@ import {
   ViewChild,
   EventEmitter,
   Output,
+  PLATFORM_ID,
+  Inject,
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
@@ -21,7 +23,7 @@ import {
   NgbDateStruct,
   NgbModal,
 } from '@ng-bootstrap/ng-bootstrap';
-import { DatePipe, Location, ViewportScroller } from '@angular/common';
+import { DatePipe, isPlatformBrowser, Location, ViewportScroller } from '@angular/common';
 import { Booking } from 'src/app/model/booking';
 import { BusinessServiceDtoList } from 'src/app/model/businessServiceDtoList';
 import { DateModel } from 'src/app/model/dateModel';
@@ -62,6 +64,7 @@ import { TriggerEventService } from 'src/services/trigger-event.service';
 import { BusinessService } from 'src/services/business.service';
 import { BusinessUser } from 'src/app/model/user';
 import { RatesAndAvailability } from 'src/app/model/ratesAndAvailability';
+import { SchemaService } from 'src/services/schema.service';
 // import { Email } from "src/app/pages/Contact/Contact.component";
 declare var $: any;
 export interface Email {
@@ -84,6 +87,7 @@ interface RoomOne {
   encapsulation: ViewEncapsulation.None,
 })
 export class ListingDetailOneComponent implements OnInit {
+  isLoadingProperty : boolean;
   roomLowestPrices: { [roomId: string]: number | null } = {};
   roomLowestPricesBookingEngine: { [roomId: string]: number | null } = {};
   additionalRooms: RoomOne[] = [];
@@ -905,8 +909,11 @@ guestDataArray: Array<{
   showWhatsappPopup = false;
   whatsappNumber = '';
   isLoadingWhatsapp: boolean = false;
+    checkinDate: string;
+  checkoutDate: string;
   constructor(
     private listingService: ListingService,
+    public SchemaService:SchemaService,
     private reviewService: ReviewService,
     private contentfulService: BlogPostService,
     private hotelBookingService: HotelBookingService,
@@ -931,8 +938,110 @@ guestDataArray: Array<{
     private metaService: Meta,
     private sanitizer: DomSanitizer,
     private viewportScroller: ViewportScroller,
-    private cd: ChangeDetectorRef
+    private cd: ChangeDetectorRef,
+    @Inject(PLATFORM_ID) private platformId: Object,
   ) {
+        this.acRoute.queryParams.subscribe((params) => {
+      if (params['hotelID'] !== undefined) {
+        this.hotelID = params['hotelID'];
+      }
+
+      if (params['checkinDay'] !== undefined) {
+        this.checkinDay = params['checkinDay'];
+      }
+
+      if (params['checkinMonth'] !== undefined) {
+        this.checkinMonth = params['checkinMonth'];
+      }
+
+      if (params['checkinYear'] !== undefined) {
+        this.checkinYear = params['checkinYear'];
+      }
+
+
+      if (params['nights'] !== undefined) {
+        this.nights = params['nights'];
+      }
+      if (params['numGuests'] !== undefined) {
+        this.adultno = params['numGuests'];
+      }
+      if (params['numAdults'] !== undefined) {
+        this.adults = params['numAdults'];
+        // this.changeDetectorRefs.detectChanges();
+      }
+      if (params['roomId'] !== undefined) {
+        this.paramsroomId = params['roomId'];
+        // this.changeDetectorRefs.detectChanges();
+      }
+      if (params['Children'] !== undefined) {
+        this.childno = params['Children'];
+        this.children = Number(this.childno);
+      }
+      if (params['userCurrency'] !== undefined) {
+        this.currency = params['userCurrency'];
+      }
+
+      if (params['taxAmount'] !== undefined) {
+        this.taxAmountParam = params['taxAmount'];
+      }
+
+      if (params['totalAmount'] !== undefined) {
+        this.totalAmountParam = params['totalAmount'];
+      }
+      if (this.hotelID != null && this.hotelID != undefined) {
+        this.getPropertyDetailsById(this.hotelID);
+        this.personChange();
+      }
+      if (this.checkinDay && this.checkinMonth && this.checkinYear) {
+  const year = Number(this.checkinYear);
+  const month = Number(this.checkinMonth);
+  const day = Number(this.checkinDay);
+  const nights = Number(this.nights);
+
+  // ✅ checkin date
+  this.checkinDate = `${year}-${('0' + month).slice(-2)}-${('0' + day).slice(-2)}`;
+
+  // ✅ checkout date
+  if (nights) {
+    const checkin = new Date(year, month - 1, day);
+    checkin.setDate(checkin.getDate() + nights);
+    this.checkoutDate = `${checkin.getFullYear()}-${('0' + (checkin.getMonth() + 1)).slice(-2)}-${('0' + checkin.getDate()).slice(-2)}`;
+  }
+}
+           if (params['bookingEngine'] !== undefined) {
+        this.urlLocation = params['bookingEngine'];
+        let websitebookingURL = 'true';
+        this.websiteUrlBookingEngine = true;
+        this.token.savewebsitebookingURL(websitebookingURL);
+
+      }
+        if (params['bookingEngine'] === undefined) {
+                  sessionStorage.removeItem('BookingEngine');
+        }
+
+      this.landingrice = Number(
+        (this.totalAmountParam - this.taxAmountParam).toFixed(2)
+      );
+      this.token.saveLandingPrice(this.landingrice);
+
+      if (!params['hotelID'] && !params['BookingEngine']) {
+        this.getDynamicNameFromUrl(this.currentUrl);
+      }
+              if (params['utm_medium'] !== undefined) {
+        this.utmMedium = params['utm_medium'];
+        sessionStorage.setItem('utm_medium', this.utmMedium);
+      } else {
+        sessionStorage.removeItem('utm_medium');
+      }
+
+
+      if (params['utm_source'] !== undefined && params['utm_source'] != '') {
+        this.utmSource = params['utm_source'];
+        sessionStorage.setItem('utm_source', this.utmSource);
+      } else {
+        sessionStorage.removeItem('utm_source');
+      }
+    });
     const today = new Date();
     this.minDateForCheckIn = new NgbDate(
       today.getFullYear(),
@@ -997,8 +1106,15 @@ guestDataArray: Array<{
       this.todayDate = calendar.getToday();
       this.selectedServices = [];
       this.toDate = this.calendar.getNext(this.calendar.getToday(), 'd', 1);
-      this.adults = 1;
-      this.children = 0;
+           if ( this.adults == null && this.adults == undefined ) {
+          this.adults = 1
+        }
+        if (this.childno == null && this.childno == undefined) {
+          this.children = 0;
+        } else {
+          this.children = Number(this.childno);
+        }
+
       this.noOfrooms = 1;
       this.rooms = 1;
 
@@ -1081,7 +1197,7 @@ guestDataArray: Array<{
         if (bookingData) {
           this.booking = bookingData;
 
-          const totalAdults = this.booking.noOfPersons || 1;
+          const totalAdults = this.adults || 1;
 
 
           const additionalAdults = this.additionalRooms?.reduce(
@@ -1092,7 +1208,12 @@ guestDataArray: Array<{
           this.adults = totalAdults - additionalAdults;
 
           // Optional for children
-          const totalChildren = this.booking.noOfChildren || 0;
+          if (this.childno == null && this.childno == undefined) {
+          this.children = 0;
+        } else {
+          this.children = Number(this.childno);
+        }
+          const totalChildren = this.children || 0;
           const additionalChildren = this.additionalRooms?.reduce(
             (sum, room) => sum + (room.children || 0),
             0
@@ -1102,15 +1223,20 @@ guestDataArray: Array<{
         }
       }
 
-      this.children = this.booking.noOfChildren;
       this.rooms = this.booking.noOfRooms;
 
       this.taxPercentage = this.booking.taxPercentage;
     } else {
       this.fromDate = this.calendar.getToday();
       this.toDate = this.calendar.getNext(this.calendar.getToday(), 'd', 1);
-      this.adults = 1;
-      this.children = 0;
+           if ( this.adults == null && this.adults == undefined ) {
+      this.adults = 1
+     }
+     if (this.childno == null && this.childno == undefined) {
+          this.children = 0;
+        } else {
+          this.children = Number(this.childno);
+        }
       this.noOfrooms = 1;
       this.rooms = 1;
     }
@@ -1138,91 +1264,7 @@ guestDataArray: Array<{
       this.showDiv = false;
     }
 
-    this.acRoute.queryParams.subscribe((params) => {
-      if (params['bookingEngine'] !== undefined) {
-        this.urlLocation = params['bookingEngine'];
-        let websitebookingURL = 'true';
-        this.websiteUrlBookingEngine = true;
-        this.token.savewebsitebookingURL(websitebookingURL);
 
-      }
-        if (params['bookingEngine'] === undefined) {
-                  sessionStorage.removeItem('BookingEngine');
-        }
-
-      if (params['hotelID'] !== undefined) {
-        this.hotelID = params['hotelID'];
-      }
-
-      if (params['checkinDay'] !== undefined) {
-        this.checkinDay = params['checkinDay'];
-      }
-
-      if (params['checkinMonth'] !== undefined) {
-        this.checkinMonth = params['checkinMonth'];
-      }
-
-      if (params['checkinYear'] !== undefined) {
-        this.checkinYear = params['checkinYear'];
-      }
-        if (params['utm_medium'] !== undefined) {
-        this.utmMedium = params['utm_medium'];
-        sessionStorage.setItem('utm_medium', this.utmMedium);
-      }
-
-      if (params['utm_medium'] == undefined) {
-        sessionStorage.removeItem('utm_medium');
-      }
-
-      if (params['utm_source'] !== undefined && params['utm_source'] != '') {
-        this.utmSource = params['utm_source'];
-        sessionStorage.setItem('utm_source', this.utmSource);
-      }
-       if (params['utm_source'] == undefined && params['utm_source'] != '') {
-        sessionStorage.removeItem('utm_source');
-      }
-      if (params['nights'] !== undefined) {
-        this.nights = params['nights'];
-      }
-      if (params['numGuests'] !== undefined) {
-        this.adultno = params['numGuests'];
-      }
-      if (params['numAdults'] !== undefined) {
-        this.adults = params['numAdults'];
-        // this.changeDetectorRefs.detectChanges();
-      }
-      if (params['roomId'] !== undefined) {
-        this.paramsroomId = params['roomId'];
-        // this.changeDetectorRefs.detectChanges();
-      }
-      if (params['Children'] !== undefined) {
-        this.childno = params['Children'];
-      }
-      if (params['userCurrency'] !== undefined) {
-        this.currency = params['userCurrency'];
-      }
-
-      if (params['taxAmount'] !== undefined) {
-        this.taxAmountParam = params['taxAmount'];
-      }
-
-      if (params['totalAmount'] !== undefined) {
-        this.totalAmountParam = params['totalAmount'];
-      }
-
-      this.landingrice = Number(
-        (this.totalAmountParam - this.taxAmountParam).toFixed(2)
-      );
-      this.token.saveLandingPrice(this.landingrice);
-
-      if (this.hotelID != null && this.hotelID != undefined) {
-        this.getPropertyDetailsById(this.hotelID);
-        this.personChange();
-      }
-      if (!params['hotelID'] && !params['BookingEngine']) {
-        this.getDynamicNameFromUrl(this.currentUrl);
-      }
-    });
 
     this.allExtraPersonCharge = this.booking.extraPersonCharge;
     this.allExtraChildCharge = this.booking.extraChildCharge;
@@ -1489,6 +1531,14 @@ onAddonToggle(addonName: string, checked: boolean) {
       this.adults + this.additionalRooms.reduce((sum, r) => sum + r.adults, 0)
     );
   }
+
+get totalChildren(): number {
+  const childno = Number(this.children); // ensures number
+  const additionalChildren = this.additionalRooms.reduce(
+    (sum, r) => sum + Number(r.children || 0), 0
+  );
+  return childno + additionalChildren;
+}
     openWhatsappPopup() {
     this.showWhatsappPopup = true;
   }
@@ -1641,12 +1691,7 @@ showSliderPopup() {
     this.isPanelOpen = false;
   }
 
-  get totalChildren(): number {
-    return (
-      this.children +
-      this.additionalRooms.reduce((sum, r) => sum + r.children, 0)
-    );
-  }
+
   isBookingAllowed(): boolean {
   const selectedRooms = this.selectedPlansSummary?.reduce(
     (total, plan) => total + (plan.selectedRoomnumber || 0),
@@ -2247,7 +2292,7 @@ resetLastChangedAge(planCode: string) {
           this.booking.taxDetails = [];
           this.booking.taxDetails.push(element);
           this.taxPercentage = element.percentage;
-          this.booking.taxPercentage = this.taxPercentage;
+          // this.booking.taxPercentage = this.taxPercentage;
 
           if (
             plan?.code === 'GHC' &&
@@ -2256,12 +2301,12 @@ resetLastChangedAge(planCode: string) {
             if (element.taxSlabsList.length > 0) {
               element.taxSlabsList.forEach((element2) => {
                 if (
-                  element2.maxAmount >
+                  element2.maxAmount >=
                     price +
                       (extraPersonAdultCountAmount +
                         extraPersonChildCountAmount) /
                         nights &&
-                  element2.minAmount <
+                  element2.minAmount <=
                     this.booking.roomPrice +
                       (extraPersonAdultCountAmount +
                         extraPersonChildCountAmount) /
@@ -2270,14 +2315,14 @@ resetLastChangedAge(planCode: string) {
                   this.taxPercentage = element2.percentage;
                   this.booking.taxPercentage = this.taxPercentage;
                 } else if (
-                  element2.maxAmount <
+                  element2.maxAmount <=
                   price +
                     (extraPersonAdultCountAmount +
                       extraPersonChildCountAmount) /
                       nights
                 ) {
                   this.taxPercentage = element2.percentage;
-                  this.booking.taxPercentage = this.taxPercentage;
+                  // this.booking.taxPercentage = this.taxPercentage;
                 }
               });
             }
@@ -2285,14 +2330,14 @@ resetLastChangedAge(planCode: string) {
             if (element.taxSlabsList.length > 0) {
               element.taxSlabsList.forEach((element2) => {
                 if (
-                  element2.maxAmount > this.actualroompriceCharge &&
-                  element2.minAmount < this.actualroompriceCharge
+                  element2.maxAmount >= this.actualroompriceCharge &&
+                  element2.minAmount <= this.actualroompriceCharge
                 ) {
                   this.taxPercentage = element2.percentage;
-                  this.booking.taxPercentage = this.taxPercentage;
-                } else if (element2.maxAmount < this.actualroompriceCharge) {
+                  // this.booking.taxPercentage = this.taxPercentage;
+                } else if (element2.maxAmount <= this.actualroompriceCharge) {
                   this.taxPercentage = element2.percentage;
-                  this.booking.taxPercentage = this.taxPercentage;
+                  // this.booking.taxPercentage = this.taxPercentage;
                 }
               });
             }
@@ -2300,7 +2345,9 @@ resetLastChangedAge(planCode: string) {
         }
       });
     }
-                  this.taxTotalSingle = 0;
+
+    const taxpercentage = this.taxPercentage;
+                      this.taxTotalSingle = 0;
               this.daterangefilterSeo?.forEach((_, i) => {
                   this.taxTotalSingle += this.calculateTaxAmount(
                     (actualRoomPrice * selectedRoomnumber) +
@@ -2309,7 +2356,6 @@ resetLastChangedAge(planCode: string) {
                     plan
                   );
               });
-    const taxpercentage = this.booking.taxPercentage;
     const taxPercentageperroom = this.taxTotalSingle;
 
     const summaryEntry = {
@@ -2585,15 +2631,15 @@ calculateTaxAmount(basePrice: number, plan: any): number {
             if (element.taxSlabsList.length > 0) {
               element.taxSlabsList.forEach((element2) => {
                 if (
-                  element2.maxAmount >
+                  element2.maxAmount >=
                     basePrice &&
-                  element2.minAmount <
+                  element2.minAmount <=
                     basePrice
                 ) {
                   this.taxPercentage = element2.percentage;
                   this.booking.taxPercentage = this.taxPercentage;
                 } else if (
-                  element2.maxAmount <
+                  element2.maxAmount <=
                   basePrice
                 ) {
                   this.taxPercentage = element2.percentage;
@@ -2605,12 +2651,12 @@ calculateTaxAmount(basePrice: number, plan: any): number {
             if (element.taxSlabsList.length > 0) {
               element.taxSlabsList.forEach((element2) => {
                 if (
-                  element2.maxAmount > basePrice &&
-                  element2.minAmount < basePrice
+                  element2.maxAmount >= basePrice &&
+                  element2.minAmount <= basePrice
                 ) {
                   this.taxPercentage = element2.percentage;
                   this.booking.taxPercentage = this.taxPercentage;
-                } else if (element2.maxAmount < basePrice) {
+                } else if (element2.maxAmount <= basePrice) {
                   this.taxPercentage = element2.percentage;
                   this.booking.taxPercentage = this.taxPercentage;
                 }
@@ -3674,12 +3720,15 @@ if (roomKey) {
   // }
 
   async getPropertyDetailsById(id: number) {
-
+    this.isLoadingProperty = true;
+ this.loader = true;
     try {
       this.loader = true;
       const data = await this.listingService?.findByPropertyId(id).toPromise();
       if (data.status === 200) {
         this.businessUser = data.body;
+        this.isLoadingProperty = false;
+        this.generateAndSetSchema();
         this.getOfferList(this.businessUser.seoFriendlyName);
         this.getGoogleReview(this.businessUser.id);
         this.showStaticContent = true;
@@ -3863,15 +3912,68 @@ if (roomKey) {
         this.loader = false;
         this.changeDetectorRefs.detectChanges();
       } else {
-        this.router.navigate(['/error']);
+        this.isLoadingProperty = false;
+        this.router.navigate(["/error"]);
       }
     } catch (error) {
+       if (isPlatformBrowser(this.platformId)) {
+      this.router.navigate(["/error"]);
+      }
+      this.isLoadingProperty = false;
       this.loader = false;
-      this.router.navigate(['/error']);
       // Handle the error appropriately, if needed.
     }
   }
+  generateAndSetSchema() {
+    // Guard against missing data.
+    if (!this.businessUser || !this.businessUser.address) {
+      return;
+    }
 
+  const schema = {
+  "@context": "https://schema.org",
+  "@type": "Hotel",
+  "name": this.businessUser?.name,
+  "url": `https://bookone.io/detail/${this.businessUser?.id}`,
+  "identifier": this.businessUser?.id,
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": this.businessUser?.address?.streetName,
+    "addressLocality": this.businessUser?.address?.city,
+    "postalCode": this.businessUser?.address?.postcode,
+    "addressCountry": this.businessUser?.address?.country
+  },
+  "telephone": this.businessUser?.mobile,
+  "makesOffer": [{
+    "@type": ["Offer", "LodgingReservation"],
+    "checkinTime": `${this.checkinDate}T14:00:00`,   // e.g. "2025-11-26T14:00:00"
+    "checkoutTime": `${this.checkoutDate}T11:00:00`, // e.g. "2025-11-28T11:00:00"
+    "name": "Economy",
+    "priceSpecification": {
+      "@type": "CompoundPriceSpecification",
+      "price": this.totalAmountParam,       // total amount
+      "priceCurrency": this.businessUser.localCurrency.toUpperCase(),
+      "priceComponent": [
+        {
+          "@type": "UnitPriceSpecification",
+          "name": "Base rate",
+          "price": this.totalAmountParam - this.taxAmountParam,
+          "priceCurrency": this.businessUser.localCurrency.toUpperCase()
+        },
+        {
+          "@type": "UnitPriceSpecification",
+          "name": "Tax",
+          "price": this.taxAmountParam,
+          "priceCurrency": this.businessUser.localCurrency.toUpperCase()
+        }
+      ]
+    },
+    "availability": "https://schema.org/InStock"
+  }]
+};
+  console.log("schema",schema);
+    this.SchemaService.setSchema(schema);
+  }
 
   increament(breakfastservice) {
     this.counterb = this.counterb + 1;
@@ -4689,12 +4791,12 @@ getOfferList(seo: string) {
             if (element.taxSlabsList.length > 0) {
               element.taxSlabsList.forEach((element2) => {
                 if (
-                  element2.maxAmount >
+                  element2.maxAmount >=
                     this.booking.roomPrice +
                       (this.booking.extraPersonCharge +
                         this.booking.extraChildCharge) /
                         this.booking.noOfNights &&
-                  element2.minAmount <
+                  element2.minAmount <=
                     this.booking.roomPrice +
                       (this.booking.extraPersonCharge +
                         this.booking.extraChildCharge) /
@@ -4703,7 +4805,7 @@ getOfferList(seo: string) {
                   this.taxPercentage = element2.percentage;
                   this.booking.taxPercentage = this.taxPercentage;
                 } else if (
-                  element2.maxAmount <
+                  element2.maxAmount <=
                   this.booking.roomPrice +
                     (this.booking.extraPersonCharge +
                       this.booking.extraChildCharge) /
@@ -4718,12 +4820,12 @@ getOfferList(seo: string) {
             if (element.taxSlabsList.length > 0) {
               element.taxSlabsList.forEach((element2) => {
                 if (
-                  element2.maxAmount > this.booking.netAmount &&
-                  element2.minAmount < this.booking.netAmount
+                  element2.maxAmount >= this.booking.netAmount &&
+                  element2.minAmount <= this.booking.netAmount
                 ) {
                   this.taxPercentage = element2.percentage;
                   this.booking.taxPercentage = this.taxPercentage;
-                } else if (element2.maxAmount < this.booking.netAmount) {
+                } else if (element2.maxAmount <= this.booking.netAmount) {
                   this.taxPercentage = element2.percentage;
                   this.booking.taxPercentage = this.taxPercentage;
                 }
@@ -4863,13 +4965,13 @@ getOfferList(seo: string) {
     return matchedAmounts;
   }
 
-  toggleReviewText(index: number): void {
-    this.expandedReviews[index] = !this.expandedReviews[index];
-  }
-  const = document.getElementsByClassName('booking-summary')[0];
-  if(bookingSummaryElement) {
-    bookingSummaryElement.scrollIntoView();
-  }
+  // toggleReviewText(index: number): void {
+  //   this.expandedReviews[index] = !this.expandedReviews[index];
+  // }
+  // const = document.getElementsByClassName('booking-summary')[0];
+  // if(bookingSummaryElement) {
+  //   bookingSummaryElement.scrollIntoView();
+  // }
 
   getWhatsappShareUrl(): string {
     const baseUrl = 'https://api.whatsapp.com/send';

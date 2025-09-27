@@ -172,10 +172,10 @@
           <i class="fa-solid fa-phone" style="margin-right: 4px"></i>Need
           Assistance?
         </button>
-        <button class="saveCopy" (click)="onGenerateVouchers()">
+        <!-- <button class="saveCopy" (click)="onGenerateVouchers()">
           <i class="fa-solid fa-download" style="margin-right: 4px"></i>Save a
           Copy
-        </button>
+        </button> -->
       </div>
 
       <div class="d-flex justify-content-center" style="margin-top: 30px">
@@ -377,7 +377,8 @@
               <tbody>
                 <tr
                 >
-                  <td>{{ booking?.roomRatePlanName }}</td>
+                  <td><b>{{booking.roomName}} </b> <br/>
+                    {{ booking.roomRatePlanName }}</td>
                   <td>
                     ₹{{
                       booking?.totalRoomTariffBeforeDiscount
@@ -626,10 +627,10 @@
           <i class="fa-solid fa-phone" style="margin-right: 4px"></i>Need
           Assistance?
         </button>
-        <button class="saveCopy" (click)="onGenerateVouchers()">
+        <!-- <button class="saveCopy" (click)="onGenerateVouchers()">
           <i class="fa-solid fa-download" style="margin-right: 4px"></i>Save a
           Copy
-        </button>
+        </button> -->
       </div>
 
       <div class="d-flex justify-content-center" style="margin-top: 30px; flex-wrap: wrap;">
@@ -806,7 +807,8 @@
           <div class="booking-summary-container">
 
               <div class="d-flex justify-content-between" style="gap:10px">
-              <div style="font-weight: bold;">{{ booking?.roomRatePlanName }}</div>
+              <div ><b>{{booking.roomName}} </b> <br/>
+                    {{ booking.roomRatePlanName }}</div>
               <div>₹{{
                       booking?.totalRoomTariffBeforeDiscount
                         | number : "1.2-2"
