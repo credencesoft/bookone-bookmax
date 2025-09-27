@@ -373,7 +373,8 @@
               <tbody>
                 <tr
                 >
-                  <td>{{ booking.roomRatePlanName }}</td>
+                  <td><b>{{booking.roomName}} </b> <br/>
+                    {{ booking.roomRatePlanName }}</td>
                   <td>
                    ₹{{
                       booking?.totalRoomTariffBeforeDiscount
@@ -832,7 +833,8 @@
           <div class="booking-summary-container">
                       <ng-container >
               <div class="d-flex justify-content-between" style="gap:10px">
-              <div style="font-weight: bold;">{{ booking.roomRatePlanName }}</div>
+              <div ><b>{{booking.roomName}} </b> <br/>
+                    {{ booking.roomRatePlanName }}</div>
               <div>₹{{
                       booking?.totalRoomTariffBeforeDiscount
                         | number : "1.2-2"
