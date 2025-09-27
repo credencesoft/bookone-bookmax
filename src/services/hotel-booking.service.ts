@@ -391,6 +391,16 @@ downloadVoucher(fileUrl: string) {
     );
   }
 
+    createAnalytic(body: any) {
+      const baseURL = environment.apiLms + '/api/google-analytic';
+    return this.http.post<any>(baseURL, body);
+  }
+
+  updateAnalytic(id: number, body: any) {
+    const baseURL = environment.apiLms + '/api/google-analytic';
+    return this.http.put<any>(`${baseURL}/${id}`, body);
+  }
+
   emailEnquire(enquiry: EnquiryDto) {
     this.setApi();
     return this.http.post<EnquiryDto>(

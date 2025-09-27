@@ -277,6 +277,7 @@ export class BookingComponent implements OnInit {
   channelManagerIntegration: any;
   isPayNowDisabled: boolean = false;
   websiteUrlBookingEngine: boolean;
+  googleAnalyticId: number | null = null;
   constructor(
     private token: TokenStorage,
     private ngZone: NgZone,
@@ -525,6 +526,86 @@ if (parsed.discountPercentage) {
   }
 openTermsUniquePopup() {
   this.showTermsUniquePopup = true;
+}
+  onEmailBlur(emailInput: any) {
+    if (emailInput.valid) {
+      const body = this.makeBodyFromSummary(); // prepare full body with email etc.
+      this.hotelBookingService.createAnalytic(body).subscribe({
+        next: (res) => {
+          this.googleAnalyticId = res.id; // store id returned from POST
+        },
+        error: (err) => console.error(err)
+      });
+    }
+  }
+
+  // Called when mobile changes
+  onMobileChange(mobile: string): void {
+  const regex = /^[6-9][0-9]{9}$/; // Indian pattern
+  this.mobileHasError = !regex.test(mobile);
+
+  if (!this.mobileHasError) {
+    // ✅ Step 2: Build API body
+    const body = this.makeBodyFromSummary();
+    body.phoneNumber = mobile;
+
+    // ✅ Step 3: Call PUT if ID exists, else POST
+    if (this.googleAnalyticId) {
+      this.hotelBookingService.createAnalytic(body).subscribe({
+      next: (res) => {
+        this.googleAnalyticId = res.id;
+      }
+    });
+    } else {
+      this.hotelBookingService.createAnalytic(body).subscribe({
+        next: (res) => {
+          this.googleAnalyticId = res.id;
+        },
+        error: (err) => console.error(err)
+      });
+    }
+  }
+}
+ makeBodyFromSummary() {
+   const bookingSummaryStr = sessionStorage.getItem('bookingSummaryDetails');
+    const bookingSummary = bookingSummaryStr
+      ? JSON.parse(bookingSummaryStr)
+      : null;
+  const summary = bookingSummary;
+  return {
+    adults: summary.totalAdults,
+    checkInDate: new Date(summary.fromDate),
+    checkOutDate: new Date(summary.toDate),
+    children: summary.totalChildren,
+    email: this.booking.email,
+    firstName: this.booking.firstName,
+    hotelName: this.businessUser?.name,
+    id: this.googleAnalyticId ?? 0,
+    lastName: this.booking.lastName,
+    nights: summary.totalNights,
+    numberOfRooms: summary.selectedPlansSummary.reduce(
+      (sum: number, r: any) => sum + (r.selectedRoomnumber || 1),
+      0
+    ),
+    phoneNumber: this.booking.mobile,
+    roomDetails: summary.selectedPlansSummary.map((plan: any) => ({
+      adults: plan.adults,
+      children: plan.children,
+      childrenAbove5Years: plan.childrenAbove5years,
+      childrenBelow5Years: plan.childrenBelow5years,
+      id: 0,
+      nights: plan.nights,
+      planCodeName: plan.planCodeName,
+      planName: plan.planName,
+      price: plan.price,
+      roomId: plan.roomId,
+      roomName: plan.roomName,
+      taxPercentage: plan.taxpercentage,
+      taxPercentagePerRoom: plan.taxPercentageperroom
+    })),
+    taxAmount: summary.totalTax,
+    totalAmount: summary.totalAmount
+  };
 }
 openPrivacyUniquePopup() {
   this.showPrivacyUniquePopup = true;

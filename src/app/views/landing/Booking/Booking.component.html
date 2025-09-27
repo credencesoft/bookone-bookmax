@@ -869,6 +869,7 @@
                     #email="ngModel"
                     required
                     email
+                    (blur)="onEmailBlur(email)"
                   />
                   <span
                     class="text-danger small"
@@ -903,7 +904,7 @@
                     name="mobile"
                     required
                     style="height: 2.5rem"
-                    (ngModelChange)="validateMobile()"
+                     (ngModelChange)="onMobileChange($event)"
                   />
                   <span class="text-danger" *ngIf="mobileHasError">
                     Invalid Phone number
