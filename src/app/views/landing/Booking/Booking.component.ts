@@ -600,8 +600,8 @@ openTermsUniquePopup() {
     hotelName: this.businessUser?.name,
     id: this.googleAnalyticId ?? 0,
     lastName: this.booking.lastName,
-    location: this.token.getProperty().address,
-    createdDate: new Date().getTime(),
+    location: this.token.getProperty().address.city,
+    createdDate: new Date().toISOString(),
     nights: summary.totalNights,
     numberOfRooms: summary.selectedPlansSummary.reduce(
       (sum: number, r: any) => sum + (r.selectedRoomnumber || 1),
