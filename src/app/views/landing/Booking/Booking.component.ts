@@ -278,6 +278,8 @@ export class BookingComponent implements OnInit {
   isPayNowDisabled: boolean = false;
   websiteUrlBookingEngine: boolean;
   googleAnalyticId: number | null = null;
+  utmSource: string;
+  utmMedium: string;
   constructor(
     private token: TokenStorage,
     private ngZone: NgZone,
@@ -545,11 +547,8 @@ openTermsUniquePopup() {
   this.mobileHasError = !regex.test(mobile);
 
   if (!this.mobileHasError) {
-    // ✅ Step 2: Build API body
     const body = this.makeBodyFromSummary();
     body.phoneNumber = mobile;
-
-    // ✅ Step 3: Call PUT if ID exists, else POST
     if (this.googleAnalyticId) {
       this.hotelBookingService.createAnalytic(body).subscribe({
       next: (res) => {
@@ -572,6 +571,25 @@ openTermsUniquePopup() {
       ? JSON.parse(bookingSummaryStr)
       : null;
   const summary = bookingSummary;
+        const bookingEngineFlag = sessionStorage.getItem('BookingEngine');
+      this.websiteUrlBookingEngine = bookingEngineFlag === 'true';
+            const utmSessionValue = sessionStorage.getItem('utm_source');
+      if (utmSessionValue && !this.websiteUrlBookingEngine)  {
+        this.utmSource = sessionStorage.getItem('utm_source');
+        this.utmMedium = sessionStorage.getItem('utm_medium');
+      } else if (this.websiteUrlBookingEngine && utmSessionValue) {
+        this.utmSource = sessionStorage.getItem('utm_source');
+        this.utmMedium = sessionStorage.getItem('utm_medium');
+      } else if (this.websiteUrlBookingEngine && !utmSessionValue) {
+        this.utmSource = "organic";
+        this.utmMedium = "bookingEngine"
+      } else if (this.activeGoogleCenter && !utmSessionValue) {
+        this.utmSource = "organic";
+        this.utmMedium = "GHC";
+      } else {
+        this.utmSource = "organic";
+        this.utmMedium = "Direct"
+      }
   return {
     adults: summary.totalAdults,
     checkInDate: new Date(summary.fromDate),
@@ -582,6 +600,8 @@ openTermsUniquePopup() {
     hotelName: this.businessUser?.name,
     id: this.googleAnalyticId ?? 0,
     lastName: this.booking.lastName,
+    location: this.token.getProperty().address,
+    createdDate: new Date().getTime(),
     nights: summary.totalNights,
     numberOfRooms: summary.selectedPlansSummary.reduce(
       (sum: number, r: any) => sum + (r.selectedRoomnumber || 1),
@@ -604,7 +624,9 @@ openTermsUniquePopup() {
       taxPercentagePerRoom: plan.taxPercentageperroom
     })),
     taxAmount: summary.totalTax,
-    totalAmount: summary.totalAmount
+    totalAmount: summary.totalAmount,
+    utmMedium: this.utmMedium,
+    utmSource: this.utmSource,
   };
 }
 openPrivacyUniquePopup() {
