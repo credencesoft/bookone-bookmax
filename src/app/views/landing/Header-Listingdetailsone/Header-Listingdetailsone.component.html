@@ -200,7 +200,20 @@
     <div style="display: flex; gap: 10px; align-items: center">
       <div>
         <a
+        *ngIf="websiteUrlBookingEngine"
           [href]="getWhatsappShareUrl()"
+          target="_blank"
+          class="Whatsapp-btn-header"
+        >
+          <img
+            src="assets/images/whatsapp-icons.svg"
+            style="margin-right: 6px"
+          />
+          Book via WhatsApp
+        </a>
+        <a
+        *ngIf="!websiteUrlBookingEngine"
+          [href]="getWhatsappShareUrlOne()"
           target="_blank"
           class="Whatsapp-btn-header"
         >
@@ -302,6 +315,18 @@
     <div class="d-flex" style="gap: 12px; align-items: center;">
       <div>
         <a
+          *ngIf="!websiteUrlBookingEngine"
+          [href]="getWhatsappShareUrlOne()"
+          target="_blank"
+          class="Whatsapp-btn-header"
+        >
+          <img
+            src="assets/images/whatsapp-icons.svg"
+            style="margin-right: 6px"
+          />
+        </a>
+        <a
+        *ngIf="websiteUrlBookingEngine"
           [href]="getWhatsappShareUrl()"
           target="_blank"
           class="Whatsapp-btn-header"
