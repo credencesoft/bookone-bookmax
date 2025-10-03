@@ -150,6 +150,26 @@ checkBookingEngineFlag(): void {
 }
     getWhatsappShareUrl(): string {
     const baseUrl = 'https://api.whatsapp.com/send';
+    this.dynamicText = this.businessUser.name;
+    const phoneNumber = this.businessUser.mobile;
+    this.dynamicPropertyId = this.businessUser.id;
+    this.dynamicCity = this.businessUser?.address?.city;
+    this.dynamicStreetName = this.businessUser.address?.streetName;
+    this.dynamicLocality = this.businessUser.address?.locality;
+    this.dynamicStreetNumber = this.businessUser.address?.streetNumber;
+    this.dynamicCountryName = this.businessUser.address?.country;
+    this.externalSite = 'WebSite';
+    // The recipient's phone number (optional)
+    const message =
+      '*This is an Enquiry from :* Your Website'
+
+    return (
+      baseUrl + '?phone=' + phoneNumber + '&text=' + encodeURIComponent(message)
+    );
+  }
+
+      getWhatsappShareUrlOne(): string {
+    const baseUrl = 'https://api.whatsapp.com/send';
     const phoneNumber = '919004126958';
     this.dynamicText = this.businessUser.name;
     this.dynamicPropertyId = this.businessUser.id;
