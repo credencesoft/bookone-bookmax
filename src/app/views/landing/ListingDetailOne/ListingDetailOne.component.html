@@ -2662,6 +2662,9 @@
                               <div
                                 class="cursor-pointer minus-btn"
                                 (click)="onDecrement(plan.code, 'adults')"
+                                 [class.disabled]="
+                                  selectedGuestsByPlan[plan.code]?.adults <= selectedRoomsByPlan[room.name + '_' + plan.code]
+                                "
                               >
                                 <i class="fa-solid fa-minus"></i>
                               </div>
@@ -2883,6 +2886,9 @@
                               <div
                                 class="cursor-pointer minus-btn"
                                 (click)="onDecrement(plan.code, 'adults')"
+                                [class.disabled]="
+                                  selectedGuestsByPlan[plan.code]?.adults <= selectedRoomsByPlan[room.name + '_' + plan.code]
+                                "
                               >
                                 <i class="fa-solid fa-minus"></i>
                               </div>
@@ -3283,6 +3289,9 @@
                               <div
                                 class="cursor-pointer minus-btn"
                                 (click)="onDecrement(plan.code, 'adults')"
+                                [class.disabled]="
+                                  selectedGuestsByPlan[plan.code]?.adults <= selectedRoomsByPlan[room.name + '_' + plan.code]
+                                "
                               >
                                 <i class="fa-solid fa-minus"></i>
                               </div>
@@ -3496,6 +3505,9 @@
                               <div
                                 class="cursor-pointer minus-btn"
                                 (click)="onDecrement(plan.code, 'adults')"
+                                [class.disabled]="
+                                  selectedGuestsByPlan[plan.code]?.adults <= selectedRoomsByPlan[room.name + '_' + plan.code]
+                                "
                               >
                                 <i class="fa-solid fa-minus"></i>
                               </div>

@@ -1722,10 +1722,18 @@ getRoomOptions(totalAvailable: number, roomName: string, currentPlanCode: string
     }
     return true;
   }
- onRoomSelect(roomName: string, planCode: string, count: number | string) {
+onRoomSelect(roomName: string, planCode: string, count: number | string) {
   const key = roomName + '_' + planCode;
-  this.selectedRoomsByPlan[key] = Number(count) || 0;
+  const selectedCount = Number(count) || 0;
+
+  this.selectedRoomsByPlan[key] = selectedCount;
+  if (!this.selectedGuestsByPlan[planCode]) {
+    this.selectedGuestsByPlan[planCode] = { adults: 0, children: 0 };
+  }
+  this.selectedGuestsByPlan[planCode].adults = selectedCount;
+
 }
+
 
   getRemainingRooms(): number {
     const totalSelected = Object.values(this.selectedRoomsByPlan).reduce(

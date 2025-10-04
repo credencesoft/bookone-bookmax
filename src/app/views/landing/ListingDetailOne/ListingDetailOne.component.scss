@@ -1606,7 +1606,11 @@ position: absolute;
   align-items: center;
   z-index: 9999;
 }
-
+.minus-btn.disabled {
+  pointer-events: none;
+  opacity: 0.5;
+  cursor: not-allowed;
+}
 .loader-booking {
         width: 64px;
         height: 64px;
