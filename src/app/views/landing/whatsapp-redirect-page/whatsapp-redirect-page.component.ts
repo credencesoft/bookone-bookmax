@@ -454,7 +454,7 @@ this.storedPromo = localStorage.getItem('selectPromo');
   );
 }
 callNow() {
-    window.location.href = 'tel:' + 9040785705;
+    window.location.href = 'tel:' + 7326079861;
 }
 
 onGenerateVouchers() {

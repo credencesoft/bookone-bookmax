@@ -3567,17 +3567,17 @@ if (roomKey) {
     ) {
       this.description = this.businessUser.businessDescription;
     } else {
-      this.description = 'Contact No: +91-9040785705';
+      this.description = 'Contact No: +91-7326079861';
     }
     let title =
       this.businessUser.name +
       ' | The Hotel Mate' +
-      ' | Contact No: +91-9040785705';
+      ' | Contact No: +91-7326079861';
 
     let ogTitle =
       this.businessUser.name +
       ' | The Hotel Mate' +
-      ' | Contact No: +91-9040785705';
+      ' | Contact No: +91-7326079861';
 
     if (
       this.businessUser.businessDescription != null &&
@@ -3585,7 +3585,7 @@ if (roomKey) {
     ) {
       this.ogDescription = this.businessUser.businessDescription;
     } else {
-      this.ogDescription = 'Contact No: +91-9040785705';
+      this.ogDescription = 'Contact No: +91-7326079861';
     }
 
     let ogImage = this.businessUser.logoUrl;

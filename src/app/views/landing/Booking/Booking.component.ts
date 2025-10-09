@@ -3842,7 +3842,7 @@ if (bookingSummaryStr) {
 
      this.parametertype2 = new Para();
     (this.parametertype2.type = 'text'),
-      (this.parametertype2.text = '9040785705');
+      (this.parametertype2.text = '7326079861');
     this.parameterss2.push(this.parametertype2);
 
      this.parametertype2 = new Para();
@@ -4154,7 +4154,7 @@ if (bookingSummaryStr) {
 
      this.parametertype2 = new Para();
     (this.parametertype2.type = 'text'),
-      (this.parametertype2.text = '9040785705');
+      (this.parametertype2.text = '7326079861');
     this.parameterss2.push(this.parametertype2);
 
      this.parametertype2 = new Para();
@@ -4339,7 +4339,7 @@ if (bookingSummaryStr) {
 
     this.template.components = this.components;
     this.whatsappForm.template = this.template;
-    (this.whatsappForm.to = '9040785705'),
+    (this.whatsappForm.to = '7326079861'),
       (this.whatsappForm.type = 'template'),
       this.hotelBookingService.whatsAppMsg(this.whatsappForm).subscribe(
         (response) => {
@@ -4467,7 +4467,7 @@ if (bookingSummaryStr) {
 
      this.parametertype2 = new Para();
     (this.parametertype2.type = 'text'),
-      (this.parametertype2.text = '9040785705');
+      (this.parametertype2.text = '7326079861');
     this.parameterss2.push(this.parametertype2);
 
      this.parametertype2 = new Para();
@@ -4780,7 +4780,7 @@ if (bookingSummaryStr) {
 
      this.parametertype2 = new Para();
     (this.parametertype2.type = 'text'),
-      (this.parametertype2.text = '9040785705');
+      (this.parametertype2.text = '7326079861');
     this.parameterss2.push(this.parametertype2);
 
      this.parametertype2 = new Para();
@@ -4808,7 +4808,7 @@ if (bookingSummaryStr) {
 
     this.template.components = this.components;
     this.whatsappForm.template = this.template;
-    (this.whatsappForm.to = '9040785705'),
+    (this.whatsappForm.to = '7326079861'),
       (this.whatsappForm.type = 'template'),
       this.hotelBookingService.whatsAppMsg(this.whatsappForm).subscribe(
         (response) => {
@@ -5557,7 +5557,7 @@ if (bookingSummaryStr) {
 
   //   this.template.components = this.components;
   //   this.whatsappForm.template = this.template;
-  //   (this.whatsappForm.to = '9040785705'),
+  //   (this.whatsappForm.to = '7326079861'),
   //     (this.whatsappForm.type = 'template'),
   //     this.hotelBookingService.whatsAppMsg(this.whatsappForm).subscribe(
   //       (response) => {
