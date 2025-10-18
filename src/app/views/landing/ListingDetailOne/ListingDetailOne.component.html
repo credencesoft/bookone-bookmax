@@ -1,4 +1,4 @@
-<div [ngClass]="{ 'background-image-website': businessUser?.id === 3063 }">
+<div [ngClass]="{ 'background-image-website': [3063, 3424, 3425].includes(businessUser?.id) }">
   <df-messenger
   location="asia-south1"
   project-id="impactful-name-306810"
@@ -361,7 +361,7 @@
                     class="text-muted"
                     *ngFor="let price of [planPrice[i]]"
                   >
-                    ₹{{ price * plan.selectedRoomnumber | number : "1.2-2" }}
+                    {{ price * plan.selectedRoomnumber | currency:currency:'symbol':'1.2-2' }}
                     <br />
                     <ng-container
                       *ngIf="plan.SingleDayextraPersonAdultCountAmount > 0"
@@ -369,7 +369,7 @@
                       <b style="font-weight: normal">Extra Adult Charge:</b
                       >&nbsp; &nbsp; &nbsp; &nbsp;
                       <b style="font-weight: normal"
-                        >₹{{ plan.SingleDayextraPersonAdultCountAmount }}</b
+                        >{{ plan.SingleDayextraPersonAdultCountAmount | currency:currency:'symbol':'1.2-2'}}</b
                       >
                       <br />
                     </ng-container>
@@ -379,29 +379,37 @@
                     >
                       <b style="font-weight: normal">Extra Children Charge</b>
                       &nbsp; &nbsp; &nbsp; &nbsp;
-                      <b style="font-weight: normal">₹{{
-                        plan.SingleDayextraPersonChildCountAmount
-                      }}</b>
+                      <b style="font-weight: normal"
+                        >{{ plan.SingleDayextraPersonChildCountAmount | currency:currency:'symbol':'1.2-2' }}</b
+                      >
                       <br />
                     </ng-container>
                     <ng-container
                       *ngIf="
-                        price * plan.selectedRoomnumber +
-                        (plan.SingleDayextraPersonAdultCountAmount +
-                          plan.SingleDayextraPersonChildCountAmount)
+                        price
                       "
                     >
                       <b style="font-weight: normal"> Tax Fees: </b> &nbsp;
                       &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;
                       &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;
-                      <b style="font-weight: normal">
-                        ₹{{
-                          calculateTaxAmount(
-                            price * plan.selectedRoomnumber +
-                              (plan.SingleDayextraPersonAdultCountAmount +
-                                plan.SingleDayextraPersonChildCountAmount),
-                            plan
-                          ) | number : "1.2-2"
+                      <b style="font-weight: normal" *ngIf="plan.selectedRoomnumber > 1">
+                        {{
+                         (calculateTaxAmount(
+                           price  +
+                                (plan.singleextraAdultCharges +
+                                  plan.singleextraChildrenCharges),
+                              plan
+                          ) * plan.selectedRoomnumber )  | currency:currency:'symbol':'1.2-2'
+                        }}
+                      </b>
+                      <b style="font-weight: normal" *ngIf="plan.selectedRoomnumber <= 1">
+                        {{
+                         (calculateTaxAmount(
+                           price  +
+                                (plan.SingleDayextraPersonAdultCountAmount  +
+                                  plan.SingleDayextraPersonChildCountAmount),
+                              plan
+                          ) * plan.selectedRoomnumber )  | currency:currency:'symbol':'1.2-2'
                         }}
                       </b>
                     </ng-container>
@@ -410,60 +418,70 @@
               </div>
               <div style="display: block" *ngIf="plan.planName != 'GHC'">
                 <div *ngFor="let item of daterangefilterSeo; let i = index">
-                  <small class="text-muted">
-                    {{ item }}
-                  </small>
-                  &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp;
-                  <small class="text-muted">
-                    ₹{{
-                      plan.actualRoomPrice * plan.selectedRoomnumber
-                        | number : "1.2-2"
-                    }}
-                    <br />
-                    <ng-container
-                      *ngIf="plan.SingleDayextraPersonAdultCountAmount > 0"
-                    >
-                      <b style="font-weight: normal">Extra Adult Charge:</b
-                      >&nbsp; &nbsp; &nbsp; &nbsp;
-                      <b style="font-weight: normal"
-                        >₹{{ plan.SingleDayextraPersonAdultCountAmount }}</b
+                    <small class="text-muted">
+                      {{ item }}
+                    </small>
+                    &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp;
+                    <small class="text-muted">
+                      {{
+                        plan.actualRoomPrice * plan.selectedRoomnumber
+                          | currency:currency:'symbol':'1.2-2'
+                      }}
+                      <br />
+                      <ng-container
+                        *ngIf="plan.SingleDayextraPersonAdultCountAmount > 0"
                       >
-                      <br />
-                    </ng-container>
+                        <b style="font-weight: normal">Extra Adult Charge:</b
+                        >&nbsp; &nbsp; &nbsp; &nbsp;
+                        <b style="font-weight: normal"
+                          >{{ plan.SingleDayextraPersonAdultCountAmount | currency:currency:'symbol':'1.2-2' }}</b
+                        >
+                        <br />
+                      </ng-container>
 
-                    <ng-container
-                      *ngIf="plan.SingleDayextraPersonChildCountAmount > 0"
-                    >
-                      <b style="font-weight: normal">Extra Children Charge</b>
-                      &nbsp; &nbsp; &nbsp; &nbsp;
-                      <b style="font-weight: normal">₹{{
-                        plan.SingleDayextraPersonChildCountAmount
-                      }}</b>
-                      <br />
-                    </ng-container>
-                    <ng-container
-                      *ngIf="
-                        plan.actualRoomPrice * plan.selectedRoomnumber +
-                        (plan.SingleDayextraPersonAdultCountAmount +
-                          plan.SingleDayextraPersonChildCountAmount)
-                      "
-                    >
-                      <b style="font-weight: normal"> Tax Fees: </b> &nbsp;
-                      &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;
-                      &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;
-                      <b style="font-weight: normal">
-                        ₹{{
-                          calculateTaxAmount(
-                            plan.actualRoomPrice * plan.selectedRoomnumber +
-                              (plan.SingleDayextraPersonAdultCountAmount +
-                                plan.SingleDayextraPersonChildCountAmount),
-                            plan
-                          ) | number : "1.2-2"
-                        }}
-                      </b>
-                    </ng-container>
-                  </small>
-                </div>
+                      <ng-container
+                        *ngIf="plan.SingleDayextraPersonChildCountAmount > 0"
+                      >
+                        <b style="font-weight: normal">Extra Children Charge</b>
+                        &nbsp; &nbsp; &nbsp; &nbsp;
+                        <b style="font-weight: normal">{{
+                          plan.SingleDayextraPersonChildCountAmount | currency:currency:'symbol':'1.2-2'
+                        }}</b>
+                        <br />
+                      </ng-container>
+                      <ng-container
+                        *ngIf="
+                          plan.actualRoomPrice * plan.selectedRoomnumber +
+                          (plan.SingleDayextraPersonAdultCountAmount +
+                            plan.SingleDayextraPersonChildCountAmount)
+                        "
+                      >
+                        <b style="font-weight: normal"> Tax Fees: </b> &nbsp;
+                        &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;
+                        &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;
+                        <b style="font-weight: normal"  *ngIf="plan.selectedRoomnumber <= 1">
+                          {{
+                            calculateTaxAmount(
+                              plan.actualRoomPrice * plan.selectedRoomnumber +
+                                (plan.SingleDayextraPersonAdultCountAmount +
+                                  plan.SingleDayextraPersonChildCountAmount),
+                              plan
+                            ) | currency:currency:'symbol':'1.2-2'
+                          }}
+                        </b>
+                        <b style="font-weight: normal"  *ngIf="plan.selectedRoomnumber > 1">
+                          {{
+                            (calculateTaxAmount(
+                              plan.actualRoomPrice +
+                                (plan.singleextraAdultCharges +
+                                  plan.singleextraChildrenCharges),
+                              plan
+                            ) * plan.selectedRoomnumber)  | currency:currency:'symbol':'1.2-2'
+                          }}
+                        </b>
+                      </ng-container>
+                    </small>
+                  </div>
               </div>
             </div>
           </div>
@@ -1882,7 +1900,7 @@
   </div>
 
   <!-- mob view -->
-  <div class="modal fade" tabindex="-1" id="galleryModal" #galleryModalRef>
+  <div class="modal fade" style="overflow: auto !important;" tabindex="-1" id="galleryModal" #galleryModalRef>
     <div
       class="modal-dialog modal-lg modal-dialog-centered modal-fullscreen-gallery"
     >
@@ -2494,7 +2512,7 @@
                     <div class="d-flex text-center" style="gap: 10px">
                       <div
                         class="aminities-alignment"
-                        *ngFor="let item of room.roomFacilities | slice : 0 : 3"
+                        *ngFor="let item of room.roomFacilities | slice : 0 : 2"
                       >
                         <i
                           [ngClass]="getAmenityIcon(item.name)"
@@ -2642,7 +2660,7 @@
                                 )
                               "
                               [ngValue]="count"
-                              [disabled]="count === 0"
+
                             >
                               {{ count === 0 ? "0" : count }}
                             </option>
@@ -2857,7 +2875,7 @@
                                 )
                               "
                               [ngValue]="count"
-                              [disabled]="count === 0"
+
                             >
                               {{ count === 0 ? "0" : count }}
                             </option>
@@ -3124,7 +3142,7 @@
                     <div class="d-flex text-center" style="gap: 10px">
                       <div
                         class="aminities-alignment"
-                        *ngFor="let item of room.roomFacilities | slice : 0 : 3"
+                        *ngFor="let item of room.roomFacilities | slice : 0 : 2"
                       >
                         <i
                           [ngClass]="getAmenityIcon(item.name)"
@@ -3269,7 +3287,7 @@
                                 )
                               "
                               [ngValue]="count"
-                              [disabled]="count === 0"
+
                             >
                               {{ count === 0 ? "0" : count }}
                             </option>
@@ -3476,7 +3494,7 @@
                                 )
                               "
                               [ngValue]="count"
-                              [disabled]="count === 0"
+
                             >
                               {{ count === 0 ? "0" : count }}
                             </option>
@@ -3821,7 +3839,7 @@
                     <div class="d-flex text-center" style="gap: 10px">
                       <div
                         class="aminities-alignment"
-                        *ngFor="let item of room.roomFacilities | slice : 0 : 3"
+                        *ngFor="let item of room.roomFacilities | slice : 0 : 2"
                       >
                         <i
                           [ngClass]="getAmenityIcon(item.name)"
@@ -3993,7 +4011,7 @@
                     <div class="d-flex text-center" style="gap: 10px">
                       <div
                         class="aminities-alignment"
-                        *ngFor="let item of room.roomFacilities | slice : 0 : 3"
+                        *ngFor="let item of room.roomFacilities | slice : 0 : 2"
                       >
                         <i
                           [ngClass]="getAmenityIcon(item.name)"
@@ -4217,7 +4235,7 @@
                       class="text-muted"
                       *ngFor="let price of [planPrice[i]]"
                     >
-                      ₹{{ price * plan.selectedRoomnumber | number : "1.2-2" }}
+                      {{ price * plan.selectedRoomnumber | currency:currency:'symbol':'1.2-2' }}
                       <br />
                       <ng-container
                         *ngIf="plan.SingleDayextraPersonAdultCountAmount > 0"
@@ -4225,7 +4243,7 @@
                         <b style="font-weight: normal">Extra Adult Charge:</b
                         >&nbsp; &nbsp; &nbsp; &nbsp;
                         <b style="font-weight: normal"
-                          >₹{{ plan.SingleDayextraPersonAdultCountAmount }}</b
+                          > {{ plan.SingleDayextraPersonAdultCountAmount | currency:currency:'symbol':'1.2-2' }}</b
                         >
                         <br />
                       </ng-container>
@@ -4235,31 +4253,39 @@
                       >
                         <b style="font-weight: normal">Extra Children Charge</b>
                         &nbsp; &nbsp; &nbsp; &nbsp;
-                        <b style="font-weight: normal">₹{{
-                          plan.SingleDayextraPersonChildCountAmount
-                        }}</b>
+                        <b style="font-weight: normal"
+                          > {{ plan.SingleDayextraPersonChildCountAmount | currency:currency:'symbol':'1.2-2' }}</b
+                        >
                         <br />
                       </ng-container>
                       <ng-container
                         *ngIf="
-                          price * plan.selectedRoomnumber +
-                          (plan.SingleDayextraPersonAdultCountAmount +
-                            plan.SingleDayextraPersonChildCountAmount)
+                          price
                         "
                       >
                         <b style="font-weight: normal"> Tax Fees: </b> &nbsp;
                         &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;
                         &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;
-                        <b style="font-weight: normal">
-                          ₹{{
-                            calculateTaxAmount(
-                              price * plan.selectedRoomnumber +
-                                (plan.SingleDayextraPersonAdultCountAmount +
-                                  plan.SingleDayextraPersonChildCountAmount),
+
+                        <b style="font-weight: normal" *ngIf="plan.selectedRoomnumber > 1">
+
+                        {{
+                         (calculateTaxAmount(
+                          (price) +
+                                (plan.singleextraAdultCharges +
+                                  plan.singleextraChildrenCharges),
                               plan
-                            ) | number : "1.2-2"
-                          }}
-                        </b>
+                          )  * plan.selectedRoomnumber)  | currency:currency:'symbol':'1.2-2'
+                        }}
+                      </b>
+                      <b style="font-weight: normal" *ngIf="plan.selectedRoomnumber <= 1">
+                        {{
+                         (calculateTaxAmount(
+                           price  + (plan.SingleDayextraPersonAdultCountAmount  + plan.SingleDayextraPersonChildCountAmount),
+                              plan
+                          ) * plan.selectedRoomnumber )  | currency:currency:'symbol':'1.2-2'
+                        }}
+                      </b>
                       </ng-container>
                     </small>
                   </div>
@@ -4271,9 +4297,9 @@
                     </small>
                     &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp;
                     <small class="text-muted">
-                      ₹{{
+                      {{
                         plan.actualRoomPrice * plan.selectedRoomnumber
-                          | number : "1.2-2"
+                          | currency:currency:'symbol':'1.2-2'
                       }}
                       <br />
                       <ng-container
@@ -4282,7 +4308,7 @@
                         <b style="font-weight: normal">Extra Adult Charge:</b
                         >&nbsp; &nbsp; &nbsp; &nbsp;
                         <b style="font-weight: normal"
-                          >₹{{ plan.SingleDayextraPersonAdultCountAmount }}</b
+                          >{{ plan.SingleDayextraPersonAdultCountAmount | currency:currency:'symbol':'1.2-2' }}</b
                         >
                         <br />
                       </ng-container>
@@ -4292,8 +4318,8 @@
                       >
                         <b style="font-weight: normal">Extra Children Charge</b>
                         &nbsp; &nbsp; &nbsp; &nbsp;
-                        <b style="font-weight: normal">₹{{
-                          plan.SingleDayextraPersonChildCountAmount
+                        <b style="font-weight: normal">{{
+                          plan.SingleDayextraPersonChildCountAmount | currency:currency:'symbol':'1.2-2'
                         }}</b>
                         <br />
                       </ng-container>
@@ -4307,14 +4333,24 @@
                         <b style="font-weight: normal"> Tax Fees: </b> &nbsp;
                         &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;
                         &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;
-                        <b style="font-weight: normal">
-                          ₹{{
-                            calculateTaxAmount(
-                              plan.actualRoomPrice * plan.selectedRoomnumber +
+                        <b style="font-weight: normal" *ngIf="plan.selectedRoomnumber > 1">
+                          {{
+                            (calculateTaxAmount(
+                              plan.actualRoomPrice +
+                                (plan.singleextraAdultCharges +
+                                  plan.singleextraChildrenCharges),
+                              plan
+                            ) * plan.selectedRoomnumber) | currency:currency:'symbol':'1.2-2'
+                          }}
+                        </b>
+                        <b style="font-weight: normal" *ngIf="plan.selectedRoomnumber <= 1">
+                          {{
+                            (calculateTaxAmount(
+                              plan.actualRoomPrice +
                                 (plan.SingleDayextraPersonAdultCountAmount +
                                   plan.SingleDayextraPersonChildCountAmount),
                               plan
-                            ) | number : "1.2-2"
+                            ) * plan.selectedRoomnumber) | currency:currency:'symbol':'1.2-2'
                           }}
                         </b>
                       </ng-container>
@@ -4547,7 +4583,6 @@
         <div style="margin-top: 20px" *ngIf="businessUser.businessDescription">
           <div
             style="
-              background-color: #e5f9ff80;
               display: inline-block;
               padding: 4px 8px;
             "
