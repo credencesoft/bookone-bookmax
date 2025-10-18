@@ -444,7 +444,7 @@
           <button
             class="btn btn-primary text-white FB"
             type="button"
-            [disabled]="isPayNowDisabled || paymentLoader || submitButtonDisable || !validateFrom()"
+            [disabled]="isPayDisabled || isPayNowDisabled || paymentLoader || submitButtonDisable || !validateFrom()"
             *ngIf="value === true && businessUser.paymentGateway != null"
             (click)="payAndCheckout()"
           >
@@ -1262,7 +1262,7 @@
             class="Fillpaybtn"
             type="button"
             style="font-size: 19px"
-            [disabled]="
+            [disabled]=" isEnquiryDisabled ||
               ((!paymentLoader || !submitButtonDisable) && !validateFrom()) ||
               !termsAccepted
             "
@@ -1275,7 +1275,7 @@
             class="Fillpaybtn"
             type="button"
             style="font-size: 19px"
-            [disabled]="
+            [disabled]=" isCashPayDisabled ||
               ((!paymentLoader || !submitButtonDisable) && !validateFrom()) ||
               !termsAccepted
             "
@@ -1294,7 +1294,7 @@
             class="Fillpaybtn"
             type="button"
             style="font-size: 19px"
-            [disabled]="
+            [disabled]="isCashPayDisabled ||
               ((!paymentLoader || !submitButtonDisable) && !validateFrom()) ||
               !termsAccepted
             "
@@ -1311,7 +1311,7 @@
             class="Fillpaybtn"
             type="button"
             style="font-size: 19px"
-            [disabled]="isPayNowDisabled ||
+            [disabled]="isPayNowDisabled || isPayDisabled ||
               ((!paymentLoader || !submitButtonDisable) && !validateFrom()) ||
               !termsAccepted
             "
@@ -1929,7 +1929,7 @@
             class="Fillpaybtn"
             type="button"
             style="font-size: 19px"
-            [disabled]="
+            [disabled]=" isEnquiryDisabled ||
               ((!paymentLoader || !submitButtonDisable) && !validateFrom()) ||
               !termsAccepted
             "
@@ -1942,7 +1942,7 @@
             class="Fillpaybtn"
             type="button"
             style="font-size: 19px"
-            [disabled]="
+            [disabled]=" isCashPayDisabled ||
               ((!paymentLoader || !submitButtonDisable) && !validateFrom()) ||
               !termsAccepted
             "
@@ -1961,7 +1961,7 @@
             class="Fillpaybtn"
             type="button"
             style="font-size: 19px"
-            [disabled]="
+            [disabled]="isCashPayDisabled ||
               ((!paymentLoader || !submitButtonDisable) && !validateFrom()) ||
               !termsAccepted
             "
@@ -1978,7 +1978,7 @@
             class="Fillpaybtn"
             type="button"
             style="font-size: 19px"
-            [disabled]=" isPayNowDisabled ||
+            [disabled]=" isPayNowDisabled || isPayDisabled ||
               ((!paymentLoader || !submitButtonDisable) && !validateFrom()) ||
               !termsAccepted
             "

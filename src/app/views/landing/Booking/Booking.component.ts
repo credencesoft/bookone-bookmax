@@ -277,6 +277,9 @@ export class BookingComponent implements OnInit {
   channelManagerIntegration: any;
   isPayNowDisabled: boolean = false;
   websiteUrlBookingEngine: boolean;
+  isEnquiryDisabled = false;
+  isCashPayDisabled = false;
+  isPayDisabled = false;
   constructor(
     private token: TokenStorage,
     private ngZone: NgZone,
@@ -1910,6 +1913,8 @@ if (bookingSummaryStr) {
   }
 
 async  payAndCheckout() {
+  if (this.isPayDisabled) return; // Prevent double clicks
+  this.isPayDisabled = true;
   sessionStorage.removeItem('EnquiryResponseList');
   this.isPayNowDisabled = true;
 const bookingSummaryStr = sessionStorage.getItem('bookingSummaryDetails');
@@ -2914,6 +2919,8 @@ if (bookingSummaryStr) {
 
   taxAmountBackUp: number;
   onCashPaymentSubmit() {
+    if (this.isCashPayDisabled) return; // prevent multiple clicks
+  this.isCashPayDisabled = true;
     // localStorage.removeItem('selectedPromoData');
     // localStorage.removeItem('selectPromo');
     const bookingSummaryStr = sessionStorage.getItem('bookingSummaryDetails');
@@ -6250,6 +6257,8 @@ if (bookingSummaryStr) {
     });
   }
   async createAllEnquiries() {
+    if(this.isEnquiryDisabled) return;
+    this.isEnquiryDisabled = true;
     const bookingSummaryStr = sessionStorage.getItem('bookingSummaryDetails');
     const bookingSummary = bookingSummaryStr
       ? JSON.parse(bookingSummaryStr)
