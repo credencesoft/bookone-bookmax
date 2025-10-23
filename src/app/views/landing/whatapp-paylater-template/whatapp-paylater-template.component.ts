@@ -126,7 +126,7 @@ export class WhatappPaylaterTemplateComponent implements OnInit {
     }
   }
 callNow() {
-    window.location.href = 'tel:' + 9040785705;
+    window.location.href = 'tel:' + 7326079861;
 }
      async getPropertyDetailsById(id: number) {
 

@@ -185,7 +185,7 @@ getTrimmedDescription(description: string): string {
     if (this.businessUser?.mobile && this.websiteUrlBookingEngine) {
     window.location.href = 'tel:' + this.businessUser?.mobile;
   } else {
-    window.location.href = 'tel:' + 9040785705;
+    window.location.href = 'tel:' + 7326079861;
   }
 }
 

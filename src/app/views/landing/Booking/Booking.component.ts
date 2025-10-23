@@ -280,6 +280,9 @@ export class BookingComponent implements OnInit {
   googleAnalyticId: number | null = null;
   utmSource: string;
   utmMedium: string;
+  isEnquiryDisabled = false;
+  isCashPayDisabled = false;
+  isPayDisabled = false;
   constructor(
     private token: TokenStorage,
     private ngZone: NgZone,
@@ -2013,6 +2016,8 @@ if (bookingSummaryStr) {
   }
 
 async  payAndCheckout() {
+  if (this.isPayDisabled) return; // Prevent double clicks
+  this.isPayDisabled = true;
   sessionStorage.removeItem('EnquiryResponseList');
   this.isPayNowDisabled = true;
 const bookingSummaryStr = sessionStorage.getItem('bookingSummaryDetails');
@@ -3017,6 +3022,8 @@ if (bookingSummaryStr) {
 
   taxAmountBackUp: number;
   onCashPaymentSubmit() {
+    if (this.isCashPayDisabled) return; // prevent multiple clicks
+  this.isCashPayDisabled = true;
     // localStorage.removeItem('selectedPromoData');
     // localStorage.removeItem('selectPromo');
     const bookingSummaryStr = sessionStorage.getItem('bookingSummaryDetails');
@@ -3945,7 +3952,7 @@ if (bookingSummaryStr) {
 
      this.parametertype2 = new Para();
     (this.parametertype2.type = 'text'),
-      (this.parametertype2.text = '9040785705');
+      (this.parametertype2.text = '7326079861');
     this.parameterss2.push(this.parametertype2);
 
      this.parametertype2 = new Para();
@@ -4257,7 +4264,7 @@ if (bookingSummaryStr) {
 
      this.parametertype2 = new Para();
     (this.parametertype2.type = 'text'),
-      (this.parametertype2.text = '9040785705');
+      (this.parametertype2.text = '7326079861');
     this.parameterss2.push(this.parametertype2);
 
      this.parametertype2 = new Para();
@@ -4442,7 +4449,7 @@ if (bookingSummaryStr) {
 
     this.template.components = this.components;
     this.whatsappForm.template = this.template;
-    (this.whatsappForm.to = '9040785705'),
+    (this.whatsappForm.to = '7326079861'),
       (this.whatsappForm.type = 'template'),
       this.hotelBookingService.whatsAppMsg(this.whatsappForm).subscribe(
         (response) => {
@@ -4570,7 +4577,7 @@ if (bookingSummaryStr) {
 
      this.parametertype2 = new Para();
     (this.parametertype2.type = 'text'),
-      (this.parametertype2.text = '9040785705');
+      (this.parametertype2.text = '7326079861');
     this.parameterss2.push(this.parametertype2);
 
      this.parametertype2 = new Para();
@@ -4883,7 +4890,7 @@ if (bookingSummaryStr) {
 
      this.parametertype2 = new Para();
     (this.parametertype2.type = 'text'),
-      (this.parametertype2.text = '9040785705');
+      (this.parametertype2.text = '7326079861');
     this.parameterss2.push(this.parametertype2);
 
      this.parametertype2 = new Para();
@@ -4911,7 +4918,7 @@ if (bookingSummaryStr) {
 
     this.template.components = this.components;
     this.whatsappForm.template = this.template;
-    (this.whatsappForm.to = '9040785705'),
+    (this.whatsappForm.to = '7326079861'),
       (this.whatsappForm.type = 'template'),
       this.hotelBookingService.whatsAppMsg(this.whatsappForm).subscribe(
         (response) => {
@@ -5660,7 +5667,7 @@ if (bookingSummaryStr) {
 
   //   this.template.components = this.components;
   //   this.whatsappForm.template = this.template;
-  //   (this.whatsappForm.to = '9040785705'),
+  //   (this.whatsappForm.to = '7326079861'),
   //     (this.whatsappForm.type = 'template'),
   //     this.hotelBookingService.whatsAppMsg(this.whatsappForm).subscribe(
   //       (response) => {
@@ -6353,6 +6360,8 @@ if (bookingSummaryStr) {
     });
   }
   async createAllEnquiries() {
+    if(this.isEnquiryDisabled) return;
+    this.isEnquiryDisabled = true;
     const bookingSummaryStr = sessionStorage.getItem('bookingSummaryDetails');
     const bookingSummary = bookingSummaryStr
       ? JSON.parse(bookingSummaryStr)

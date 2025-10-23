@@ -1497,7 +1497,7 @@ this.externalReservationdto =res.body
 
           this.template.components = this.components;
           this.whatsappForm.template =this.template;
-          this.whatsappForm.to = "9040785705",
+          this.whatsappForm.to = "7326079861",
           this.whatsappForm.type = 'template',
             this.hotelBookingService.whatsAppMsg(this.whatsappForm).subscribe((response) => {
               this.paymentLoader = false;

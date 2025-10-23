@@ -1709,7 +1709,7 @@ callNow() {
   if (this.businessUser?.mobile && this.websiteUrlBookingEngine) {
     window.location.href = 'tel:' + this.businessUser?.mobile;
   } else {
-    window.location.href = 'tel:' + 9040785705;
+    window.location.href = 'tel:' + 7326079861;
   }
 }
 
@@ -2165,7 +2165,7 @@ onGenerateVouchers() {
 
             this.template.components = this.components;
             this.whatsappForm.template =this.template;
-            this.whatsappForm.to = '9040785705',
+            this.whatsappForm.to = '7326079861',
             this.whatsappForm.type = 'template',
               this.hotelBookingService.whatsAppMsg(this.whatsappForm).subscribe((response) => {
                 this.paymentLoader = false;
@@ -3226,7 +3226,7 @@ onGenerateVouchers() {
 
               this.template.components = this.components;
               this.whatsappForm.template =this.template;
-              this.whatsappForm.to = "9040785705",
+              this.whatsappForm.to = "7326079861",
               this.whatsappForm.type = 'template',
                 this.hotelBookingService.whatsAppMsg(this.whatsappForm).subscribe((response) => {
                   this.paymentLoader = false;
