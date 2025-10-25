@@ -1110,10 +1110,43 @@ guestDataArray: Array<{
       if (this.hotelID != null && this.hotelID != undefined) {
         this.propertyId = this.hotelID;
       }
-      this.fromDate = this.calendar.getToday();
+       if(this.checkinDay && this.checkinMonth && this.checkinYear) {
+                  let dateString =
+          this.checkinYear + '-' + this.checkinMonth + '-' + this.checkinDay;
+        let checkedinday = new Date(dateString);
+
+        let checkedOutday = new Date(checkedinday);
+        let day = Number(checkedOutday.getDate()) + Number(this.nights);
+        checkedOutday.setDate(day);
+            this.booking.fromDate = this.getDateFormatYearMonthDay(
+          checkedinday.getDate(),
+          checkedinday.getMonth() + 1,
+          checkedinday.getFullYear()
+        );
+        this.fromDate = new NgbDate(
+        this.mileSecondToNGBDate(this.booking.fromDate).year,
+        this.mileSecondToNGBDate(this.booking.fromDate).month,
+        this.mileSecondToNGBDate(this.booking.fromDate).day
+      );
+        this.booking.toDate = this.getDateFormatYearMonthDay(
+          checkedOutday.getDate(),
+          checkedOutday.getMonth() + 1,
+          checkedOutday.getFullYear()
+        );
+
+        this.toDate = new NgbDate(
+        this.mileSecondToNGBDate(this.booking.toDate).year,
+        this.mileSecondToNGBDate(this.booking.toDate).month,
+        this.mileSecondToNGBDate(this.booking.toDate).day
+      );
+
+    } else {
+            this.fromDate = this.calendar.getToday();
       this.todayDate = calendar.getToday();
-      this.selectedServices = [];
       this.toDate = this.calendar.getNext(this.calendar.getToday(), 'd', 1);
+    }
+
+      this.selectedServices = [];
            if ( this.adults == null && this.adults == undefined ) {
           this.adults = 1
         }
@@ -1235,8 +1268,41 @@ guestDataArray: Array<{
 
       this.taxPercentage = this.booking.taxPercentage;
     } else {
+      if(this.checkinDay && this.checkinMonth && this.checkinYear) {
+                  let dateString =
+          this.checkinYear + '-' + this.checkinMonth + '-' + this.checkinDay;
+        let checkedinday = new Date(dateString);
+
+        let checkedOutday = new Date(checkedinday);
+        let day = Number(checkedOutday.getDate()) + Number(this.nights);
+        checkedOutday.setDate(day);
+            this.booking.fromDate = this.getDateFormatYearMonthDay(
+          checkedinday.getDate(),
+          checkedinday.getMonth() + 1,
+          checkedinday.getFullYear()
+        );
+        this.fromDate = new NgbDate(
+        this.mileSecondToNGBDate(this.booking.fromDate).year,
+        this.mileSecondToNGBDate(this.booking.fromDate).month,
+        this.mileSecondToNGBDate(this.booking.fromDate).day
+      );
+        this.booking.toDate = this.getDateFormatYearMonthDay(
+          checkedOutday.getDate(),
+          checkedOutday.getMonth() + 1,
+          checkedOutday.getFullYear()
+        );
+
+        this.toDate = new NgbDate(
+        this.mileSecondToNGBDate(this.booking.toDate).year,
+        this.mileSecondToNGBDate(this.booking.toDate).month,
+        this.mileSecondToNGBDate(this.booking.toDate).day
+      );
+
+    } else {
+
       this.fromDate = this.calendar.getToday();
       this.toDate = this.calendar.getNext(this.calendar.getToday(), 'd', 1);
+    }
            if ( this.adults == null && this.adults == undefined ) {
       this.adults = 1
      }
@@ -1536,7 +1602,7 @@ onAddonToggle(addonName: string, checked: boolean) {
 }
   get totalAdults(): number {
     return (
-      this.adults + this.additionalRooms.reduce((sum, r) => sum + r.adults, 0)
+      Number(this.adults) + this.additionalRooms.reduce((sum, r) => sum + r.adults, 0)
     );
   }
 
