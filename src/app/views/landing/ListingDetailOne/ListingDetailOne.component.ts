@@ -1007,6 +1007,7 @@ guestDataArray: Array<{
 
   // ✅ checkin date
   this.checkinDate = `${year}-${('0' + month).slice(-2)}-${('0' + day).slice(-2)}`;
+  console.log('Check-in Date:', this.checkinDate);
 
   // ✅ checkout date
   if (nights) {
@@ -5851,8 +5852,27 @@ onBookNow() {
     this.loaderHotelBooking = true;
     this.checkAvailabilityStatusHide = false;
     this.booking.propertyId = this.businessUser.id;
+    if(this.checkinDay && this.checkinMonth && this.checkinYear) {
+                  let dateString =
+          this.checkinYear + '-' + this.checkinMonth + '-' + this.checkinDay;
+        let checkedinday = new Date(dateString);
 
-    if (
+        let checkedOutday = new Date(checkedinday);
+        let day = Number(checkedOutday.getDate()) + Number(this.nights);
+        checkedOutday.setDate(day);
+            this.booking.fromDate = this.getDateFormatYearMonthDay(
+          checkedinday.getDate(),
+          checkedinday.getMonth() + 1,
+          checkedinday.getFullYear()
+        );
+        this.booking.toDate = this.getDateFormatYearMonthDay(
+          checkedOutday.getDate(),
+          checkedOutday.getMonth() + 1,
+          checkedOutday.getFullYear()
+        );
+
+    } else {
+          if (
       this.fromDate.day != null &&
       this.fromDate.month != null &&
       this.fromDate.year != null
@@ -5870,8 +5890,7 @@ onBookNow() {
         currentDate.getFullYear()
       );
     }
-
-    if (
+        if (
       this.toDate.day != null &&
       this.toDate.month != null &&
       this.toDate.year != null
@@ -5890,6 +5909,10 @@ onBookNow() {
         currentDate.getFullYear()
       );
     }
+    }
+
+
+
     this.booking.noOfRooms = this.noOfrooms;
     this.booking.noOfPersons = this.totalAdults;
     this.booking.noOfChildren = this.totalChildren;
@@ -6743,44 +6766,7 @@ isPlanVisible(filteredPlans: any[], roomName: string) {
     this.booking.propertyId = this.businessUser.id;
     this.token.saveBookingRoomPrice(this.booking.roomPrice);
 
-    if (
-      this.fromDate.day != null &&
-      this.fromDate.month != null &&
-      this.fromDate.year != null
-    ) {
-      this.booking.fromDate = this.getDateFormatYearMonthDay(
-        this.fromDate.day,
-        this.fromDate.month,
-        this.fromDate.year
-      );
-    } else {
-      let currentDate = new Date();
-      this.booking.fromDate = this.getDateFormatYearMonthDay(
-        currentDate.getDate(),
-        currentDate.getMonth(),
-        currentDate.getFullYear()
-      );
-    }
 
-    if (
-      this.toDate.day != null &&
-      this.toDate.month != null &&
-      this.toDate.year != null
-    ) {
-      this.booking.toDate = this.getDateFormatYearMonthDay(
-        this.toDate.day,
-        this.toDate.month,
-        this.toDate.year
-      );
-    } else {
-      let currentDate = new Date();
-      currentDate.setDate(currentDate.getDate() + 1);
-      this.booking.toDate = this.getDateFormatYearMonthDay(
-        currentDate.getDate(),
-        currentDate.getMonth(),
-        currentDate.getFullYear()
-      );
-    }
 
     this.booking.noOfRooms = this.noOfrooms;
     this.booking.noOfPersons = this.adults;
