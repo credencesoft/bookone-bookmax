@@ -5918,26 +5918,7 @@ onBookNow() {
     this.loaderHotelBooking = true;
     this.checkAvailabilityStatusHide = false;
     this.booking.propertyId = this.businessUser.id;
-    if(this.checkinDay && this.checkinMonth && this.checkinYear) {
-                  let dateString =
-          this.checkinYear + '-' + this.checkinMonth + '-' + this.checkinDay;
-        let checkedinday = new Date(dateString);
 
-        let checkedOutday = new Date(checkedinday);
-        let day = Number(checkedOutday.getDate()) + Number(this.nights);
-        checkedOutday.setDate(day);
-            this.booking.fromDate = this.getDateFormatYearMonthDay(
-          checkedinday.getDate(),
-          checkedinday.getMonth() + 1,
-          checkedinday.getFullYear()
-        );
-        this.booking.toDate = this.getDateFormatYearMonthDay(
-          checkedOutday.getDate(),
-          checkedOutday.getMonth() + 1,
-          checkedOutday.getFullYear()
-        );
-
-    } else {
           if (
       this.fromDate.day != null &&
       this.fromDate.month != null &&
@@ -5975,7 +5956,7 @@ onBookNow() {
         currentDate.getFullYear()
       );
     }
-    }
+
 
 
 
