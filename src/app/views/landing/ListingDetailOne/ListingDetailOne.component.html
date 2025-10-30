@@ -19,7 +19,7 @@
   (onBookNowClick)="onBookNowClick()"
 >
 </app-Header-Listingdetailsone>
-<div *ngIf="showAllTheOfferList?.length > 0 && !activeForGoogleHotelCenter">
+<div *ngIf="showAllTheOfferList?.length > 0 ">
   <p-carousel
     class="carousel-section"
     [value]="showAllTheOfferList"
@@ -602,7 +602,7 @@
 
         <div
           class="d-flex justify-content-between"
-          *ngIf="specialDiscountPercentage"
+          *ngIf="specialDiscountPercentage && !activeForGoogleHotelCenter"
         >
           <span>Discount ({{ specialDiscountPercentage }})%</span>
           <span>
@@ -616,6 +616,28 @@
             <b style="color: #16a34a; font-weight: 400"
               >-₹{{
                 (getTotalPlanPrice() * specialDiscountPercentage) / 100
+                  | number : "1.2-2"
+              }}</b
+            ></span
+          >
+        </div>
+
+        <div
+          class="d-flex justify-content-between"
+          *ngIf="specialDiscountPercentage && activeForGoogleHotelCenter"
+        >
+          <span>Discount ({{ specialDiscountPercentage }})%</span>
+          <span>
+            <small
+              >Coupon <img src=" assets/images/coupon-tag.svg" alt="" /><b
+                style="color: #16a34a; font-weight: 400"
+                >{{ this.specialDiscountData.couponCode }}</b
+              >
+              &nbsp;
+            </small>
+            <b style="color: #16a34a; font-weight: 400"
+              >-₹{{
+                (getGrandSubtotal() * specialDiscountPercentage) / 100
                   | number : "1.2-2"
               }}</b
             ></span
@@ -4396,7 +4418,7 @@
             </div>
           </ng-container>
         </div>
-        <div *ngIf="!activeForGoogleHotelCenter">
+        <div >
           <small class="special-code"
             >Have a coupon code?
             <span class="special-code-One"
@@ -4408,7 +4430,7 @@
             errorMessagePrivate
           }}</small>
         </div>
-        <div class="special-sectionOne" *ngIf="!activeForGoogleHotelCenter">
+        <div class="special-sectionOne" >
           <div style="width: 100%">
             <input
               class="input-coupon"
@@ -4482,26 +4504,49 @@
           </div>
 
           <div
-            class="d-flex justify-content-between"
-            *ngIf="specialDiscountPercentage"
+          class="d-flex justify-content-between"
+          *ngIf="specialDiscountPercentage && !activeForGoogleHotelCenter"
+        >
+          <span>Discount ({{ specialDiscountPercentage }})%</span>
+          <span>
+            <small
+              >Coupon <img src=" assets/images/coupon-tag.svg" alt="" /><b
+                style="color: #16a34a; font-weight: 400"
+                >{{ this.specialDiscountData.couponCode }}</b
+              >
+              &nbsp;
+            </small>
+            <b style="color: #16a34a; font-weight: 400"
+              >-₹{{
+                (getTotalPlanPrice() * specialDiscountPercentage) / 100
+                  | number : "1.2-2"
+              }}</b
+            ></span
           >
-            <span>Discount ({{ specialDiscountPercentage }})%</span>
-            <span>
-              <small
-                >Coupon <img src=" assets/images/coupon-tag.svg" alt="" /><b
-                  style="color: #16a34a; font-weight: 400"
-                  >{{ this.specialDiscountData.couponCode }}</b
-                >
-                &nbsp;
-              </small>
-              <b style="color: #16a34a; font-weight: 400"
-                >-₹{{
-                  (getTotalPlanPrice() * specialDiscountPercentage) / 100
-                    | number : "1.2-2"
-                }}</b
-              ></span
-            >
-          </div>
+        </div>
+
+        <div
+          class="d-flex justify-content-between"
+          *ngIf="specialDiscountPercentage && activeForGoogleHotelCenter"
+        >
+          <span>Discount ({{ specialDiscountPercentage }})%</span>
+          <span>
+            <small
+              >Coupon <img src=" assets/images/coupon-tag.svg" alt="" /><b
+                style="color: #16a34a; font-weight: 400"
+                >{{ this.specialDiscountData.couponCode }}</b
+              >
+              &nbsp;
+            </small>
+            <b style="color: #16a34a; font-weight: 400"
+              >-₹{{
+                (getGrandSubtotal() * specialDiscountPercentage) / 100
+                  | number : "1.2-2"
+              }}</b
+            ></span
+          >
+        </div>
+
 
           <div
             class="d-flex justify-content-between"
@@ -4555,16 +4600,11 @@
             <span>Total Amount</span>
             <span *ngIf="specialDiscountPercentage">
               ₹{{
-                getTotalPlanPrice() +
-                  getTotalAfterTaxAmountFacility() +
-                  getTotalTaxPrice() -
-                  (this.getTotalPlanPrice() * this.specialDiscountPercentage) /
-                    100 | number : "1.2-2"
+               ((getGrandTotal() + getGrandTaxTotal()) -
+                   ((getGrandSubtotal() * specialDiscountPercentage) / 100)) | number : "1.2-2"
               }}
             </span>
-            <span *ngIf="!specialDiscountPercentage"
-              >₹{{ getGrandTotal() | number : "1.2-2" }}</span
-            >
+            <span *ngIf="!specialDiscountPercentage">₹{{ getGrandTotal() | number : "1.2-2" }}</span>
           </div>
         </div>
 
