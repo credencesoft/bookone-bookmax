@@ -709,11 +709,15 @@ closeTermsUniquePopup() {
     this.reservationRoomDetails = [];
     let roomdetailss = new RoomDetail();
     let externalreservation = new externalReservationDtoList();
+     const couponCodeValues = sessionStorage.getItem('selectedPromoData');
+    const parsed = JSON.parse(couponCodeValues);
+  this.specialDiscountData = JSON.parse(couponCodeValues);
     externalreservation.checkinDate = booking.fromDate;
     externalreservation.checkoutDate = booking.toDate;
     externalreservation.currency = booking.currency;
     externalreservation.email = booking.email;
-    externalreservation.couponCode = booking.couponCode;
+    externalreservation.couponCode = this.specialDiscountData.couponCode;
+    externalreservation.discountAmount = booking.discountAmount;
     externalreservation.promotionName = booking.promotionName;
     externalreservation.totalAmount = booking.totalAmount;
     externalreservation.amountBeforeTax = booking.beforeTaxAmount;
@@ -3824,7 +3828,7 @@ if (bookingSummaryStr) {
 
     this.parametertype2 = new Para();
     (this.parametertype2.type = 'text'),
-      (this.parametertype2.text = this.propertyDataObj.promotionName
+     (this.parametertype2.text = booking.promotionName
         ? booking.promotionName
         : ' ');
     this.parameterss2.push(this.parametertype2);
@@ -3980,7 +3984,7 @@ if (bookingSummaryStr) {
 
     this.parametertype2 = new Para();
     (this.parametertype2.type = 'text'),
-      (this.parametertype2.text = this.propertyDataObj.promotionName
+      (this.parametertype2.text = booking.promotionName
         ? booking.promotionName
         : ' ');
     this.parameterss2.push(this.parametertype2);
@@ -4136,7 +4140,7 @@ if (bookingSummaryStr) {
 
     this.parametertype2 = new Para();
     (this.parametertype2.type = 'text'),
-      (this.parametertype2.text = this.propertyDataObj.promotionName
+      (this.parametertype2.text = booking.promotionName
         ? booking.promotionName
         : ' ');
     this.parameterss2.push(this.parametertype2);
@@ -4292,7 +4296,7 @@ if (bookingSummaryStr) {
 
     this.parametertype2 = new Para();
     (this.parametertype2.type = 'text'),
-      (this.parametertype2.text = this.propertyDataObj.promotionName
+      (this.parametertype2.text = booking.promotionName
         ? booking.promotionName
         : ' ');
     this.parameterss2.push(this.parametertype2);
@@ -4449,7 +4453,7 @@ if (bookingSummaryStr) {
 
     this.parametertype2 = new Para();
     (this.parametertype2.type = 'text'),
-      (this.parametertype2.text = this.propertyDataObj.promotionName
+      (this.parametertype2.text = booking.promotionName
         ? booking.promotionName
         : ' ');
     this.parameterss2.push(this.parametertype2);
@@ -4605,7 +4609,7 @@ if (bookingSummaryStr) {
 
     this.parametertype2 = new Para();
     (this.parametertype2.type = 'text'),
-      (this.parametertype2.text = this.propertyDataObj.promotionName
+     (this.parametertype2.text = booking.promotionName
         ? booking.promotionName
         : ' ');
     this.parameterss2.push(this.parametertype2);
@@ -4762,7 +4766,7 @@ if (bookingSummaryStr) {
 
     this.parametertype2 = new Para();
     (this.parametertype2.type = 'text'),
-      (this.parametertype2.text = this.propertyDataObj.promotionName
+      (this.parametertype2.text = booking.promotionName
         ? booking.promotionName
         : ' ');
     this.parameterss2.push(this.parametertype2);
@@ -4918,7 +4922,7 @@ if (bookingSummaryStr) {
 
     this.parametertype2 = new Para();
     (this.parametertype2.type = 'text'),
-      (this.parametertype2.text = this.propertyDataObj.promotionName
+      (this.parametertype2.text = booking.promotionName
         ? booking.promotionName
         : ' ');
     this.parameterss2.push(this.parametertype2);
@@ -5075,7 +5079,7 @@ if (bookingSummaryStr) {
 
     this.parametertype2 = new Para();
     (this.parametertype2.type = 'text'),
-      (this.parametertype2.text = this.propertyDataObj.promotionName
+      (this.parametertype2.text = booking.promotionName
         ? booking.promotionName
         : ' ');
     this.parameterss2.push(this.parametertype2);
