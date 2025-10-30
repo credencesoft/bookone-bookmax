@@ -3372,8 +3372,8 @@ if (bookingSummaryStr) {
     booking.noOfChildrenUnder5years = plan.childrenBelow5years;
     booking.noOfNights = plan.nights;
     booking.noOfRooms = Number(plan.selectedRoomnumber);
-    booking.netAmount = plan.price;
-    booking.beforeTaxAmount = plan.price;
+    booking.netAmount = plan.price.toFixed(2);
+    booking.beforeTaxAmount = plan.price.toFixed(2);
     booking.createdDate = new Date().toISOString();
     booking.propertyId = this.booking.propertyId;
     booking.gstAmount = plan.taxPercentageperroom;
@@ -3382,12 +3382,12 @@ if (bookingSummaryStr) {
     booking.discountAmount = 0;
     booking.extraChildCharge = (plan.extraPersonChildCountAmount) || 0;
     booking.extraPersonCharge = ((plan.extraPersonAdultCountAmount)) || 0;
-    booking.roomTariffBeforeDiscount = plan.actualRoomPrice;
-    booking.totalAmount = plan.price + plan.taxPercentageperroom;
-    booking.bookingAmount = booking.totalAmount;
+    booking.roomTariffBeforeDiscount = plan.actualRoomPrice.toFixed(2);
+    booking.totalAmount = (plan.price + plan.taxPercentageperroom).toFixed(2);
+    booking.bookingAmount = booking.totalAmount.toFixed(2);
     booking.payableAmount = this.showTheSelectedCoupon
-      ? booking.totalAmount
-      : booking.totalAmount;
+      ? booking.totalAmount.toFixed(2)
+      : booking.totalAmount.toFixed(2);
     booking.fromDate = bookingSummary.fromDate;
     booking.toDate = bookingSummary.toDate;
     booking.currency = this.businessUser.localCurrency;
@@ -3413,10 +3413,10 @@ if (bookingSummaryStr) {
     booking.roomBooking = true;
     booking.groupBooking = false;
     booking.available = true;
-    booking.roomPrice = plan.actualRoomPrice;
+    booking.roomPrice = plan.actualRoomPrice.toFixed(2);
     booking.totalServiceAmount = this.totalServiceCost || 0;
-    booking.taxAmount = booking.gstAmount;
-    booking.totalRoomTariffBeforeDiscount = plan.actualRoomPrice * plan.nights * plan.selectedRoomnumber;
+    booking.taxAmount = booking.gstAmount.toFixed(2);
+    booking.totalRoomTariffBeforeDiscount = (plan.actualRoomPrice * plan.nights * plan.selectedRoomnumber).toFixed(2);
     booking.noOfExtraPerson = plan.extraCountAdult;
     booking.noOfExtraChild = plan.extraCountChild;
     booking.purposeOfVisit = '';
