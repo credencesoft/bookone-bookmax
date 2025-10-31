@@ -1,4 +1,4 @@
-<div [ngClass]="{ 'background-image-website': businessUser?.id === 3063 }">
+<div [ngClass]="{ 'background-image-website': [3063, 3424, 3425].includes(businessUser?.id) }">
   <app-Header-Listingdetailsone [businessUser]="businessUser">
 </app-Header-Listingdetailsone>
 

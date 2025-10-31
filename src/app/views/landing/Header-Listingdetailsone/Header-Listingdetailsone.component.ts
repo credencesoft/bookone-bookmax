@@ -112,7 +112,7 @@ checkBookingEngineFlag(): void {
   getFormattedNumber(): string {
     const rawNumber = this.websiteUrlBookingEngine
       ? this.businessUser?.mobile
-      : '9040785705';
+      : '7326079861';
 
     if (!rawNumber) return '';
 

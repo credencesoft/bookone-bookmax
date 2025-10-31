@@ -1,4 +1,4 @@
-<div [ngClass]="{ 'background-image-website': businessUser?.id === 3063 }">
+<div [ngClass]="{ 'background-image-website': [3063, 3424, 3425].includes(businessUser?.id) }">
   <df-messenger
   location="asia-south1"
   project-id="impactful-name-306810"
@@ -361,7 +361,7 @@
                     class="text-muted"
                     *ngFor="let price of [planPrice[i]]"
                   >
-                    ₹{{ price * plan.selectedRoomnumber | number : "1.2-2" }}
+                    {{ price * plan.selectedRoomnumber | currency:currency:'symbol':'1.2-2' }}
                     <br />
                     <ng-container
                       *ngIf="plan.SingleDayextraPersonAdultCountAmount > 0"
@@ -369,7 +369,7 @@
                       <b style="font-weight: normal">Extra Adult Charge:</b
                       >&nbsp; &nbsp; &nbsp; &nbsp;
                       <b style="font-weight: normal"
-                        >₹{{ plan.SingleDayextraPersonAdultCountAmount }}</b
+                        >{{ plan.SingleDayextraPersonAdultCountAmount | currency:currency:'symbol':'1.2-2'}}</b
                       >
                       <br />
                     </ng-container>
@@ -379,29 +379,37 @@
                     >
                       <b style="font-weight: normal">Extra Children Charge</b>
                       &nbsp; &nbsp; &nbsp; &nbsp;
-                      <b style="font-weight: normal">₹{{
-                        plan.SingleDayextraPersonChildCountAmount
-                      }}</b>
+                      <b style="font-weight: normal"
+                        >{{ plan.SingleDayextraPersonChildCountAmount | currency:currency:'symbol':'1.2-2' }}</b
+                      >
                       <br />
                     </ng-container>
                     <ng-container
                       *ngIf="
-                        price * plan.selectedRoomnumber +
-                        (plan.SingleDayextraPersonAdultCountAmount +
-                          plan.SingleDayextraPersonChildCountAmount)
+                        price
                       "
                     >
                       <b style="font-weight: normal"> Tax Fees: </b> &nbsp;
                       &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;
                       &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;
-                      <b style="font-weight: normal">
-                        ₹{{
-                          calculateTaxAmount(
-                            price * plan.selectedRoomnumber +
-                              (plan.SingleDayextraPersonAdultCountAmount +
-                                plan.SingleDayextraPersonChildCountAmount),
-                            plan
-                          ) | number : "1.2-2"
+                      <b style="font-weight: normal" *ngIf="plan.selectedRoomnumber > 1">
+                        {{
+                         (calculateTaxAmount(
+                           price  +
+                                (plan.singleextraAdultCharges +
+                                  plan.singleextraChildrenCharges),
+                              plan
+                          ) * plan.selectedRoomnumber )  | currency:currency:'symbol':'1.2-2'
+                        }}
+                      </b>
+                      <b style="font-weight: normal" *ngIf="plan.selectedRoomnumber <= 1">
+                        {{
+                         (calculateTaxAmount(
+                           price  +
+                                (plan.SingleDayextraPersonAdultCountAmount  +
+                                  plan.SingleDayextraPersonChildCountAmount),
+                              plan
+                          ) * plan.selectedRoomnumber )  | currency:currency:'symbol':'1.2-2'
                         }}
                       </b>
                     </ng-container>
@@ -410,60 +418,70 @@
               </div>
               <div style="display: block" *ngIf="plan.planName != 'GHC'">
                 <div *ngFor="let item of daterangefilterSeo; let i = index">
-                  <small class="text-muted">
-                    {{ item }}
-                  </small>
-                  &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp;
-                  <small class="text-muted">
-                    ₹{{
-                      plan.actualRoomPrice * plan.selectedRoomnumber
-                        | number : "1.2-2"
-                    }}
-                    <br />
-                    <ng-container
-                      *ngIf="plan.SingleDayextraPersonAdultCountAmount > 0"
-                    >
-                      <b style="font-weight: normal">Extra Adult Charge:</b
-                      >&nbsp; &nbsp; &nbsp; &nbsp;
-                      <b style="font-weight: normal"
-                        >₹{{ plan.SingleDayextraPersonAdultCountAmount }}</b
+                    <small class="text-muted">
+                      {{ item }}
+                    </small>
+                    &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp;
+                    <small class="text-muted">
+                      {{
+                        plan.actualRoomPrice * plan.selectedRoomnumber
+                          | currency:currency:'symbol':'1.2-2'
+                      }}
+                      <br />
+                      <ng-container
+                        *ngIf="plan.SingleDayextraPersonAdultCountAmount > 0"
                       >
-                      <br />
-                    </ng-container>
+                        <b style="font-weight: normal">Extra Adult Charge:</b
+                        >&nbsp; &nbsp; &nbsp; &nbsp;
+                        <b style="font-weight: normal"
+                          >{{ plan.SingleDayextraPersonAdultCountAmount | currency:currency:'symbol':'1.2-2' }}</b
+                        >
+                        <br />
+                      </ng-container>
 
-                    <ng-container
-                      *ngIf="plan.SingleDayextraPersonChildCountAmount > 0"
-                    >
-                      <b style="font-weight: normal">Extra Children Charge</b>
-                      &nbsp; &nbsp; &nbsp; &nbsp;
-                      <b style="font-weight: normal">₹{{
-                        plan.SingleDayextraPersonChildCountAmount
-                      }}</b>
-                      <br />
-                    </ng-container>
-                    <ng-container
-                      *ngIf="
-                        plan.actualRoomPrice * plan.selectedRoomnumber +
-                        (plan.SingleDayextraPersonAdultCountAmount +
-                          plan.SingleDayextraPersonChildCountAmount)
-                      "
-                    >
-                      <b style="font-weight: normal"> Tax Fees: </b> &nbsp;
-                      &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;
-                      &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;
-                      <b style="font-weight: normal">
-                        ₹{{
-                          calculateTaxAmount(
-                            plan.actualRoomPrice * plan.selectedRoomnumber +
-                              (plan.SingleDayextraPersonAdultCountAmount +
-                                plan.SingleDayextraPersonChildCountAmount),
-                            plan
-                          ) | number : "1.2-2"
-                        }}
-                      </b>
-                    </ng-container>
-                  </small>
-                </div>
+                      <ng-container
+                        *ngIf="plan.SingleDayextraPersonChildCountAmount > 0"
+                      >
+                        <b style="font-weight: normal">Extra Children Charge</b>
+                        &nbsp; &nbsp; &nbsp; &nbsp;
+                        <b style="font-weight: normal">{{
+                          plan.SingleDayextraPersonChildCountAmount | currency:currency:'symbol':'1.2-2'
+                        }}</b>
+                        <br />
+                      </ng-container>
+                      <ng-container
+                        *ngIf="
+                          plan.actualRoomPrice * plan.selectedRoomnumber +
+                          (plan.SingleDayextraPersonAdultCountAmount +
+                            plan.SingleDayextraPersonChildCountAmount)
+                        "
+                      >
+                        <b style="font-weight: normal"> Tax Fees: </b> &nbsp;
+                        &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;
+                        &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;
+                        <b style="font-weight: normal"  *ngIf="plan.selectedRoomnumber <= 1">
+                          {{
+                            calculateTaxAmount(
+                              plan.actualRoomPrice * plan.selectedRoomnumber +
+                                (plan.SingleDayextraPersonAdultCountAmount +
+                                  plan.SingleDayextraPersonChildCountAmount),
+                              plan
+                            ) | currency:currency:'symbol':'1.2-2'
+                          }}
+                        </b>
+                        <b style="font-weight: normal"  *ngIf="plan.selectedRoomnumber > 1">
+                          {{
+                            (calculateTaxAmount(
+                              plan.actualRoomPrice +
+                                (plan.singleextraAdultCharges +
+                                  plan.singleextraChildrenCharges),
+                              plan
+                            ) * plan.selectedRoomnumber)  | currency:currency:'symbol':'1.2-2'
+                          }}
+                        </b>
+                      </ng-container>
+                    </small>
+                  </div>
               </div>
             </div>
           </div>
@@ -584,7 +602,7 @@
 
         <div
           class="d-flex justify-content-between"
-          *ngIf="specialDiscountPercentage"
+          *ngIf="specialDiscountPercentage && !activeForGoogleHotelCenter"
         >
           <span>Discount ({{ specialDiscountPercentage }})%</span>
           <span>
@@ -598,6 +616,28 @@
             <b style="color: #16a34a; font-weight: 400"
               >-₹{{
                 (getTotalPlanPrice() * specialDiscountPercentage) / 100
+                  | number : "1.2-2"
+              }}</b
+            ></span
+          >
+        </div>
+
+        <div
+          class="d-flex justify-content-between"
+          *ngIf="specialDiscountPercentage && activeForGoogleHotelCenter"
+        >
+          <span>Discount ({{ specialDiscountPercentage }})%</span>
+          <span>
+            <small
+              >Coupon <img src=" assets/images/coupon-tag.svg" alt="" /><b
+                style="color: #16a34a; font-weight: 400"
+                >{{ this.specialDiscountData.couponCode }}</b
+              >
+              &nbsp;
+            </small>
+            <b style="color: #16a34a; font-weight: 400"
+              >-₹{{
+                (getGrandSubtotal() * specialDiscountPercentage) / 100
                   | number : "1.2-2"
               }}</b
             ></span
@@ -655,13 +695,8 @@
         >
           <span>Total Amount</span>
           <span *ngIf="specialDiscountPercentage">
-            ₹{{
-              getTotalPlanPrice() +
-                getTotalAfterTaxAmountFacility() +
-                getTotalTaxPrice() -
-                (this.getTotalPlanPrice() * this.specialDiscountPercentage) /
-                  100 | number : "1.2-2"
-            }}
+            ₹{{((getGrandSubtotal() - ((getGrandSubtotal() * specialDiscountPercentage) / 100)))
+                    + getGrandTaxTotal() | number : "1.2-2" }}
           </span>
           <span *ngIf="!specialDiscountPercentage"
             >₹{{ getGrandTotal() | number : "1.2-2" }}</span
@@ -700,6 +735,7 @@
                     Check-in
                   </label>
                   <input
+                  readonly
                     #dpFromDate3
                     type="text"
                     class="date-input form-control input-field-resize2 custom-border-on-focus"
@@ -765,6 +801,7 @@
                     Check-out
                   </label>
                   <input
+                  readonly
                     #dpToDate3
                     type="text"
                     class="date-input form-control input-field-resize2 custom-border-on-focus"
@@ -1085,6 +1122,7 @@
                       Check-in date
                     </label>
                     <input
+                    readonly
                       #dpFromDate3
                       type="text"
                       class="date-input form-control input-field-resize2 custom-border-on-focus"
@@ -1140,6 +1178,7 @@
                       Check-out date
                     </label>
                     <input
+                    readonly
                       #dpToDate3
                       type="text"
                       class="date-input form-control input-field-resize2 custom-border-on-focus"
@@ -1882,7 +1921,7 @@
   </div>
 
   <!-- mob view -->
-  <div class="modal fade" tabindex="-1" id="galleryModal" #galleryModalRef>
+  <div class="modal fade" style="overflow: auto !important;" tabindex="-1" id="galleryModal" #galleryModalRef>
     <div
       class="modal-dialog modal-lg modal-dialog-centered modal-fullscreen-gallery"
     >
@@ -2494,7 +2533,7 @@
                     <div class="d-flex text-center" style="gap: 10px">
                       <div
                         class="aminities-alignment"
-                        *ngFor="let item of room.roomFacilities | slice : 0 : 3"
+                        *ngFor="let item of room.roomFacilities | slice : 0 : 2"
                       >
                         <i
                           [ngClass]="getAmenityIcon(item.name)"
@@ -2642,7 +2681,7 @@
                                 )
                               "
                               [ngValue]="count"
-                              [disabled]="count === 0"
+
                             >
                               {{ count === 0 ? "0" : count }}
                             </option>
@@ -2662,6 +2701,9 @@
                               <div
                                 class="cursor-pointer minus-btn"
                                 (click)="onDecrement(plan.code, 'adults')"
+                                 [class.disabled]="
+                                  selectedGuestsByPlan[plan.code]?.adults <= selectedRoomsByPlan[room.name + '_' + plan.code]
+                                "
                               >
                                 <i class="fa-solid fa-minus"></i>
                               </div>
@@ -2854,7 +2896,7 @@
                                 )
                               "
                               [ngValue]="count"
-                              [disabled]="count === 0"
+
                             >
                               {{ count === 0 ? "0" : count }}
                             </option>
@@ -2883,6 +2925,9 @@
                               <div
                                 class="cursor-pointer minus-btn"
                                 (click)="onDecrement(plan.code, 'adults')"
+                                [class.disabled]="
+                                  selectedGuestsByPlan[plan.code]?.adults <= selectedRoomsByPlan[room.name + '_' + plan.code]
+                                "
                               >
                                 <i class="fa-solid fa-minus"></i>
                               </div>
@@ -3118,7 +3163,7 @@
                     <div class="d-flex text-center" style="gap: 10px">
                       <div
                         class="aminities-alignment"
-                        *ngFor="let item of room.roomFacilities | slice : 0 : 3"
+                        *ngFor="let item of room.roomFacilities | slice : 0 : 2"
                       >
                         <i
                           [ngClass]="getAmenityIcon(item.name)"
@@ -3263,7 +3308,7 @@
                                 )
                               "
                               [ngValue]="count"
-                              [disabled]="count === 0"
+
                             >
                               {{ count === 0 ? "0" : count }}
                             </option>
@@ -3283,6 +3328,9 @@
                               <div
                                 class="cursor-pointer minus-btn"
                                 (click)="onDecrement(plan.code, 'adults')"
+                                [class.disabled]="
+                                  selectedGuestsByPlan[plan.code]?.adults <= selectedRoomsByPlan[room.name + '_' + plan.code]
+                                "
                               >
                                 <i class="fa-solid fa-minus"></i>
                               </div>
@@ -3467,7 +3515,7 @@
                                 )
                               "
                               [ngValue]="count"
-                              [disabled]="count === 0"
+
                             >
                               {{ count === 0 ? "0" : count }}
                             </option>
@@ -3496,6 +3544,9 @@
                               <div
                                 class="cursor-pointer minus-btn"
                                 (click)="onDecrement(plan.code, 'adults')"
+                                [class.disabled]="
+                                  selectedGuestsByPlan[plan.code]?.adults <= selectedRoomsByPlan[room.name + '_' + plan.code]
+                                "
                               >
                                 <i class="fa-solid fa-minus"></i>
                               </div>
@@ -3809,7 +3860,7 @@
                     <div class="d-flex text-center" style="gap: 10px">
                       <div
                         class="aminities-alignment"
-                        *ngFor="let item of room.roomFacilities | slice : 0 : 3"
+                        *ngFor="let item of room.roomFacilities | slice : 0 : 2"
                       >
                         <i
                           [ngClass]="getAmenityIcon(item.name)"
@@ -3981,7 +4032,7 @@
                     <div class="d-flex text-center" style="gap: 10px">
                       <div
                         class="aminities-alignment"
-                        *ngFor="let item of room.roomFacilities | slice : 0 : 3"
+                        *ngFor="let item of room.roomFacilities | slice : 0 : 2"
                       >
                         <i
                           [ngClass]="getAmenityIcon(item.name)"
@@ -4205,7 +4256,7 @@
                       class="text-muted"
                       *ngFor="let price of [planPrice[i]]"
                     >
-                      ₹{{ price * plan.selectedRoomnumber | number : "1.2-2" }}
+                      {{ price * plan.selectedRoomnumber | currency:currency:'symbol':'1.2-2' }}
                       <br />
                       <ng-container
                         *ngIf="plan.SingleDayextraPersonAdultCountAmount > 0"
@@ -4213,7 +4264,7 @@
                         <b style="font-weight: normal">Extra Adult Charge:</b
                         >&nbsp; &nbsp; &nbsp; &nbsp;
                         <b style="font-weight: normal"
-                          >₹{{ plan.SingleDayextraPersonAdultCountAmount }}</b
+                          > {{ plan.SingleDayextraPersonAdultCountAmount | currency:currency:'symbol':'1.2-2' }}</b
                         >
                         <br />
                       </ng-container>
@@ -4223,31 +4274,39 @@
                       >
                         <b style="font-weight: normal">Extra Children Charge</b>
                         &nbsp; &nbsp; &nbsp; &nbsp;
-                        <b style="font-weight: normal">₹{{
-                          plan.SingleDayextraPersonChildCountAmount
-                        }}</b>
+                        <b style="font-weight: normal"
+                          > {{ plan.SingleDayextraPersonChildCountAmount | currency:currency:'symbol':'1.2-2' }}</b
+                        >
                         <br />
                       </ng-container>
                       <ng-container
                         *ngIf="
-                          price * plan.selectedRoomnumber +
-                          (plan.SingleDayextraPersonAdultCountAmount +
-                            plan.SingleDayextraPersonChildCountAmount)
+                          price
                         "
                       >
                         <b style="font-weight: normal"> Tax Fees: </b> &nbsp;
                         &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;
                         &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;
-                        <b style="font-weight: normal">
-                          ₹{{
-                            calculateTaxAmount(
-                              price * plan.selectedRoomnumber +
-                                (plan.SingleDayextraPersonAdultCountAmount +
-                                  plan.SingleDayextraPersonChildCountAmount),
+
+                        <b style="font-weight: normal" *ngIf="plan.selectedRoomnumber > 1">
+
+                        {{
+                         (calculateTaxAmount(
+                          (price) +
+                                (plan.singleextraAdultCharges +
+                                  plan.singleextraChildrenCharges),
                               plan
-                            ) | number : "1.2-2"
-                          }}
-                        </b>
+                          )  * plan.selectedRoomnumber)  | currency:currency:'symbol':'1.2-2'
+                        }}
+                      </b>
+                      <b style="font-weight: normal" *ngIf="plan.selectedRoomnumber <= 1">
+                        {{
+                         (calculateTaxAmount(
+                           price  + (plan.SingleDayextraPersonAdultCountAmount  + plan.SingleDayextraPersonChildCountAmount),
+                              plan
+                          ) * plan.selectedRoomnumber )  | currency:currency:'symbol':'1.2-2'
+                        }}
+                      </b>
                       </ng-container>
                     </small>
                   </div>
@@ -4259,9 +4318,9 @@
                     </small>
                     &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp;
                     <small class="text-muted">
-                      ₹{{
+                      {{
                         plan.actualRoomPrice * plan.selectedRoomnumber
-                          | number : "1.2-2"
+                          | currency:currency:'symbol':'1.2-2'
                       }}
                       <br />
                       <ng-container
@@ -4270,7 +4329,7 @@
                         <b style="font-weight: normal">Extra Adult Charge:</b
                         >&nbsp; &nbsp; &nbsp; &nbsp;
                         <b style="font-weight: normal"
-                          >₹{{ plan.SingleDayextraPersonAdultCountAmount }}</b
+                          >{{ plan.SingleDayextraPersonAdultCountAmount | currency:currency:'symbol':'1.2-2' }}</b
                         >
                         <br />
                       </ng-container>
@@ -4280,8 +4339,8 @@
                       >
                         <b style="font-weight: normal">Extra Children Charge</b>
                         &nbsp; &nbsp; &nbsp; &nbsp;
-                        <b style="font-weight: normal">₹{{
-                          plan.SingleDayextraPersonChildCountAmount
+                        <b style="font-weight: normal">{{
+                          plan.SingleDayextraPersonChildCountAmount | currency:currency:'symbol':'1.2-2'
                         }}</b>
                         <br />
                       </ng-container>
@@ -4295,14 +4354,24 @@
                         <b style="font-weight: normal"> Tax Fees: </b> &nbsp;
                         &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;
                         &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;
-                        <b style="font-weight: normal">
-                          ₹{{
-                            calculateTaxAmount(
-                              plan.actualRoomPrice * plan.selectedRoomnumber +
+                        <b style="font-weight: normal" *ngIf="plan.selectedRoomnumber > 1">
+                          {{
+                            (calculateTaxAmount(
+                              plan.actualRoomPrice +
+                                (plan.singleextraAdultCharges +
+                                  plan.singleextraChildrenCharges),
+                              plan
+                            ) * plan.selectedRoomnumber) | currency:currency:'symbol':'1.2-2'
+                          }}
+                        </b>
+                        <b style="font-weight: normal" *ngIf="plan.selectedRoomnumber <= 1">
+                          {{
+                            (calculateTaxAmount(
+                              plan.actualRoomPrice +
                                 (plan.SingleDayextraPersonAdultCountAmount +
                                   plan.SingleDayextraPersonChildCountAmount),
                               plan
-                            ) | number : "1.2-2"
+                            ) * plan.selectedRoomnumber) | currency:currency:'symbol':'1.2-2'
                           }}
                         </b>
                       </ng-container>
@@ -4430,26 +4499,49 @@
           </div>
 
           <div
-            class="d-flex justify-content-between"
-            *ngIf="specialDiscountPercentage"
+          class="d-flex justify-content-between"
+          *ngIf="specialDiscountPercentage && !activeForGoogleHotelCenter"
+        >
+          <span>Discount ({{ specialDiscountPercentage }})%</span>
+          <span>
+            <small
+              >Coupon <img src=" assets/images/coupon-tag.svg" alt="" /><b
+                style="color: #16a34a; font-weight: 400"
+                >{{ this.specialDiscountData.couponCode }}</b
+              >
+              &nbsp;
+            </small>
+            <b style="color: #16a34a; font-weight: 400"
+              >-₹{{
+                (getTotalPlanPrice() * specialDiscountPercentage) / 100
+                  | number : "1.2-2"
+              }}</b
+            ></span
           >
-            <span>Discount ({{ specialDiscountPercentage }})%</span>
-            <span>
-              <small
-                >Coupon <img src=" assets/images/coupon-tag.svg" alt="" /><b
-                  style="color: #16a34a; font-weight: 400"
-                  >{{ this.specialDiscountData.couponCode }}</b
-                >
-                &nbsp;
-              </small>
-              <b style="color: #16a34a; font-weight: 400"
-                >-₹{{
-                  (getTotalPlanPrice() * specialDiscountPercentage) / 100
-                    | number : "1.2-2"
-                }}</b
-              ></span
-            >
-          </div>
+        </div>
+
+        <div
+          class="d-flex justify-content-between"
+          *ngIf="specialDiscountPercentage && activeForGoogleHotelCenter"
+        >
+          <span>Discount ({{ specialDiscountPercentage }})%</span>
+          <span>
+            <small
+              >Coupon <img src=" assets/images/coupon-tag.svg" alt="" /><b
+                style="color: #16a34a; font-weight: 400"
+                >{{ this.specialDiscountData.couponCode }}</b
+              >
+              &nbsp;
+            </small>
+            <b style="color: #16a34a; font-weight: 400"
+              >-₹{{
+                (getGrandSubtotal() * specialDiscountPercentage) / 100
+                  | number : "1.2-2"
+              }}</b
+            ></span
+          >
+        </div>
+
 
           <div
             class="d-flex justify-content-between"
@@ -4502,17 +4594,10 @@
           >
             <span>Total Amount</span>
             <span *ngIf="specialDiscountPercentage">
-              ₹{{
-                getTotalPlanPrice() +
-                  getTotalAfterTaxAmountFacility() +
-                  getTotalTaxPrice() -
-                  (this.getTotalPlanPrice() * this.specialDiscountPercentage) /
-                    100 | number : "1.2-2"
-              }}
+              ₹{{((getGrandSubtotal() - ((getGrandSubtotal() * specialDiscountPercentage) / 100)))
+                    + getGrandTaxTotal() | number : "1.2-2" }}
             </span>
-            <span *ngIf="!specialDiscountPercentage"
-              >₹{{ getGrandTotal() | number : "1.2-2" }}</span
-            >
+            <span *ngIf="!specialDiscountPercentage">₹{{ getGrandTotal() | number : "1.2-2" }}</span>
           </div>
         </div>
 
@@ -4535,7 +4620,6 @@
         <div style="margin-top: 20px" *ngIf="businessUser.businessDescription">
           <div
             style="
-              background-color: #e5f9ff80;
               display: inline-block;
               padding: 4px 8px;
             "

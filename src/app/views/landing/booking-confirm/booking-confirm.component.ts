@@ -760,16 +760,26 @@ this.combinedDateToTime = combinedCheckoutDate.getTime();
     booking.taxPercentage = plan.taxpercentage;
           if (this.specialDiscountData) {
       const finalPrice = (plan.price) ;
-      booking.netAmount = finalPrice;
-      booking.gstAmount = ((finalPrice - (plan.price * this.specialDiscountData?.discountPercentage)/100 ) * plan.taxpercentage) /100;
+      // booking.netAmount = finalPrice;
+      // booking.gstAmount = ((finalPrice - (plan.price * this.specialDiscountData?.discountPercentage)/100 ) * plan.taxpercentage) /100;
+      // booking.discountPercentage = this.specialDiscountData.discountPercentage;
+      // booking.discountAmount = ((plan.price * this.specialDiscountData?.discountPercentage)/100);
+      // booking.beforeTaxAmount = plan.price;
+      // booking.taxAmount = ((finalPrice - (plan.price * this.specialDiscountData?.discountPercentage)/100 ) * plan.taxpercentage) /100;
+      // booking.couponCode = this.specialDiscountData.couponCode;
+      // booking.promotionName = this.specialDiscountData.name;
+      // booking.payableAmount =  (plan.price - (plan.price * this.specialDiscountData?.discountPercentage)/100) + ((((plan.price)- (plan.price * this.specialDiscountData?.discountPercentage)/100 ) * plan.taxpercentage) /100);
+      // booking.totalAmount = (plan.price - (plan.price * this.specialDiscountData?.discountPercentage)/100) + ((((plan.price)- (plan.price * this.specialDiscountData?.discountPercentage)/100 ) * plan.taxpercentage) /100);
+      booking.netAmount = (plan.discountedPrice).toFixed(2);
+      booking.gstAmount = (plan.taxPercentageperroom).toFixed(2);
       booking.discountPercentage = this.specialDiscountData.discountPercentage;
-      booking.discountAmount = ((plan.price * this.specialDiscountData?.discountPercentage)/100);
-      booking.beforeTaxAmount = plan.price;
-      booking.taxAmount = ((finalPrice - (plan.price * this.specialDiscountData?.discountPercentage)/100 ) * plan.taxpercentage) /100;
+      booking.discountAmount = (plan?.discountAmount).toFixed(2);
+      booking.beforeTaxAmount = (plan.discountedPrice).toFixed(2);
+      booking.taxAmount = (plan?.taxPercentageperroom).toFixed(2);
       booking.couponCode = this.specialDiscountData.couponCode;
       booking.promotionName = this.specialDiscountData.name;
-      booking.payableAmount =  (plan.price - (plan.price * this.specialDiscountData?.discountPercentage)/100) + ((((plan.price)- (plan.price * this.specialDiscountData?.discountPercentage)/100 ) * plan.taxpercentage) /100);
-      booking.totalAmount = (plan.price - (plan.price * this.specialDiscountData?.discountPercentage)/100) + ((((plan.price)- (plan.price * this.specialDiscountData?.discountPercentage)/100 ) * plan.taxpercentage) /100);
+      booking.payableAmount =  (plan.finalPrice).toFixed(2);
+      booking.totalAmount = (plan.finalPrice).toFixed(2);
           if (
             this.bookingSummaryDetails.selectedPlansSummary &&
             this.bookingSummaryDetails.selectedPlansSummary.length > 0
@@ -1709,7 +1719,7 @@ callNow() {
   if (this.businessUser?.mobile && this.websiteUrlBookingEngine) {
     window.location.href = 'tel:' + this.businessUser?.mobile;
   } else {
-    window.location.href = 'tel:' + 9040785705;
+    window.location.href = 'tel:' + 7326079861;
   }
 }
 
@@ -2165,7 +2175,7 @@ onGenerateVouchers() {
 
             this.template.components = this.components;
             this.whatsappForm.template =this.template;
-            this.whatsappForm.to = '9040785705',
+            this.whatsappForm.to = '7326079861',
             this.whatsappForm.type = 'template',
               this.hotelBookingService.whatsAppMsg(this.whatsappForm).subscribe((response) => {
                 this.paymentLoader = false;
@@ -3226,7 +3236,7 @@ onGenerateVouchers() {
 
               this.template.components = this.components;
               this.whatsappForm.template =this.template;
-              this.whatsappForm.to = "9040785705",
+              this.whatsappForm.to = "7326079861",
               this.whatsappForm.type = 'template',
                 this.hotelBookingService.whatsAppMsg(this.whatsappForm).subscribe((response) => {
                   this.paymentLoader = false;
