@@ -1479,8 +1479,8 @@ if (bookingSummaryStr) {
         this.token.getProperty().address.city;
     }
     this.payment.netReceivableAmount = this.booking.netAmount;
-    this.enquiryForm.min = Number(this.booking.totalAmount.toFixed(2));
-    this.enquiryForm.max = Number(this.booking.totalAmount.toFixed(2));
+    this.enquiryForm.min = Number((this.booking.totalAmount).toFixed(2));
+    this.enquiryForm.max = Number((this.booking.totalAmount).toFixed(2));
 
     this.enquiryForm.firstName = this.booking.firstName;
     this.enquiryForm.lastName = this.booking.lastName;
@@ -1728,8 +1728,8 @@ if (bookingSummaryStr) {
     }
 
     this.payment.netReceivableAmount = plan.price + plan.taxPercentageperroom;
-    enquiryForm.min = Number(this.payment.netReceivableAmount.toFixed(2));
-    enquiryForm.max = Number(this.payment.netReceivableAmount.toFixed(2));
+    enquiryForm.min = Number((this.payment.netReceivableAmount).toFixed(2));
+    enquiryForm.max = Number((this.payment.netReceivableAmount).toFixed(2));
         if(this.groupBookingId){
       enquiryForm.groupEnquiryId = this.groupBookingId;
     sessionStorage.setItem('groupbookingId', enquiryForm.groupEnquiryId);
@@ -2005,7 +2005,7 @@ if (bookingSummaryStr) {
             if (this.businessServiceDto.advanceAmountPercentage === 100) {
         this.payment.taxAmount = Number(
           (
-            Number(this.bookingSummaryDetails?.totalTax.toFixed(2))
+            Number((this.bookingSummaryDetails?.totalTax).toFixed(2))
           ).toFixed(2)
         );
         this.payment.netReceivableAmount = Number(
@@ -2088,7 +2088,7 @@ if (bookingSummaryStr) {
       if (this.businessServiceDto.advanceAmountPercentage === 100) {
         this.payment.taxAmount = Number(
           (
-            Number(this.bookingSummaryDetails?.totalTax.toFixed(2))
+            Number((this.bookingSummaryDetails?.totalTax).toFixed(2))
           ).toFixed(2)
         );
         this.payment.netReceivableAmount = Number(
@@ -2365,7 +2365,7 @@ if (bookingSummaryStr) {
       if (this.businessServiceDto.advanceAmountPercentage === 100) {
         this.payment.taxAmount = Number(
           (
-            Number(this.bookingSummaryDetails?.totalTax.toFixed(2))
+            Number((this.bookingSummaryDetails?.totalTax).toFixed(2))
           ).toFixed(2)
         );
         this.payment.netReceivableAmount = Number(
@@ -2471,7 +2471,7 @@ if (bookingSummaryStr) {
       if (this.businessServiceDto.advanceAmountPercentage === 100) {
         this.payment.taxAmount = Number(
           (
-            Number(this.bookingSummaryDetails?.totalTax.toFixed(2))
+            Number((this.bookingSummaryDetails?.totalTax).toFixed(2))
           ).toFixed(2)
         );
         this.payment.netReceivableAmount = Number(
@@ -2553,7 +2553,7 @@ if (bookingSummaryStr) {
       if (this.businessServiceDto.advanceAmountPercentage === 100) {
         this.payment.taxAmount = Number(
           (
-            Number(this.bookingSummaryDetails?.totalTax.toFixed(2))
+            Number((this.bookingSummaryDetails?.totalTax).toFixed(2))
           ).toFixed(2)
         );
         this.payment.netReceivableAmount = Number(
@@ -2655,7 +2655,7 @@ if (bookingSummaryStr) {
       if (this.businessServiceDto.advanceAmountPercentage === 100) {
         this.payment.taxAmount = Number(
           (
-            Number(this.bookingSummaryDetails?.totalTax.toFixed(2))
+            Number((this.bookingSummaryDetails?.totalTax).toFixed(2))
           ).toFixed(2)
         );
         this.payment.netReceivableAmount = Number(
@@ -3821,8 +3821,8 @@ if (bookingSummaryStr) {
     booking.noOfChildrenUnder5years = plan.childrenBelow5years;
     booking.noOfNights = plan.nights;
     booking.noOfRooms = Number(plan.selectedRoomnumber);
-    booking.netAmount = plan.price.toFixed(2);
-    booking.beforeTaxAmount = plan.price.toFixed(2);
+    booking.netAmount = (plan.price).toFixed(2);
+    booking.beforeTaxAmount = (plan.price).toFixed(2);
     booking.createdDate = new Date().toISOString();
     booking.propertyId = this.booking.propertyId;
     booking.gstAmount = plan.taxPercentageperroom;
@@ -3831,12 +3831,12 @@ if (bookingSummaryStr) {
     booking.discountAmount = 0;
     booking.extraChildCharge = (plan.extraPersonChildCountAmount) || 0;
     booking.extraPersonCharge = ((plan.extraPersonAdultCountAmount)) || 0;
-    booking.roomTariffBeforeDiscount = plan.actualRoomPrice.toFixed(2);
+    booking.roomTariffBeforeDiscount = (plan.actualRoomPrice).toFixed(2);
     booking.totalAmount = (plan.price + plan.taxPercentageperroom).toFixed(2);
-    booking.bookingAmount = booking.totalAmount.toFixed(2);
+    booking.bookingAmount = (booking.totalAmount).toFixed(2);
     booking.payableAmount = this.showTheSelectedCoupon
-      ? booking.totalAmount.toFixed(2)
-      : booking.totalAmount.toFixed(2);
+      ? (booking.totalAmount).toFixed(2)
+      : (booking.totalAmount).toFixed(2);
     booking.fromDate = bookingSummary.fromDate;
     booking.toDate = bookingSummary.toDate;
     booking.currency = this.businessUser.localCurrency;
@@ -3862,9 +3862,9 @@ if (bookingSummaryStr) {
     booking.roomBooking = true;
     booking.groupBooking = false;
     booking.available = true;
-    booking.roomPrice = plan.actualRoomPrice.toFixed(2);
+    booking.roomPrice = (plan.actualRoomPrice).toFixed(2);
     booking.totalServiceAmount = this.totalServiceCost || 0;
-    booking.taxAmount = booking.gstAmount.toFixed(2);
+    booking.taxAmount = (booking.gstAmount).toFixed(2);
     booking.totalRoomTariffBeforeDiscount = (plan.actualRoomPrice * plan.nights * plan.selectedRoomnumber).toFixed(2);
     booking.noOfExtraPerson = plan.extraCountAdult;
     booking.noOfExtraChild = plan.extraCountChild;
@@ -4003,8 +4003,8 @@ if (bookingSummaryStr) {
     }
 
     this.payment.netReceivableAmount = plan.price + plan.taxPercentageperroom;
-    enquiryForm.min = Number(this.payment.netReceivableAmount.toFixed(2));
-    enquiryForm.max = Number(this.payment.netReceivableAmount.toFixed(2));
+    enquiryForm.min = Number((this.payment.netReceivableAmount).toFixed(2));
+    enquiryForm.max = Number((this.payment.netReceivableAmount).toFixed(2));
     enquiryForm.enquiryType = 'Pay Later';
     enquiryForm.firstName = booking.firstName;
     enquiryForm.lastName = booking.lastName;
@@ -4286,7 +4286,7 @@ if (bookingSummaryStr) {
 
     this.parametertype2 = new Para();
     (this.parametertype2.type = 'text'),
-      (this.parametertype2.text = this.propertyDataObj.totalAmount.toFixed(2));
+      (this.parametertype2.text = (this.propertyDataObj.totalAmount).toFixed(2));
     this.parameterss2.push(this.parametertype2);
 
     this.parametertype2 = new Para();
@@ -4299,7 +4299,7 @@ if (bookingSummaryStr) {
 
     this.parametertype2 = new Para();
     (this.parametertype2.type = 'text'),
-      (this.parametertype2.text = this.propertyDataObj.totalAmount.toFixed(2));
+      (this.parametertype2.text = (this.propertyDataObj.totalAmount).toFixed(2));
     this.parameterss2.push(this.parametertype2);
 
      this.parametertype2 = new Para();
@@ -4442,7 +4442,7 @@ if (bookingSummaryStr) {
 
     this.parametertype2 = new Para();
     (this.parametertype2.type = 'text'),
-      (this.parametertype2.text = this.propertyDataObj.totalAmount.toFixed(2));
+      (this.parametertype2.text = (this.propertyDataObj.totalAmount).toFixed(2));
     this.parameterss2.push(this.parametertype2);
 
     this.parametertype2 = new Para();
@@ -4451,7 +4451,7 @@ if (bookingSummaryStr) {
 
     this.parametertype2 = new Para();
     (this.parametertype2.type = 'text'),
-      (this.parametertype2.text = this.propertyDataObj.totalAmount.toFixed(2));
+      (this.parametertype2.text = (this.propertyDataObj.totalAmount).toFixed(2));
     this.parameterss2.push(this.parametertype2);
 
     this.parametertype2 = new Para();
@@ -4598,7 +4598,7 @@ if (bookingSummaryStr) {
 
     this.parametertype2 = new Para();
     (this.parametertype2.type = 'text'),
-      (this.parametertype2.text = this.propertyDataObj.totalAmount.toFixed(2));
+      (this.parametertype2.text = (this.propertyDataObj.totalAmount).toFixed(2));
     this.parameterss2.push(this.parametertype2);
 
     this.parametertype2 = new Para();
@@ -4611,7 +4611,7 @@ if (bookingSummaryStr) {
 
     this.parametertype2 = new Para();
     (this.parametertype2.type = 'text'),
-      (this.parametertype2.text = this.propertyDataObj.totalAmount.toFixed(2));
+      (this.parametertype2.text = (this.propertyDataObj.totalAmount).toFixed(2));
     this.parameterss2.push(this.parametertype2);
 
      this.parametertype2 = new Para();
@@ -4754,7 +4754,7 @@ if (bookingSummaryStr) {
 
     this.parametertype2 = new Para();
     (this.parametertype2.type = 'text'),
-      (this.parametertype2.text = this.propertyDataObj.totalAmount.toFixed(2));
+      (this.parametertype2.text = (this.propertyDataObj.totalAmount).toFixed(2));
     this.parameterss2.push(this.parametertype2);
 
     this.parametertype2 = new Para();
@@ -4763,7 +4763,7 @@ if (bookingSummaryStr) {
 
     this.parametertype2 = new Para();
     (this.parametertype2.type = 'text'),
-      (this.parametertype2.text = this.propertyDataObj.totalAmount.toFixed(2));
+      (this.parametertype2.text = (this.propertyDataObj.totalAmount).toFixed(2));
     this.parameterss2.push(this.parametertype2);
 
     this.parametertype2 = new Para();
@@ -4911,7 +4911,7 @@ if (bookingSummaryStr) {
 
     this.parametertype2 = new Para();
     (this.parametertype2.type = 'text'),
-      (this.parametertype2.text = this.propertyDataObj.totalAmount.toFixed(2));
+      (this.parametertype2.text = (this.propertyDataObj.totalAmount).toFixed(2));
     this.parameterss2.push(this.parametertype2);
 
     this.parametertype2 = new Para();
@@ -4924,7 +4924,7 @@ if (bookingSummaryStr) {
 
     this.parametertype2 = new Para();
     (this.parametertype2.type = 'text'),
-      (this.parametertype2.text = this.propertyDataObj.totalAmount.toFixed(2));
+      (this.parametertype2.text = (this.propertyDataObj.totalAmount).toFixed(2));
     this.parameterss2.push(this.parametertype2);
 
      this.parametertype2 = new Para();
@@ -5067,7 +5067,7 @@ if (bookingSummaryStr) {
 
     this.parametertype2 = new Para();
     (this.parametertype2.type = 'text'),
-      (this.parametertype2.text = this.propertyDataObj.totalAmount.toFixed(2));
+      (this.parametertype2.text = (this.propertyDataObj.totalAmount).toFixed(2));
     this.parameterss2.push(this.parametertype2);
 
     this.parametertype2 = new Para();
@@ -5076,7 +5076,7 @@ if (bookingSummaryStr) {
 
     this.parametertype2 = new Para();
     (this.parametertype2.type = 'text'),
-      (this.parametertype2.text = this.propertyDataObj.totalAmount.toFixed(2));
+      (this.parametertype2.text = (this.propertyDataObj.totalAmount).toFixed(2));
     this.parameterss2.push(this.parametertype2);
 
     this.parametertype2 = new Para();
@@ -5224,7 +5224,7 @@ if (bookingSummaryStr) {
 
     this.parametertype2 = new Para();
     (this.parametertype2.type = 'text'),
-      (this.parametertype2.text = this.propertyDataObj.totalAmount.toFixed(2));
+      (this.parametertype2.text = (this.propertyDataObj.totalAmount).toFixed(2));
     this.parameterss2.push(this.parametertype2);
 
     this.parametertype2 = new Para();
@@ -5237,7 +5237,7 @@ if (bookingSummaryStr) {
 
     this.parametertype2 = new Para();
     (this.parametertype2.type = 'text'),
-      (this.parametertype2.text = this.propertyDataObj.totalAmount.toFixed(2));
+      (this.parametertype2.text = (this.propertyDataObj.totalAmount).toFixed(2));
     this.parameterss2.push(this.parametertype2);
 
      this.parametertype2 = new Para();
@@ -5380,7 +5380,7 @@ if (bookingSummaryStr) {
 
     this.parametertype2 = new Para();
     (this.parametertype2.type = 'text'),
-      (this.parametertype2.text = this.propertyDataObj.totalAmount.toFixed(2));
+      (this.parametertype2.text = (this.propertyDataObj.totalAmount).toFixed(2));
     this.parameterss2.push(this.parametertype2);
 
     this.parametertype2 = new Para();
@@ -5389,7 +5389,7 @@ if (bookingSummaryStr) {
 
     this.parametertype2 = new Para();
     (this.parametertype2.type = 'text'),
-      (this.parametertype2.text = this.propertyDataObj.totalAmount.toFixed(2));
+      (this.parametertype2.text = (this.propertyDataObj.totalAmount).toFixed(2));
     this.parameterss2.push(this.parametertype2);
 
     this.parametertype2 = new Para();
@@ -5537,7 +5537,7 @@ if (bookingSummaryStr) {
 
     this.parametertype2 = new Para();
     (this.parametertype2.type = 'text'),
-      (this.parametertype2.text = this.propertyDataObj.totalAmount.toFixed(2));
+      (this.parametertype2.text = (this.propertyDataObj.totalAmount).toFixed(2));
     this.parameterss2.push(this.parametertype2);
 
     this.parametertype2 = new Para();
@@ -5546,7 +5546,7 @@ if (bookingSummaryStr) {
 
     this.parametertype2 = new Para();
     (this.parametertype2.type = 'text'),
-      (this.parametertype2.text = this.propertyDataObj.totalAmount.toFixed(2));
+      (this.parametertype2.text = (this.propertyDataObj.totalAmount).toFixed(2));
     this.parameterss2.push(this.parametertype2);
 
     this.parametertype2 = new Para();
@@ -6128,7 +6128,7 @@ if (bookingSummaryStr) {
 
     this.parametertype2 = new Para();
     (this.parametertype2.type = 'text'),
-      (this.parametertype2.text = booking.totalAmount.toFixed(2));
+      (this.parametertype2.text = (booking.totalAmount).toFixed(2));
     this.parameterss2.push(this.parametertype2);
 
     this.parametertype2 = new Para();
@@ -6137,7 +6137,7 @@ if (bookingSummaryStr) {
 
     this.parametertype2 = new Para();
     (this.parametertype2.type = 'text'),
-      (this.parametertype2.text = booking.totalAmount.toFixed(2));
+      (this.parametertype2.text = (booking.totalAmount).toFixed(2));
     this.parameterss2.push(this.parametertype2);
 
     this.parametertype2 = new Para();
@@ -6279,7 +6279,7 @@ if (bookingSummaryStr) {
 
     this.parametertype2 = new Para();
     (this.parametertype2.type = 'text'),
-      (this.parametertype2.text = this.booking.totalAmount.toFixed(2));
+      (this.parametertype2.text = (this.booking.totalAmount).toFixed(2));
     this.parameterss2.push(this.parametertype2);
 
     this.parametertype2 = new Para();
@@ -6288,7 +6288,7 @@ if (bookingSummaryStr) {
 
     this.parametertype2 = new Para();
     (this.parametertype2.type = 'text'),
-      (this.parametertype2.text = this.booking.totalAmount.toFixed(2));
+      (this.parametertype2.text = (this.booking.totalAmount).toFixed(2));
     this.parameterss2.push(this.parametertype2);
 
     this.parametertype2 = new Para();
@@ -6758,8 +6758,8 @@ if (this.specialDiscountData) {
     }
 
     this.payment.netReceivableAmount = plan.price + plan.taxPercentageperroom;
-    enquiryForm.min = Number(this.payment.netReceivableAmount.toFixed(2));
-    enquiryForm.max = Number(this.payment.netReceivableAmount.toFixed(2));
+    enquiryForm.min = Number((this.payment.netReceivableAmount).toFixed(2));
+    enquiryForm.max = Number((this.payment.netReceivableAmount).toFixed(2));
 
     enquiryForm.firstName = booking.firstName;
     enquiryForm.lastName = booking.lastName;
