@@ -3833,10 +3833,10 @@ if (bookingSummaryStr) {
     booking.extraPersonCharge = ((plan.extraPersonAdultCountAmount)) || 0;
     booking.roomTariffBeforeDiscount = (plan.actualRoomPrice).toFixed(2);
     booking.totalAmount = (plan.price + plan.taxPercentageperroom).toFixed(2);
-    booking.bookingAmount = (booking.totalAmount).toFixed(2);
+    booking.bookingAmount = (plan.price + plan.taxPercentageperroom).toFixed(2);
     booking.payableAmount = this.showTheSelectedCoupon
-      ? (booking.totalAmount).toFixed(2)
-      : (booking.totalAmount).toFixed(2);
+      ? (plan.price + plan.taxPercentageperroom).toFixed(2)
+      : (plan.price + plan.taxPercentageperroom).toFixed(2);
     booking.fromDate = bookingSummary.fromDate;
     booking.toDate = bookingSummary.toDate;
     booking.currency = this.businessUser.localCurrency;
