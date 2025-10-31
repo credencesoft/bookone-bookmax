@@ -5671,6 +5671,18 @@ onBookNow() {
     let discountAmount = 0;
       discountAmount = (plan.price * this.specialDiscountData.discountPercentage) / 100;
       discountedPrice -= discountAmount;
+        let discountedPriceOne = 0;
+       if (plan.selectedRoomnumber > 1) {
+          discountedPriceOne = ((plan.actualRoomPrice) +
+        (plan.singleextraAdultCharges || 0) +
+        (plan.singleextraChildrenCharges || 0));
+
+        } else {
+          discountedPriceOne = ((plan.actualRoomPrice) +
+        (plan.SingleDayextraPersonAdultCountAmount || 0) +
+        (plan.SingleDayextraPersonChildCountAmount || 0));
+
+        }
               if (this.businessUser?.taxDetails?.length > 0) {
       this.businessUser?.taxDetails.forEach((element) => {
         if (element.name === 'GST') {
@@ -5687,14 +5699,14 @@ onBookNow() {
               element.taxSlabsList.forEach((element2) => {
                 if (
                   element2.maxAmount >=
-                    discountedPrice &&
-                  element2.minAmount <= discountedPrice
+                    discountedPriceOne &&
+                  element2.minAmount <= discountedPriceOne
                 ) {
                   this.taxPercentage = element2.percentage;
                   this.booking.taxPercentage = this.taxPercentage;
                 } else if (
                   element2.maxAmount <=
-                  discountedPrice
+                  discountedPriceOne
                 ) {
                   this.taxPercentage = element2.percentage;
                   this.booking.taxPercentage = this.taxPercentage;
@@ -5705,12 +5717,12 @@ onBookNow() {
             if (element.taxSlabsList.length > 0) {
               element.taxSlabsList.forEach((element2) => {
                 if (
-                  element2.maxAmount >= discountedPrice &&
-                  element2.minAmount <= discountedPrice
+                  element2.maxAmount >= discountedPriceOne &&
+                  element2.minAmount <= discountedPriceOne
                 ) {
                   this.taxPercentage = element2.percentage;
                   this.booking.taxPercentage = this.taxPercentage;
-                } else if (element2.maxAmount <= discountedPrice) {
+                } else if (element2.maxAmount <= discountedPriceOne) {
                   this.taxPercentage = element2.percentage;
                   this.booking.taxPercentage = this.taxPercentage;
                 }
