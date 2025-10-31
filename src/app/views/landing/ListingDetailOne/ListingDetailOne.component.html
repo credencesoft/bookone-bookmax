@@ -19,7 +19,7 @@
   (onBookNowClick)="onBookNowClick()"
 >
 </app-Header-Listingdetailsone>
-<div *ngIf="showAllTheOfferList?.length > 0 && !showPayLater()">
+<div *ngIf="showAllTheOfferList?.length > 0 ">
   <p-carousel
     class="carousel-section"
     [value]="showAllTheOfferList"
