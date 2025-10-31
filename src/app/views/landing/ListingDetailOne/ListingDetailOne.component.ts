@@ -5372,8 +5372,6 @@ onBookNow() {
   const selectedAddOns = this.propertyServiceListDataOne
     .filter(item => this.selectedFacilityNames.includes(item.name));
 
-
-
   if (this.activeForGoogleHotelCenter && !this.specialDiscountData ) {
   let bookingSummary = JSON.parse(sessionStorage.getItem('bookingSummaryDetails') || '{}');
 
@@ -5611,9 +5609,8 @@ onBookNow() {
     totalAddOnsPrice: this.getTotalAfterTaxAmountFacility() + this.getTotalTaxFacility(),
     totalTax: this.getTotalTaxPrice(),
     totalAmount:
-      (this.getTotalPlanPrice() +
-      this.getTotalAfterTaxAmountFacility() +
-      this.getTotalTaxPrice()) - ((this.getTotalPlanPrice() * this.specialDiscountPercentage)/100),
+      ((this.getTotalPlanPrice() +
+      this.getTotalAfterTaxAmountFacility()) - ((this.getTotalPlanPrice() * this.specialDiscountPercentage)/100)) + this.getTotalTaxPrice(),
   };
       sessionStorage.setItem('bookingSummaryDetails', JSON.stringify(bookingData));
     } else if(this.specialDiscountData && this.activeForGoogleHotelCenter){
@@ -5748,8 +5745,8 @@ onBookNow() {
     totaltaxfacilityAmount: this.getTotalTaxFacility(),
     totalAddOnsPrice: this.getTotalAfterTaxAmountFacility() + this.getTotalTaxFacility(),
     totalTax: this.getGrandTaxTotal(),
-    totalAmount: ((this.getGrandTotal() + this.getGrandTaxTotal()) -
-                   ((this.getGrandSubtotal() * this.specialDiscountPercentage) / 100)),
+    totalAmount: ((this.getGrandSubtotal() - ((this.getGrandSubtotal() * this.specialDiscountPercentage) / 100)))
+                    + this.getGrandTaxTotal(),
   };
       sessionStorage.setItem('bookingSummaryDetails', JSON.stringify(bookingData));
     }else {

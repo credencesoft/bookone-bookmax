@@ -1237,6 +1237,18 @@
                       }}
                     </div>
                   </div>
+                  <div class="d-flex justify-content-between line-height-27px" *ngIf="specialDiscountData?.discountPercentage">
+                    <div class="color-graying" style="color: #16A34A !important;">Discount Amount</div>
+
+                    <div style="color: #16A34A !important; font-weight: 500">
+                     -₹
+                      {{
+                        (bookingSummaryDetails?.totalPlanPrice *
+                              specialDiscountData?.discountPercentage) /
+                              100 | number : "1.2-2"
+                      }}
+                    </div>
+                  </div>
 
                   <div class="d-flex justify-content-between line-height-27px">
                     <div class="color-graying">Total Tax on Room Price</div>
@@ -1720,6 +1732,19 @@
                     }}
                   </div>
                 </div>
+
+                <div class="d-flex justify-content-between line-height-27px" *ngIf="specialDiscountData?.discountPercentage">
+                    <div class="color-graying" style="color: #16A34A !important;">Discount Amount</div>
+
+                    <div style="color: #16A34A !important; font-weight: 500">
+                     -₹
+                      {{
+                        (bookingSummaryDetails?.totalPlanPrice *
+                              specialDiscountData?.discountPercentage) /
+                              100 | number : "1.2-2"
+                      }}
+                    </div>
+                  </div>
 
                 <div class="d-flex justify-content-between line-height-27px">
                   <div class="color-graying">Total Tax on Room Price</div>

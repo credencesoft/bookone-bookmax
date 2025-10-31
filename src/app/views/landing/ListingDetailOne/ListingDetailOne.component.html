@@ -19,7 +19,7 @@
   (onBookNowClick)="onBookNowClick()"
 >
 </app-Header-Listingdetailsone>
-<div *ngIf="showAllTheOfferList?.length > 0 ">
+<div *ngIf="showAllTheOfferList?.length > 0 && !showPayLater()">
   <p-carousel
     class="carousel-section"
     [value]="showAllTheOfferList"
@@ -695,13 +695,8 @@
         >
           <span>Total Amount</span>
           <span *ngIf="specialDiscountPercentage">
-            ₹{{
-              getTotalPlanPrice() +
-                getTotalAfterTaxAmountFacility() +
-                getTotalTaxPrice() -
-                (this.getTotalPlanPrice() * this.specialDiscountPercentage) /
-                  100 | number : "1.2-2"
-            }}
+            ₹{{((getGrandSubtotal() - ((getGrandSubtotal() * specialDiscountPercentage) / 100)))
+                    + getGrandTaxTotal() | number : "1.2-2" }}
           </span>
           <span *ngIf="!specialDiscountPercentage"
             >₹{{ getGrandTotal() | number : "1.2-2" }}</span
@@ -4599,10 +4594,8 @@
           >
             <span>Total Amount</span>
             <span *ngIf="specialDiscountPercentage">
-              ₹{{
-               ((getGrandTotal() + getGrandTaxTotal()) -
-                   ((getGrandSubtotal() * specialDiscountPercentage) / 100)) | number : "1.2-2"
-              }}
+              ₹{{((getGrandSubtotal() - ((getGrandSubtotal() * specialDiscountPercentage) / 100)))
+                    + getGrandTaxTotal() | number : "1.2-2" }}
             </span>
             <span *ngIf="!specialDiscountPercentage">₹{{ getGrandTotal() | number : "1.2-2" }}</span>
           </div>
