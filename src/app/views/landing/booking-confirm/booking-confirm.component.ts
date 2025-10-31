@@ -1978,7 +1978,7 @@ onGenerateVouchers() {
 
             this.parametertype2 = new Para();
             this.parametertype2.type = 'text',
-            this.parametertype2.text = booking.totalAmount.toFixed(2);
+            this.parametertype2.text = (booking.totalAmount).toFixed(2);
             this.parameterss2.push(this.parametertype2);
 
             this.parametertype2 = new Para();
@@ -2138,7 +2138,7 @@ onGenerateVouchers() {
 
             this.parametertype2 = new Para();
             this.parametertype2.type = 'text',
-            this.parametertype2.text = booking.totalAmount.toFixed(2);
+            this.parametertype2.text = (booking.totalAmount).toFixed(2);
             this.parameterss2.push(this.parametertype2);
 
             this.parametertype2 = new Para();
@@ -2298,7 +2298,7 @@ onGenerateVouchers() {
 
             this.parametertype2 = new Para();
             this.parametertype2.type = 'text',
-            this.parametertype2.text = booking.totalAmount.toFixed(2);
+            this.parametertype2.text = (booking.totalAmount).toFixed(2);
             this.parameterss2.push(this.parametertype2);
 
             this.parametertype2 = new Para();
@@ -2459,7 +2459,7 @@ onGenerateVouchers() {
 
             this.parametertype2 = new Para();
             this.parametertype2.type = 'text',
-            this.parametertype2.text = booking.totalAmount.toFixed(2);
+            this.parametertype2.text = (booking.totalAmount).toFixed(2);
             this.parameterss2.push(this.parametertype2);
 
             this.parametertype2 = new Para();
@@ -3051,7 +3051,7 @@ onGenerateVouchers() {
 
             this.parametertype2 = new Para();
             this.parametertype2.type = 'text',
-            this.parametertype2.text = this.booking.totalAmount.toFixed(2);
+            this.parametertype2.text = (this.booking.totalAmount).toFixed(2);
             this.parameterss2.push(this.parametertype2);
 
             this.parametertype2 = new Para();
@@ -3199,7 +3199,7 @@ onGenerateVouchers() {
 
               this.parametertype2 = new Para();
               this.parametertype2.type = 'text',
-              this.parametertype2.text = this.booking.totalAmount.toFixed(2);
+              this.parametertype2.text = (this.booking.totalAmount).toFixed(2);
               this.parameterss2.push(this.parametertype2);
 
               this.parametertype2 = new Para();
