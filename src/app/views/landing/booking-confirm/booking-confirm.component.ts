@@ -1279,53 +1279,53 @@ this.combinedDateToTime = combinedCheckoutDate.getTime();
     this.reservationRoomDetails = [];
     let roomdetailss = new RoomDetail();
     let externalreservation = new externalReservationDtoList();
-    externalreservation.checkinDate = booking.fromDate;
-    externalreservation.checkoutDate = booking.toDate;
-    externalreservation.currency = booking.currency;
+    externalreservation.checkinDate = booking?.fromDate;
+    externalreservation.checkoutDate = booking?.toDate;
+    externalreservation.currency = booking?.currency;
      if(this.groupBookingId) {
       externalreservation.groupBookingId = this.groupBookingId;
     }
     externalreservation.email = booking.email;
-    externalreservation.couponCode = booking.couponCode;
-    externalreservation.promotionName = booking.promotionName;
-    externalreservation.totalAmount = booking.totalAmount;
+    externalreservation.couponCode = booking?.couponCode;
+    externalreservation.promotionName = booking?.promotionName;
+    externalreservation.totalAmount = booking?.totalAmount;
     if(booking.advanceAmount) {
-      externalreservation.paidAmount = booking.advanceAmount;
+      externalreservation.paidAmount = booking?.advanceAmount;
     } else {
       externalreservation.paidAmount = 0;
     }
     if(this.groupBookingId) {
       externalreservation.groupBookingId = this.groupBookingId;
     }
-    externalreservation.amountBeforeTax = booking.beforeTaxAmount;
+    externalreservation.amountBeforeTax = booking?.beforeTaxAmount;
     externalreservation.channelId = '9';
     externalreservation.lastModifiedBy = 'hotelmate';
     externalreservation.modeOfPayment = this.payment?.paymentMode;
-     let propertyReservationNumber = booking.propertyReservationNumber;
+     let propertyReservationNumber = booking?.propertyReservationNumber;
     let updatedCode = propertyReservationNumber.replace("-B-", "-BE-");
     externalreservation.otaReservationId = updatedCode;
-    externalreservation.propertyId = booking.propertyId.toString();
-    externalreservation.propertyName = booking.businessName;
-    externalreservation.firstName = booking.firstName;
-    externalreservation.lastName = booking.lastName;
+    externalreservation.propertyId = booking?.propertyId.toString();
+    externalreservation.propertyName = booking?.businessName;
+    externalreservation.firstName = booking?.firstName;
+    externalreservation.lastName = booking?.lastName;
     externalreservation.bookoneReservationId =
-    booking.propertyReservationNumber;
-   externalreservation.noOfChildrenAbove5Years =  booking.noOfChildren;
-    externalreservation.noOfChildrenBelow5Years = booking.noOfChildrenUnder5years;
-    externalreservation.contactNumber = booking.mobile;
-    externalreservation.propertyBusinessEmail = booking.businessEmail;
+    booking?.propertyReservationNumber;
+   externalreservation.noOfChildrenAbove5Years =  booking?.noOfChildren;
+    externalreservation.noOfChildrenBelow5Years = booking?.noOfChildrenUnder5years;
+    externalreservation.contactNumber = booking?.mobile;
+    externalreservation.propertyBusinessEmail = booking?.businessEmail;
     externalreservation.externalTransactionId =
-      this.propertyData.shortName + '-BE-' + booking.id;
+      this.propertyData.shortName + '-BE-' + booking?.id;
     externalreservation.createdBy = 'hotelmate';
-    roomdetailss.checkinDate = booking.fromDate;
-    roomdetailss.checkoutDate = booking.toDate;
-    roomdetailss.noOfRooms = booking.noOfRooms;
-    roomdetailss.noOfadult = booking.noOfPersons;
-    roomdetailss.noOfchild = booking.noOfChildrenUnder5years + booking.noOfChildren;
-    roomdetailss.plan = booking.roomRatePlanName;
-    roomdetailss.roomRate = booking.roomPrice;
-    roomdetailss.roomTypeId = booking.roomId;
-    roomdetailss.roomTypeName = booking.roomName;
+    roomdetailss.checkinDate = booking?.fromDate;
+    roomdetailss.checkoutDate = booking?.toDate;
+    roomdetailss.noOfRooms = booking?.noOfRooms;
+    roomdetailss.noOfadult = booking?.noOfPersons;
+    roomdetailss.noOfchild = booking?.noOfChildrenUnder5years + booking?.noOfChildren;
+    roomdetailss.plan = booking?.roomRatePlanName;
+    roomdetailss.roomRate = booking?.roomPrice;
+    roomdetailss.roomTypeId = booking?.roomId;
+    roomdetailss.roomTypeName = booking?.roomName;
     this.reservationRoomDetails.push(roomdetailss);
     externalreservation.roomDetails = this.reservationRoomDetails;
     this.propertyServices = this.bookingSummaryDetails?.propertyServiceListDataOne;
@@ -1339,9 +1339,9 @@ this.combinedDateToTime = combinedCheckoutDate.getTime();
       ele.organisationId = null;
     });
     externalreservation.services = this.propertyServices;
-    externalreservation.taxAmount = booking.taxAmount;
+    externalreservation.taxAmount = booking?.taxAmount;
     // externalreservation.lastModifiedDate = new Date().toString();
-    externalreservation.noOfPerson = booking.noOfPersons.toString();
+    externalreservation.noOfPerson = booking?.noOfPersons.toString();
     externalreservation.resType = '';
     externalreservation.otaBooking = false;
     externalreservation.otaName = 'WebSite';
