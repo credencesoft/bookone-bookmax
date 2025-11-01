@@ -280,6 +280,7 @@ export class BookingComponent implements OnInit {
   isEnquiryDisabled = false;
   isCashPayDisabled = false;
   isPayDisabled = false;
+  propertyMobileNumber: string;
   constructor(
     private token: TokenStorage,
     private ngZone: NgZone,
@@ -4346,6 +4347,7 @@ if (bookingSummaryStr) {
 
    sendWhatsappMessageToTHMCopy(booking) {
      this.propertyDataObj = this.token.getBookingDataObj();
+     this.propertyMobileNumber = this.token.getProperty().mobile;
     let propertyReservationNumber = this.propertyDataObj.propertyReservationNumber;
     let updatedCode = propertyReservationNumber?.replace("-B-", "-BE-");
     this.parameterss2 = [];
@@ -4461,7 +4463,7 @@ if (bookingSummaryStr) {
 
      this.parametertype2 = new Para();
     (this.parametertype2.type = 'text'),
-    (this.parametertype2.text = this.propertyDataObj.mobile);
+    (this.parametertype2.text = this.propertyMobileNumber);
     this.parameterss2.push(this.parametertype2);
 
      this.parametertype2 = new Para();
@@ -4658,6 +4660,7 @@ if (bookingSummaryStr) {
 
    sendWhatsappMessageToTHM1Copy(booking) {
      this.propertyDataObj = this.token.getBookingDataObj();
+     this.propertyMobileNumber = this.token.getProperty().mobile;
     let propertyReservationNumber = this.propertyDataObj.propertyReservationNumber;
     let updatedCode = propertyReservationNumber?.replace("-B-", "-BE-");
     this.parameterss2 = [];
@@ -4773,7 +4776,7 @@ if (bookingSummaryStr) {
 
      this.parametertype2 = new Para();
     (this.parametertype2.type = 'text'),
-    (this.parametertype2.text = this.propertyDataObj.mobile);
+    (this.parametertype2.text = this.propertyMobileNumber);
     this.parameterss2.push(this.parametertype2);
 
      this.parametertype2 = new Para();
@@ -4971,6 +4974,7 @@ if (bookingSummaryStr) {
 
    sendWhatsappMessageToTHM2Copy(booking) {
      this.propertyDataObj = this.token.getBookingDataObj();
+     this.propertyMobileNumber = this.token.getProperty().mobile;
     let propertyReservationNumber = this.propertyDataObj.propertyReservationNumber;
     let updatedCode = propertyReservationNumber?.replace("-B-", "-BE-");
     this.parameterss2 = [];
@@ -5086,7 +5090,7 @@ if (bookingSummaryStr) {
 
      this.parametertype2 = new Para();
     (this.parametertype2.type = 'text'),
-    (this.parametertype2.text = this.propertyDataObj.mobile);
+    (this.parametertype2.text = this.propertyMobileNumber);
     this.parameterss2.push(this.parametertype2);
 
      this.parametertype2 = new Para();
@@ -5284,6 +5288,7 @@ if (bookingSummaryStr) {
 
    sendWhatsappMessageToTHM3Copy(booking) {
      this.propertyDataObj = this.token.getBookingDataObj();
+     this.propertyMobileNumber = this.token.getProperty().mobile;
     let propertyReservationNumber = this.propertyDataObj.propertyReservationNumber;
     let updatedCode = propertyReservationNumber?.replace("-B-", "-BE-");
     this.parameterss2 = [];
@@ -5399,7 +5404,7 @@ if (bookingSummaryStr) {
 
      this.parametertype2 = new Para();
     (this.parametertype2.type = 'text'),
-    (this.parametertype2.text = this.propertyDataObj.mobile);
+    (this.parametertype2.text = this.propertyMobileNumber);
     this.parameterss2.push(this.parametertype2);
 
      this.parametertype2 = new Para();
@@ -5441,6 +5446,7 @@ if (bookingSummaryStr) {
 
    sendWhatsappMessageToTHM4Copy(booking) {
      this.propertyDataObj = this.token.getBookingDataObj();
+     this.propertyMobileNumber = this.token.getProperty().mobile;
     let propertyReservationNumber = this.propertyDataObj.propertyReservationNumber;
     let updatedCode = propertyReservationNumber?.replace("-B-", "-BE-");
     this.parameterss2 = [];
@@ -5556,7 +5562,7 @@ if (bookingSummaryStr) {
 
      this.parametertype2 = new Para();
     (this.parametertype2.type = 'text'),
-    (this.parametertype2.text = this.propertyDataObj.mobile);
+    (this.parametertype2.text = this.propertyMobileNumber);
     this.parameterss2.push(this.parametertype2);
 
      this.parametertype2 = new Para();
