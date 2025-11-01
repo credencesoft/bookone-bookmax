@@ -7429,6 +7429,7 @@ onCouponInputChange(event: string) {
 
   sessionStorage.removeItem('selectedPromoData');
   sessionStorage.removeItem('selectPromo');
+  this.enteredCoupon = '';
 }
   applyCoupon(product: any, couponSection: HTMLElement) {
 
