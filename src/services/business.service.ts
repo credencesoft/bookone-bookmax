@@ -161,8 +161,8 @@ export class BusinessService {
       { observe: 'response' }
     );
   }
-    getOfferListFindByName(name){
-    return this.http.get<any[]>(API_URL_PROMOTION + '/api/offer/findByPromotionType/' + name +'/', { observe: 'response' });
+  getOfferListFindByName(seo,name){
+    return this.http.get<any[]>(API_URL_PROMOTION + '/api/offer/offersBySeoAndType?seoFriendlyName=' + seo + '&promotionType=' + name , { observe: 'response' });
   }
 
   getOfferList() {

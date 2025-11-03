@@ -4649,52 +4649,54 @@ if (roomKey) {
   //       this.showAllTheOfferList = this.checkValidCouponOrNot(filteredOffers);
   //   });
   // }
-getOfferList(seo: string) {
-  const bookingStart = new Date(this.booking.fromDate + 'T00:00:00');
-  const bookingEnd = new Date(this.booking.toDate + 'T23:59:59');
- if (this.activeForGoogleHotelCenter === true) {
-    this.offerService
-      .getOfferListFindByName('Platform Promotion')
-      .subscribe((response) => {
-        if (response.body && response.body.length > 0) {
-          const validOffers = response.body.filter((offer: any) => {
-            const offerStart = new Date(Number(offer.startDate)); // timestamp → Date
-            const offerEnd = new Date(Number(offer.endDate));
+ getOfferList(seo: string) {
+    if (this.activeForGoogleHotelCenter === true) {
+  this.offerService
+    .getOfferListFindByName(seo, 'Platform Promotion')
+    .subscribe((response) => {
+      if (response.body && response.body.length > 0) {
+        // Flatten if multiple calls push arrays
+        this.offersList = [...this.offersList, ...response.body];
+      }
 
-            // ✅ Containment check
-            return offerStart <= bookingStart && offerEnd >= bookingEnd;
-          });
-
-          this.offersList.push(...validOffers);
-        } else {
-          this.offersList = [];
+      // Validate all offers (flattened)
+      const currentDate = new Date();
+      const validCoupons = this.offersList.filter((coupon: any) => {
+        if (coupon.startDate && coupon.endDate && coupon.discountPercentage) {
+          const startDate = new Date(coupon.startDate);
+          const endDate = new Date(coupon.endDate);
+          return (
+            currentDate >= startDate &&
+            currentDate <= endDate &&
+            coupon.discountPercentage != 100
+          );
         }
-
-        this.showAllTheOfferList = this.checkValidCouponOrNot(this.offersList);
-        this.changeDetectorRefs.detectChanges();
+        return false;
       });
-  } else {
-    this.offerService
-      .getOfferListFindBySeoFriendlyName(seo)
-      .subscribe((data) => {
-        if (data.body && data.body.length > 0) {
-          const validOffers = data.body.filter((offer: any) => {
-            const offerStart = new Date(Number(offer.startDate));
-            const offerEnd = new Date(Number(offer.endDate));
 
-            return offerStart <= bookingStart && offerEnd >= bookingEnd;
-          });
+      // Pass only valid ones
+      this.showAllTheOfferList = this.checkValidCouponOrNot(validCoupons);
 
-          this.offersList = validOffers;
-        } else {
-          this.offersList = [];
-        }
-
-        this.showAllTheOfferList = this.checkValidCouponOrNot(this.offersList);
-        this.changeDetectorRefs.detectChanges();
-      });
-  }
+      this.changeDetectorRefs.detectChanges();
+    });
 }
+ else {
+      this.offerService
+        .getOfferListFindBySeoFriendlyName(seo)
+        .subscribe((data) => {
+          if (data.body && data.body.length > 0) {
+            this.offersList = data.body;
+          } else {
+            this.offersList = [];
+          }
+          this.showAllTheOfferList = this.checkValidCouponOrNot(
+            this.offersList
+          );
+          this.changeDetectorRefs.detectChanges();
+        });
+    }
+  }
+
 
 
   checkValidCouponOrNot(couponList?) {
