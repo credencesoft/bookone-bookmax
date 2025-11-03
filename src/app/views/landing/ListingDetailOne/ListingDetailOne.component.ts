@@ -4655,11 +4655,10 @@ if (roomKey) {
     .getOfferListFindByName(seo, 'Platform Promotion')
     .subscribe((response) => {
       if (response.body && response.body.length > 0) {
-        // Flatten if multiple calls push arrays
         this.offersList = [...this.offersList, ...response.body];
       }
 
-      // Validate all offers (flattened)
+
       const currentDate = new Date();
       const validCoupons = this.offersList.filter((coupon: any) => {
         if (coupon.startDate && coupon.endDate && coupon.discountPercentage) {
@@ -4674,7 +4673,6 @@ if (roomKey) {
         return false;
       });
 
-      // Pass only valid ones
       this.showAllTheOfferList = this.checkValidCouponOrNot(validCoupons);
 
       this.changeDetectorRefs.detectChanges();
