@@ -78,6 +78,7 @@ import { TaxDetails } from "./TaxDetails";
     enquiryType: string;
     utmSource: string;
     utmMedium: string;
+    businessEmail: string;
     // noOfNights:number;
     // counterName:string;
   }

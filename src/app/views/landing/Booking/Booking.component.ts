@@ -6890,6 +6890,7 @@ if (this.specialDiscountData) {
     enquiryForm.organisationId = environment.parentOrganisationId;
     enquiryForm.bookingCommissionAmount = 0;
     enquiryForm.taxPercentage = plan.taxpercentage;
+    enquiryForm.businessEmail = this.token.getProperty().email;
         if (this.specialDiscountData) {
       enquiryForm.payableAmount = (plan.finalPrice).tofixed(2);
       enquiryForm.beforeTaxAmount = (plan.discountedPrice).tofixed(2);
