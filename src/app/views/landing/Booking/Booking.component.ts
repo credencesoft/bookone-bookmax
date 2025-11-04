@@ -1707,17 +1707,17 @@ if (bookingSummaryStr) {
     const booking: any = this.booking;
 
     if (this.specialDiscountData) {
-      booking.netAmount = (plan.discountedPrice).tofixed(2);
-      booking.gstAmount = (plan.taxPercentageperroom).tofixed(2);
-      booking.discountPercentage = this.specialDiscountData.discountPercentage;
-      booking.discountAmount = (plan.discountAmount).tofixed(2);
-      booking.beforeTaxAmount = (plan.discountedPrice).tofixed(2);
-      booking.taxAmount = (plan.taxPercentageperroom).tofixed(2);
-      booking.couponCode = this.specialDiscountData.couponCode;
-      booking.promotionName = this.specialDiscountData.name;
-    } else {
-      booking.discountPercentage = 0;
-    }
+  booking.netAmount = Number(plan.discountedPrice.toFixed(2));
+  booking.gstAmount = Number(plan.taxPercentageperroom.toFixed(2));
+  booking.discountPercentage = this.specialDiscountData.discountPercentage;
+  booking.discountAmount = Number(plan.discountAmount.toFixed(2));
+  booking.beforeTaxAmount = Number(plan.discountedPrice.toFixed(2));
+  booking.taxAmount = Number(plan.taxPercentageperroom.toFixed(2));
+  booking.couponCode = this.specialDiscountData.couponCode;
+  booking.promotionName = this.specialDiscountData.name;
+} else {
+  booking.discountPercentage = 0;
+}
 
     const enquiryForm = new EnquiryDto();
 
@@ -1879,10 +1879,11 @@ if (bookingSummaryStr) {
         }
 
     if (this.specialDiscountData) {
-      enquiryForm.payableAmount = (plan.finalPrice).tofixed(2);
-      enquiryForm.beforeTaxAmount = (plan.discountedPrice).tofixed(2);
+      enquiryForm.payableAmount = Number(plan.finalPrice.toFixed(2));
+      enquiryForm.beforeTaxAmount = Number(plan.discountedPrice.toFixed(2));
       enquiryForm.taxPercentage = plan.taxpercentage;
-      enquiryForm.totalAmount = (plan.finalPrice).tofixed(2);
+      enquiryForm.totalAmount = Number(plan.finalPrice.toFixed(2));
+
                 if (
             this.bookingSummaryDetails.selectedPlansSummary &&
             this.bookingSummaryDetails.selectedPlansSummary.length > 0
@@ -2078,14 +2079,14 @@ if (bookingSummaryStr) {
 
             if (this.specialDiscountData) {
         const firstPlanOne = this.bookingSummaryDetails.selectedPlansSummary[0];
-         this.booking.netAmount = (firstPlanOne.discountedPrice).tofixed(2);
-      this.booking.gstAmount = (firstPlanOne.taxPercentageperroom).tofixed(2);
-      this.booking.discountPercentage = this.specialDiscountData.discountPercentage;
-      this.booking.discountAmount = (firstPlanOne.discountAmount).tofixed(2);
-      this.booking.beforeTaxAmount = (firstPlanOne.discountedPrice).tofixed(2);
-      this.booking.taxAmount = (firstPlanOne.taxPercentageperroom).tofixed(2);
-      this.booking.couponCode = this.specialDiscountData.couponCode;
-      this.booking.promotionName = this.specialDiscountData.name;
+        this.booking.netAmount = Number(firstPlanOne.discountedPrice.toFixed(2));
+        this.booking.gstAmount = Number(firstPlanOne.taxPercentageperroom.toFixed(2));
+        this.booking.discountPercentage = this.specialDiscountData.discountPercentage;
+        this.booking.discountAmount = Number(firstPlanOne.discountAmount.toFixed(2));
+        this.booking.beforeTaxAmount = Number(firstPlanOne.discountedPrice.toFixed(2));
+        this.booking.taxAmount = Number(firstPlanOne.taxPercentageperroom.toFixed(2));
+        this.booking.couponCode = this.specialDiscountData.couponCode;
+        this.booking.promotionName = this.specialDiscountData.name;
       if (this.businessServiceDto.advanceAmountPercentage === 100) {
         this.payment.taxAmount = Number(
           (
@@ -2220,14 +2221,14 @@ if (bookingSummaryStr) {
       );
             if (this.specialDiscountData) {
         const firstPlanOne = this.bookingSummaryDetails.selectedPlansSummary[0];
-         this.booking.netAmount = (firstPlanOne.discountedPrice).tofixed(2);
-      this.booking.gstAmount = (firstPlanOne.taxPercentageperroom).tofixed(2);
-      this.booking.discountPercentage = this.specialDiscountData.discountPercentage;
-      this.booking.discountAmount = (firstPlanOne.discountAmount).tofixed(2);
-      this.booking.beforeTaxAmount = (firstPlanOne.discountedPrice).tofixed(2);
-      this.booking.taxAmount = (firstPlanOne.taxPercentageperroom).tofixed(2);
-      this.booking.couponCode = this.specialDiscountData.couponCode;
-      this.booking.promotionName = this.specialDiscountData.name;
+        this.booking.netAmount = Number(firstPlanOne.discountedPrice.toFixed(2));
+          this.booking.gstAmount = Number(firstPlanOne.taxPercentageperroom.toFixed(2));
+          this.booking.discountPercentage = this.specialDiscountData.discountPercentage;
+          this.booking.discountAmount = Number(firstPlanOne.discountAmount.toFixed(2));
+          this.booking.beforeTaxAmount = Number(firstPlanOne.discountedPrice.toFixed(2));
+          this.booking.taxAmount = Number(firstPlanOne.taxPercentageperroom.toFixed(2));
+          this.booking.couponCode = this.specialDiscountData.couponCode;
+          this.booking.promotionName = this.specialDiscountData.name;
       if (this.businessServiceDto.advanceAmountPercentage === 100) {
         this.payment.taxAmount = Number(
           (
@@ -2355,14 +2356,15 @@ if (bookingSummaryStr) {
       );
             if (this.specialDiscountData) {
         const firstPlanOne = this.bookingSummaryDetails.selectedPlansSummary[0];
-         this.booking.netAmount = (firstPlanOne.discountedPrice).tofixed(2);
-      this.booking.gstAmount = (firstPlanOne.taxPercentageperroom).tofixed(2);
-      this.booking.discountPercentage = this.specialDiscountData.discountPercentage;
-      this.booking.discountAmount = (firstPlanOne.discountAmount).tofixed(2);
-      this.booking.beforeTaxAmount = (firstPlanOne.discountedPrice).tofixed(2);
-      this.booking.taxAmount = (firstPlanOne.taxPercentageperroom).tofixed(2);
-      this.booking.couponCode = this.specialDiscountData.couponCode;
-      this.booking.promotionName = this.specialDiscountData.name;
+        this.booking.netAmount = Number(firstPlanOne.discountedPrice.toFixed(2));
+this.booking.gstAmount = Number(firstPlanOne.taxPercentageperroom.toFixed(2));
+this.booking.discountPercentage = this.specialDiscountData.discountPercentage;
+this.booking.discountAmount = Number(firstPlanOne.discountAmount.toFixed(2));
+this.booking.beforeTaxAmount = Number(firstPlanOne.discountedPrice.toFixed(2));
+this.booking.taxAmount = Number(firstPlanOne.taxPercentageperroom.toFixed(2));
+this.booking.couponCode = this.specialDiscountData.couponCode;
+this.booking.promotionName = this.specialDiscountData.name;
+
       if (this.businessServiceDto.advanceAmountPercentage === 100) {
         this.payment.taxAmount = Number(
           (
@@ -2543,14 +2545,15 @@ if (bookingSummaryStr) {
       }
             if (this.specialDiscountData) {
         const firstPlanOne = this.bookingSummaryDetails.selectedPlansSummary[0];
-         this.booking.netAmount = (firstPlanOne.discountedPrice).tofixed(2);
-      this.booking.gstAmount = (firstPlanOne.taxPercentageperroom).tofixed(2);
-      this.booking.discountPercentage = this.specialDiscountData.discountPercentage;
-      this.booking.discountAmount = (firstPlanOne.discountAmount).tofixed(2);
-      this.booking.beforeTaxAmount = (firstPlanOne.discountedPrice).tofixed(2);
-      this.booking.taxAmount = (firstPlanOne.taxPercentageperroom).tofixed(2);
-      this.booking.couponCode = this.specialDiscountData.couponCode;
-      this.booking.promotionName = this.specialDiscountData.name;
+        this.booking.netAmount = Number(firstPlanOne.discountedPrice.toFixed(2));
+this.booking.gstAmount = Number(firstPlanOne.taxPercentageperroom.toFixed(2));
+this.booking.discountPercentage = this.specialDiscountData.discountPercentage;
+this.booking.discountAmount = Number(firstPlanOne.discountAmount.toFixed(2));
+this.booking.beforeTaxAmount = Number(firstPlanOne.discountedPrice.toFixed(2));
+this.booking.taxAmount = Number(firstPlanOne.taxPercentageperroom.toFixed(2));
+this.booking.couponCode = this.specialDiscountData.couponCode;
+this.booking.promotionName = this.specialDiscountData.name;
+
       if (this.businessServiceDto.advanceAmountPercentage === 100) {
         this.payment.taxAmount = Number(
           (
@@ -2728,14 +2731,15 @@ if (bookingSummaryStr) {
 
       if (this.specialDiscountData) {
         const firstPlanOne = this.bookingSummaryDetails.selectedPlansSummary[0];
-         this.booking.netAmount = (firstPlanOne.discountedPrice).tofixed(2);
-      this.booking.gstAmount = (firstPlanOne.taxPercentageperroom).tofixed(2);
-      this.booking.discountPercentage = this.specialDiscountData.discountPercentage;
-      this.booking.discountAmount = (firstPlanOne.discountAmount).tofixed(2);
-      this.booking.beforeTaxAmount = (firstPlanOne.discountedPrice).tofixed(2);
-      this.booking.taxAmount = (firstPlanOne.taxPercentageperroom).tofixed(2);
-      this.booking.couponCode = this.specialDiscountData.couponCode;
-      this.booking.promotionName = this.specialDiscountData.name;
+        this.booking.netAmount = Number(firstPlanOne.discountedPrice.toFixed(2));
+this.booking.gstAmount = Number(firstPlanOne.taxPercentageperroom.toFixed(2));
+this.booking.discountPercentage = this.specialDiscountData.discountPercentage;
+this.booking.discountAmount = Number(firstPlanOne.discountAmount.toFixed(2));
+this.booking.beforeTaxAmount = Number(firstPlanOne.discountedPrice.toFixed(2));
+this.booking.taxAmount = Number(firstPlanOne.taxPercentageperroom.toFixed(2));
+this.booking.couponCode = this.specialDiscountData.couponCode;
+this.booking.promotionName = this.specialDiscountData.name;
+
       if (this.businessServiceDto.advanceAmountPercentage === 100) {
         this.payment.taxAmount = Number(
           (
@@ -3881,21 +3885,23 @@ if (bookingSummaryStr) {
       );
 
     booking.taxPercentage = plan.taxpercentage;
-        if (this.specialDiscountData) {
-      const finalPrice = (plan.discountedPrice) ;
-      booking.netAmount = (finalPrice).toFixed(2);
-      booking.gstAmount = (plan.taxPercentageperroom).toFixed(2);
-      booking.discountPercentage = this.specialDiscountData.discountPercentage;
-      booking.discountAmount = (plan?.discountAmount).toFixed(2);
-      booking.beforeTaxAmount = (plan.price).toFixed(2);
-      booking.taxAmount = (plan?.taxPercentageperroom).toFixed(2);
-      booking.couponCode = this.specialDiscountData.couponCode;
-      booking.promotionName = this.specialDiscountData.name;
-      booking.payableAmount =  (plan.finalPrice).toFixed(2);
-      booking.totalAmount = (plan.finalPrice).toFixed(2);
-    } else {
-      this.booking.discountPercentage = 0;
-    }
+      if (this.specialDiscountData) {
+  const finalPrice = plan.discountedPrice;
+
+  booking.netAmount = Number(finalPrice.toFixed(2));
+  booking.gstAmount = Number(plan.taxPercentageperroom.toFixed(2));
+  booking.discountPercentage = this.specialDiscountData.discountPercentage;
+  booking.discountAmount = Number(plan.discountAmount.toFixed(2));
+  booking.beforeTaxAmount = Number(plan.price.toFixed(2));
+  booking.taxAmount = Number(plan.taxPercentageperroom.toFixed(2));
+  booking.couponCode = this.specialDiscountData.couponCode;
+  booking.promotionName = this.specialDiscountData.name;
+  booking.payableAmount = Number((plan.finalPrice).toFixed(2));
+  booking.totalAmount = Number((plan.finalPrice).toFixed(2));
+} else {
+  booking.discountPercentage = 0;
+}
+
     Logger.log('createBooking ', JSON.stringify(booking));
 
     this.paymentLoader = true;
@@ -3982,17 +3988,18 @@ if (bookingSummaryStr) {
   // Match booking based on roomId (or another unique property)
   const matchedBooking = bookings.find((b: any) => b.roomId === plan.roomId);
     if (this.specialDiscountData) {
-      booking.netAmount = (plan.discountedPrice).tofixed(2);
-      booking.gstAmount = (plan.taxPercentageperroom).tofixed(2);
-      booking.discountPercentage = this.specialDiscountData.discountPercentage;
-      booking.discountAmount = (plan.discountAmount).tofixed(2);
-      booking.beforeTaxAmount = (plan.discountedPrice).tofixed(2);
-      booking.taxAmount = (plan.taxPercentageperroom).tofixed(2);
-      booking.couponCode = this.specialDiscountData.couponCode;
-      booking.promotionName = this.specialDiscountData.name;
-    } else {
-      booking.discountPercentage = 0;
-    }
+  booking.netAmount = Number(plan.discountedPrice.toFixed(2));
+  booking.gstAmount = Number(plan.taxPercentageperroom.toFixed(2));
+  booking.discountPercentage = this.specialDiscountData.discountPercentage;
+  booking.discountAmount = Number(plan.discountAmount.toFixed(2));
+  booking.beforeTaxAmount = Number(plan.discountedPrice.toFixed(2));
+  booking.taxAmount = Number(plan.taxPercentageperroom.toFixed(2));
+  booking.couponCode = this.specialDiscountData.couponCode;
+  booking.promotionName = this.specialDiscountData.name;
+} else {
+  booking.discountPercentage = 0;
+}
+
 
     const enquiryForm = new EnquiryDto();
 
@@ -4131,12 +4138,13 @@ if (bookingSummaryStr) {
     enquiryForm.organisationId = environment.parentOrganisationId;
     enquiryForm.bookingCommissionAmount = 0;
     enquiryForm.taxPercentage = plan.taxpercentage;
-        if (this.specialDiscountData) {
-      enquiryForm.payableAmount = (plan.finalPrice).tofixed(2);
-      enquiryForm.beforeTaxAmount = (plan.discountedPrice).tofixed(2);
-      enquiryForm.taxPercentage = plan.taxpercentage;
-      enquiryForm.totalAmount = (plan.finalPrice).tofixed(2);
-    }
+     if (this.specialDiscountData) {
+  enquiryForm.payableAmount = Number(plan.finalPrice.toFixed(2));
+  enquiryForm.beforeTaxAmount = Number(plan.discountedPrice.toFixed(2));
+  enquiryForm.taxPercentage = plan.taxpercentage;
+  enquiryForm.totalAmount = Number(plan.finalPrice.toFixed(2));
+}
+
 
     this.paymentLoader = true;
     try {
@@ -6742,17 +6750,18 @@ if (bookingSummaryStr) {
     const booking: any = this.booking;
 
 if (this.specialDiscountData) {
-      booking.netAmount = (plan.discountedPrice).tofixed(2);
-      booking.gstAmount = (plan.taxPercentageperroom).tofixed(2);
-      booking.discountPercentage = this.specialDiscountData.discountPercentage;
-      booking.discountAmount = (plan.discountAmount).tofixed(2);
-      booking.beforeTaxAmount = (plan.discountedPrice).tofixed(2);
-      booking.taxAmount = (plan.taxPercentageperroom).tofixed(2);
-      booking.couponCode = this.specialDiscountData.couponCode;
-      booking.promotionName = this.specialDiscountData.name;
-    } else {
-      booking.discountPercentage = 0;
-    }
+  booking.netAmount = Number(plan.discountedPrice.toFixed(2));
+  booking.gstAmount = Number(plan.taxPercentageperroom.toFixed(2));
+  booking.discountPercentage = this.specialDiscountData.discountPercentage;
+  booking.discountAmount = Number(plan.discountAmount.toFixed(2));
+  booking.beforeTaxAmount = Number(plan.discountedPrice.toFixed(2));
+  booking.taxAmount = Number(plan.taxPercentageperroom.toFixed(2));
+  booking.couponCode = this.specialDiscountData.couponCode;
+  booking.promotionName = this.specialDiscountData.name;
+} else {
+  booking.discountPercentage = 0;
+}
+
 
     const enquiryForm = new EnquiryDto();
 
@@ -6892,10 +6901,10 @@ if (this.specialDiscountData) {
     enquiryForm.taxPercentage = plan.taxpercentage;
     enquiryForm.businessEmail = this.token.getProperty().email;
         if (this.specialDiscountData) {
-      enquiryForm.payableAmount = (plan.finalPrice).tofixed(2);
-      enquiryForm.beforeTaxAmount = (plan.discountedPrice).tofixed(2);
-      enquiryForm.taxPercentage = plan.taxpercentage;
-      enquiryForm.totalAmount = (plan.finalPrice).tofixed(2);
+        enquiryForm.payableAmount = Number(plan.finalPrice.toFixed(2));
+  enquiryForm.beforeTaxAmount = Number(plan.discountedPrice.toFixed(2));
+  enquiryForm.taxPercentage = plan.taxpercentage;
+  enquiryForm.totalAmount = Number(plan.finalPrice.toFixed(2));
     }
     this.paymentLoader = true;
         const bookingForm = new Booking();
@@ -6961,12 +6970,12 @@ if (this.specialDiscountData) {
     bookingForm.roomTariffBeforeDiscount = plan.actualRoomPrice;
     bookingForm.totalRoomTariffBeforeDiscount = plan.actualRoomPrice * plan.nights * plan.selectedRoomnumber;
     bookingForm.totalBookingAmount = bookingForm.totalRoomTariffBeforeDiscount;
-            if (this.specialDiscountData) {
-      bookingForm.payableAmount = (plan.finalPrice).tofixed(2);
-      bookingForm.beforeTaxAmount = (plan.discountedPrice).tofixed(2);
-      bookingForm.taxPercentage = plan.taxpercentage;
-      bookingForm.totalAmount = (plan.finalPrice).tofixed(2);
-    }
+      if (this.specialDiscountData) {
+  bookingForm.payableAmount = Number(plan.finalPrice.toFixed(2));
+  bookingForm.beforeTaxAmount = Number(plan.discountedPrice.toFixed(2));
+  bookingForm.taxPercentage = plan.taxpercentage;
+  bookingForm.totalAmount = Number(plan.finalPrice.toFixed(2));
+}
     this.saveEnquiryTHM(bookingForm);
     try {
       const response: HttpResponse<EnquiryDto> = await this.hotelBookingService
