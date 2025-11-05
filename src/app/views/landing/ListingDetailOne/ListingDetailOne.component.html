@@ -1650,7 +1650,7 @@
                           Budget Combo
                         </h5>
                         <div class="line-height pricing-best-fit">
-                         ₹ {{ plan?.totalPrice }}
+                         ₹ {{ plan?.totalPrice | number : "1.2-2" }}
                         </div>
                         <div class="line-height">
                          Total for
@@ -1684,7 +1684,7 @@
                           <div class="room-details">
                             <div class="room-title">{{ room?.roomName }}</div>
                             <ng-container>
-                              <div>₹{{ plan.pricePerNight }} per night</div>
+                              <div>₹{{ plan.pricePerNight | number : "1.2-2"  }} per night</div>
                             </ng-container>
                           </div>
                         </div>
@@ -1880,7 +1880,7 @@
             </h5>
 
             <!-- Price & details -->
-            <div class="line-height pricing-best-fit">&nbsp; &nbsp; ₹ {{ plan?.totalPrice }}</div>
+            <div class="line-height pricing-best-fit">&nbsp; &nbsp; ₹ {{ plan?.totalPrice | number : "1.2-2" }}</div>
             <div class="line-height">&nbsp; &nbsp; &nbsp; &nbsp; Total for {{ DiffDate }} nights</div>
             <div class="line-height">
               &nbsp; &nbsp; &nbsp; &nbsp;
@@ -1902,7 +1902,7 @@
               <div class="room-details">
                 <div class="room-title">{{ room?.roomName }}</div>
                 <ng-container>
-                  <div>₹{{ plan.pricePerNight }} per night</div>
+                  <div>₹{{ plan.pricePerNight | number : "1.2-2" }} per night</div>
                 </ng-container>
               </div>
             </div>
