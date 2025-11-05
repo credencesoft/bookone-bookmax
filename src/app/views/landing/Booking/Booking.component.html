@@ -1145,9 +1145,10 @@
                     <div>
                       - ₹
                       {{
-                        (plan.price *
+                       ( (plan.price *
                           this.specialDiscountData?.discountPercentage) /
                           100
+                      ) | number : "1.2-2"
                       }}
                     </div>
                   </div>
@@ -1630,9 +1631,10 @@
                     <div>
                      - ₹
                       {{
-                        (plan.price *
+                       ( (plan.price *
                           this.specialDiscountData?.discountPercentage) /
                           100
+                      ) | number : "1.2-2"
                       }}
                     </div>
                   </div>

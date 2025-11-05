@@ -38,6 +38,8 @@ export class CheckoutRazorpayComponent {
   DiffDate;
   currency: string;
   loading: boolean;
+  businessProfileName: string;
+  businessProfilelogo: string;
 
   constructor(
     // private readonly checkoutService: CheckoutService,
@@ -108,14 +110,21 @@ export class CheckoutRazorpayComponent {
 }
 initiatePayment() {
   if (this.payment.failureMessage !== null) return;
-
+let keyId = 'rzp_live_RURdDEsmd8BUzY';
+if (this.businessUser.paymentGatewayApiKey === keyId) {
+  this.businessProfileName = 'THEHOTELMATE TECHNOLOGIES PRIVATE LIMITED';
+  this.businessProfilelogo = 'https://thehotelmate.co/assets/images/THM-logo-new.svg';
+} else {
+  this.businessProfileName = this.businessUser.name;
+  this.businessProfilelogo = this.businessUser.logoUrl;
+}
   const options = {
     key: this.businessUser.paymentGatewayApiKey,
     amount: Math.round(this.payment.amount * 100),
     currency: 'INR',
-    name: this.businessUser.name,
+    name: this.businessProfileName,
     description: "Payment for online services",
-    image: this.businessUser.logoUrl,
+    image: this.businessProfilelogo,
     order_id: this.payment.razorpayOrderId,
     handler: (response: any) => {
       if (response?.razorpay_payment_id) {

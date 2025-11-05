@@ -759,7 +759,7 @@ this.combinedDateToTime = combinedCheckoutDate.getTime();
       );
     booking.taxPercentage = plan.taxpercentage;
           if (this.specialDiscountData) {
-      const finalPrice = (plan.price) ;
+      const finalPrice = Number(plan?.price || 0) ;
       // booking.netAmount = finalPrice;
       // booking.gstAmount = ((finalPrice - (plan.price * this.specialDiscountData?.discountPercentage)/100 ) * plan.taxpercentage) /100;
       // booking.discountPercentage = this.specialDiscountData.discountPercentage;
@@ -770,16 +770,18 @@ this.combinedDateToTime = combinedCheckoutDate.getTime();
       // booking.promotionName = this.specialDiscountData.name;
       // booking.payableAmount =  (plan.price - (plan.price * this.specialDiscountData?.discountPercentage)/100) + ((((plan.price)- (plan.price * this.specialDiscountData?.discountPercentage)/100 ) * plan.taxpercentage) /100);
       // booking.totalAmount = (plan.price - (plan.price * this.specialDiscountData?.discountPercentage)/100) + ((((plan.price)- (plan.price * this.specialDiscountData?.discountPercentage)/100 ) * plan.taxpercentage) /100);
-      booking.netAmount = (plan.discountedPrice).toFixed(2);
-      booking.gstAmount = (plan.taxPercentageperroom).toFixed(2);
-      booking.discountPercentage = this.specialDiscountData.discountPercentage;
-      booking.discountAmount = (plan?.discountAmount).toFixed(2);
-      booking.beforeTaxAmount = (plan.discountedPrice).toFixed(2);
-      booking.taxAmount = (plan?.taxPercentageperroom).toFixed(2);
-      booking.couponCode = this.specialDiscountData.couponCode;
-      booking.promotionName = this.specialDiscountData.name;
-      booking.payableAmount =  (plan.finalPrice).toFixed(2);
-      booking.totalAmount = (plan.finalPrice).toFixed(2);
+
+  // Booking values (ensure all are numbers)
+  booking.netAmount = Number(Number(plan?.discountedPrice || 0).toFixed(2));
+  booking.gstAmount = Number(Number(plan?.taxPercentageperroom || 0).toFixed(2));
+  booking.discountPercentage = this.specialDiscountData.discountPercentage;
+  booking.discountAmount = Number(Number(plan?.discountAmount || 0).toFixed(2));
+  booking.beforeTaxAmount = Number(Number(plan?.discountedPrice || 0).toFixed(2));
+  booking.taxAmount = Number(Number(plan?.taxPercentageperroom || 0).toFixed(2));
+  booking.couponCode = this.specialDiscountData.couponCode;
+  booking.promotionName = this.specialDiscountData.name;
+  booking.payableAmount = Number(Number(plan?.finalPrice || 0).toFixed(2));
+  booking.totalAmount = Number(Number(plan?.finalPrice || 0).toFixed(2));
           if (
             this.bookingSummaryDetails.selectedPlansSummary &&
             this.bookingSummaryDetails.selectedPlansSummary.length > 0
