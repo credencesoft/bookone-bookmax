@@ -1039,8 +1039,8 @@ closeTermsUniquePopup() {
     this.businessUser = this.token.getProperty();
     this.businessUser.businessServiceDtoList.forEach((item) => {
       if (item.name === 'Accommodation') {
-        this.fromTime = item.checkInTime;
-        this.toTime = item.checkOutTime;
+        this.fromTime = item.checkInTime ?? "";
+        this.toTime = item.checkOutTime ?? "";
         this.channelManagerIntegration = item.cmIntegration;
       }
     });
@@ -1548,8 +1548,8 @@ if (bookingSummaryStr) {
     this.propertyDetails = this.token.getProperty();
     this.propertyDetails.businessServiceDtoList.forEach((item) => {
       if (item.name === 'Accommodation') {
-        this.fromTime = item.checkInTime;
-        this.toTime = item.checkOutTime;
+        this.fromTime = item.checkInTime ?? "";
+        this.toTime = item.checkOutTime ?? "";
       }
     });
 
@@ -6419,8 +6419,8 @@ this.booking.promotionName = this.specialDiscountData.name;
     this.propertyDetails = this.token.getProperty();
     this.propertyDetails.businessServiceDtoList.forEach((item) => {
       if (item.name === 'Accommodation') {
-        this.fromTime = item.checkInTime;
-        this.toTime = item.checkOutTime;
+        this.fromTime = item.checkInTime ?? "";
+        this.toTime = item.checkOutTime ?? "";
       }
     });
 
@@ -6548,8 +6548,8 @@ this.booking.promotionName = this.specialDiscountData.name;
         this.businessUser = data.body;
         this.businessUser.businessServiceDtoList.forEach((item) => {
           if (item.name === 'Accommodation') {
-            this.fromTime = item.checkInTime;
-            this.toTime = item.checkOutTime;
+            this.fromTime = item.checkInTime ?? "";
+            this.toTime = item.checkOutTime ?? "";
           }
         });
 
@@ -6743,6 +6743,7 @@ this.booking.promotionName = this.specialDiscountData.name;
     for (let i = 0; i < bookingList.length; i++) {
       const _booking = bookingList[i];
       await this.submitForm(_booking, bookingList);
+      await this.submitFormMobileBizzApp(_booking, bookingList);
     }
   }
 
@@ -7017,6 +7018,271 @@ if (this.specialDiscountData) {
           () => {
             this.paymentLoader = false;
             this.router.navigate(['/confirm']);
+          },
+          () => {
+            this.paymentLoader = false;
+          }
+        );
+        this.sendenquirytoproperty(enquiryForm);
+        this.sendWhatsappMessageToCustomer();
+        this.sendWhatsappMessageToPropertyOwner();
+        return true;
+      }
+    } catch (e) {
+      console.error('Submit failed', e);
+    }
+
+    return false;
+  }
+
+   async submitFormMobileBizzApp(plan: any, bookingSummary: any) {
+    const booking: any = this.booking;
+
+if (this.specialDiscountData) {
+  booking.netAmount = Number(plan?.discountedPrice).toFixed(2);
+  booking.gstAmount = Number(plan?.taxPercentageperroom).toFixed(2);
+  booking.discountPercentage = this.specialDiscountData.discountPercentage;
+  booking.discountAmount = Number(plan?.discountAmount).toFixed(2);
+  booking.beforeTaxAmount = Number(plan?.discountedPrice).toFixed(2);
+  booking.taxAmount = Number(plan?.taxPercentageperroom).toFixed(2);
+      booking.couponCode = this.specialDiscountData.couponCode;
+      booking.promotionName = this.specialDiscountData.name;
+    } else {
+      booking.discountPercentage = 0;
+    }
+
+    const enquiryForm = new EnquiryDto();
+
+    if (this.token.getProperty()?.address?.city) {
+      enquiryForm.address = this.token.getProperty().address;
+      enquiryForm.country = this.token.getProperty().address.country;
+      enquiryForm.location = this.token.getProperty().address.city;
+      enquiryForm.alternativeLocation = this.token.getProperty().address.city;
+    }
+
+    this.payment.netReceivableAmount =  plan?.price +  plan?.taxPercentageperroom;
+    enquiryForm.min = Number(this.payment.netReceivableAmount.toFixed(2));
+    enquiryForm.max = Number(this.payment.netReceivableAmount.toFixed(2));
+
+    enquiryForm.firstName = booking.firstName;
+    enquiryForm.lastName = booking.lastName;
+    enquiryForm.email = booking.email;
+    enquiryForm.phone = booking.mobile;
+    enquiryForm.checkOutDate = booking.toDate;
+    enquiryForm.checkInDate = booking.fromDate;
+    enquiryForm.noOfPerson =  plan?.adults;
+    enquiryForm.noOfExtraPerson =  plan?.extraCountAdult;
+    enquiryForm.roomId =  plan?.roomId;
+    if(this.groupBookingId){
+      enquiryForm.groupEnquiryId = this.groupBookingId;
+    }
+    enquiryForm.payableAmount =  plan?.price +  plan?.taxPercentageperroom;
+    enquiryForm.roomName =  plan?.roomName;
+    enquiryForm.extraPersonCharge =  plan?.extraPersonAdultCountAmount;
+    enquiryForm.extraChildCharge =  plan?.extraPersonChildCountAmount;
+    enquiryForm.noOfExtraChild =  plan?.extraCountChild;
+      const utmSessionValue = sessionStorage.getItem('utm_source');
+      if (utmSessionValue )  {
+        enquiryForm.utmSource = sessionStorage.getItem('utm_source');
+        enquiryForm.utmMedium = sessionStorage.getItem('utm_medium');
+      } else if (this.activeGoogleCenter && !utmSessionValue) {
+        enquiryForm.utmSource = "organic";
+        enquiryForm.utmMedium = "ghc";
+      } else {
+        enquiryForm.utmSource = "organic";
+        enquiryForm.utmMedium = "unknown"
+      }
+
+    enquiryForm.roomPrice =
+      booking.planCode === 'GHC'
+        ? booking.totalAmount -
+           (plan?.extraPersonCharge +  plan?.extraPersonChildCountAmount)
+        :  plan?.price -
+          (enquiryForm.extraPersonCharge + enquiryForm.extraChildCharge);
+
+    enquiryForm.externalSite = 'The Hotel Mate';
+    enquiryForm.source = 'The Hotel Mate';
+    enquiryForm.couponCode = booking.couponCode;
+    enquiryForm.promotionName = booking.promotionName;
+    enquiryForm.discountAmount = booking.discountAmount;
+    enquiryForm.beforeTaxAmount =  plan?.price;
+
+    enquiryForm.mobile =
+      this.token.getProperty().whatsApp || this.token.getProperty().mobile;
+
+    enquiryForm.roomType =  plan?.roomName;
+    enquiryForm.roomRatePlanName =  plan?.planCodeName;
+    enquiryForm.createdDate = new Date().getTime();
+    enquiryForm.enquiryType = 'Enquiry';
+    // Combine date and time
+    const checkInDateTime = new Date(
+      `${enquiryForm.checkInDate} ${this.fromTime}`
+    ).getTime();
+    const checkOutDateTime = new Date(
+      `${enquiryForm.checkInDate} ${this.toTime}`
+    ).getTime();
+        let checkinDateConcat = this.booking.fromDate;
+    let timestamp = this.fromTime;
+    let combinedDateTimeString = checkinDateConcat + ' ' + timestamp;
+    let combinedDateTime = new Date(combinedDateTimeString).getTime();
+    this.combinedDateFromTime = combinedDateTime;
+    let checkoutDateConcat = this.booking.toDate;
+    let timestampcheckout = this.toTime;
+    let combinedCheckouDateTimeString =
+      checkoutDateConcat + ' ' + timestampcheckout;
+    let combinedDateTimeCheckout = new Date(
+      combinedCheckouDateTimeString
+    ).getTime();
+    this.combinedDateToTime = combinedDateTimeCheckout;
+    enquiryForm.fromTime = this.combinedDateFromTime;
+    enquiryForm.toTime = this.combinedDateToTime;
+    this.token.saveTime(String(checkInDateTime));
+    this.token.saveToTime(String(checkOutDateTime));
+
+    enquiryForm.accountManager = '';
+    enquiryForm.consultantPerson = '';
+    enquiryForm.noOfRooms = Number (plan?.selectedRoomnumber);
+    enquiryForm.noOfChildren =  plan?.children;
+    enquiryForm.accommodationType = this.token.getProperty().businessType;
+    enquiryForm.status = 'Enquiry';
+    enquiryForm.specialNotes = booking.notes || '';
+    enquiryForm.propertyId = this.token.getProperty().id;
+    enquiryForm.bookingPropertyId = this.token.getProperty().id;
+    enquiryForm.propertyName = this.token.getProperty().name;
+    enquiryForm.taxDetails = this.token
+      .getProperty()
+      .taxDetails.filter((item) => ['CGST', 'SGST', 'GST'].includes(item.name));
+    enquiryForm.taxAmount =  plan?.taxPercentageperroom;
+
+    const TO_EMAIL = 'reservation@thehotelmate.co';
+    const TO_NAME = 'Support - The Hotel Mate';
+    const bccEmail = 'samaya.muduli@credencesoft.co.nz';
+    const bccEmail2 = 'info@bookonepms.com';
+
+    enquiryForm.fromName = `${enquiryForm.firstName} ${enquiryForm.lastName}`;
+    enquiryForm.toName = TO_NAME;
+    enquiryForm.fromEmail = enquiryForm.email;
+    enquiryForm.toEmail = TO_EMAIL;
+    enquiryForm.bccEmail = bccEmail;
+    enquiryForm.bccName = bccEmail;
+    enquiryForm.bccEmailTo = bccEmail2;
+    enquiryForm.businessEmail = this.token.getProperty().email;
+    enquiryForm.dietaryRequirement = enquiryForm.dietaryRequirement || '';
+    enquiryForm.accommodationType = enquiryForm.accommodationType || '';
+    enquiryForm.specialNotes = enquiryForm.specialNotes || '';
+    enquiryForm.alternativeLocation = enquiryForm.alternativeLocation || '';
+
+    enquiryForm.totalAmount =  plan?.price +  plan?.taxPercentageperroom;
+    enquiryForm.discountAmountPercentage = booking.discountPercentage;
+    enquiryForm.noOfNights =  plan?.nights;
+    enquiryForm.foodOptions = '';
+    enquiryForm.organisationId = environment.parentOrganisationId;
+    enquiryForm.bookingCommissionAmount = 0;
+    enquiryForm.taxPercentage =  plan?.taxpercentage;
+            if (this.specialDiscountData) {
+        enquiryForm.payableAmount = parseFloat(Number(plan?.finalPrice).toFixed(2));
+        enquiryForm.beforeTaxAmount = parseFloat(Number(plan?.discountedPrice).toFixed(2));
+        enquiryForm.taxPercentage = plan?.taxpercentage;
+        enquiryForm.totalAmount = parseFloat(Number(plan?.finalPrice).toFixed(2));
+    }
+    this.paymentLoader = true;
+        const bookingForm = new Booking();
+    bookingForm.businessEmail = this.token.getProperty().email;
+    bookingForm.businessName = this.token.getProperty().name;
+    bookingForm.firstName = booking.firstName;
+    bookingForm.lastName = booking.lastName;
+    bookingForm.email = booking.email;
+    bookingForm.mobile = booking.mobile;
+    bookingForm.toDate = booking.toDate;
+    bookingForm.fromDate = booking.fromDate;
+    bookingForm.noOfPersons =  plan?.adults;
+    bookingForm.noOfExtraPerson =  plan?.extraCountAdult;
+    bookingForm.roomId =  plan?.roomId;
+    bookingForm.payableAmount =  plan?.price +  plan?.taxPercentageperroom;
+    bookingForm.roomName =  plan?.roomName;
+    bookingForm.extraPersonCharge =  plan?.extraPersonAdultCountAmount;
+    bookingForm.extraChildCharge =  plan?.extraPersonChildCountAmount;
+    bookingForm.noOfExtraChild =  plan?.extraCountChild;
+
+    bookingForm.roomPrice =  plan?.actualRoomPrice;
+
+    bookingForm.externalSite = 'The Hotel Mate';
+    bookingForm.couponCode = booking.couponCode;
+    bookingForm.promotionName = booking.promotionName;
+    bookingForm.discountAmount = booking.discountAmount;
+    bookingForm.beforeTaxAmount =  plan?.price;
+
+    bookingForm.mobile =
+      this.token.getProperty().whatsApp || this.token.getProperty().mobile;
+
+    bookingForm.roomName =  plan?.roomName;
+    bookingForm.roomRatePlanName =  plan?.planCodeName;
+    bookingForm.createdDate = new Date().getTime();
+
+    // Combine date and time
+    const checkInDateTimeOne = new Date(
+      `${bookingForm.fromDate} ${this.fromTime}`
+    ).getTime();
+    const checkOutDateTimeOne = new Date(
+      `${bookingForm.toDate} ${this.toTime}`
+    ).getTime();
+    bookingForm.fromTime = checkInDateTimeOne;
+    bookingForm.toTime = checkOutDateTimeOne;
+    this.token.saveTime(String(checkInDateTimeOne));
+    this.token.saveToTime(String(checkOutDateTimeOne));
+
+    bookingForm.noOfRooms = Number (plan?.selectedRoomnumber);
+    bookingForm.noOfChildren =  plan?.children;
+    bookingForm.propertyId = this.token.getProperty().id;
+    bookingForm.taxDetails = this.token
+      .getProperty()
+      .taxDetails.filter((item) => ['CGST', 'SGST', 'GST'].includes(item.name));
+    bookingForm.taxAmount =  plan?.taxPercentageperroom;
+    if(this.groupBookingId){
+      bookingForm.groupBookingId = this.groupBookingId;
+    }
+    bookingForm.totalAmount =  plan?.price +  plan?.taxPercentageperroom;
+    bookingForm.discountPercentage = booking.discountPercentage;
+    bookingForm.noOfNights =  plan?.nights;
+    bookingForm.taxPercentage =  plan?.taxpercentage;
+    bookingForm.roomTariffBeforeDiscount =  plan?.actualRoomPrice;
+    bookingForm.totalRoomTariffBeforeDiscount =  plan?.actualRoomPrice *  plan?.nights *  plan?.selectedRoomnumber;
+    bookingForm.totalBookingAmount = bookingForm.totalRoomTariffBeforeDiscount;
+                if (this.specialDiscountData) {
+        bookingForm.payableAmount = parseFloat(Number(plan?.finalPrice).toFixed(2));
+        bookingForm.beforeTaxAmount = parseFloat(Number(plan?.discountedPrice).toFixed(2));
+        bookingForm.taxPercentage = plan?.taxpercentage ?? 0;
+        bookingForm.totalAmount = parseFloat(Number(plan?.finalPrice).toFixed(2));
+    }
+    try {
+      const response: HttpResponse<EnquiryDto> = await this.hotelBookingService
+        .accommodationEnquiry(enquiryForm)
+        .toPromise();
+      if (response) {
+        this.paymentLoader = false;
+
+        enquiryForm.checkOutDate = this.datePipe.transform(
+          enquiryForm.checkInDate,
+          'dd-MM-yyyy'
+        );
+        enquiryForm.checkInDate = this.datePipe.transform(
+          enquiryForm.checkInDate,
+          'dd-MM-yyyy'
+        );
+        this.equitycreatedData = response.body;
+        this.token.saveEnquiryData(this.equitycreatedData);
+        this.isEnquiry = true;
+        this.isSuccess = true;
+        this.submitButtonDisable = true;
+        this.bookingConfirmed = true;
+        this.enquiryNo = 'THM-' + response.body.enquiryId;
+
+        // Send notifications
+        this.propertyenquiryemails(enquiryForm);
+        this.hotelBookingService.emailEnquire(enquiryForm).subscribe(
+          () => {
+            this.paymentLoader = false;
+             this.router.navigate(['/confirm']);
           },
           () => {
             this.paymentLoader = false;
