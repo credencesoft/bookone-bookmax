@@ -5543,6 +5543,7 @@ onBookNow() {
           }
             const price = this.priceingO || 0;
           let discountAmount = 0;
+           discountAmount = (plan.price * this.specialDiscountData.discountPercentage) / 100;
           discountedPrice = price;
 
           if (this.specialDiscountData?.discountPercentage) {
