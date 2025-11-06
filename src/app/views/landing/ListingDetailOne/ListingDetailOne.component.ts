@@ -192,6 +192,7 @@ currentPage = 0; // page index
   taxTotalSingle: number;
   utmMedium: any;
   utmSource: any;
+  priceingO: any;
   toggleListingDetails() {
     this.showListingDetails = !this.showListingDetails;
   }
@@ -5531,9 +5532,24 @@ onBookNow() {
         }
       });
     }
-    let discountAmount = 0;
-      discountAmount = (plan.price * this.specialDiscountData.discountPercentage) / 100;
-      discountedPrice -= discountAmount;
+    if (plan.selectedRoomnumber > 1) {
+            this.priceingO = plan.actualRoomPrice +
+                  (plan.singleextraAdultCharges || 0) +
+                  (plan.singleextraChildrenCharges || 0) || 0;
+          } else {
+            this.priceingO =  plan.actualRoomPrice +
+                  (plan.SingleDayextraPersonAdultCountAmount || 0) +
+                  (plan.SingleDayextraPersonChildCountAmount || 0) || 0;
+          }
+            const price = this.priceingO || 0;
+          let discountAmount = 0;
+          discountedPrice = price;
+
+          if (this.specialDiscountData?.discountPercentage) {
+            const discountAmount =
+              (price * this.specialDiscountData.discountPercentage) / 100;
+            discountedPrice -= discountAmount;
+          }
               if (this.businessUser?.taxDetails?.length > 0) {
       this.businessUser?.taxDetails.forEach((element) => {
         if (element.name === 'GST') {
@@ -5584,7 +5600,7 @@ onBookNow() {
       });
     }
     const taxPercent = this.taxPercentage || 0;
-    const taxAmount = (discountedPrice * taxPercent) / 100;
+    const taxAmount = (((discountedPrice * taxPercent) / 100) * plan.selectedRoomnumber) * plan.nights;
 
     return {
       ...plan,
@@ -6811,7 +6827,16 @@ getTotalTaxPrice(): number {
     if (this.specialDiscountData) {
       return (
         this.selectedPlansSummary?.reduce((sum, plan) => {
-          const price = plan?.price || 0;
+          if (plan.selectedRoomnumber > 1) {
+            this.priceingO = plan.actualRoomPrice +
+                  (plan.singleextraAdultCharges || 0) +
+                  (plan.singleextraChildrenCharges || 0) || 0;
+          } else {
+            this.priceingO =  plan.actualRoomPrice +
+                  (plan.SingleDayextraPersonAdultCountAmount || 0) +
+                  (plan.SingleDayextraPersonChildCountAmount || 0) || 0;
+          }
+            const price = this.priceingO || 0;
           const taxPercent = plan?.taxpercentage || 0;
           let discountedPrice = price;
           if (this.specialDiscountData?.discountPercentage) {
@@ -6868,7 +6893,7 @@ getTotalTaxPrice(): number {
           }
 
           const taxAmount = (discountedPrice * this.taxPercentage) / 100;
-          return sum + taxAmount;
+          return ((sum + taxAmount) * plan.selectedRoomnumber) * plan.nights;
         }, 0) || 0
       );
     } else {
