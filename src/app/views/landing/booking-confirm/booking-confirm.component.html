@@ -369,8 +369,8 @@
                   <th>Count</th>
                   <th>Extra Pax</th>
                   <th>Extra Child</th>
-                  <th>Sub Total</th>
                   <th *ngIf="specialDiscountData">Discount ({{specialDiscountData?.discountPercentage}}%)</th>
+                  <th>Sub Total</th>
                   <th>Tax</th>
                   <th>Total</th>
                 </tr>
@@ -391,8 +391,8 @@
                   <td>{{ booking.noOfRooms }}</td>
                   <td>₹{{ booking.extraPersonCharge | number : "1.2-2" }}</td>
                   <td>₹{{ booking.extraChildCharge | number : "1.2-2" }}</td>
-                  <td>₹{{ booking.beforeTaxAmount | number : "1.2-2" }}</td>
                   <td *ngIf="booking.discountAmount">-₹{{ booking.discountAmount | number : "1.2-2" }}</td>
+                  <td>₹{{ booking.beforeTaxAmount | number : "1.2-2" }}</td>
                   <td>₹{{ booking.taxAmount | number : "1.2-2" }}</td>
                   <td>₹{{ booking.totalAmount | number : "1.2-2" }}</td>
                 </tr>
@@ -854,15 +854,16 @@
                 <div>Extra Child</div>
                 <div>₹{{ booking.extraChildCharge | number : "1.2-2" }}</div>
             </div>
-            <div class="d-flex justify-content-between">
-                <div>Sub Total</div>
-                <div>₹{{ booking.beforeTaxAmount | number : "1.2-2" }}</div>
-            </div>
             <div class="d-flex justify-content-between" *ngIf="booking.discountAmount">
               <div *ngIf="specialDiscountData?.discountPercentage">Discount ({{specialDiscountData?.discountPercentage?.discountPercentage}}%)</div>
               <div *ngIf="booking.discountAmount">-₹{{ booking.discountAmount | number : "1.2-2" }}</div>
 
             </div>
+            <div class="d-flex justify-content-between">
+                <div>Sub Total</div>
+                <div>₹{{ booking.beforeTaxAmount | number : "1.2-2" }}</div>
+            </div>
+
 
             <div class="d-flex justify-content-between">
                 <div>Tax</div>
