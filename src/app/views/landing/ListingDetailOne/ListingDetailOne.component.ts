@@ -5532,6 +5532,7 @@ onBookNow() {
         }
       });
     }
+
     if (plan.selectedRoomnumber > 1) {
             this.priceingO = plan.actualRoomPrice +
                   (plan.singleextraAdultCharges || 0) +
@@ -5547,8 +5548,6 @@ onBookNow() {
           discountedPrice = price;
 
           if (this.specialDiscountData?.discountPercentage) {
-            const discountAmount =
-              (price * this.specialDiscountData.discountPercentage) / 100;
             discountedPrice -= discountAmount;
           }
               if (this.businessUser?.taxDetails?.length > 0) {
@@ -5601,7 +5600,8 @@ onBookNow() {
       });
     }
     const taxPercent = this.taxPercentage || 0;
-    const taxAmount = (((discountedPrice * taxPercent) / 100) * plan.selectedRoomnumber) * plan.nights;
+    discountedPrice = plan.price - discountAmount;
+    const taxAmount = (((discountedPrice * taxPercent) / 100) );
 
     return {
       ...plan,
