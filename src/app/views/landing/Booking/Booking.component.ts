@@ -7015,18 +7015,19 @@ if (this.specialDiscountData) {
 
         // Send notifications
         this.propertyenquiryemails(enquiryForm);
-        this.hotelBookingService.emailEnquire(enquiryForm).subscribe(
-          () => {
-            this.paymentLoader = false;
-            this.router.navigate(['/confirm']);
-          },
-          () => {
-            this.paymentLoader = false;
-          }
-        );
+        // this.hotelBookingService.emailEnquire(enquiryForm).subscribe(
+        //   () => {
+        //     this.paymentLoader = false;
+        //     this.router.navigate(['/confirm']);
+        //   },
+        //   () => {
+        //     this.paymentLoader = false;
+        //   }
+        // );
         this.sendenquirytoproperty(enquiryForm);
         this.sendWhatsappMessageToCustomer();
         this.sendWhatsappMessageToPropertyOwner();
+        this.router.navigate(['/confirm']);
         return true;
       }
     } catch (e) {
@@ -7063,17 +7064,18 @@ if (this.specialDiscountData) {
 
         // Send notifications
         this.propertyenquiryemails(enquiryForm);
-        this.hotelBookingService.emailEnquire(enquiryForm).subscribe(
-          () => {
-            this.paymentLoader = false;
-             this.router.navigate(['/confirm']);
-          },
-          () => {
-            this.paymentLoader = false;
-          }
-        );
+        // this.hotelBookingService.emailEnquire(enquiryForm).subscribe(
+        //   () => {
+        //     this.paymentLoader = false;
+        //      this.router.navigate(['/confirm']);
+        //   },
+        //   () => {
+        //     this.paymentLoader = false;
+        //   }
+        // );
         this.sendWhatsappMessageToCustomer();
         this.sendWhatsappMessageToPropertyOwner();
+         this.router.navigate(['/confirm']);
         return true;
       }
     } catch (e) {
