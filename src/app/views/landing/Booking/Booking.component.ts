@@ -7061,6 +7061,8 @@ if (this.specialDiscountData) {
         this.submitButtonDisable = true;
         this.bookingConfirmed = true;
         this.enquiryNo = 'THM-' + response.body.enquiryId;
+        enquiryForm.taxAmount = this.equitycreatedData.taxAmount.toFixed();
+        enquiryForm.totalAmount = this.equitycreatedData.totalAmount.toFixed();
 
         // Send notifications
         this.propertyenquiryemails(enquiryForm);
