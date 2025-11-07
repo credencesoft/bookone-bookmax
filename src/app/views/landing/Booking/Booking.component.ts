@@ -7047,7 +7047,7 @@ if (this.specialDiscountData) {
         this.paymentLoader = false;
 
         enquiryForm.checkOutDate = this.datePipe.transform(
-          enquiryForm.checkInDate,
+          enquiryForm.checkOutDate,
           'dd-MM-yyyy'
         );
         enquiryForm.checkInDate = this.datePipe.transform(
@@ -7064,18 +7064,17 @@ if (this.specialDiscountData) {
 
         // Send notifications
         this.propertyenquiryemails(enquiryForm);
-        // this.hotelBookingService.emailEnquire(enquiryForm).subscribe(
-        //   () => {
-        //     this.paymentLoader = false;
-        //      this.router.navigate(['/confirm']);
-        //   },
-        //   () => {
-        //     this.paymentLoader = false;
-        //   }
-        // );
+        this.hotelBookingService.emailEnquire(enquiryForm).subscribe(
+          () => {
+            this.paymentLoader = false;
+             this.router.navigate(['/confirm']);
+          },
+          () => {
+            this.paymentLoader = false;
+          }
+        );
         this.sendWhatsappMessageToCustomer();
         this.sendWhatsappMessageToPropertyOwner();
-         this.router.navigate(['/confirm']);
         return true;
       }
     } catch (e) {
@@ -7264,7 +7263,7 @@ if (this.specialDiscountData) {
         (this.componentstype4.type = "body"),
         (this.parametertype4 = new Para());
         (this.parametertype4.type = "text"),
-          (this.parametertype4.text = this.equitycreatedData.totalAmount);
+          (this.parametertype4.text = this.equitycreatedData.totalAmount.toFixed(2));
           this.parameterss4.push(this.parametertype4);
       this.template.components = this.components2;
       this.whatsappForm2.template = this.template;
@@ -7353,7 +7352,7 @@ if (this.specialDiscountData) {
         (this.componentstype4.type = "body"),
         (this.parametertype4 = new Para());
         (this.parametertype4.type = "text"),
-          (this.parametertype4.text = this.equitycreatedData.totalAmount);
+          (this.parametertype4.text = this.equitycreatedData.totalAmount.toFixed(2));
           this.parameterss4.push(this.parametertype4);
       this.template.components = this.components2;
       this.whatsappForm2.template = this.template;
