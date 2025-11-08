@@ -7024,7 +7024,7 @@ if (this.specialDiscountData) {
         //     this.paymentLoader = false;
         //   }
         // );
-        this.sendenquirytoproperty(enquiryForm);
+        this.sendenquirytoproperty();
         this.sendWhatsappMessageToCustomer();
         this.sendWhatsappMessageToPropertyOwner();
         this.router.navigate(['/confirm']);
@@ -7045,13 +7045,12 @@ if (this.specialDiscountData) {
         .toPromise();
       if (response) {
         this.paymentLoader = false;
-
-        enquiryForm.checkOutDate = this.datePipe.transform(
-          enquiryForm.checkOutDate,
+        enquiryForm.checkInDate = this.datePipe.transform(
+          this.booking?.fromDate,
           'dd-MM-yyyy'
         );
-        enquiryForm.checkInDate = this.datePipe.transform(
-          enquiryForm.checkInDate,
+        enquiryForm.checkOutDate = this.datePipe.transform(
+          this.booking?.toDate,
           'dd-MM-yyyy'
         );
         this.equitycreatedData = response.body;
@@ -7153,16 +7152,18 @@ if (this.specialDiscountData) {
         //  this.successMessage = true;
       });
   }
-  sendenquirytoproperty(enquiryForm) {
-    this.enquiryForm.fromEmail = 'reservation@thehotelmate.co';
-    this.enquiryForm.phone = '';
-    (this.enquiryForm.email = ''),
-      (this.enquiryForm.roomPrice = this.booking.totalAmount);
-    this.enquiryForm.toEmail = this.businessUser.email;
+  sendenquirytoproperty() {
+    const payload = {
+    fromEmail: 'reservation@thehotelmate.co',
+    toEmail: this.businessUser.email,
+    roomPrice: this.booking.totalAmount,
+    phone: '',
+    email: ''
+  };
     this.http
       .post<EnquiryForm>(
         environment.apiUrlBookone + '/api/email/enquire',
-        this.enquiryForm
+        payload
       )
       .subscribe((response) => {
         this.success = response;
