@@ -625,47 +625,60 @@ closeTermsUniquePopup() {
   }
 
   showPayNow(): boolean {
-         if (this.channelManagerIntegration) {
-    return true;
-  }
-    const propertyUrl = this.token.getPropertyUrl();
-    const isBookingEngine = propertyUrl?.includes('bookingEngine');
-    if (isBookingEngine) {
-      return this.businessUser.paymentGateway != null;
-    }
+  if (this.channelManagerIntegration) return true;
 
-    const fromDateTimestamp = new Date(this.booking.fromDate).getTime();
-    const createdDateTimestamp = new Date(this.booking.createdDate).getTime();
-    const hoursDifference =
-      (fromDateTimestamp - createdDateTimestamp) / (1000 * 60 * 60);
+  const propertyUrl = this.token.getPropertyUrl();
+  const isBookingEngine = propertyUrl?.includes('bookingEngine');
+  if (isBookingEngine) return this.businessUser.paymentGateway != null;
 
-    return hoursDifference >= 48 && this.businessUser.paymentGateway != null;
-  }
+  this.propertyData = this.token.getProperty();
+  this.accommodationData = this.propertyData.businessServiceDtoList?.filter(
+    (entry) => entry.name === 'Accommodation'
+  );
+
+  // ✅ If any accommodation has payLater = true → return false
+  const hasPayLater = this.accommodationData?.some((a) => a.payLater);
+
+  if (hasPayLater) return false;
+
+  const fromDateTimestamp = new Date(this.booking.fromDate).getTime();
+  const createdDateTimestamp = new Date(this.booking.createdDate).getTime();
+  const hoursDifference =
+    (fromDateTimestamp - createdDateTimestamp) / (1000 * 60 * 60);
+
+  return hoursDifference >= 48 && this.businessUser.paymentGateway != null;
+}
+
 
   showPayLater(): boolean {
-          if (this.channelManagerIntegration) {
-    return false;
-  }
-    const propertyUrl = this.token.getPropertyUrl();
-    const isBookingEngine = propertyUrl?.includes('bookingEngine');
+  if (this.channelManagerIntegration) return false;
 
-    if (isBookingEngine) {
-      return false;
-    }
-    const fromDateTimestamp = new Date(this.booking.fromDate).getTime();
-    const createdDateTimestamp = new Date(this.booking.createdDate).getTime();
-    const hoursDifference =
-      (fromDateTimestamp - createdDateTimestamp) / (1000 * 60 * 60);
-    if (hoursDifference < 48) {
-      return true;
-    }
+  const propertyUrl = this.token.getPropertyUrl();
+  const isBookingEngine = propertyUrl?.includes('bookingEngine');
+  if (isBookingEngine) return false;
 
-    if (hoursDifference >= 48 && this.businessUser.paymentGateway == null) {
-      return true;
-    }
+  this.propertyData = this.token.getProperty();
+  this.accommodationData = this.propertyData.businessServiceDtoList?.filter(
+    (entry) => entry.name === 'Accommodation'
+  );
 
-    return false;
-  }
+  // ✅ If any accommodation has payLater = true → return true
+  const hasPayLater = this.accommodationData?.some((a) => a.payLater);
+  if (hasPayLater) return true;
+
+  const fromDateTimestamp = new Date(this.booking.fromDate).getTime();
+  const createdDateTimestamp = new Date(this.booking.createdDate).getTime();
+  const hoursDifference =
+    (fromDateTimestamp - createdDateTimestamp) / (1000 * 60 * 60);
+
+  if (hoursDifference < 48) return true;
+
+  if (hoursDifference >= 48 && this.businessUser.paymentGateway == null)
+    return true;
+
+  return false;
+}
+
 
   calculateserviceprice() {
     this.calculatedServices = [];
