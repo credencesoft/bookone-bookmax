@@ -1345,7 +1345,7 @@
                 ((!paymentLoader || !submitButtonDisable) && !validateFrom()) ||
                 !termsAccepted
               "
-              *ngIf="value === false"
+              *ngIf="showPayNow() === false && showPayLater() === false"
               (click)="createAllEnquiries()"
             >
               Enquiry Now
@@ -1360,29 +1360,7 @@
                 !termsAccepted
               "
               *ngIf="
-                value === true &&
-                showPayLater() &&
-                businessUser.paymentGateway != null &&
-                businessUser.paymentGateway != ''
-              "
-              (click)="onCashPaymentSubmit()"
-            >
-              Pay Later
-            </button>
-
-            <button
-              class="Fillpaybtn"
-              type="button"
-              style="font-size: 19px"
-              [disabled]="
-                isCashPayDisabled ||
-                ((!paymentLoader || !submitButtonDisable) && !validateFrom()) ||
-                !termsAccepted
-              "
-              *ngIf="
-                value === true &&
-                (businessUser.paymentGateway === null ||
-                  businessUser.paymentGateway === '')
+                showPayLater()
               "
               (click)="onCashPaymentSubmit()"
             >
@@ -1399,10 +1377,7 @@
                 !termsAccepted
               "
               *ngIf="
-                value === true &&
-                showPayNow() &&
-                businessUser.paymentGateway != null &&
-                businessUser.paymentGateway != ''
+                showPayNow()
               "
               (click)="payAndCheckout()"
             >
@@ -2063,7 +2038,7 @@
                 ((!paymentLoader || !submitButtonDisable) && !validateFrom()) ||
                 !termsAccepted
               "
-              *ngIf="value === false"
+               *ngIf="showPayNow() === false && showPayLater() === false"
               (click)="createAllEnquiries()"
             >
               Enquiry Now
@@ -2078,10 +2053,7 @@
                 !termsAccepted
               "
               *ngIf="
-                value === true &&
-                showPayLater() &&
-                businessUser.paymentGateway != null &&
-                businessUser.paymentGateway != ''
+                showPayLater()
               "
               (click)="onCashPaymentSubmit()"
             >
@@ -2093,35 +2065,12 @@
               type="button"
               style="font-size: 19px"
               [disabled]="
-                isCashPayDisabled ||
-                ((!paymentLoader || !submitButtonDisable) && !validateFrom()) ||
-                !termsAccepted
-              "
-              *ngIf="
-                value === true &&
-                (businessUser.paymentGateway === null ||
-                  businessUser.paymentGateway === '')
-              "
-              (click)="onCashPaymentSubmit()"
-            >
-              Pay Later
-            </button>
-            <button
-              class="Fillpaybtn"
-              type="button"
-              style="font-size: 19px"
-              [disabled]="
                 isPayNowDisabled ||
                 isPayDisabled ||
                 ((!paymentLoader || !submitButtonDisable) && !validateFrom()) ||
                 !termsAccepted
               "
-              *ngIf="
-                value === true &&
-                showPayNow() &&
-                businessUser.paymentGateway != null &&
-                businessUser.paymentGateway != ''
-              "
+              *ngIf="showPayNow()"
               (click)="payAndCheckout()"
             >
               Pay Now

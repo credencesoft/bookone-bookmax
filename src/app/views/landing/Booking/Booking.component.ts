@@ -627,20 +627,16 @@ closeTermsUniquePopup() {
   showPayNow(): boolean {
   if (this.channelManagerIntegration) return true;
 
-  const propertyUrl = this.token.getPropertyUrl();
-  const isBookingEngine = propertyUrl?.includes('bookingEngine');
-  if (isBookingEngine) return this.businessUser.paymentGateway != null;
-
-  this.propertyData = this.token.getProperty();
+    this.propertyData = this.token.getProperty();
   this.accommodationData = this.propertyData.businessServiceDtoList?.filter(
     (entry) => entry.name === 'Accommodation'
   );
-
-  // ✅ If any accommodation has payLater = true → return false
   const hasPayLater = this.accommodationData?.some((a) => a.payLater);
-
   if (hasPayLater) return false;
-
+  const propertyUrl = this.token.getPropertyUrl();
+  const isBookingEngine = propertyUrl?.includes('bookingEngine');
+  if (isBookingEngine) return this.businessUser.paymentGateway != null;
+    if (!this.channelManagerIntegration && !this.value) return false;
   const fromDateTimestamp = new Date(this.booking.fromDate).getTime();
   const createdDateTimestamp = new Date(this.booking.createdDate).getTime();
   const hoursDifference =
@@ -651,11 +647,6 @@ closeTermsUniquePopup() {
 
 
   showPayLater(): boolean {
-  if (this.channelManagerIntegration) return false;
-
-  const propertyUrl = this.token.getPropertyUrl();
-  const isBookingEngine = propertyUrl?.includes('bookingEngine');
-  if (isBookingEngine) return false;
 
   this.propertyData = this.token.getProperty();
   this.accommodationData = this.propertyData.businessServiceDtoList?.filter(
@@ -665,6 +656,11 @@ closeTermsUniquePopup() {
   // ✅ If any accommodation has payLater = true → return true
   const hasPayLater = this.accommodationData?.some((a) => a.payLater);
   if (hasPayLater) return true;
+  if (this.channelManagerIntegration) return false;
+  if (!this.channelManagerIntegration && !this.value) return false;
+  const propertyUrl = this.token.getPropertyUrl();
+  const isBookingEngine = propertyUrl?.includes('bookingEngine');
+  if (isBookingEngine) return false;
 
   const fromDateTimestamp = new Date(this.booking.fromDate).getTime();
   const createdDateTimestamp = new Date(this.booking.createdDate).getTime();
@@ -673,8 +669,10 @@ closeTermsUniquePopup() {
 
   if (hoursDifference < 48) return true;
 
+
   if (hoursDifference >= 48 && this.businessUser.paymentGateway == null)
     return true;
+
 
   return false;
 }
