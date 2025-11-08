@@ -6995,6 +6995,7 @@ if (this.specialDiscountData) {
           'dd-MM-yyyy'
         );
         this.equitycreatedData = response.body;
+        enquiryForm.enquiryId = this.equitycreatedData.enquiryId;
         const existingEnquirysStr = sessionStorage.getItem(
           'EnquiryResponseList'
         );
@@ -7060,9 +7061,9 @@ if (this.specialDiscountData) {
         this.submitButtonDisable = true;
         this.bookingConfirmed = true;
         this.enquiryNo = 'THM-' + response.body.enquiryId;
-        enquiryForm.taxAmount = this.equitycreatedData.taxAmount.toFixed();
-        enquiryForm.totalAmount = this.equitycreatedData.totalAmount.toFixed();
-
+        enquiryForm.taxAmount = this.equitycreatedData.taxAmount.toFixed(2);
+        enquiryForm.totalAmount = this.equitycreatedData.totalAmount.toFixed(2);
+        enquiryForm.payableAmount = this.equitycreatedData.payableAmount.toFixed(2);
         // Send notifications
         this.propertyenquiryemails(enquiryForm);
         this.hotelBookingService.emailEnquire(enquiryForm).subscribe(
@@ -7074,8 +7075,8 @@ if (this.specialDiscountData) {
             this.paymentLoader = false;
           }
         );
-        this.sendWhatsappMessageToCustomer();
-        this.sendWhatsappMessageToPropertyOwner();
+        // this.sendWhatsappMessageToCustomer();
+        // this.sendWhatsappMessageToPropertyOwner();
         return true;
       }
     } catch (e) {
