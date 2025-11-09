@@ -1918,7 +1918,7 @@ onGenerateVouchers() {
 
             this.parametertype2 = new Para();
             this.parametertype2.type = 'text',
-            this.parametertype2.text = this.datePipe.transform(booking.fromDate, 'dd-MM-YYYY') + ",";
+            this.parametertype2.text = this.datePipe.transform(booking.fromDate, 'dd-MM-yyyy') + ",";
             this.parameterss2.push(this.parametertype2);
 
             this.parametertype2 = new Para();
@@ -1933,7 +1933,7 @@ onGenerateVouchers() {
 
             this.parametertype2 = new Para();
             this.parametertype2.type = 'text',
-            this.parametertype2.text = this.datePipe.transform(booking.toDate, 'dd-MM-YYYY') + ",";
+            this.parametertype2.text = this.datePipe.transform(booking.toDate, 'dd-MM-yyyy') + ",";
             this.parameterss2.push(this.parametertype2);
 
             this.parametertype2 = new Para();
@@ -2078,7 +2078,7 @@ onGenerateVouchers() {
 
             this.parametertype2 = new Para();
             this.parametertype2.type = 'text',
-            this.parametertype2.text = this.datePipe.transform(booking.fromDate, 'dd-MM-YYYY') + ",";
+            this.parametertype2.text = this.datePipe.transform(booking.fromDate, 'dd-MM-yyyy') + ",";
             this.parameterss2.push(this.parametertype2);
 
             this.parametertype2 = new Para();
@@ -2093,7 +2093,7 @@ onGenerateVouchers() {
 
             this.parametertype2 = new Para();
             this.parametertype2.type = 'text',
-            this.parametertype2.text = this.datePipe.transform(booking.toDate, 'dd-MM-YYYY') + ",";
+            this.parametertype2.text = this.datePipe.transform(booking.toDate, 'dd-MM-yyyy') + ",";
             this.parameterss2.push(this.parametertype2);
 
             this.parametertype2 = new Para();
@@ -2238,7 +2238,7 @@ onGenerateVouchers() {
 
             this.parametertype2 = new Para();
             this.parametertype2.type = 'text',
-            this.parametertype2.text = this.datePipe.transform(booking.fromDate, 'dd-MM-YYYY') + ",";
+            this.parametertype2.text = this.datePipe.transform(booking.fromDate, 'dd-MM-yyyy') + ",";
             this.parameterss2.push(this.parametertype2);
 
             this.parametertype2 = new Para();
@@ -2253,7 +2253,7 @@ onGenerateVouchers() {
 
             this.parametertype2 = new Para();
             this.parametertype2.type = 'text',
-            this.parametertype2.text = this.datePipe.transform(booking.toDate, 'dd-MM-YYYY') + ",";
+            this.parametertype2.text = this.datePipe.transform(booking.toDate, 'dd-MM-yyyy') + ",";
             this.parameterss2.push(this.parametertype2);
 
             this.parametertype2 = new Para();
@@ -2399,7 +2399,7 @@ onGenerateVouchers() {
 
             this.parametertype2 = new Para();
             this.parametertype2.type = 'text',
-            this.parametertype2.text = this.datePipe.transform(booking.fromDate, 'dd-MM-YYYY') + ",";
+            this.parametertype2.text = this.datePipe.transform(booking.fromDate, 'dd-MM-yyyy') + ",";
             this.parameterss2.push(this.parametertype2);
 
             this.parametertype2 = new Para();
@@ -2414,7 +2414,7 @@ onGenerateVouchers() {
 
             this.parametertype2 = new Para();
             this.parametertype2.type = 'text',
-            this.parametertype2.text = this.datePipe.transform(booking.toDate, 'dd-MM-YYYY') + ",";
+            this.parametertype2.text = this.datePipe.transform(booking.toDate, 'dd-MM-yyyy') + ",";
             this.parameterss2.push(this.parametertype2);
 
             this.parametertype2 = new Para();
@@ -2547,7 +2547,7 @@ onGenerateVouchers() {
 
     //   this.parametertype2 = new Para();
     //   this.parametertype2.type = 'text',
-    //   this.parametertype2.text = this.datePipe.transform(this.booking.fromDate, 'dd-MM-YYYY') + ",";
+    //   this.parametertype2.text = this.datePipe.transform(this.booking.fromDate, 'dd-MM-yyyy') + ",";
     //   this.parameterss2.push(this.parametertype2);
 
     //   this.parametertype2 = new Para();
@@ -2562,7 +2562,7 @@ onGenerateVouchers() {
 
     //   this.parametertype2 = new Para();
     //   this.parametertype2.type = 'text',
-    //   this.parametertype2.text = this.datePipe.transform(this.booking.toDate, 'dd-MM-YYYY') + ",";
+    //   this.parametertype2.text = this.datePipe.transform(this.booking.toDate, 'dd-MM-yyyy') + ",";
     //   this.parameterss2.push(this.parametertype2);
 
     //   this.parametertype2 = new Para();
@@ -2695,7 +2695,7 @@ onGenerateVouchers() {
 
       //   this.parametertype2 = new Para();
       //   this.parametertype2.type = 'text',
-      //   this.parametertype2.text = this.datePipe.transform(this.booking.fromDate, 'dd-MM-YYYY') + ",";
+      //   this.parametertype2.text = this.datePipe.transform(this.booking.fromDate, 'dd-MM-yyyy') + ",";
       //   this.parameterss2.push(this.parametertype2);
 
       //   this.parametertype2 = new Para();
@@ -2710,7 +2710,7 @@ onGenerateVouchers() {
 
       //   this.parametertype2 = new Para();
       //   this.parametertype2.type = 'text',
-      //   this.parametertype2.text = this.datePipe.transform(this.booking.toDate, 'dd-MM-YYYY') + ",";
+      //   this.parametertype2.text = this.datePipe.transform(this.booking.toDate, 'dd-MM-yyyy') + ",";
       //   this.parameterss2.push(this.parametertype2);
 
       //   this.parametertype2 = new Para();
@@ -2843,7 +2843,7 @@ onGenerateVouchers() {
 
       //     this.parametertype2 = new Para();
       //     this.parametertype2.type = 'text',
-      //     this.parametertype2.text = this.datePipe.transform(this.booking.fromDate, 'dd-MM-YYYY') + ",";
+      //     this.parametertype2.text = this.datePipe.transform(this.booking.fromDate, 'dd-MM-yyyy') + ",";
       //     this.parameterss2.push(this.parametertype2);
 
       //     this.parametertype2 = new Para();
@@ -2858,7 +2858,7 @@ onGenerateVouchers() {
 
       //     this.parametertype2 = new Para();
       //     this.parametertype2.type = 'text',
-      //     this.parametertype2.text =this.datePipe.transform(this.booking.toDate, 'dd-MM-YYYY') + ",";
+      //     this.parametertype2.text =this.datePipe.transform(this.booking.toDate, 'dd-MM-yyyy') + ",";
       //     this.parameterss2.push(this.parametertype2);
 
       //     this.parametertype2 = new Para();
@@ -2991,7 +2991,7 @@ onGenerateVouchers() {
 
             this.parametertype2 = new Para();
             this.parametertype2.type = 'text',
-            this.parametertype2.text = this.datePipe.transform(this.booking.fromDate, 'dd-MM-YYYY') + ",";
+            this.parametertype2.text = this.datePipe.transform(this.booking.fromDate, 'dd-MM-yyyy') + ",";
             this.parameterss2.push(this.parametertype2);
 
             this.parametertype2 = new Para();
@@ -3006,7 +3006,7 @@ onGenerateVouchers() {
 
             this.parametertype2 = new Para();
             this.parametertype2.type = 'text',
-            this.parametertype2.text = this.datePipe.transform(this.booking.toDate, 'dd-MM-YYYY') + ",";
+            this.parametertype2.text = this.datePipe.transform(this.booking.toDate, 'dd-MM-yyyy') + ",";
             this.parameterss2.push(this.parametertype2);
 
             this.parametertype2 = new Para();
@@ -3139,7 +3139,7 @@ onGenerateVouchers() {
 
               this.parametertype2 = new Para();
               this.parametertype2.type = 'text',
-              this.parametertype2.text = this.datePipe.transform(this.booking.fromDate, 'dd-MM-YYYY') + ",";
+              this.parametertype2.text = this.datePipe.transform(this.booking.fromDate, 'dd-MM-yyyy') + ",";
               this.parameterss2.push(this.parametertype2);
 
               this.parametertype2 = new Para();
@@ -3154,7 +3154,7 @@ onGenerateVouchers() {
 
               this.parametertype2 = new Para();
               this.parametertype2.type = 'text',
-              this.parametertype2.text = this.datePipe.transform(this.booking.toDate, 'dd-MM-YYYY') + ",";
+              this.parametertype2.text = this.datePipe.transform(this.booking.toDate, 'dd-MM-yyyy') + ",";
               this.parameterss2.push(this.parametertype2);
 
               this.parametertype2 = new Para();
