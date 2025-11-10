@@ -3683,6 +3683,54 @@ if (roomKey) {
       this.adults = this.adults;
     }
   }
+  onCheckInClosed(): void {
+  if (this.fromDate) {
+    this.booking.fromDate = this.getDateFormatYearMonthDay(
+      this.fromDate.day,
+      this.fromDate.month,
+      this.fromDate.year
+    );
+
+    // Automatically set next day as default checkout if not chosen yet
+    if (!this.toDate) {
+      this.booking.toDate = this.getDateFormatYearMonthDay(
+        this.fromDate.day + 1,
+        this.fromDate.month,
+        this.fromDate.year
+      );
+    }
+
+    this.booking.noOfRooms = this.noOfrooms;
+    this.booking.noOfPersons = this.adults;
+
+    this.token.saveBookingData(this.booking);
+  }
+}
+
+onCheckOutClosed(): void {
+  if (this.toDate) {
+    this.booking.toDate = this.getDateFormatYearMonthDay(
+      this.toDate.day,
+      this.toDate.month,
+      this.toDate.year
+    );
+
+    if (this.fromDate) {
+      this.booking.fromDate = this.getDateFormatYearMonthDay(
+        this.fromDate.day,
+        this.fromDate.month,
+        this.fromDate.year
+      );
+    }
+
+    this.booking.noOfRooms = this.noOfrooms;
+    this.booking.noOfPersons = this.adults;
+
+    this.token.saveBookingData(this.booking);
+    this.checkingAvailability();
+  }
+}
+
   child() {
     if (this.childno != null || this.childno != undefined) {
       this.children = Number(+this.children + 1);
