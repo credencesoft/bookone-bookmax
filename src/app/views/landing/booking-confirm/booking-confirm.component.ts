@@ -1352,6 +1352,7 @@ this.combinedDateToTime = combinedCheckoutDate.getTime();
     });
     externalreservation.services = this.propertyServices;
     externalreservation.taxAmount = booking?.taxAmount;
+    externalreservation.discountAmount = booking?.discountAmount;
     // externalreservation.lastModifiedDate = new Date().toString();
     externalreservation.noOfPerson = booking?.noOfPersons.toString();
     externalreservation.resType = '';
