@@ -981,25 +981,22 @@ closeTermsUniquePopup() {
     const month = dsd.getMonth() + 1;
     return { year: year, month: month, day: day };
   }
-  getDiffDate(toDate, fromDate) {
-    this.enddate = new Date(toDate.year, toDate.month - 1, toDate.day);
-
-    this.startDate = new Date(fromDate.year, fromDate.month - 1, fromDate.day);
-
-    this.DiffDate = Math.floor(
-      (Date.UTC(
-        this.enddate.getFullYear(),
-        this.enddate.getMonth(),
-        this.enddate.getDate()
-      ) -
-        Date.UTC(
-          this.startDate.getFullYear(),
-          this.startDate.getMonth(),
-          this.startDate.getDate()
-        )) /
-        (1000 * 60 * 60 * 24)
-    );
+  getDiffDate(toDate: any, fromDate: any) {
+  if (!toDate || !fromDate) {
+    this.DiffDate = 0;
+    return;
   }
+
+  const endDate = new Date(toDate.year, toDate.month - 1, toDate.day);
+  const startDate = new Date(fromDate.year, fromDate.month - 1, fromDate.day);
+
+  this.DiffDate = Math.floor(
+    (Date.UTC(endDate.getFullYear(), endDate.getMonth(), endDate.getDate()) -
+      Date.UTC(startDate.getFullYear(), startDate.getMonth(), startDate.getDate())) /
+      (1000 * 60 * 60 * 24)
+  );
+}
+
   toggleRoomsAndOccupancy() {
     if (this.roomsAndOccupancy === false) {
       this.roomsAndOccupancy = true;
@@ -1080,7 +1077,8 @@ closeTermsUniquePopup() {
     );
     this.currency = this.businessUser.localCurrency.toUpperCase();
     this.getOfferDetails();
-this.getPropertyDetailsById(this.bookingData.propertyId);
+    this.bookingData = this.token.getBookingData();
+this.getPropertyDetailsById(this.bookingData?.propertyId);
     // if (this.bookingData.propertyId != null && this.bookingData.propertyId != undefined) {
 
     // }

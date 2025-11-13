@@ -1352,6 +1352,7 @@ this.combinedDateToTime = combinedCheckoutDate.getTime();
     });
     externalreservation.services = this.propertyServices;
     externalreservation.taxAmount = booking?.taxAmount;
+    externalreservation.discountAmount = booking?.discountAmount;
     // externalreservation.lastModifiedDate = new Date().toString();
     externalreservation.noOfPerson = booking?.noOfPersons.toString();
     externalreservation.resType = '';
@@ -1979,6 +1980,11 @@ onGenerateVouchers() {
             this.parameterss2.push(this.parametertype2);
 
             this.parametertype2 = new Para();
+            this.parametertype2.type = 'text';
+            this.parametertype2.text = this.booking?.couponCode ?? " ";
+            this.parameterss2.push(this.parametertype2);
+
+            this.parametertype2 = new Para();
             this.parametertype2.type = 'text',
             this.parametertype2.text = (booking.totalAmount).toFixed(2);
             this.parameterss2.push(this.parametertype2);
@@ -2136,6 +2142,11 @@ onGenerateVouchers() {
             this.parametertype2 = new Para();
             this.parametertype2.type = 'text';
             this.parametertype2.text = String(booking.noOfChildren);
+            this.parameterss2.push(this.parametertype2);
+
+            this.parametertype2 = new Para();
+            this.parametertype2.type = 'text';
+            this.parametertype2.text = this.booking?.couponCode ?? " ";
             this.parameterss2.push(this.parametertype2);
 
             this.parametertype2 = new Para();
@@ -2299,6 +2310,11 @@ onGenerateVouchers() {
             this.parameterss2.push(this.parametertype2);
 
             this.parametertype2 = new Para();
+            this.parametertype2.type = 'text';
+            this.parametertype2.text = this.booking?.couponCode ?? " ";
+            this.parameterss2.push(this.parametertype2);
+
+            this.parametertype2 = new Para();
             this.parametertype2.type = 'text',
             this.parametertype2.text = (booking.totalAmount).toFixed(2);
             this.parameterss2.push(this.parametertype2);
@@ -2457,6 +2473,11 @@ onGenerateVouchers() {
             this.parametertype2 = new Para();
             this.parametertype2.type = 'text';
             this.parametertype2.text = String(booking.noOfChildren);
+            this.parameterss2.push(this.parametertype2);
+
+            this.parametertype2 = new Para();
+            this.parametertype2.type = 'text';
+            this.parametertype2.text = this.booking?.couponCode ?? " ";
             this.parameterss2.push(this.parametertype2);
 
             this.parametertype2 = new Para();

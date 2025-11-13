@@ -19,7 +19,7 @@
   (onBookNowClick)="onBookNowClick()"
 >
 </app-Header-Listingdetailsone>
-<div *ngIf="showAllTheOfferList?.length > 0 ">
+<div *ngIf="(showAllTheOfferList?.length > 0 && showPayLater())">
   <p-carousel
     class="carousel-section"
     [value]="showAllTheOfferList"
@@ -751,7 +751,7 @@
                       fromDate = validateInput(fromDate, dpFromDate3.value)
                     "
                     required
-                    (click)="datepicker3Web.toggle()"
+                    (click)="datepicker3Web.toggle();removeSession()"
                     autocomplete="off"
                   />
 
@@ -763,6 +763,7 @@
                       #datepicker3Web="ngbDatepicker"
                       [autoClose]="true"
                       (dateSelect)="onDateSelection($event, 'checkin')"
+                      (closed)="onCheckInClosed()"
                       [displayMonths]="1"
                       [dayTemplate]="t1"
                       outsideDays="hidden"
@@ -774,7 +775,7 @@
                 </div>
                 <div class="content-centered">
                   <img
-                    (click)="datepicker3Web.toggle()"
+                    (click)="datepicker3Web.toggle();removeSession()"
                     style="cursor: pointer"
                     src=" assets/images/Calendar.png"
                     alt=""
@@ -815,7 +816,7 @@
                     "
                     (input)="toDate = validateInput(toDate, dpToDate3.value)"
                     required
-                    (click)="datepicker4Web.toggle()"
+                    (click)="datepicker4Web.toggle();removeSession()"
                     autocomplete="off"
                   />
 
@@ -827,6 +828,7 @@
                       #datepicker4Web="ngbDatepicker"
                       [autoClose]="true"
                       (dateSelect)="onDateSelection($event, 'checkout')"
+                      (closed)="onCheckOutClosed()"
                       [displayMonths]="1"
                       [dayTemplate]="t1"
                       outsideDays="hidden"
@@ -838,7 +840,7 @@
                 </div>
                 <div class="content-centered">
                   <img
-                    (click)="datepicker4Web.toggle()"
+                    (click)="datepicker4Web.toggle();removeSession()"
                     src=" assets/images/Calendar.png"
                     style="cursor: pointer"
                     alt=""
@@ -1139,7 +1141,7 @@
                         fromDate = validateInput(fromDate, dpFromDate3.value)
                       "
                       required
-                      (click)="datepicker3.toggle()"
+                      (click)="datepicker3.toggle();removeSession()"
                       autocomplete="off"
                     />
 
@@ -1151,6 +1153,7 @@
                         #datepicker3="ngbDatepicker"
                         [autoClose]="true"
                         (dateSelect)="onDateSelection($event, 'checkin')"
+                        (closed)="onCheckInClosed()"
                         [displayMonths]="1"
                         [dayTemplate]="t1"
                         outsideDays="hidden"
@@ -1160,7 +1163,7 @@
                       />
                     </div>
                   </div>
-                  <div class="content-centered" (click)="datepicker3.toggle()">
+                  <div class="content-centered" (click)="datepicker3.toggle();removeSession()">
                     <img
                       src=" assets/images/Calendar.png"
                       alt=""
@@ -1193,7 +1196,7 @@
                       "
                       (input)="toDate = validateInput(toDate, dpToDate3.value)"
                       required
-                      (click)="datepicker4.toggle()"
+                      (click)="datepicker4.toggle();removeSession()"
                       autocomplete="off"
                     />
 
@@ -1205,6 +1208,7 @@
                         #datepicker4="ngbDatepicker"
                         [autoClose]="true"
                         (dateSelect)="onDateSelection($event, 'checkout')"
+                        (closed)="onCheckOutClosed()"
                         [displayMonths]="1"
                         [dayTemplate]="t1"
                         outsideDays="hidden"
@@ -1214,7 +1218,7 @@
                       />
                     </div>
                   </div>
-                  <div class="content-centered" (click)="datepicker4.toggle()">
+                  <div class="content-centered" (click)="datepicker4.toggle();removeSession()">
                     <img
                       src=" assets/images/Calendar.png"
                       alt=""

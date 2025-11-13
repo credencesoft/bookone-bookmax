@@ -193,6 +193,7 @@ currentPage = 0; // page index
   utmMedium: any;
   utmSource: any;
   priceingO: any;
+  propertyById: number;
   toggleListingDetails() {
     this.showListingDetails = !this.showListingDetails;
   }
@@ -919,6 +920,8 @@ guestDataArray: Array<{
   isLoadingWhatsapp: boolean = false;
     checkinDate: string;
   checkoutDate: string;
+  channelManagerIntegration: boolean = false;
+  instantBooking: boolean = false;
   constructor(
     private listingService: ListingService,
     public SchemaService:SchemaService,
@@ -3683,6 +3686,57 @@ if (roomKey) {
       this.adults = this.adults;
     }
   }
+  onCheckInClosed(): void {
+  if (this.fromDate) {
+    this.booking.fromDate = this.getDateFormatYearMonthDay(
+      this.fromDate.day,
+      this.fromDate.month,
+      this.fromDate.year
+    );
+
+    // Automatically set next day as default checkout if not chosen yet
+    if (!this.toDate) {
+      this.booking.toDate = this.getDateFormatYearMonthDay(
+        this.fromDate.day + 1,
+        this.fromDate.month,
+        this.fromDate.year
+      );
+    }
+
+    this.booking.noOfRooms = this.noOfrooms;
+    this.booking.noOfPersons = this.adults;
+
+    this.token.saveBookingData(this.booking);
+  }
+}
+
+onCheckOutClosed(): void {
+  if (this.toDate) {
+    this.booking.toDate = this.getDateFormatYearMonthDay(
+      this.toDate.day,
+      this.toDate.month,
+      this.toDate.year
+    );
+
+    if (this.fromDate) {
+      this.booking.fromDate = this.getDateFormatYearMonthDay(
+        this.fromDate.day,
+        this.fromDate.month,
+        this.fromDate.year
+      );
+    }
+
+    this.booking.noOfRooms = this.noOfrooms;
+    this.booking.noOfPersons = this.adults;
+
+    this.token.saveBookingData(this.booking);
+    this.checkingAvailability();
+    if(this.activeForGoogleHotelCenter === false){
+       this.getPropertyDetailsBySeoName(this.data);
+    } 
+  }
+}
+
   child() {
     if (this.childno != null || this.childno != undefined) {
       this.children = Number(+this.children + 1);
@@ -3977,6 +4031,18 @@ if (roomKey) {
         }
         this.updateTag();
         this.token.saveProperty(this.businessUser);
+
+        this.accommodationData?.forEach((element) => {
+          this.smartRecommendationsBoolean = element.smartRecommendation;
+        });
+
+         this.accommodationData?.forEach((element) => {
+          this.channelManagerIntegration = element.cmIntegration;
+        });
+
+        this.accommodationData?.forEach((element) =>{
+          this.instantBooking = element.instantBooking;
+        });
 
         if (this.urlLocation !== undefined && this.urlLocation !== null) {
           this.triggerEventService.newEvent(this.urlLocation);
@@ -4469,6 +4535,18 @@ if (roomKey) {
           this.changeDetectorRefs.detectChanges();
           this.token.saveProperty(this.businessUser);
 
+          this.accommodationData?.forEach((element) => {
+          this.smartRecommendationsBoolean = element.smartRecommendation;
+        });
+
+           this.accommodationData?.forEach((element) => {
+          this.channelManagerIntegration = element.cmIntegration;
+        });
+
+        this.accommodationData?.forEach((element) =>{
+          this.instantBooking = element.instantBooking;
+        });
+
           if (this.urlLocation !== undefined && this.urlLocation !== null) {
             this.triggerEventService.newEvent(this.urlLocation);
           }
@@ -4769,21 +4847,62 @@ if (roomKey) {
       console.error('Error in selectedPromotionList : ', error);
     }
   }
-  showPayLater(): boolean {
-    const fromDateTimestamp = new Date(this.booking.fromDate).getTime();
-    const createdDateTimestamp = new Date(this.booking.createdDate).getTime();
-    const hoursDifference =
-      (fromDateTimestamp - createdDateTimestamp) / (1000 * 60 * 60);
-    if (hoursDifference < 48) {
-      return true;
-    }
+   showPayLater(): boolean {
+  this.propertyData = this.token.getProperty();
 
-    if (hoursDifference >= 48 && this.businessUser.paymentGateway == null) {
-      return true;
-    }
+  // Get accommodation data
+  this.accommodationData = this.propertyData.businessServiceDtoList?.filter(
+    (entry) => entry.name === 'Accommodation'
+  );
 
+
+  // ✅ 1. Check bookingEngine
+  const propertyUrl = this.token.getPropertyUrl();
+  const isBookingEngine = propertyUrl?.includes('bookingEngine') || false;
+
+  if (isBookingEngine) {
+    return true; // ✅ Show immediately, skip other checks
+  }
+
+    // ✅ 2. If any accommodation has payLater = true → show
+  const hasPayLater = this.accommodationData?.some((a) => a.payLater);
+  if (hasPayLater) {
     return false;
   }
+    
+  // ✅ 3. Instancebooking , channelmanagerIntegration false
+  if(!this.channelManagerIntegration && !this.instantBooking){
+    return false;
+  }
+
+
+  // ✅ 4. Check channelManagerIntegration
+  if (this.channelManagerIntegration) {
+    return true; // ✅ Show immediately, skip other checks
+  }
+
+  // ✅ 5. Both are false → apply 48-hour logic
+  const fromDateTimestamp = new Date(this.booking.fromDate).getTime();
+  const createdDateTimestamp = new Date(this.booking.createdDate).getTime();
+  const hoursDifference =
+    (fromDateTimestamp - createdDateTimestamp) / (1000 * 60 * 60);
+
+  // ❌ If booking is within 48 hours → don't show
+  if (hoursDifference < 48) {
+    return false;
+  }
+
+  // ✅ If booking ≥ 48 hours and paymentGateway == null → show
+  if (hoursDifference >= 48) {
+    return true;
+  }
+
+  if (hoursDifference >= 48 && this.businessUser.paymentGateway !== null) {
+    return true;
+  }
+
+  return false;
+}
 
   getReview(id) {
     this.loader = true;
