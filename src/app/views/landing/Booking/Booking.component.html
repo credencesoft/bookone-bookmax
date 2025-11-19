@@ -460,7 +460,7 @@
                 isPayNowDisabled ||
                 paymentLoader ||
                 submitButtonDisable ||
-                !validateFrom()
+                !validateFrom() || booking?.email === 'HARRYPOTTER382741@gmail.com'
               "
               *ngIf="value === true && businessUser.paymentGateway != null"
               (click)="payAndCheckout()"
@@ -1343,7 +1343,7 @@
               [disabled]="
                 isEnquiryDisabled ||
                 ((!paymentLoader || !submitButtonDisable) && !validateFrom()) ||
-                !termsAccepted
+                !termsAccepted || booking?.email === 'HARRYPOTTER382741@gmail.com'
               "
               *ngIf="showPayNow() === false && showPayLater() === false"
               (click)="createAllEnquiries()"
@@ -1357,7 +1357,7 @@
               [disabled]="
                 isCashPayDisabled ||
                 ((!paymentLoader || !submitButtonDisable) && !validateFrom()) ||
-                !termsAccepted
+                !termsAccepted || booking?.email === 'HARRYPOTTER382741@gmail.com'
               "
               *ngIf="
                 showPayLater()
@@ -1374,7 +1374,7 @@
                 isPayNowDisabled ||
                 isPayDisabled ||
                 ((!paymentLoader || !submitButtonDisable) && !validateFrom()) ||
-                !termsAccepted
+                !termsAccepted || booking?.email === 'HARRYPOTTER382741@gmail.com'
               "
               *ngIf="
                 showPayNow()
@@ -2036,7 +2036,7 @@
               [disabled]="
                 isEnquiryDisabled ||
                 ((!paymentLoader || !submitButtonDisable) && !validateFrom()) ||
-                !termsAccepted
+                !termsAccepted || booking?.email === 'HARRYPOTTER382741@gmail.com'
               "
                *ngIf="showPayNow() === false && showPayLater() === false"
               (click)="createAllEnquiries()"
@@ -2050,7 +2050,7 @@
               [disabled]="
                 isCashPayDisabled ||
                 ((!paymentLoader || !submitButtonDisable) && !validateFrom()) ||
-                !termsAccepted
+                !termsAccepted || booking?.email === 'HARRYPOTTER382741@gmail.com'
               "
               *ngIf="
                 showPayLater()
@@ -2068,7 +2068,7 @@
                 isPayNowDisabled ||
                 isPayDisabled ||
                 ((!paymentLoader || !submitButtonDisable) && !validateFrom()) ||
-                !termsAccepted
+                !termsAccepted || booking?.email === 'HARRYPOTTER382741@gmail.com'
               "
               *ngIf="showPayNow()"
               (click)="payAndCheckout()"

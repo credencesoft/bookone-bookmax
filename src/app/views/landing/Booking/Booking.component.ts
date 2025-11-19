@@ -1781,12 +1781,7 @@ if (bookingSummaryStr) {
         enquiryForm.utmMedium = "unknown"
       }
 
-    enquiryForm.roomPrice =
-      booking.planCode === 'GHC'
-        ? booking.totalAmount -
-          (plan.extraPersonCharge + plan.extraPersonChildCountAmount)
-        : plan.price -
-          (enquiryForm.extraPersonCharge + enquiryForm.extraChildCharge);
+    enquiryForm.roomPrice = plan.actualRoomPrice;
 
     enquiryForm.externalSite = 'Website';
     enquiryForm.source = 'Bookone Connect';
@@ -4059,12 +4054,7 @@ this.booking.promotionName = this.specialDiscountData.name;
         enquiryForm.utmMedium = "unknown"
       }
 
-    enquiryForm.roomPrice =
-      booking.planCode === 'GHC'
-        ? booking.totalAmount -
-          (plan.extraPersonCharge + plan.extraPersonChildCountAmount)
-        : plan.price -
-          (enquiryForm.extraPersonCharge + enquiryForm.extraChildCharge);
+    enquiryForm.roomPrice = plan.actualRoomPrice;
 
     enquiryForm.externalSite = 'Website';
     enquiryForm.source = 'Bookone Connect';
@@ -6824,12 +6814,7 @@ if (this.specialDiscountData) {
         enquiryForm.utmMedium = "unknown"
       }
 
-    enquiryForm.roomPrice =
-      booking.planCode === 'GHC'
-        ? booking.totalAmount -
-          (plan.extraPersonCharge + plan.extraPersonChildCountAmount)
-        : plan.price -
-          (enquiryForm.extraPersonCharge + enquiryForm.extraChildCharge);
+    enquiryForm.roomPrice = plan.actualRoomPrice;
 
     enquiryForm.externalSite = 'Website';
     enquiryForm.source = 'Bookone Connect';
