@@ -1797,17 +1797,25 @@ if (bookingSummaryStr) {
     enquiryForm.roomRatePlanName = plan.planCodeName;
     enquiryForm.createdDate = new Date().getTime();
 
-    // Combine date and time
-    const checkInDateTime = new Date(
-      `${enquiryForm.checkInDate} ${this.fromTime}`
-    ).getTime();
-    const checkOutDateTime = new Date(
-      `${enquiryForm.checkInDate} ${this.toTime}`
-    ).getTime();
-    enquiryForm.fromTime = checkInDateTime;
-    enquiryForm.toTime = checkOutDateTime;
-    this.token.saveTime(String(checkInDateTime));
-    this.token.saveToTime(String(checkOutDateTime));
+if (!this.fromTime && !this.toTime) {
+  const checkInDateTime = new Date(enquiryForm.checkInDate).getTime();
+  const checkOutDateTime = new Date(enquiryForm.checkOutDate).getTime();
+  enquiryForm.fromTime = checkInDateTime;
+  enquiryForm.toTime = checkOutDateTime;
+  this.token.saveTime(String(checkInDateTime));
+  this.token.saveToTime(String(checkOutDateTime));
+} else {
+  const checkInDateTime = new Date(
+    `${enquiryForm.checkInDate} ${this.fromTime}`
+  ).getTime();
+  const checkOutDateTime = new Date(
+    `${enquiryForm.checkInDate} ${this.toTime}`
+  ).getTime();
+  enquiryForm.fromTime = checkInDateTime;
+  enquiryForm.toTime = checkOutDateTime;
+  this.token.saveTime(String(checkInDateTime));
+  this.token.saveToTime(String(checkOutDateTime));
+}
 
     enquiryForm.accountManager = '';
     enquiryForm.consultantPerson = '';
