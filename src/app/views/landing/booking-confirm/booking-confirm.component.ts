@@ -1407,6 +1407,8 @@ this.combinedDateToTime = combinedCheckoutDate.getTime();
       enquiry.paymentStatus = 'Paid';
     }
 
+    enquiry.fromTime = this.booking.fromTime;
+    enquiry.toTime = this.booking.toTime;
     this.hotelBookingService.accommodationEnquiry(enquiry).subscribe({
       next: (response) => {
         // console.log(`Enquiry ${index + 1} updated successfully:`, response.body);
