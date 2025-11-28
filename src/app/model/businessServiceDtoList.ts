@@ -47,5 +47,6 @@ export class BusinessServiceDtoList {
     }
   ];
   cmIntegration: any;
+  bookoneActive: any;
   constructor() {}
 }
