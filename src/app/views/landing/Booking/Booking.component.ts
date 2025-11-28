@@ -282,6 +282,7 @@ export class BookingComponent implements OnInit {
   isPayDisabled = false;
   propertyMobileNumber: string;
   components1: Components[];
+  bookoneActiveData: any;
   constructor(
     private token: TokenStorage,
     private ngZone: NgZone,
@@ -626,13 +627,11 @@ closeTermsUniquePopup() {
 
   showPayNow(): boolean {
  if (
-    this.businessUser?.id === 3063 ||
-    this.businessUser?.id === 3424 ||
-    this.businessUser?.id === 3425
+    this.bookoneActiveData === false
   ) {
-    return true;
+    return false;
   }
-
+if(this.bookoneActiveData === false) {
   const from = new Date(this.booking.fromDate);
   const to   = new Date(this.booking.toDate);
 
@@ -650,6 +649,7 @@ closeTermsUniquePopup() {
   if (isRestricted) {
     return false;
   }
+}
 
 
   if (this.channelManagerIntegration) return true;
@@ -674,15 +674,13 @@ closeTermsUniquePopup() {
 
 
   showPayLater(): boolean {
- if (
-    this.businessUser?.id === 3063 ||
-    this.businessUser?.id === 3424 ||
-    this.businessUser?.id === 3425
+  if (
+    this.bookoneActiveData === false
   ) {
     return false;
   }
-
-  const from = new Date(this.booking.fromDate);
+  if(this.bookoneActiveData === false) {
+      const from = new Date(this.booking.fromDate);
   const to   = new Date(this.booking.toDate);
 
   const today = new Date();
@@ -699,6 +697,8 @@ closeTermsUniquePopup() {
   if (isRestricted) {
     return false;
   }
+  }
+
   this.propertyData = this.token.getProperty();
   this.accommodationData = this.propertyData.businessServiceDtoList?.filter(
     (entry) => entry.name === 'Accommodation'
@@ -1103,6 +1103,7 @@ closeTermsUniquePopup() {
         this.fromTime = item.checkInTime ?? "";
         this.toTime = item.checkOutTime ?? "";
         this.channelManagerIntegration = item.cmIntegration;
+        this.bookoneActiveData = item.bookoneActive;
       }
     });
 
