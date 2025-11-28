@@ -282,6 +282,7 @@ export class BookingComponent implements OnInit {
   isPayDisabled = false;
   propertyMobileNumber: string;
   components1: Components[];
+  bookoneActiveData: any;
   constructor(
     private token: TokenStorage,
     private ngZone: NgZone,
@@ -625,6 +626,32 @@ closeTermsUniquePopup() {
   }
 
   showPayNow(): boolean {
+ if (
+    this.bookoneActiveData === false
+  ) {
+    return false;
+  }
+if(this.bookoneActiveData === false) {
+  const from = new Date(this.booking.fromDate);
+  const to   = new Date(this.booking.toDate);
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0); // normalize time to midnight
+
+  // FIXED END: Jan 31, 2026
+  const jan31_2026 = new Date(2026, 0, 31); // Jan=0
+
+  // Restriction check: both dates between TODAY → Jan 31, 2026
+  const isRestricted =
+    from >= today && from <= jan31_2026 &&
+    to   >= today && to   <= jan31_2026;
+
+  if (isRestricted) {
+    return false;
+  }
+}
+
+
   if (this.channelManagerIntegration) return true;
 
     this.propertyData = this.token.getProperty();
@@ -647,6 +674,30 @@ closeTermsUniquePopup() {
 
 
   showPayLater(): boolean {
+  if (
+    this.bookoneActiveData === false
+  ) {
+    return false;
+  }
+  if(this.bookoneActiveData === false) {
+      const from = new Date(this.booking.fromDate);
+  const to   = new Date(this.booking.toDate);
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0); // normalize time to midnight
+
+  // FIXED END: Jan 31, 2026
+  const jan31_2026 = new Date(2026, 0, 31); // Jan=0
+
+  // Restriction check: both dates between TODAY → Jan 31, 2026
+  const isRestricted =
+    from >= today && from <= jan31_2026 &&
+    to   >= today && to   <= jan31_2026;
+
+  if (isRestricted) {
+    return false;
+  }
+  }
 
   this.propertyData = this.token.getProperty();
   this.accommodationData = this.propertyData.businessServiceDtoList?.filter(
@@ -1052,6 +1103,7 @@ closeTermsUniquePopup() {
         this.fromTime = item.checkInTime ?? "";
         this.toTime = item.checkOutTime ?? "";
         this.channelManagerIntegration = item.cmIntegration;
+        this.bookoneActiveData = item.bookoneActive;
       }
     });
 
