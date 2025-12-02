@@ -7135,7 +7135,7 @@ if (this.specialDiscountData) {
         enquiryForm.payableAmount = this.equitycreatedData.payableAmount.toFixed(2);
         // Send notifications
         this.propertyenquiryemails(enquiryForm);
-        this.hotelBookingService.emailEnquire(enquiryForm).subscribe(
+        this.hotelBookingService.emailEnquireToMail(enquiryForm).subscribe(
           () => {
             this.paymentLoader = false;
              this.router.navigate(['/confirm']);
