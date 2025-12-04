@@ -263,6 +263,10 @@ const routes: Routes = [
     path: "detail/bookingSource/:id",
     component: ListingDetailOneComponent,
   },
+    {
+    path: "booking/:detail",
+    component: ListingDetailOneComponent,
+  },
 
   {
     path: 'detail',
