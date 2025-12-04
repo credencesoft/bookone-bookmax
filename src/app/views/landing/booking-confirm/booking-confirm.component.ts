@@ -3381,7 +3381,7 @@ onGenerateVouchers() {
 
               this.parametertype2 = new Para();
               this.parametertype2.type = 'text',
-              this.parametertype2.text = booking.totalAmount;
+              this.parametertype2.text = this.token.getProperty().mobile;
               this.parameterss2.push(this.parametertype2);
 
               this.componentstype2.parameters =this.parameterss2;
@@ -3509,7 +3509,7 @@ onGenerateVouchers() {
 
               this.parametertype2 = new Para();
               this.parametertype2.type = 'text',
-              this.parametertype2.text = booking.totalAmount;
+              this.parametertype2.text = this.token.getProperty().mobile;
               this.parameterss2.push(this.parametertype2);
 
               this.componentstype2.parameters =this.parameterss2;
@@ -3636,7 +3636,7 @@ onGenerateVouchers() {
 
               this.parametertype2 = new Para();
               this.parametertype2.type = 'text',
-              this.parametertype2.text = booking.totalAmount;
+              this.parametertype2.text = this.token.getProperty().mobile;
               this.parameterss2.push(this.parametertype2);
 
               this.componentstype2.parameters =this.parameterss2;
@@ -3763,7 +3763,7 @@ onGenerateVouchers() {
 
               this.parametertype2 = new Para();
               this.parametertype2.type = 'text',
-              this.parametertype2.text = booking.totalAmount;
+              this.parametertype2.text = this.token.getProperty().mobile;
               this.parameterss2.push(this.parametertype2);
 
               this.componentstype2.parameters =this.parameterss2;
