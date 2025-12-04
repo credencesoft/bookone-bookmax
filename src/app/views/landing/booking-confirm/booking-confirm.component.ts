@@ -1285,7 +1285,7 @@ this.combinedDateToTime = combinedCheckoutDate.getTime();
           // console.log('BookOne Subscription is not found');
         }
 
-        if(foundSubscriptionBookingEngine){
+        if(foundSubscriptionBookingEngine || foundSubscription){
           this.sendWhatsappMessageToTHMBookingEngine(booking);
         } else{
         this.sendWhatsappMessageToTHM(this.booking);
@@ -1323,7 +1323,7 @@ this.combinedDateToTime = combinedCheckoutDate.getTime();
     externalreservation.lastModifiedBy = 'hotelmate';
     externalreservation.modeOfPayment = this.payment?.paymentMode;
      let propertyReservationNumber = booking?.propertyReservationNumber;
-    let updatedCode = propertyReservationNumber.replace("-B-", "-BE-");
+    let updatedCode = propertyReservationNumber?.replace("-B-", "-BE-");
     externalreservation.otaReservationId = updatedCode;
     externalreservation.propertyId = booking?.propertyId.toString();
     externalreservation.propertyName = booking?.businessName;
@@ -1879,8 +1879,8 @@ onGenerateVouchers() {
   }
 
   sendWhatsappMessageToTHM(booking) {
-    let propertyReservationNumber = booking.propertyReservationNumber;
-    let updatedCode = propertyReservationNumber.replace("-B-", "-BE-");
+    let propertyReservationNumber = booking?.propertyReservationNumber;
+    let updatedCode = propertyReservationNumber?.replace("-B-", "-BE-");
         this.parameterss2 = [];
   this.parameterss15 = [];
   this.components = [];
@@ -2044,8 +2044,8 @@ onGenerateVouchers() {
               });
   }
   sendWhatsappMessageToTHM1(booking) {
-    let propertyReservationNumber = booking.propertyReservationNumber;
-    let updatedCode = propertyReservationNumber.replace("-B-", "-BE-");
+    let propertyReservationNumber = booking?.propertyReservationNumber;
+    let updatedCode = propertyReservationNumber?.replace("-B-", "-BE-");
        this.parameterss2 = [];
   this.parameterss15 = [];
   this.components = [];
@@ -2209,8 +2209,8 @@ onGenerateVouchers() {
               });
   }
     sendWhatsappMessageToTHM2(booking) {
-       let propertyReservationNumber = booking.propertyReservationNumber;
-    let updatedCode = propertyReservationNumber.replace("-B-", "-BE-");
+       let propertyReservationNumber = booking?.propertyReservationNumber;
+    let updatedCode = propertyReservationNumber?.replace("-B-", "-BE-");
      this.parameterss2 = [];
   this.parameterss15 = [];
   this.components = [];
@@ -2375,8 +2375,8 @@ onGenerateVouchers() {
   }
 
     sendWhatsappMessageToTHM3(booking) {
-          let propertyReservationNumber = booking.propertyReservationNumber;
-    let updatedCode = propertyReservationNumber.replace("-B-", "-BE-");
+          let propertyReservationNumber = booking?.propertyReservationNumber;
+    let updatedCode = propertyReservationNumber?.replace("-B-", "-BE-");
           this.parameterss2 = [];
   this.parameterss15 = [];
   this.components = [];
@@ -3344,7 +3344,7 @@ onGenerateVouchers() {
               this.componentstype.type = 'header';
               let documentParam = new Para();
               documentParam.type = 'document';
-              documentParam.document = {link: "https://bookonelocal.in/cdn/MG-B-15266_Enquiry_Voucher.pdf",filename: "invoice.pdf"};
+              documentParam.document = {link: booking?.voucherUrl,filename: "invoice.pdf"};
               this.parameterss = [];
               this.parameterss.push(documentParam);
               this.componentstype.parameters = this.parameterss;
@@ -3368,7 +3368,7 @@ onGenerateVouchers() {
 
               this.parametertype2 = new Para();
               this.parametertype2.type = 'text',
-              this.parametertype2.text = this.datePipe.transform(booking.fromDate, 'dd-MM-yyyy') + ",";
+              this.parametertype2.text = this.datePipe.transform(booking.fromDate, 'dd-MM-yyyy');
               this.parameterss2.push(this.parametertype2);
 
               this.parametertype2 = new Para();
