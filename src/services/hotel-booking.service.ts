@@ -409,6 +409,15 @@ downloadVoucher(fileUrl: string) {
       { observe: 'response' }
     );
   }
+
+   emailEnquireToMail(enquiry: EnquiryDto) {
+    this.setApi();
+    return this.http.post<EnquiryDto>(
+      API_URL_IN + '/api/email/enquire',
+      enquiry,
+      { observe: 'response' }
+    );
+  }
   whatsAppMsg(whatsappmsg: WhatsappDto) {
     this.setApi();
     return this.http.post<WhatsappDto>(

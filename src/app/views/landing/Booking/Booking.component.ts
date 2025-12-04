@@ -801,7 +801,7 @@ if(this.bookoneActiveData === false) {
     externalreservation.lastName = booking?.lastName;
     externalreservation.bookoneReservationId =
       booking?.propertyReservationNumber;
-    externalreservation.contactNumber = booking?.mobile;
+    externalreservation.contactNumber = '+91' + (booking?.mobile);
     externalreservation.propertyBusinessEmail = booking?.businessEmail;
     externalreservation.noOfChildrenAbove5Years =  booking?.noOfChildren;
     externalreservation.noOfChildrenBelow5Years = booking?.noOfChildrenUnder5years;
@@ -7120,7 +7120,7 @@ if (this.specialDiscountData) {
         enquiryForm.payableAmount = this.equitycreatedData.payableAmount.toFixed(2);
         // Send notifications
         this.propertyenquiryemails(enquiryForm);
-        this.hotelBookingService.emailEnquire(enquiryForm).subscribe(
+        this.hotelBookingService.emailEnquireToMail(enquiryForm).subscribe(
           () => {
             this.paymentLoader = false;
              this.router.navigate(['/confirm']);
