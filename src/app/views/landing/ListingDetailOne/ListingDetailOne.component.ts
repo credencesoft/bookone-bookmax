@@ -348,7 +348,7 @@ currentPage = 0; // page index
 promoSelected = false;
   places: any = [
     {
-      image: 'assets/images/most-img-4.jpg',
+      image: 'media-be/images/most-img-4.jpg',
     },
   ];
 

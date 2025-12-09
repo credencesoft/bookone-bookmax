@@ -25,12 +25,12 @@
             "inlineStyleLanguage": "scss",
             "assets": [
               "src/favicon.ico",
-              "src/assets",
+              "src/media-be",
               "src/sitemap.xml",
               "src/robots.txt",
               "src/bookone_sitemap.xml"
             ],
-            "styles": ["src/assets/styles/app/_app.scss", "src/styles.css",
+            "styles": ["src/media-be/styles/app/_app.scss", "src/styles.css",
             "node_modules/slick-carousel/slick/slick.scss",
             "node_modules/slick-carousel/slick/slick-theme.scss",
           "node_modules/primeng/resources/themes/lara-light-blue/theme.css",
@@ -38,8 +38,8 @@
             "scripts": [
               "node_modules/jquery/dist/jquery.min.js",
               "node_modules/slick-carousel/slick/slick.min.js",
-              "src/assets/scripts/bootstrap.min.js",
-              "src/assets/scripts/slick.min.js"
+              "src/media-be/scripts/bootstrap.min.js",
+              "src/media-be/scripts/slick.min.js"
             ]
           },
           "configurations": {
@@ -92,8 +92,8 @@
           "options": {
             "polyfills": ["zone.js", "zone.js/testing"],
             "tsConfig": "tsconfig.spec.json",
-            "assets": ["src/favicon.ico", "src/assets"],
-            "styles": ["src/assets/styles/app/_app.scss", "src/styles.css"],
+            "assets": ["src/favicon.ico", "src/media-be"],
+            "styles": ["src/media-be/styles/app/_app.scss", "src/styles.css"],
             "scripts": []
           }
         },

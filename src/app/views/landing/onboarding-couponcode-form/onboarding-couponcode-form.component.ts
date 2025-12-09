@@ -132,7 +132,7 @@ getBusinessLeadById(){
     const ogTitle = 'Maximize your property bookings through the Bookone PMS | Bookone PMS';
     const ogDescription =
     'One stop solution';
-    const ogImage = 'https://bookonepms.com/assets/images/formimg.png';
+    const ogImage = 'https://bookonepms.com/media-be/images/formimg.png';
     const ogSiteName = 'Maximize your property bookings through the Bookone PMS | Bookone PMS';
     const ogUrl = 'https://bookonepms.com/onboardingCouponcode-form';
   // const ogSiteName = '';

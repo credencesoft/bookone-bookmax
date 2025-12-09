@@ -23,7 +23,7 @@ export class PricingComponent implements OnInit {
     this.meta.updateTag({property: 'og:title', content: "Affordable Pricing Plans for BookOnePMS | BookonePMS"});
     this.meta.updateTag({property: 'og:description', content: "Explore our range of flexible and budget-friendly pricing plans for BookOnePMS, tailored to suit your specific needs."});
     this.meta.updateTag({property: 'og:text:description', content:"dfghjkl"});
-    this.meta.updateTag({property: 'og:image', content: 'https://bookonepms.com/assets/images/pricing.png'})
+    this.meta.updateTag({property: 'og:image', content: 'https://bookonepms.com/media-be/images/pricing.png'})
 
 
 
@@ -33,7 +33,7 @@ export class PricingComponent implements OnInit {
     this.meta.updateTag({name: 'twitter:title', content: "Affordable Pricing Plans for BookOnePMS | BookonePMS"});
     this.meta.updateTag({name: 'twitter:description', content: "Explore our range of flexible and budget-friendly pricing plans for BookOnePMS, tailored to suit your specific needs."});
     this.meta.updateTag({name: 'twitter:text:description', content:"dfghjkl"});
-    this.meta.updateTag({name: 'twitter:image', content: 'https://bookonepms.com/assets/images/pricing.png'});
+    this.meta.updateTag({name: 'twitter:image', content: 'https://bookonepms.com/media-be/images/pricing.png'});
 
 
 

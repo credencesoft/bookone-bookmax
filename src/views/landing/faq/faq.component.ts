@@ -22,7 +22,7 @@ export class FaqComponent implements OnInit {
     this.meta.updateTag({property: 'og:title', content: "Frequently Asked Questions | BookOnePMS"});
     this.meta.updateTag({property: 'og:description', content: "Find answers to the most commonly asked questions about BookOnePMS. Get detailed information on features, pricing, support, and more."});
     this.meta.updateTag({property: 'og:text:description', content:"dfghjkl"});
-    this.meta.updateTag({property: 'og:image', content: 'https://bookonepms.com/assets/images/faqlogo.png'})
+    this.meta.updateTag({property: 'og:image', content: 'https://bookonepms.com/media-be/images/faqlogo.png'})
 
 
 
@@ -32,7 +32,7 @@ export class FaqComponent implements OnInit {
     this.meta.updateTag({name: 'twitter:title', content: "Frequently Asked Questions | BookOnePMS"});
     this.meta.updateTag({name: 'twitter:description', content: "Find answers to the most commonly asked questions about BookOnePMS. Get detailed information on features, pricing, support, and more."});
     this.meta.updateTag({name: 'twitter:text:description', content:"dfghjkl"});
-    this.meta.updateTag({name: 'twitter:image', content: 'https://bookonepms.com/assets/images/faqlogo.png'});
+    this.meta.updateTag({name: 'twitter:image', content: 'https://bookonepms.com/media-be/images/faqlogo.png'});
 
 
 

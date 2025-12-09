@@ -8,37 +8,37 @@ import { NguCarouselConfig } from "@ngu/carousel";
 export class WorksCarouselComponent implements OnInit {
   public carouselTileItems: Array<any> = [
     {
-      photo: "./assets/images/landing/products/products9.svg",
+      photo: "./media-be/images/landing/products/products9.svg",
       text: `Adipisci quas repellat sed. Quasi quaerat aut nam possimus
     vitae dignissimos, sapiente est atque tenetur`,
       title: "Project One"
     },
     {
-      photo: "./assets/images/landing/products/products11.svg",
+      photo: "./media-be/images/landing/products/products11.svg",
       text: `Adipisci quas repellat sed. Quasi quaerat aut nam possimus
     vitae dignissimos, sapiente est atque tenetur`,
       title: "Project Two"
     },
     {
-      photo: "./assets/images/landing/products/products15.svg",
+      photo: "./media-be/images/landing/products/products15.svg",
       text: `Adipisci quas repellat sed. Quasi quaerat aut nam possimus
     vitae dignissimos, sapiente est atque tenetur`,
       title: "Project Three"
     },
     {
-      photo: "./assets/images/landing/products/products17.svg",
+      photo: "./media-be/images/landing/products/products17.svg",
       text: `Adipisci quas repellat sed. Quasi quaerat aut nam possimus
     vitae dignissimos, sapiente est atque tenetur`,
       title: "Project Four"
     },
     {
-      photo: "./assets/images/landing/products/products13.svg",
+      photo: "./media-be/images/landing/products/products13.svg",
       text: `Adipisci quas repellat sed. Quasi quaerat aut nam possimus
     vitae dignissimos, sapiente est atque tenetur`,
       title: "Project Five"
     },
     {
-      photo: "./assets/images/landing/products/products12.svg",
+      photo: "./media-be/images/landing/products/products12.svg",
       text: `Adipisci quas repellat sed. Quasi quaerat aut nam possimus
     vitae dignissimos, sapiente est atque tenetur`,
       title: "Project Six"

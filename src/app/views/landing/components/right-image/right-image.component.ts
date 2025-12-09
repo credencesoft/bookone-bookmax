@@ -8,28 +8,28 @@ import { NguCarouselConfig } from "@ngu/carousel";
 export class RightImageComponent implements OnInit {
   public carouselTileItems: Array<any> = [
     {
-      // photo: "./assets/images/landing/app_screenshots/550/01.png"
-      photo: "./assets/images/landing/svg/slider1.svg"
+      // photo: "./media-be/images/landing/app_screenshots/550/01.png"
+      photo: "./media-be/images/landing/svg/slider1.svg"
     },
     {
-      photo: "./assets/images/landing/svg/slider2.svg"
-      // photo: "./assets/images/landing/app_screenshots/550/02.png"
+      photo: "./media-be/images/landing/svg/slider2.svg"
+      // photo: "./media-be/images/landing/app_screenshots/550/02.png"
     },
     {
-      photo: "./assets/images/landing/svg/slider3.svg"
-      // photo: "./assets/images/landing/app_screenshots/550/03.png"
+      photo: "./media-be/images/landing/svg/slider3.svg"
+      // photo: "./media-be/images/landing/app_screenshots/550/03.png"
     },
     {
-      photo: "./assets/images/landing/svg/slider4.svg"
-      // photo: "./assets/images/landing/app_screenshots/550/04.png"
+      photo: "./media-be/images/landing/svg/slider4.svg"
+      // photo: "./media-be/images/landing/app_screenshots/550/04.png"
     },
     {
-      photo: "./assets/images/landing/svg/slider5.svg"
-      // photo: "./assets/images/landing/app_screenshots/550/05.png"
+      photo: "./media-be/images/landing/svg/slider5.svg"
+      // photo: "./media-be/images/landing/app_screenshots/550/05.png"
     },
     {
-      photo: "./assets/images/landing/svg/slider6.svg"
-      // photo: "./assets/images/landing/app_screenshots/550/01.png"
+      photo: "./media-be/images/landing/svg/slider6.svg"
+      // photo: "./media-be/images/landing/app_screenshots/550/01.png"
     }
   ];
   public carouselTiles = {

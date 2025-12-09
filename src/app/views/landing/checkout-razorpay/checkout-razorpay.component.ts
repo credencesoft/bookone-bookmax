@@ -113,7 +113,7 @@ initiatePayment() {
 let keyId = 'rzp_live_RURdDEsmd8BUzY';
 if (this.businessUser.paymentGatewayApiKey === keyId) {
   this.businessProfileName = 'THEHOTELMATE TECHNOLOGIES PRIVATE LIMITED';
-  this.businessProfilelogo = 'https://thehotelmate.co/assets/images/THM-logo-new.svg';
+  this.businessProfilelogo = 'https://thehotelmate.co/media-be/images/THM-logo-new.svg';
 } else {
   this.businessProfileName = this.businessUser.name;
   this.businessProfilelogo = this.businessUser.logoUrl;

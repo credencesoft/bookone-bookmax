@@ -28,7 +28,7 @@ export class BlogComponent implements OnInit {
     this.meta.updateTag({property: 'og:title', content: "Insights, Tips, and News from BookOnePMS | BookonePMS"});
     this.meta.updateTag({property: 'og:description', content: "Stay updated with the latest industry insights, valuable tips, and news related to property management. Explore our informative blog articles from BookOnePMS."});
     this.meta.updateTag({property: 'og:text:description', content:"dfghjkl"});
-    this.meta.updateTag({property: 'og:image', content: 'https://bookonepms.com/assets/images/bloglogo.png'})
+    this.meta.updateTag({property: 'og:image', content: 'https://bookonepms.com/media-be/images/bloglogo.png'})
 
 
 
@@ -38,7 +38,7 @@ export class BlogComponent implements OnInit {
     this.meta.updateTag({name: 'twitter:title', content: "Insights, Tips, and News from BookOnePMS | BookonePMS"});
     this.meta.updateTag({name: 'twitter:description', content: "Stay updated with the latest industry insights, valuable tips, and news related to property management. Explore our informative blog articles from BookOnePMS."});
     this.meta.updateTag({name: 'twitter:text:description', content:"dfghjkl"});
-    this.meta.updateTag({name: 'twitter:image', content: 'https://bookonepms.com/assets/images/bloglogo.png'});
+    this.meta.updateTag({name: 'twitter:image', content: 'https://bookonepms.com/media-be/images/bloglogo.png'});
   }
 
   changeBg(colorName) {

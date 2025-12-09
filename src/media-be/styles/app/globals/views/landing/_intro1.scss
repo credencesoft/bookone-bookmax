@@ -1,10 +1,10 @@
-.intro-nine-Wrap {
-  padding: 180px 0px 40px;
+.intro1Wrap {
+  padding: 180px 0px 180px;
   color: #fff;
   overflow: hidden;
   position: relative;
   z-index: 99;
-  .intro-nine-RightSection {
+  .intro1RightSection {
     position: relative;
   }
   .overlay {
@@ -22,10 +22,10 @@
     content: "";
     display: block;
     height: 100%;
-    background: url("/assets/images/landing/Bg/Bg_08.png") bottom no-repeat;
+    background: url("/media-be/images/landing/Bg/Bg_03.png") bottom no-repeat;
     background-size: cover;
     position: absolute;
-    bottom: 0px;
+    bottom: -8px;
     left: 0;
     right: 0;
     z-index: -1;
@@ -33,8 +33,8 @@
 }
 
 @media only screen and (max-width: 992px) {
-  .intro-nine-Wrap {
-    .intro-nine-LeftSection {
+  .intro1Wrap {
+    .intro1LeftSection {
       margin-bottom: 0px;
     }
   }
