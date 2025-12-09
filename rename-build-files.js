@@ -16,7 +16,8 @@ const browserFiles = [
   'main.js',
   'polyfills.js',
   'runtime.js',
-  'styles.css'
+  'styles.css',
+  'script.js'
 ];
 
 const serverFiles = [
