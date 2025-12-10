@@ -1,5 +1,5 @@
 /* You can add global styles to this file, and also import other style files */
-@import "/src/assets/styles/app/toast-container.scss";
+@import "/src/media-be/styles/app/toast-container.scss";
 @import "primeicons/primeicons.css";
 .slick-initialized .slick-slide {
   display: block !important;

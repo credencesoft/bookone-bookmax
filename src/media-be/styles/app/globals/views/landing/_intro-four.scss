@@ -1,12 +1,10 @@
-.intro-seven-Wrap {
-  background: url("/assets/images/landing/Bg/bg.jpeg") center center/cover
-    no-repeat;
+.intro-four-Wrap {
   padding: 180px 0px 180px;
   color: #fff;
   overflow: hidden;
   position: relative;
   z-index: 99;
-  .intro-seven-RightSection {
+  .intro-four-RightSection {
     position: relative;
   }
   .overlay {
@@ -18,13 +16,13 @@
     height: 100%;
     width: 100%;
     z-index: -1;
-    opacity: 0.95;
+    opacity: 1;
   }
   &:after {
     content: "";
     display: block;
     height: 100%;
-    background: url("/assets/images/landing/Bg/Bg_04.png") bottom no-repeat;
+    background: url("/media-be/images/landing/Bg/Bg_02.png") bottom no-repeat;
     background-size: cover;
     position: absolute;
     bottom: -8px;
@@ -35,8 +33,8 @@
 }
 
 @media only screen and (max-width: 992px) {
-  .intro-seven-Wrap {
-    .intro-seven-LeftSection {
+  .intro-four-Wrap {
+    .intro-four-LeftSection {
       margin-bottom: 0px;
     }
   }

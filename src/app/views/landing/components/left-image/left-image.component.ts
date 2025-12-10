@@ -9,28 +9,28 @@ export class LeftImageComponent implements OnInit {
 
   public carouselTileItems: Array<any> = [
     {
-      // photo: "./assets/images/landing/app_screenshots/550/01.png"
-      photo: "./assets/images/landing/svg/slider8.svg"
+      // photo: "./media-be/images/landing/app_screenshots/550/01.png"
+      photo: "./media-be/images/landing/svg/slider8.svg"
     },
     {
-      photo: "./assets/images/landing/svg/slider7.svg"
-      // photo: "./assets/images/landing/app_screenshots/550/02.png"
+      photo: "./media-be/images/landing/svg/slider7.svg"
+      // photo: "./media-be/images/landing/app_screenshots/550/02.png"
     },
     {
-      photo: "./assets/images/landing/svg/slider9.svg"
-      // photo: "./assets/images/landing/app_screenshots/550/03.png"
+      photo: "./media-be/images/landing/svg/slider9.svg"
+      // photo: "./media-be/images/landing/app_screenshots/550/03.png"
     },
     {
-      photo: "./assets/images/landing/svg/slider10.svg"
-      // photo: "./assets/images/landing/app_screenshots/550/04.png"
+      photo: "./media-be/images/landing/svg/slider10.svg"
+      // photo: "./media-be/images/landing/app_screenshots/550/04.png"
     },
     {
-      photo: "./assets/images/landing/svg/slider1.svg"
-      // photo: "./assets/images/landing/app_screenshots/550/05.png"
+      photo: "./media-be/images/landing/svg/slider1.svg"
+      // photo: "./media-be/images/landing/app_screenshots/550/05.png"
     },
     {
-      photo: "./assets/images/landing/svg/slider4.svg"
-      // photo: "./assets/images/landing/app_screenshots/550/01.png"
+      photo: "./media-be/images/landing/svg/slider4.svg"
+      // photo: "./media-be/images/landing/app_screenshots/550/01.png"
     }
   ];
   public carouselTiles = {

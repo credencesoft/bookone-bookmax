@@ -1,10 +1,12 @@
-.intro-six-Wrap {
+.intro-three-Wrap {
+  background: url("/media-be/images/landing/Bg/bg.jpeg") center center/cover
+    no-repeat;
   padding: 180px 0px 180px;
   color: #fff;
   overflow: hidden;
   position: relative;
   z-index: 99;
-  .intro-six-RightSection {
+  .intro-three-RightSection {
     position: relative;
   }
   .overlay {
@@ -16,13 +18,13 @@
     height: 100%;
     width: 100%;
     z-index: -1;
-    opacity: 1;
+    opacity: 0.9;
   }
   &:after {
     content: "";
     display: block;
     height: 100%;
-    background: url("/assets/images/landing/Bg/Bg_04.png") bottom no-repeat;
+    background: url("/media-be/images/landing/Bg/Bg_03.png") bottom no-repeat;
     background-size: cover;
     position: absolute;
     bottom: -8px;
@@ -33,8 +35,8 @@
 }
 
 @media only screen and (max-width: 992px) {
-  .intro-six-Wrap {
-    .intro-six-LeftSection {
+  .intro-three-Wrap {
+    .intro-three-LeftSection {
       margin-bottom: 0px;
     }
   }
