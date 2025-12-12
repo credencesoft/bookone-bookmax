@@ -3989,6 +3989,14 @@ onCheckOutClosed(): void {
       const data = await this.listingService?.findByPropertyId(id).toPromise();
       if (data.status === 200) {
         this.businessUser = data.body;
+        this.propertyData = this.businessUser;
+                   this.accommodationData =
+          this.propertyData.businessServiceDtoList?.filter(
+            (entry) => entry.name === 'Accommodation'
+          );
+        this.accommodationData?.forEach((element) => {
+          this.smartRecommendationsBoolean = element.smartRecommendation;
+        });
         this.isLoadingProperty = false;
         this.generateAndSetSchema();
         this.getOfferList(this.businessUser.seoFriendlyName);
@@ -4517,6 +4525,14 @@ onCheckOutClosed(): void {
       (data) => {
         if (data.status === 200) {
           this.businessUser = data.body;
+          this.propertyData = this.businessUser;
+                   this.accommodationData =
+          this.propertyData.businessServiceDtoList?.filter(
+            (entry) => entry.name === 'Accommodation'
+          );
+        this.accommodationData?.forEach((element) => {
+          this.smartRecommendationsBoolean = element.smartRecommendation;
+        });
           this.getGoogleReview(this.businessUser.id);
           this.showStaticContent = true;
           // this.businessUser.businessServiceDtoList.filter(ele =>
@@ -6370,6 +6386,7 @@ onBookNow() {
           };
 
           const roomList = response.body.roomList;
+
           if(this.smartRecommendationsBoolean) {
             this.hotelBookingService.getRecommendations(queryParams, roomList).subscribe({
             next: (res) => {
@@ -6415,7 +6432,7 @@ onBookNow() {
             minPrice: this.getCategoryMinPrice(this.smartRecommendations.budgetOptions)
           });
         }
-
+        this.changeDetectorRefs.detectChanges();
         this.categories = tempCategories.sort((a, b) => b.minPrice - a.minPrice);
             },
             error: (err) => {
