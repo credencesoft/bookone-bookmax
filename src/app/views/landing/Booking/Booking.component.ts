@@ -3074,7 +3074,8 @@ this.booking.promotionName = this.specialDiscountData.name;
       }
       }
 
-      this.payment.referenceNumber = new Date().getTime().toString();
+      this.payment.referenceNumber = this.equitycreatedData.enquiryId;
+
       this.payment.deliveryChargeAmount = 0;
       this.payment.date = this.datePipe.transform(
         new Date().getTime(),
@@ -3224,7 +3225,6 @@ processPaymentPayU(payment: Payment) {
     .set('customerMobile', this.booking.mobile)
     .set('customerEmail', this.payment.email)
     .set('source', 'THM');
-
   const url = 'https://payu.payment.uat.bookone.io/api/payu/paymentIntent/THM';
 
   // Build the full URL
