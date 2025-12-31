@@ -667,41 +667,72 @@
           <span>Tax & Services</span>
           <span>₹{{ getGrandTaxTotal() | number : "1.2-2" }}</span>
         </div>
-        <div
-          class="d-flex justify-content-between font-weight-bold total-amount"
-          *ngIf="!activeForGoogleHotelCenter"
-        >
-          <span>Total Amount</span>
-          <span *ngIf="specialDiscountPercentage">
-            ₹{{
-              getTotalPlanPrice() +
-                getTotalAfterTaxAmountFacility() +
-                getTotalTaxPrice() -
-                (this.getTotalPlanPrice() * this.specialDiscountPercentage) /
-                  100 | number : "1.2-2"
-            }}
-          </span>
-          <span *ngIf="!specialDiscountPercentage"
-            >₹{{
-              getTotalPlanPrice() +
-                getTotalAfterTaxAmountFacility() +
-                getTotalTaxPrice() | number : "1.2-2"
-            }}</span
+         <div
+            class="d-flex justify-content-between"
+            *ngIf="!activeForGoogleHotelCenter && serviceChargePercentage > 0"
           >
-        </div>
+             <span>Convenience Fee:</span>
+            <span *ngIf="specialDiscountPercentage">
+              ₹{{ calculateConvenienceFee(getTotalPlanPrice() -
+                  ((this.getTotalPlanPrice() * this.specialDiscountPercentage) /
+                    100), serviceChargePercentage) }}
+            </span>
+            <span *ngIf="!specialDiscountPercentage"
+              >
+              ₹{{ calculateConvenienceFee(getTotalPlanPrice(), serviceChargePercentage) }}
+              </span>
+          </div>
         <div
-          class="d-flex justify-content-between font-weight-bold total-amount"
-          *ngIf="activeForGoogleHotelCenter"
-        >
-          <span>Total Amount</span>
-          <span *ngIf="specialDiscountPercentage">
-            ₹{{((getGrandSubtotal() - ((getGrandSubtotal() * specialDiscountPercentage) / 100)))
+            class="d-flex justify-content-between font-weight-bold total-amount mt-2"
+            *ngIf="!activeForGoogleHotelCenter"
+          >
+            <span>Total Amount</span>
+            <span *ngIf="specialDiscountPercentage">
+              ₹{{
+                (
+                  getTotalPlanPrice() +
+                  getTotalAfterTaxAmountFacility() +
+                  getTotalTaxPrice() -
+                  (getTotalPlanPrice() * specialDiscountPercentage) / 100
+                )
+                +
+                (
+                  serviceChargePercentage > 0
+                    ? calculateConvenienceFee(getTotalPlanPrice() -
+                  ((this.getTotalPlanPrice() * this.specialDiscountPercentage) /
+                    100), serviceChargePercentage)
+                    : 0
+                )
+                | number : "1.2-2"
+              }}
+            </span>
+            <span *ngIf="!specialDiscountPercentage">
+              ₹{{
+                (
+                  getTotalPlanPrice() +
+                  getTotalAfterTaxAmountFacility() +
+                  getTotalTaxPrice()
+                )
+                +
+                (
+                  serviceChargePercentage > 0
+                    ? calculateConvenienceFee(getTotalPlanPrice(), serviceChargePercentage)
+                    : 0)
+                | number : "1.2-2"
+              }}
+            </span>
+          </div>
+          <div
+            class="d-flex justify-content-between font-weight-bold total-amount mt-2"
+            *ngIf="activeForGoogleHotelCenter"
+          >
+            <span>Total Amount</span>
+            <span *ngIf="specialDiscountPercentage">
+              ₹{{((getGrandSubtotal() - ((getGrandSubtotal() * specialDiscountPercentage) / 100)))
                     + getGrandTaxTotal() | number : "1.2-2" }}
-          </span>
-          <span *ngIf="!specialDiscountPercentage"
-            >₹{{ getGrandTotal() | number : "1.2-2" }}</span
-          >
-        </div>
+            </span>
+            <span *ngIf="!specialDiscountPercentage">₹{{ getGrandTotal() | number : "1.2-2" }}</span>
+          </div>
       </div>
       <button
         style="margin-bottom: 50px"
@@ -4558,43 +4589,77 @@
             >
           </div>
           <div
-            class="d-flex justify-content-between mb-2"
+            class="d-flex justify-content-between"
             *ngIf="!activeForGoogleHotelCenter"
           >
             <span>Tax & Services</span>
             <span>₹{{ getTotalTaxPrice() | number : "1.2-2" }}</span>
           </div>
           <div
-            class="d-flex justify-content-between mb-2"
+            class="d-flex justify-content-between"
             *ngIf="activeForGoogleHotelCenter"
           >
             <span>Tax & Services</span>
             <span>₹{{ getGrandTaxTotal() | number : "1.2-2" }}</span>
           </div>
           <div
-            class="d-flex justify-content-between font-weight-bold total-amount"
+            class="d-flex justify-content-between"
+            *ngIf="!activeForGoogleHotelCenter && serviceChargePercentage > 0"
+          >
+             <span>Convenience Fee:</span>
+            <span *ngIf="specialDiscountPercentage">
+              ₹{{ calculateConvenienceFee(getTotalPlanPrice() -
+                  ((this.getTotalPlanPrice() * this.specialDiscountPercentage) /
+                    100), serviceChargePercentage) }}
+            </span>
+            <span *ngIf="!specialDiscountPercentage"
+              >
+              ₹{{ calculateConvenienceFee(getTotalPlanPrice(), serviceChargePercentage) }}
+              </span>
+          </div>
+
+          <div
+            class="d-flex justify-content-between font-weight-bold total-amount mt-2"
             *ngIf="!activeForGoogleHotelCenter"
           >
             <span>Total Amount</span>
             <span *ngIf="specialDiscountPercentage">
               ₹{{
-                getTotalPlanPrice() +
+                (
+                  getTotalPlanPrice() +
                   getTotalAfterTaxAmountFacility() +
                   getTotalTaxPrice() -
-                  (this.getTotalPlanPrice() * this.specialDiscountPercentage) /
-                    100 | number : "1.2-2"
+                  (getTotalPlanPrice() * specialDiscountPercentage) / 100
+                )
+                +
+                (
+                  serviceChargePercentage > 0
+                    ? calculateConvenienceFee(getTotalPlanPrice() -
+                  ((this.getTotalPlanPrice() * this.specialDiscountPercentage) /
+                    100), serviceChargePercentage)
+                    : 0
+                )
+                | number : "1.2-2"
               }}
             </span>
-            <span *ngIf="!specialDiscountPercentage"
-              >₹{{
-                getTotalPlanPrice() +
+            <span *ngIf="!specialDiscountPercentage">
+              ₹{{
+                (
+                  getTotalPlanPrice() +
                   getTotalAfterTaxAmountFacility() +
-                  getTotalTaxPrice() | number : "1.2-2"
-              }}</span
-            >
+                  getTotalTaxPrice()
+                )
+                +
+                (
+                  serviceChargePercentage > 0
+                    ? calculateConvenienceFee(getTotalPlanPrice(), serviceChargePercentage)
+                    : 0)
+                | number : "1.2-2"
+              }}
+            </span>
           </div>
           <div
-            class="d-flex justify-content-between font-weight-bold total-amount"
+            class="d-flex justify-content-between font-weight-bold total-amount mt-2"
             *ngIf="activeForGoogleHotelCenter"
           >
             <span>Total Amount</span>

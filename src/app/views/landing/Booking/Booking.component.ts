@@ -284,6 +284,7 @@ export class BookingComponent implements OnInit {
   propertyMobileNumber: string;
   components1: Components[];
   bookoneActiveData: any;
+  serviceChargePercentage: any;
   constructor(
     private token: TokenStorage,
     private ngZone: NgZone,
@@ -494,6 +495,7 @@ if (parsed.discountPercentage) {
       (entry) => entry.name === 'Accommodation'
     );
     this.accommodationData.forEach((element) => {
+      this.serviceChargePercentage = element.serviceChargePercentage;
       if (this.bookingengineurl === 'true') {
         this.value = element.websiteinstantBooking;
       } else if (this.value !== true) {
@@ -531,6 +533,13 @@ if (parsed.discountPercentage) {
   getFirstWords(text: string, count: number): string {
     return text.split(' ').slice(0, count).join(' ');
   }
+  calculateConvenienceFee(totalAmount: number, percentage: number): number {
+  if (!totalAmount || !percentage) {
+    return 0;
+  }
+  const fee = (totalAmount * percentage) / 100;
+  return Number(fee.toFixed(2));
+}
 openTermsUniquePopup() {
   this.showTermsUniquePopup = true;
 }

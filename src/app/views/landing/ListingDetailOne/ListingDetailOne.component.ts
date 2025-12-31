@@ -194,6 +194,7 @@ currentPage = 0; // page index
   utmSource: any;
   priceingO: any;
   propertyById: number;
+  serviceChargePercentage: any;
   toggleListingDetails() {
     this.showListingDetails = !this.showListingDetails;
   }
@@ -971,23 +972,25 @@ guestDataArray: Array<{
 
 
       if (params['nights'] !== undefined) {
-        this.nights = params['nights'];
-      }
-      if (params['numGuests'] !== undefined) {
-        this.adultno = params['numGuests'];
-      }
-      if (params['numAdults'] !== undefined) {
-        this.adults = params['numAdults'];
-        // this.changeDetectorRefs.detectChanges();
-      }
-      if (params['roomId'] !== undefined) {
-        this.paramsroomId = params['roomId'];
-        // this.changeDetectorRefs.detectChanges();
-      }
-      if (params['Children'] !== undefined) {
-        this.childno = params['Children'];
-        this.children = Number(this.childno);
-      }
+  this.nights = Number(params['nights']);
+}
+
+if (params['numGuests'] !== undefined) {
+  this.adultno = Number(params['numGuests']);
+}
+
+if (params['numAdults'] !== undefined) {
+  this.adults = Number(params['numAdults']);
+}
+
+if (params['roomId'] !== undefined) {
+  this.paramsroomId = Number(params['roomId']);
+}
+
+if (params['Children'] !== undefined) {
+  this.childno = Number(params['Children']);
+  this.children = Number(params['Children']);
+}
       if (params['userCurrency'] !== undefined) {
         this.currency = params['userCurrency'];
       }
@@ -1486,6 +1489,8 @@ if (storedBooking) {
           );
         this.accommodationData?.forEach((element) => {
           this.smartRecommendationsBoolean = element.smartRecommendation;
+          this.serviceChargePercentage = element.serviceChargePercentage;
+          console.log('this.serviceChargePercentage', this.serviceChargePercentage);
         });
     }
 
@@ -3733,7 +3738,7 @@ onCheckOutClosed(): void {
     this.checkingAvailability();
     if(this.activeForGoogleHotelCenter === false){
        this.getPropertyDetailsBySeoName(this.data);
-    } 
+    }
   }
 }
 
@@ -4885,7 +4890,7 @@ onCheckOutClosed(): void {
   if (hasPayLater) {
     return false;
   }
-    
+
   // ✅ 3. Instancebooking , channelmanagerIntegration false
   if(!this.channelManagerIntegration && !this.instantBooking){
     return false;
@@ -6830,6 +6835,15 @@ getTotalTaxFacility(): number {
 }
 get totalEachPlanPrice(): number {
   return this.planPrice?.reduce((sum, price) => sum + price, 0) || 0;
+}
+
+calculateConvenienceFee(totalAmount: number, percentage: number): number {
+  if (!totalAmount || !percentage) {
+    return 0;
+  }
+
+  const fee = (totalAmount * percentage) / 100;
+  return Number(fee.toFixed(2));
 }
 
   getTotalPlanPrice(): number {
