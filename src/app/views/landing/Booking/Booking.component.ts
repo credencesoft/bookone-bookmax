@@ -1809,6 +1809,9 @@ if (bookingSummaryStr) {
     enquiryForm.enquiryType = 'Pay Now';
     enquiryForm.noOfExtraPerson = plan.extraCountAdult;
     enquiryForm.roomId = plan.roomId;
+    if (this.token?.getProperty()?.paymentGateway === "PayU") {
+      enquiryForm.modeOfPayment = "PayU";
+    }
     enquiryForm.payableAmount = plan.price + plan.taxPercentageperroom;
     enquiryForm.roomName = plan.roomName;
     enquiryForm.extraPersonCharge = plan.extraPersonAdultCountAmount;
