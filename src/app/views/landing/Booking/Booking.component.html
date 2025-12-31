@@ -1293,19 +1293,32 @@
                       }}
                     </div>
                   </div>
+                  <div
+                  class="d-flex justify-content-between line-height-27px"
+                  *ngIf="serviceChargePercentage > 0"
+                >
+                  <div class="color-graying">Convenience Fee:</div>
+
+                  <div style="font-weight: 500">
+                    <span *ngIf="specialDiscountData?.discountPercentage">₹{{ calculateConvenienceFee(bookingSummaryDetails?.totalPlanPrice - ((bookingSummaryDetails?.totalPlanPrice *
+                              specialDiscountData?.discountPercentage) / 100), serviceChargePercentage) }}</span>
+                    <span *ngIf="!specialDiscountData?.discountPercentage">₹{{ calculateConvenienceFee(bookingSummaryDetails?.totalPlanPrice, serviceChargePercentage) }}</span>
+
+                  </div>
+                </div>
                 </div>
 
-                <div
-                  class="d-flex justify-content-between line-height-27px"
-                  style="margin-top: 10px"
-                >
+
+                <div class="d-flex justify-content-between line-height-27px">
                   <div class="font-weight-600" style="font-size: 1rem">
                     Total Amount
                   </div>
 
                   <div class="font-weight-600" style="font-size: 1rem">
-                    ₹
-                    {{ bookingSummaryDetails?.totalAmount | number : "1.2-2" }}
+                    <span *ngIf="specialDiscountData?.discountPercentage">₹{{( bookingSummaryDetails?.totalAmount) + calculateConvenienceFee(bookingSummaryDetails?.totalPlanPrice - ((bookingSummaryDetails?.totalPlanPrice *
+                              specialDiscountData?.discountPercentage) / 100), serviceChargePercentage) }}</span>
+                    <span *ngIf="!specialDiscountData?.discountPercentage">₹{{( bookingSummaryDetails?.totalAmount) +  calculateConvenienceFee(bookingSummaryDetails?.totalPlanPrice, serviceChargePercentage) }}</span>
+
                   </div>
                 </div>
               </div>
@@ -1765,14 +1778,29 @@
                     }}
                   </div>
                 </div>
+                 <div
+                  class="d-flex justify-content-between line-height-27px"
+                  *ngIf="serviceChargePercentage > 0"
+                >
+                  <div class="color-graying">Convenience Fee:</div>
+
+                  <div style="font-weight: 500">
+                    <span *ngIf="specialDiscountData?.discountPercentage">₹{{ calculateConvenienceFee(bookingSummaryDetails?.totalPlanPrice - ((bookingSummaryDetails?.totalPlanPrice *
+                              specialDiscountData?.discountPercentage) / 100), serviceChargePercentage) }}</span>
+                    <span *ngIf="!specialDiscountData?.discountPercentage">₹{{ calculateConvenienceFee(bookingSummaryDetails?.totalPlanPrice, serviceChargePercentage) }}</span>
+
+                  </div>
+                </div>
                 <div class="d-flex justify-content-between line-height-27px">
                   <div class="font-weight-600" style="font-size: 1rem">
                     Total Amount
                   </div>
 
                   <div class="font-weight-600" style="font-size: 1rem">
-                    ₹
-                    {{ bookingSummaryDetails?.totalAmount | number : "1.2-2" }}
+                                       <span *ngIf="specialDiscountData?.discountPercentage">₹{{( bookingSummaryDetails?.totalAmount) + calculateConvenienceFee(bookingSummaryDetails?.totalPlanPrice - ((bookingSummaryDetails?.totalPlanPrice *
+                              specialDiscountData?.discountPercentage) / 100), serviceChargePercentage) }}</span>
+                    <span *ngIf="!specialDiscountData?.discountPercentage">₹{{( bookingSummaryDetails?.totalAmount) +  calculateConvenienceFee(bookingSummaryDetails?.totalPlanPrice, serviceChargePercentage) }}</span>
+
                   </div>
                 </div>
               </div>
