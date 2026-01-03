@@ -911,6 +911,11 @@ display: flex;
       color: var(--secondary, #0b01cc);
       border: 1px solid var(--secondary, #0b01cc);
 }
+.view-more {
+      color: var(--secondary);
+    cursor: pointer;
+    text-decoration: underline;
+}
 .background-image-website {
     background: url("https://mayurhotels.in/assets/images/page_bg.jpg") no-repeat center top fixed;
     background-size: cover;

@@ -27,6 +27,7 @@ import { Language } from 'src/app/model/language';
 import { Components } from 'src/app/model/components';
 import { Para } from 'src/app/model/parameters';
 import { Images } from 'src/app/model/image';
+import { log } from 'console';
 
 @Component({
   selector: 'app-booking-confirm',
@@ -141,6 +142,10 @@ textToCopyOne: string = 'This is some text to copy';
   loadingData: boolean = true;
   toTime: number;
   fromTime: number;
+  serviceChargePercentage: any;
+  accommodationData: any;
+  url: string;
+  activeGoogleCenter: boolean = false;
   constructor(
     private http: HttpClient,
     private token: TokenStorage,
@@ -311,9 +316,29 @@ textToCopyOne: string = 'This is some text to copy';
 
       this.propertyData =  this.token.getProperty();
       this.shortName = this.propertyData?.shortName;
-
+       this.accommodationData = this.propertyData.businessServiceDtoList?.filter(
+      (entry) => entry.name === 'Accommodation'
+    );
+    this.url = this.token.getBookingEngineBoolean();
+    if (this.url !== 'googlehotelcenter') {
+      this.activeGoogleCenter = false;
+      this.accommodationData.forEach((element) => {
+       this.serviceChargePercentage = element.serviceChargePercentage;
+    });
+    } else {
+      this.activeGoogleCenter = true;
+    }
 
   }
+
+
+calculateConvenienceFee(totalAmount: number, percentage: number): number {
+  if (!totalAmount || !percentage) {
+    return 0;
+  }
+  const fee = (totalAmount * percentage) / 100;
+  return Number(fee.toFixed(2));
+}
 
   ngOnInit() {
         const couponCodeValues = sessionStorage.getItem('selectedPromoData');
@@ -758,20 +783,55 @@ this.combinedDateToTime = combinedCheckoutDate.getTime();
           item.name === 'CGST' || item.name === 'SGST' || item.name === 'GST'
       );
     booking.taxPercentage = plan.taxpercentage;
+    if (this.serviceChargePercentage && this.serviceChargePercentage > 0) {
+      const serviceChargeAmount = (plan.price * this.serviceChargePercentage) / 100;
+    booking.totalAmount = (plan.price + plan.taxPercentageperroom + serviceChargeAmount);
+    booking.convenienceFee = serviceChargeAmount;
+    booking.bookingAmount = booking.totalAmount;
+    booking.payableAmount = booking.totalAmount;
+    booking.advanceAmount = booking.advanceAmount + serviceChargeAmount;
+    }
           if (this.specialDiscountData) {
-      const finalPrice = Number(plan?.price || 0) ;
-      // booking.netAmount = finalPrice;
-      // booking.gstAmount = ((finalPrice - (plan.price * this.specialDiscountData?.discountPercentage)/100 ) * plan.taxpercentage) /100;
-      // booking.discountPercentage = this.specialDiscountData.discountPercentage;
-      // booking.discountAmount = ((plan.price * this.specialDiscountData?.discountPercentage)/100);
-      // booking.beforeTaxAmount = plan.price;
-      // booking.taxAmount = ((finalPrice - (plan.price * this.specialDiscountData?.discountPercentage)/100 ) * plan.taxpercentage) /100;
-      // booking.couponCode = this.specialDiscountData.couponCode;
-      // booking.promotionName = this.specialDiscountData.name;
-      // booking.payableAmount =  (plan.price - (plan.price * this.specialDiscountData?.discountPercentage)/100) + ((((plan.price)- (plan.price * this.specialDiscountData?.discountPercentage)/100 ) * plan.taxpercentage) /100);
-      // booking.totalAmount = (plan.price - (plan.price * this.specialDiscountData?.discountPercentage)/100) + ((((plan.price)- (plan.price * this.specialDiscountData?.discountPercentage)/100 ) * plan.taxpercentage) /100);
+            if(this.serviceChargePercentage && this.serviceChargePercentage > 0) {
+            const serviceChargeAmount = (plan?.discountedPrice * this.serviceChargePercentage) / 100;
+            const finalPrice = Number(plan?.price || 0) ;
+            booking.netAmount = Number(Number((plan?.discountedPrice + serviceChargeAmount) || 0).toFixed(2));
+            booking.beforeTaxAmount = Number(Number((plan?.discountedPrice) || 0).toFixed(2));
+            booking.taxAmount = Number(Number(plan?.taxPercentageperroom || 0).toFixed(2));
+            booking.couponCode = this.specialDiscountData.couponCode;
+            booking.promotionName = this.specialDiscountData.name;
+            booking.payableAmount = Number(Number((plan?.finalPrice + serviceChargeAmount) || 0).toFixed(2));
+            booking.totalAmount = Number(Number((plan?.finalPrice + serviceChargeAmount) || 0).toFixed(2));
+          if (
+            this.bookingSummaryDetails.selectedPlansSummary &&
+            this.bookingSummaryDetails.selectedPlansSummary.length > 0
+          ) {
 
-  // Booking values (ensure all are numbers)
+            // Get the 0th index plan
+            const firstPlan = this.bookingSummaryDetails.selectedPlansSummary[0];
+            const serviceChargeAmount = (firstPlan.discountedPrice * this.serviceChargePercentage) / 100;
+            // console.log('First plan pushed:', firstPlan);
+            if (firstPlan.planCodeName ===  booking.roomRatePlanName) {
+                              if (this.businessServiceDto.advanceAmountPercentage === 50) {
+              booking.advanceAmount = Number(
+                Number(((((firstPlan?.finalPrice) / 100) * 50) + serviceChargeAmount).toFixed(2))
+              );
+            }  else {
+              booking.advanceAmount = Number(
+                Number(((((firstPlan?.finalPrice) / 100) * 20) + serviceChargeAmount).toFixed(2))
+              );
+            }
+            } else {
+              booking.advanceAmount = 0;
+            }
+          }
+                    if (this.businessServiceDto.advanceAmountPercentage === 100) {
+              booking.advanceAmount = Number(
+                Number((booking.totalAmount + serviceChargeAmount).toFixed(2))
+              );
+            }
+            } else {
+                    const finalPrice = Number(plan?.price || 0) ;
   booking.netAmount = Number(Number(plan?.discountedPrice || 0).toFixed(2));
   booking.gstAmount = Number(Number(plan?.taxPercentageperroom || 0).toFixed(2));
   booking.discountPercentage = this.specialDiscountData.discountPercentage;
@@ -807,6 +867,7 @@ this.combinedDateToTime = combinedCheckoutDate.getTime();
               booking.advanceAmount = Number(
                 Number((booking.totalAmount).toFixed(2))
               );
+            }
             }
     }
 
@@ -1320,6 +1381,9 @@ this.combinedDateToTime = combinedCheckoutDate.getTime();
     }
     if(this.groupBookingId) {
       externalreservation.groupBookingId = this.groupBookingId;
+    }
+    if(this.serviceChargePercentage && this.serviceChargePercentage > 0) {
+      externalreservation.commissionAmount = booking.convenienceFee;
     }
     externalreservation.amountBeforeTax = booking?.beforeTaxAmount;
     externalreservation.channelId = '9';

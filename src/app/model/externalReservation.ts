@@ -18,6 +18,7 @@ export class externalReservationDtoList {
   email: string;
   externalTransactionId: string;
   firstName: string;
+  commissionAmount: any;
   id: Number;
   lastModifiedBy: string;
   lastModifiedDate:string;
