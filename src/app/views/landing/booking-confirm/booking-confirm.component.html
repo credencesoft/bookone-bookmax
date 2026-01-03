@@ -411,6 +411,10 @@
                   <div>Total GST:</div>
                   <div>₹{{ bookingSummaryDetails?.totalTax | number : "1.2-2" }}</div>
                 </div>
+                <div class="d-flex justify-content-between" *ngIf="serviceChargePercentage" style="margin-top: 5px;">
+                  <div>Convenience Fee:</div>
+                  <div>₹{{ calculateConvenienceFee(bookingSummaryDetails?.totalPlanPrice - totalDiscount, serviceChargePercentage) | number : "1.2-2" }}</div>
+                </div>
                 </div>
                 <div class="footer-borders" *ngIf="bookingSummaryDetails?.totalAddOnsPrice">
                 <div class="d-flex justify-content-between">
@@ -435,7 +439,10 @@
                 <div class="booking-summary-total total-borders">
                 <div class="d-flex justify-content-between">
                   <div>Total Amount:</div>
-                  <div>₹{{ bookingSummaryDetails?.totalAmount | number : "1.2-2" }}</div>
+                  <div>
+                    <span *ngIf="serviceChargePercentage">₹{{ (bookingSummaryDetails?.totalAmount) + (calculateConvenienceFee(bookingSummaryDetails?.totalPlanPrice - totalDiscount, serviceChargePercentage) ) | number : "1.2-2" }}</span>
+                    <span *ngIf="!serviceChargePercentage">₹{{ bookingSummaryDetails?.totalAmount | number : "1.2-2" }}</span>
+                    </div>
                 </div>
                 </div>
                 <div class="booking-summary-total total-borders">
@@ -444,10 +451,12 @@
                   <div>₹{{booking.advanceAmount | number : "1.2-2" }}</div>
                 </div>
                 </div>
-                <div class="booking-summary-total due-borders" *ngIf="(bookingSummaryDetails?.totalAmount - booking.advanceAmount) > 0">
+                <div class="booking-summary-total due-borders" *ngIf=" ((bookingSummaryDetails?.totalAmount) + (calculateConvenienceFee(bookingSummaryDetails?.totalPlanPrice - totalDiscount, serviceChargePercentage)) - booking.advanceAmount ) > 0 || bookingSummaryDetails?.totalAmount - booking.advanceAmount > 0">
                 <div class="d-flex justify-content-between coloring-due">
                   <div>Due Amount:</div>
-                  <div>₹{{ bookingSummaryDetails?.totalAmount - booking.advanceAmount | number : "1.2-2" }}</div>
+                  <div>
+                    <span *ngIf="serviceChargePercentage">₹{{ ((bookingSummaryDetails?.totalAmount) + (calculateConvenienceFee(bookingSummaryDetails?.totalPlanPrice - totalDiscount, serviceChargePercentage)) - booking.advanceAmount ) | number : "1.2-2" }}</span>
+                    <span *ngIf="!serviceChargePercentage">₹{{ bookingSummaryDetails?.totalAmount - booking.advanceAmount | number : "1.2-2" }}</span>
                 </div>
                 </div>
 
@@ -510,6 +519,7 @@
       </div>
     </div>
   </div>
+</div>
 </div>
 <div class="popup-container" *ngIf="copyTextOne">
   <div class="popup-content">
@@ -889,6 +899,10 @@
                             <div>Total GST:</div>
                             <div>₹  {{ bookingSummaryDetails?.totalTax | number : "1.2-2" }}</div>
                         </div>
+                        <div class="d-flex justify-content-between" *ngIf="serviceChargePercentage" style="margin-top: 5px;">
+                        <div>Convenience Fee:</div>
+                        <div>₹{{ calculateConvenienceFee(bookingSummaryDetails?.totalPlanPrice - totalDiscount, serviceChargePercentage) | number : "1.2-2" }}</div>
+                      </div>
                         <div class="d-flex justify-content-between" *ngIf="bookingSummaryDetails?.totalAddOnsPrice > 0">
                             <div>Total Add-on Services Price:</div>
                             <div>₹ {{
@@ -906,16 +920,22 @@
                         </div>
                         <div class="d-flex justify-content-between" style="font-weight: 600; color:#16A34A">
                           <div>Total Amount:</div>
-                          <div>₹{{ bookingSummaryDetails?.totalAmount | number : "1.2-2" }}</div>
+                      <div>
+                    <span *ngIf="serviceChargePercentage">₹{{ (bookingSummaryDetails?.totalAmount) + (calculateConvenienceFee(bookingSummaryDetails?.totalPlanPrice - totalDiscount, serviceChargePercentage) ) | number : "1.2-2" }}</span>
+                    <span *ngIf="!serviceChargePercentage">₹{{ bookingSummaryDetails?.totalAmount | number : "1.2-2" }}</span>
+                    </div>
+
                         </div>
                         <div class="d-flex justify-content-between" style="font-weight: 600; color:#16A34A">
                           <div>Advance Amount:</div>
                           <div>₹{{booking.advanceAmount | number : "1.2-2" }}</div>
                         </div>
                         <hr style="border: 1px solid #E5E7EB; margin-top: 10px; margin-bottom: 10px;">
-                         <div class="d-flex justify-content-between" style="font-weight: 600; color:#16A34A" *ngIf="(bookingSummaryDetails?.totalAmount - booking.advanceAmount) > 0">
+                         <div class="d-flex justify-content-between" style="font-weight: 600; color:#16A34A" *ngIf=" ((bookingSummaryDetails?.totalAmount) + (calculateConvenienceFee(bookingSummaryDetails?.totalPlanPrice - totalDiscount, serviceChargePercentage)) - booking.advanceAmount ) > 0 || bookingSummaryDetails?.totalAmount - booking.advanceAmount > 0">
                           <div>Due Amount:</div>
-                          <div>₹{{ bookingSummaryDetails?.totalAmount - booking.advanceAmount | number : "1.2-2" }}</div>
+                          <div><span *ngIf="serviceChargePercentage">₹{{ ((bookingSummaryDetails?.totalAmount) + (calculateConvenienceFee(bookingSummaryDetails?.totalPlanPrice - totalDiscount, serviceChargePercentage)) - booking.advanceAmount ) | number : "1.2-2" }}</span>
+                    <span *ngIf="!serviceChargePercentage">₹{{ bookingSummaryDetails?.totalAmount - booking.advanceAmount | number : "1.2-2" }}</span>
+</div>
                         </div>
               <div>
               </div>
@@ -1036,4 +1056,5 @@
 <div class="loader-overlay" *ngIf="loadingData">
   <span class="loader-booking "></span>
 </div>
+
 </div>

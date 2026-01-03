@@ -923,6 +923,9 @@ guestDataArray: Array<{
   checkoutDate: string;
   channelManagerIntegration: boolean = false;
   instantBooking: boolean = false;
+isRoomDescriptionExpanded = false;
+descriptionWordLimit = 30;
+expandedRoomDescriptions: { [roomId: string]: boolean } = {};
   constructor(
     private listingService: ListingService,
     public SchemaService:SchemaService,
@@ -1487,10 +1490,15 @@ if (storedBooking) {
           this.propertyData.businessServiceDtoList?.filter(
             (entry) => entry.name === 'Accommodation'
           );
+              this.accommodationData = this.propertyData.businessServiceDtoList?.filter(
+      (entry) => entry.name === 'Accommodation'
+    );
+
+    this.accommodationData.forEach((element) => {
+       this.serviceChargePercentage = element.serviceChargePercentage;
+    });
         this.accommodationData?.forEach((element) => {
           this.smartRecommendationsBoolean = element.smartRecommendation;
-          this.serviceChargePercentage = element.serviceChargePercentage;
-          console.log('this.serviceChargePercentage', this.serviceChargePercentage);
         });
     }
 
@@ -1553,6 +1561,20 @@ if (storedBooking) {
     //  this.getTotalTaxFee();
     localStorage.removeItem('landingrice');
   }
+
+roomDescriptionPreview(room: any): string {
+  if (!room?.description) return '';
+
+  const plainText = room.description.replace(/<[^>]+>/g, '');
+  const wordArray = plainText.split(/\s+/);
+
+  if (wordArray.length <= this.descriptionWordLimit) {
+    return room.description;
+  }
+
+  return wordArray.slice(0, this.descriptionWordLimit).join(' ') + '...';
+}
+
 getTotalAdults(): number {
   return this.selectedPlansSummary.reduce((sum, plan) => sum + (plan.adults || 0), 0);
 }
@@ -3182,6 +3204,9 @@ sortAndLimitRooms() {
       Bar: 'fa-champagne-glasses',
       Fitness: 'fa-dumbbell',
       Geyser: 'fa-fire',
+      'Paid Wifi': 'fa-wifi',
+      'Complimentary Wifi': 'fa-wifi',
+      'Attached Bathroom': 'fa-bath',
     };
 
     return iconMap[name.trim()] || 'fa-circle-question'; // fallback icon

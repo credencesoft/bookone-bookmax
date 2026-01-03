@@ -79,6 +79,7 @@ import { TaxDetails } from "./TaxDetails";
     utmSource: string;
     utmMedium: string;
     businessEmail: string;
+    convenienceFee: number;
     // noOfNights:number;
     // counterName:string;
   }

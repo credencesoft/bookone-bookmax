@@ -2597,9 +2597,10 @@
               </div>
 
               <div class="col-12 col-lg-7 spacing-manage">
-                <div class="d-flex justify-content-between">
+                <div class="d-flex justify-content-between" style="gap: 15px">
                   <h3 class="margin-top-mobile-30px">{{ room.name }}</h3>
-                  <div class="d-flex" style="gap:15px">
+                  <div class="d-flex" style="    gap: 15px;width: 50px;
+">
                     <div>
                     <img
                       src=" media-be/images/profile-pic.svg"
@@ -2621,6 +2622,17 @@
 
                   <!-- <div>380 sq.ft</div> -->
                 </div>
+                <div *ngIf="rates.roomRatePlans.length === 1">
+                <div [innerHTML]="roomDescriptionPreview(room)"></div>
+
+                <span
+                  *ngIf="room?.description?.split(' ').length > descriptionWordLimit"
+                  class="view-more d-flex justify-content-end"
+                  (click)="togglePanel(room, i)"
+                >
+                  View More
+                </span>
+              </div>
                 <div class="d-block">
                   <!-- Plan -- 1 -->
                   <div
@@ -3076,6 +3088,8 @@
                     </a>
                   </div>
                 </div>
+
+
               </div>
               <!-- <div class="col-2">
 
@@ -3227,9 +3241,9 @@
               </div>
 
               <div class="col-12 col-lg-7 spacing-manage">
-                <div class="d-flex justify-content-between">
+                <div class="d-flex justify-content-between" style="gap: 15px">
                   <h3 class="margin-top-mobile-30px">{{ room.name }}</h3>
-                  <div class="d-flex" style="gap:15px">
+                  <div class="d-flex" style="    gap: 15px; width: 50px;">
                     <div>
                     <img
                       src=" media-be/images/profile-pic.svg"
@@ -3249,6 +3263,16 @@
                   </div>
                   </div>
                 </div>
+                  <div *ngIf="rates.roomRatePlans.length === 1">
+                <div [innerHTML]="roomDescriptionPreview(room)"></div>
+                <span
+                  *ngIf="room?.description?.split(' ').length > descriptionWordLimit"
+                  class="view-more d-flex justify-content-end"
+                  (click)="togglePanel(room, i)"
+                >
+                  View More
+                </span>
+              </div>
                 <div class="d-block">
                   <div
                     class="card border-radius-20px plan-cards margin-bottom-10px"
@@ -3924,9 +3948,9 @@
               </div>
 
               <div class="col-12 col-lg-7 spacing-manage">
-                <div class="d-flex justify-content-between">
+                <div class="d-flex justify-content-between" style="gap: 15px">
                   <h3 class="margin-top-mobile-30px">{{ room.name }}</h3>
-                  <div class="d-flex" style="gap:15px">
+                  <div class="d-flex" style="gap:15px; width: 50px;">
                     <div>
                     <img
                       src=" media-be/images/profile-pic.svg"
@@ -4096,9 +4120,9 @@
               </div>
 
               <div class="col-12 col-lg-7 spacing-manage">
-                <div class="d-flex justify-content-between">
+                <div class="d-flex justify-content-between" style="gap: 15px">
                   <h3 class="margin-top-mobile-30px">{{ room.name }}</h3>
-                  <div class="d-flex" style="gap:15px">
+                  <div class="d-flex" style="gap:15px; width: 50px;">
                     <div>
                     <img
                       src=" media-be/images/profile-pic.svg"
