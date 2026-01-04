@@ -1493,10 +1493,12 @@ if (storedBooking) {
               this.accommodationData = this.propertyData.businessServiceDtoList?.filter(
       (entry) => entry.name === 'Accommodation'
     );
-
+    if(this.activeForGoogleHotelCenter === false) {
     this.accommodationData.forEach((element) => {
        this.serviceChargePercentage = element.serviceChargePercentage;
     });
+    }
+
         this.accommodationData?.forEach((element) => {
           this.smartRecommendationsBoolean = element.smartRecommendation;
         });
@@ -4081,6 +4083,14 @@ onCheckOutClosed(): void {
         this.accommodationData?.forEach((element) =>{
           this.instantBooking = element.instantBooking;
         });
+        if(this.activeForGoogleHotelCenter === false) {
+          this.accommodationData = this.businessUser.businessServiceDtoList?.filter(
+          (entry) => entry.name === 'Accommodation'
+        );
+        this.accommodationData.forEach((element) => {
+          this.serviceChargePercentage = element.serviceChargePercentage;
+        });
+        }
 
         if (this.urlLocation !== undefined && this.urlLocation !== null) {
           this.triggerEventService.newEvent(this.urlLocation);
@@ -4580,7 +4590,6 @@ onCheckOutClosed(): void {
           this.updateTag();
           this.changeDetectorRefs.detectChanges();
           this.token.saveProperty(this.businessUser);
-
           this.accommodationData?.forEach((element) => {
           this.smartRecommendationsBoolean = element.smartRecommendation;
         });
@@ -4592,6 +4601,15 @@ onCheckOutClosed(): void {
         this.accommodationData?.forEach((element) =>{
           this.instantBooking = element.instantBooking;
         });
+
+          if(this.activeForGoogleHotelCenter === false) {
+          this.accommodationData = this.businessUser.businessServiceDtoList?.filter(
+          (entry) => entry.name === 'Accommodation'
+        );
+        this.accommodationData.forEach((element) => {
+          this.serviceChargePercentage = element.serviceChargePercentage;
+        });
+        }
 
           if (this.urlLocation !== undefined && this.urlLocation !== null) {
             this.triggerEventService.newEvent(this.urlLocation);
