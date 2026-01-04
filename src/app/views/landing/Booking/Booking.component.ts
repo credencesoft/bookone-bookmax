@@ -1423,7 +1423,7 @@ this.getPropertyDetailsById(this.bookingData?.propertyId);
     }, 3000);
   }
   backClicked() {
-    this.locationBack.back();
+    window.location.href = this.PropertyUrl;
   }
   getDateFormatDayMonthYear(
     day12: number,
