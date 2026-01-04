@@ -536,11 +536,10 @@ checkValidCouponOrNot(couponList?){
     this.loadingData = true;
     this.hotelBookingService.getPaymentByReffId(referenceNumber).subscribe((res) => {
       this.payment = res.body[0];
-      if (this.payment?.failureCode === null && this.payment.status == 'Paid') {
-
+      if ( this.payment.status == 'Paid') {
         this.createAllBookings();
-
-      }else{
+      }
+      else{
         this.createEnquiry();
       }
     });

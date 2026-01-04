@@ -33,5 +33,6 @@ export const environment = {
   googleKey: '',
   // callbackUrl: 'http://localhost:4200/#/details?ReferenceNumber='
   callbackUrl: 'https://uat.bookone.io/booking-confirm',
+  failureCode:'https://uat.bookone.io/booking',
   callbackUrlPayment:'https://bookone.io/confirm-payment'
 };
