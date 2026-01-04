@@ -3592,6 +3592,7 @@ if (bookingSummaryStr) {
      else if (this.businessUser.paymentGateway === 'PayU') {
       this.payment.paymentMode = 'UPI';
       this.payment.status = 'NotPaid';
+      this.payment.failureCode = environment.failureCode;
       this.payment.businessServiceName = 'Accommodation';
       this.payment.firstName = this.booking.firstName;
       this.payment.lastName = this.booking.lastName;
