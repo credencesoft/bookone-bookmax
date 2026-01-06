@@ -2439,8 +2439,8 @@ resetLastChangedAge(planCode: string) {
       this.actualroompriceCharge = plan.amount;
     }
 
-    const price = this.roomPricePerPlan;
-    const actualRoomPrice = this.actualroompriceCharge;
+    const price = Number(this.roomPricePerPlan.toFixed(2));
+    const actualRoomPrice = Number(this.actualroompriceCharge.toFixed(2));
     const selectedRoomnumber = selectedRooms;
     const SingleDayextraPersonAdultCountAmount = this.extraAdultCharge;
     const SingleDayextraPersonChildCountAmount = this.extraChildrenCharge;
@@ -2550,7 +2550,7 @@ resetLastChangedAge(planCode: string) {
                 }
 
               });
-    const taxPercentageperroom = this.taxTotalSingle * selectedRoomnumber;
+    const taxPercentageperroom = Number((this.taxTotalSingle * selectedRoomnumber).toFixed(2));
 
 
     const summaryEntry = {
@@ -5520,7 +5520,7 @@ onBookNow() {
         ...plan,
         actualRoomPrice: actualRoomPrice,
         price: newPrice,
-        taxPercentageperroom: taxTotalOne
+        taxPercentageperroom: Number(taxTotalOne.toFixed(2)),
       };
         } else {
   let taxTotalTwo = 0;
@@ -5549,7 +5549,7 @@ onBookNow() {
   return {
     ...plan,
     price: newPricNonGHC,
-    taxPercentageperroom: taxTotalTwo,
+    taxPercentageperroom: Number(taxTotalTwo.toFixed(2)),
   };
 }
     });
@@ -5574,18 +5574,18 @@ onBookNow() {
       totalNights: this.DiffDate,
       selectedPlansSummary: bookingSummary.selectedPlansSummary,
       propertyServiceListDataOne: selectedAddOns,
-      totalPlanPrice: totalPlanPrice,
-      totalTax: totalTax,
+      totalPlanPrice: Number(totalPlanPrice.toFixed(2)),
+      totalTax: Number(totalTax.toFixed(2)),
       totalAddOnsPrice: this.getTotalAfterTaxAmountFacility() + this.getTotalTaxFacility(),
       totaltaxfacilityAmount: this.getTotalTaxFacility(),
       totalAmount: this.specialDiscountPercentage
-        ? totalPlanPrice + totalTax +
+        ? Number((totalPlanPrice + totalTax +
           this.getTotalAfterTaxAmountFacility() +
           this.getTotalTaxFacility() -
-          (totalPlanPrice * this.specialDiscountPercentage) / 100
-        : totalPlanPrice + totalTax +
+          (totalPlanPrice * this.specialDiscountPercentage) / 100).toFixed(2))
+        : Number((totalPlanPrice + totalTax +
           this.getTotalAfterTaxAmountFacility() +
-          this.getTotalTaxFacility(),
+          this.getTotalTaxFacility()).toFixed(2)),
     };
     sessionStorage.setItem('bookingSummaryDetails', JSON.stringify(bookingData));
   } else if(this.specialDiscountData && !this.activeForGoogleHotelCenter){
@@ -5718,8 +5718,8 @@ onBookNow() {
       discountedPrice,
       discountAmount,
       taxpercentage: taxPercent,
-      taxPercentageperroom: taxAmount,
-      finalPrice: discountedPrice + taxAmount
+      taxPercentageperroom: Number(taxAmount.toFixed(2)),
+      finalPrice: discountedPrice + Number(taxAmount.toFixed(2))
     };
   });
 }
@@ -5734,10 +5734,10 @@ onBookNow() {
     totalPlanPrice: this.getTotalPlanPrice(),
     totaltaxfacilityAmount: this.getTotalTaxFacility(),
     totalAddOnsPrice: this.getTotalAfterTaxAmountFacility() + this.getTotalTaxFacility(),
-    totalTax: this.getTotalTaxPrice(),
+    totalTax: Number(this.getTotalTaxPrice().toFixed(2)),
     totalAmount:
-      ((this.getTotalPlanPrice() +
-      this.getTotalAfterTaxAmountFacility()) - ((this.getTotalPlanPrice() * this.specialDiscountPercentage)/100)) + this.getTotalTaxPrice(),
+      Number((((this.getTotalPlanPrice() +
+      this.getTotalAfterTaxAmountFacility()) - ((this.getTotalPlanPrice() * this.specialDiscountPercentage)/100)) + this.getTotalTaxPrice()).toFixed(2)),
   };
       sessionStorage.setItem('bookingSummaryDetails', JSON.stringify(bookingData));
     } else if(this.specialDiscountData && this.activeForGoogleHotelCenter){
@@ -5867,8 +5867,8 @@ onBookNow() {
       discountedPrice,
       discountAmount,
       taxpercentage: taxPercent,
-      taxPercentageperroom: taxAmount,
-      finalPrice: discountedPrice + taxAmount
+      taxPercentageperroom: Number(taxAmount.toFixed(2)),
+      finalPrice: discountedPrice + Number(taxAmount.toFixed(2))
     };
   });
 }
@@ -5884,8 +5884,8 @@ onBookNow() {
     totaltaxfacilityAmount: this.getTotalTaxFacility(),
     totalAddOnsPrice: this.getTotalAfterTaxAmountFacility() + this.getTotalTaxFacility(),
     totalTax: this.getGrandTaxTotal(),
-    totalAmount: ((this.getGrandSubtotal() - ((this.getGrandSubtotal() * this.specialDiscountPercentage) / 100)))
-                    + this.getGrandTaxTotal(),
+    totalAmount: Number((((this.getGrandSubtotal() - ((this.getGrandSubtotal() * this.specialDiscountPercentage) / 100)))
+                    + this.getGrandTaxTotal()).toFixed(2)),
   };
       sessionStorage.setItem('bookingSummaryDetails', JSON.stringify(bookingData));
     }else {
@@ -5899,17 +5899,17 @@ onBookNow() {
       selectedPlansSummary: this.selectedPlansSummary,
       propertyServiceListDataOne: selectedAddOns,
       totalPlanPrice: this.getTotalPlanPrice(),
-      totalTax: this.getTotalTaxPrice(),
+      totalTax: Number((this.getTotalTaxPrice()).toFixed(2)),
       totalAddOnsPrice: this.getTotalAfterTaxAmountFacility() + this.getTotalTaxFacility(),
       totaltaxfacilityAmount: this.getTotalTaxFacility(),
       totalAmount: this.specialDiscountPercentage
-        ? this.getTotalPlanPrice() +
+        ? Number((this.getTotalPlanPrice() +
           this.getTotalAfterTaxAmountFacility() +
           this.getTotalTaxPrice() -
-          (this.getTotalPlanPrice() * this.specialDiscountPercentage) / 100
-        : this.getTotalPlanPrice() +
+          (this.getTotalPlanPrice() * this.specialDiscountPercentage) / 100).toFixed(2))
+        : Number((this.getTotalPlanPrice() +
           this.getTotalAfterTaxAmountFacility() +
-          this.getTotalTaxPrice(),
+          this.getTotalTaxPrice()).toFixed(2)),
     };
     sessionStorage.setItem('bookingSummaryDetails', JSON.stringify(bookingData));
   }

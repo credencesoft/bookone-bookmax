@@ -217,23 +217,20 @@
 
 <!-- Popup Dialog -->
 <div class="website-mob-vision">
-  <p-dialog
-    header="Booking Summary"
-    [(visible)]="showBookingSummary"
-    [modal]="true"
-    styleClass="booking-summary-dialog"
-    [style]="{
-    width: '100%',
-    height: '100%',
-    maxWidth: '100%',
-    maxHeight: '100%',
-    margin: '0',
-    borderRadius: '0',
-  }"
-    [contentStyle]="{ height: 'calc(100% - 3rem)' }"
-    [dismissableMask]="true"
-    [breakpoints]="{ '768px': '100%' }"
-  >
+  <div
+  class="mobile-dialog-backdrop"
+  *ngIf="showBookingSummary"
+  (click)="closeDialog($event)"
+>
+  <div class="mobile-dialog" (click)="$event.stopPropagation()">
+
+    <div class="mobile-dialog-header">
+      <span>Booking Summary</span>
+      <i
+        class="fa-regular fa-circle-xmark close-icon"
+        (click)="showBookingSummary = false"
+      ></i>
+    </div>
     <div class="container-div">
       <!-- Dates & Guests -->
       <small *ngIf="!isBookingAllowed()" class="text-danger">
@@ -754,7 +751,8 @@
         Book Now
       </button>
     </div>
-  </p-dialog>
+   </div>
+</div>
 </div>
 
   <div class="container-div">

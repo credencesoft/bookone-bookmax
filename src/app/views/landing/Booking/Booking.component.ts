@@ -474,7 +474,7 @@ if (parsed.discountPercentage) {
       : null;
         const plans = bookingSummary.selectedPlansSummary;
           if (plans.length >= 2) {
-        this.groupBookingId = Math.floor(100000 + Math.random() * 900000);
+        this.groupBookingId = Math.floor(10000000 + Math.random() * 90000000);
       }
     this.otaPlanPrice = this.token.getLandingPrice();
     this.otaTaxAmount = this.token.getAllTaxArray();
@@ -1948,14 +1948,17 @@ if (!this.fromTime && !this.toTime) {
               enquiryForm.advanceAmount = Number(
                 Number((((firstPlan?.taxPercentageperroom + firstPlan?.price) / 100) * 50).toFixed(2))
               );
+
             } else if (this.businessServiceDto.advanceAmountPercentage === 100) {
               enquiryForm.advanceAmount = Number(
                 Number((firstPlan?.taxPercentageperroom + firstPlan?.price).toFixed(2))
               );
+
             } else {
               enquiryForm.advanceAmount = Number(
                 Number((((firstPlan?.taxPercentageperroom + firstPlan?.price) / 100) * 20).toFixed(2))
               );
+
             }
             } else {
               enquiryForm.advanceAmount = 0;
@@ -1964,6 +1967,7 @@ if (!this.fromTime && !this.toTime) {
               enquiryForm.advanceAmount = Number(
                 Number((enquiryForm.totalAmount).toFixed(2))
               );
+
             }
           }
         }
@@ -1984,19 +1988,23 @@ if (!this.fromTime && !this.toTime) {
               enquiryForm.advanceAmount = Number(
                 Number(((((firstPlan?.taxPercentageperroom + firstPlan?.price) / 100) * 50) + serviceChargeAmount).toFixed(2))
               );
+
             } else if (this.businessServiceDto.advanceAmountPercentage === 100) {
               enquiryForm.advanceAmount = Number(
                 Number(((firstPlan?.taxPercentageperroom + firstPlan?.price) + serviceChargeAmount).toFixed(2))
               );
+
             } else {
               enquiryForm.advanceAmount = Number(
                 Number(((((firstPlan?.taxPercentageperroom + firstPlan?.price) / 100) * 20) + serviceChargeAmount).toFixed(2))
               );
+
             }
             } else {
               enquiryForm.advanceAmount = 0;
             }
             if (this.businessServiceDto.advanceAmountPercentage === 100) {
+              const serviceChargeAmount = (plan.price * this.serviceChargePercentage) / 100;
               enquiryForm.advanceAmount = Number(
                 Number(((enquiryForm.totalAmount) + serviceChargeAmount).toFixed(2))
               );
@@ -2004,6 +2012,13 @@ if (!this.fromTime && !this.toTime) {
           }
         }
         }
+    if (this.serviceChargePercentage && this.serviceChargePercentage > 0) {
+      const serviceChargeAmount = (plan.price * this.serviceChargePercentage) / 100;
+      enquiryForm.convenienceFee = Number((serviceChargeAmount).toFixed(2));
+      enquiryForm.payableAmount = Number((plan.price + plan.taxPercentageperroom + serviceChargeAmount).toFixed(2));
+       enquiryForm.beforeTaxAmount = Number((plan.price).toFixed(2));
+       enquiryForm.totalAmount = Number((plan.price + plan.taxPercentageperroom + serviceChargeAmount).toFixed(2));
+    }
     if (this.specialDiscountData) {
       if (this.serviceChargePercentage && this.serviceChargePercentage > 0) {
         const serviceChargeAmount = (plan.discountedPrice * this.serviceChargePercentage) / 100;
@@ -2023,14 +2038,17 @@ if (!this.fromTime && !this.toTime) {
               enquiryForm.advanceAmount = Number(
                 Number((((plan.finalPrice + serviceChargeAmount) / 100) * 50).toFixed(2))
               );
+
             } else if (this.businessServiceDto.advanceAmountPercentage === 100) {
               enquiryForm.advanceAmount = Number(
                 Number((plan.finalPrice + serviceChargeAmount).toFixed(2))
               );
+
             } else {
               enquiryForm.advanceAmount = Number(
                 Number(((((plan.finalPrice) / 100) * 20) + serviceChargeAmount).toFixed(2))
               );
+
             }
             } else {
               enquiryForm.advanceAmount = 0;
@@ -2039,6 +2057,7 @@ if (!this.fromTime && !this.toTime) {
               enquiryForm.advanceAmount = Number(
                 Number((enquiryForm.totalAmount + serviceChargeAmount).toFixed(2))
               );
+
             }
           }
       } else {
@@ -2058,14 +2077,17 @@ if (!this.fromTime && !this.toTime) {
               enquiryForm.advanceAmount = Number(
                 Number((((plan.finalPrice) / 100) * 50).toFixed(2))
               );
+
             } else if (this.businessServiceDto.advanceAmountPercentage === 100) {
               enquiryForm.advanceAmount = Number(
                 Number((plan.finalPrice).toFixed(2))
               );
+
             } else {
               enquiryForm.advanceAmount = Number(
                 Number((((plan.finalPrice) / 100) * 20).toFixed(2))
               );
+
             }
             } else {
               enquiryForm.advanceAmount = 0;
@@ -2074,19 +2096,14 @@ if (!this.fromTime && !this.toTime) {
               enquiryForm.advanceAmount = Number(
                 Number((enquiryForm.totalAmount).toFixed(2))
               );
+
             }
           }
       }
 
     }
 
-    if (this.serviceChargePercentage && this.serviceChargePercentage > 0) {
-      const serviceChargeAmount = (plan.price * this.serviceChargePercentage) / 100;
-      enquiryForm.convenienceFee = Number((serviceChargeAmount).toFixed(2));
-      enquiryForm.payableAmount = Number((plan.price + plan.taxPercentageperroom + serviceChargeAmount).toFixed(2));
-       enquiryForm.beforeTaxAmount = Number((plan.price).toFixed(2));
-       enquiryForm.totalAmount = Number((plan.price + plan.taxPercentageperroom + serviceChargeAmount).toFixed(2));
-    }
+
 
     this.paymentLoader = true;
     try {

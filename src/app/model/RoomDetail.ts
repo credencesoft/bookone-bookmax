@@ -8,5 +8,7 @@ export class RoomDetail {
   roomRate: Number;
   roomTypeId: any;
   roomTypeName: string
+  extraPersonCharge: any;
+  noOfExtraPerson: any;
   constructor() { }
 }
