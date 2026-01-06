@@ -394,7 +394,12 @@
                   <td *ngIf="booking.discountAmount">-₹{{ booking.discountAmount | number : "1.2-2" }}</td>
                   <td>₹{{ booking.beforeTaxAmount | number : "1.2-2" }}</td>
                   <td>₹{{ booking.taxAmount | number : "1.2-2" }}</td>
-                  <td>₹{{ booking.totalAmount | number : "1.2-2" }}</td>
+                  <td>₹{{
+                    (serviceChargePercentage
+                      ? booking.totalAmount - booking.convenienceFee
+                      : booking.totalAmount)
+                      | number : '1.2-2'
+                  }}</td>
                 </tr>
               </tbody>
             </table>
@@ -882,7 +887,14 @@
             <hr style="border: 1px solid #E5E7EB; margin-top: 5px; margin-bottom: 5px;">
             <div class="d-flex justify-content-between" style="font-weight: bold;">
                 <div>Total Amount</div>
-                <div>₹{{ booking.totalAmount | number : "1.2-2" }}</div>
+                <div>
+                  ₹{{
+                    (serviceChargePercentage
+                      ? booking.totalAmount - booking.convenienceFee
+                      : booking.totalAmount)
+                      | number : '1.2-2'
+                  }}
+                </div>
             </div>
           </ng-container>
           </div>
