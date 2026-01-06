@@ -6335,22 +6335,61 @@ onBookNow() {
             this.availableRooms = response.body.roomList.sort(
             (a: any, b: any) => b.roomOnlyPrice - a.roomOnlyPrice
           );
+          const roomListOne = response.body.roomList || [];
 
-          this.availableRooms = this.availableRooms.filter(room =>
-          room.ratesAndAvailabilityDtos?.length > 0 &&
-          (room.ratesAndAvailabilityDtos[0]?.stopSellOBE === null || room.ratesAndAvailabilityDtos[0]?.stopSellOBE === false) &&
-          (room.ratesAndAvailabilityDtos[0]?.stopSellOTA === null || room.ratesAndAvailabilityDtos[0]?.stopSellOTA === false)
-        );
+          const sortedRoomsOne = roomListOne.sort(
+            (a: any, b: any) => b.roomOnlyPrice - a.roomOnlyPrice
+          );
+          this.availableRooms = sortedRoomsOne.filter(room => {
+                const rates = room.ratesAndAvailabilityDtos;
+
+                if (!rates || rates.length === 0) {
+                  return false;
+                }
+
+                const isStopSellOBE =
+                  rates[0]?.stopSellOBE !== null && rates[0]?.stopSellOBE !== false;
+
+                const isStopSellOTA =
+                  rates[0]?.stopSellOTA !== null && rates[0]?.stopSellOTA !== false;
+
+                return (
+                  rates.length === this.booking.noOfNights &&
+                  !isStopSellOBE &&
+                  !isStopSellOTA
+                );
+              });
+
+        //   this.availableRooms = this.availableRooms.filter(room =>
+        //   room.ratesAndAvailabilityDtos?.length > 0 &&
+        //   (room.ratesAndAvailabilityDtos[0]?.stopSellOBE === null || room.ratesAndAvailabilityDtos[0]?.stopSellOBE === false) &&
+        //   (room.ratesAndAvailabilityDtos[0]?.stopSellOTA === null || room.ratesAndAvailabilityDtos[0]?.stopSellOTA === false)
+        // );
 
                 if(this.activeForGoogleHotelCenter === true) {
           this.getAvailableRoomsForGHC(this.availableRooms);
         }
     // Filter sold-out rooms
-          this.soldOutRooms = response.body.roomList.filter(room =>
-            room.ratesAndAvailabilityDtos === null ||
-            (room.ratesAndAvailabilityDtos[0]?.stopSellOBE != null && room.ratesAndAvailabilityDtos[0]?.stopSellOBE !== false) ||
-            (room.ratesAndAvailabilityDtos[0]?.stopSellOTA != null && room.ratesAndAvailabilityDtos[0]?.stopSellOTA !== false)
-          );
+          // this.soldOutRooms = response.body.roomList.filter(room =>
+          //   room.ratesAndAvailabilityDtos === null ||
+          //   (room.ratesAndAvailabilityDtos[0]?.stopSellOBE != null && room.ratesAndAvailabilityDtos[0]?.stopSellOBE !== false) ||
+          //   (room.ratesAndAvailabilityDtos[0]?.stopSellOTA != null && room.ratesAndAvailabilityDtos[0]?.stopSellOTA !== false)
+          // );
+          this.soldOutRooms = sortedRoomsOne.filter(room => {
+              const rates = room.ratesAndAvailabilityDtos;
+
+              if (!rates || rates.length !== this.booking.noOfNights) {
+                return true;
+              }
+
+              const isStopSellOBE =
+                rates[0]?.stopSellOBE !== null && rates[0]?.stopSellOBE !== false;
+
+              const isStopSellOTA =
+                rates[0]?.stopSellOTA !== null && rates[0]?.stopSellOTA !== false;
+
+              return isStopSellOBE || isStopSellOTA;
+            });
           this.SubAvailableRooms = response.body.roomList;
           const queryParams = {
              noOfChildren: this.children,
