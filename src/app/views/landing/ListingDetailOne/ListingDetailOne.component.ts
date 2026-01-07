@@ -6331,7 +6331,9 @@ onBookNow() {
       .subscribe(
         (response) => {
           this.loaderHotelBooking = false;
+
           this.availableRooms = response.body.roomList;
+          console.log("response.body.roomList",response.body.roomList)
             this.availableRooms = response.body.roomList.sort(
             (a: any, b: any) => b.roomOnlyPrice - a.roomOnlyPrice
           );
@@ -6352,13 +6354,14 @@ onBookNow() {
 
                 const isStopSellOTA =
                   rates[0]?.stopSellOTA !== null && rates[0]?.stopSellOTA !== false;
-
+                console.log(rates.length === this.booking.noOfNights,"rates.length === this.booking.noOfNights")
                 return (
                   rates.length === this.booking.noOfNights &&
                   !isStopSellOBE &&
                   !isStopSellOTA
                 );
               });
+          console.log("this.availableRooms",this.availableRooms)
 
         //   this.availableRooms = this.availableRooms.filter(room =>
         //   room.ratesAndAvailabilityDtos?.length > 0 &&
@@ -6390,6 +6393,7 @@ onBookNow() {
 
               return isStopSellOBE || isStopSellOTA;
             });
+            console.log("this.soldOutRooms",this.soldOutRooms)
           this.SubAvailableRooms = response.body.roomList;
           const queryParams = {
              noOfChildren: this.children,

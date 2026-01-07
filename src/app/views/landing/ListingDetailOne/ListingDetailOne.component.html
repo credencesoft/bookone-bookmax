@@ -2322,84 +2322,9 @@
                 </div>
               </div>
 
-              <ng-container
-                 *ngIf="
-            selectedRoom?.ratesAndAvailabilityDtos?.length > 0 &&
-            i === 0 &&
-            this.isDiabled && (selectedRoom.ratesAndAvailabilityDtos?.[0]?.stopSellOBE === null || selectedRoom?.ratesAndAvailabilityDtos?.[0]?.stopSellOBE === false) &&
-       (selectedRoom?.ratesAndAvailabilityDtos?.[0]?.stopSellOTA === null || selectedRoom?.ratesAndAvailabilityDtos?.[0]?.stopSellOTA === false)
-          "
-        >
-                <ng-container
-                  *ngFor="
-                    let rates of selectedRoom?.ratesAndAvailabilityDtos
-                      | slice : 0 : 1;
-                    let r = index
-                  "
-                >
-                  <ng-container
-                    *ngFor="let plan of getFilteredPlans(rates?.roomRatePlans); let p = index"
-                  >
-                    <div
-                      class="popup-card"
-                      *ngIf="
-                        room.id === rates.roomId &&
-                        r < 1 &&
-                        (rates.stopSellOBE === false ||
-                          rates.stopSellOBE === null)
-                      "
-                    >
-                      <h4 class="popup-plan">{{ plan.name }}</h4>
-
-                      <div
-                        class="d-flex justify-content-between margin-top-20px"
-                      >
-                        <h4 class="popup-plan font-weight-bold">
-                          {{
-                            plan.amount
-                              | currency : currency : "symbol" : "1.2-2"
-                          }}
-                        </h4>
-                        <p style="font-size: smaller">per night + taxes</p>
-                      </div>
-                      <div class="d-flex justify-content-between">
-                        <div
-                        *ngIf="plan?.extraChargePerPerson"
-                          class="d-flex"
-                          style="align-items: center; gap: 10px"
-                        >
-                          <img src=" media-be/images/adult-img.svg" alt="" />
-                          <p style="font-size: smaller; margin-bottom: 0px">
-                            Extra Adult Charge:  {{plan?.extraChargePerPerson | currency : currency : "symbol" : "1.2-2"}}
-                          </p>
-                        </div>
-                        <div
-                        *ngIf="plan?.extraChargePerChild"
-                          class="d-flex"
-                          style="align-items: center; gap: 10px"
-                        >
-                          <img src=" media-be/images/child-img.svg" alt="" />
-                          <p style="font-size: smaller; margin-bottom: 0px">
-                            Extra Child Charge: {{plan?.extraChargePerChild | currency : currency : "symbol" : "1.2-2"}}
-                          </p>
-                        </div>
-                      </div>
-                      <div class="margin-top-10px">
-                        <button
-                          class="btn select-plan"
-                          (click)="onSelectPlanFromPopup(plan)"
-                        >
-                          Select Plan
-                        </button>
-                      </div>
-                    </div>
-                  </ng-container>
-                </ng-container>
-              </ng-container>
 
               <ng-container
-                *ngIf="selectedRoom?.ratesAndAvailabilityDtos?.length>0 && i>0 && this.isDiabled && selectedRoom?.ratesAndAvailabilityDtos?.[0]?.roomRatePlans?.length > 0 && (selectedRoom?.ratesAndAvailabilityDtos?.[0]?.stopSellOBE === null || selectedRoom?.ratesAndAvailabilityDtos?.[0]?.stopSellOBE === false) &&
-       (selectedRoom?.ratesAndAvailabilityDtos?.[0]?.stopSellOTA === null || selectedRoom?.ratesAndAvailabilityDtos?.[0]?.stopSellOTA === false) "
+              *ngIf="this.availableRooms?.length > 0"
               >
                 <ng-container
                   *ngFor="
@@ -3114,8 +3039,7 @@
 
         <div
           class="card-rooms card margin-top-20px"
-          *ngIf="room.ratesAndAvailabilityDtos?.length>0 && i>0 && this.isDiabled && room.ratesAndAvailabilityDtos?.[0]?.roomRatePlans?.length > 0 && (room.ratesAndAvailabilityDtos?.[0]?.stopSellOBE === null || room.ratesAndAvailabilityDtos?.[0]?.stopSellOBE === false) &&
-       (room.ratesAndAvailabilityDtos?.[0]?.stopSellOTA === null || room.ratesAndAvailabilityDtos?.[0]?.stopSellOTA === false) "
+        *ngIf="this.availableRooms?.length > 0"
         >
           <div
             *ngFor="let rates of room.ratesAndAvailabilityDtos; let r = index"
