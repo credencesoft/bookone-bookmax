@@ -1805,6 +1805,17 @@ showSliderPopup() {
   return selectedRooms >= this.rooms;
 }
 
+getMinAvailableRooms(ratesList: any[]): number {
+  if (!ratesList || ratesList.length === 0) {
+    return 0;
+  }
+  return Math.min(
+    ...ratesList
+      .filter(r => r.stopSellOBE === false || r.stopSellOBE === null)
+      .map(r => r.noOfAvailable ?? 0)
+  );
+}
+
 getRoomOptions(totalAvailable: number, roomName: string, currentPlanCode: string): number[] {
   // Filter only plans that belong to this room
   const usedRooms = Object.entries(this.selectedRoomsByPlan)
@@ -2110,187 +2121,6 @@ resetLastChangedAge(planCode: string) {
     }
   }, 100); // slight delay ensures DOM updates
 }
-
-  // onPlanSelect(planCode: string, rates: any) {
-  //   const selectedRooms = this.selectedRoomsByPlan[planCode];
-  //   const selectedGuests = this.selectedGuestsByPlan[planCode];
-  //   const plan = rates.roomRatePlans.find((p) => p.code === planCode);
-  //   // Reset
-  //     this.extraAdultCharge = 0;
-  //     this.extraChildrenCharge = 0;
-  //     this.extraAdultCount = 0;
-  //     this.extraChildCount = 0;
-  //     const childAges = (this.childAgesByPlan[planCode] || []).map(a => Number(a));
-  //     const below5Count = childAges.filter(a => !isNaN(a) && a <= 5).length;
-  //     const above5Count = childAges.filter(a => !isNaN(a) && a > 5).length;
-
-
-  //     rates.roomRatePlans.forEach((ele1) => {
-  //       if (plan.code === ele1.code) {
-  //         const totalMinAdults = ele1.minimumOccupancy * selectedRooms;
-  //         const totalMinChildren = ele1.noOfChildren * selectedRooms;
-
-  //         const extraAdults =
-  //           selectedGuests.adults > totalMinAdults
-  //             ? selectedGuests.adults - totalMinAdults
-  //             : 0;
-  //         const extraChildren =
-  //           above5Count > totalMinChildren
-  //             ? above5Count - totalMinChildren
-  //             : 0;
-
-  //         this.extraAdultCount = extraAdults;
-  //         this.extraAdultCharge = extraAdults * ele1.extraChargePerPerson;
-
-  //         this.extraChildCount = extraChildren;
-  //         this.extraChildrenCharge = extraChildren * ele1.extraChargePerChild;
-  //       }
-  //     });
-  //   if (selectedRooms && selectedGuests?.adults > 0) {
-  //     const roomName = rates.roomName;
-  //     const roomId = rates.roomId;
-  //     // i have suffle because i have added a condition
-  //     const planName = plan.code;
-  //     const planCodeName = plan.name;
-  //     const nights = this.DiffDate;
-  //     if (this.extraAdultCharge && !this.extraChildrenCharge) {
-  //       const priceOne =
-  //         plan.code === 'GHC' && this.activeForGoogleHotelCenter
-  //           ? this.totalplanPrice + this.extraAdultCharge
-  //           : plan.amount * nights * selectedRooms + this.extraAdultCharge;
-  //           this.actualroompriceCharge = plan.amount;
-  //       this.roomPricePerPlan = priceOne;
-  //     } else if (this.extraChildrenCharge && !this.extraAdultCharge) {
-  //       const priceOne =
-  //         plan.code === 'GHC' && this.activeForGoogleHotelCenter
-  //           ? this.totalplanPrice + this.extraChildrenCharge
-  //           : plan.amount * nights * selectedRooms + this.extraChildrenCharge;
-  //       this.actualroompriceCharge = plan.amount;
-  //       this.roomPricePerPlan = priceOne;
-  //     } else if (this.extraAdultCharge && this.extraChildrenCharge) {
-  //       const priceOne =
-  //         plan.code === 'GHC' && this.activeForGoogleHotelCenter
-  //           ? this.totalplanPrice +
-  //             (this.extraChildrenCharge + this.extraAdultCharge)
-  //           : plan.amount * nights * selectedRooms +
-  //             (this.extraChildrenCharge + this.extraAdultCharge);
-  //       this.actualroompriceCharge = plan.amount;
-  //       this.roomPricePerPlan = priceOne;
-  //     } else {
-  //       const priceOne =
-  //         plan.code === 'GHC' && this.activeForGoogleHotelCenter
-  //           ? this.totalplanPrice
-  //           : plan.amount * nights * selectedRooms;
-  //       this.roomPricePerPlan = priceOne;
-  //       this.actualroompriceCharge = plan.amount;
-  //     }
-  //     const price = this.roomPricePerPlan;
-  //     const actualRoomPrice = this.actualroompriceCharge;
-  //     const selectedRoomnumber = selectedRooms;
-  //     const extraPersonAdultCountAmount = this.extraAdultCharge;
-  //     const extraPersonChildCountAmount = this.extraChildrenCharge;
-  //     const extraCountAdult = this.extraAdultCount? this.extraAdultCount: 0;
-  //     const extraCountChild = this.extraChildCount? this.extraChildCount: 0;
-  //     if (this.businessUser.taxDetails.length > 0) {
-  //       this.businessUser.taxDetails.forEach((element) => {
-  //         if (element.name === 'GST') {
-  //           this.booking.taxDetails = [];
-  //           this.booking.taxDetails.push(element);
-  //           this.taxPercentage = element.percentage;
-  //           this.booking.taxPercentage = this.taxPercentage;
-  //           if (
-  //             plan?.code === 'GHC' &&
-  //             this.activeForGoogleHotelCenter === true
-  //           ) {
-  //             if (element.taxSlabsList.length > 0) {
-  //               element.taxSlabsList.forEach((element2) => {
-  //                 if (
-  //                   element2.maxAmount >
-  //                     price +
-  //                       (extraPersonAdultCountAmount +
-  //                         extraPersonChildCountAmount) /
-  //                         nights &&
-  //                   element2.minAmount <
-  //                     this.booking.roomPrice +
-  //                       (extraPersonAdultCountAmount +
-  //                         extraPersonChildCountAmount) /
-  //                         nights
-  //                 ) {
-  //                   this.taxPercentage = element2.percentage;
-  //                   this.booking.taxPercentage = this.taxPercentage;
-  //                 } else if (
-  //                   element2.maxAmount <
-  //                   price +
-  //                     (extraPersonAdultCountAmount +
-  //                       extraPersonChildCountAmount) /
-  //                       nights
-  //                 ) {
-  //                   this.taxPercentage = element2.percentage;
-  //                   this.booking.taxPercentage = this.taxPercentage;
-  //                 }
-  //               });
-  //             }
-  //           } else {
-  //             if (element.taxSlabsList.length > 0) {
-  //               element.taxSlabsList.forEach((element2) => {
-  //                 if (
-  //                   element2.maxAmount > price &&
-  //                   element2.minAmount < price
-  //                 ) {
-  //                   this.taxPercentage = element2.percentage;
-  //                   this.booking.taxPercentage = this.taxPercentage;
-  //                 } else if (element2.maxAmount < price) {
-  //                   this.taxPercentage = element2.percentage;
-  //                   this.booking.taxPercentage = this.taxPercentage;
-  //                 }
-  //               });
-  //             }
-  //           }
-  //         }
-  //       });
-  //       // this.taxPercentage = this.booking.taxDetails[0].percentage;
-  //     }
-  //     const taxpercentage = this.booking.taxPercentage;
-  //     const taxPercentageperroom = (price * this.booking.taxPercentage) / 100;
-
-  //     const summaryEntry = {
-  //       roomName,
-  //       actualRoomPrice,
-  //       extraPersonChildCountAmount,
-  //       extraPersonAdultCountAmount,
-  //       roomId,
-  //       planName,
-  //       adults: selectedGuests.adults,
-  //       children: above5Count + below5Count || 0,
-  //       nights,
-  //       price,
-  //       selectedRoomnumber,
-  //       taxPercentageperroom,
-  //       taxpercentage,
-  //       extraCountChild,
-  //       extraCountAdult,
-  //       planCodeName
-  //     };
-
-  //     // Replace if already exists
-  //     const index = this.selectedPlansSummary.findIndex(
-  //       (p) => p.planName === planName
-  //     );
-  //     if (index > -1) {
-  //       this.selectedPlansSummary[index] = summaryEntry;
-  //     } else {
-  //       this.selectedPlansSummary.push(summaryEntry);
-  //     }
-  //     console.log('summaryEntry', summaryEntry);
-  //     sessionStorage.setItem(
-  //       'bookingSummaryDetails',
-  //       JSON.stringify({
-  //         selectedPlansSummary: this.selectedPlansSummary
-  //         // Add any other relevant data if needed
-  //       })
-  //     );
-  //   }
-  // }
 
   onPlanSelect(planCode: string, rates: any) {
     const selectedRooms = this.selectedRoomsByPlan[planCode];
