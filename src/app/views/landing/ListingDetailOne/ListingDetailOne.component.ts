@@ -2228,6 +2228,7 @@ resetLastChangedAge(planCode: string) {
         selectedGuests.adults > totalMinAdults
           ? selectedGuests.adults - totalMinAdults
           : 0;
+          console.log("extraAdults",extraAdults)
       const extraChildren =
         above5Count > totalMinChildren
           ? above5Count - totalMinChildren
@@ -2236,10 +2237,21 @@ resetLastChangedAge(planCode: string) {
       this.extraAdultCount = extraAdults;
       this.extraAdultCharge = extraAdults * ele1.extraChargePerPerson;
       this.singleextraAdultCount = this.singleextraChild;
-      this.singleextraAdultCharge = this.singleextraAdults * ele1.extraChargePerPerson;
+      // this.singleextraAdultCharge = this.singleextraAdults * ele1.extraChargePerPerson;
+      if(this.singleextraAdults > 0) {
+        this.singleextraAdultCharge = ele1.extraChargePerPerson;
+      } else {
+        this.singleextraAdultCharge = 0
+      }
+
       this.extraChildCount = extraChildren;
       this.singleextraChildCount = this.singleextraChild;
-      this.singleextraChildrenCharge = this.singleextraChild * ele1.extraChargePerChild;
+      if(this.singleextraChild > 0) {
+        this.singleextraChildrenCharge = ele1.extraChargePerChild;
+      } else {
+        this.singleextraChildrenCharge = 0;
+      }
+
       this.extraChildrenCharge = extraChildren * ele1.extraChargePerChild;
     }
   });
