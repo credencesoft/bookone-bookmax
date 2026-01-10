@@ -195,6 +195,7 @@ currentPage = 0; // page index
   priceingO: any;
   propertyById: number;
   serviceChargePercentage: any;
+  singleextraAdultChargeBookOne: any;
   toggleListingDetails() {
     this.showListingDetails = !this.showListingDetails;
   }
@@ -2240,20 +2241,21 @@ resetLastChangedAge(planCode: string) {
       this.extraAdultCount = extraAdults;
       this.extraAdultCharge = extraAdults * ele1.extraChargePerPerson;
       this.singleextraAdultCount = this.singleextraChild;
-      // this.singleextraAdultCharge = this.singleextraAdults * ele1.extraChargePerPerson;
+      this.singleextraAdultCharge = this.singleextraAdults * ele1.extraChargePerPerson;
       if(this.singleextraAdults > 0) {
-        this.singleextraAdultCharge = ele1.extraChargePerPerson;
+        this.singleextraAdultChargeBookOne = ele1.extraChargePerPerson
       } else {
-        this.singleextraAdultCharge = 0
+        this.singleextraAdultChargeBookOne = 0;
       }
 
       this.extraChildCount = extraChildren;
       this.singleextraChildCount = this.singleextraChild;
-      if(this.singleextraChild > 0) {
-        this.singleextraChildrenCharge = ele1.extraChargePerChild;
-      } else {
-        this.singleextraChildrenCharge = 0;
-      }
+      this.singleextraChildrenCharge = this.singleextraChild * ele1.extraChargePerChild;
+      // if(this.singleextraChild > 0) {
+      //   this.singleextraChildrenCharge = ele1.extraChargePerChild;
+      // } else {
+      //   this.singleextraChildrenCharge = 0;
+      // }
 
       this.extraChildrenCharge = extraChildren * ele1.extraChargePerChild;
     }
@@ -2297,6 +2299,7 @@ resetLastChangedAge(planCode: string) {
     const childrenAbove5years = above5Count;
     const singleextraAdultCharges = this.singleextraAdultCharge;
     const singleextraChildrenCharges = this.singleextraChildrenCharge;
+    const singleextraAdultChargeBookOne = this.singleextraAdultChargeBookOne;
     if (this.businessUser.taxDetails.length > 0) {
       this.businessUser.taxDetails.forEach((element) => {
         if (element.name === 'GST') {
@@ -2405,6 +2408,7 @@ resetLastChangedAge(planCode: string) {
       extraPersonAdultCountAmount,
       SingleDayextraPersonChildCountAmount,
       singleextraAdultCharges,
+      singleextraAdultChargeBookOne,
       singleextraChildrenCharges,
       SingleDayextraPersonAdultCountAmount,
       roomId,
@@ -2420,7 +2424,7 @@ resetLastChangedAge(planCode: string) {
       extraCountAdult,
       planCodeName,
       childrenAbove5years,
-      childrenBelow5years
+      childrenBelow5years,
     };
       // Replace if already exists
 
