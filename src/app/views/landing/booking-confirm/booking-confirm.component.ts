@@ -898,7 +898,7 @@ this.combinedDateToTime = combinedCheckoutDate.getTime();
           savedBooking.id,
           this.bookingSummaryDetails?.propertyServiceListDataOne
         );
-        this.getSubscriptions(savedBooking);
+        this.getSubscriptions(savedBooking, plan);
         // this.sendWhatsappMessageToTHM(savedBooking);
         // this.sendWhatsappMessageToTHM3(savedBooking);
         // this.sendWhatsappMessageToTHM2(savedBooking);
@@ -1089,7 +1089,7 @@ this.combinedDateToTime = combinedCheckoutDate.getTime();
             );
           }
           // this.addServiceToBooking(this.booking);
-          this.getSubscriptions(this.booking.propertyId);
+          // this.getSubscriptions(this.booking.propertyId, plan);
           this.bookingConfirmed = true;
           this.paymentLoader = true;
           this.changeDetectorRefs.detectChanges();
@@ -1324,7 +1324,7 @@ this.combinedDateToTime = combinedCheckoutDate.getTime();
   );
 }
 
-  getSubscriptions(booking: any) {
+  getSubscriptions(booking: any, plan) {
     // console.log('booking', booking);
     this.hotelBookingService
       .getSubscriptions(booking.propertyId)
@@ -1340,7 +1340,7 @@ this.combinedDateToTime = combinedCheckoutDate.getTime();
         console.log('foundSubscriptionBookingEngine is',foundSubscriptionBookingEngine);
 
         if (foundSubscription) {
-          this.externalReservation(booking);
+          this.externalReservation(booking, plan);
         } else {
           // console.log('BookOne Subscription is not found');
         }
@@ -1359,7 +1359,7 @@ this.combinedDateToTime = combinedCheckoutDate.getTime();
       });
   }
 
-  externalReservation(booking) {
+  externalReservation(booking, plan) {
     this.reservationRoomDetails = [];
     let roomdetailss = new RoomDetail();
     let externalreservation = new externalReservationDtoList();
@@ -1409,7 +1409,7 @@ this.combinedDateToTime = combinedCheckoutDate.getTime();
     roomdetailss.noOfRooms = booking?.noOfRooms;
     roomdetailss.noOfadult = booking?.noOfPersons;
     roomdetailss.noOfExtraPerson = booking.noOfExtraPerson;
-    roomdetailss.extraPersonCharge = booking.extraPersonCharge / (booking.noOfRooms * booking.noOfNights);
+    roomdetailss.extraPersonCharge = plan.singleextraAdultChargeBookOne;
     roomdetailss.noOfchild = booking?.noOfChildrenUnder5years + booking?.noOfChildren;
     roomdetailss.plan = booking?.roomRatePlanName;
     roomdetailss.roomRate = booking?.roomPrice;

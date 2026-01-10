@@ -756,7 +756,7 @@ if(this.bookoneActiveData === false) {
     }
   }
 
-  getSubscriptions(booking: any) {
+  getSubscriptions(booking: any, plan: any) {
     this.hotelBookingService
       .getSubscriptions(booking.propertyId)
       .subscribe((res) => {
@@ -766,7 +766,7 @@ if(this.bookoneActiveData === false) {
         );
 
         if (foundSubscription) {
-          this.externalReservation(booking);
+          this.externalReservation(booking, plan);
         } else {
 
         }
@@ -786,7 +786,7 @@ if(this.bookoneActiveData === false) {
       });
   }
 
-  externalReservation(booking) {
+  externalReservation(booking, plan) {
     this.reservationRoomDetails = [];
     let roomdetailss = new RoomDetail();
     let externalreservation = new externalReservationDtoList();
@@ -829,6 +829,8 @@ if(this.bookoneActiveData === false) {
     roomdetailss.noOfRooms = booking?.noOfRooms;
     roomdetailss.noOfadult = booking?.noOfPersons;
     roomdetailss.noOfchild = booking?.noOfChildrenUnder5years + booking?.noOfChildren;
+    roomdetailss.noOfExtraPerson = booking.noOfExtraPerson;
+    roomdetailss.extraPersonCharge = plan.singleextraAdultChargeBookOne;
     roomdetailss.plan = booking?.roomRatePlanName;
     roomdetailss.roomRate = booking?.roomPrice;
     roomdetailss.roomTypeId = booking?.roomId;
@@ -5069,7 +5071,7 @@ processPaymentPayU(payment: Payment) {
           savedBooking.id,
           this.bookingSummaryDetails?.propertyServiceListDataOne
         );
-        this.getSubscriptions(savedBooking);
+        this.getSubscriptions(savedBooking,plan);
         // this.sendWhatsappMessageToTHM(savedBooking);
         // this.sendWhatsappMessageToTHM1(savedBooking);
         // this.sendWhatsappMessageToTHM2(savedBooking);
