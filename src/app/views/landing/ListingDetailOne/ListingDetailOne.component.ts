@@ -2239,8 +2239,8 @@ resetLastChangedAge(planCode: string) {
       this.extraAdultCharge = extraAdults * ele1.extraChargePerPerson;
       this.singleextraAdultCount = this.singleextraChild;
       this.singleextraAdultCharge = this.singleextraAdults * ele1.extraChargePerPerson;
-      if(this.singleextraAdults > 0) {
-        this.singleextraAdultChargeBookOne = ele1.extraChargePerPerson
+      if(this.extraAdultCount > 0) {
+        this.singleextraAdultChargeBookOne = ele1.extraChargePerPerson;
       } else {
         this.singleextraAdultChargeBookOne = 0;
       }
