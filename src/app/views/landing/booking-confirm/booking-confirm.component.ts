@@ -322,13 +322,12 @@ textToCopyOne: string = 'This is some text to copy';
     this.url = this.token.getBookingEngineBoolean();
     if (this.url !== 'googlehotelcenter') {
       this.activeGoogleCenter = false;
-      this.accommodationData.forEach((element) => {
-       this.serviceChargePercentage = element.serviceChargePercentage;
-    });
     } else {
       this.activeGoogleCenter = true;
     }
-
+    this.accommodationData.forEach((element) => {
+       this.serviceChargePercentage = element.serviceChargePercentage;
+    });
   }
 
 
