@@ -1295,7 +1295,7 @@
                   </div>
                   <div
                   class="d-flex justify-content-between line-height-27px"
-                  *ngIf="serviceChargePercentage > 0 && !activeGoogleCenter"
+                  *ngIf="serviceChargePercentage > 0"
                 >
                   <div class="color-graying">Convenience Fee:</div>
 
@@ -1306,6 +1306,7 @@
 
                   </div>
                 </div>
+
                 </div>
 
 
@@ -1315,7 +1316,7 @@
                   </div>
 
                   <div class="font-weight-600" style="font-size: 1rem">
-                    <span *ngIf="serviceChargePercentage > 0 && !activeGoogleCenter">
+                    <span *ngIf="serviceChargePercentage > 0">
                       <span *ngIf="specialDiscountData?.discountPercentage">₹{{( bookingSummaryDetails?.totalAmount) + calculateConvenienceFee(bookingSummaryDetails?.totalPlanPrice - ((bookingSummaryDetails?.totalPlanPrice *
                               specialDiscountData?.discountPercentage) / 100), serviceChargePercentage) | number : "1.2-2"}}</span>
                     <span *ngIf="!specialDiscountData?.discountPercentage">₹{{( bookingSummaryDetails?.totalAmount) +  calculateConvenienceFee(bookingSummaryDetails?.totalPlanPrice, serviceChargePercentage) | number : "1.2-2" }}</span>
@@ -1785,7 +1786,7 @@
                 </div>
                  <div
                   class="d-flex justify-content-between line-height-27px"
-                  *ngIf="serviceChargePercentage > 0 && !activeGoogleCenter"
+                  *ngIf="serviceChargePercentage > 0"
                 >
                   <div class="color-graying">Convenience Fee:</div>
 
@@ -1802,7 +1803,7 @@
                   </div>
 
                   <div class="font-weight-600" style="font-size: 1rem">
-                    <span *ngIf="serviceChargePercentage > 0 && !activeGoogleCenter">
+                     <span *ngIf="serviceChargePercentage > 0">
                       <span *ngIf="specialDiscountData?.discountPercentage">₹{{( bookingSummaryDetails?.totalAmount) + calculateConvenienceFee(bookingSummaryDetails?.totalPlanPrice - ((bookingSummaryDetails?.totalPlanPrice *
                               specialDiscountData?.discountPercentage) / 100), serviceChargePercentage) | number : "1.2-2"}}</span>
                     <span *ngIf="!specialDiscountData?.discountPercentage">₹{{( bookingSummaryDetails?.totalAmount) +  calculateConvenienceFee(bookingSummaryDetails?.totalPlanPrice, serviceChargePercentage) | number : "1.2-2" }}</span>

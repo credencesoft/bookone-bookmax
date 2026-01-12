@@ -193,7 +193,6 @@ currentPage = 0; // page index
   utmMedium: any;
   utmSource: any;
   priceingO: any;
-  propertyById: number;
   serviceChargePercentage: any;
   singleextraAdultChargeBookOne: any;
   toggleListingDetails() {
@@ -922,8 +921,6 @@ guestDataArray: Array<{
   isLoadingWhatsapp: boolean = false;
     checkinDate: string;
   checkoutDate: string;
-  channelManagerIntegration: boolean = false;
-  instantBooking: boolean = false;
 isRoomDescriptionExpanded = false;
 descriptionWordLimit = 30;
 expandedRoomDescriptions: { [roomId: string]: boolean } = {};
@@ -1494,11 +1491,10 @@ if (storedBooking) {
               this.accommodationData = this.propertyData.businessServiceDtoList?.filter(
       (entry) => entry.name === 'Accommodation'
     );
-    if(this.activeForGoogleHotelCenter === false) {
     this.accommodationData.forEach((element) => {
        this.serviceChargePercentage = element.serviceChargePercentage;
+
     });
-    }
 
         this.accommodationData?.forEach((element) => {
           this.smartRecommendationsBoolean = element.smartRecommendation;
@@ -2242,8 +2238,8 @@ resetLastChangedAge(planCode: string) {
       this.extraAdultCharge = extraAdults * ele1.extraChargePerPerson;
       this.singleextraAdultCount = this.singleextraChild;
       this.singleextraAdultCharge = this.singleextraAdults * ele1.extraChargePerPerson;
-      if(this.singleextraAdults > 0) {
-        this.singleextraAdultChargeBookOne = ele1.extraChargePerPerson
+      if(this.extraAdultCount > 0) {
+        this.singleextraAdultChargeBookOne = ele1.extraChargePerPerson;
       } else {
         this.singleextraAdultChargeBookOne = 0;
       }
@@ -3609,9 +3605,6 @@ onCheckOutClosed(): void {
 
     this.token.saveBookingData(this.booking);
     this.checkingAvailability();
-    if(this.activeForGoogleHotelCenter === false){
-       this.getPropertyDetailsBySeoName(this.data);
-    }
   }
 }
 
@@ -3918,26 +3911,13 @@ onCheckOutClosed(): void {
         this.updateTag();
         this.token.saveProperty(this.businessUser);
 
-        this.accommodationData?.forEach((element) => {
-          this.smartRecommendationsBoolean = element.smartRecommendation;
-        });
-
-         this.accommodationData?.forEach((element) => {
-          this.channelManagerIntegration = element.cmIntegration;
-        });
-
-        this.accommodationData?.forEach((element) =>{
-          this.instantBooking = element.instantBooking;
-        });
-        if(this.activeForGoogleHotelCenter === false) {
           this.accommodationData = this.businessUser.businessServiceDtoList?.filter(
           (entry) => entry.name === 'Accommodation'
         );
         this.accommodationData.forEach((element) => {
           this.serviceChargePercentage = element.serviceChargePercentage;
-        });
-        }
 
+        });
         if (this.urlLocation !== undefined && this.urlLocation !== null) {
           this.triggerEventService.newEvent(this.urlLocation);
         }
@@ -4436,27 +4416,12 @@ onCheckOutClosed(): void {
           this.updateTag();
           this.changeDetectorRefs.detectChanges();
           this.token.saveProperty(this.businessUser);
-          this.accommodationData?.forEach((element) => {
-          this.smartRecommendationsBoolean = element.smartRecommendation;
-        });
-
-           this.accommodationData?.forEach((element) => {
-          this.channelManagerIntegration = element.cmIntegration;
-        });
-
-        this.accommodationData?.forEach((element) =>{
-          this.instantBooking = element.instantBooking;
-        });
-
-          if(this.activeForGoogleHotelCenter === false) {
           this.accommodationData = this.businessUser.businessServiceDtoList?.filter(
           (entry) => entry.name === 'Accommodation'
         );
         this.accommodationData.forEach((element) => {
           this.serviceChargePercentage = element.serviceChargePercentage;
         });
-        }
-
           if (this.urlLocation !== undefined && this.urlLocation !== null) {
             this.triggerEventService.newEvent(this.urlLocation);
           }
@@ -4757,62 +4722,21 @@ onCheckOutClosed(): void {
       console.error('Error in selectedPromotionList : ', error);
     }
   }
-   showPayLater(): boolean {
-  this.propertyData = this.token.getProperty();
+  showPayLater(): boolean {
+    const fromDateTimestamp = new Date(this.booking.fromDate).getTime();
+    const createdDateTimestamp = new Date(this.booking.createdDate).getTime();
+    const hoursDifference =
+      (fromDateTimestamp - createdDateTimestamp) / (1000 * 60 * 60);
+    if (hoursDifference < 48) {
+      return true;
+    }
 
-  // Get accommodation data
-  this.accommodationData = this.propertyData.businessServiceDtoList?.filter(
-    (entry) => entry.name === 'Accommodation'
-  );
+    if (hoursDifference >= 48 && this.businessUser.paymentGateway == null) {
+      return true;
+    }
 
-
-  // ✅ 1. Check bookingEngine
-  const propertyUrl = this.token.getPropertyUrl();
-  const isBookingEngine = propertyUrl?.includes('bookingEngine') || false;
-
-  if (isBookingEngine) {
-    return true; // ✅ Show immediately, skip other checks
-  }
-
-    // ✅ 2. If any accommodation has payLater = true → show
-  const hasPayLater = this.accommodationData?.some((a) => a.payLater);
-  if (hasPayLater) {
     return false;
   }
-
-  // ✅ 3. Instancebooking , channelmanagerIntegration false
-  if(!this.channelManagerIntegration && !this.instantBooking){
-    return false;
-  }
-
-
-  // ✅ 4. Check channelManagerIntegration
-  if (this.channelManagerIntegration) {
-    return true; // ✅ Show immediately, skip other checks
-  }
-
-  // ✅ 5. Both are false → apply 48-hour logic
-  const fromDateTimestamp = new Date(this.booking.fromDate).getTime();
-  const createdDateTimestamp = new Date(this.booking.createdDate).getTime();
-  const hoursDifference =
-    (fromDateTimestamp - createdDateTimestamp) / (1000 * 60 * 60);
-
-  // ❌ If booking is within 48 hours → don't show
-  if (hoursDifference < 48) {
-    return false;
-  }
-
-  // ✅ If booking ≥ 48 hours and paymentGateway == null → show
-  if (hoursDifference >= 48) {
-    return true;
-  }
-
-  if (hoursDifference >= 48 && this.businessUser.paymentGateway !== null) {
-    return true;
-  }
-
-  return false;
-}
 
   getReview(id) {
     this.loader = true;
@@ -7824,5 +7748,3 @@ onYesClick() {
     this.isPopupOpen = false;
   }
 }
-
-

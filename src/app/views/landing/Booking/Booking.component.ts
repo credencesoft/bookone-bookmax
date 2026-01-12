@@ -495,11 +495,11 @@ if (parsed.discountPercentage) {
     this.accommodationData = this.propertyData.businessServiceDtoList?.filter(
       (entry) => entry.name === 'Accommodation'
     );
-    if(!this.activeGoogleCenter){
+    // if(!this.activeGoogleCenter){
       this.accommodationData.forEach((element) => {
        this.serviceChargePercentage = element.serviceChargePercentage;
     });
-    }
+    // }
 
     this.accommodationData.forEach((element) => {
       if (this.bookingengineurl === 'true') {
