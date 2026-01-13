@@ -898,7 +898,7 @@ this.combinedDateToTime = combinedCheckoutDate.getTime();
           savedBooking.id,
           this.bookingSummaryDetails?.propertyServiceListDataOne
         );
-        this.getSubscriptions(savedBooking, plan);
+
         // this.sendWhatsappMessageToTHM(savedBooking);
         // this.sendWhatsappMessageToTHM3(savedBooking);
         // this.sendWhatsappMessageToTHM2(savedBooking);
@@ -919,6 +919,7 @@ this.combinedDateToTime = combinedCheckoutDate.getTime();
               if (res.status === 200) {
                 // this.openSuccessSnackBar(`Payment Details Saved`);
                 this.paymentRefNo = this.payment.externalTransactionNumber;
+                this.getSubscriptions(savedBooking, plan);
                 this.paymentLoader = false;
                 if(this.businessServiceDto.advanceAmountPercentage != 100) {
                   if (this.booking.payableAmount != this.payment.transactionAmount) {
