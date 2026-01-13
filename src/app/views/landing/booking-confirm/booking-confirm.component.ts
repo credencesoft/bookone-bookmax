@@ -146,6 +146,7 @@ textToCopyOne: string = 'This is some text to copy';
   accommodationData: any;
   url: string;
   activeGoogleCenter: boolean = false;
+  paymentRefNo: string;
   constructor(
     private http: HttpClient,
     private token: TokenStorage,
@@ -917,6 +918,7 @@ this.combinedDateToTime = combinedCheckoutDate.getTime();
             .subscribe((res) => {
               if (res.status === 200) {
                 // this.openSuccessSnackBar(`Payment Details Saved`);
+                this.paymentRefNo = this.payment.externalTransactionNumber;
                 this.paymentLoader = false;
                 if(this.businessServiceDto.advanceAmountPercentage != 100) {
                   if (this.booking.payableAmount != this.payment.transactionAmount) {
@@ -1372,6 +1374,7 @@ this.combinedDateToTime = combinedCheckoutDate.getTime();
     externalreservation.couponCode = booking?.couponCode;
     externalreservation.promotionName = booking?.promotionName;
     externalreservation.totalAmount = booking?.totalAmount;
+    externalreservation.paymentReference = this.paymentRefNo;
     if(booking.advanceAmount) {
       externalreservation.paidAmount = booking?.advanceAmount;
     } else {
@@ -1472,6 +1475,7 @@ this.combinedDateToTime = combinedCheckoutDate.getTime();
   const matchedBooking = bookings.find((b: any) => b.roomId === enquiry.roomId);
     enquiry.bookingId = matchedBooking?.id;
     enquiry.bookingReservationId = matchedBooking?.propertyReservationNumber;
+    enquiry.paymentReference = this.paymentRefNo;
     // Update the status
     enquiry.status = 'Booked';
     enquiry.enquiryType = 'Pay Now'
