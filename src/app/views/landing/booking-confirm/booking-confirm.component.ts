@@ -784,7 +784,7 @@ this.combinedDateToTime = combinedCheckoutDate.getTime();
     if (this.serviceChargePercentage && this.serviceChargePercentage > 0) {
       const serviceChargeAmount = (plan.price * this.serviceChargePercentage) / 100;
     booking.totalAmount = (plan.price + plan.taxPercentageperroom + serviceChargeAmount);
-    booking.convenienceFee = serviceChargeAmount;
+    booking.convenienceFee = Number((serviceChargeAmount).toFixed(2));
     booking.bookingAmount = booking.totalAmount;
     booking.payableAmount = booking.totalAmount;
     booking.advanceAmount = booking.advanceAmount + serviceChargeAmount;
@@ -1381,7 +1381,7 @@ this.combinedDateToTime = combinedCheckoutDate.getTime();
       externalreservation.groupBookingId = this.groupBookingId;
     }
     if(this.serviceChargePercentage && this.serviceChargePercentage > 0) {
-      externalreservation.commissionAmount = booking.convenienceFee;
+      externalreservation.commissionAmount = Number((booking.convenienceFee).toFixed(2));
     }
     externalreservation.amountBeforeTax = booking?.beforeTaxAmount;
     externalreservation.channelId = '9';
