@@ -635,7 +635,9 @@ checkValidCouponOrNot(couponList?){
             },
           });
       }
+      setTimeout(() => {
       this.updateEnquiryStatusToBooked();
+    }, 2000);
       return;
     }
       const currentPlan = plans[index];
