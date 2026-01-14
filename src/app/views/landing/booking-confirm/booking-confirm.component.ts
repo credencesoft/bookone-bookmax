@@ -146,7 +146,7 @@ textToCopyOne: string = 'This is some text to copy';
   accommodationData: any;
   url: string;
   activeGoogleCenter: boolean = false;
-  paymentRefNo: string;
+  paymentRefNo: any;
   constructor(
     private http: HttpClient,
     private token: TokenStorage,
@@ -253,12 +253,16 @@ textToCopyOne: string = 'This is some text to copy';
     if (this.token.getPaymentData() != null && this.token.getPaymentData() != undefined)
     {
       this.payment = this.token.getPaymentData();
+      if(this.payment.paymentMode == 'Razorpay') {
+        this.paymentRefNo = this.payment.razorpayOrderId;
+      }
       // console.log("this.payment"+JSON.stringify(this.payment))
     }
 
     if (this.token.getPayment2Data() != null && this.token.getPayment2Data() != undefined)
     {
       this.payment2 = this.token.getPayment2Data();
+
     }
 
     this.storedPromo = localStorage.getItem('selectPromo');
@@ -917,8 +921,12 @@ this.combinedDateToTime = combinedCheckoutDate.getTime();
             .savePayment(this.payment)
             .subscribe((res) => {
               if (res.status === 200) {
+
                 // this.openSuccessSnackBar(`Payment Details Saved`);
-                this.paymentRefNo = this.payment.externalTransactionNumber;
+
+                if(this.payment.paymentMode !== 'Razorpay') {
+                  this.paymentRefNo = this.payment.externalTransactionNumber;
+                }
                 this.getSubscriptions(savedBooking, plan);
                 this.paymentLoader = false;
                 if(this.businessServiceDto.advanceAmountPercentage != 100) {
@@ -1375,6 +1383,7 @@ this.combinedDateToTime = combinedCheckoutDate.getTime();
     externalreservation.couponCode = booking?.couponCode;
     externalreservation.promotionName = booking?.promotionName;
     externalreservation.totalAmount = booking?.totalAmount;
+
     externalreservation.paymentReference = this.paymentRefNo;
     if(booking.advanceAmount) {
       externalreservation.paidAmount = booking?.advanceAmount;
@@ -1476,6 +1485,7 @@ this.combinedDateToTime = combinedCheckoutDate.getTime();
   const matchedBooking = bookings.find((b: any) => b.roomId === enquiry.roomId);
     enquiry.bookingId = matchedBooking?.id;
     enquiry.bookingReservationId = matchedBooking?.propertyReservationNumber;
+
     enquiry.paymentReference = this.paymentRefNo;
     // Update the status
     enquiry.status = 'Booked';

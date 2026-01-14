@@ -80,7 +80,7 @@ import { TaxDetails } from "./TaxDetails";
     utmMedium: string;
     businessEmail: string;
     convenienceFee: number;
-    paymentReference: string;
+    paymentReference: any;
     // noOfNights:number;
     // counterName:string;
   }
