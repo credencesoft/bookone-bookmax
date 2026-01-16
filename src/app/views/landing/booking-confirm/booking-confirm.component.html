@@ -911,7 +911,7 @@
                             <div>Total GST:</div>
                             <div>₹  {{ bookingSummaryDetails?.totalTax | number : "1.2-2" }}</div>
                         </div>
-                        <div class="d-flex justify-content-between" *ngIf="serviceChargePercentage" style="margin-top: 5px;">
+                        <div class="d-flex justify-content-between" *ngIf="serviceChargePercentage" >
                         <div>Convenience Fee:</div>
                         <div>₹{{ calculateConvenienceFee(bookingSummaryDetails?.totalPlanPrice - totalDiscount, serviceChargePercentage) | number : "1.2-2" }}</div>
                       </div>

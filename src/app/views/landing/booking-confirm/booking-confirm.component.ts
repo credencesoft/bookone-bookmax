@@ -146,6 +146,7 @@ textToCopyOne: string = 'This is some text to copy';
   accommodationData: any;
   url: string;
   activeGoogleCenter: boolean = false;
+  paymentRefNo: any;
   constructor(
     private http: HttpClient,
     private token: TokenStorage,
@@ -252,12 +253,16 @@ textToCopyOne: string = 'This is some text to copy';
     if (this.token.getPaymentData() != null && this.token.getPaymentData() != undefined)
     {
       this.payment = this.token.getPaymentData();
+      if(this.payment.paymentMode == 'Razorpay') {
+        this.paymentRefNo = this.payment.razorpayOrderId;
+      }
       // console.log("this.payment"+JSON.stringify(this.payment))
     }
 
     if (this.token.getPayment2Data() != null && this.token.getPayment2Data() != undefined)
     {
       this.payment2 = this.token.getPayment2Data();
+
     }
 
     this.storedPromo = localStorage.getItem('selectPromo');
@@ -356,7 +361,8 @@ if (couponCodeValues) {
       : null;
         const plans = bookingSummary.selectedPlansSummary;
           if (plans.length >= 2) {
-            this.groupBookingId = parseInt(sessionStorage.getItem('groupbookingId') || '0', 10);
+            // this.groupBookingId = parseInt(sessionStorage.getItem('groupbookingId') || '0', 10);
+            this.groupBookingId = null;
       }
     this.acRoute.queryParams.subscribe((params) => {
       if (params["businessUser"] !== undefined) {
@@ -630,7 +636,9 @@ checkValidCouponOrNot(couponList?){
             },
           });
       }
+      setTimeout(() => {
       this.updateEnquiryStatusToBooked();
+    }, 2000);
       return;
     }
       const currentPlan = plans[index];
@@ -784,7 +792,7 @@ this.combinedDateToTime = combinedCheckoutDate.getTime();
     if (this.serviceChargePercentage && this.serviceChargePercentage > 0) {
       const serviceChargeAmount = (plan.price * this.serviceChargePercentage) / 100;
     booking.totalAmount = (plan.price + plan.taxPercentageperroom + serviceChargeAmount);
-    booking.convenienceFee = serviceChargeAmount;
+    booking.convenienceFee = Number((serviceChargeAmount).toFixed(2));
     booking.bookingAmount = booking.totalAmount;
     booking.payableAmount = booking.totalAmount;
     booking.advanceAmount = booking.advanceAmount + serviceChargeAmount;
@@ -897,7 +905,7 @@ this.combinedDateToTime = combinedCheckoutDate.getTime();
           savedBooking.id,
           this.bookingSummaryDetails?.propertyServiceListDataOne
         );
-        this.getSubscriptions(savedBooking, plan);
+
         // this.sendWhatsappMessageToTHM(savedBooking);
         // this.sendWhatsappMessageToTHM3(savedBooking);
         // this.sendWhatsappMessageToTHM2(savedBooking);
@@ -916,7 +924,13 @@ this.combinedDateToTime = combinedCheckoutDate.getTime();
             .savePayment(this.payment)
             .subscribe((res) => {
               if (res.status === 200) {
+
                 // this.openSuccessSnackBar(`Payment Details Saved`);
+
+                if(this.payment.paymentMode !== 'Razorpay') {
+                  this.paymentRefNo = this.payment.externalTransactionNumber;
+                }
+                this.getSubscriptions(savedBooking, plan);
                 this.paymentLoader = false;
                 if(this.businessServiceDto.advanceAmountPercentage != 100) {
                   if (this.booking.payableAmount != this.payment.transactionAmount) {
@@ -1372,6 +1386,8 @@ this.combinedDateToTime = combinedCheckoutDate.getTime();
     externalreservation.couponCode = booking?.couponCode;
     externalreservation.promotionName = booking?.promotionName;
     externalreservation.totalAmount = booking?.totalAmount;
+
+    externalreservation.paymentReference = this.paymentRefNo;
     if(booking.advanceAmount) {
       externalreservation.paidAmount = booking?.advanceAmount;
     } else {
@@ -1381,7 +1397,7 @@ this.combinedDateToTime = combinedCheckoutDate.getTime();
       externalreservation.groupBookingId = this.groupBookingId;
     }
     if(this.serviceChargePercentage && this.serviceChargePercentage > 0) {
-      externalreservation.commissionAmount = booking.convenienceFee;
+      externalreservation.commissionAmount = Number((booking.convenienceFee).toFixed(2));
     }
     externalreservation.amountBeforeTax = booking?.beforeTaxAmount;
     externalreservation.channelId = '9';
@@ -1472,6 +1488,8 @@ this.combinedDateToTime = combinedCheckoutDate.getTime();
   const matchedBooking = bookings.find((b: any) => b.roomId === enquiry.roomId);
     enquiry.bookingId = matchedBooking?.id;
     enquiry.bookingReservationId = matchedBooking?.propertyReservationNumber;
+
+    enquiry.paymentReference = this.paymentRefNo;
     // Update the status
     enquiry.status = 'Booked';
     enquiry.enquiryType = 'Pay Now'

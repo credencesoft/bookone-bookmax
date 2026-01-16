@@ -49,6 +49,7 @@ export class Payment {
   lastModifiedDate: any;
   gatewayPaymentStatus: any;
   orderId: any;
+  externalTransactionNumber: string;
     constructor() {
     }
 }

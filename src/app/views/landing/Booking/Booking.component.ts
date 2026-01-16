@@ -474,7 +474,8 @@ if (parsed.discountPercentage) {
       : null;
         const plans = bookingSummary.selectedPlansSummary;
           if (plans.length >= 2) {
-        this.groupBookingId = Math.floor(10000000 + Math.random() * 90000000);
+        // this.groupBookingId = Math.floor(10000000 + Math.random() * 90000000);
+        this.groupBookingId = null;
       }
     this.otaPlanPrice = this.token.getLandingPrice();
     this.otaTaxAmount = this.token.getAllTaxArray();
@@ -4955,9 +4956,10 @@ processPaymentPayU(payment: Payment) {
     booking.mobile = this.booking.mobile;
     booking.email = this.booking.email;
     booking.noOfChildren = plan.childrenAbove5years;
-    if(this.groupBookingId){
-      booking.groupBookingId = this.groupBookingId;
-    }
+    // if(this.groupBookingId){
+    //   booking.groupBookingId = this.groupBookingId;
+    // }
+     booking.groupBookingId = null;
     booking.noOfChildrenUnder5years = plan.childrenBelow5years;
     booking.noOfNights = plan.nights;
     booking.noOfRooms = Number(plan.selectedRoomnumber);
