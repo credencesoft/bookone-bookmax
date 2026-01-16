@@ -361,8 +361,7 @@ if (couponCodeValues) {
       : null;
         const plans = bookingSummary.selectedPlansSummary;
           if (plans.length >= 2) {
-            // this.groupBookingId = parseInt(sessionStorage.getItem('groupbookingId') || '0', 10);
-            this.groupBookingId = null;
+            this.groupBookingId = parseInt(sessionStorage.getItem('groupbookingId') || '0', 10);
       }
     this.acRoute.queryParams.subscribe((params) => {
       if (params["businessUser"] !== undefined) {
@@ -671,7 +670,7 @@ checkValidCouponOrNot(couponList?){
     booking.roomType = plan.roomName;
     booking.planCode = plan.planName;
     if(this.groupBookingId) {
-      booking.groupBookingId = this.groupBookingId;
+      booking.groupBookingId = null;
     }
       const bookingSummaryStr = sessionStorage.getItem('bookingSummaryDetails');
             if (bookingSummaryStr) {
@@ -1380,7 +1379,7 @@ this.combinedDateToTime = combinedCheckoutDate.getTime();
     externalreservation.checkoutDate = booking?.toDate;
     externalreservation.currency = booking?.currency;
      if(this.groupBookingId) {
-      externalreservation.groupBookingId = this.groupBookingId;
+      externalreservation.groupBookingId = null;
     }
     externalreservation.email = booking.email;
     externalreservation.couponCode = booking?.couponCode;
@@ -1394,7 +1393,7 @@ this.combinedDateToTime = combinedCheckoutDate.getTime();
       externalreservation.paidAmount = 0;
     }
     if(this.groupBookingId) {
-      externalreservation.groupBookingId = this.groupBookingId;
+      externalreservation.groupBookingId = null;
     }
     if(this.serviceChargePercentage && this.serviceChargePercentage > 0) {
       externalreservation.commissionAmount = Number((booking.convenienceFee).toFixed(2));

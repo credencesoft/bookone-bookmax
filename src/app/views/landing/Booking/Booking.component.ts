@@ -474,8 +474,7 @@ if (parsed.discountPercentage) {
       : null;
         const plans = bookingSummary.selectedPlansSummary;
           if (plans.length >= 2) {
-        // this.groupBookingId = Math.floor(10000000 + Math.random() * 90000000);
-        this.groupBookingId = null;
+        this.groupBookingId = Math.floor(10000000 + Math.random() * 90000000);
       }
     this.otaPlanPrice = this.token.getLandingPrice();
     this.otaTaxAmount = this.token.getAllTaxArray();
@@ -807,7 +806,7 @@ if(this.bookoneActiveData === false) {
     externalreservation.lastModifiedBy = 'hotelmate';
     externalreservation.modeOfPayment = 'Cash';
     if(this.groupBookingId) {
-      externalreservation.groupBookingId = this.groupBookingId;
+      externalreservation.groupBookingId = null;
     }
     let propertyReservationNumber = booking?.propertyReservationNumber;
     let updatedCode = propertyReservationNumber.replace("-B-", "-BE-");
@@ -8103,7 +8102,7 @@ if (this.specialDiscountData) {
       .taxDetails.filter((item) => ['CGST', 'SGST', 'GST'].includes(item.name));
     bookingForm.taxAmount = plan.taxPercentageperroom;
     if(this.groupBookingId){
-      bookingForm.groupBookingId = this.groupBookingId;
+      bookingForm.groupBookingId = null;
     }
     bookingForm.totalAmount = plan.price + plan.taxPercentageperroom;
     bookingForm.discountPercentage = booking.discountPercentage;
