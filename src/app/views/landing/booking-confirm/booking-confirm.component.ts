@@ -361,7 +361,8 @@ if (couponCodeValues) {
       : null;
         const plans = bookingSummary.selectedPlansSummary;
           if (plans.length >= 2) {
-            this.groupBookingId = parseInt(sessionStorage.getItem('groupbookingId') || '0', 10);
+            // this.groupBookingId = parseInt(sessionStorage.getItem('groupbookingId') || '0', 10);
+            this.groupBookingId = null;
       }
     this.acRoute.queryParams.subscribe((params) => {
       if (params["businessUser"] !== undefined) {
