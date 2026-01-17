@@ -1015,7 +1015,6 @@ if (params['Children'] !== undefined) {
 
   // ✅ checkin date
   this.checkinDate = `${year}-${('0' + month).slice(-2)}-${('0' + day).slice(-2)}`;
-  console.log('Check-in Date:', this.checkinDate);
 
   // ✅ checkout date
   if (nights) {
@@ -1066,6 +1065,9 @@ if (params['Children'] !== undefined) {
     );
     // this.checkAvailabilityDisabled = true;
     let currenturl = window.location.href;
+    let urlObj = new URL(currenturl);
+    let params = new URLSearchParams(urlObj.search);
+    let CurrentRoomCout = params.get('rooms');
     let flag = currenturl.includes('bookingEngine');
     this.token.savePropertyUrl(currenturl);
     this.serviceDto = new PropertyServiceDTO();
@@ -1165,7 +1167,12 @@ if (params['Children'] !== undefined) {
         }
 
       this.noOfrooms = 1;
-      this.rooms = 1;
+      if(this.rooms === Number(CurrentRoomCout)){
+        this.rooms = 1;
+      } else {
+        this.rooms = Number(CurrentRoomCout);
+      }
+      // this.rooms = 1;
 
       if (this.hotelID != null && this.hotelID != undefined) {
         this.token.saveBookingEngineBoolean('googlehotelcenter');
@@ -1271,8 +1278,11 @@ if (params['Children'] !== undefined) {
           this.children = totalChildren - additionalChildren;
         }
       }
-
-      this.rooms = this.booking.noOfRooms;
+      if(this.rooms === Number(CurrentRoomCout)){
+        this.rooms = this.booking.noOfRooms;
+      } else {
+        this.rooms = Number(CurrentRoomCout);
+      }
 
       this.taxPercentage = this.booking.taxPercentage;
     } else {
@@ -1320,7 +1330,12 @@ if (params['Children'] !== undefined) {
           this.children = Number(this.childno);
         }
       this.noOfrooms = 1;
-      this.rooms = 1;
+      if(this.rooms === Number(CurrentRoomCout)){
+        this.rooms = Number(CurrentRoomCout);;
+      } else {
+        this.rooms = 1;
+      }
+      // this.rooms = 1;
     }
     if (
       this.token.getBookingData()?.roomName != null &&
@@ -2192,10 +2207,8 @@ resetLastChangedAge(planCode: string) {
       // }
       if (selectedRooms > 1) {
   const singleRoomCountOccupancyAdult = ele1.minimumOccupancy * 1;
-  console.log('singleRoomCountOccupancyAdult is', singleRoomCountOccupancyAdult);
 
   const singleRoomCountOccupancyChild = ele1.noOfChildren * 1;
-  console.log('singleRoomCountOccupancyChild is', singleRoomCountOccupancyChild);
 
   // Calculate total included adults/children for all rooms
   const totalIncludedAdults = ele1.minimumOccupancy * selectedRooms;
@@ -2219,8 +2232,6 @@ resetLastChangedAge(planCode: string) {
   this.singleextraChild =
     totalExtraChildren > 0 ? totalExtraChildren / selectedRooms : 0;
 
-  console.log('singleextraAdults per room is', this.singleextraAdults);
-  console.log('singleextraChild per room is', this.singleextraChild);
 }
 
 
@@ -2228,7 +2239,6 @@ resetLastChangedAge(planCode: string) {
         selectedGuests.adults > totalMinAdults
           ? selectedGuests.adults - totalMinAdults
           : 0;
-          console.log("extraAdults",extraAdults)
       const extraChildren =
         above5Count > totalMinChildren
           ? above5Count - totalMinChildren
@@ -2489,7 +2499,6 @@ getSubtotalNonGhCPrice(plan: any): number {
 
 getTotalGhCPrice(plan: any): number {
   const subtotal = this.getSubtotalGhCPrice(plan);
-  console.log('subtotal is',subtotal);
   let taxTotalOne = 0;
     this.selectedPlansSummary.forEach((plan: any) => {
     if (plan.planName === 'GHC') {
@@ -2550,7 +2559,6 @@ getGrandTotal(): number {
   this.selectedPlansSummary.forEach((plan: any) => {
     if (plan.planName === 'GHC') {
       total += this.getTotalGhCPrice(plan);
-      console.log('totaal is',total);
     } else {
       total += this.getTotalNonGhCPrice(plan);
     }
@@ -2563,7 +2571,6 @@ getGrandSubtotal(): number {
   this.selectedPlansSummary.forEach((plan: any) => {
     if (plan.planName === 'GHC') {
       subtotal += this.getSubtotalGhCPrice(plan);
-      console.log('subtotal is',subtotal);
     } else {
       subtotal += this.getSubtotalNonGhCPrice(plan);
     }
@@ -6093,7 +6100,6 @@ onBookNow() {
   }
 
   checkingAvailability() {
-
     this.smartLoading = true;
     if (this.activeForGoogleHotelCenter === true) {
       this.showDiv = false;
@@ -6176,7 +6182,6 @@ onBookNow() {
           this.loaderHotelBooking = false;
 
           this.availableRooms = response.body.roomList;
-          console.log("response.body.roomList",response.body.roomList)
             this.availableRooms = response.body.roomList.sort(
             (a: any, b: any) => b.roomOnlyPrice - a.roomOnlyPrice
           );
@@ -6204,7 +6209,6 @@ onBookNow() {
                   !isStopSellOTA
                 );
               });
-          console.log("this.availableRooms",this.availableRooms)
 
         //   this.availableRooms = this.availableRooms.filter(room =>
         //   room.ratesAndAvailabilityDtos?.length > 0 &&
@@ -6236,7 +6240,6 @@ onBookNow() {
 
               return isStopSellOBE || isStopSellOTA;
             });
-            console.log("this.soldOutRooms",this.soldOutRooms)
           this.SubAvailableRooms = response.body.roomList;
           const queryParams = {
              noOfChildren: this.children,
