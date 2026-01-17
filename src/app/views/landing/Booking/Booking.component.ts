@@ -714,7 +714,7 @@ if(this.bookoneActiveData === false) {
     return false;
   }
   }
-
+  
   this.propertyData = this.token.getProperty();
   this.accommodationData = this.propertyData.businessServiceDtoList?.filter(
     (entry) => entry.name === 'Accommodation'
