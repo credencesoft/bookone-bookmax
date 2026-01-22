@@ -1,7 +1,7 @@
 // import { CheckoutModule } from 'paytm-blink-checkout-angular';
 import { CheckoutComponent } from './views/landing/checkout/checkout.component';
-import { BrowserModule, Title, TransferState } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { BrowserModule, Title } from '@angular/platform-browser';
+import { NgModule, TransferState } from '@angular/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { AppRoutes, AppRoutingModule } from './app-routing.module';
@@ -9,7 +9,7 @@ import { AppComponent } from './app.component';
 import { SharedModule } from './shared/shared.module';
 import { Http } from '@angular/http';
 import { HttpClientModule } from '@angular/common/http';
-import { TransferHttpCacheModule } from '@nguniversal/common';
+import { TransferHttpCacheModule } from '@angular/ssr';
 
 import {
   WpApiModule,
