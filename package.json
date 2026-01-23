@@ -36,7 +36,7 @@
     "@material/form-field": "^14.0.0",
     "@material/radio": "^14.0.0",
     "@material/select": "^14.0.0",
-    "@ng-bootstrap/ng-bootstrap": "^15.1.2",
+    "@ng-bootstrap/ng-bootstrap": "^18.0.0",
     "@ng-select/ng-select": "^9.0.2",
     "@ngu/carousel": "5.0.0",
     "@popperjs/core": "^2.11.6",
