@@ -1,3 +1,6 @@
+import { HeaderListingdetailsoneComponent } from './../Header-Listingdetailsone/Header-Listingdetailsone.component';
+
+import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Booking } from 'src/app/model/booking';
@@ -9,6 +12,8 @@ import { TokenStorage } from 'src/token.storage';
 
 @Component({
   selector: 'app-whatapp-paylater-template',
+  imports: [CommonModule,HeaderListingdetailsoneComponent] ,
+  standalone: true,
   templateUrl: './whatapp-paylater-template.component.html',
   styleUrls: ['./whatapp-paylater-template.component.css']
 })

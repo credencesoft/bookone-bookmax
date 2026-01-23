@@ -1,5 +1,7 @@
-import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+
 import { Booking } from 'src/app/model/booking';
 import { BusinessOfferDto } from 'src/app/model/businessOfferDto';
 import { BusinessUser } from 'src/app/model/user';
@@ -9,6 +11,8 @@ import { TokenStorage } from 'src/token.storage';
 
 @Component({
   selector: 'app-paylater-confirm',
+  imports: [CommonModule] ,
+  standalone: true,
   templateUrl: './paylater-confirm.component.html',
   styleUrls: ['./paylater-confirm.component.scss'],
 })

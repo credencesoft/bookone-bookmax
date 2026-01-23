@@ -1,10 +1,11 @@
-// import { SharedAnimations } from 'src/app/shared/animations/shared-animations';
 import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup, NgForm } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
-import { ActivatedRoute } from '@angular/router';
+
 import { SubmitData } from '../dynamic-pricing/submitData';
 import { SharedAnimations } from 'src/shared/animations/shared-animations';
+import { CommonModule } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
+import { ActivatedRoute } from '@angular/router';
+import { FormControl, FormGroup, FormsModule, NgForm, ReactiveFormsModule } from '@angular/forms';
 
 export interface Email {
 
@@ -18,6 +19,8 @@ export interface Email {
 
 @Component({
   selector: 'app-contact-form',
+  imports: [CommonModule,FormsModule,ReactiveFormsModule] ,
+  standalone: true,
   templateUrl: './contact-form.component.html',
   styleUrls: ['./contact-form.component.scss'],
   animations: [SharedAnimations]

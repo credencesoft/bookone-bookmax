@@ -1,16 +1,13 @@
-import {
-  Component,
-  OnInit,
-  HostListener,
-  HostBinding,
-  Inject,
-  Input
-} from '@angular/core';
-import {DOCUMENT} from '@angular/common';
+
+import {CommonModule, DOCUMENT} from '@angular/common';
+import { Component, HostBinding, HostListener, Inject, OnInit } from '@angular/core';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import {WINDOW_PROVIDERS, WINDOW} from '../../helpers/window.helpers';
 
 @Component({
   selector: 'app-header',
+  imports: [CommonModule,NgbModule] ,
+  standalone: true,
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss']
 })

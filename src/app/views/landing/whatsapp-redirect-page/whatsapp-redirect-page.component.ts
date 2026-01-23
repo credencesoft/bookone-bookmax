@@ -1,3 +1,4 @@
+import { HeaderListingdetailsoneComponent } from './../Header-Listingdetailsone/Header-Listingdetailsone.component';
 // import { ChangeDetectorRef, Component, NgZone ,OnInit} from '@angular/core';
 import { API_URL_IN, API_URL_NZ } from 'src/app/app.component';
 import { BusinessOfferDto } from 'src/app/model/businessOfferDto';
@@ -8,7 +9,7 @@ import { EnquiryDto } from 'src/app/model/enquiry';
 import { BusinessUser } from 'src/app/model/user';
 import { Booking } from 'src/app/model/booking';
 import { Payment } from 'src/app/model/payment';
-import { Location, DatePipe } from '@angular/common';
+import { Location, DatePipe, CommonModule } from '@angular/common';
 
 
 import { externalReservationDtoList } from 'src/app/model/externalReservation';
@@ -32,6 +33,8 @@ import { ChangeDetectorRef, Component, NgZone, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 @Component({
   selector: 'app-whatsapp-redirect-page',
+  imports: [CommonModule,HeaderListingdetailsoneComponent] ,
+  standalone: true,
   templateUrl: './whatsapp-redirect-page.component.html',
   styleUrls: ['./whatsapp-redirect-page.component.css']
 })

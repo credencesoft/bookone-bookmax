@@ -1,8 +1,19 @@
+import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { Meta } from '@angular/platform-browser';
+import { ContactFormComponent } from 'src/views/landing/components/contact-form/contact-form.component';
+import { DynamicPricingComponent } from 'src/views/landing/components/dynamic-pricing/dynamic-pricing.component';
+import { FooterComponent } from 'src/views/landing/components/footer/footer.component';
+import { HeaderComponent } from 'src/views/landing/components/header/header.component';
+import { PricingFilterComponent } from 'src/views/landing/components/pricing-filter/pricing-filter.component';
+import { ContactComponent } from 'src/views/landing/contact/contact.component';
+
+
 
 @Component({
   selector: 'app-pricing',
+  imports: [CommonModule,FooterComponent,DynamicPricingComponent,ContactComponent,ContactFormComponent,PricingFilterComponent,HeaderComponent] ,
+  standalone: true,
   templateUrl: './pricing.component.html',
   styleUrls: ['./pricing.component.scss']
 })
