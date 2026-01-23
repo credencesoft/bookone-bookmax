@@ -8,7 +8,7 @@ import { AppRoutes, AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { SharedModule } from './shared/shared.module';
 import { Http } from '@angular/http';
-import { HttpClientModule } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { TransferHttpCacheModule } from '@angular/ssr';
 
 import {
@@ -33,42 +33,35 @@ import { AuthService } from './auth/auth.service';
 import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material';
 import { CalendarModule } from 'primeng/calendar';
-@NgModule({
-  declarations: [AppComponent],
-  imports: [
-    CommonModule,
-CalendarModule,
-    SharedModule,
-    HttpClientModule,
-    BrowserAnimationsModule,
-    SlickCarouselModule,
-    NgSelectModule,
-
-    NgbModule,
-    MatTableModule,
-    GooglePlaceModule,
-    AgmCoreModule.forRoot({
-      apiKey: environment.googleKey
-    }),
-    TransferHttpCacheModule,
-    AppRoutingModule,
-    BrowserModule.withServerTransition({ appId: 'serverApp' }),
-    RouterModule.forRoot(AppRoutes,{ scrollPositionRestoration: 'enabled' }),
-    WpApiModule.forRoot({ // <---
-      provide: WpApiLoader,
-      useFactory: (WpApiLoaderFactory),
-      deps: [ Http ]
-    }),
-    CookieLawModule
-  ],
-  providers: [
-    Title,
-    AuthService,
-TokenStorage,
-    {provide: LocationStrategy, useClass: PathLocationStrategy},
-  ],
-  bootstrap: [AppComponent]
-})
+@NgModule({ declarations: [AppComponent],
+    bootstrap: [AppComponent], imports: [CommonModule,
+        CalendarModule,
+        SharedModule,
+        BrowserAnimationsModule,
+        SlickCarouselModule,
+        NgSelectModule,
+        NgbModule,
+        MatTableModule,
+        GooglePlaceModule,
+        AgmCoreModule.forRoot({
+            apiKey: environment.googleKey
+        }),
+        TransferHttpCacheModule,
+        AppRoutingModule,
+        BrowserModule.withServerTransition({ appId: 'serverApp' }),
+        RouterModule.forRoot(AppRoutes, { scrollPositionRestoration: 'enabled' }),
+        WpApiModule.forRoot({
+            provide: WpApiLoader,
+            useFactory: (WpApiLoaderFactory),
+            deps: [Http]
+        }),
+        CookieLawModule], providers: [
+        Title,
+        AuthService,
+        TokenStorage,
+        { provide: LocationStrategy, useClass: PathLocationStrategy },
+        provideHttpClient(withInterceptorsFromDi()),
+    ] })
 
 export class AppModule {
 
