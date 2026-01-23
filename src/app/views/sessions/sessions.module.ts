@@ -9,8 +9,13 @@ import { ForgotComponent } from './forgot/forgot.component';
 @NgModule({
   imports: [
     CommonModule,
-    SessionsRoutingModule
+    SessionsRoutingModule,
+
+    // ✅ IMPORT standalone components here
+    SignupComponent,
+    SigninComponent,
+    ForgotComponent
   ],
-  declarations: [SignupComponent, SigninComponent, ForgotComponent]
+  declarations: []   // ❌ REMOVE declarations
 })
-export class SessionsModule { }
+export class SessionsModule {}

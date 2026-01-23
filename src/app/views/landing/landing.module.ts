@@ -4,10 +4,10 @@ import { OnboardingformSubmittedFormComponent } from './onboardingform-submitted
 
 import { ScrollToDirective } from './helpers/scrollTo.directives';
 import { WINDOW_PROVIDERS } from './helpers/window.helpers';
-import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
+// import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 // import { NgForm } from "@angular/forms";
 import { CommonModule, DatePipe } from '@angular/common';
-import { NguCarouselModule } from '@ngu/carousel';
+// import { NguCarouselModule } from '@ngu/carousel';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { LandingRoutingModule } from './landing-routing.module';
 import { LandingV1Component } from './landing-v1/landing-v1.component';
@@ -57,7 +57,7 @@ import { ToastModule } from 'primeng/toast';
 import { IntroTenComponent } from './components/intro-ten/intro-ten.component';
 import { LandingV10Component } from './landing-v10/landing-v10.component';
 import { SharedModule } from 'src/app/shared/shared.module';
-import { FormsModule, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+// import { FormsModule, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { DemosComponent } from './components/demos/demos.component';
 import { BlogDetailsComponent } from './components/blog-details/blog-details.component';
 import { BlogDetailsPageComponent } from './blog-details-page/blog-details-page.component';
@@ -75,27 +75,20 @@ import { DynamicPricingComponent } from './components/dynamic-pricing/dynamic-pr
 import { AboutCredencesoftComponent } from './components/about-credencesoft/about-credencesoft.component';
 import { ContactDetailsComponent } from './components/contact-details/contact-details.component';
 import { OurFeaturesComponent } from './components/our-features/our-features.component';
-import {
-  MatCheckboxModule,
-  MatInputModule,
-  MatSelectModule,
-  MatRadioModule,
-  MatFormFieldModule,
-  MatTableModule
-} from '@angular/material';
+
 import { CallToActionComponent } from './components/call-to-action/call-to-action.component';
 import { SubscribeEmailComponent } from './components/subscribe-email/subscribe-email.component';
 import { PrivacyComponent } from './components/privacy/privacy.component';
 import { PrivacyPolicyComponent } from './privacy-policy/privacy-policy.component';
 import { OnboardingCouponcodeFormComponent } from './onboarding-couponcode-form/onboarding-couponcode-form.component';
-import { GooglePlaceModule } from 'ngx-google-places-autocomplete';
+// import { GooglePlaceModule } from 'ngx-google-places-autocomplete';
 // import { CheckoutModule } from 'paytm-blink-checkout-angular';
 import { TokenStorage } from 'src/token.storage';
 import { BookOneConnectComponent } from 'src/app/views/landing/book-one-connect/book-one-connect.component';
 import { ListingDetailOneComponent } from './ListingDetailOne/ListingDetailOne.component';
-import { SlickCarouselModule } from 'ngx-slick-carousel';
+// import { SlickCarouselModule } from 'ngx-slick-carousel';
 // import { BookingComponent } from 'src/app/views/landing/Booking/Booking.component';
-import { RouterModule, Routes } from '@angular/router';
+// import { RouterModule, Routes } from '@angular/router';
 import { AgmCoreModule } from '@agm/core';
 import { BookingComponent } from './Booking/Booking.component';
 import { environment } from 'src/environments/environment';
@@ -109,7 +102,7 @@ import { LoginDetailsComponent } from './login-details/login-details.component';
 import { CheckoutComponent } from './checkout/checkout.component';
 import { BookingCompleteComponent } from './booking-complete/booking-complete.component';
 import { CheckoutModule } from 'paytm-blink-checkout-angular';
-import { BrowserModule } from '@angular/platform-browser';
+// import { BrowserModule } from '@angular/platform-browser';
 import { PaymentComponent } from './payment/payment.component';
 import { CheckoutPaymentComponent } from './checkout-payment/checkout-payment.component';
 import { ConfirmPaymentComponent } from './confirm-payment/confirm-payment.component';
@@ -128,30 +121,27 @@ import { TermsAndConditionComponent } from './terms-and-condition/terms-and-cond
 import { CancellationPolicyComponent } from './cancellation-policy/cancellation-policy.component';
 import { AboutUsComponent } from './about-us/about-us.component';
 import { CalendarModule } from 'primeng/calendar';
+import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatSelectModule } from '@angular/material/select';
 
 
 @NgModule({
   imports: [
     CommonModule,
     LandingRoutingModule,
-    NguCarouselModule,
     NgbModule,
-    GooglePlaceModule,
+    
     ReactiveFormsModule,
     NgbModule,
     CheckoutModule,
     CarouselModule,
-    MatCheckboxModule,
-    MatInputModule,
     AgmCoreModule.forRoot({ apiKey: environment.googleKey }),
-    SlickCarouselModule,
+   
     FormsModule,
     MatSelectModule,
     DialogModule,
     ToastModule,
-    MatRadioModule,
-    MatFormFieldModule,
-    MatTableModule,
     CalendarModule,
   ],
   declarations: [

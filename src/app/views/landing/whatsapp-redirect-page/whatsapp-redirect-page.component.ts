@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, NgZone ,OnInit} from '@angular/core';
+// import { ChangeDetectorRef, Component, NgZone ,OnInit} from '@angular/core';
 import { API_URL_IN, API_URL_NZ } from 'src/app/app.component';
 import { BusinessOfferDto } from 'src/app/model/businessOfferDto';
 import { HotelBookingService } from 'src/services/hotel-booking.service';
@@ -15,8 +15,7 @@ import { externalReservationDtoList } from 'src/app/model/externalReservation';
 import { PropertyServiceDTO } from 'src/app/model/PropertyServices';
 import { BusinessServiceDtoList } from 'src/app/model/businessServiceDtoList';
 import { RoomDetail } from 'src/app/model/RoomDetail';
-import { HttpClient } from '@angular/common/http';
-import { ActivatedRoute, Router } from '@angular/router';
+
 import { ListingService } from 'src/services/listing.service';
 import { NgbDate } from '@ng-bootstrap/ng-bootstrap';
 import { Logger } from 'src/services/logger.service';
@@ -29,6 +28,8 @@ import { Components } from 'src/app/model/components';
 import { Para } from 'src/app/model/parameters';
 import { Images } from 'src/app/model/image';
 import { OrderService } from 'src/app/services/order.service';
+import { ChangeDetectorRef, Component, NgZone, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 @Component({
   selector: 'app-whatsapp-redirect-page',
   templateUrl: './whatsapp-redirect-page.component.html',
@@ -124,7 +125,6 @@ bookingroomPrice: string;
 taxPercentage: number;
 
   constructor(
-    private http: HttpClient,
     private token: TokenStorage,
     private acRoute: ActivatedRoute,
     private hotelBookingService: HotelBookingService,
