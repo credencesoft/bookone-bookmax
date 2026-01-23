@@ -28,12 +28,7 @@ import {
   EMAIL_Expression,
   SMS_NUMBER,
 } from 'src/app/app.component';
-import {
-  HttpClient,
-  HttpErrorResponse,
-  HttpParams,
-  HttpResponse,
-} from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpParams, HttpResponse } from '@angular/common/http';
 import { NgbDate } from '@ng-bootstrap/ng-bootstrap';
 import { BankAccount } from 'src/app/model/BankAccount';
 import { MobileWallet } from 'src/app/model/mobileWallet';

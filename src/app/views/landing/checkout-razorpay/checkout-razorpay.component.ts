@@ -1,7 +1,7 @@
 // import { Component } from '@angular/core';
 // import { Email } from './../ecosystem/ecosystem.component';
 // import { Component } from '@angular/core';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { ChangeDetectorRef, Component, NgZone } from '@angular/core';
 import { Router } from '@angular/router';
 import { CheckoutService } from 'paytm-blink-checkout-angular';

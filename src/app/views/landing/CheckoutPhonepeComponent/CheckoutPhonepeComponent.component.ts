@@ -1,4 +1,4 @@
-import { HttpClientModule } from '@angular/common/http';
+import {} from '@angular/common/http';
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { CheckoutService } from 'paytm-blink-checkout-angular';
