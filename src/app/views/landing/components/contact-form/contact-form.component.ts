@@ -1,6 +1,6 @@
 import { SharedAnimations } from 'src/app/shared/animations/shared-animations';
 import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup, NgForm } from '@angular/forms';
+import { FormControl, FormGroup, FormsModule, NgForm, ReactiveFormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { SubmitData } from '../dynamic-pricing/submitData';
@@ -22,7 +22,7 @@ export interface Email {
   styleUrls: ['./contact-form.component.scss'],
   animations: [SharedAnimations],
   standalone:true,
-  imports:[SharedModule]
+  imports:[SharedModule,FormsModule,ReactiveFormsModule]
 })
 export class ContactFormComponent implements OnInit {
   serviceType = [

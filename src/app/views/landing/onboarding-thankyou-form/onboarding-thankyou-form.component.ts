@@ -7,7 +7,7 @@ import { NgbDate } from '@ng-bootstrap/ng-bootstrap/datepicker/ngb-date';
 import { json } from 'express';
 // import { Address } from 'ngx-google-places-autocomplete/objects/address';
 import { debounceTime } from 'rxjs';
-import { Address } from 'ngx-google-places-autocomplete/objects/address';
+// import { Address } from 'ngx-google-places-autocomplete/objects/address';
 import { City } from 'src/model/address-setup/city';
 import { State } from 'src/model/address-setup/state';
 import { Suburb } from 'src/model/address-setup/suburbDto';
@@ -17,6 +17,7 @@ import { PropertyAddress } from 'src/model/propertyAddress';
 import { ListingService } from 'src/services/listing.service';
 import { TokenStorage } from 'src/token.storage';
 import { SharedModule } from 'src/app/shared/shared.module';
+import {  } from 'src/model/address';
 // import { Address } from 'src/app/model/address';
 // import { City } from 'src/app/model/address-setup/city';
 // import { Country } from 'src/app/model/address-setup/country';
@@ -184,34 +185,7 @@ if (this.businessLead.address != null && this.businessLead.address != undefined)
       })
 
   }
-  handleAddressChange(address: Address) {
-    const formattedAddress = address.formatted_address;
-    const components = address.address_components;
-    const suburb = this.extractComponent(components, 'sublocality'); // Extract suburb
-    const locality = this.extractComponent(components, 'locality'); // Extract locality
-    const city = this.extractComponent(components, 'locality'); // Extract city
-    const state = this.extractComponent(components, 'administrative_area_level_1'); // Extract state
-    const country = this.extractComponent(components, 'country'); // Extract country
-    const pincode = this.extractComponent(components, 'postal_code'); // Extract postal code
-    const streetName = this.extractComponent(components, 'route');
-    const streetNumber = this.extractComponent(components, 'street_number'); // Extract street number
-    this.address.city =city;
-    this.address.state = state;
-    this.address.country = country;
-     const number = Number(pincode)
-     this.address.postcode = number;
-     this.address.suburb = suburb;
-     this.address.locality = locality
-     this.address.streetName = streetName;
-     this.address.streetNumber = streetNumber;
-    // console.log("City:", city);
-    // console.log("State:", state);
-    // console.log("Country:", country);
-    // console.log("Pincode:", pincode);
-    // console.log("streetName:", streetName);
-    // console.log("streetNumber:", streetNumber);
-    // console.log("suburb:", suburb);
-  }
+
 
   extractComponent(components: any[], type: string): string {
     // console.log("Type:", type);

@@ -81,7 +81,7 @@ import { SubscribeEmailComponent } from './components/subscribe-email/subscribe-
 import { PrivacyComponent } from './components/privacy/privacy.component';
 import { PrivacyPolicyComponent } from './privacy-policy/privacy-policy.component';
 import { OnboardingCouponcodeFormComponent } from './onboarding-couponcode-form/onboarding-couponcode-form.component';
-import { GooglePlaceModule } from 'ngx-google-places-autocomplete';
+// import { GooglePlaceModule } from 'ngx-google-places-autocomplete';
 // import { CheckoutModule } from 'paytm-blink-checkout-angular';
 import { TokenStorage } from 'src/token.storage';
 import { BookOneConnectComponent } from 'src/app/views/landing/book-one-connect/book-one-connect.component';
@@ -89,7 +89,7 @@ import { ListingDetailOneComponent } from './ListingDetailOne/ListingDetailOne.c
 import { SlickCarouselModule } from 'ngx-slick-carousel';
 // import { BookingComponent } from 'src/app/views/landing/Booking/Booking.component';
 import { RouterModule, Routes } from '@angular/router';
-import { AgmCoreModule } from '@agm/core';
+// import { AgmCoreModule } from '@agm/core';
 import { BookingComponent } from './Booking/Booking.component';
 import { environment } from 'src/environments/environment';
 import { HeaderListingdetailsoneComponent } from './Header-Listingdetailsone/Header-Listingdetailsone.component';
@@ -129,13 +129,12 @@ import { CalendarModule } from 'primeng/calendar';
     LandingRoutingModule,
     NguCarouselModule,
     NgbModule,
-    GooglePlaceModule,
+
     ReactiveFormsModule,
     NgbModule,
     CheckoutModule,
     CarouselModule,
-
-    AgmCoreModule.forRoot({ apiKey: environment.googleKey }),
+    // AgmCoreModule.forRoot({ apiKey: environment.googleKey }),
     SlickCarouselModule,
     FormsModule,
 
@@ -145,100 +144,7 @@ import { CalendarModule } from 'primeng/calendar';
     CalendarModule,
   ],
   declarations: [
-    LandingV1Component,
-    Intro1Component,
-    Intro2Component,
-    Works1Component,
-    Works2Component,
-    WorksCarouselComponent,
-    PaymentComponent,
-    ServicesComponent,
-    ConfirmBookingComponent,
-    CheckoutPaymentComponent,
 
-    ServicesCauroselComponent,
-    TestimonialComponent,
-    TestimonialCauroselComponent,
-    PricingOneComponent,
-    ContactFormComponent,
-    FooterComponent,
-    ListingDetailOneComponent,
-   LandingV2Component,
-    FeaturesComponent,
-    FeaturesTwoComponent,
-    BestComponent,
-
-    LeftImageComponent,
-    RightImageComponent,
-    TeamComponent,
-    NewsComponent,
-    FaqsComponent,
-    BookOneConnectComponent,
-    BookingComponent,
-
-    BookingCompleteComponent,
-    NewsTwoComponent,
-    IntroThreeComponent,
-    LandingV3Component,
-    IntroFourComponent,
-    LandingV4Component,
-    IntroFiveComponent,
-    LandingV5Component,
-    LandingV6Component,
-    IntroSixComponent,
-    IntroSevenComponent,
-    LandingV7Component,
-    IntroEightComponent,
-    LandingV8Component,
-    HeaderComponent,
-    ScrollToDirective,
-    OnboardingCouponcodeFormComponent,
-    OnboardingformSubmittedFormComponent,
-    OnboardingRoomdetailsFormComponent,
-    OnboardingThankyouFormComponent,
-    NotificationHandlingComponent,
-    HeaderWhiteComponent,
-    CheckoutRazorpayComponent,
-    IntroNineComponent,
-    LandingV9Component,
-EnquiryComponent,
-    LoginDetailsComponent,
-    IntroTenComponent,
-    LandingV10Component,
-    DemosComponent,
-    CheckoutComponent,
-    BlogDetailsComponent,
-    BlogDetailsPageComponent,
-    IntroElevenComponent,
-    LandingV11Component,
-    WhyBookoneComponent,
-    PricingFilterComponent,
-    DynamicPricingComponent,
-    AboutCredencesoftComponent,
-    ContactDetailsComponent,
-    OurFeaturesComponent,
-    HomeComponent,
-    PricingComponent,
-    CompanyComponent,
-    BlogComponent,
-    ContactComponent,
-    FaqComponent,
-    HeaderListingdetailsoneComponent,
-    SideNavComponent,
-    ManageBookingsLoginComponent,
-    LoginCancelPageComponent,
-
-    CallToActionComponent,
-    SubscribeEmailComponent,
-    PrivacyComponent,
-    PrivacyPolicyComponent,
-    ConfirmPaymentComponent,
-    BookingVoucherComponent,
-    PaylaterConfirmComponent,
-    BookingConfirmComponent,
-    WhatsappRedirectPageComponent,
-    WhatappPaylaterTemplateComponent,
-    ErrorpageComponent,
     TermsAndConditionComponent,
     CancellationPolicyComponent,
     AboutUsComponent

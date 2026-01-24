@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { NgForm } from '@angular/forms';
+import { FormsModule, NgForm } from '@angular/forms';
 import { SharedModule } from 'src/app/shared/shared.module';
 
 @Component({
@@ -7,7 +7,7 @@ import { SharedModule } from 'src/app/shared/shared.module';
   templateUrl: './intro-eleven.component.html',
   styleUrls: ['./intro-eleven.component.scss'],
   standalone:true,
-  imports:[SharedModule]
+  imports:[SharedModule,FormsModule]
 })
 export class IntroElevenComponent implements OnInit {
 

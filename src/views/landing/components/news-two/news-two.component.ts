@@ -6,7 +6,8 @@ import { WpApiPosts } from 'wp-api-angular';
 @Component({
   selector: 'app-news-two',
   templateUrl: './news-two.component.html',
-  styleUrls: ['./news-two.component.scss']
+  styleUrls: ['./news-two.component.scss'],
+  standalone:true
 })
 export class NewsTwoComponent implements OnInit {
   @Input() token;

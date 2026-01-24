@@ -13,6 +13,7 @@ import {
   Output,
   PLATFORM_ID,
   Inject,
+  CUSTOM_ELEMENTS_SCHEMA,
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
@@ -23,7 +24,7 @@ import {
   NgbDateStruct,
   NgbModal,
 } from '@ng-bootstrap/ng-bootstrap';
-import { DatePipe, isPlatformBrowser, Location, ViewportScroller } from '@angular/common';
+import { CommonModule, DatePipe, isPlatformBrowser, Location, ViewportScroller } from '@angular/common';
 import { Booking } from 'src/app/model/booking';
 import { BusinessServiceDtoList } from 'src/app/model/businessServiceDtoList';
 import { DateModel } from 'src/app/model/dateModel';
@@ -44,7 +45,7 @@ import { Room } from 'src/app/model/room';
 import { RoomRatePlans } from 'src/app/model/roomRatePlans';
 import { DomSanitizer, Meta, SafeUrl, Title } from '@angular/platform-browser';
 // import { TriggerEventService } from 'src/app/services/trigger-event.service';
-import { FormControl, FormGroup, NgForm, Validators } from '@angular/forms';
+import { FormControl, FormGroup, FormsModule, NgForm, ReactiveFormsModule, Validators } from '@angular/forms';
 import { environment } from 'src/environments/environment';
 import { API_URL_NZ } from 'src/app/app.component';
 import { ScrollBar } from '@ng-bootstrap/ng-bootstrap/util/scrollbar';
@@ -86,7 +87,8 @@ interface RoomOne {
   templateUrl: './ListingDetailOne.component.html',
   styleUrls: ['./ListingDetailOne.component.scss'],
   standalone:true,
-  imports:[SharedModule],
+  imports:[SharedModule,FormsModule,ReactiveFormsModule,CommonModule],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   encapsulation: ViewEncapsulation.None,
 })
 export class ListingDetailOneComponent implements OnInit {

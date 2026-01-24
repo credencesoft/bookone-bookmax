@@ -10,7 +10,8 @@ import { WPAPIService } from 'src/services/wpapi.service';
 @Component({
   selector: 'app-blog-details',
   templateUrl: './blog-details.component.html',
-  styleUrls: ['./blog-details.component.scss']
+  styleUrls: ['./blog-details.component.scss'],
+  standalone:true
 })
 export class BlogDetailsComponent implements OnInit {
   @Input() token;

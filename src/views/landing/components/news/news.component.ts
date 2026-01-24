@@ -7,7 +7,8 @@ import { WPAPIService } from 'src/services/wpapi.service';
 @Component({
   selector: 'app-news',
   templateUrl: './news.component.html',
-  styleUrls: ['./news.component.scss']
+  styleUrls: ['./news.component.scss'],
+  standalone:true
 })
 export class NewsComponent implements OnInit {
   // @Input() token;

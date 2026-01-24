@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, OnInit } from "@angular/core";
 import { Router } from "@angular/router";
-import { CheckoutService } from "paytm-blink-checkout-angular";
+import { CheckoutModule, CheckoutService } from "paytm-blink-checkout-angular";
 // import { CheckoutService } from "paytm-blink-checkout-angular";
 import { Subscription } from "rxjs";
 import { Booking } from "src/app/model/booking";
@@ -16,7 +16,7 @@ import { TokenStorage } from "src/token.storage";
   templateUrl: "./checkout.component.html",
   styleUrls: ["./checkout.component.css"],
   standalone:true,
-  imports:[SharedModule]
+  imports:[SharedModule,CheckoutModule]
 })
 export class CheckoutComponent implements OnInit {
   businessUser: BusinessUser;

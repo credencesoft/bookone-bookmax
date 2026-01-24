@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router, NavigationEnd, ActivatedRoute  } from '@angular/router';
+import { Router, NavigationEnd, ActivatedRoute, RouterOutlet  } from '@angular/router';
 import { Meta, Title } from '@angular/platform-browser';
 import { filter, map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
@@ -7,7 +7,9 @@ declare const dataLayer: any;
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  styleUrls: ['./app.component.css'],
+  standalone:true,
+  imports:[RouterOutlet]
 })
 export class AppComponent implements OnInit {
   token = null;

@@ -21,7 +21,7 @@ import { HTTPStatus } from 'src/app/app.interceptor';
 import { Subscription } from "rxjs";
 import { JwtAuthService } from 'src/app/auth/jwt-auth.service';
 import { ApplicationUser } from './user';
-import { Validators, UntypedFormControl, FormGroup, FormControl } from "@angular/forms";
+import { Validators, UntypedFormControl, FormGroup, FormControl, FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { UntypedFormGroup } from '@angular/forms';
 import { AuthService } from 'src/app/auth/auth.service';
 import { SharedModule } from 'src/app/shared/shared.module';
@@ -33,7 +33,7 @@ const TOKEN_PREFIX = "Bearer ";
   templateUrl: './Login-cancel-page.component.html',
   styleUrls: ['./Login-cancel-page.component.css'],
   standalone:true,
-  imports:[SharedModule]
+  imports:[SharedModule,FormsModule,ReactiveFormsModule]
 })
 export class LoginCancelPageComponent implements OnInit {
   emailt :UntypedFormControl = new UntypedFormControl();

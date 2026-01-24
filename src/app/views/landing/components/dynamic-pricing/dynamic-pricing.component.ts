@@ -4,7 +4,7 @@ import { CurrencyService } from 'src/app/services/currency.service';
 import { SubmitData } from './submitData';
 import { NavigationExtras } from '@angular/router';
 import { Router } from '@angular/router';
-import { FormControl, Validators } from '@angular/forms';
+import { FormControl, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { SharedModule } from 'src/app/shared/shared.module';
 // import { constructor } from 'jquery';
 
@@ -14,7 +14,7 @@ import { SharedModule } from 'src/app/shared/shared.module';
   styleUrls: ['./dynamic-pricing.component.scss'],
   animations: [SharedAnimations],
   standalone:true,
-  imports:[SharedModule]
+  imports:[SharedModule,FormsModule,ReactiveFormsModule]
 })
 export class DynamicPricingComponent implements OnInit {
   currency = '₹';

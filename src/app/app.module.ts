@@ -1,8 +1,8 @@
 // import { CheckoutModule } from 'paytm-blink-checkout-angular';
 import { CheckoutComponent } from './views/landing/checkout/checkout.component';
-import { BrowserModule, Title, TransferState } from '@angular/platform-browser';
+import { BrowserModule, Title } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+// import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { AppRoutes, AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -16,7 +16,7 @@ import {
   WpApiLoader,
   WpApiStaticLoader
 } from 'wp-api-angular';
-import { AgmCoreModule } from '@agm/core';
+// import { AgmCoreModule } from '@agm/core';
 import { NgSelectModule } from '@ng-select/ng-select';
 export function WpApiLoaderFactory(http: Http) {
   return new WpApiStaticLoader(http, 'https://blog.bookonepms.com/wp-json/wp/v2/', '');
@@ -24,7 +24,7 @@ export function WpApiLoaderFactory(http: Http) {
 import { CookieLawModule } from 'angular2-cookie-law';
 import { LocationStrategy, HashLocationStrategy, PathLocationStrategy } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { GooglePlaceModule } from 'ngx-google-places-autocomplete';
+// import { GooglePlaceModule } from 'ngx-google-places-autocomplete';
 import { SlickCarouselModule } from 'ngx-slick-carousel';
 import { TokenStorage } from 'src/token.storage';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
@@ -40,19 +40,19 @@ import { CalendarModule } from 'primeng/calendar';
 CalendarModule,
     SharedModule,
     HttpClientModule,
-    BrowserAnimationsModule,
+    // BrowserAnimationsModule,
     SlickCarouselModule,
     NgSelectModule,
 
     NgbModule,
     // MatTableModule,
-    GooglePlaceModule,
-    AgmCoreModule.forRoot({
-      apiKey: environment.googleKey
-    }),
+    // GooglePlaceModule,
+    // AgmCoreModule.forRoot({
+    //   apiKey: environment.googleKey
+    // }),
     TransferHttpCacheModule,
     AppRoutingModule,
-    BrowserModule.withServerTransition({ appId: 'serverApp' }),
+    BrowserModule,
     RouterModule.forRoot(AppRoutes,{ scrollPositionRestoration: 'enabled' }),
     WpApiModule.forRoot({ // <---
       provide: WpApiLoader,
