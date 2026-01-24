@@ -27,6 +27,12 @@ import { PricingFilterComponent } from '../views/landing/components/pricing-filt
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { GooglePlaceModule } from 'ngx-google-places-autocomplete';
 import { NguCarouselModule } from '@ngu/carousel';
+import { SubscribeEmailComponent } from 'src/views/landing/components/subscribe-email/subscribe-email.component';
+import { Intro2Component } from 'src/views/landing/components/intro2/intro2.component';
+import { WhyBookoneComponent } from 'src/views/landing/components/why-bookone/why-bookone.component';
+import { ServicesComponent } from 'src/views/landing/components/services/services.component';
+import { FeaturesComponent } from 'src/views/landing/components/features/features.component';
+import { OurFeaturesComponent } from 'src/views/landing/components/our-features/our-features.component';
 
 
 const exportedClasses = [
@@ -41,7 +47,14 @@ PrivacyComponent,
 IntroEightComponent,
 ContactFormComponent,
 DynamicPricingComponent,
-PricingFilterComponent
+PricingFilterComponent,
+SubscribeEmailComponent,
+Intro2Component,
+WhyBookoneComponent,
+ServicesComponent,
+FeaturesComponent,
+OurFeaturesComponent,
+
 ];
 
 
