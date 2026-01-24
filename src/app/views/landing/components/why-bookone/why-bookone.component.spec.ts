@@ -11,8 +11,8 @@ describe('WhyBookoneComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ WhyBookoneComponent ]
-    })
+    declarations: [WhyBookoneComponent]
+})
     .compileComponents();
   }));
 

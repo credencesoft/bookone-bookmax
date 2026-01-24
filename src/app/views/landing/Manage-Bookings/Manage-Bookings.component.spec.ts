@@ -11,8 +11,8 @@ describe('ManageBookingsComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ManageBookingsComponent ]
-    })
+    declarations: [ManageBookingsComponent]
+})
     .compileComponents();
   }));
 

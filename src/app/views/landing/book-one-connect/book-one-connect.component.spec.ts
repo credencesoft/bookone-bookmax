@@ -8,8 +8,8 @@ describe('BookOneConnectComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ BookOneConnectComponent ]
-    })
+    declarations: [BookOneConnectComponent]
+})
     .compileComponents();
 
     fixture = TestBed.createComponent(BookOneConnectComponent);

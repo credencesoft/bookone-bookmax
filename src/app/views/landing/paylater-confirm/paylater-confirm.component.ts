@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { Booking } from 'src/app/model/booking';
 import { BusinessOfferDto } from 'src/app/model/businessOfferDto';
 import { BusinessUser } from 'src/app/model/user';
+import { SharedModule } from 'src/app/shared/shared.module';
 import { HotelBookingService } from 'src/services/hotel-booking.service';
 import { ListingService } from 'src/services/listing.service';
 import { TokenStorage } from 'src/token.storage';
@@ -11,6 +12,8 @@ import { TokenStorage } from 'src/token.storage';
   selector: 'app-paylater-confirm',
   templateUrl: './paylater-confirm.component.html',
   styleUrls: ['./paylater-confirm.component.scss'],
+  standalone:true,
+  imports:[SharedModule]
 })
 export class PaylaterConfirmComponent {
   propertyDetails: any;

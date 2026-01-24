@@ -11,8 +11,8 @@ describe('PricingFilterComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ PricingFilterComponent ]
-    })
+    imports: [PricingFilterComponent]
+})
     .compileComponents();
   }));
 

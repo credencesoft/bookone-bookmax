@@ -11,8 +11,8 @@ describe('SubscribeEmailComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ SubscribeEmailComponent ]
-    })
+    declarations: [SubscribeEmailComponent]
+})
     .compileComponents();
   }));
 

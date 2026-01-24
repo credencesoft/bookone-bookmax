@@ -8,8 +8,8 @@ describe('CancellationPolicyComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ CancellationPolicyComponent ]
-    })
+    declarations: [CancellationPolicyComponent]
+})
     .compileComponents();
 
     fixture = TestBed.createComponent(CancellationPolicyComponent);

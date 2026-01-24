@@ -16,13 +16,16 @@ import { CancelService } from '../cancel.service';
 import { Cancel } from '../cancel';
 import { BusinessUser } from 'src/app/model/user';
 import { CountryList } from 'src/model/country';
+import { SharedModule } from 'src/app/shared/shared.module';
 
 // import { NgbCalendar } from '@ng-bootstrap/ng-bootstrap/datepicker/ngb-calendar';
 
 @Component({
   selector: 'app-notification-handling',
   templateUrl: './notification-handling.component.html',
-  styleUrls: ['./notification-handling.component.scss']
+  styleUrls: ['./notification-handling.component.scss'],
+  standalone:true,
+  imports:[SharedModule]
 })
 export class NotificationHandlingComponent {
 

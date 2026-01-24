@@ -7,10 +7,10 @@ import { SigninComponent } from './signin/signin.component';
 import { ForgotComponent } from './forgot/forgot.component';
 
 @NgModule({
-  imports: [
-    CommonModule,
-    SessionsRoutingModule
-  ],
-  declarations: [SignupComponent, SigninComponent, ForgotComponent]
+    imports: [
+        CommonModule,
+        SessionsRoutingModule,
+        SignupComponent, SigninComponent, ForgotComponent
+    ]
 })
 export class SessionsModule { }

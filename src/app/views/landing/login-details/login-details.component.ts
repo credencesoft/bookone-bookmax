@@ -14,11 +14,14 @@ import { CancelService } from '../cancel.service';
 import { Cancel } from '../cancel';
 import { ListingService } from 'src/services/listing.service';
 import { CountryList } from 'src/model/country';
+import { SharedModule } from 'src/app/shared/shared.module';
 
 @Component({
   selector: 'app-login-details',
   templateUrl: './login-details.component.html',
-  styleUrls: ['./login-details.component.css']
+  styleUrls: ['./login-details.component.css'],
+  standalone:true,
+  imports:[SharedModule]
 })
 export class LoginDetailsComponent implements OnInit {
   @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;

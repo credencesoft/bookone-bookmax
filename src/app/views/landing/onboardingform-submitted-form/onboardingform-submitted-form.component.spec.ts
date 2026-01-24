@@ -8,8 +8,8 @@ describe('OnboardingformSubmittedFormComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ OnboardingformSubmittedFormComponent ]
-    })
+    declarations: [OnboardingformSubmittedFormComponent]
+})
     .compileComponents();
 
     fixture = TestBed.createComponent(OnboardingformSubmittedFormComponent);

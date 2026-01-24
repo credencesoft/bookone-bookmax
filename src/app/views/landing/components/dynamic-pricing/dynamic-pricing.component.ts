@@ -11,7 +11,8 @@ import { FormControl, Validators } from '@angular/forms';
   selector: 'app-dynamic-pricing',
   templateUrl: './dynamic-pricing.component.html',
   styleUrls: ['./dynamic-pricing.component.scss'],
-  animations: [SharedAnimations]
+  animations: [SharedAnimations],
+  standalone: true,
 })
 export class DynamicPricingComponent implements OnInit {
   currency = '₹';

@@ -1,10 +1,11 @@
 // import { SharedAnimations } from 'src/app/shared/animations/shared-animations';
 import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup, NgForm } from '@angular/forms';
+import { FormControl, FormGroup, NgForm, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { SubmitData } from '../dynamic-pricing/submitData';
 import { SharedAnimations } from 'src/shared/animations/shared-animations';
+import { NgIf, NgFor } from '@angular/common';
 
 export interface Email {
 
@@ -17,10 +18,12 @@ export interface Email {
 
 
 @Component({
-  selector: 'app-contact-form',
-  templateUrl: './contact-form.component.html',
-  styleUrls: ['./contact-form.component.scss'],
-  animations: [SharedAnimations]
+    selector: 'app-contact-form',
+    templateUrl: './contact-form.component.html',
+    styleUrls: ['./contact-form.component.scss'],
+    animations: [SharedAnimations],
+    standalone: true,
+    imports: [NgIf, FormsModule, ReactiveFormsModule, NgFor]
 })
 export class ContactFormComponent implements OnInit {
   serviceType = [

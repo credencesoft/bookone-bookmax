@@ -11,8 +11,8 @@ describe('WhatappPaylaterTemplateComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ WhatappPaylaterTemplateComponent ]
-    })
+    declarations: [WhatappPaylaterTemplateComponent]
+})
     .compileComponents();
   }));
 

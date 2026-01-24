@@ -11,8 +11,8 @@ describe('EnquiryComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ EnquiryComponent ]
-    })
+    declarations: [EnquiryComponent]
+})
     .compileComponents();
   }));
 

@@ -4,7 +4,8 @@ import { Title } from '@angular/platform-browser';
 @Component({
   selector: 'app-intro-eight',
   templateUrl: './intro-eight.component.html',
-  styleUrls: ['./intro-eight.component.scss']
+  styleUrls: ['./intro-eight.component.scss'],
+  standalone:true
 })
 export class IntroEightComponent implements OnInit {
   pageName: string;

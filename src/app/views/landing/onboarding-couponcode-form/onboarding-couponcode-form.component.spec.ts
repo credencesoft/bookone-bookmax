@@ -8,8 +8,8 @@ describe('OnboardingCouponcodeFormComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ OnboardingCouponcodeFormComponent ]
-    })
+    declarations: [OnboardingCouponcodeFormComponent]
+})
     .compileComponents();
 
     fixture = TestBed.createComponent(OnboardingCouponcodeFormComponent);

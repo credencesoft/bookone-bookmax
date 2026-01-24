@@ -11,8 +11,8 @@ describe('AboutCredencesoftComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ AboutCredencesoftComponent ]
-    })
+    imports: [AboutCredencesoftComponent]
+})
     .compileComponents();
   }));
 

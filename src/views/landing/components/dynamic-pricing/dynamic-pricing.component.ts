@@ -10,10 +10,11 @@ import { CurrencyService } from 'src/services/currency.service';
 // import { constructor } from 'jquery';
 
 @Component({
-  selector: 'app-dynamic-pricing',
-  templateUrl: './dynamic-pricing.component.html',
-  styleUrls: ['./dynamic-pricing.component.scss'],
-  animations: [SharedAnimations]
+    selector: 'app-dynamic-pricing',
+    templateUrl: './dynamic-pricing.component.html',
+    styleUrls: ['./dynamic-pricing.component.scss'],
+    animations: [SharedAnimations],
+    standalone: true
 })
 // @Pipe({ name: 'convertToSpaces' })
 export class DynamicPricingComponent implements OnInit {

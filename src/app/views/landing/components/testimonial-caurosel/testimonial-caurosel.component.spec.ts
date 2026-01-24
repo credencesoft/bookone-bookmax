@@ -8,8 +8,8 @@ describe('TestimonialCauroselComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ TestimonialCauroselComponent ]
-    })
+    declarations: [TestimonialCauroselComponent]
+})
     .compileComponents();
   }));
 

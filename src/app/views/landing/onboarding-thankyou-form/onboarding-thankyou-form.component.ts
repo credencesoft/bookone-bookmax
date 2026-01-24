@@ -16,6 +16,7 @@ import { BusinessLineDTO } from 'src/model/businessLeadsDto';
 import { PropertyAddress } from 'src/model/propertyAddress';
 import { ListingService } from 'src/services/listing.service';
 import { TokenStorage } from 'src/token.storage';
+import { SharedModule } from 'src/app/shared/shared.module';
 // import { Address } from 'src/app/model/address';
 // import { City } from 'src/app/model/address-setup/city';
 // import { Country } from 'src/app/model/address-setup/country';
@@ -36,7 +37,9 @@ import { TokenStorage } from 'src/token.storage';
 @Component({
   selector: 'app-onboarding-thankyou-form',
   templateUrl: './onboarding-thankyou-form.component.html',
-  styleUrls: ['./onboarding-thankyou-form.component.scss']
+  styleUrls: ['./onboarding-thankyou-form.component.scss'],
+  standalone:true,
+  imports:[SharedModule]
 })
 export class OnboardingThankyouFormComponent {
   options: any = {

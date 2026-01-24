@@ -8,8 +8,8 @@ describe('ForgotComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ForgotComponent ]
-    })
+    imports: [ForgotComponent]
+})
     .compileComponents();
   }));
 

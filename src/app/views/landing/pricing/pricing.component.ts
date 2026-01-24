@@ -1,10 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { Meta } from '@angular/platform-browser';
+import { SharedModule } from 'src/app/shared/shared.module';
 
 @Component({
   selector: 'app-pricing',
   templateUrl: './pricing.component.html',
-  styleUrls: ['./pricing.component.scss']
+  styleUrls: ['./pricing.component.scss'],
+  standalone:true,
+  imports:[SharedModule]
 })
 export class PricingComponent implements OnInit {
 

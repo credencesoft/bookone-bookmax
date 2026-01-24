@@ -1,10 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { Meta } from '@angular/platform-browser';
+import { SharedModule } from 'src/app/shared/shared.module';
 
 @Component({
   selector: 'app-faq',
   templateUrl: './faq.component.html',
-  styleUrls: ['./faq.component.scss']
+  styleUrls: ['./faq.component.scss'],
+  standalone:true,
+    imports:[SharedModule]
 })
 export class FaqComponent implements OnInit {
 

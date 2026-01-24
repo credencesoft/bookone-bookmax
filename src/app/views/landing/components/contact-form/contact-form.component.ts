@@ -19,7 +19,8 @@ export interface Email {
   selector: 'app-contact-form',
   templateUrl: './contact-form.component.html',
   styleUrls: ['./contact-form.component.scss'],
-  animations: [SharedAnimations]
+  animations: [SharedAnimations],
+  standalone:true,
 })
 export class ContactFormComponent implements OnInit {
   serviceType = [

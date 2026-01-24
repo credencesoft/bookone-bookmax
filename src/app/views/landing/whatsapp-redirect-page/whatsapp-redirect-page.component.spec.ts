@@ -11,8 +11,8 @@ describe('WhatsappRedirectPageComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ WhatsappRedirectPageComponent ]
-    })
+    declarations: [WhatsappRedirectPageComponent]
+})
     .compileComponents();
   }));
 

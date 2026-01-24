@@ -11,8 +11,8 @@ describe('FaqComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ FaqComponent ]
-    })
+    declarations: [FaqComponent]
+})
     .compileComponents();
   }));
 

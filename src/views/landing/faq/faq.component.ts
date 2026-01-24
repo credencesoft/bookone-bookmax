@@ -1,10 +1,18 @@
 import { Component, OnInit } from '@angular/core';
 import { Meta } from '@angular/platform-browser';
+import { FooterComponent } from '../components/footer/footer.component';
+import { ContactFormComponent } from '../components/contact-form/contact-form.component';
+import { FaqsComponent } from '../components/faqs/faqs.component';
+import { IntroEightComponent } from '../components/intro-eight/intro-eight.component';
+import { HeaderComponent } from '../components/header/header.component';
+import { NgClass } from '@angular/common';
 
 @Component({
-  selector: 'app-faq',
-  templateUrl: './faq.component.html',
-  styleUrls: ['./faq.component.scss']
+    selector: 'app-faq',
+    templateUrl: './faq.component.html',
+    styleUrls: ['./faq.component.scss'],
+    standalone: true,
+    imports: [NgClass, HeaderComponent, IntroEightComponent, FaqsComponent, ContactFormComponent, FooterComponent]
 })
 export class FaqComponent implements OnInit {
 

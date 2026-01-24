@@ -11,8 +11,8 @@ describe('HeaderListingdetailsoneComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ HeaderListingdetailsoneComponent ]
-    })
+    declarations: [HeaderListingdetailsoneComponent]
+})
     .compileComponents();
   }));
 

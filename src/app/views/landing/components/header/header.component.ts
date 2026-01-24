@@ -12,7 +12,8 @@ import {WINDOW_PROVIDERS, WINDOW} from '../../helpers/window.helpers';
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
-  styleUrls: ['./header.component.scss']
+  styleUrls: ['./header.component.scss'],
+  standalone:true
 })
 export class HeaderComponent implements OnInit {
   constructor(

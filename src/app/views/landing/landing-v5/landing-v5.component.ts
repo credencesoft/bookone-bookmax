@@ -1,9 +1,12 @@
 import { Component, OnInit } from '@angular/core';
+import { SharedModule } from 'src/app/shared/shared.module';
 
 @Component({
   selector: 'app-landing-v5',
   templateUrl: './landing-v5.component.html',
-  styleUrls: ['./landing-v5.component.scss']
+  styleUrls: ['./landing-v5.component.scss'],
+  standalone:true,
+    imports:[SharedModule]
 })
 export class LandingV5Component implements OnInit {
 

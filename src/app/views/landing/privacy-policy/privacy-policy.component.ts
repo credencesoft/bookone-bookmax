@@ -1,9 +1,12 @@
 import { Component, OnInit } from '@angular/core';
+import { SharedModule } from 'src/app/shared/shared.module';
 
 @Component({
   selector: 'app-privacy-policy',
   templateUrl: './privacy-policy.component.html',
-  styleUrls: ['./privacy-policy.component.scss']
+  styleUrls: ['./privacy-policy.component.scss'],
+  standalone:true,
+  imports:[SharedModule]
 })
 export class PrivacyPolicyComponent implements OnInit {
   pagename = 'Privacy Policy';

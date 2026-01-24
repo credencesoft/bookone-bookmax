@@ -8,8 +8,8 @@ describe('NumberCounterComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ NumberCounterComponent ]
-    })
+    imports: [NumberCounterComponent]
+})
     .compileComponents();
 
     fixture = TestBed.createComponent(NumberCounterComponent);

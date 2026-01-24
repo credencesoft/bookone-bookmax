@@ -8,7 +8,7 @@ import { EnquiryDto } from 'src/app/model/enquiry';
 import { BusinessUser } from 'src/app/model/user';
 import { Booking } from 'src/app/model/booking';
 import { Payment } from 'src/app/model/payment';
-import { Location, DatePipe } from '@angular/common';
+import { Location, DatePipe, CommonModule } from '@angular/common';
 
 
 import { externalReservationDtoList } from 'src/app/model/externalReservation';
@@ -16,7 +16,7 @@ import { PropertyServiceDTO } from 'src/app/model/PropertyServices';
 import { BusinessServiceDtoList } from 'src/app/model/businessServiceDtoList';
 import { RoomDetail } from 'src/app/model/RoomDetail';
 import { HttpClient } from '@angular/common/http';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ListingService } from 'src/services/listing.service';
 import { NgbDate } from '@ng-bootstrap/ng-bootstrap';
 import { Logger } from 'src/services/logger.service';
@@ -29,10 +29,13 @@ import { Components } from 'src/app/model/components';
 import { Para } from 'src/app/model/parameters';
 import { Images } from 'src/app/model/image';
 import { OrderService } from 'src/app/services/order.service';
+import { SharedModule } from 'src/app/shared/shared.module';
 @Component({
   selector: 'app-whatsapp-redirect-page',
   templateUrl: './whatsapp-redirect-page.component.html',
-  styleUrls: ['./whatsapp-redirect-page.component.css']
+  styleUrls: ['./whatsapp-redirect-page.component.css'],
+  standalone: true,
+  imports: [SharedModule]
 })
 export class WhatsappRedirectPageComponent implements OnInit {
   businessUser: BusinessUser;

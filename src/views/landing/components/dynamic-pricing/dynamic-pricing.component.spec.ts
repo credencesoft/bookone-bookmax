@@ -11,8 +11,8 @@ describe('DynamicPricingComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ DynamicPricingComponent ]
-    })
+    imports: [DynamicPricingComponent]
+})
     .compileComponents();
   }));
 

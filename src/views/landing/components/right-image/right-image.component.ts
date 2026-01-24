@@ -1,9 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { NguCarouselConfig } from "@ngu/carousel";
+import { NguCarouselConfig, NguCarouselModule } from "@ngu/carousel";
 @Component({
-  selector: "app-right-image",
-  templateUrl: "./right-image.component.html",
-  styleUrls: ["./right-image.component.scss"]
+    selector: "app-right-image",
+    templateUrl: "./right-image.component.html",
+    styleUrls: ["./right-image.component.scss"],
+    standalone: true,
+    imports: [NguCarouselModule]
 })
 export class RightImageComponent implements OnInit {
   public carouselTileItems: Array<any> = [

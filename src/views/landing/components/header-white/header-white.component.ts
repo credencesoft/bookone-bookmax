@@ -6,13 +6,17 @@ import {
   Inject,
   Input
 } from "@angular/core";
-import {DOCUMENT} from "@angular/common";
+import { DOCUMENT, NgClass } from "@angular/common";
 import {WINDOW_PROVIDERS, WINDOW} from "../../helpers/window.helpers";
+import { ScrollToDirective } from "../../helpers/scrollTo.directives";
+import { NgbCollapse } from "@ng-bootstrap/ng-bootstrap";
 
 @Component({
-  selector: "app-header-white",
-  templateUrl: "./header-white.component.html",
-  styleUrls: ["./header-white.component.scss"]
+    selector: "app-header-white",
+    templateUrl: "./header-white.component.html",
+    styleUrls: ["./header-white.component.scss"],
+    standalone: true,
+    imports: [NgClass, NgbCollapse, ScrollToDirective]
 })
 export class HeaderWhiteComponent implements OnInit {
   isFixed;

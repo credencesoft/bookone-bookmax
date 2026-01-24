@@ -1,6 +1,7 @@
 import { ChangeDetectorRef, Component, Input } from '@angular/core';
 import { FormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { json } from 'express';
+import { SharedModule } from 'src/app/shared/shared.module';
 import { BusinessLineDTO } from 'src/model/businessLeadsDto';
 import { RoomDetails } from 'src/model/roomdetails';
 import { ListingService } from 'src/services/listing.service';
@@ -39,7 +40,9 @@ export class EnquiryForm {
 @Component({
   selector: 'app-onboarding-roomdetails-form',
   templateUrl: './onboarding-roomdetails-form.component.html',
-  styleUrls: ['./onboarding-roomdetails-form.component.scss']
+  styleUrls: ['./onboarding-roomdetails-form.component.scss'],
+  standalone:true,
+  imports:[SharedModule]
 })
 
 export class OnboardingRoomdetailsFormComponent {

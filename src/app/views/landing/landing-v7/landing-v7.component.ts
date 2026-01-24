@@ -1,9 +1,12 @@
 import { Component, OnInit } from '@angular/core';
+import { SharedModule } from 'src/app/shared/shared.module';
 
 @Component({
   selector: 'app-landing-v7',
   templateUrl: './landing-v7.component.html',
-  styleUrls: ['./landing-v7.component.scss']
+  styleUrls: ['./landing-v7.component.scss'],
+  standalone:true,
+    imports:[SharedModule]
 })
 export class LandingV7Component implements OnInit {
 

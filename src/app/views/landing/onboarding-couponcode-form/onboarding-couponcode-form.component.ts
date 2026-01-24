@@ -3,6 +3,7 @@ import { Component, Input, AfterViewInit } from '@angular/core';
 import { FormControl, FormGroup, NgForm, UntypedFormGroup, Validators } from '@angular/forms';
 import { Meta, Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
+import { SharedModule } from 'src/app/shared/shared.module';
 import { BusinessLineDTO } from 'src/model/businessLeadsDto';
 import { ListingService } from 'src/services/listing.service';
 import { TokenStorage } from 'src/token.storage';
@@ -13,7 +14,9 @@ import { TokenStorage } from 'src/token.storage';
 @Component({
   selector: 'app-onboarding-couponcode-form',
   templateUrl: './onboarding-couponcode-form.component.html',
-  styleUrls: ['./onboarding-couponcode-form.component.scss']
+  styleUrls: ['./onboarding-couponcode-form.component.scss'],
+  standalone:true,
+  imports:[SharedModule]
 })
 export class OnboardingCouponcodeFormComponent {
   isPopupVisible: boolean = false;

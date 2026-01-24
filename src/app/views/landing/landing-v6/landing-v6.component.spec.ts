@@ -8,8 +8,8 @@ describe('LandingV6Component', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ LandingV6Component ]
-    })
+    declarations: [LandingV6Component]
+})
     .compileComponents();
   }));
 

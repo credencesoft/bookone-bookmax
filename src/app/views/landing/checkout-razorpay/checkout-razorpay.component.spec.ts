@@ -8,8 +8,8 @@ describe('CheckoutRazorpayComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ CheckoutRazorpayComponent ]
-    })
+    declarations: [CheckoutRazorpayComponent]
+})
     .compileComponents();
 
     fixture = TestBed.createComponent(CheckoutRazorpayComponent);

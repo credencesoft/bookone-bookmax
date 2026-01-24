@@ -7,7 +7,8 @@ import { BusinessUser } from 'src/app/model/user';
 @Component({
   selector: 'app-Header-Listingdetailsone',
   templateUrl: './Header-Listingdetailsone.component.html',
-  styleUrls: ['./Header-Listingdetailsone.component.css']
+  styleUrls: ['./Header-Listingdetailsone.component.css'],
+  standalone: true,
 })
 export class HeaderListingdetailsoneComponent implements OnInit {
   // @Output() bookNowClicked = new EventEmitter<void>();

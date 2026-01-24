@@ -11,8 +11,8 @@ describe('CheckoutPhonepeComponentComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ CheckoutPhonepeComponentComponent ]
-    })
+    declarations: [CheckoutPhonepeComponentComponent]
+})
     .compileComponents();
   }));
 

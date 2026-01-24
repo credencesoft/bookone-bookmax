@@ -75,14 +75,7 @@ import { DynamicPricingComponent } from './components/dynamic-pricing/dynamic-pr
 import { AboutCredencesoftComponent } from './components/about-credencesoft/about-credencesoft.component';
 import { ContactDetailsComponent } from './components/contact-details/contact-details.component';
 import { OurFeaturesComponent } from './components/our-features/our-features.component';
-import {
-  MatCheckboxModule,
-  MatInputModule,
-  MatSelectModule,
-  MatRadioModule,
-  MatFormFieldModule,
-  MatTableModule
-} from '@angular/material';
+
 import { CallToActionComponent } from './components/call-to-action/call-to-action.component';
 import { SubscribeEmailComponent } from './components/subscribe-email/subscribe-email.component';
 import { PrivacyComponent } from './components/privacy/privacy.component';
@@ -141,17 +134,14 @@ import { CalendarModule } from 'primeng/calendar';
     NgbModule,
     CheckoutModule,
     CarouselModule,
-    MatCheckboxModule,
-    MatInputModule,
+
     AgmCoreModule.forRoot({ apiKey: environment.googleKey }),
     SlickCarouselModule,
     FormsModule,
-    MatSelectModule,
+
     DialogModule,
     ToastModule,
-    MatRadioModule,
-    MatFormFieldModule,
-    MatTableModule,
+
     CalendarModule,
   ],
   declarations: [

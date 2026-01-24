@@ -8,8 +8,8 @@ describe('IntroSixComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ IntroSixComponent ]
-    })
+    imports: [IntroSixComponent]
+})
     .compileComponents();
   }));
 

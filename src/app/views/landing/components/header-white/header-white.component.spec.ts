@@ -8,8 +8,8 @@ describe('HeaderWhiteComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ HeaderWhiteComponent ]
-    })
+    declarations: [HeaderWhiteComponent]
+})
     .compileComponents();
   }));
 

@@ -11,8 +11,8 @@ describe('LoginCancelPageComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ LoginCancelPageComponent ]
-    })
+    declarations: [LoginCancelPageComponent]
+})
     .compileComponents();
   }));
 

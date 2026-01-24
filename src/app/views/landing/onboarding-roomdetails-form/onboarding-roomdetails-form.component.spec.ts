@@ -8,8 +8,8 @@ describe('OnboardingRoomdetailsFormComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ OnboardingRoomdetailsFormComponent ]
-    })
+    declarations: [OnboardingRoomdetailsFormComponent]
+})
     .compileComponents();
 
     fixture = TestBed.createComponent(OnboardingRoomdetailsFormComponent);

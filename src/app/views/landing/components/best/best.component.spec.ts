@@ -8,8 +8,8 @@ describe('BestComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ BestComponent ]
-    })
+    declarations: [BestComponent]
+})
     .compileComponents();
   }));
 
