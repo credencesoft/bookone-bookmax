@@ -8,12 +8,15 @@ import {
 } from '@angular/core';
 import {DOCUMENT} from '@angular/common';
 import {WINDOW_PROVIDERS, WINDOW} from '../../helpers/window.helpers';
+import { SharedModule } from 'src/app/shared/shared.module';
 
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
-  standalone:true
+  standalone:true,
+  imports:[SharedModule]
+
 })
 export class HeaderComponent implements OnInit {
   constructor(

@@ -1,9 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { NguCarouselConfig } from "@ngu/carousel";
+import { SharedModule } from 'src/app/shared/shared.module';
 @Component({
   selector: "app-left-image",
   templateUrl: "./left-image.component.html",
-  styleUrls: ["./left-image.component.scss"]
+  styleUrls: ["./left-image.component.scss"],
+  standalone:true,
+  imports:[SharedModule]
 })
 export class LeftImageComponent implements OnInit {
 

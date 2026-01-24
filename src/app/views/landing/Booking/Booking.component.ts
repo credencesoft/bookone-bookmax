@@ -61,6 +61,7 @@ import { PropertyEnquiryDto } from 'src/model/propertyEnquiryDto';
 import { externalReservationDtoList } from 'src/app/model/externalReservation';
 import { RoomDetail } from 'src/app/model/RoomDetail';
 import { MessageService } from 'primeng/api';
+import { SharedModule } from 'src/app/shared/shared.module';
 declare var Stripe: any;
 
 declare var window: any;
@@ -70,6 +71,8 @@ declare var window: any;
   styleUrls: ['./Booking.component.scss'],
   encapsulation: ViewEncapsulation.None,
   providers: [DatePipe],
+  standalone:true,
+  imports:[SharedModule]
 })
 export class BookingComponent implements OnInit {
   PropertyUrl: string;
@@ -714,7 +717,7 @@ if(this.bookoneActiveData === false) {
     return false;
   }
   }
-  
+
   this.propertyData = this.token.getProperty();
   this.accommodationData = this.propertyData.businessServiceDtoList?.filter(
     (entry) => entry.name === 'Accommodation'

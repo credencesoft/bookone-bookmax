@@ -6,6 +6,7 @@ import { Subscription } from "rxjs";
 import { Booking } from "src/app/model/booking";
 import { Payment } from "src/app/model/payment";
 import { BusinessUser } from "src/app/model/user";
+import { SharedModule } from "src/app/shared/shared.module";
 import { HotelBookingService } from "src/services/hotel-booking.service";
 import { TokenStorage } from "src/token.storage";
 
@@ -14,6 +15,8 @@ import { TokenStorage } from "src/token.storage";
   selector: "app-checkout",
   templateUrl: "./checkout.component.html",
   styleUrls: ["./checkout.component.css"],
+  standalone:true,
+  imports:[SharedModule]
 })
 export class CheckoutComponent implements OnInit {
   businessUser: BusinessUser;

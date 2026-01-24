@@ -1,12 +1,15 @@
 import { Component } from '@angular/core';
 import { Meta } from '@angular/platform-browser';
 import { Observable } from 'rxjs';
+import { SharedModule } from 'src/app/shared/shared.module';
 import { BlogPostService } from 'src/services/blog-post.service';
 
 @Component({
   selector: 'app-book-one-connect',
   templateUrl: './book-one-connect.component.html',
-  styleUrls: ['./book-one-connect.component.scss']
+  styleUrls: ['./book-one-connect.component.scss'],
+  standalone:true,
+  imports:[SharedModule]
 })
 export class BookOneConnectComponent {
   backgroundColor: string;

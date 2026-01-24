@@ -4,6 +4,7 @@ import { FormControl, FormGroup, NgForm } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { SubmitData } from '../dynamic-pricing/submitData';
+import { SharedModule } from 'src/app/shared/shared.module';
 
 export interface Email {
 
@@ -21,6 +22,7 @@ export interface Email {
   styleUrls: ['./contact-form.component.scss'],
   animations: [SharedAnimations],
   standalone:true,
+  imports:[SharedModule]
 })
 export class ContactFormComponent implements OnInit {
   serviceType = [

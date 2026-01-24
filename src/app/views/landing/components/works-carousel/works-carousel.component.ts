@@ -1,9 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { NguCarouselConfig } from "@ngu/carousel";
+import { SharedModule } from 'src/app/shared/shared.module';
 @Component({
   selector: "app-works-carousel",
   templateUrl: "./works-carousel.component.html",
-  styleUrls: ["./works-carousel.component.scss"]
+  styleUrls: ["./works-carousel.component.scss"],
+  standalone:true,
+  imports:[SharedModule]
 })
 export class WorksCarouselComponent implements OnInit {
   public carouselTileItems: Array<any> = [

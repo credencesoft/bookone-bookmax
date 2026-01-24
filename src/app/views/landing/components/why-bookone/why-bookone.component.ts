@@ -1,10 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { NguCarouselConfig } from '@ngu/carousel';
+import { SharedModule } from 'src/app/shared/shared.module';
 
 @Component({
   selector: 'app-why-bookone',
   templateUrl: './why-bookone.component.html',
-  styleUrls: ['./why-bookone.component.scss']
+  styleUrls: ['./why-bookone.component.scss'],
+  standalone:true,
+  imports:[SharedModule]
 })
 export class WhyBookoneComponent implements OnInit {
   public carouselTileItems: Array<any> = [

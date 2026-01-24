@@ -28,11 +28,14 @@ import { Components } from 'src/app/model/components';
 import { Para } from 'src/app/model/parameters';
 import { Images } from 'src/app/model/image';
 import { log } from 'console';
+import { SharedModule } from 'src/app/shared/shared.module';
 
 @Component({
   selector: 'app-booking-confirm',
   templateUrl: './booking-confirm.component.html',
-  styleUrls: ['./booking-confirm.component.scss']
+  styleUrls: ['./booking-confirm.component.scss'],
+  standalone:true,
+  imports:[SharedModule]
 })
 export class BookingConfirmComponent {
   businessUser: BusinessUser;

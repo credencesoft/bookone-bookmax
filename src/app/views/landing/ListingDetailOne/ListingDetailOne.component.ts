@@ -65,6 +65,7 @@ import { BusinessService } from 'src/services/business.service';
 import { BusinessUser } from 'src/app/model/user';
 import { RatesAndAvailability } from 'src/app/model/ratesAndAvailability';
 import { SchemaService } from 'src/services/schema.service';
+import { SharedModule } from 'src/app/shared/shared.module';
 // import { Email } from "src/app/pages/Contact/Contact.component";
 declare var $: any;
 export interface Email {
@@ -84,6 +85,8 @@ interface RoomOne {
   selector: 'list-detail-one',
   templateUrl: './ListingDetailOne.component.html',
   styleUrls: ['./ListingDetailOne.component.scss'],
+  standalone:true,
+  imports:[SharedModule],
   encapsulation: ViewEncapsulation.None,
 })
 export class ListingDetailOneComponent implements OnInit {

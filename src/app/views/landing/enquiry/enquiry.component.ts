@@ -21,12 +21,15 @@ import { CancelService } from '../cancel.service';
 import { Cancel } from '../cancel';
 import { CountryList } from 'src/model/country';
 import { Property } from 'src/app/model/property';
+import { SharedModule } from 'src/app/shared/shared.module';
 
 
 @Component({
   selector: 'app-enquiry',
   templateUrl: './enquiry.component.html',
-  styleUrls: ['./enquiry.component.scss']
+  styleUrls: ['./enquiry.component.scss'],
+  standalone:true,
+  imports:[SharedModule]
 })
 export class EnquiryComponent implements OnInit {
 

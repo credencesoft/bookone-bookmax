@@ -31,7 +31,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { environment } from 'src/environments/environment';
 import { AuthService } from './auth/auth.service';
 import { CommonModule } from '@angular/common';
-import { MatTableModule } from '@angular/material';
+// import { MatTableModule } from '@angular/material';
 import { CalendarModule } from 'primeng/calendar';
 @NgModule({
   declarations: [AppComponent],
@@ -45,7 +45,7 @@ CalendarModule,
     NgSelectModule,
 
     NgbModule,
-    MatTableModule,
+    // MatTableModule,
     GooglePlaceModule,
     AgmCoreModule.forRoot({
       apiKey: environment.googleKey

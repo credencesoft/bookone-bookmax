@@ -28,12 +28,15 @@ import { Language } from 'src/app/model/language';
 import { Components } from 'src/app/model/components';
 import { Para } from 'src/app/model/parameters';
 import { Images } from 'src/app/model/image';
+import { SharedModule } from 'src/app/shared/shared.module';
 
 
 @Component({
   selector: 'app-booking-complete',
   templateUrl: './booking-complete.component.html',
   styleUrls: ['./booking-complete.component.scss'],
+  standalone:true,
+  imports:[SharedModule]
 })
 export class BookingCompleteComponent implements OnInit {
   businessUser: BusinessUser;

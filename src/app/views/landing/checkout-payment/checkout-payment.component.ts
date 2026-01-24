@@ -9,12 +9,15 @@ import { BusinessUser } from "src/app/model/user";
 import { HotelBookingService } from "src/services/hotel-booking.service";
 import { TokenStorage } from "src/token.storage";
 import { Location} from "@angular/common";
+import { SharedModule } from "src/app/shared/shared.module";
 
 
 @Component({
   selector: "app-checkout",
   templateUrl: "./checkout-payment.component.html",
   styleUrls: ["./checkout-payment.component.css"],
+  standalone:true,
+  imports:[SharedModule]
 })
 export class CheckoutPaymentComponent implements OnInit {
   businessUser: BusinessUser;

@@ -24,13 +24,16 @@ import { ApplicationUser } from './user';
 import { Validators, UntypedFormControl, FormGroup, FormControl } from "@angular/forms";
 import { UntypedFormGroup } from '@angular/forms';
 import { AuthService } from 'src/app/auth/auth.service';
+import { SharedModule } from 'src/app/shared/shared.module';
 
 const TOKEN_PREFIX = "Bearer ";
 
 @Component({
   selector: 'app-Login-cancel-page',
   templateUrl: './Login-cancel-page.component.html',
-  styleUrls: ['./Login-cancel-page.component.css']
+  styleUrls: ['./Login-cancel-page.component.css'],
+  standalone:true,
+  imports:[SharedModule]
 })
 export class LoginCancelPageComponent implements OnInit {
   emailt :UntypedFormControl = new UntypedFormControl();

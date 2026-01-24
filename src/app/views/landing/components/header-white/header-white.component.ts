@@ -8,11 +8,14 @@ import {
 } from "@angular/core";
 import {DOCUMENT} from "@angular/common";
 import {WINDOW_PROVIDERS, WINDOW} from "../../helpers/window.helpers";
+import { SharedModule } from "src/app/shared/shared.module";
 
 @Component({
   selector: "app-header-white",
   templateUrl: "./header-white.component.html",
-  styleUrls: ["./header-white.component.scss"]
+  styleUrls: ["./header-white.component.scss"],
+  standalone:true,
+  imports:[SharedModule]
 })
 export class HeaderWhiteComponent implements OnInit {
   isFixed;

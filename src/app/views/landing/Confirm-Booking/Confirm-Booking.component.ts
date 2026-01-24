@@ -22,12 +22,15 @@ import { externalReservationDtoList } from 'src/app/model/externalReservation';
 import { ListingService } from 'src/services/listing.service';
 import { BusinessServiceDtoList } from 'src/app/model/businessServiceDtoList';
 import { PropertyServiceDTO } from 'src/app/model/PropertyServices';
+import { SharedModule } from 'src/app/shared/shared.module';
 
 @Component({
   selector: 'app-Confirm-Booking',
   templateUrl: './Confirm-Booking.component.html',
   providers: [DatePipe],
   styleUrls: ['./Confirm-Booking.component.scss'],
+  standalone:true,
+  imports:[SharedModule]
 })
 export class ConfirmBookingComponent implements OnInit {
   businessUser: BusinessUser;

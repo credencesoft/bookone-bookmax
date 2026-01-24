@@ -26,6 +26,7 @@ import { DynamicPricingComponent } from '../views/landing/components/dynamic-pri
 import { PricingFilterComponent } from '../views/landing/components/pricing-filter/pricing-filter.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { GooglePlaceModule } from 'ngx-google-places-autocomplete';
+import { NguCarouselModule } from '@ngu/carousel';
 
 
 const exportedClasses = [
@@ -45,7 +46,7 @@ PricingFilterComponent
 
 
 @NgModule({
-    imports: [CommonModule,FormsModule,GooglePlaceModule,ReactiveFormsModule, NgbModule, RouterModule, ...exportedClasses],
+    imports: [CommonModule,FormsModule, NguCarouselModule ,GooglePlaceModule,ReactiveFormsModule, NgbModule, RouterModule, ...exportedClasses],
     exports:[
     ...exportedClasses,
     CommonModule, // <--- Add this! This exports the 'number' pipe to everyone

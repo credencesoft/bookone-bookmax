@@ -1,10 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { Meta } from '@angular/platform-browser';
+import { SharedModule } from 'src/app/shared/shared.module';
 
 @Component({
   selector: 'app-contact',
   templateUrl: './contact.component.html',
-  styleUrls: ['./contact.component.scss']
+  styleUrls: ['./contact.component.scss'],
+  standalone:true,
+  imports:[SharedModule]
 })
 export class ContactComponent implements OnInit {
   pagename = 'Contact';
