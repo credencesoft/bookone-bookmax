@@ -1065,9 +1065,9 @@ if (params['Children'] !== undefined) {
     );
     // this.checkAvailabilityDisabled = true;
     let currenturl = window.location.href;
-    let urlObj = new URL(currenturl);
-    let params = new URLSearchParams(urlObj.search);
-    let CurrentRoomCout = params.get('rooms');
+    // let urlObj = new URL(currenturl);
+    // let params = new URLSearchParams(urlObj.search);
+    // let CurrentRoomCout = params.get('rooms');
     let flag = currenturl.includes('bookingEngine');
     this.token.savePropertyUrl(currenturl);
     this.serviceDto = new PropertyServiceDTO();
@@ -1167,11 +1167,11 @@ if (params['Children'] !== undefined) {
         }
 
       this.noOfrooms = 1;
-      if(this.rooms === Number(CurrentRoomCout)){
-        this.rooms = 1;
-      } else {
-        this.rooms = Number(CurrentRoomCout);
-      }
+      // if(this.rooms === Number(CurrentRoomCout)){
+      //   this.rooms = 1;
+      // } else {
+      //   this.rooms = Number(CurrentRoomCout);
+      // }
       // this.rooms = 1;
 
       if (this.hotelID != null && this.hotelID != undefined) {
@@ -1278,11 +1278,12 @@ if (params['Children'] !== undefined) {
           this.children = totalChildren - additionalChildren;
         }
       }
-      if(this.rooms === Number(CurrentRoomCout)){
-        this.rooms = this.booking.noOfRooms;
-      } else {
-        this.rooms = Number(CurrentRoomCout);
-      }
+      this.rooms = this.booking.noOfRooms;
+      // if(this.rooms === Number(CurrentRoomCout)){
+      //   this.rooms = this.booking.noOfRooms;
+      // } else {
+      //   this.rooms = Number(CurrentRoomCout);
+      // }
 
       this.taxPercentage = this.booking.taxPercentage;
     } else {
@@ -1330,11 +1331,12 @@ if (params['Children'] !== undefined) {
           this.children = Number(this.childno);
         }
       this.noOfrooms = 1;
-      if(this.rooms === Number(CurrentRoomCout)){
-        this.rooms = Number(CurrentRoomCout);;
-      } else {
-        this.rooms = 1;
-      }
+      this.rooms = 1;
+      // if(this.rooms === Number(CurrentRoomCout)){
+      //   this.rooms = Number(CurrentRoomCout);;
+      // } else {
+      //   this.rooms = 1;
+      // }
       // this.rooms = 1;
     }
     if (
