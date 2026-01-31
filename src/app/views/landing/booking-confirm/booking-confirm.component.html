@@ -97,34 +97,18 @@
             <div class="mb-2">
               <span class="highlight-text"
                 >Booking ID
-                <img
-                  src="media-be/images/CopyVoucher.png"
-                  alt=""
-                  height="15px"
-                  width="15px"
-                  style="margin-right: 3px; margin-left: 5px; cursor: pointer"
-                  (click)="copyTexttwo()"
-              /></span>
+                </span>
             </div>
             <div class="mb-0" style="text-align: left" *ngFor="let booking of bookingsResponseList; let last = last">
               <span *ngIf="booking?.groupBookingId && last">
                 <b id="copyTexttwo">{{ booking?.groupBookingId }}</b></span
               >
 
-              <span *ngIf="!booking?.groupBookingId && last"
-                ><b id="copyTexttwo">{{ booking?.id }}</b></span
-              >
+              <span *ngIf="!booking?.groupBookingId">
+                <b id="copyTexttwo">{{ booking?.id }}</b>
+                <span *ngIf="!last">, </span>
+              </span>
             </div>
-            <a
-              href="https://thehotelmate.co/history"
-              style="
-                font-size: 11px;
-                color: #1465cf;
-                text-decoration: none;
-                text-align: left;
-              "
-              >Check Details</a
-            >
           </div>
         </div>
         </div>
@@ -203,12 +187,12 @@
                     <b>{{ booking?.groupBookingId }}</b></span
                   >
 
-                  <span *ngIf="!booking?.groupBookingId && last"
-                    ><b>{{ booking?.id }}</b></span
-                  >
+                    <span *ngIf="!booking?.groupBookingId">
+                    <b id="copyTexttwo">{{ booking?.id }}</b>
+                    <span *ngIf="!last">, </span>
+                  </span>
                 </div>
               </div>
-              <div class="d-flex justify-content-between"></div>
             </div>
             <div
               class="d-flex justify-content-between"
@@ -621,26 +605,12 @@
                 <b id="copyTexttwo">{{ booking?.groupBookingId }}</b></span
               >
 
-              <span *ngIf="!booking?.groupBookingId && last"
-                ><b id="copyTexttwo">{{ booking?.id }}</b></span
-              ></div>
-              <div><a
-              href="https://thehotelmate.co/history"
-              style="
-                font-size: 11px;
-                color: #1465cf;
-                text-decoration: none;
-                text-align: left;
-              "
-              >Check Details </a
-            > <span><img
-                  src="media-be/images/CopyVoucher.png"
-                  alt=""
-                  height="15px"
-                  width="15px"
-                  style="margin-right: 3px; margin-left: 5px; cursor: pointer"
-                  (click)="copyTexttwo()"
-              /></span></div>
+              <span *ngIf="!booking?.groupBookingId">
+                <b id="copyTexttwo">{{ booking?.id }}</b>
+                <span *ngIf="!last">, </span>
+              </span>
+              </div>
+
               </div>
               <div>
                   <div class="mb-1 highlight-text">Current Status</div>
@@ -700,9 +670,10 @@
                     <b>{{ booking?.groupBookingId }}</b></span
                   >
 
-                  <span *ngIf="!booking?.groupBookingId && last"
-                    ><b>{{ booking?.id }}</b></span
-                  >
+                  <span *ngIf="!booking?.groupBookingId">
+                  <b id="copyTexttwo">{{ booking?.id }}</b>
+                  <span *ngIf="!last">, </span>
+                </span>
                 </div>
               </div>
             </div>
