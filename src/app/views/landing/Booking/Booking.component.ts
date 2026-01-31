@@ -714,7 +714,7 @@ if(this.bookoneActiveData === false) {
     return false;
   }
   }
-  
+
   this.propertyData = this.token.getProperty();
   this.accommodationData = this.propertyData.businessServiceDtoList?.filter(
     (entry) => entry.name === 'Accommodation'
@@ -1110,6 +1110,60 @@ if(this.bookoneActiveData === false) {
     // and finaly, in days :)
     this.timeDifferenceInDays = timeDifferenceInHours;
   }
+  private getZoneByCountry(country?: string): string {
+  return country?.toUpperCase() === 'INDIA'
+    ? 'Asia/Kolkata'
+    : 'UTC';
+}
+private getTimestamp(
+  formattedDate: string,   // dd-MM-yyyy
+  time: string | null,     // HH:mm
+  country?: string
+): number {
+  const zone = this.getZoneByCountry(country);
+
+  // parse date (dd-MM-yyyy)
+  const [day, month, year] = formattedDate.split('-').map(Number);
+
+  // parse time or default 12:00
+  const [hour, minute] = time
+    ? time.split(':').map(Number)
+    : [12, 0];
+
+  // create UTC baseline
+  const utcBase = new Date(Date.UTC(year, month - 1, day, hour, minute));
+
+  // extract exact date-time in target zone
+  const parts = new Intl.DateTimeFormat('en-GB', {
+    timeZone: zone,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false
+  }).formatToParts(utcBase);
+
+  const map: any = {};
+  parts.forEach(p => (map[p.type] = p.value));
+
+  // ZonedDateTime → Instant
+  return Date.UTC(
+    Number(map.year),
+    Number(map.month) - 1,
+    Number(map.day),
+    Number(map.hour),
+    Number(map.minute)
+  );
+}
+displayPropertyTime(timestamp: number, zone: string = 'Asia/Kolkata') {
+  return new Date(timestamp).toLocaleString('en-GB', {
+    timeZone: zone,
+    hour12: false
+  });
+}
+
+
   getPropertyDetails(id: number) {
     this.loader = true;
     // this.listingService.findByPropertyId(id).subscribe(
@@ -1124,24 +1178,42 @@ if(this.bookoneActiveData === false) {
         this.bookoneActiveData = item.bookoneActive;
       }
     });
+// 1️⃣ Property timezone
+const zone = 'Asia/Kolkata'; // India
 
-    let checkinDateConcat = this.booking.fromDate;
-    let timestamp = this.fromTime;
-    let combinedDateTimeString = checkinDateConcat + ' ' + timestamp;
-    let combinedDateTime = new Date(combinedDateTimeString).getTime();
-    this.combinedDateFromTime = combinedDateTime;
-    let checkoutDateConcat = this.booking.toDate;
-    let timestampcheckout = this.toTime;
-    let combinedCheckouDateTimeString =
-      checkoutDateConcat + ' ' + timestampcheckout;
-    let combinedDateTimeCheckout = new Date(
-      combinedCheckouDateTimeString
-    ).getTime();
-    this.combinedDateToTime = combinedDateTimeCheckout;
-    this.tokenFromTime = this.combinedDateFromTime;
-    this.tokenToTime = this.combinedDateToTime;
-    this.token.saveTime(String(this.tokenFromTime));
-    this.token.saveToTime(String(this.tokenToTime));
+// 2️⃣ Get property check-in/out times
+const accommodation = this.businessUser.businessServiceDtoList.find(
+  item => item.name === 'Accommodation'
+);
+const fromTime = accommodation?.checkInTime ?? '12:00';
+const toTime = accommodation?.checkOutTime ?? '12:00';
+
+// 3️⃣ Function: combine guest date + property time → UTC timestamp
+const getPropertyTimestamp = (guestDate: string, propertyTime: string) => {
+  const [year, month, day] = guestDate.includes('-') && guestDate.split('-')[0].length === 4
+    ? guestDate.split('-').map(Number) // yyyy-MM-dd
+    : guestDate.split('-').reverse().map(Number); // dd-MM-yyyy
+
+  const [hour, minute] = propertyTime.split(':').map(Number);
+
+  // India is UTC+5:30
+  const IST_OFFSET = 5.5 * 60; // in minutes
+
+  // Convert property date + time to UTC timestamp
+  const utcTimestamp = Date.UTC(year, month - 1, day, hour, minute) - IST_OFFSET * 60 * 1000;
+
+  return utcTimestamp;
+};
+
+// 4️⃣ Compute check-in / check-out timestamps
+this.combinedDateFromTime = getPropertyTimestamp(this.booking.fromDate, fromTime);
+this.combinedDateToTime = getPropertyTimestamp(this.booking.toDate, toTime);
+
+// 5️⃣ Save tokens if needed
+this.tokenFromTime = this.combinedDateFromTime;
+this.tokenToTime = this.combinedDateToTime;
+this.token.saveTime(String(this.tokenFromTime));
+this.token.saveToTime(String(this.tokenToTime));
     this.accommodationvalue = this.businessUser.businessServiceDtoList.filter(
       (ele) => ele.name === 'Accommodation'
     );
@@ -1626,29 +1698,42 @@ if (bookingSummaryStr) {
     this.enquiryForm.roomRatePlanName = this.booking.roomRatePlanName;
 
     this.enquiryForm.createdDate = new Date().getTime();
-    this.propertyDetails = this.token.getProperty();
-    this.propertyDetails.businessServiceDtoList.forEach((item) => {
-      if (item.name === 'Accommodation') {
-        this.fromTime = item.checkInTime ?? "";
-        this.toTime = item.checkOutTime ?? "";
-      }
-    });
+this.businessUser = this.token.getProperty();
+const zone = 'Asia/Kolkata'; // India
 
-    let checkinDateConcat = this.booking.fromDate;
-    let timestamp = this.fromTime;
-    let combinedDateTimeString = checkinDateConcat + ' ' + timestamp;
-    let combinedDateTime = new Date(combinedDateTimeString).getTime();
-    this.combinedDateFromTime = combinedDateTime;
-    let checkoutDateConcat = this.booking.toDate;
-    let timestampcheckout = this.toTime;
-    let combinedCheckouDateTimeString =
-      checkoutDateConcat + ' ' + timestampcheckout;
-    let combinedDateTimeCheckout = new Date(
-      combinedCheckouDateTimeString
-    ).getTime();
-    this.combinedDateToTime = combinedDateTimeCheckout;
-    this.enquiryForm.fromTime = this.combinedDateFromTime;
-    this.enquiryForm.toTime = this.combinedDateToTime;
+// 2️⃣ Get property check-in/out times
+const accommodation = this.businessUser.businessServiceDtoList.find(
+  item => item.name === 'Accommodation'
+);
+const fromTime = accommodation?.checkInTime ?? '12:00';
+const toTime = accommodation?.checkOutTime ?? '12:00';
+
+// 3️⃣ Function: combine guest date + property time → UTC timestamp
+const getPropertyTimestamp = (guestDate: string, propertyTime: string) => {
+  const [year, month, day] = guestDate.includes('-') && guestDate.split('-')[0].length === 4
+    ? guestDate.split('-').map(Number) // yyyy-MM-dd
+    : guestDate.split('-').reverse().map(Number); // dd-MM-yyyy
+
+  const [hour, minute] = propertyTime.split(':').map(Number);
+
+  // India is UTC+5:30
+  const IST_OFFSET = 5.5 * 60; // in minutes
+
+  // Convert property date + time to UTC timestamp
+  const utcTimestamp = Date.UTC(year, month - 1, day, hour, minute) - IST_OFFSET * 60 * 1000;
+
+  return utcTimestamp;
+};
+
+// 4️⃣ Compute check-in / check-out timestamps
+this.combinedDateFromTime = getPropertyTimestamp(this.booking.fromDate, fromTime);
+this.combinedDateToTime = getPropertyTimestamp(this.booking.toDate, toTime);
+
+// 5️⃣ Save tokens if needed
+this.tokenFromTime = this.combinedDateFromTime;
+this.tokenToTime = this.combinedDateToTime;
+    this.enquiryForm.fromTime = this.tokenFromTime;
+    this.enquiryForm.toTime = this.tokenToTime;
     this.token.saveTime(String(this.enquiryForm.fromTime));
     this.token.saveToTime(String(this.enquiryForm.toTime));
     this.enquiryForm.accountManager = '';
@@ -4949,6 +5034,40 @@ processPaymentPayU(payment: Payment) {
 
   createBooking(plan: any, bookingSummary: any, callback?: () => void) {
     const booking: any = {};
+this.businessUser = this.token.getProperty();
+const zone = 'Asia/Kolkata'; // India
+
+// 2️⃣ Get property check-in/out times
+const accommodation = this.businessUser.businessServiceDtoList.find(
+  item => item.name === 'Accommodation'
+);
+const fromTime = accommodation?.checkInTime ?? '12:00';
+const toTime = accommodation?.checkOutTime ?? '12:00';
+
+// 3️⃣ Function: combine guest date + property time → UTC timestamp
+const getPropertyTimestamp = (guestDate: string, propertyTime: string) => {
+  const [year, month, day] = guestDate.includes('-') && guestDate.split('-')[0].length === 4
+    ? guestDate.split('-').map(Number) // yyyy-MM-dd
+    : guestDate.split('-').reverse().map(Number); // dd-MM-yyyy
+
+  const [hour, minute] = propertyTime.split(':').map(Number);
+
+  // India is UTC+5:30
+  const IST_OFFSET = 5.5 * 60; // in minutes
+
+  // Convert property date + time to UTC timestamp
+  const utcTimestamp = Date.UTC(year, month - 1, day, hour, minute) - IST_OFFSET * 60 * 1000;
+
+  return utcTimestamp;
+};
+
+// 4️⃣ Compute check-in / check-out timestamps
+this.combinedDateFromTime = getPropertyTimestamp(this.booking.fromDate, fromTime);
+this.combinedDateToTime = getPropertyTimestamp(this.booking.toDate, toTime);
+
+// 5️⃣ Save tokens if needed
+this.tokenFromTime = this.combinedDateFromTime;
+this.tokenToTime = this.combinedDateToTime;
     booking.roomRatePlanName = plan.planCodeName;
     booking.roomName = plan.roomName;
     booking.roomType = plan.roomName;
@@ -4986,21 +5105,8 @@ processPaymentPayU(payment: Payment) {
     booking.fromDate = bookingSummary.fromDate;
     booking.toDate = bookingSummary.toDate;
     booking.currency = this.businessUser.localCurrency;
-        let checkinDateConcat = this.booking.fromDate;
-    let timestamp = this.fromTime;
-    let combinedDateTimeString = checkinDateConcat + ' ' + timestamp;
-    let combinedDateTime = new Date(combinedDateTimeString).getTime();
-    this.combinedDateFromTime = combinedDateTime;
-    let checkoutDateConcat = this.booking.toDate;
-    let timestampcheckout = this.toTime;
-    let combinedCheckouDateTimeString =
-      checkoutDateConcat + ' ' + timestampcheckout;
-    let combinedDateTimeCheckout = new Date(
-      combinedCheckouDateTimeString
-    ).getTime();
-    this.combinedDateToTime = combinedDateTimeCheckout;
-    booking.fromTime = this.combinedDateFromTime;
-    booking.toTime = this.combinedDateToTime;
+    booking.fromTime = this.tokenFromTime;
+    booking.toTime = this.tokenToTime;
     booking.modeOfPayment = this.payment.paymentMode;
     booking.externalSite = 'WebSite';
     booking.businessName = this.businessUser.name;
@@ -5209,31 +5315,44 @@ processPaymentPayU(payment: Payment) {
     enquiryForm.roomType = plan.roomName;
     enquiryForm.roomRatePlanName = plan.planCodeName;
     enquiryForm.createdDate = new Date().getTime();
+this.businessUser = this.token.getProperty();
+const zone = 'Asia/Kolkata'; // India
 
-    // Combine date and time
-    const checkInDateTime = new Date(
-      `${enquiryForm.checkInDate} ${this.fromTime}`
-    ).getTime();
-    const checkOutDateTime = new Date(
-      `${enquiryForm.checkInDate} ${this.toTime}`
-    ).getTime();
-        let checkinDateConcat = this.booking.fromDate;
-    let timestamp = this.fromTime;
-    let combinedDateTimeString = checkinDateConcat + ' ' + timestamp;
-    let combinedDateTime = new Date(combinedDateTimeString).getTime();
-    this.combinedDateFromTime = combinedDateTime;
-    let checkoutDateConcat = this.booking.toDate;
-    let timestampcheckout = this.toTime;
-    let combinedCheckouDateTimeString =
-      checkoutDateConcat + ' ' + timestampcheckout;
-    let combinedDateTimeCheckout = new Date(
-      combinedCheckouDateTimeString
-    ).getTime();
-    this.combinedDateToTime = combinedDateTimeCheckout;
-    enquiryForm.fromTime = this.combinedDateFromTime;
-    enquiryForm.toTime = this.combinedDateToTime;
-    this.token.saveTime(String(checkInDateTime));
-    this.token.saveToTime(String(checkOutDateTime));
+// 2️⃣ Get property check-in/out times
+const accommodation = this.businessUser.businessServiceDtoList.find(
+  item => item.name === 'Accommodation'
+);
+const fromTime = accommodation?.checkInTime ?? '12:00';
+const toTime = accommodation?.checkOutTime ?? '12:00';
+
+// 3️⃣ Function: combine guest date + property time → UTC timestamp
+const getPropertyTimestamp = (guestDate: string, propertyTime: string) => {
+  const [year, month, day] = guestDate.includes('-') && guestDate.split('-')[0].length === 4
+    ? guestDate.split('-').map(Number) // yyyy-MM-dd
+    : guestDate.split('-').reverse().map(Number); // dd-MM-yyyy
+
+  const [hour, minute] = propertyTime.split(':').map(Number);
+
+  // India is UTC+5:30
+  const IST_OFFSET = 5.5 * 60; // in minutes
+
+  // Convert property date + time to UTC timestamp
+  const utcTimestamp = Date.UTC(year, month - 1, day, hour, minute) - IST_OFFSET * 60 * 1000;
+
+  return utcTimestamp;
+};
+
+// 4️⃣ Compute check-in / check-out timestamps
+this.combinedDateFromTime = getPropertyTimestamp(this.booking.fromDate, fromTime);
+this.combinedDateToTime = getPropertyTimestamp(this.booking.toDate, toTime);
+
+// 5️⃣ Save tokens if needed
+this.tokenFromTime = this.combinedDateFromTime;
+this.tokenToTime = this.combinedDateToTime;
+    enquiryForm.fromTime = this.tokenFromTime;
+    enquiryForm.toTime = this.tokenToTime;
+    this.token.saveTime(String(enquiryForm.fromTime));
+    this.token.saveToTime(String(enquiryForm.toTime));
             if(this.groupBookingId){
       enquiryForm.groupEnquiryId = this.groupBookingId;
     }
@@ -7557,29 +7676,42 @@ processPaymentPayU(payment: Payment) {
 
     this.enquiryForm.createdDate = new Date().getTime();
 
-    this.propertyDetails = this.token.getProperty();
-    this.propertyDetails.businessServiceDtoList.forEach((item) => {
-      if (item.name === 'Accommodation') {
-        this.fromTime = item.checkInTime ?? "";
-        this.toTime = item.checkOutTime ?? "";
-      }
-    });
+this.businessUser = this.token.getProperty();
+const zone = 'Asia/Kolkata'; // India
 
-    let checkinDateConcat = this.booking.fromDate;
-    let timestamp = this.fromTime;
-    let combinedDateTimeString = checkinDateConcat + ' ' + timestamp;
-    let combinedDateTime = new Date(combinedDateTimeString).getTime();
-    this.combinedDateFromTime = combinedDateTime;
-    let checkoutDateConcat = this.booking.toDate;
-    let timestampcheckout = this.toTime;
-    let combinedCheckouDateTimeString =
-      checkoutDateConcat + ' ' + timestampcheckout;
-    let combinedDateTimeCheckout = new Date(
-      combinedCheckouDateTimeString
-    ).getTime();
-    this.combinedDateToTime = combinedDateTimeCheckout;
-    this.enquiryForm.fromTime = this.combinedDateFromTime;
-    this.enquiryForm.toTime = this.combinedDateToTime;
+// 2️⃣ Get property check-in/out times
+const accommodation = this.businessUser.businessServiceDtoList.find(
+  item => item.name === 'Accommodation'
+);
+const fromTime = accommodation?.checkInTime ?? '12:00';
+const toTime = accommodation?.checkOutTime ?? '12:00';
+
+// 3️⃣ Function: combine guest date + property time → UTC timestamp
+const getPropertyTimestamp = (guestDate: string, propertyTime: string) => {
+  const [year, month, day] = guestDate.includes('-') && guestDate.split('-')[0].length === 4
+    ? guestDate.split('-').map(Number) // yyyy-MM-dd
+    : guestDate.split('-').reverse().map(Number); // dd-MM-yyyy
+
+  const [hour, minute] = propertyTime.split(':').map(Number);
+
+  // India is UTC+5:30
+  const IST_OFFSET = 5.5 * 60; // in minutes
+
+  // Convert property date + time to UTC timestamp
+  const utcTimestamp = Date.UTC(year, month - 1, day, hour, minute) - IST_OFFSET * 60 * 1000;
+
+  return utcTimestamp;
+};
+
+// 4️⃣ Compute check-in / check-out timestamps
+this.combinedDateFromTime = getPropertyTimestamp(this.booking.fromDate, fromTime);
+this.combinedDateToTime = getPropertyTimestamp(this.booking.toDate, toTime);
+
+// 5️⃣ Save tokens if needed
+this.tokenFromTime = this.combinedDateFromTime;
+this.tokenToTime = this.combinedDateToTime;
+    this.enquiryForm.fromTime = this.tokenFromTime;
+    this.enquiryForm.toTime = this.tokenToTime;
     this.token.saveTime(String(this.enquiryForm.fromTime));
     this.token.saveToTime(String(this.enquiryForm.toTime));
     this.enquiryForm.accountManager = 'TheHotelMate Team';
@@ -7687,28 +7819,39 @@ processPaymentPayU(payment: Payment) {
       const data = await this.listingService?.findByPropertyId(id).toPromise();
       if (data.status === 200) {
         this.businessUser = data.body;
-        this.businessUser.businessServiceDtoList.forEach((item) => {
-          if (item.name === 'Accommodation') {
-            this.fromTime = item.checkInTime ?? "";
-            this.toTime = item.checkOutTime ?? "";
-          }
-        });
+const zone = 'Asia/Kolkata'; // India
 
-        let checkinDateConcat = this.booking.fromDate;
-        let timestamp = this.fromTime;
-        let combinedDateTimeString = checkinDateConcat + ' ' + timestamp;
-        let combinedDateTime = new Date(combinedDateTimeString).getTime();
-        this.combinedDateFromTime = combinedDateTime;
-        let checkoutDateConcat = this.booking.toDate;
-        let timestampcheckout = this.toTime;
-        let combinedCheckouDateTimeString =
-          checkoutDateConcat + ' ' + timestampcheckout;
-        let combinedDateTimeCheckout = new Date(
-          combinedCheckouDateTimeString
-        ).getTime();
-        this.combinedDateToTime = combinedDateTimeCheckout;
-        this.tokenFromTime = this.combinedDateFromTime;
-        this.tokenToTime = this.combinedDateToTime;
+// 2️⃣ Get property check-in/out times
+const accommodation = this.businessUser.businessServiceDtoList.find(
+  item => item.name === 'Accommodation'
+);
+const fromTime = accommodation?.checkInTime ?? '12:00';
+const toTime = accommodation?.checkOutTime ?? '12:00';
+
+// 3️⃣ Function: combine guest date + property time → UTC timestamp
+const getPropertyTimestamp = (guestDate: string, propertyTime: string) => {
+  const [year, month, day] = guestDate.includes('-') && guestDate.split('-')[0].length === 4
+    ? guestDate.split('-').map(Number) // yyyy-MM-dd
+    : guestDate.split('-').reverse().map(Number); // dd-MM-yyyy
+
+  const [hour, minute] = propertyTime.split(':').map(Number);
+
+  // India is UTC+5:30
+  const IST_OFFSET = 5.5 * 60; // in minutes
+
+  // Convert property date + time to UTC timestamp
+  const utcTimestamp = Date.UTC(year, month - 1, day, hour, minute) - IST_OFFSET * 60 * 1000;
+
+  return utcTimestamp;
+};
+
+// 4️⃣ Compute check-in / check-out timestamps
+this.combinedDateFromTime = getPropertyTimestamp(this.booking.fromDate, fromTime);
+this.combinedDateToTime = getPropertyTimestamp(this.booking.toDate, toTime);
+
+// 5️⃣ Save tokens if needed
+this.tokenFromTime = this.combinedDateFromTime;
+this.tokenToTime = this.combinedDateToTime;
         this.token.saveTime(String(this.tokenFromTime));
         this.token.saveToTime(String(this.tokenToTime));
         this.policies = this.businessUser.businessServiceDtoList.filter(
@@ -7975,30 +8118,44 @@ if (this.specialDiscountData) {
     enquiryForm.roomRatePlanName = plan.planCodeName;
     enquiryForm.createdDate = new Date().getTime();
     enquiryForm.enquiryType = 'Enquiry';
-    // Combine date and time
-    const checkInDateTime = new Date(
-      `${enquiryForm.checkInDate} ${this.fromTime}`
-    ).getTime();
-    const checkOutDateTime = new Date(
-      `${enquiryForm.checkInDate} ${this.toTime}`
-    ).getTime();
-        let checkinDateConcat = this.booking.fromDate;
-    let timestamp = this.fromTime;
-    let combinedDateTimeString = checkinDateConcat + ' ' + timestamp;
-    let combinedDateTime = new Date(combinedDateTimeString).getTime();
-    this.combinedDateFromTime = combinedDateTime;
-    let checkoutDateConcat = this.booking.toDate;
-    let timestampcheckout = this.toTime;
-    let combinedCheckouDateTimeString =
-      checkoutDateConcat + ' ' + timestampcheckout;
-    let combinedDateTimeCheckout = new Date(
-      combinedCheckouDateTimeString
-    ).getTime();
-    this.combinedDateToTime = combinedDateTimeCheckout;
-    enquiryForm.fromTime = this.combinedDateFromTime;
-    enquiryForm.toTime = this.combinedDateToTime;
-    this.token.saveTime(String(checkInDateTime));
-    this.token.saveToTime(String(checkOutDateTime));
+this.businessUser = this.token.getProperty();
+const zone = 'Asia/Kolkata'; // India
+
+// 2️⃣ Get property check-in/out times
+const accommodation = this.businessUser.businessServiceDtoList.find(
+  item => item.name === 'Accommodation'
+);
+const fromTime = accommodation?.checkInTime ?? '12:00';
+const toTime = accommodation?.checkOutTime ?? '12:00';
+
+// 3️⃣ Function: combine guest date + property time → UTC timestamp
+const getPropertyTimestamp = (guestDate: string, propertyTime: string) => {
+  const [year, month, day] = guestDate.includes('-') && guestDate.split('-')[0].length === 4
+    ? guestDate.split('-').map(Number) // yyyy-MM-dd
+    : guestDate.split('-').reverse().map(Number); // dd-MM-yyyy
+
+  const [hour, minute] = propertyTime.split(':').map(Number);
+
+  // India is UTC+5:30
+  const IST_OFFSET = 5.5 * 60; // in minutes
+
+  // Convert property date + time to UTC timestamp
+  const utcTimestamp = Date.UTC(year, month - 1, day, hour, minute) - IST_OFFSET * 60 * 1000;
+
+  return utcTimestamp;
+};
+
+// 4️⃣ Compute check-in / check-out timestamps
+this.combinedDateFromTime = getPropertyTimestamp(this.booking.fromDate, fromTime);
+this.combinedDateToTime = getPropertyTimestamp(this.booking.toDate, toTime);
+
+// 5️⃣ Save tokens if needed
+this.tokenFromTime = this.combinedDateFromTime;
+this.tokenToTime = this.combinedDateToTime;
+    enquiryForm.fromTime = this.tokenFromTime;
+    enquiryForm.toTime = this.tokenToTime;
+    this.token.saveTime(String(enquiryForm.fromTime));
+    this.token.saveToTime(String(enquiryForm.toTime));
 
     enquiryForm.accountManager = '';
     enquiryForm.consultantPerson = '';
