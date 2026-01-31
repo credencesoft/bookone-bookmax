@@ -1181,7 +1181,7 @@ displayPropertyTime(timestamp: number, zone: string = 'Asia/Kolkata') {
 // 1️⃣ Property timezone
 const zone = 'Asia/Kolkata'; // India
 
-// 2️⃣ Get property check-in/out times
+
 const accommodation = this.businessUser.businessServiceDtoList.find(
   item => item.name === 'Accommodation'
 );
@@ -1205,11 +1205,11 @@ const getPropertyTimestamp = (guestDate: string, propertyTime: string) => {
   return utcTimestamp;
 };
 
-// 4️⃣ Compute check-in / check-out timestamps
+
 this.combinedDateFromTime = getPropertyTimestamp(this.booking.fromDate, fromTime);
 this.combinedDateToTime = getPropertyTimestamp(this.booking.toDate, toTime);
 
-// 5️⃣ Save tokens if needed
+
 this.tokenFromTime = this.combinedDateFromTime;
 this.tokenToTime = this.combinedDateToTime;
 this.token.saveTime(String(this.tokenFromTime));
@@ -1701,7 +1701,7 @@ if (bookingSummaryStr) {
 this.businessUser = this.token.getProperty();
 const zone = 'Asia/Kolkata'; // India
 
-// 2️⃣ Get property check-in/out times
+
 const accommodation = this.businessUser.businessServiceDtoList.find(
   item => item.name === 'Accommodation'
 );
@@ -1725,11 +1725,11 @@ const getPropertyTimestamp = (guestDate: string, propertyTime: string) => {
   return utcTimestamp;
 };
 
-// 4️⃣ Compute check-in / check-out timestamps
+
 this.combinedDateFromTime = getPropertyTimestamp(this.booking.fromDate, fromTime);
 this.combinedDateToTime = getPropertyTimestamp(this.booking.toDate, toTime);
 
-// 5️⃣ Save tokens if needed
+
 this.tokenFromTime = this.combinedDateFromTime;
 this.tokenToTime = this.combinedDateToTime;
     this.enquiryForm.fromTime = this.tokenFromTime;
@@ -5037,7 +5037,7 @@ processPaymentPayU(payment: Payment) {
 this.businessUser = this.token.getProperty();
 const zone = 'Asia/Kolkata'; // India
 
-// 2️⃣ Get property check-in/out times
+
 const accommodation = this.businessUser.businessServiceDtoList.find(
   item => item.name === 'Accommodation'
 );
@@ -5061,11 +5061,11 @@ const getPropertyTimestamp = (guestDate: string, propertyTime: string) => {
   return utcTimestamp;
 };
 
-// 4️⃣ Compute check-in / check-out timestamps
+
 this.combinedDateFromTime = getPropertyTimestamp(this.booking.fromDate, fromTime);
 this.combinedDateToTime = getPropertyTimestamp(this.booking.toDate, toTime);
 
-// 5️⃣ Save tokens if needed
+
 this.tokenFromTime = this.combinedDateFromTime;
 this.tokenToTime = this.combinedDateToTime;
     booking.roomRatePlanName = plan.planCodeName;
@@ -5318,7 +5318,7 @@ this.tokenToTime = this.combinedDateToTime;
 this.businessUser = this.token.getProperty();
 const zone = 'Asia/Kolkata'; // India
 
-// 2️⃣ Get property check-in/out times
+
 const accommodation = this.businessUser.businessServiceDtoList.find(
   item => item.name === 'Accommodation'
 );
@@ -5342,11 +5342,11 @@ const getPropertyTimestamp = (guestDate: string, propertyTime: string) => {
   return utcTimestamp;
 };
 
-// 4️⃣ Compute check-in / check-out timestamps
+
 this.combinedDateFromTime = getPropertyTimestamp(this.booking.fromDate, fromTime);
 this.combinedDateToTime = getPropertyTimestamp(this.booking.toDate, toTime);
 
-// 5️⃣ Save tokens if needed
+
 this.tokenFromTime = this.combinedDateFromTime;
 this.tokenToTime = this.combinedDateToTime;
     enquiryForm.fromTime = this.tokenFromTime;
@@ -7679,7 +7679,7 @@ this.tokenToTime = this.combinedDateToTime;
 this.businessUser = this.token.getProperty();
 const zone = 'Asia/Kolkata'; // India
 
-// 2️⃣ Get property check-in/out times
+
 const accommodation = this.businessUser.businessServiceDtoList.find(
   item => item.name === 'Accommodation'
 );
@@ -7703,11 +7703,11 @@ const getPropertyTimestamp = (guestDate: string, propertyTime: string) => {
   return utcTimestamp;
 };
 
-// 4️⃣ Compute check-in / check-out timestamps
+
 this.combinedDateFromTime = getPropertyTimestamp(this.booking.fromDate, fromTime);
 this.combinedDateToTime = getPropertyTimestamp(this.booking.toDate, toTime);
 
-// 5️⃣ Save tokens if needed
+
 this.tokenFromTime = this.combinedDateFromTime;
 this.tokenToTime = this.combinedDateToTime;
     this.enquiryForm.fromTime = this.tokenFromTime;
@@ -7821,7 +7821,7 @@ this.tokenToTime = this.combinedDateToTime;
         this.businessUser = data.body;
 const zone = 'Asia/Kolkata'; // India
 
-// 2️⃣ Get property check-in/out times
+
 const accommodation = this.businessUser.businessServiceDtoList.find(
   item => item.name === 'Accommodation'
 );
@@ -7845,11 +7845,11 @@ const getPropertyTimestamp = (guestDate: string, propertyTime: string) => {
   return utcTimestamp;
 };
 
-// 4️⃣ Compute check-in / check-out timestamps
+
 this.combinedDateFromTime = getPropertyTimestamp(this.booking.fromDate, fromTime);
 this.combinedDateToTime = getPropertyTimestamp(this.booking.toDate, toTime);
 
-// 5️⃣ Save tokens if needed
+
 this.tokenFromTime = this.combinedDateFromTime;
 this.tokenToTime = this.combinedDateToTime;
         this.token.saveTime(String(this.tokenFromTime));
@@ -8121,7 +8121,7 @@ if (this.specialDiscountData) {
 this.businessUser = this.token.getProperty();
 const zone = 'Asia/Kolkata'; // India
 
-// 2️⃣ Get property check-in/out times
+
 const accommodation = this.businessUser.businessServiceDtoList.find(
   item => item.name === 'Accommodation'
 );
@@ -8145,11 +8145,11 @@ const getPropertyTimestamp = (guestDate: string, propertyTime: string) => {
   return utcTimestamp;
 };
 
-// 4️⃣ Compute check-in / check-out timestamps
+
 this.combinedDateFromTime = getPropertyTimestamp(this.booking.fromDate, fromTime);
 this.combinedDateToTime = getPropertyTimestamp(this.booking.toDate, toTime);
 
-// 5️⃣ Save tokens if needed
+
 this.tokenFromTime = this.combinedDateFromTime;
 this.tokenToTime = this.combinedDateToTime;
     enquiryForm.fromTime = this.tokenFromTime;
