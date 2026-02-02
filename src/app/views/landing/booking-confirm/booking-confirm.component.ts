@@ -3069,7 +3069,9 @@ onGenerateVouchers() {
       //         this.paymentLoader = false;
       //       });
       //     }
-
+getUpdatedReservationNumber(value: string): string {
+  return value ? value.replace('-B-', '-BE-') : '';
+}
           sendWhatsappMessageToTHM4(){
             this.whatsappForm = new WhatsappDto();
         this.template =new Template();
@@ -3449,7 +3451,7 @@ onGenerateVouchers() {
 
               this.parametertype2 = new Para();
               this.parametertype2.type = 'text',
-              this.parametertype2.text = String(this.bookingId);
+              this.parametertype2.text = String(this.getUpdatedReservationNumber(booking.propertyReservationNumber));
               this.parameterss2.push(this.parametertype2);
 
               this.parametertype2 = new Para();
@@ -3577,7 +3579,7 @@ onGenerateVouchers() {
 
               this.parametertype2 = new Para();
               this.parametertype2.type = 'text',
-              this.parametertype2.text = String(this.bookingId);
+              this.parametertype2.text = String(this.getUpdatedReservationNumber(booking.propertyReservationNumber));
               this.parameterss2.push(this.parametertype2);
 
               this.parametertype2 = new Para();
@@ -3704,7 +3706,7 @@ onGenerateVouchers() {
 
               this.parametertype2 = new Para();
               this.parametertype2.type = 'text',
-              this.parametertype2.text = String(this.bookingId);
+              this.parametertype2.text = String(this.getUpdatedReservationNumber(booking.propertyReservationNumber));
               this.parameterss2.push(this.parametertype2);
 
               this.parametertype2 = new Para();
@@ -3831,7 +3833,7 @@ onGenerateVouchers() {
 
               this.parametertype2 = new Para();
               this.parametertype2.type = 'text',
-              this.parametertype2.text = String(this.bookingId);
+              this.parametertype2.text = String(this.getUpdatedReservationNumber(booking.propertyReservationNumber));
               this.parameterss2.push(this.parametertype2);
 
               this.parametertype2 = new Para();

@@ -105,8 +105,8 @@
               >
 
               <span *ngIf="!booking?.groupBookingId">
-                <b id="copyTexttwo">{{ booking?.id }}</b>
-                <span *ngIf="!last">, </span>
+                <b id="copyTexttwo">{{ getUpdatedReservationNumber(booking.propertyReservationNumber) }}</b>
+                <span *ngIf="!last">, </span><br/>
               </span>
             </div>
           </div>
@@ -188,8 +188,8 @@
                   >
 
                     <span *ngIf="!booking?.groupBookingId">
-                    <b id="copyTexttwo">{{ booking?.id }}</b>
-                    <span *ngIf="!last">, </span>
+                    <b id="copyTexttwo">{{ getUpdatedReservationNumber(booking.propertyReservationNumber) }}</b>
+                <span *ngIf="!last">, </span><br/>
                   </span>
                 </div>
               </div>
@@ -606,8 +606,8 @@
               >
 
               <span *ngIf="!booking?.groupBookingId">
-                <b id="copyTexttwo">{{ booking?.id }}</b>
-                <span *ngIf="!last">, </span>
+                <b id="copyTexttwo">{{ getUpdatedReservationNumber(booking.propertyReservationNumber) }}</b>
+                <span *ngIf="!last">, </span><br/>
               </span>
               </div>
 
@@ -671,8 +671,8 @@
                   >
 
                   <span *ngIf="!booking?.groupBookingId">
-                  <b id="copyTexttwo">{{ booking?.id }}</b>
-                  <span *ngIf="!last">, </span>
+                  <b id="copyTexttwo">{{ getUpdatedReservationNumber(booking.propertyReservationNumber) }}</b>
+                <span *ngIf="!last">, </span><br/>
                 </span>
                 </div>
               </div>
