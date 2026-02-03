@@ -3461,7 +3461,7 @@ getUpdatedReservationNumber(value: string): string {
 
               this.parametertype2 = new Para();
               this.parametertype2.type = 'text',
-              this.parametertype2.text = booking.advanceAmount;
+              this.parametertype2.text = String((booking.advanceAmount).toFixed(2));
               this.parameterss2.push(this.parametertype2);
 
               this.parametertype2 = new Para();
@@ -3589,7 +3589,7 @@ getUpdatedReservationNumber(value: string): string {
 
               this.parametertype2 = new Para();
               this.parametertype2.type = 'text',
-              this.parametertype2.text = booking.advanceAmount;
+              this.parametertype2.text = String((booking.advanceAmount).toFixed(2));
               this.parameterss2.push(this.parametertype2);
 
               this.parametertype2 = new Para();
@@ -3716,7 +3716,7 @@ getUpdatedReservationNumber(value: string): string {
 
               this.parametertype2 = new Para();
               this.parametertype2.type = 'text',
-              this.parametertype2.text = booking.advanceAmount;
+              this.parametertype2.text = String((booking.advanceAmount).toFixed(2));
               this.parameterss2.push(this.parametertype2);
 
               this.parametertype2 = new Para();
@@ -3843,7 +3843,7 @@ getUpdatedReservationNumber(value: string): string {
 
               this.parametertype2 = new Para();
               this.parametertype2.type = 'text',
-              this.parametertype2.text = booking.advanceAmount;
+              this.parametertype2.text = String((booking.advanceAmount).toFixed(2));
               this.parameterss2.push(this.parametertype2);
 
               this.parametertype2 = new Para();
