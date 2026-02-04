@@ -1654,7 +1654,7 @@ if (bookingSummaryStr) {
     this.enquiryForm.extraPersonCharge = this.booking.extraPersonCharge;
     this.enquiryForm.extraChildCharge = this.booking.extraChildCharge;
     this.enquiryForm.noOfExtraChild = this.booking.noOfExtraChild;
-    this.enquiryForm.externalSite = 'Website';
+    this.enquiryForm.externalSite = 'WebSite';
     this.enquiryForm.source = 'The Hotel Mate';
     this.enquiryForm.beforeTaxAmount = this.booking.beforeTaxAmount;
         if (bookingSummaryStr) {
@@ -1946,7 +1946,7 @@ this.tokenToTime = this.combinedDateToTime;
         : plan.price -
           (enquiryForm.extraPersonCharge + enquiryForm.extraChildCharge);
 
-    enquiryForm.externalSite = 'Website';
+    enquiryForm.externalSite = 'WebSite';
     enquiryForm.source = 'Bookone Connect';
     enquiryForm.couponCode = booking.couponCode;
     enquiryForm.promotionName = booking.promotionName;
@@ -4340,7 +4340,7 @@ processPaymentPayU(payment: Payment) {
   }
   createBookingPayTM() {
     this.booking.modeOfPayment = this.payment.paymentMode;
-    this.booking.externalSite = 'Website';
+    this.booking.externalSite = 'WebSite';
     this.booking.businessName = this.businessUser.name;
     this.booking.businessEmail = this.businessUser.email;
     this.booking.roomBooking = true;
@@ -4472,7 +4472,7 @@ processPaymentPayU(payment: Payment) {
   }
   createBookingAtom() {
     this.booking.modeOfPayment = this.payment.paymentMode;
-    this.booking.externalSite = 'Website';
+    this.booking.externalSite = 'WebSite';
     this.booking.businessName = this.businessUser.name;
     this.booking.businessEmail = this.businessUser.email;
     this.booking.roomBooking = true;
@@ -5302,7 +5302,7 @@ this.tokenToTime = this.combinedDateToTime;
         : plan.price -
           (enquiryForm.extraPersonCharge + enquiryForm.extraChildCharge);
 
-    enquiryForm.externalSite = 'Website';
+    enquiryForm.externalSite = 'WebSite';
     enquiryForm.source = 'Bookone Connect';
     enquiryForm.couponCode = booking.couponCode;
     enquiryForm.promotionName = booking.promotionName;
@@ -8104,7 +8104,7 @@ if (this.specialDiscountData) {
         : plan.price -
           (enquiryForm.extraPersonCharge + enquiryForm.extraChildCharge);
 
-    enquiryForm.externalSite = 'Website';
+    enquiryForm.externalSite = 'WebSite';
     enquiryForm.source = 'Bookone Connect';
     enquiryForm.couponCode = booking.couponCode;
     enquiryForm.promotionName = booking.promotionName;

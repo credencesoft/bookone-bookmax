@@ -1029,7 +1029,7 @@ const tokenToTime = this.combinedDateToTime;
   createBookingPayTM() {
 
     this.booking.modeOfPayment = this.payment.paymentMode;
-    this.booking.externalSite = 'Website';
+    this.booking.externalSite = 'WebSite';
     this.booking.businessName = this.businessUser.name;
     this.booking.businessEmail = this.businessUser.email;
     this.booking.roomBooking = true;
