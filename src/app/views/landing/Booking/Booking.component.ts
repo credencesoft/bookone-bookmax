@@ -285,6 +285,11 @@ export class BookingComponent implements OnInit {
   components1: Components[];
   bookoneActiveData: any;
   serviceChargePercentage: any;
+  soldOutRooms: any;
+  availableRoomsOne: any;
+  availableRoomIdSet = new Set<number>();
+soldOutSectionRef!: HTMLElement;
+availabilityLoaded = false;
   constructor(
     private token: TokenStorage,
     private ngZone: NgZone,
@@ -355,7 +360,6 @@ export class BookingComponent implements OnInit {
       this.calculateTotalGuestsFromPlans();
 
     }
-
     setTimeout(() => {
       this.businessUser?.socialMediaLinks.forEach((element) => {
         this.socialmedialist = element;
@@ -432,7 +436,7 @@ export class BookingComponent implements OnInit {
       this.token.getBookingRoomPrice()
     );
     this.getPropertyDetails(this.booking.propertyId);
-
+this.checkingAvailabilityOne();
     this.payment.expYear = '';
     this.payment.expMonth = '';
 
@@ -1497,6 +1501,7 @@ this.getPropertyDetailsById(this.bookingData?.propertyId);
     }, 3000);
   }
   backClicked() {
+    this.PropertyUrl = this.token.getPropertyUrl();
     window.location.href = this.PropertyUrl;
   }
   getDateFormatDayMonthYear(
@@ -2227,9 +2232,137 @@ if (!this.fromTime && !this.toTime) {
     return false;
   }
 
+  isRoomSoldOut(plan: any): boolean {
+  if (!this.availabilityLoaded) {
+    return false;
+  }
+  return !this.availableRoomIdSet.has(plan.roomId);
+}
+
+hasAnySoldOutRoom(): boolean {
+  if (!this.availabilityLoaded) return false;
+  return this.bookingSummaryDetails?.selectedPlansSummary?.some(
+    plan => this.isRoomSoldOut(plan)
+  );
+}
+
+scrollToSoldOut() {
+  const el = document.getElementById('soldOutSection');
+  if (el) {
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+}
+
+scrollToSoldOutOne() {
+  const el = document.getElementById('soldOutSectionOne');
+  if (el) {
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+}
+
+onEditBooking() {
+this.PropertyUrl = this.token.getPropertyUrl();
+  if (!this.PropertyUrl) return;
+
+  sessionStorage.removeItem('bookingsResponseList');
+  sessionStorage.removeItem('bookingSummaryDetails');
+  sessionStorage.removeItem('EnquiryResponseList');
+
+  // tell the previous page where to scroll
+  sessionStorage.setItem('scrollTo', 'accmdOne');
+
+  window.location.href = this.PropertyUrl; // no # in URL
+}
+
+checkingAvailabilityOne(): Promise<boolean> {
+  return new Promise((resolve, reject) => {
+    this.availabilityLoaded = false;
+    this.isSuccess = true;
+    this.headerTitle = 'Success!';
+    this.bodyMessage = 'CheckAvailability Clicked ';
+
+    this.showSuccess(this.contentDialog);
+
+    setTimeout(() => {
+      this.showAlert = false;
+      this.changeDetectorRefs.detectChanges();
+    }, 1000);
+
+    this.booking.propertyId = this.businessUser.id;
+
+    this.hotelBookingService
+      .checkAvailabilityByProperty(
+        this.booking.fromDate,
+        this.booking.toDate,
+        this.booking.noOfRooms,
+        this.booking.noOfPersons,
+        this.booking.propertyId
+      )
+      .subscribe(
+        (response) => {
+          const roomListOne = response.body.roomList || [];
+
+          const sortedRoomsOne = roomListOne.sort(
+            (a: any, b: any) => b.roomOnlyPrice - a.roomOnlyPrice
+          );
+
+          this.availableRoomsOne = sortedRoomsOne.filter(room => {
+            const rates = room.ratesAndAvailabilityDtos;
+            if (!rates || rates.length === 0) return false;
+
+            const isStopSellOBE =
+              rates[0]?.stopSellOBE !== null && rates[0]?.stopSellOBE !== false;
+
+            const isStopSellOTA =
+              rates[0]?.stopSellOTA !== null && rates[0]?.stopSellOTA !== false;
+
+            return (
+              rates.length === this.booking.noOfNights &&
+              !isStopSellOBE &&
+              !isStopSellOTA
+            );
+          });
+          console.log('this.availableRoomsOne',this.availableRoomsOne);
+          this.soldOutRooms = sortedRoomsOne.filter(room => {
+            const rates = room.ratesAndAvailabilityDtos;
+            if (!rates || rates.length !== this.booking.noOfNights) return true;
+
+            const isStopSellOBE =
+              rates[0]?.stopSellOBE !== null && rates[0]?.stopSellOBE !== false;
+
+            const isStopSellOTA =
+              rates[0]?.stopSellOTA !== null && rates[0]?.stopSellOTA !== false;
+
+            return isStopSellOBE || isStopSellOTA;
+          });
+          this.availableRoomIdSet.clear();
+          this.availableRoomsOne.forEach(room => { this.availableRoomIdSet.add(room.id); });
+
+          this.availabilityLoaded = true;
+
+          // ✅ resolve AFTER everything is done
+          resolve(this.hasAnySoldOutRoom());
+        },
+        (error) => {
+          this.availabilityLoaded = true;
+          reject(error);
+        }
+      );
+  });
+}
+
+
 async  payAndCheckout() {
-  if (this.isPayDisabled) return; // Prevent double clicks
+  if (this.isPayDisabled) return;
   this.isPayDisabled = true;
+  const hasSoldOut = await this.checkingAvailabilityOne();
+  if(hasSoldOut) {
+  if (this.hasAnySoldOutRoom()) {
+    this.scrollToSoldOut();
+    this.scrollToSoldOutOne();
+    return;
+  }
+}
   sessionStorage.removeItem('EnquiryResponseList');
   this.isPayNowDisabled = true;
 const bookingSummaryStr = sessionStorage.getItem('bookingSummaryDetails');
@@ -3950,9 +4083,7 @@ if (bookingSummaryStr) {
         this.payment.transactionAmount = Number(
           Number((((firstPlanOne?.finalPrice) / 100) * 20).toFixed(2))
         );
-        this.payment.amount = Number(
-          Number((((firstPlanOne?.finalPrice) / 100) * 20).toFixed(2))
-        );
+        this.payment.amount = Number(Number((((firstPlanOne?.finalPrice) / 100) * 20).toFixed(2)));
 
         this.booking.advanceAmount = Number(
           Number((((firstPlanOne?.finalPrice) / 100) * 20).toFixed(2))
@@ -4046,8 +4177,11 @@ if (bookingSummaryStr) {
           this.token.saveBookingData(this.booking);
           this.token.savePaymentData(this.payment);
           this.token.savePropertyData(this.businessUser);
-
-          this.router.navigate(['/checkout-rayzorpay']);
+           const url = this.router.serializeUrl(
+          this.router.createUrlTree(['/checkout-rayzorpay'])
+        );
+        window.open(url, '_blank');
+          // this.router.navigate(['/checkout-rayzorpay']);
         }
       });
   }
@@ -4104,7 +4238,7 @@ processPaymentPayU(payment: Payment) {
       }
     );
   }
-  paymentIntentPayU() {
+paymentIntentPayU() {
   this.paymentLoader = true;
 
   const params = new HttpParams()
@@ -4115,6 +4249,7 @@ processPaymentPayU(payment: Payment) {
     .set('customerMobile', this.booking.mobile)
     .set('customerEmail', this.payment.email)
     .set('source', 'THM');
+
   const url = 'https://payu.payment.uat.bookone.io/api/payu/paymentIntent/THM';
 
   // Build the full URL
@@ -4122,9 +4257,10 @@ processPaymentPayU(payment: Payment) {
 
   this.paymentLoader = false;
 
-  // Redirect the browser to PayU
-  window.location.href = fullUrl;
+  // ✅ Open PayU in a new tab
+  window.open(fullUrl, '_blank');
 }
+
   processPaymentPayTM(payment: Payment) {
     this.paymentLoader = true;
     this.changeDetectorRefs.detectChanges();
