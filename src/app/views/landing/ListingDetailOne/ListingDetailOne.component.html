@@ -1201,7 +1201,7 @@
                   removeSession();
                   checkingAvailability();
                   resetCoupon();
-                  scrollToSmartDash();
+                  scrollToAccommodationDash();
                   clicked();
                   landingTaxAmount();
                   checkavailabilityCall()
@@ -1590,7 +1590,7 @@
                   (click)="
                     removeSession();
                     checkingAvailability();
-                    scrollToSmartDash();
+                    scrollToAccommodationDash();
                     clicked();
                     landingTaxAmount();
                     checkavailabilityCall()
@@ -2597,7 +2597,7 @@
               <div class="col-12 col-lg-7 spacing-manage">
                 <div class="d-flex justify-content-between" style="gap: 15px">
                   <h3 class="margin-top-mobile-30px">{{ room.name }}</h3>
-                  <div class="d-flex" style="    gap: 15px; width: 50px;">
+                  <div class="d-flex" style="    gap: 15px; width: 100px; align-items: center;">
                     <div>
                     <img
                       src=" media-be/images/profile-pic.svg"
@@ -3304,7 +3304,7 @@
               <div class="col-12 col-lg-7 spacing-manage">
                 <div class="d-flex justify-content-between" style="gap: 15px">
                   <h3 class="margin-top-mobile-30px">{{ room.name }}</h3>
-                  <div class="d-flex" style="gap:15px; width: 50px;">
+                  <div class="d-flex" style="gap:15px; width: 100px;align-items: center;">
                     <div>
                     <img
                       src=" media-be/images/profile-pic.svg"
@@ -3352,177 +3352,7 @@
           </div>
         </div>
 
-        <div
-          class="card-rooms card margin-top-20px"
-          *ngIf="room.ratesAndAvailabilityDtos?.[0]?.stopSellOBE != null && room.ratesAndAvailabilityDtos?.[0]?.stopSellOBE !== false
-          || room.ratesAndAvailabilityDtos?.[0]?.stopSellOTA != null && room.ratesAndAvailabilityDtos?.[0]?.stopSellOTA !== false"
-        >
-          <div>
-            <div class="d-flex justify-content-between flex-wrap-one">
-              <div class="col-12 col-lg-5 spacing-manage">
-                <div
-                  class="position-relative bg-white rounded-4 overflow-hidden shadow"
-                  style="
-                    border: 1px solid #e0e0e0;
-                    border-radius: 20px;
-                    cursor: pointer;
-                  "
-                >
-                  <!-- Top Badge -->
-                  <div
-                    style="z-index: 1"
-                    class="position-absolute top-0 start-0 m-2 px-3 py-1 sold-rooms rounded-pill small"
-                  >
-                    Sold Out
-                  </div>
 
-                  <!-- Room Image -->
-                  <!-- Fallback image if imageList is empty or undefined -->
-                  <img
-                    (click)="togglePanelOne(room, i)"
-                    *ngIf="!room.imageList || room.imageList.length === 0"
-                    src="https://themissionneighbourhood.com/images/no-image.png"
-                    class="w-100"
-                    style="
-                      aspect-ratio: 4/3;
-                      object-fit: cover;
-                      border-radius: 0;
-                    "
-                  />
-
-                  <!-- Show single image if only one or two images but they are same -->
-                  <img
-                    (click)="togglePanelOne(room, i)"
-                    *ngIf="
-                      room.imageList?.length > 0 &&
-                      (room.imageList.length === 1 ||
-                        room.imageList[0]?.url === room.imageList[1]?.url)
-                    "
-                    [src]="room.imageList[0].url"
-                    alt="Hotel Room"
-                    class="w-100"
-                    style="
-                      aspect-ratio: 4/3;
-                      object-fit: cover;
-                      border-radius: 0;
-                    "
-                  />
-
-                  <!-- Show carousel only if there are 2+ unique images -->
-                  <div
-                    (click)="togglePanelOne(room, i)"
-                    *ngIf="
-                      room.imageList?.length > 1 &&
-                      room.imageList[0]?.url !== room.imageList[1]?.url
-                    "
-                    id="carouselExampleIndicators"
-                    class="carousel slide"
-                    data-ride="carousel"
-                  >
-                    <div class="carousel-inner img_size_room">
-                      <div
-                        class="carousel-item img_size_room"
-                        *ngFor="let image of room.imageList; let i = index"
-                        [class.active]="i === 0"
-                      >
-                        <img
-                          [src]="image.url"
-                          class="w-100"
-                          alt="Slide {{ i }}"
-                          style="
-                            aspect-ratio: 4/3;
-                            object-fit: cover;
-                            border-radius: 0;
-                          "
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- Feature Icons Positioned at Image Bottom -->
-                  <div
-                    class="position-absolute bottom-0 start-0 w-100 p-2 bg-opacity-75 bottom-0px"
-                  >
-                    <div class="d-flex text-center" style="gap: 10px">
-                      <div
-                        class="aminities-alignment"
-                        *ngFor="let item of room.roomFacilities | slice : 0 : 2"
-                      >
-                        <i
-                          [ngClass]="getAmenityIcon(item.name)"
-                          class="fa-solid"
-                        ></i>
-                        <div class="small mt-1">{{ item.name }}</div>
-                      </div>
-
-                      <div
-                        (click)="togglePanelOne(room, i)"
-                        [style.top.px]="
-                          (room.roomFacilities?.length || 0) > 0 ? null : -17
-                        "
-                        class="stories"
-                      >
-                        <img
-                          src=" media-be/images/stories-image.svg"
-                          alt=""
-                          width="17px"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div class="col-12 col-lg-7 spacing-manage">
-                <div class="d-flex justify-content-between" style="gap: 15px">
-                  <h3 class="margin-top-mobile-30px">{{ room.name }}</h3>
-                  <div class="d-flex" style="gap:15px; width: 50px;">
-                    <div>
-                    <img
-                      src=" media-be/images/profile-pic.svg"
-                      alt=""
-                      width="17px"
-                    />{{ room.maximumOccupancy }}
-                  </div>
-                  <div *ngIf="room.noOfChild > 0">
-                    <div style="display: flex; align-items: center;">
-                      <img
-                      src=" media-be/images/child.svg"
-                      alt=""
-                      width="14px"
-                      style="margin-right: 2px;"
-                    />{{ room.noOfChild }}
-                    </div>
-                  </div>
-                  </div>
-                </div>
-                <div class="d-block margin-top-30px">
-                  <div
-                    class="roomDescription"
-                    [innerHTML]="room.description"
-                  ></div>
-                  <div class="margin-top-20px">
-                    <p class="sold-out-header">
-                      See similar rooms or adjust your dates to find
-                      availability.
-                    </p>
-                  </div>
-                  <div class="margin-top-20px d-flex" style="gap: 30px">
-                    <button class="dates-seemore" (click)="adjustDates()">
-                      Change Dates
-                    </button>
-                    <button
-                      (click)="scrollToAccommodationDash()"
-                      class="dates-seemore"
-                    >
-                      See More Rooms
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
 

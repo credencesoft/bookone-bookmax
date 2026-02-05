@@ -3643,3 +3643,88 @@ p-dialog .p-dialog-header .p-dialog-title{
           transform: rotate(360deg)
         }
       }
+/* SOLD OUT CARD STATE */
+.sold-out-card {
+    background-color: #f3f4f6;
+    opacity: 0.85;
+    padding: 10px;
+    border-radius: 12px;
+}
+
+/* SOLD OUT LABEL */
+.sold-out-title {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    color: red;
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+}
+
+.btn-reset-one {
+      width: 150px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    border: 2px solid var(--secondary);
+    font-family: 'Poppins';
+    color: #000;
+}
+
+.btn-reset-one:hover {
+  background-color: var(--secondary);
+  color: var(--tertiary);
+}
+
+/* SOLD OUT ICON */
+.sold-out-icon {
+  font-size: 13px;
+  color: red;
+}
+
+/* Muted text when sold out */
+.sold-out-card .color-graying,
+.sold-out-card .font-weight-600,
+.sold-out-card .nights {
+  color: #9ca3af !important;
+}
+
+/* Strike-through price */
+.strike-price {
+  text-decoration: line-through;
+  color: #9ca3af !important;
+}
+.booking-card {
+    border-radius: 10px;
+  padding: 12px;
+  transition: all 0.25s ease;
+}
+.sold-out-info-box {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  padding: 12px;
+  margin: 15px 0;
+  color: #991b1b;
+  font-size: 14px;
+}
+
+.sold-out-info-box i {
+  font-size: 18px;
+  margin-top: 2px;
+}
+
+.sold-out-info-text {
+  line-height: 1.4;
+}
+
+.sold-out-info-sub {
+  font-size: 13px;
+  color: #7f1d1d;
+  margin-top: 2px;
+}

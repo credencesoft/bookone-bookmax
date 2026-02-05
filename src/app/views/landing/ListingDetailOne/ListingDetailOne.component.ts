@@ -1064,12 +1064,9 @@ if (params['Children'] !== undefined) {
       today.getDate()
     );
     // this.checkAvailabilityDisabled = true;
-    let currenturl = window.location.href;
-    let urlObj = new URL(currenturl);
-    let params = new URLSearchParams(urlObj.search);
-    let CurrentRoomCout = params.get('rooms');
-    let flag = currenturl.includes('bookingEngine');
-    this.token.savePropertyUrl(currenturl);
+let currentUrl = window.location.href;
+
+this.token.savePropertyUrl(currentUrl);
     this.serviceDto = new PropertyServiceDTO();
     this.businessServiceDto = new BusinessServiceDtoList();
     this.businessService = new BusinessServiceDtoList();
@@ -1167,11 +1164,11 @@ if (params['Children'] !== undefined) {
         }
 
       this.noOfrooms = 1;
-      if(this.rooms === Number(CurrentRoomCout)){
-        this.rooms = 1;
-      } else {
-        this.rooms = Number(CurrentRoomCout);
-      }
+      // if(this.rooms === Number(CurrentRoomCout)){
+      //   this.rooms = 1;
+      // } else {
+      //   this.rooms = Number(CurrentRoomCout);
+      // }
       // this.rooms = 1;
 
       if (this.hotelID != null && this.hotelID != undefined) {
@@ -1278,11 +1275,12 @@ if (params['Children'] !== undefined) {
           this.children = totalChildren - additionalChildren;
         }
       }
-      if(this.rooms === Number(CurrentRoomCout)){
-        this.rooms = this.booking.noOfRooms;
-      } else {
-        this.rooms = Number(CurrentRoomCout);
-      }
+      this.rooms = this.booking.noOfRooms;
+      // if(this.rooms === Number(CurrentRoomCout)){
+      //   this.rooms = this.booking.noOfRooms;
+      // } else {
+      //   this.rooms = Number(CurrentRoomCout);
+      // }
 
       this.taxPercentage = this.booking.taxPercentage;
     } else {
@@ -1330,11 +1328,12 @@ if (params['Children'] !== undefined) {
           this.children = Number(this.childno);
         }
       this.noOfrooms = 1;
-      if(this.rooms === Number(CurrentRoomCout)){
-        this.rooms = Number(CurrentRoomCout);;
-      } else {
-        this.rooms = 1;
-      }
+      this.rooms = 1;
+      // if(this.rooms === Number(CurrentRoomCout)){
+      //   this.rooms = Number(CurrentRoomCout);;
+      // } else {
+      //   this.rooms = 1;
+      // }
       // this.rooms = 1;
     }
     if (
@@ -3381,6 +3380,17 @@ if (roomKey) {
         behavior: 'smooth',
       });
     }, 100);
+
+  const sectionId = sessionStorage.getItem('scrollTo');
+  if (sectionId) {
+    setTimeout(() => {
+      const el = document.getElementById(sectionId);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+      sessionStorage.removeItem('scrollTo');
+    }, 100);
+  }
   }
 
   backClicked() {

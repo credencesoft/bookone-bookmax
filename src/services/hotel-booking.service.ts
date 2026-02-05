@@ -75,7 +75,7 @@ export class HotelBookingService {
       .set('checkInDate', queryParams.checkInDate)
       .set('checkOutDate', queryParams.checkOutDate);
 
-    return this.http.post(API_URL_RECOMMEND + '/api/recommend', { roomList }, { params });
+    return this.http.post(API_URL_RECOMMEND + '/api/recommendation', { roomList }, { params });
   }
 sendBookingEmailToCustomer(bookingId: number): Observable<any> {
   const url = this.API_URL + `/api/thm/bookingEmailToCustomer?bookingId=${bookingId}`;

@@ -97,34 +97,18 @@
             <div class="mb-2">
               <span class="highlight-text"
                 >Booking ID
-                <img
-                  src="media-be/images/CopyVoucher.png"
-                  alt=""
-                  height="15px"
-                  width="15px"
-                  style="margin-right: 3px; margin-left: 5px; cursor: pointer"
-                  (click)="copyTexttwo()"
-              /></span>
+                </span>
             </div>
             <div class="mb-0" style="text-align: left" *ngFor="let booking of bookingsResponseList; let last = last">
               <span *ngIf="booking?.groupBookingId && last">
                 <b id="copyTexttwo">{{ booking?.groupBookingId }}</b></span
               >
 
-              <span *ngIf="!booking?.groupBookingId && last"
-                ><b id="copyTexttwo">{{ booking?.id }}</b></span
-              >
+              <span *ngIf="!booking?.groupBookingId">
+                <b id="copyTexttwo">{{ getUpdatedReservationNumber(booking.propertyReservationNumber) }}</b>
+                <span *ngIf="!last">, </span><br/>
+              </span>
             </div>
-            <a
-              href="https://thehotelmate.co/history"
-              style="
-                font-size: 11px;
-                color: #1465cf;
-                text-decoration: none;
-                text-align: left;
-              "
-              >Check Details</a
-            >
           </div>
         </div>
         </div>
@@ -203,12 +187,12 @@
                     <b>{{ booking?.groupBookingId }}</b></span
                   >
 
-                  <span *ngIf="!booking?.groupBookingId && last"
-                    ><b>{{ booking?.id }}</b></span
-                  >
+                    <span *ngIf="!booking?.groupBookingId">
+                    <b id="copyTexttwo">{{ getUpdatedReservationNumber(booking.propertyReservationNumber) }}</b>
+                <span *ngIf="!last">, </span><br/>
+                  </span>
                 </div>
               </div>
-              <div class="d-flex justify-content-between"></div>
             </div>
             <div
               class="d-flex justify-content-between"
@@ -476,20 +460,17 @@
         <h5>Please note:</h5>
         <ul style="line-height: 30px">
           <li>
-            Confirmation: The Hotel Mate team will contact you to confirm your
-            booking.
+            Confirmation: Your reservation request has been received and is being reviewed by the Reservation Team. You will receive a confirmation shortly via email & WhatsApp.
           </li>
           <li>
-            Price Changes: Prices are subject to change due to hotel demand. We
-            will do our best to offer the Best Available Rate.
+            Price Changes: Room rates are dynamic and subject to availability at the time of confirmation. The Reservation Team will always attempt to secure the best available rate for your stay.
           </li>
           <li>
-            Room Availability: If rooms are unavailable, we may offer
-            alternative accommodations upon your request.
+            Room Availability: In rare cases where the selected room category becomes unavailable, an alternative option of similar or higher value may be offered with your consent.
+            For same-day check-ins or next-day early check-ins, we recommend contacting the Reservation Team directly to ensure faster confirmation.
           </li>
           <li>
-            Advance Payment: In accordance with the hotel's policy, you may be
-            required to pay an advance amount (minimum 20% to full payment).
+            In exceptional situations where availability cannot be confirmed after payment, the full amount will be refunded (excluding applicable payment gateway charges).
           </li>
           <li>
             Payment and Booking Confirmation: We will provide you with a payment
@@ -498,18 +479,7 @@
             WhatsApp.
           </li>
           <li>
-            Last Minute Bookings: If this is a last minute booking, meaning the
-            check-in date is the same as the date of booking or early check-in
-            the next day, please call us.
-          </li>
-          <li>
-            Paid Booking: In the event that payment has already been made, and
-            we are unable to confirm the booking, we will refund the full amount
-            (minus payment gateway charges).
-          </li>
-          <li>
-            Email Confirmation: Please check your spam folder for the email
-            confirmation, as it may sometimes be found there.
+            Email Confirmation: If you do not receive the confirmation email, please check your spam or promotions folder.
           </li>
         </ul>
         <div *ngFor="let bServiceDtoList of policies; let i = index">
@@ -621,26 +591,12 @@
                 <b id="copyTexttwo">{{ booking?.groupBookingId }}</b></span
               >
 
-              <span *ngIf="!booking?.groupBookingId && last"
-                ><b id="copyTexttwo">{{ booking?.id }}</b></span
-              ></div>
-              <div><a
-              href="https://thehotelmate.co/history"
-              style="
-                font-size: 11px;
-                color: #1465cf;
-                text-decoration: none;
-                text-align: left;
-              "
-              >Check Details </a
-            > <span><img
-                  src="media-be/images/CopyVoucher.png"
-                  alt=""
-                  height="15px"
-                  width="15px"
-                  style="margin-right: 3px; margin-left: 5px; cursor: pointer"
-                  (click)="copyTexttwo()"
-              /></span></div>
+              <span *ngIf="!booking?.groupBookingId">
+                <b id="copyTexttwo">{{ getUpdatedReservationNumber(booking.propertyReservationNumber) }}</b>
+                <span *ngIf="!last">, </span><br/>
+              </span>
+              </div>
+
               </div>
               <div>
                   <div class="mb-1 highlight-text">Current Status</div>
@@ -700,9 +656,10 @@
                     <b>{{ booking?.groupBookingId }}</b></span
                   >
 
-                  <span *ngIf="!booking?.groupBookingId && last"
-                    ><b>{{ booking?.id }}</b></span
-                  >
+                  <span *ngIf="!booking?.groupBookingId">
+                  <b id="copyTexttwo">{{ getUpdatedReservationNumber(booking.propertyReservationNumber) }}</b>
+                <span *ngIf="!last">, </span><br/>
+                </span>
                 </div>
               </div>
             </div>
@@ -960,20 +917,17 @@
         <h5>Please note:</h5>
         <ul style="line-height: 30px">
           <li>
-            Confirmation: The Hotel Mate team will contact you to confirm your
-            booking.
+            Confirmation: Your reservation request has been received and is being reviewed by the Reservation Team. You will receive a confirmation shortly via email & WhatsApp.
           </li>
           <li>
-            Price Changes: Prices are subject to change due to hotel demand. We
-            will do our best to offer the Best Available Rate.
+            Price Changes: Room rates are dynamic and subject to availability at the time of confirmation. The Reservation Team will always attempt to secure the best available rate for your stay.
           </li>
           <li>
-            Room Availability: If rooms are unavailable, we may offer
-            alternative accommodations upon your request.
+            Room Availability: In rare cases where the selected room category becomes unavailable, an alternative option of similar or higher value may be offered with your consent.
+            For same-day check-ins or next-day early check-ins, we recommend contacting the Reservation Team directly to ensure faster confirmation.
           </li>
           <li>
-            Advance Payment: In accordance with the hotel's policy, you may be
-            required to pay an advance amount (minimum 20% to full payment).
+            In exceptional situations where availability cannot be confirmed after payment, the full amount will be refunded (excluding applicable payment gateway charges).
           </li>
           <li>
             Payment and Booking Confirmation: We will provide you with a payment
@@ -982,20 +936,8 @@
             WhatsApp.
           </li>
           <li>
-            Last Minute Bookings: If this is a last minute booking, meaning the
-            check-in date is the same as the date of booking or early check-in
-            the next day, please call us.
-          </li>
-          <li>
-            Paid Booking: In the event that payment has already been made, and
-            we are unable to confirm the booking, we will refund the full amount
-            (minus payment gateway charges).
-          </li>
-          <li>
-            Email Confirmation: Please check your spam folder for the email
-            confirmation, as it may sometimes be found there.
-          </li>
-        </ul>
+            Email Confirmation: If you do not receive the confirmation email, please check your spam or promotions folder.
+          </li></ul>
         <div *ngFor="let bServiceDtoList of policies; let i = index">
           <div *ngIf="bServiceDtoList?.policy">
             <div class="property-rules" *ngIf="policies">Property rules:</div>
@@ -1066,8 +1008,25 @@
 </div>
 
 <div class="loader-overlay" *ngIf="loadingData">
-  <span class="loader-booking "></span>
-   <p class="loading-message">Please hold on while we process your booking...</p>
+  <div class="loader-card">
+    <span class="loader-booking"></span>
+
+    <div class="text-block">
+      <h3>Confirming your booking</h3>
+<p class="main-text">
+  We’re securely finalizing your reservation.
+</p>
+<p class="sub-text">
+  Please stay on this page and do not refresh, go back, or close the window.
+  Closing this page may interrupt the confirmation process.
+</p>
+<p class="hint-text">
+  You’ll be redirected automatically once everything is completed.
+</p>
+
+    </div>
+  </div>
 </div>
+
 
 </div>

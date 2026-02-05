@@ -1040,6 +1040,7 @@
             </div>
             <div class="col-5 padding-right-0px">
               <div class="rooms-cards-pricing card" style="margin-bottom: 20px">
+
                 <h5 class="headimg-color">
                   <img
                     src="media-be/images/payment-sum.svg"
@@ -1051,13 +1052,35 @@
                   Payment Summary
                 </h5>
                 <div
+                id="soldOutSectionOne"
+                  *ngIf="hasAnySoldOutRoom()"
+                  class="sold-out-info-box"
+                >
+                  <i class="fa-solid fa-circle-exclamation"></i>
+
+                    <div class="sold-out-info-text">
+                      <strong>Some rooms are no longer available.</strong>
+                      <div class="sold-out-info-sub">
+                        Please reset your booking and select available rooms to continue.
+                      </div>
+                    </div>
+                  </div>
+                <div
                   class="booking-heading"
                   style="padding: 10px"
                   *ngFor="
                     let plan of bookingSummaryDetails.selectedPlansSummary;
                     let last = last
                   "
+                  [class.sold-out-card]="isRoomSoldOut(plan)"
                 >
+                 <div
+                  *ngIf="isRoomSoldOut(plan)"
+                  class="sold-out-title"
+                >
+                  <i class="fa-solid fa-circle-xmark sold-out-icon"></i>
+                  SOLD OUT
+                </div>
                   <div class="line-height-27px d-flex justify-content-between" style="gap: 15px">
                     <div class="font-weight-600">
                       {{ plan.roomName }} &nbsp;&nbsp;
@@ -1221,6 +1244,16 @@
                   </div>
                   <hr *ngIf="!last" style="border: 1px solid #e5e7eb" />
                 </div>
+                <div class="d-flex justify-content-center" *ngIf="hasAnySoldOutRoom()">
+                  <button
+
+                    type="button"
+                    class="btn btn-reset-one"
+                    (click)="onEditBooking()"
+                  >
+                    Reset Bookings
+                  </button>
+                </div>
                 <div
                   style="
                     padding: 10px;
@@ -1327,6 +1360,7 @@
 
                   </div>
                 </div>
+
               </div>
             </div>
           </div>
@@ -1420,6 +1454,7 @@
       <div class="container-div" style="margin-top: 20px">
         <div class="booking-summary-container">
           <div style="margin: 0px !important">
+
             <div class="col-12 padding-left0px padding-right-0px">
               <div class="card" style="padding: 10px">
                 <h5 class="margin-botton-20px booking-d-heading">
@@ -1469,7 +1504,7 @@
                     </div>
                   </div>
 
-                  <div class="d-flex spacing-gap">
+                  <div class="d-flex spacing-gap" id="soldOutSection">
                     <div>
                       <img
                         src="media-be/images/checkin-book-calender.svg"
@@ -1530,14 +1565,37 @@
                     margin-bottom: 20px;
                   "
                 />
+                <div
+                  *ngIf="hasAnySoldOutRoom()"
+                  class="sold-out-info-box"
+                >
+                  <i class="fa-solid fa-circle-exclamation"></i>
 
+                    <div class="sold-out-info-text">
+                      <strong>Some rooms are no longer available.</strong>
+                      <div class="sold-out-info-sub">
+                        Please reset your booking and select available rooms to continue.
+                      </div>
+                    </div>
+                  </div>
                 <div
                   class="booking-heading"
                   *ngFor="
                     let plan of bookingSummaryDetails.selectedPlansSummary;
                     let last = last
                   "
+                  [class.sold-out-card]="isRoomSoldOut(plan)"
                 >
+
+                <!-- SOLD OUT LABEL AT TOP -->
+                <div
+                  *ngIf="isRoomSoldOut(plan)"
+                  class="sold-out-title"
+                >
+                  <i class="fa-solid fa-circle-xmark sold-out-icon"></i>
+                  SOLD OUT
+                </div>
+
                   <div class="line-height-27px d-flex justify-content-between" style="gap: 15px">
                     <div class="font-weight-600">
                       {{ plan.roomName }} &nbsp;&nbsp;
@@ -1558,8 +1616,10 @@
                   </div>
                   <div class="d-flex justify-content-between line-height-27px">
                     <div class="color-graying">
-                      {{ plan.planCodeName }} x {{ plan.selectedRoomnumber }}
-                    </div>
+                        {{ plan.planCodeName }} x {{ plan.selectedRoomnumber }} <br/>
+
+                      </div>
+
 
                     <div *ngIf="activeGoogleCenter">
                       <div style="text-align: end">
@@ -1700,6 +1760,16 @@
                     </div>
                   </div>
                   <hr *ngIf="!last" style="border: 1px solid #e5e7eb" />
+                </div>
+                <div class="d-flex justify-content-center"  *ngIf="hasAnySoldOutRoom()">
+                  <button
+
+                    type="button"
+                    class="btn btn-reset-one"
+                    (click)="onEditBooking()"
+                  >
+                    Reset Bookings
+                  </button>
                 </div>
               </div>
             </div>

@@ -285,6 +285,11 @@ export class BookingComponent implements OnInit {
   components1: Components[];
   bookoneActiveData: any;
   serviceChargePercentage: any;
+  soldOutRooms: any;
+  availableRoomsOne: any;
+  availableRoomIdSet = new Set<number>();
+soldOutSectionRef!: HTMLElement;
+availabilityLoaded = false;
   constructor(
     private token: TokenStorage,
     private ngZone: NgZone,
@@ -355,7 +360,6 @@ export class BookingComponent implements OnInit {
       this.calculateTotalGuestsFromPlans();
 
     }
-
     setTimeout(() => {
       this.businessUser?.socialMediaLinks.forEach((element) => {
         this.socialmedialist = element;
@@ -432,7 +436,7 @@ export class BookingComponent implements OnInit {
       this.token.getBookingRoomPrice()
     );
     this.getPropertyDetails(this.booking.propertyId);
-
+this.checkingAvailabilityOne();
     this.payment.expYear = '';
     this.payment.expMonth = '';
 
@@ -714,7 +718,7 @@ if(this.bookoneActiveData === false) {
     return false;
   }
   }
-  
+
   this.propertyData = this.token.getProperty();
   this.accommodationData = this.propertyData.businessServiceDtoList?.filter(
     (entry) => entry.name === 'Accommodation'
@@ -1110,6 +1114,60 @@ if(this.bookoneActiveData === false) {
     // and finaly, in days :)
     this.timeDifferenceInDays = timeDifferenceInHours;
   }
+  private getZoneByCountry(country?: string): string {
+  return country?.toUpperCase() === 'INDIA'
+    ? 'Asia/Kolkata'
+    : 'UTC';
+}
+private getTimestamp(
+  formattedDate: string,   // dd-MM-yyyy
+  time: string | null,     // HH:mm
+  country?: string
+): number {
+  const zone = this.getZoneByCountry(country);
+
+  // parse date (dd-MM-yyyy)
+  const [day, month, year] = formattedDate.split('-').map(Number);
+
+  // parse time or default 12:00
+  const [hour, minute] = time
+    ? time.split(':').map(Number)
+    : [12, 0];
+
+  // create UTC baseline
+  const utcBase = new Date(Date.UTC(year, month - 1, day, hour, minute));
+
+  // extract exact date-time in target zone
+  const parts = new Intl.DateTimeFormat('en-GB', {
+    timeZone: zone,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false
+  }).formatToParts(utcBase);
+
+  const map: any = {};
+  parts.forEach(p => (map[p.type] = p.value));
+
+  // ZonedDateTime → Instant
+  return Date.UTC(
+    Number(map.year),
+    Number(map.month) - 1,
+    Number(map.day),
+    Number(map.hour),
+    Number(map.minute)
+  );
+}
+displayPropertyTime(timestamp: number, zone: string = 'Asia/Kolkata') {
+  return new Date(timestamp).toLocaleString('en-GB', {
+    timeZone: zone,
+    hour12: false
+  });
+}
+
+
   getPropertyDetails(id: number) {
     this.loader = true;
     // this.listingService.findByPropertyId(id).subscribe(
@@ -1124,24 +1182,42 @@ if(this.bookoneActiveData === false) {
         this.bookoneActiveData = item.bookoneActive;
       }
     });
+// 1️⃣ Property timezone
+const zone = 'Asia/Kolkata'; // India
 
-    let checkinDateConcat = this.booking.fromDate;
-    let timestamp = this.fromTime;
-    let combinedDateTimeString = checkinDateConcat + ' ' + timestamp;
-    let combinedDateTime = new Date(combinedDateTimeString).getTime();
-    this.combinedDateFromTime = combinedDateTime;
-    let checkoutDateConcat = this.booking.toDate;
-    let timestampcheckout = this.toTime;
-    let combinedCheckouDateTimeString =
-      checkoutDateConcat + ' ' + timestampcheckout;
-    let combinedDateTimeCheckout = new Date(
-      combinedCheckouDateTimeString
-    ).getTime();
-    this.combinedDateToTime = combinedDateTimeCheckout;
-    this.tokenFromTime = this.combinedDateFromTime;
-    this.tokenToTime = this.combinedDateToTime;
-    this.token.saveTime(String(this.tokenFromTime));
-    this.token.saveToTime(String(this.tokenToTime));
+
+const accommodation = this.businessUser.businessServiceDtoList.find(
+  item => item.name === 'Accommodation'
+);
+const fromTime = accommodation?.checkInTime ?? '12:00';
+const toTime = accommodation?.checkOutTime ?? '12:00';
+
+// 3️⃣ Function: combine guest date + property time → UTC timestamp
+const getPropertyTimestamp = (guestDate: string, propertyTime: string) => {
+  const [year, month, day] = guestDate.includes('-') && guestDate.split('-')[0].length === 4
+    ? guestDate.split('-').map(Number) // yyyy-MM-dd
+    : guestDate.split('-').reverse().map(Number); // dd-MM-yyyy
+
+  const [hour, minute] = propertyTime.split(':').map(Number);
+
+  // India is UTC+5:30
+  const IST_OFFSET = 5.5 * 60; // in minutes
+
+  // Convert property date + time to UTC timestamp
+  const utcTimestamp = Date.UTC(year, month - 1, day, hour, minute) - IST_OFFSET * 60 * 1000;
+
+  return utcTimestamp;
+};
+
+
+this.combinedDateFromTime = getPropertyTimestamp(this.booking.fromDate, fromTime);
+this.combinedDateToTime = getPropertyTimestamp(this.booking.toDate, toTime);
+
+
+this.tokenFromTime = this.combinedDateFromTime;
+this.tokenToTime = this.combinedDateToTime;
+this.token.saveTime(String(this.tokenFromTime));
+this.token.saveToTime(String(this.tokenToTime));
     this.accommodationvalue = this.businessUser.businessServiceDtoList.filter(
       (ele) => ele.name === 'Accommodation'
     );
@@ -1425,6 +1501,7 @@ this.getPropertyDetailsById(this.bookingData?.propertyId);
     }, 3000);
   }
   backClicked() {
+    this.PropertyUrl = this.token.getPropertyUrl();
     window.location.href = this.PropertyUrl;
   }
   getDateFormatDayMonthYear(
@@ -1582,7 +1659,7 @@ if (bookingSummaryStr) {
     this.enquiryForm.extraPersonCharge = this.booking.extraPersonCharge;
     this.enquiryForm.extraChildCharge = this.booking.extraChildCharge;
     this.enquiryForm.noOfExtraChild = this.booking.noOfExtraChild;
-    this.enquiryForm.externalSite = 'Website';
+    this.enquiryForm.externalSite = 'WebSite';
     this.enquiryForm.source = 'The Hotel Mate';
     this.enquiryForm.beforeTaxAmount = this.booking.beforeTaxAmount;
         if (bookingSummaryStr) {
@@ -1626,29 +1703,42 @@ if (bookingSummaryStr) {
     this.enquiryForm.roomRatePlanName = this.booking.roomRatePlanName;
 
     this.enquiryForm.createdDate = new Date().getTime();
-    this.propertyDetails = this.token.getProperty();
-    this.propertyDetails.businessServiceDtoList.forEach((item) => {
-      if (item.name === 'Accommodation') {
-        this.fromTime = item.checkInTime ?? "";
-        this.toTime = item.checkOutTime ?? "";
-      }
-    });
+this.businessUser = this.token.getProperty();
+const zone = 'Asia/Kolkata'; // India
 
-    let checkinDateConcat = this.booking.fromDate;
-    let timestamp = this.fromTime;
-    let combinedDateTimeString = checkinDateConcat + ' ' + timestamp;
-    let combinedDateTime = new Date(combinedDateTimeString).getTime();
-    this.combinedDateFromTime = combinedDateTime;
-    let checkoutDateConcat = this.booking.toDate;
-    let timestampcheckout = this.toTime;
-    let combinedCheckouDateTimeString =
-      checkoutDateConcat + ' ' + timestampcheckout;
-    let combinedDateTimeCheckout = new Date(
-      combinedCheckouDateTimeString
-    ).getTime();
-    this.combinedDateToTime = combinedDateTimeCheckout;
-    this.enquiryForm.fromTime = this.combinedDateFromTime;
-    this.enquiryForm.toTime = this.combinedDateToTime;
+
+const accommodation = this.businessUser.businessServiceDtoList.find(
+  item => item.name === 'Accommodation'
+);
+const fromTime = accommodation?.checkInTime ?? '12:00';
+const toTime = accommodation?.checkOutTime ?? '12:00';
+
+// 3️⃣ Function: combine guest date + property time → UTC timestamp
+const getPropertyTimestamp = (guestDate: string, propertyTime: string) => {
+  const [year, month, day] = guestDate.includes('-') && guestDate.split('-')[0].length === 4
+    ? guestDate.split('-').map(Number) // yyyy-MM-dd
+    : guestDate.split('-').reverse().map(Number); // dd-MM-yyyy
+
+  const [hour, minute] = propertyTime.split(':').map(Number);
+
+  // India is UTC+5:30
+  const IST_OFFSET = 5.5 * 60; // in minutes
+
+  // Convert property date + time to UTC timestamp
+  const utcTimestamp = Date.UTC(year, month - 1, day, hour, minute) - IST_OFFSET * 60 * 1000;
+
+  return utcTimestamp;
+};
+
+
+this.combinedDateFromTime = getPropertyTimestamp(this.booking.fromDate, fromTime);
+this.combinedDateToTime = getPropertyTimestamp(this.booking.toDate, toTime);
+
+
+this.tokenFromTime = this.combinedDateFromTime;
+this.tokenToTime = this.combinedDateToTime;
+    this.enquiryForm.fromTime = this.tokenFromTime;
+    this.enquiryForm.toTime = this.tokenToTime;
     this.token.saveTime(String(this.enquiryForm.fromTime));
     this.token.saveToTime(String(this.enquiryForm.toTime));
     this.enquiryForm.accountManager = '';
@@ -1856,7 +1946,7 @@ if (bookingSummaryStr) {
 
     enquiryForm.roomPrice = plan.actualRoomPrice;
 
-    enquiryForm.externalSite = 'Website';
+    enquiryForm.externalSite = 'WebSite';
     enquiryForm.source = 'Bookone Connect';
     enquiryForm.couponCode = booking.couponCode;
     enquiryForm.promotionName = booking.promotionName;
@@ -2137,9 +2227,137 @@ if (!this.fromTime && !this.toTime) {
     return false;
   }
 
+  isRoomSoldOut(plan: any): boolean {
+  if (!this.availabilityLoaded) {
+    return false;
+  }
+  return !this.availableRoomIdSet.has(plan.roomId);
+}
+
+hasAnySoldOutRoom(): boolean {
+  if (!this.availabilityLoaded) return false;
+  return this.bookingSummaryDetails?.selectedPlansSummary?.some(
+    plan => this.isRoomSoldOut(plan)
+  );
+}
+
+scrollToSoldOut() {
+  const el = document.getElementById('soldOutSection');
+  if (el) {
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+}
+
+scrollToSoldOutOne() {
+  const el = document.getElementById('soldOutSectionOne');
+  if (el) {
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+}
+
+onEditBooking() {
+this.PropertyUrl = this.token.getPropertyUrl();
+  if (!this.PropertyUrl) return;
+
+  sessionStorage.removeItem('bookingsResponseList');
+  sessionStorage.removeItem('bookingSummaryDetails');
+  sessionStorage.removeItem('EnquiryResponseList');
+
+  // tell the previous page where to scroll
+  sessionStorage.setItem('scrollTo', 'accmdOne');
+
+  window.location.href = this.PropertyUrl; // no # in URL
+}
+
+checkingAvailabilityOne(): Promise<boolean> {
+  return new Promise((resolve, reject) => {
+    this.availabilityLoaded = false;
+    this.isSuccess = true;
+    this.headerTitle = 'Success!';
+    this.bodyMessage = 'CheckAvailability Clicked ';
+
+    this.showSuccess(this.contentDialog);
+
+    setTimeout(() => {
+      this.showAlert = false;
+      this.changeDetectorRefs.detectChanges();
+    }, 1000);
+
+    this.booking.propertyId = this.businessUser.id;
+
+    this.hotelBookingService
+      .checkAvailabilityByProperty(
+        this.booking.fromDate,
+        this.booking.toDate,
+        this.booking.noOfRooms,
+        this.booking.noOfPersons,
+        this.booking.propertyId
+      )
+      .subscribe(
+        (response) => {
+          const roomListOne = response.body.roomList || [];
+
+          const sortedRoomsOne = roomListOne.sort(
+            (a: any, b: any) => b.roomOnlyPrice - a.roomOnlyPrice
+          );
+
+          this.availableRoomsOne = sortedRoomsOne.filter(room => {
+            const rates = room.ratesAndAvailabilityDtos;
+            if (!rates || rates.length === 0) return false;
+
+            const isStopSellOBE =
+              rates[0]?.stopSellOBE !== null && rates[0]?.stopSellOBE !== false;
+
+            const isStopSellOTA =
+              rates[0]?.stopSellOTA !== null && rates[0]?.stopSellOTA !== false;
+
+            return (
+              rates.length === this.booking.noOfNights &&
+              !isStopSellOBE &&
+              !isStopSellOTA
+            );
+          });
+          console.log('this.availableRoomsOne',this.availableRoomsOne);
+          this.soldOutRooms = sortedRoomsOne.filter(room => {
+            const rates = room.ratesAndAvailabilityDtos;
+            if (!rates || rates.length !== this.booking.noOfNights) return true;
+
+            const isStopSellOBE =
+              rates[0]?.stopSellOBE !== null && rates[0]?.stopSellOBE !== false;
+
+            const isStopSellOTA =
+              rates[0]?.stopSellOTA !== null && rates[0]?.stopSellOTA !== false;
+
+            return isStopSellOBE || isStopSellOTA;
+          });
+          this.availableRoomIdSet.clear();
+          this.availableRoomsOne.forEach(room => { this.availableRoomIdSet.add(room.id); });
+
+          this.availabilityLoaded = true;
+
+          // ✅ resolve AFTER everything is done
+          resolve(this.hasAnySoldOutRoom());
+        },
+        (error) => {
+          this.availabilityLoaded = true;
+          reject(error);
+        }
+      );
+  });
+}
+
+
 async  payAndCheckout() {
-  if (this.isPayDisabled) return; // Prevent double clicks
+  if (this.isPayDisabled) return;
   this.isPayDisabled = true;
+  const hasSoldOut = await this.checkingAvailabilityOne();
+  if(hasSoldOut) {
+  if (this.hasAnySoldOutRoom()) {
+    this.scrollToSoldOut();
+    this.scrollToSoldOutOne();
+    return;
+  }
+}
   sessionStorage.removeItem('EnquiryResponseList');
   this.isPayNowDisabled = true;
 const bookingSummaryStr = sessionStorage.getItem('bookingSummaryDetails');
@@ -3860,9 +4078,7 @@ if (bookingSummaryStr) {
         this.payment.transactionAmount = Number(
           Number((((firstPlanOne?.finalPrice) / 100) * 20).toFixed(2))
         );
-        this.payment.amount = Number(
-          Number((((firstPlanOne?.finalPrice) / 100) * 20).toFixed(2))
-        );
+        this.payment.amount = Number(Number((((firstPlanOne?.finalPrice) / 100) * 20).toFixed(2)));
 
         this.booking.advanceAmount = Number(
           Number((((firstPlanOne?.finalPrice) / 100) * 20).toFixed(2))
@@ -3956,8 +4172,11 @@ if (bookingSummaryStr) {
           this.token.saveBookingData(this.booking);
           this.token.savePaymentData(this.payment);
           this.token.savePropertyData(this.businessUser);
-
-          this.router.navigate(['/checkout-rayzorpay']);
+           const url = this.router.serializeUrl(
+          this.router.createUrlTree(['/checkout-rayzorpay'])
+        );
+        window.open(url, '_blank');
+          // this.router.navigate(['/checkout-rayzorpay']);
         }
       });
   }
@@ -4014,7 +4233,7 @@ processPaymentPayU(payment: Payment) {
       }
     );
   }
-  paymentIntentPayU() {
+paymentIntentPayU() {
   this.paymentLoader = true;
 
   const params = new HttpParams()
@@ -4025,6 +4244,7 @@ processPaymentPayU(payment: Payment) {
     .set('customerMobile', this.booking.mobile)
     .set('customerEmail', this.payment.email)
     .set('source', 'THM');
+
   const url = 'https://payu.payment.uat.bookone.io/api/payu/paymentIntent/THM';
 
   // Build the full URL
@@ -4032,9 +4252,10 @@ processPaymentPayU(payment: Payment) {
 
   this.paymentLoader = false;
 
-  // Redirect the browser to PayU
-  window.location.href = fullUrl;
+  // ✅ Open PayU in a new tab
+  window.open(fullUrl, '_blank');
 }
+
   processPaymentPayTM(payment: Payment) {
     this.paymentLoader = true;
     this.changeDetectorRefs.detectChanges();
@@ -4250,7 +4471,7 @@ processPaymentPayU(payment: Payment) {
   }
   createBookingPayTM() {
     this.booking.modeOfPayment = this.payment.paymentMode;
-    this.booking.externalSite = 'Website';
+    this.booking.externalSite = 'WebSite';
     this.booking.businessName = this.businessUser.name;
     this.booking.businessEmail = this.businessUser.email;
     this.booking.roomBooking = true;
@@ -4382,7 +4603,7 @@ processPaymentPayU(payment: Payment) {
   }
   createBookingAtom() {
     this.booking.modeOfPayment = this.payment.paymentMode;
-    this.booking.externalSite = 'Website';
+    this.booking.externalSite = 'WebSite';
     this.booking.businessName = this.businessUser.name;
     this.booking.businessEmail = this.businessUser.email;
     this.booking.roomBooking = true;
@@ -4944,6 +5165,40 @@ processPaymentPayU(payment: Payment) {
 
   createBooking(plan: any, bookingSummary: any, callback?: () => void) {
     const booking: any = {};
+this.businessUser = this.token.getProperty();
+const zone = 'Asia/Kolkata'; // India
+
+
+const accommodation = this.businessUser.businessServiceDtoList.find(
+  item => item.name === 'Accommodation'
+);
+const fromTime = accommodation?.checkInTime ?? '12:00';
+const toTime = accommodation?.checkOutTime ?? '12:00';
+
+// 3️⃣ Function: combine guest date + property time → UTC timestamp
+const getPropertyTimestamp = (guestDate: string, propertyTime: string) => {
+  const [year, month, day] = guestDate.includes('-') && guestDate.split('-')[0].length === 4
+    ? guestDate.split('-').map(Number) // yyyy-MM-dd
+    : guestDate.split('-').reverse().map(Number); // dd-MM-yyyy
+
+  const [hour, minute] = propertyTime.split(':').map(Number);
+
+  // India is UTC+5:30
+  const IST_OFFSET = 5.5 * 60; // in minutes
+
+  // Convert property date + time to UTC timestamp
+  const utcTimestamp = Date.UTC(year, month - 1, day, hour, minute) - IST_OFFSET * 60 * 1000;
+
+  return utcTimestamp;
+};
+
+
+this.combinedDateFromTime = getPropertyTimestamp(this.booking.fromDate, fromTime);
+this.combinedDateToTime = getPropertyTimestamp(this.booking.toDate, toTime);
+
+
+this.tokenFromTime = this.combinedDateFromTime;
+this.tokenToTime = this.combinedDateToTime;
     booking.roomRatePlanName = plan.planCodeName;
     booking.roomName = plan.roomName;
     booking.roomType = plan.roomName;
@@ -4981,21 +5236,8 @@ processPaymentPayU(payment: Payment) {
     booking.fromDate = bookingSummary.fromDate;
     booking.toDate = bookingSummary.toDate;
     booking.currency = this.businessUser.localCurrency;
-        let checkinDateConcat = this.booking.fromDate;
-    let timestamp = this.fromTime;
-    let combinedDateTimeString = checkinDateConcat + ' ' + timestamp;
-    let combinedDateTime = new Date(combinedDateTimeString).getTime();
-    this.combinedDateFromTime = combinedDateTime;
-    let checkoutDateConcat = this.booking.toDate;
-    let timestampcheckout = this.toTime;
-    let combinedCheckouDateTimeString =
-      checkoutDateConcat + ' ' + timestampcheckout;
-    let combinedDateTimeCheckout = new Date(
-      combinedCheckouDateTimeString
-    ).getTime();
-    this.combinedDateToTime = combinedDateTimeCheckout;
-    booking.fromTime = this.combinedDateFromTime;
-    booking.toTime = this.combinedDateToTime;
+    booking.fromTime = this.tokenFromTime;
+    booking.toTime = this.tokenToTime;
     booking.modeOfPayment = this.payment.paymentMode;
     booking.externalSite = 'WebSite';
     booking.businessName = this.businessUser.name;
@@ -5186,7 +5428,7 @@ processPaymentPayU(payment: Payment) {
 
     enquiryForm.roomPrice = plan.actualRoomPrice;
 
-    enquiryForm.externalSite = 'Website';
+    enquiryForm.externalSite = 'WebSite';
     enquiryForm.source = 'Bookone Connect';
     enquiryForm.couponCode = booking.couponCode;
     enquiryForm.promotionName = booking.promotionName;
@@ -5199,31 +5441,44 @@ processPaymentPayU(payment: Payment) {
     enquiryForm.roomType = plan.roomName;
     enquiryForm.roomRatePlanName = plan.planCodeName;
     enquiryForm.createdDate = new Date().getTime();
+this.businessUser = this.token.getProperty();
+const zone = 'Asia/Kolkata'; // India
 
-    // Combine date and time
-    const checkInDateTime = new Date(
-      `${enquiryForm.checkInDate} ${this.fromTime}`
-    ).getTime();
-    const checkOutDateTime = new Date(
-      `${enquiryForm.checkInDate} ${this.toTime}`
-    ).getTime();
-        let checkinDateConcat = this.booking.fromDate;
-    let timestamp = this.fromTime;
-    let combinedDateTimeString = checkinDateConcat + ' ' + timestamp;
-    let combinedDateTime = new Date(combinedDateTimeString).getTime();
-    this.combinedDateFromTime = combinedDateTime;
-    let checkoutDateConcat = this.booking.toDate;
-    let timestampcheckout = this.toTime;
-    let combinedCheckouDateTimeString =
-      checkoutDateConcat + ' ' + timestampcheckout;
-    let combinedDateTimeCheckout = new Date(
-      combinedCheckouDateTimeString
-    ).getTime();
-    this.combinedDateToTime = combinedDateTimeCheckout;
-    enquiryForm.fromTime = this.combinedDateFromTime;
-    enquiryForm.toTime = this.combinedDateToTime;
-    this.token.saveTime(String(checkInDateTime));
-    this.token.saveToTime(String(checkOutDateTime));
+
+const accommodation = this.businessUser.businessServiceDtoList.find(
+  item => item.name === 'Accommodation'
+);
+const fromTime = accommodation?.checkInTime ?? '12:00';
+const toTime = accommodation?.checkOutTime ?? '12:00';
+
+// 3️⃣ Function: combine guest date + property time → UTC timestamp
+const getPropertyTimestamp = (guestDate: string, propertyTime: string) => {
+  const [year, month, day] = guestDate.includes('-') && guestDate.split('-')[0].length === 4
+    ? guestDate.split('-').map(Number) // yyyy-MM-dd
+    : guestDate.split('-').reverse().map(Number); // dd-MM-yyyy
+
+  const [hour, minute] = propertyTime.split(':').map(Number);
+
+  // India is UTC+5:30
+  const IST_OFFSET = 5.5 * 60; // in minutes
+
+  // Convert property date + time to UTC timestamp
+  const utcTimestamp = Date.UTC(year, month - 1, day, hour, minute) - IST_OFFSET * 60 * 1000;
+
+  return utcTimestamp;
+};
+
+
+this.combinedDateFromTime = getPropertyTimestamp(this.booking.fromDate, fromTime);
+this.combinedDateToTime = getPropertyTimestamp(this.booking.toDate, toTime);
+
+
+this.tokenFromTime = this.combinedDateFromTime;
+this.tokenToTime = this.combinedDateToTime;
+    enquiryForm.fromTime = this.tokenFromTime;
+    enquiryForm.toTime = this.tokenToTime;
+    this.token.saveTime(String(enquiryForm.fromTime));
+    this.token.saveToTime(String(enquiryForm.toTime));
             if(this.groupBookingId){
       enquiryForm.groupEnquiryId = this.groupBookingId;
     }
@@ -7547,29 +7802,42 @@ processPaymentPayU(payment: Payment) {
 
     this.enquiryForm.createdDate = new Date().getTime();
 
-    this.propertyDetails = this.token.getProperty();
-    this.propertyDetails.businessServiceDtoList.forEach((item) => {
-      if (item.name === 'Accommodation') {
-        this.fromTime = item.checkInTime ?? "";
-        this.toTime = item.checkOutTime ?? "";
-      }
-    });
+this.businessUser = this.token.getProperty();
+const zone = 'Asia/Kolkata'; // India
 
-    let checkinDateConcat = this.booking.fromDate;
-    let timestamp = this.fromTime;
-    let combinedDateTimeString = checkinDateConcat + ' ' + timestamp;
-    let combinedDateTime = new Date(combinedDateTimeString).getTime();
-    this.combinedDateFromTime = combinedDateTime;
-    let checkoutDateConcat = this.booking.toDate;
-    let timestampcheckout = this.toTime;
-    let combinedCheckouDateTimeString =
-      checkoutDateConcat + ' ' + timestampcheckout;
-    let combinedDateTimeCheckout = new Date(
-      combinedCheckouDateTimeString
-    ).getTime();
-    this.combinedDateToTime = combinedDateTimeCheckout;
-    this.enquiryForm.fromTime = this.combinedDateFromTime;
-    this.enquiryForm.toTime = this.combinedDateToTime;
+
+const accommodation = this.businessUser.businessServiceDtoList.find(
+  item => item.name === 'Accommodation'
+);
+const fromTime = accommodation?.checkInTime ?? '12:00';
+const toTime = accommodation?.checkOutTime ?? '12:00';
+
+// 3️⃣ Function: combine guest date + property time → UTC timestamp
+const getPropertyTimestamp = (guestDate: string, propertyTime: string) => {
+  const [year, month, day] = guestDate.includes('-') && guestDate.split('-')[0].length === 4
+    ? guestDate.split('-').map(Number) // yyyy-MM-dd
+    : guestDate.split('-').reverse().map(Number); // dd-MM-yyyy
+
+  const [hour, minute] = propertyTime.split(':').map(Number);
+
+  // India is UTC+5:30
+  const IST_OFFSET = 5.5 * 60; // in minutes
+
+  // Convert property date + time to UTC timestamp
+  const utcTimestamp = Date.UTC(year, month - 1, day, hour, minute) - IST_OFFSET * 60 * 1000;
+
+  return utcTimestamp;
+};
+
+
+this.combinedDateFromTime = getPropertyTimestamp(this.booking.fromDate, fromTime);
+this.combinedDateToTime = getPropertyTimestamp(this.booking.toDate, toTime);
+
+
+this.tokenFromTime = this.combinedDateFromTime;
+this.tokenToTime = this.combinedDateToTime;
+    this.enquiryForm.fromTime = this.tokenFromTime;
+    this.enquiryForm.toTime = this.tokenToTime;
     this.token.saveTime(String(this.enquiryForm.fromTime));
     this.token.saveToTime(String(this.enquiryForm.toTime));
     this.enquiryForm.accountManager = 'TheHotelMate Team';
@@ -7677,28 +7945,39 @@ processPaymentPayU(payment: Payment) {
       const data = await this.listingService?.findByPropertyId(id).toPromise();
       if (data.status === 200) {
         this.businessUser = data.body;
-        this.businessUser.businessServiceDtoList.forEach((item) => {
-          if (item.name === 'Accommodation') {
-            this.fromTime = item.checkInTime ?? "";
-            this.toTime = item.checkOutTime ?? "";
-          }
-        });
+const zone = 'Asia/Kolkata'; // India
 
-        let checkinDateConcat = this.booking.fromDate;
-        let timestamp = this.fromTime;
-        let combinedDateTimeString = checkinDateConcat + ' ' + timestamp;
-        let combinedDateTime = new Date(combinedDateTimeString).getTime();
-        this.combinedDateFromTime = combinedDateTime;
-        let checkoutDateConcat = this.booking.toDate;
-        let timestampcheckout = this.toTime;
-        let combinedCheckouDateTimeString =
-          checkoutDateConcat + ' ' + timestampcheckout;
-        let combinedDateTimeCheckout = new Date(
-          combinedCheckouDateTimeString
-        ).getTime();
-        this.combinedDateToTime = combinedDateTimeCheckout;
-        this.tokenFromTime = this.combinedDateFromTime;
-        this.tokenToTime = this.combinedDateToTime;
+
+const accommodation = this.businessUser.businessServiceDtoList.find(
+  item => item.name === 'Accommodation'
+);
+const fromTime = accommodation?.checkInTime ?? '12:00';
+const toTime = accommodation?.checkOutTime ?? '12:00';
+
+// 3️⃣ Function: combine guest date + property time → UTC timestamp
+const getPropertyTimestamp = (guestDate: string, propertyTime: string) => {
+  const [year, month, day] = guestDate.includes('-') && guestDate.split('-')[0].length === 4
+    ? guestDate.split('-').map(Number) // yyyy-MM-dd
+    : guestDate.split('-').reverse().map(Number); // dd-MM-yyyy
+
+  const [hour, minute] = propertyTime.split(':').map(Number);
+
+  // India is UTC+5:30
+  const IST_OFFSET = 5.5 * 60; // in minutes
+
+  // Convert property date + time to UTC timestamp
+  const utcTimestamp = Date.UTC(year, month - 1, day, hour, minute) - IST_OFFSET * 60 * 1000;
+
+  return utcTimestamp;
+};
+
+
+this.combinedDateFromTime = getPropertyTimestamp(this.booking.fromDate, fromTime);
+this.combinedDateToTime = getPropertyTimestamp(this.booking.toDate, toTime);
+
+
+this.tokenFromTime = this.combinedDateFromTime;
+this.tokenToTime = this.combinedDateToTime;
         this.token.saveTime(String(this.tokenFromTime));
         this.token.saveToTime(String(this.tokenToTime));
         this.policies = this.businessUser.businessServiceDtoList.filter(
@@ -7946,7 +8225,7 @@ if (this.specialDiscountData) {
 
     enquiryForm.roomPrice = plan.actualRoomPrice;
 
-    enquiryForm.externalSite = 'Website';
+    enquiryForm.externalSite = 'WebSite';
     enquiryForm.source = 'Bookone Connect';
     enquiryForm.couponCode = booking.couponCode;
     enquiryForm.promotionName = booking.promotionName;
@@ -7960,30 +8239,44 @@ if (this.specialDiscountData) {
     enquiryForm.roomRatePlanName = plan.planCodeName;
     enquiryForm.createdDate = new Date().getTime();
     enquiryForm.enquiryType = 'Enquiry';
-    // Combine date and time
-    const checkInDateTime = new Date(
-      `${enquiryForm.checkInDate} ${this.fromTime}`
-    ).getTime();
-    const checkOutDateTime = new Date(
-      `${enquiryForm.checkInDate} ${this.toTime}`
-    ).getTime();
-        let checkinDateConcat = this.booking.fromDate;
-    let timestamp = this.fromTime;
-    let combinedDateTimeString = checkinDateConcat + ' ' + timestamp;
-    let combinedDateTime = new Date(combinedDateTimeString).getTime();
-    this.combinedDateFromTime = combinedDateTime;
-    let checkoutDateConcat = this.booking.toDate;
-    let timestampcheckout = this.toTime;
-    let combinedCheckouDateTimeString =
-      checkoutDateConcat + ' ' + timestampcheckout;
-    let combinedDateTimeCheckout = new Date(
-      combinedCheckouDateTimeString
-    ).getTime();
-    this.combinedDateToTime = combinedDateTimeCheckout;
-    enquiryForm.fromTime = this.combinedDateFromTime;
-    enquiryForm.toTime = this.combinedDateToTime;
-    this.token.saveTime(String(checkInDateTime));
-    this.token.saveToTime(String(checkOutDateTime));
+this.businessUser = this.token.getProperty();
+const zone = 'Asia/Kolkata'; // India
+
+
+const accommodation = this.businessUser.businessServiceDtoList.find(
+  item => item.name === 'Accommodation'
+);
+const fromTime = accommodation?.checkInTime ?? '12:00';
+const toTime = accommodation?.checkOutTime ?? '12:00';
+
+// 3️⃣ Function: combine guest date + property time → UTC timestamp
+const getPropertyTimestamp = (guestDate: string, propertyTime: string) => {
+  const [year, month, day] = guestDate.includes('-') && guestDate.split('-')[0].length === 4
+    ? guestDate.split('-').map(Number) // yyyy-MM-dd
+    : guestDate.split('-').reverse().map(Number); // dd-MM-yyyy
+
+  const [hour, minute] = propertyTime.split(':').map(Number);
+
+  // India is UTC+5:30
+  const IST_OFFSET = 5.5 * 60; // in minutes
+
+  // Convert property date + time to UTC timestamp
+  const utcTimestamp = Date.UTC(year, month - 1, day, hour, minute) - IST_OFFSET * 60 * 1000;
+
+  return utcTimestamp;
+};
+
+
+this.combinedDateFromTime = getPropertyTimestamp(this.booking.fromDate, fromTime);
+this.combinedDateToTime = getPropertyTimestamp(this.booking.toDate, toTime);
+
+
+this.tokenFromTime = this.combinedDateFromTime;
+this.tokenToTime = this.combinedDateToTime;
+    enquiryForm.fromTime = this.tokenFromTime;
+    enquiryForm.toTime = this.tokenToTime;
+    this.token.saveTime(String(enquiryForm.fromTime));
+    this.token.saveToTime(String(enquiryForm.toTime));
 
     enquiryForm.accountManager = '';
     enquiryForm.consultantPerson = '';

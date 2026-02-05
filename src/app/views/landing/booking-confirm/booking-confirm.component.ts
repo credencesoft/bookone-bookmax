@@ -734,38 +734,40 @@ checkValidCouponOrNot(couponList?){
     booking.fromDate = bookingSummary.fromDate;
     booking.toDate = bookingSummary.toDate;
     booking.currency = this.businessUser.localCurrency;
-let checkinDateConcat = this.booking.fromDate;          // e.g. "2025-09-12"
-let fromTimeTimestamp = Number(this.token.getFromTime()); // e.g. 1757660400000
+    this.businessUser = this.token.getProperty();
+const zone = 'Asia/Kolkata'; // India
 
-// Step 1: Extract hours/minutes/seconds from the timestamp
-let fromTimeDate = new Date(fromTimeTimestamp);
-let hours = fromTimeDate.getHours();
-let minutes = fromTimeDate.getMinutes();
-let seconds = fromTimeDate.getSeconds();
 
-// Step 2: Build combined datetime using booking date
-let combinedDate = new Date(checkinDateConcat); // midnight of booking date
-combinedDate.setHours(hours, minutes, seconds, 0);
+const accommodation = this.businessUser.businessServiceDtoList.find(
+  item => item.name === 'Accommodation'
+);
+const fromTime = accommodation?.checkInTime ?? '12:00';
+const toTime = accommodation?.checkOutTime ?? '12:00';
 
-// Step 3: Convert to final timestamp
-this.combinedDateFromTime = combinedDate.getTime();
-let checkoutDateConcat = this.booking.toDate;            // e.g. "2025-09-13"
-let toTimeTimestamp = Number(this.token.getToTime());    // e.g. 1757700000000
+// 3️⃣ Function: combine guest date + property time → UTC timestamp
+const getPropertyTimestamp = (guestDate: string, propertyTime: string) => {
+  const [year, month, day] = guestDate.includes('-') && guestDate.split('-')[0].length === 4
+    ? guestDate.split('-').map(Number) // yyyy-MM-dd
+    : guestDate.split('-').reverse().map(Number); // dd-MM-yyyy
 
-// Step 1: Extract hours/minutes/seconds from toTime timestamp
-let toTimeDate = new Date(toTimeTimestamp);
-let toHours = toTimeDate.getHours();
-let toMinutes = toTimeDate.getMinutes();
-let toSeconds = toTimeDate.getSeconds();
+  const [hour, minute] = propertyTime.split(':').map(Number);
 
-// Step 2: Build combined datetime using checkout date
-let combinedCheckoutDate = new Date(checkoutDateConcat); // midnight of checkout date
-combinedCheckoutDate.setHours(toHours, toMinutes, toSeconds, 0);
+  // India is UTC+5:30
+  const IST_OFFSET = 5.5 * 60; // in minutes
 
-// Step 3: Convert to final timestamp
-this.combinedDateToTime = combinedCheckoutDate.getTime();
-    booking.fromTime = this.combinedDateFromTime;
-    booking.toTime = this.combinedDateToTime;
+  // Convert property date + time to UTC timestamp
+  const utcTimestamp = Date.UTC(year, month - 1, day, hour, minute) - IST_OFFSET * 60 * 1000;
+
+  return utcTimestamp;
+};
+
+
+this.combinedDateFromTime = getPropertyTimestamp(this.booking.fromDate, fromTime);
+this.combinedDateToTime = getPropertyTimestamp(this.booking.toDate, toTime);
+const tokenFromTime = this.combinedDateFromTime;
+const tokenToTime = this.combinedDateToTime;
+    booking.fromTime = tokenFromTime;
+    booking.toTime = tokenToTime;
     booking.modeOfPayment = this.payment.paymentMode;
     booking.externalSite = 'WebSite';
     booking.businessName = this.businessUser.name;
@@ -1027,7 +1029,7 @@ this.combinedDateToTime = combinedCheckoutDate.getTime();
   createBookingPayTM() {
 
     this.booking.modeOfPayment = this.payment.paymentMode;
-    this.booking.externalSite = 'Website';
+    this.booking.externalSite = 'WebSite';
     this.booking.businessName = this.businessUser.name;
     this.booking.businessEmail = this.businessUser.email;
     this.booking.roomBooking = true;
@@ -3067,7 +3069,9 @@ onGenerateVouchers() {
       //         this.paymentLoader = false;
       //       });
       //     }
-
+getUpdatedReservationNumber(value: string): string {
+  return value ? value.replace('-B-', '-BE-') : '';
+}
           sendWhatsappMessageToTHM4(){
             this.whatsappForm = new WhatsappDto();
         this.template =new Template();
@@ -3447,7 +3451,7 @@ onGenerateVouchers() {
 
               this.parametertype2 = new Para();
               this.parametertype2.type = 'text',
-              this.parametertype2.text = String(this.bookingId);
+              this.parametertype2.text = String(this.getUpdatedReservationNumber(booking.propertyReservationNumber));
               this.parameterss2.push(this.parametertype2);
 
               this.parametertype2 = new Para();
@@ -3457,7 +3461,7 @@ onGenerateVouchers() {
 
               this.parametertype2 = new Para();
               this.parametertype2.type = 'text',
-              this.parametertype2.text = booking.advanceAmount;
+              this.parametertype2.text = String((booking.advanceAmount).toFixed(2));
               this.parameterss2.push(this.parametertype2);
 
               this.parametertype2 = new Para();
@@ -3575,7 +3579,7 @@ onGenerateVouchers() {
 
               this.parametertype2 = new Para();
               this.parametertype2.type = 'text',
-              this.parametertype2.text = String(this.bookingId);
+              this.parametertype2.text = String(this.getUpdatedReservationNumber(booking.propertyReservationNumber));
               this.parameterss2.push(this.parametertype2);
 
               this.parametertype2 = new Para();
@@ -3585,7 +3589,7 @@ onGenerateVouchers() {
 
               this.parametertype2 = new Para();
               this.parametertype2.type = 'text',
-              this.parametertype2.text = booking.advanceAmount;
+              this.parametertype2.text = String((booking.advanceAmount).toFixed(2));
               this.parameterss2.push(this.parametertype2);
 
               this.parametertype2 = new Para();
@@ -3702,7 +3706,7 @@ onGenerateVouchers() {
 
               this.parametertype2 = new Para();
               this.parametertype2.type = 'text',
-              this.parametertype2.text = String(this.bookingId);
+              this.parametertype2.text = String(this.getUpdatedReservationNumber(booking.propertyReservationNumber));
               this.parameterss2.push(this.parametertype2);
 
               this.parametertype2 = new Para();
@@ -3712,7 +3716,7 @@ onGenerateVouchers() {
 
               this.parametertype2 = new Para();
               this.parametertype2.type = 'text',
-              this.parametertype2.text = booking.advanceAmount;
+              this.parametertype2.text = String((booking.advanceAmount).toFixed(2));
               this.parameterss2.push(this.parametertype2);
 
               this.parametertype2 = new Para();
@@ -3829,7 +3833,7 @@ onGenerateVouchers() {
 
               this.parametertype2 = new Para();
               this.parametertype2.type = 'text',
-              this.parametertype2.text = String(this.bookingId);
+              this.parametertype2.text = String(this.getUpdatedReservationNumber(booking.propertyReservationNumber));
               this.parameterss2.push(this.parametertype2);
 
               this.parametertype2 = new Para();
@@ -3839,7 +3843,7 @@ onGenerateVouchers() {
 
               this.parametertype2 = new Para();
               this.parametertype2.type = 'text',
-              this.parametertype2.text = booking.advanceAmount;
+              this.parametertype2.text = String((booking.advanceAmount).toFixed(2));
               this.parameterss2.push(this.parametertype2);
 
               this.parametertype2 = new Para();
