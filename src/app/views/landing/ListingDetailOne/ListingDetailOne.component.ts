@@ -5340,6 +5340,8 @@ adjustDates() {
 //   this.router.navigate(['/booking']);
 // }
 onBookNow() {
+  let currentUrl = window.location.href;
+this.token.savePropertyUrl(currentUrl);
   const selectedAddOns = this.propertyServiceListDataOne
     .filter(item => this.selectedFacilityNames.includes(item.name));
 
