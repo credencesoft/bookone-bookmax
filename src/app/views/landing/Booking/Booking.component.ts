@@ -64,6 +64,12 @@ import { MessageService } from 'primeng/api';
 declare var Stripe: any;
 
 declare var window: any;
+type StepStatus = 'pending' | 'processing' | 'completed' | 'failed';
+
+interface Step {
+  label: string;
+  status: StepStatus;
+}
 @Component({
   selector: 'booking',
   templateUrl: './Booking.component.html',
@@ -290,6 +296,45 @@ export class BookingComponent implements OnInit {
   availableRoomIdSet = new Set<number>();
 soldOutSectionRef!: HTMLElement;
 availabilityLoaded = false;
+showModal = false;
+enquiryResponseList: any[] = [];
+steps: Step[] = [
+  { label: 'Enquiry', status: 'pending' },
+  { label: 'Payment', status: 'pending' },
+  { label: 'Confirm', status: 'pending' }
+];
+
+activeStep = 0;
+completed = false;
+failed = false;
+
+progressPercent = 0;
+private targetProgress = 0;
+aiMessage = 'Initializing secure connection...';
+
+private progressTimer: any;
+private enquiryId!: number;
+private transactionId!: string;
+private paymentStartDelayTimer: any;
+ private paymentDelayTimer: any;
+   private paymentPoller: any;
+  private bookingPoller: any;
+private paymentStartTime!: number;
+private isPmsConversionTriggered = false;
+pmsResponses: any[] = [];
+private pmsSuccessCount = 0;
+private bookedEnquiries: any[] = [];
+private STEP_MESSAGES = {
+    enquiry: 'Enquiry created successfully. Preparing payment...',
+    paymentProcessing: 'Securely verifying payment with bank...',
+    paymentSuccess: 'Payment confirmed. Creating booking...',
+    paymentFailure: 'Payment failed or cancelled.',
+    bookingProcessing: 'Finalizing booking and generating confirmation...',
+    bookingSuccess: 'Booking confirmed successfully!',
+    bookingTimeout: 'Booking creation is taking longer than expected.'
+  };
+  errorData: any;
+
   constructor(
     private token: TokenStorage,
     private ngZone: NgZone,
@@ -543,6 +588,328 @@ if (parsed.discountPercentage) {
   getFirstWords(text: string, count: number): string {
     return text.split(' ').slice(0, count).join(' ');
   }
+  openBookingProcess(enquiryId: number, transactionId: string) {
+    this.resetState();
+
+    this.enquiryId = enquiryId;
+    this.transactionId = transactionId;
+
+    this.showModal = true;
+
+    // STEP 1 – enquiry already completed
+    this.markEnquiryCompleted();
+
+    // STEP 2 – start payment polling after 40 seconds
+    this.paymentDelayTimer = setTimeout(() => {
+      if (!this.showModal || this.failed || this.completed) return;
+      this.startPaymentStatusPolling();
+    }, 20000);
+  }
+  private markEnquiryCompleted() {
+    this.activeStep = 0;
+    this.steps[0].status = 'completed';
+    this.steps[1].status = 'processing';
+
+    this.aiMessage = this.STEP_MESSAGES.enquiry;
+    this.animateProgressTo(30);
+  }
+  private onPaymentPending() {
+    if (this.progressPercent < 65) {
+      this.progressPercent += 1;
+    }
+  }
+  private startPaymentStatusPolling() {
+    if (this.paymentPoller) return;
+
+    this.activeStep = 1;
+    this.aiMessage = this.STEP_MESSAGES.paymentProcessing;
+    this.paymentStartTime = Date.now();
+
+    this.paymentPoller = setInterval(() => {
+
+      const TEN_MINUTES = 10 * 60 * 1000;
+
+      if (Date.now() - this.paymentStartTime > TEN_MINUTES) {
+        this.handlePaymentFailure();
+        return;
+      }
+
+      this.checkPaymentStatus();
+
+    }, 5000);
+  }
+private checkPaymentStatus() {
+
+  this.hotelBookingService
+    .checkPaymentStatus(this.businessUser.id, this.transactionId)
+    .subscribe({
+      next: res => {
+        const tx = res?.transaction_details?.[this.transactionId];
+        if (!tx) return;
+
+        const status = (tx.status || '').toLowerCase();
+        this.errorData = tx.error_Message;
+
+        if (status === 'success') {
+          this.handlePaymentSuccess();
+        }
+        else if (status === 'pending' || status === 'not found') {
+          this.onPaymentPending();
+        }
+        else {
+          this.handlePaymentFailure();
+        }
+      },
+      error: () => {
+        // network or gateway lag ≠ failure
+        this.onPaymentPending();
+      }
+    });
+}
+
+
+
+  private animateProgressTo(target: number) {
+    this.targetProgress = target;
+
+    const i = setInterval(() => {
+      if (this.progressPercent >= this.targetProgress) {
+        clearInterval(i);
+        return;
+      }
+      this.progressPercent += 1;
+    }, 60);
+  }
+
+  private handlePaymentFailure() {
+  this.clearPaymentPoller();
+  this.clearBookingPoller();
+
+  this.failed = true;
+  this.steps[this.activeStep].status = 'failed';
+  this.aiMessage = 'Payment or booking could not be completed.';
+}
+
+  private onBookingPending() {
+    if (this.progressPercent < 95) {
+      this.progressPercent += 1;
+    }
+  }
+private handlePaymentSuccess() {
+  this.clearPaymentPoller();
+
+  this.steps[1].status = 'completed';
+  this.aiMessage = 'Payment confirmed. Syncing with PMS...';
+
+  this.animateProgressTo(75);
+
+  this.convertEnquiriesToPMS();
+}
+
+private convertEnquiriesToPMS() {
+  const enquiryStr = sessionStorage.getItem('EnquiryResponseList');
+  if (!enquiryStr) return;
+
+  const enquiryList = JSON.parse(enquiryStr);
+  if (!Array.isArray(enquiryList) || enquiryList.length === 0) return;
+
+  this.pmsSuccessCount = 0;
+
+  enquiryList.forEach(enquiry => {
+
+    const payload = {
+      ...enquiry,
+      paymentStatus: 'Paid',
+      paymentReceived: true,
+      paymentReference: this.payment.referenceNumber,
+      updatedDate: new Date().toISOString()
+    };
+
+    this.hotelBookingService
+      .convertEnquiryToPMS(payload)
+      .subscribe({
+        next: res => {
+          if (
+            res.status === 200 ||
+            res.status === 201 ||
+            res.status === 409
+          ) {
+            this.pmsSuccessCount++;
+          }
+
+          if (this.pmsSuccessCount === enquiryList.length) {
+            this.handlePmsSuccess();
+          }
+        },
+        error: err => {
+          console.warn('PMS sync issue, continuing booking flow', err);
+
+          this.pmsSuccessCount++;
+
+          if (this.pmsSuccessCount === enquiryList.length) {
+            this.handlePmsSuccess();
+          }
+        }
+      });
+  });
+}
+
+
+private handlePmsSuccess() {
+  this.aiMessage = 'Payment synced. Creating booking...';
+  this.animateProgressTo(85);
+  this.startBookingPolling();
+}
+
+
+private startBookingPolling() {
+  const enquiryStr = sessionStorage.getItem('EnquiryResponseList');
+  if (!enquiryStr) return;
+
+  const enquiryList = JSON.parse(enquiryStr);
+  this.bookedEnquiries = [];
+
+  this.bookingPoller = setInterval(() => {
+    enquiryList.forEach(enquiry => {
+      this.checkBookingStatus(enquiry);
+    });
+  }, 5000);
+}
+private checkBookingStatus(enquiry: any) {
+  this.hotelBookingService
+    .checkBookingStatus(enquiry.enquiryId)
+    .subscribe({
+      next: res => {
+        if (res?.bookingId) {
+          this.handleBookingSuccess(enquiry, res.bookingId);
+        }
+      },
+      error: err => {
+        // booking may not be created yet – do NOT fail
+        console.warn(
+          'Booking not ready yet for enquiry:',
+          enquiry.enquiryId,
+          err
+        );
+      }
+    });
+}
+
+
+  private handleBookingSuccess(enquiry: any, bookingId: number) {
+  // prevent duplicates
+  const exists = this.bookedEnquiries.find(e => e.enquiryId === enquiry.enquiryId);
+  if (exists) return;
+
+  enquiry.bookingId = bookingId;
+  enquiry.bookingReservationId = bookingId;
+  enquiry.updatedDate = new Date().toISOString();
+
+  this.bookedEnquiries.push(enquiry);
+
+  // ✅ once all enquiries are booked
+  const originalList = JSON.parse(sessionStorage.getItem('EnquiryResponseList') || '[]');
+
+  if (this.bookedEnquiries.length === originalList.length) {
+    this.clearBookingPoller();
+    this.storeBookedEnquiries();
+    this.completeBookingFlow();
+  }
+}
+private completeBookingFlow() {
+  this.steps[2].status = 'completed';
+  this.completed = true;
+  this.aiMessage = 'Booking confirmed successfully!';
+  this.animateProgressTo(100);
+}
+
+private storeBookedEnquiries() {
+  sessionStorage.setItem(
+    'BookedEnquiryList',
+    JSON.stringify(this.bookedEnquiries)
+  );
+}
+
+  private handleBookingTimeout() {
+    this.clearBookingPoller();
+
+    this.steps[2].status = 'failed';
+    this.failed = true;
+
+    this.aiMessage = this.STEP_MESSAGES.bookingTimeout;
+  }
+private startProgressAnimation() {
+  this.progressTimer = setInterval(() => {
+    if (this.progressPercent < 98) {
+      this.progressPercent += Math.floor(Math.random() * 2) + 1;
+    }
+  }, 250);
+}
+  private clearPaymentPoller() {
+    if (this.paymentPoller) {
+      clearInterval(this.paymentPoller);
+      this.paymentPoller = null;
+    }
+  }
+
+  private clearBookingPoller() {
+    if (this.bookingPoller) {
+      clearInterval(this.bookingPoller);
+      this.bookingPoller = null;
+    }
+  }
+
+private stopAllTimers() {
+  this.clearPaymentPoller();
+  this.clearBookingPoller();
+  if (this.progressTimer) clearInterval(this.progressTimer);
+}
+
+  private updateStatusText(stepName: string) {
+    this.aiMessage = this.STEP_MESSAGES[stepName] || "Processing your request securely...";
+  }
+
+ private resetState() {
+    this.clearPaymentPoller();
+    this.clearBookingPoller();
+
+    if (this.paymentDelayTimer) {
+      clearTimeout(this.paymentDelayTimer);
+      this.paymentDelayTimer = null;
+    }
+
+    this.progressPercent = 0;
+    this.activeStep = 0;
+    this.completed = false;
+    this.failed = false;
+
+    this.steps = [
+      { label: 'Enquiry', status: 'pending' },
+      { label: 'Payment', status: 'pending' },
+      { label: 'Confirm', status: 'pending' }
+    ];
+  }
+
+closeModal() {
+  this.resetState();
+  this.showModal = false;
+  this.submitButtonDisable = false;
+  this.isPayNowDisabled = false;
+  this.paymentLoader = false;
+  this.isPayDisabled = false;
+}
+
+ngOnDestroy() {
+  this.resetState();
+}
+
+
+  goToConfirmation() {
+    alert("Redirecting to confirmation dashboard...");
+    this.router.navigate(['/booking-confirmation']);
+    this.closeModal();
+  }
+
   calculateConvenienceFee(totalAmount: number, percentage: number): number {
   if (!totalAmount || !percentage) {
     return 0;
@@ -2360,6 +2727,7 @@ async  payAndCheckout() {
 }
   sessionStorage.removeItem('EnquiryResponseList');
   this.isPayNowDisabled = true;
+  this.showModal = true;
 const bookingSummaryStr = sessionStorage.getItem('bookingSummaryDetails');
 if (bookingSummaryStr) {
   this.bookingSummaryDetails = JSON.parse(bookingSummaryStr);
@@ -4203,6 +4571,10 @@ processPaymentPayU(payment: Payment) {
           } else {
             this.paymentLoader = false;
             this.payment = response.body;
+                    this.openBookingProcess(
+          this.equitycreatedData.enquiryId,
+          this.payment.referenceNumber
+        );
            this.token.saveBookingData(this.booking);
           this.token.savePaymentData(this.payment);
           this.token.savePropertyData(this.businessUser);
@@ -4233,28 +4605,24 @@ processPaymentPayU(payment: Payment) {
       }
     );
   }
-paymentIntentPayU() {
-  this.paymentLoader = true;
+  paymentIntentPayU() {
+    const params = new HttpParams()
+      .set('propertyId', this.businessUser.id)
+      .set('transactionAmount', this.payment.transactionAmount)
+      .set('reference', this.payment.referenceNumber)
+      .set('customerName', this.payment.name)
+      .set('customerMobile', this.booking.mobile)
+      .set('customerEmail', this.payment.email)
+      .set('source', 'THM')
+      .set('callbackUrl', environment.callbackUrl)
+      .set('failureCode', environment.failureCode);
 
-  const params = new HttpParams()
-    .set('propertyId', this.businessUser.id)
-    .set('transactionAmount', this.payment.transactionAmount)
-    .set('reference', this.payment.referenceNumber)
-    .set('customerName', this.payment.name)
-    .set('customerMobile', this.booking.mobile)
-    .set('customerEmail', this.payment.email)
-    .set('source', 'THM');
+    const url =
+      `https://payu.payment.uat.bookone.io/api/payu/paymentIntent/THM?${params.toString()}`;
 
-  const url = 'https://payu.payment.uat.bookone.io/api/payu/paymentIntent/THM';
+    window.open(url, '_blank');
+  }
 
-  // Build the full URL
-  const fullUrl = `${url}?${params.toString()}`;
-
-  this.paymentLoader = false;
-
-  // ✅ Open PayU in a new tab
-  window.open(fullUrl, '_blank');
-}
 
   processPaymentPayTM(payment: Payment) {
     this.paymentLoader = true;

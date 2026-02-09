@@ -29,11 +29,11 @@ export const environment = {
   appUrl: 'https://thehotelmate.co',
   androidAppUrl: 'https://play.google.com/store/apps/details?id=nz.co.bookonelocal.customer',
   iosAppUrl: 'https://apps.apple.com/us/app/bookone-local/id1528910778',
+  payuUrl: 'https://payu.payment.uat.bookone.io',
   country: 'in',
   googleKey: '',
   // callbackUrl: 'http://localhost:4200/#/details?ReferenceNumber='
-  callbackUrl: 'https://uat.bookone.io/booking-confirm',
-  failureCode:'https://uat.bookone.io/booking',
+  callbackUrl: 'https://uat.bookone.io/payment-confirmation',
+  failureCode:'https://uat.bookone.io/payment-failure',
   callbackUrlPayment:'https://uat.bookone.io/confirm-payment'
-
 };

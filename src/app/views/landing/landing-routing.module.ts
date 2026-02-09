@@ -52,6 +52,9 @@ import { CheckoutRazorpayComponent } from './checkout-razorpay/checkout-razorpay
 import { CancellationPolicyComponent } from './cancellation-policy/cancellation-policy.component';
 import { TermsAndConditionComponent } from './terms-and-condition/terms-and-condition.component';
 import { AboutUsComponent } from './about-us/about-us.component';
+import { BookingConfirmationComponent } from './booking-confirmation/booking-confirmation.component';
+import { PaymentFailureComponent } from './payment-failure/payment-failure.component';
+import { BookingConfirmationVoucherComponent } from './booking-confirmation-voucher/booking-confirmation-voucher.component';
 // import { WhatsappRedirectPageComponent } from './whatsapp-redirect-page/whatsapp-redirect-page.component';
 // import { BookingComponent } from './Booking/Booking.component';
 const routes: Routes = [
@@ -206,6 +209,18 @@ const routes: Routes = [
     {
     path: 'privacy',
     component: PrivacyPolicyComponent, data: {title: 'Privacy Policy'}
+  },
+  {
+    path: 'payment-confirmation',
+    component: BookingConfirmationComponent, data: {title: 'payment Confirmation'}
+  },
+  {
+    path: 'booking-confirmation',
+    component: BookingConfirmationVoucherComponent, data: {title: 'Booking Confirmation'}
+  },
+  {
+    path: 'payment-failure',
+    component: PaymentFailureComponent, data: {title: 'Payment Failure'}
   },
       {
     path: 'cancellation',

@@ -128,6 +128,9 @@ import { TermsAndConditionComponent } from './terms-and-condition/terms-and-cond
 import { CancellationPolicyComponent } from './cancellation-policy/cancellation-policy.component';
 import { AboutUsComponent } from './about-us/about-us.component';
 import { CalendarModule } from 'primeng/calendar';
+import { PaymentFailureComponent } from './payment-failure/payment-failure.component';
+import { BookingConfirmationComponent } from './booking-confirmation/booking-confirmation.component';
+import { BookingConfirmationVoucherComponent } from './booking-confirmation-voucher/booking-confirmation-voucher.component';
 
 
 @NgModule({
@@ -251,7 +254,10 @@ EnquiryComponent,
     ErrorpageComponent,
     TermsAndConditionComponent,
     CancellationPolicyComponent,
-    AboutUsComponent
+    AboutUsComponent,
+    PaymentFailureComponent,
+    BookingConfirmationComponent,
+    BookingConfirmationVoucherComponent
 
   ],
   providers: [WINDOW_PROVIDERS,

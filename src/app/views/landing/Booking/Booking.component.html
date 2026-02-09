@@ -2236,3 +2236,134 @@
 </div>
 
 
+<div class="booking-overlay" *ngIf="showModal" role="dialog" aria-modal="true">
+  <div class="processing-card shadow-2xl">
+
+    <!-- Close Button -->
+    <button class="close-btn" (click)="closeModal()" [disabled]="!completed && !failed" aria-label="Close modal">
+      <span aria-hidden="true">&times;</span>
+    </button>
+
+    <!-- Content Header -->
+    <h3 class="fw-bold mb-5 text-dark" *ngIf="!completed && !failed">
+      Securely Processing
+    </h3>
+
+    <!-- Stepper (Hidden on final views for cleaner look) -->
+    <div class="stepper-container px-3" *ngIf="!completed && !failed">
+      <div *ngFor="let step of steps; let i = index" class="step-item"
+           [class.active]="activeStep === i"
+           [class.completed]="step.status === 'completed'"
+           [class.failed]="step.status === 'failed'">
+
+        <div class="step-circle" [class.pulse-active]="activeStep === i">
+          <ng-container *ngIf="step.status === 'completed'">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5" /></svg>
+          </ng-container>
+          <ng-container *ngIf="step.status === 'failed'">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M18 6L6 18M6 6l12 12" /></svg>
+          </ng-container>
+          <span *ngIf="step.status === 'pending' || step.status === 'processing'">{{i + 1}}</span>
+        </div>
+        <div class="step-label">{{step.label}}</div>
+      </div>
+
+      <div class="position-absolute top-50 start-0 translate-middle-y w-100 px-5" style="z-index: 1;">
+        <div class="d-flex w-100">
+          <div class="step-line">
+            <div class="step-line-progress" [style.width]="steps[0].status === 'completed' ? '100%' : '0%'"></div>
+          </div>
+          <div class="step-line">
+            <div class="step-line-progress" [style.width]="steps[1].status === 'completed' ? '100%' : '0%'"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Active Loader Section -->
+    <div *ngIf="!completed && !failed">
+      <div class="loader-box">
+        <svg class="svg-loader" viewBox="0 0 120 120">
+          <circle class="loader-ring-bg" cx="60" cy="60" r="54"></circle>
+          <circle class="loader-ring-progress" cx="60" cy="60" r="54"
+                  [attr.stroke-dasharray]="(progressPercent * 3.39) + ' 339'"></circle>
+        </svg>
+        <div class="percentage-text">
+          {{progressPercent}}<span class="percentage-symbol">%</span>
+        </div>
+        <div class="satellite-container">
+          <div class="satellite-dot"></div>
+        </div>
+      </div>
+
+      <p class="status-text">
+        "{{aiMessage}}"
+      </p>
+
+      <div class="security-box d-flex gap-3 text-start align-items-center">
+        <div class="warning-icon-bg">!</div>
+        <div class="small">
+          <strong class="text-dark d-block">Encryption Link Active</strong>
+          <span class="text-secondary">Stay on this page. We are securely validating your transaction with the bank.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Success View -->
+    <div *ngIf="completed" class="final-view py-2">
+      <div class="success-icon-wrapper">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5">
+          <path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+
+      <h2 class="fw-bold text-dark mb-2">Booking Confirmed!</h2>
+      <p class="text-secondary small mb-4 px-4">Great news! Your selected room is booked. A receipt and digital pass have been sent to your email.</p>
+
+      <button style="font-size: 17px;" class="btn btn-primary w-100 py-3 fw-bold rounded-4 shadow-lg" (click)="goToConfirmation()">
+        Go to Dashboard
+      </button>
+    </div>
+
+    <!-- Failure View -->
+   <!-- Failure View -->
+<div *ngIf="failed" class="final-view py-2">
+
+  <div class="failure-icon-wrapper">
+    <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5">
+      <path d="M18 6L6 18M6 6l12 12" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </div>
+
+  <h2 class="fw-bold text-dark mb-2">Payment Cancelled</h2>
+
+  <p class="text-secondary small mb-4 px-3 failure-subtext">
+    <span *ngIf="errorData">
+    {{this.errorData}}
+  </span>
+  <span *ngIf="!errorData">
+ Your bank did not complete the authentication in time.No charges have been made
+  </span>
+
+  </p>
+
+  <!-- Action Buttons -->
+  <div class="failure-actions">
+    <button style="font-size: 17px;" class="btn btn-outline-secondary w-100 mb-3 py-3 rounded-4 fw-semibold"
+            (click)="closeModal()">
+      Cancel
+    </button>
+
+    <button style="font-size: 17px;" class="btn btn-danger w-100 py-3 rounded-4 fw-bold shadow-lg retry-btn"
+            (click)="closeModal()">
+      Retry Secure Payment
+    </button>
+  </div>
+
+</div>
+
+
+  </div>
+</div>
+
+
