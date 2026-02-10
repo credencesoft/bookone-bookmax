@@ -2310,7 +2310,12 @@ this.tokenToTime = this.combinedDateToTime;
         enquiryForm.utmMedium = "unknown"
       }
 
-    enquiryForm.roomPrice = plan.actualRoomPrice;
+    enquiryForm.roomPrice =
+      booking.planCode === 'GHC'
+        ? booking.totalAmount -
+          (plan.extraPersonCharge + plan.extraPersonChildCountAmount)
+        : plan.price -
+          (enquiryForm.extraPersonCharge + enquiryForm.extraChildCharge);
 
     enquiryForm.externalSite = 'WebSite';
     enquiryForm.source = 'Bookone Connect';
@@ -5810,7 +5815,12 @@ this.tokenToTime = this.combinedDateToTime;
         enquiryForm.utmMedium = "unknown"
       }
 
-    enquiryForm.roomPrice = plan.actualRoomPrice;
+    enquiryForm.roomPrice =
+      booking.planCode === 'GHC'
+        ? booking.totalAmount -
+          (plan.extraPersonCharge + plan.extraPersonChildCountAmount)
+        : plan.price -
+          (enquiryForm.extraPersonCharge + enquiryForm.extraChildCharge);
 
     enquiryForm.externalSite = 'WebSite';
     enquiryForm.source = 'Bookone Connect';
@@ -8606,7 +8616,12 @@ if (this.specialDiscountData) {
         enquiryForm.utmMedium = "unknown"
       }
 
-    enquiryForm.roomPrice = plan.actualRoomPrice;
+    enquiryForm.roomPrice =
+      booking.planCode === 'GHC'
+        ? booking.totalAmount -
+          (plan.extraPersonCharge + plan.extraPersonChildCountAmount)
+        : plan.price -
+          (enquiryForm.extraPersonCharge + enquiryForm.extraChildCharge);
 
     enquiryForm.externalSite = 'WebSite';
     enquiryForm.source = 'Bookone Connect';
@@ -9199,5 +9214,3 @@ this.tokenToTime = this.combinedDateToTime;
       });
   }
 }
-
-
