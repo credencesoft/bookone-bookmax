@@ -2401,7 +2401,8 @@ this.tokenToTime = this.combinedDateToTime;
     enquiryForm.accommodationType = enquiryForm.accommodationType || '';
     enquiryForm.specialNotes = enquiryForm.specialNotes || '';
     enquiryForm.alternativeLocation = enquiryForm.alternativeLocation || '';
-
+    enquiryForm.roomTariffBeforeDiscount = (plan.actualRoomPrice).toFixed(2);
+    enquiryForm.totalRoomTariffBeforeDiscount = enquiryForm.roomTariffBeforeDiscount * plan.nights * plan.selectedRoomnumber;
     enquiryForm.totalAmount = plan.price + plan.taxPercentageperroom;
     enquiryForm.discountAmountPercentage = booking.discountPercentage;
     enquiryForm.noOfNights = plan.nights;
