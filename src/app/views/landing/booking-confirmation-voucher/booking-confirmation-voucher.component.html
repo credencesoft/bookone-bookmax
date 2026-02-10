@@ -367,8 +367,7 @@
                     {{ booking?.roomRatePlanName }}</div></td>
                   <td>
                     ₹{{
-                      booking?.totalRoomTariffBeforeDiscount
-                        | number : "1.2-2"
+                      booking?.roomPrice * booking?.noOfNights| number : "1.2-2"
                     }}
                   </td>
                   <td>{{ booking?.noOfNights }}</td>
@@ -810,7 +809,7 @@
               <div ><b>{{booking?.roomName}} </b> <br/>
                     {{ booking?.roomRatePlanName }}</div>
               <div>₹{{
-                      booking?.totalRoomTariffBeforeDiscount
+                      booking?.roomPrice * booking?.noOfNights
                         | number : "1.2-2"
                     }}</div>
             </div>

@@ -81,6 +81,8 @@ import { TaxDetails } from "./TaxDetails";
     businessEmail: string;
     convenienceFee: number;
     paymentReference: any;
+    roomTariffBeforeDiscount: any;
+    totalRoomTariffBeforeDiscount: number;
     // noOfNights:number;
     // counterName:string;
   }
