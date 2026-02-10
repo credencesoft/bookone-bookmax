@@ -703,7 +703,8 @@ private handlePaymentSuccess() {
 
   this.animateProgressTo(75);
 
-  this.convertEnquiriesToPMS();
+  this.handlePmsSuccess();
+  // this.convertEnquiriesToPMS();
 }
 
 private convertEnquiriesToPMS() {
