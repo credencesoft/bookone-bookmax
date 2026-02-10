@@ -905,7 +905,6 @@ ngOnDestroy() {
 
 
   goToConfirmation() {
-    alert("Redirecting to confirmation dashboard...");
     this.router.navigate(['/booking-confirmation']);
     this.closeModal();
   }
@@ -1559,7 +1558,7 @@ const accommodation = this.businessUser.businessServiceDtoList.find(
 const fromTime = accommodation?.checkInTime ?? '12:00';
 const toTime = accommodation?.checkOutTime ?? '12:00';
 
-// 3️⃣ Function: combine guest date + property time → UTC timestamp
+
 const getPropertyTimestamp = (guestDate: string, propertyTime: string) => {
   const [year, month, day] = guestDate.includes('-') && guestDate.split('-')[0].length === 4
     ? guestDate.split('-').map(Number) // yyyy-MM-dd
@@ -2080,7 +2079,7 @@ const accommodation = this.businessUser.businessServiceDtoList.find(
 const fromTime = accommodation?.checkInTime ?? '12:00';
 const toTime = accommodation?.checkOutTime ?? '12:00';
 
-// 3️⃣ Function: combine guest date + property time → UTC timestamp
+
 const getPropertyTimestamp = (guestDate: string, propertyTime: string) => {
   const [year, month, day] = guestDate.includes('-') && guestDate.split('-')[0].length === 4
     ? guestDate.split('-').map(Number) // yyyy-MM-dd
@@ -2327,26 +2326,44 @@ this.tokenToTime = this.combinedDateToTime;
     enquiryForm.roomRatePlanName = plan.planCodeName;
     enquiryForm.createdDate = new Date().getTime();
 
-if (!this.fromTime && !this.toTime) {
-  const checkInDateTime = new Date(enquiryForm.checkInDate).getTime();
-  const checkOutDateTime = new Date(enquiryForm.checkOutDate).getTime();
-  enquiryForm.fromTime = checkInDateTime;
-  enquiryForm.toTime = checkOutDateTime;
-  this.token.saveTime(String(checkInDateTime));
-  this.token.saveToTime(String(checkOutDateTime));
-} else {
-  const checkInDateTime = new Date(
-    `${enquiryForm.checkInDate} ${this.fromTime}`
-  ).getTime();
-  const checkOutDateTime = new Date(
-    `${enquiryForm.checkInDate} ${this.toTime}`
-  ).getTime();
-  enquiryForm.fromTime = checkInDateTime;
-  enquiryForm.toTime = checkOutDateTime;
-  this.token.saveTime(String(checkInDateTime));
-  this.token.saveToTime(String(checkOutDateTime));
-}
+this.businessUser = this.token.getProperty();
+const zone = 'Asia/Kolkata'; // India
 
+
+const accommodation = this.businessUser.businessServiceDtoList.find(
+  item => item.name === 'Accommodation'
+);
+const fromTime = accommodation?.checkInTime ?? '12:00';
+const toTime = accommodation?.checkOutTime ?? '12:00';
+
+
+const getPropertyTimestamp = (guestDate: string, propertyTime: string) => {
+  const [year, month, day] = guestDate.includes('-') && guestDate.split('-')[0].length === 4
+    ? guestDate.split('-').map(Number) // yyyy-MM-dd
+    : guestDate.split('-').reverse().map(Number); // dd-MM-yyyy
+
+  const [hour, minute] = propertyTime.split(':').map(Number);
+
+  // India is UTC+5:30
+  const IST_OFFSET = 5.5 * 60; // in minutes
+
+  // Convert property date + time to UTC timestamp
+  const utcTimestamp = Date.UTC(year, month - 1, day, hour, minute) - IST_OFFSET * 60 * 1000;
+
+  return utcTimestamp;
+};
+
+
+this.combinedDateFromTime = getPropertyTimestamp(this.booking.fromDate, fromTime);
+this.combinedDateToTime = getPropertyTimestamp(this.booking.toDate, toTime);
+
+
+this.tokenFromTime = this.combinedDateFromTime;
+this.tokenToTime = this.combinedDateToTime;
+    enquiryForm.fromTime = this.tokenFromTime;
+    enquiryForm.toTime = this.tokenToTime;
+    this.token.saveTime(String(enquiryForm.fromTime));
+    this.token.saveToTime(String(enquiryForm.toTime));
     enquiryForm.accountManager = '';
     enquiryForm.consultantPerson = '';
     enquiryForm.noOfRooms = Number(plan.selectedRoomnumber);
@@ -2727,7 +2744,6 @@ async  payAndCheckout() {
 }
   sessionStorage.removeItem('EnquiryResponseList');
   this.isPayNowDisabled = true;
-  this.showModal = true;
 const bookingSummaryStr = sessionStorage.getItem('bookingSummaryDetails');
 if (bookingSummaryStr) {
   this.bookingSummaryDetails = JSON.parse(bookingSummaryStr);
@@ -4190,6 +4206,7 @@ if (bookingSummaryStr) {
       this.cardPaymentAvailable = true;
     }
      else if (this.businessUser.paymentGateway === 'PayU') {
+      this.showModal = true;
       this.payment.paymentMode = 'UPI';
       this.payment.status = 'NotPaid';
       this.payment.failureCode = environment.failureCode;
@@ -4540,11 +4557,11 @@ if (bookingSummaryStr) {
           this.token.saveBookingData(this.booking);
           this.token.savePaymentData(this.payment);
           this.token.savePropertyData(this.businessUser);
-           const url = this.router.serializeUrl(
-          this.router.createUrlTree(['/checkout-rayzorpay'])
-        );
-        window.open(url, '_blank');
-          // this.router.navigate(['/checkout-rayzorpay']);
+        //    const url = this.router.serializeUrl(
+        //   this.router.createUrlTree(['/checkout-rayzorpay'])
+        // );
+        // window.open(url, '_blank');
+          this.router.navigate(['/checkout-rayzorpay']);
         }
       });
   }
@@ -5543,7 +5560,6 @@ const accommodation = this.businessUser.businessServiceDtoList.find(
 const fromTime = accommodation?.checkInTime ?? '12:00';
 const toTime = accommodation?.checkOutTime ?? '12:00';
 
-// 3️⃣ Function: combine guest date + property time → UTC timestamp
 const getPropertyTimestamp = (guestDate: string, propertyTime: string) => {
   const [year, month, day] = guestDate.includes('-') && guestDate.split('-')[0].length === 4
     ? guestDate.split('-').map(Number) // yyyy-MM-dd
@@ -5819,7 +5835,7 @@ const accommodation = this.businessUser.businessServiceDtoList.find(
 const fromTime = accommodation?.checkInTime ?? '12:00';
 const toTime = accommodation?.checkOutTime ?? '12:00';
 
-// 3️⃣ Function: combine guest date + property time → UTC timestamp
+
 const getPropertyTimestamp = (guestDate: string, propertyTime: string) => {
   const [year, month, day] = guestDate.includes('-') && guestDate.split('-')[0].length === 4
     ? guestDate.split('-').map(Number) // yyyy-MM-dd
@@ -8180,7 +8196,7 @@ const accommodation = this.businessUser.businessServiceDtoList.find(
 const fromTime = accommodation?.checkInTime ?? '12:00';
 const toTime = accommodation?.checkOutTime ?? '12:00';
 
-// 3️⃣ Function: combine guest date + property time → UTC timestamp
+
 const getPropertyTimestamp = (guestDate: string, propertyTime: string) => {
   const [year, month, day] = guestDate.includes('-') && guestDate.split('-')[0].length === 4
     ? guestDate.split('-').map(Number) // yyyy-MM-dd
@@ -8322,7 +8338,7 @@ const accommodation = this.businessUser.businessServiceDtoList.find(
 const fromTime = accommodation?.checkInTime ?? '12:00';
 const toTime = accommodation?.checkOutTime ?? '12:00';
 
-// 3️⃣ Function: combine guest date + property time → UTC timestamp
+
 const getPropertyTimestamp = (guestDate: string, propertyTime: string) => {
   const [year, month, day] = guestDate.includes('-') && guestDate.split('-')[0].length === 4
     ? guestDate.split('-').map(Number) // yyyy-MM-dd
@@ -8617,7 +8633,7 @@ const accommodation = this.businessUser.businessServiceDtoList.find(
 const fromTime = accommodation?.checkInTime ?? '12:00';
 const toTime = accommodation?.checkOutTime ?? '12:00';
 
-// 3️⃣ Function: combine guest date + property time → UTC timestamp
+
 const getPropertyTimestamp = (guestDate: string, propertyTime: string) => {
   const [year, month, day] = guestDate.includes('-') && guestDate.split('-')[0].length === 4
     ? guestDate.split('-').map(Number) // yyyy-MM-dd
