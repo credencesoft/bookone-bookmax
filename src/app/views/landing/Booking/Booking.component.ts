@@ -8542,7 +8542,6 @@ this.tokenToTime = this.combinedDateToTime;
 
   async submitForm(plan: any, bookingSummary: any) {
     const booking: any = this.booking;
-
 if (this.specialDiscountData) {
   booking.netAmount = Number(plan.discountedPrice.toFixed(2));
   booking.gstAmount = Number(plan.taxPercentageperroom.toFixed(2));
