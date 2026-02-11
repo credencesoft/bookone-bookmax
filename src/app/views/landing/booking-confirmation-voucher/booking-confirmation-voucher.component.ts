@@ -140,7 +140,7 @@ private fetchBookingsSequentially(bookedEnquiries: any[]) {
 
     fetchedBookingId = bookingId;
 
-    this.fetchBookingById(bookingId).subscribe({
+    this.hotelBookingService.fetchBookingById(bookingId).subscribe({
       next: booking => {
         if (booking) {
           this.bookingsResponseList.push(booking);
@@ -368,7 +368,7 @@ getUpdatedReservationNumber(value: string): string {
         return;
       }
 
-      this.fetchBookingById(bookingId).subscribe({
+      this.hotelBookingService.fetchBookingById(bookingId).subscribe({
         next: (booking) => {
           this.bookingsResponseList.push(booking);
         },
@@ -385,10 +385,7 @@ getUpdatedReservationNumber(value: string): string {
     });
   }
 
-  private fetchBookingById(bookingId: number) {
-    const url = `https://api.thehotelmate.co/api/booking/findById?BookingId=${bookingId}`;
-    return this.http.get<any>(url);
-  }
+
   calculateTotalGuestsFromPlans() {
     this.totalPlanAdults =
       this.bookingSummaryDetails?.selectedPlansSummary?.reduce(
