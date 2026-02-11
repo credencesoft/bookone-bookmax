@@ -102,7 +102,10 @@ downloadVoucher(fileUrl: string) {
   const apiUrl = `${this.API_URL}/api/thm/downloadPdf?fileUrl=${encodeURIComponent(fileUrl)}`;
   return this.http.get(apiUrl, { responseType: 'blob' });
 }
-
+fetchBookingById(bookingId: number) {
+    const url = `https://api.thehotelmate.co/api/booking/findById?BookingId=${bookingId}`;
+    return this.http.get<any>(url);
+  }
   verifyAuthorisationToken(message: MessageDto) {
     this.setApi();
     let headers = new HttpHeaders({
