@@ -2362,7 +2362,24 @@
 
 </div>
 
+    <div *ngIf="paidEnquiry" class="final-view py-2">
+      <div class="success-icon-wrapper">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5">
+          <path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
 
+      <h2 class="fw-bold text-dark mb-2">Payment Successful</h2>
+      <p class="text-secondary small mb-4 px-4"> We have successfully received your payment.
+    A paid enquiry has been created in our system.
+    <br><br>
+    Our property team will convert it into a confirmed booking shortly.
+    If you need immediate assistance, please contact the property directly <a href="{{this.businessUser.mobile}}"> {{this.businessUser.mobile}}</a>.</p>
+
+      <button style="font-size: 17px;" class="btn btn-primary w-100 py-3 fw-bold rounded-4 shadow-lg" (click)="closeModal();backClicked()">
+        Close
+      </button>
+    </div>
   </div>
 </div>
 
