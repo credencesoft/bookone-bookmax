@@ -2374,7 +2374,7 @@
     A paid enquiry has been created in our system.
     <br><br>
     Our property team will convert it into a confirmed booking shortly.
-    If you need immediate assistance, please contact the property directly <a href="{{this.businessUser.mobile}}"> {{this.businessUser.mobile}}</a>.</p>
+    If you need immediate assistance, please contact the property directly <a [href]="'tel:' + businessUser.mobile">{{ businessUser.mobile }}</a>.</p>
 
       <button style="font-size: 17px;" class="btn btn-primary w-100 py-3 fw-bold rounded-4 shadow-lg" (click)="closeModal();backClicked()">
         Close
