@@ -1040,6 +1040,7 @@
             </div>
             <div class="col-5 padding-right-0px">
               <div class="rooms-cards-pricing card" style="margin-bottom: 20px">
+
                 <h5 class="headimg-color">
                   <img
                     src="media-be/images/payment-sum.svg"
@@ -1051,13 +1052,35 @@
                   Payment Summary
                 </h5>
                 <div
+                id="soldOutSectionOne"
+                  *ngIf="hasAnySoldOutRoom()"
+                  class="sold-out-info-box"
+                >
+                  <i class="fa-solid fa-circle-exclamation"></i>
+
+                    <div class="sold-out-info-text">
+                      <strong>Some rooms are no longer available.</strong>
+                      <div class="sold-out-info-sub">
+                        Please reset your booking and select available rooms to continue.
+                      </div>
+                    </div>
+                  </div>
+                <div
                   class="booking-heading"
                   style="padding: 10px"
                   *ngFor="
                     let plan of bookingSummaryDetails.selectedPlansSummary;
                     let last = last
                   "
+                  [class.sold-out-card]="isRoomSoldOut(plan)"
                 >
+                 <div
+                  *ngIf="isRoomSoldOut(plan)"
+                  class="sold-out-title"
+                >
+                  <i class="fa-solid fa-circle-xmark sold-out-icon"></i>
+                  SOLD OUT
+                </div>
                   <div class="line-height-27px d-flex justify-content-between" style="gap: 15px">
                     <div class="font-weight-600">
                       {{ plan.roomName }} &nbsp;&nbsp;
@@ -1221,6 +1244,16 @@
                   </div>
                   <hr *ngIf="!last" style="border: 1px solid #e5e7eb" />
                 </div>
+                <div class="d-flex justify-content-center" *ngIf="hasAnySoldOutRoom()">
+                  <button
+
+                    type="button"
+                    class="btn btn-reset-one"
+                    (click)="onEditBooking()"
+                  >
+                    Start Over
+                  </button>
+                </div>
                 <div
                   style="
                     padding: 10px;
@@ -1327,6 +1360,7 @@
 
                   </div>
                 </div>
+
               </div>
             </div>
           </div>
@@ -1420,6 +1454,7 @@
       <div class="container-div" style="margin-top: 20px">
         <div class="booking-summary-container">
           <div style="margin: 0px !important">
+
             <div class="col-12 padding-left0px padding-right-0px">
               <div class="card" style="padding: 10px">
                 <h5 class="margin-botton-20px booking-d-heading">
@@ -1469,7 +1504,7 @@
                     </div>
                   </div>
 
-                  <div class="d-flex spacing-gap">
+                  <div class="d-flex spacing-gap" id="soldOutSection">
                     <div>
                       <img
                         src="media-be/images/checkin-book-calender.svg"
@@ -1530,14 +1565,37 @@
                     margin-bottom: 20px;
                   "
                 />
+                <div
+                  *ngIf="hasAnySoldOutRoom()"
+                  class="sold-out-info-box"
+                >
+                  <i class="fa-solid fa-circle-exclamation"></i>
 
+                    <div class="sold-out-info-text">
+                      <strong>Some rooms are no longer available.</strong>
+                      <div class="sold-out-info-sub">
+                        Please reset your booking and select available rooms to continue.
+                      </div>
+                    </div>
+                  </div>
                 <div
                   class="booking-heading"
                   *ngFor="
                     let plan of bookingSummaryDetails.selectedPlansSummary;
                     let last = last
                   "
+                  [class.sold-out-card]="isRoomSoldOut(plan)"
                 >
+
+                <!-- SOLD OUT LABEL AT TOP -->
+                <div
+                  *ngIf="isRoomSoldOut(plan)"
+                  class="sold-out-title"
+                >
+                  <i class="fa-solid fa-circle-xmark sold-out-icon"></i>
+                  SOLD OUT
+                </div>
+
                   <div class="line-height-27px d-flex justify-content-between" style="gap: 15px">
                     <div class="font-weight-600">
                       {{ plan.roomName }} &nbsp;&nbsp;
@@ -1558,8 +1616,10 @@
                   </div>
                   <div class="d-flex justify-content-between line-height-27px">
                     <div class="color-graying">
-                      {{ plan.planCodeName }} x {{ plan.selectedRoomnumber }}
-                    </div>
+                        {{ plan.planCodeName }} x {{ plan.selectedRoomnumber }} <br/>
+
+                      </div>
+
 
                     <div *ngIf="activeGoogleCenter">
                       <div style="text-align: end">
@@ -1700,6 +1760,16 @@
                     </div>
                   </div>
                   <hr *ngIf="!last" style="border: 1px solid #e5e7eb" />
+                </div>
+                <div class="d-flex justify-content-center"  *ngIf="hasAnySoldOutRoom()">
+                  <button
+
+                    type="button"
+                    class="btn btn-reset-one"
+                    (click)="onEditBooking()"
+                  >
+                    Start Over
+                  </button>
                 </div>
               </div>
             </div>
@@ -2164,3 +2234,153 @@
     <span class="loader-booking"></span>
   </div>
 </div>
+
+
+<div class="booking-overlay" *ngIf="showModal" role="dialog" aria-modal="true">
+  <div class="processing-card shadow-2xl">
+
+    <!-- Close Button -->
+    <!-- <button class="close-btn" (click)="closeModal()" [disabled]="!completed && !failed" aria-label="Close modal">
+      <span aria-hidden="true">&times;</span>
+    </button> -->
+
+    <!-- Content Header -->
+    <h3 class="fw-bold mb-5 text-dark" *ngIf="!completed && !failed && !paidEnquiry">
+      Securely Processing
+    </h3>
+
+    <!-- Stepper (Hidden on final views for cleaner look) -->
+    <div class="stepper-container px-3" *ngIf="!completed && !failed && !paidEnquiry">
+      <div *ngFor="let step of steps; let i = index" class="step-item"
+           [class.active]="activeStep === i"
+           [class.completed]="step.status === 'completed'"
+           [class.failed]="step.status === 'failed'">
+
+        <div class="step-circle" [class.pulse-active]="activeStep === i">
+          <ng-container *ngIf="step.status === 'completed'">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5" /></svg>
+          </ng-container>
+          <ng-container *ngIf="step.status === 'failed'">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M18 6L6 18M6 6l12 12" /></svg>
+          </ng-container>
+          <span *ngIf="step.status === 'pending' || step.status === 'processing'">{{i + 1}}</span>
+        </div>
+        <div class="step-label">{{step.label}}</div>
+      </div>
+
+      <div class="position-absolute top-50 start-0 translate-middle-y w-100 px-5" style="z-index: 1;">
+        <div class="d-flex w-100">
+          <div class="step-line">
+            <div class="step-line-progress" [style.width]="steps[0].status === 'completed' ? '100%' : '0%'"></div>
+          </div>
+          <div class="step-line">
+            <div class="step-line-progress" [style.width]="steps[1].status === 'completed' ? '100%' : '0%'"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Active Loader Section -->
+    <div *ngIf="!completed && !failed && !paidEnquiry">
+      <div class="loader-box">
+        <svg class="svg-loader" viewBox="0 0 120 120">
+          <circle class="loader-ring-bg" cx="60" cy="60" r="54"></circle>
+          <circle class="loader-ring-progress" cx="60" cy="60" r="54"
+                  [attr.stroke-dasharray]="(progressPercent * 3.39) + ' 339'"></circle>
+        </svg>
+        <div class="percentage-text">
+          {{progressPercent}}<span class="percentage-symbol">%</span>
+        </div>
+        <div class="satellite-container">
+          <div class="satellite-dot"></div>
+        </div>
+      </div>
+
+      <p class="status-text">
+        "{{aiMessage}}"
+      </p>
+
+      <div class="security-box d-flex gap-3 text-start align-items-center">
+        <div class="warning-icon-bg">!</div>
+        <div class="small">
+          <strong class="text-dark d-block">Encryption Link Active</strong>
+          <span class="text-secondary">Stay on this page. We are securely validating your transaction with the bank.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Success View -->
+    <div *ngIf="completed" class="final-view py-2">
+      <div class="success-icon-wrapper">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5">
+          <path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+
+      <h2 class="fw-bold text-dark mb-2">Booking Confirmed!</h2>
+      <p class="text-secondary small mb-4 px-4">Great news! Your selected room is booked. A receipt and digital pass have been sent to your email.</p>
+
+      <button style="font-size: 17px;" class="btn btn-primary w-100 py-3 fw-bold rounded-4 shadow-lg" (click)="goToConfirmation()">
+        Go to Dashboard
+      </button>
+    </div>
+
+    <!-- Failure View -->
+   <!-- Failure View -->
+<div *ngIf="failed" class="final-view py-2">
+
+  <div class="failure-icon-wrapper">
+    <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5">
+      <path d="M18 6L6 18M6 6l12 12" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </div>
+
+  <h2 class="fw-bold text-dark mb-2">Payment Cancelled</h2>
+
+  <p class="text-secondary small mb-4 px-3 failure-subtext">
+    <span *ngIf="errorData">
+    {{this.errorData}}
+  </span>
+  <span *ngIf="!errorData">
+ Your bank did not complete the authentication in time.No charges have been made
+  </span>
+
+  </p>
+
+  <!-- Action Buttons -->
+  <div class="failure-actions">
+    <button style="font-size: 17px;" class="btn btn-outline-secondary w-100 mb-3 py-3 rounded-4 fw-semibold"
+            (click)="closeModal()">
+      Cancel
+    </button>
+
+    <button style="font-size: 17px;" class="btn btn-danger w-100 py-3 rounded-4 fw-bold shadow-lg retry-btn"
+            (click)="closeModal()">
+      Retry Secure Payment
+    </button>
+  </div>
+
+</div>
+
+    <div *ngIf="paidEnquiry" class="final-view py-2">
+      <div class="success-icon-wrapper">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5">
+          <path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+
+      <h2 class="fw-bold text-dark mb-2">Payment Successful</h2>
+      <p class="text-secondary small mb-4 px-4"> We have successfully received your payment.
+    A paid enquiry has been created in our system.
+    <br><br>
+    Our property team will convert it into a confirmed booking shortly.
+    If you need immediate assistance, please contact the property directly <a [href]="'tel:' + businessUser.mobile">{{ businessUser.mobile }}</a>.</p>
+
+      <button style="font-size: 17px;" class="btn btn-primary w-100 py-3 fw-bold rounded-4 shadow-lg" (click)="closeModal();backClicked()">
+        Close
+      </button>
+    </div>
+  </div>
+</div>
+
+

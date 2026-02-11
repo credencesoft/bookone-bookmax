@@ -1064,12 +1064,9 @@ if (params['Children'] !== undefined) {
       today.getDate()
     );
     // this.checkAvailabilityDisabled = true;
-    let currenturl = window.location.href;
-    // let urlObj = new URL(currenturl);
-    // let params = new URLSearchParams(urlObj.search);
-    // let CurrentRoomCout = params.get('rooms');
-    let flag = currenturl.includes('bookingEngine');
-    this.token.savePropertyUrl(currenturl);
+let currentUrl = window.location.href;
+
+this.token.savePropertyUrl(currentUrl);
     this.serviceDto = new PropertyServiceDTO();
     this.businessServiceDto = new BusinessServiceDtoList();
     this.businessService = new BusinessServiceDtoList();
@@ -3383,6 +3380,17 @@ if (roomKey) {
         behavior: 'smooth',
       });
     }, 100);
+
+  const sectionId = sessionStorage.getItem('scrollTo');
+  if (sectionId) {
+    setTimeout(() => {
+      const el = document.getElementById(sectionId);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+      sessionStorage.removeItem('scrollTo');
+    }, 100);
+  }
   }
 
   backClicked() {
@@ -5332,6 +5340,8 @@ adjustDates() {
 //   this.router.navigate(['/booking']);
 // }
 onBookNow() {
+  let currentUrl = window.location.href;
+this.token.savePropertyUrl(currentUrl);
   const selectedAddOns = this.propertyServiceListDataOne
     .filter(item => this.selectedFacilityNames.includes(item.name));
 

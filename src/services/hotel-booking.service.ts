@@ -1,7 +1,7 @@
-import { HttpClient, HttpHeaders, HttpParams } from "@angular/common/http";
+import { HttpClient, HttpHeaders, HttpParams, HttpResponse } from "@angular/common/http";
 import {  Injectable } from "@angular/core";
 import { Observable } from "rxjs";
-import { API_URL_BOOKONE, API_URL_IN, API_URL_IO, API_URL_NZ, API_URL_PROMOTION, APP_ID,API_URL_RECOMMEND } from "src/app/app.component";
+import { API_URL_BOOKONE, API_URL_IN, API_URL_IO, API_URL_NZ, API_URL_PROMOTION, APP_ID,API_URL_RECOMMEND, PAYU_URL } from "src/app/app.component";
 import { MessageDto } from "src/app/model/MessageDto";
 import { PropertyServiceDTO } from "src/app/model/PropertyServices";
 import { Booking } from "src/app/model/booking";
@@ -408,6 +408,35 @@ downloadVoucher(fileUrl: string) {
       { observe: 'response' }
     );
   }
+    checkPaymentStatus(
+    propertyId: number,
+    transactionId: string
+  ): Observable<any> {
+
+    const url =
+      PAYU_URL + `/api/payu/checkPaymentStatus/THM` +
+      `?propertyId=${propertyId}` +
+      `&transactionId=${transactionId}`;
+
+    return this.http.get<any>(url);
+  }
+   convertEnquiryToPMS(payload: any): Observable<HttpResponse<any>> {
+    const url = PAYU_URL + '/api/payu/convert-to-pms';
+
+    return this.http.post<any>(
+      url,
+      payload,
+      { observe: 'response' }
+    );
+  }
+
+   checkBookingStatus(enquiryId: number): Observable<any> {
+    const url =
+     environment.apiLms + `/api/v1/accommodationEnquiry/${enquiryId}`;
+
+    return this.http.get<any>(url);
+  }
+
   whatsAppMsg(whatsappmsg: WhatsappDto) {
     this.setApi();
     return this.http.post<WhatsappDto>(

@@ -64,6 +64,12 @@ import { MessageService } from 'primeng/api';
 declare var Stripe: any;
 
 declare var window: any;
+type StepStatus = 'pending' | 'processing' | 'completed' | 'failed';
+
+interface Step {
+  label: string;
+  status: StepStatus;
+}
 @Component({
   selector: 'booking',
   templateUrl: './Booking.component.html',
@@ -285,6 +291,52 @@ export class BookingComponent implements OnInit {
   components1: Components[];
   bookoneActiveData: any;
   serviceChargePercentage: any;
+  soldOutRooms: any;
+  availableRoomsOne: any;
+  availableRoomIdSet = new Set<number>();
+soldOutSectionRef!: HTMLElement;
+availabilityLoaded = false;
+showModal = false;
+enquiryResponseList: any[] = [];
+steps: Step[] = [
+  { label: 'Enquiry', status: 'pending' },
+  { label: 'Payment', status: 'pending' },
+  { label: 'Confirm', status: 'pending' }
+];
+
+activeStep = 0;
+completed = false;
+failed = false;
+
+progressPercent = 0;
+private targetProgress = 0;
+aiMessage = 'Initializing secure connection...';
+
+private progressTimer: any;
+private enquiryId!: number;
+private transactionId!: string;
+private paymentStartDelayTimer: any;
+ private paymentDelayTimer: any;
+   private paymentPoller: any;
+  private bookingPoller: any;
+private paymentStartTime!: number;
+private isPmsConversionTriggered = false;
+pmsResponses: any[] = [];
+private pmsSuccessCount = 0;
+private bookedEnquiries: any[] = [];
+private STEP_MESSAGES = {
+    enquiry: 'Enquiry created successfully. Preparing payment...',
+    paymentProcessing: 'Securely verifying payment with bank...',
+    paymentSuccess: 'Payment confirmed. Creating booking...',
+    paymentFailure: 'Payment failed or cancelled.',
+    bookingProcessing: 'Finalizing booking and generating confirmation...',
+    bookingSuccess: 'Booking confirmed successfully!',
+    bookingTimeout: 'Booking creation is taking longer than expected.'
+  };
+  errorData: any;
+paidEnquiry = false;
+private bookingStartTime: number;
+private BOOKING_TIMEOUT = 50 * 1000; // 50 seconds
   constructor(
     private token: TokenStorage,
     private ngZone: NgZone,
@@ -355,7 +407,6 @@ export class BookingComponent implements OnInit {
       this.calculateTotalGuestsFromPlans();
 
     }
-
     setTimeout(() => {
       this.businessUser?.socialMediaLinks.forEach((element) => {
         this.socialmedialist = element;
@@ -432,7 +483,7 @@ export class BookingComponent implements OnInit {
       this.token.getBookingRoomPrice()
     );
     this.getPropertyDetails(this.booking.propertyId);
-
+this.checkingAvailabilityOne();
     this.payment.expYear = '';
     this.payment.expMonth = '';
 
@@ -539,6 +590,370 @@ if (parsed.discountPercentage) {
   getFirstWords(text: string, count: number): string {
     return text.split(' ').slice(0, count).join(' ');
   }
+  openBookingProcess(enquiryId: number, transactionId: string) {
+    this.resetState();
+
+    this.enquiryId = enquiryId;
+    this.transactionId = transactionId;
+
+    this.showModal = true;
+
+    // STEP 1 – enquiry already completed
+    this.markEnquiryCompleted();
+
+    // STEP 2 – start payment polling after 40 seconds
+    this.paymentDelayTimer = setTimeout(() => {
+      if (!this.showModal || this.failed || this.completed) return;
+      this.startPaymentStatusPolling();
+    }, 20000);
+  }
+  private markEnquiryCompleted() {
+    this.activeStep = 0;
+    this.steps[0].status = 'completed';
+    this.steps[1].status = 'processing';
+
+    this.aiMessage = this.STEP_MESSAGES.enquiry;
+    this.animateProgressTo(30);
+  }
+  private onPaymentPending() {
+    if (this.progressPercent < 65) {
+      this.progressPercent += 1;
+    }
+  }
+private startPaymentStatusPolling() {
+
+  if (this.paymentPoller) return;
+
+  this.activeStep = 1;
+  this.aiMessage = this.STEP_MESSAGES.paymentProcessing;
+  this.paymentStartTime = Date.now();
+
+  const FOUR_MINUTES = 4 * 60 * 1000;
+
+  this.paymentPoller = setInterval(() => {
+
+    const elapsedTime = Date.now() - this.paymentStartTime;
+
+    // ⏱ 4 minute timeout
+    if (elapsedTime > FOUR_MINUTES) {
+
+      clearInterval(this.paymentPoller);
+      this.paymentPoller = null;
+
+      // Only fail if still not completed
+      if (!this.completed) {
+        this.aiMessage = 'Payment verification timed out.';
+        this.handlePaymentFailure();
+      }
+
+      return;
+    }
+
+    this.checkPaymentStatus();
+
+  }, 5000);
+}
+
+private checkPaymentStatus() {
+
+  this.hotelBookingService
+    .checkPaymentStatus(this.businessUser.id, this.transactionId)
+    .subscribe({
+      next: res => {
+        const tx = res?.transaction_details?.[this.transactionId];
+        if (!tx) return;
+
+        const status = (tx.status || '').toLowerCase();
+        this.errorData = tx.error_Message;
+
+        if (status === 'success') {
+          this.handlePaymentSuccess();
+        }
+        else if (status === 'pending' || status === 'not found') {
+          this.onPaymentPending();
+        }
+        else {
+          this.handlePaymentFailure();
+        }
+      },
+      error: () => {
+        // network or gateway lag ≠ failure
+        this.onPaymentPending();
+      }
+    });
+}
+
+
+
+  private animateProgressTo(target: number) {
+    this.targetProgress = target;
+
+    const i = setInterval(() => {
+      if (this.progressPercent >= this.targetProgress) {
+        clearInterval(i);
+        return;
+      }
+      this.progressPercent += 1;
+    }, 60);
+  }
+
+  private handlePaymentFailure() {
+  this.clearPaymentPoller();
+  this.clearBookingPoller();
+
+  this.failed = true;
+  this.steps[this.activeStep].status = 'failed';
+  this.aiMessage = 'Payment or booking could not be completed.';
+}
+
+  private onBookingPending() {
+    if (this.progressPercent < 95) {
+      this.progressPercent += 1;
+    }
+  }
+private handlePaymentSuccess() {
+  this.clearPaymentPoller();
+
+  this.steps[1].status = 'completed';
+  this.aiMessage = 'Payment confirmed. Syncing with PMS...';
+
+  this.animateProgressTo(75);
+
+  this.handlePmsSuccess();
+  // this.convertEnquiriesToPMS();
+}
+
+private convertEnquiriesToPMS() {
+  const enquiryStr = sessionStorage.getItem('EnquiryResponseList');
+  if (!enquiryStr) return;
+
+  const enquiryList = JSON.parse(enquiryStr);
+  if (!Array.isArray(enquiryList) || enquiryList.length === 0) return;
+
+  this.pmsSuccessCount = 0;
+
+  enquiryList.forEach(enquiry => {
+
+    const payload = {
+      ...enquiry,
+      paymentStatus: 'Paid',
+      paymentReceived: true,
+      paymentReference: this.payment.referenceNumber,
+      updatedDate: new Date().toISOString()
+    };
+
+    this.hotelBookingService
+      .convertEnquiryToPMS(payload)
+      .subscribe({
+        next: res => {
+          if (
+            res.status === 200 ||
+            res.status === 201 ||
+            res.status === 409
+          ) {
+            this.pmsSuccessCount++;
+          }
+
+          if (this.pmsSuccessCount === enquiryList.length) {
+            this.handlePmsSuccess();
+          }
+        },
+        error: err => {
+          console.warn('PMS sync issue, continuing booking flow', err);
+
+          this.pmsSuccessCount++;
+
+          if (this.pmsSuccessCount === enquiryList.length) {
+            this.handlePmsSuccess();
+          }
+        }
+      });
+  });
+}
+
+
+private handlePmsSuccess() {
+  this.aiMessage = 'Payment synced. Creating booking...';
+  this.animateProgressTo(85);
+  this.startBookingPolling();
+}
+private startBookingPolling() {
+
+  const enquiryStr = sessionStorage.getItem('EnquiryResponseList');
+  if (!enquiryStr) return;
+
+  const enquiryList = JSON.parse(enquiryStr);
+
+  this.bookingStartTime = Date.now();
+
+  this.bookingPoller = setInterval(() => {
+
+    const elapsed = Date.now() - this.bookingStartTime;
+
+    // ⏱ If booking not created within timeout
+    if (elapsed > this.BOOKING_TIMEOUT) {
+
+      clearInterval(this.bookingPoller);
+      this.bookingPoller = null;
+
+      if (!this.completed) {
+        this.handlePaidEnquiryState();
+      }
+
+      return;
+    }
+
+    enquiryList.forEach(enquiry => {
+      this.checkBookingStatus(enquiry);
+    });
+
+  }, 5000);
+}
+private handlePaidEnquiryState() {
+
+  this.paidEnquiry = true;
+  this.completed = false;
+  this.failed = false;
+
+  this.aiMessage = 'Payment received. Awaiting booking confirmation...';
+
+  this.animateProgressTo(100);
+}
+
+private checkBookingStatus(enquiry: any) {
+  this.hotelBookingService
+    .checkBookingStatus(enquiry.enquiryId)
+    .subscribe({
+      next: res => {
+        if (res?.bookingId) {
+          this.handleBookingSuccess(enquiry, res.bookingId);
+        }
+      },
+      error: err => {
+        // booking may not be created yet – do NOT fail
+        console.warn(
+          'Booking not ready yet for enquiry:',
+          enquiry.enquiryId,
+          err
+        );
+      }
+    });
+}
+
+
+  private handleBookingSuccess(enquiry: any, bookingId: number) {
+  // prevent duplicates
+  const exists = this.bookedEnquiries.find(e => e.enquiryId === enquiry.enquiryId);
+  if (exists) return;
+
+  enquiry.bookingId = bookingId;
+  enquiry.bookingReservationId = bookingId;
+  enquiry.updatedDate = new Date().toISOString();
+
+  this.bookedEnquiries.push(enquiry);
+
+  // ✅ once all enquiries are booked
+  const originalList = JSON.parse(sessionStorage.getItem('EnquiryResponseList') || '[]');
+
+  if (this.bookedEnquiries.length === originalList.length) {
+    this.clearBookingPoller();
+    this.storeBookedEnquiries();
+    this.completeBookingFlow();
+  }
+}
+private completeBookingFlow() {
+  this.steps[2].status = 'completed';
+  this.completed = true;
+  this.aiMessage = 'Booking confirmed successfully!';
+  this.animateProgressTo(100);
+}
+
+private storeBookedEnquiries() {
+  sessionStorage.setItem(
+    'BookedEnquiryList',
+    JSON.stringify(this.bookedEnquiries)
+  );
+}
+
+  private handleBookingTimeout() {
+    this.clearBookingPoller();
+
+    this.steps[2].status = 'failed';
+    this.failed = true;
+
+    this.aiMessage = this.STEP_MESSAGES.bookingTimeout;
+  }
+private startProgressAnimation() {
+  this.progressTimer = setInterval(() => {
+    if (this.progressPercent < 98) {
+      this.progressPercent += Math.floor(Math.random() * 2) + 1;
+    }
+  }, 250);
+}
+  private clearPaymentPoller() {
+    if (this.paymentPoller) {
+      clearInterval(this.paymentPoller);
+      this.paymentPoller = null;
+    }
+  }
+
+  private clearBookingPoller() {
+    if (this.bookingPoller) {
+      clearInterval(this.bookingPoller);
+      this.bookingPoller = null;
+    }
+  }
+
+private stopAllTimers() {
+  this.clearPaymentPoller();
+  this.clearBookingPoller();
+  if (this.progressTimer) clearInterval(this.progressTimer);
+}
+
+  private updateStatusText(stepName: string) {
+    this.aiMessage = this.STEP_MESSAGES[stepName] || "Processing your request securely...";
+  }
+
+ private resetState() {
+    this.clearPaymentPoller();
+    this.clearBookingPoller();
+
+    if (this.paymentDelayTimer) {
+      clearTimeout(this.paymentDelayTimer);
+      this.paymentDelayTimer = null;
+    }
+
+    this.progressPercent = 0;
+    this.activeStep = 0;
+    this.completed = false;
+    this.failed = false;
+
+    this.steps = [
+      { label: 'Enquiry', status: 'pending' },
+      { label: 'Payment', status: 'pending' },
+      { label: 'Confirm', status: 'pending' }
+    ];
+  }
+
+closeModal() {
+  this.resetState();
+  this.showModal = false;
+  this.submitButtonDisable = false;
+  this.isPayNowDisabled = false;
+  this.paymentLoader = false;
+  this.isPayDisabled = false;
+}
+
+ngOnDestroy() {
+  this.resetState();
+}
+
+
+  goToConfirmation() {
+    this.router.navigate(['/booking-confirmation']);
+    this.closeModal();
+  }
+
   calculateConvenienceFee(totalAmount: number, percentage: number): number {
   if (!totalAmount || !percentage) {
     return 0;
@@ -1188,7 +1603,7 @@ const accommodation = this.businessUser.businessServiceDtoList.find(
 const fromTime = accommodation?.checkInTime ?? '12:00';
 const toTime = accommodation?.checkOutTime ?? '12:00';
 
-// 3️⃣ Function: combine guest date + property time → UTC timestamp
+
 const getPropertyTimestamp = (guestDate: string, propertyTime: string) => {
   const [year, month, day] = guestDate.includes('-') && guestDate.split('-')[0].length === 4
     ? guestDate.split('-').map(Number) // yyyy-MM-dd
@@ -1497,6 +1912,7 @@ this.getPropertyDetailsById(this.bookingData?.propertyId);
     }, 3000);
   }
   backClicked() {
+    this.PropertyUrl = this.token.getPropertyUrl();
     window.location.href = this.PropertyUrl;
   }
   getDateFormatDayMonthYear(
@@ -1708,7 +2124,7 @@ const accommodation = this.businessUser.businessServiceDtoList.find(
 const fromTime = accommodation?.checkInTime ?? '12:00';
 const toTime = accommodation?.checkOutTime ?? '12:00';
 
-// 3️⃣ Function: combine guest date + property time → UTC timestamp
+
 const getPropertyTimestamp = (guestDate: string, propertyTime: string) => {
   const [year, month, day] = guestDate.includes('-') && guestDate.split('-')[0].length === 4
     ? guestDate.split('-').map(Number) // yyyy-MM-dd
@@ -1960,26 +2376,44 @@ this.tokenToTime = this.combinedDateToTime;
     enquiryForm.roomRatePlanName = plan.planCodeName;
     enquiryForm.createdDate = new Date().getTime();
 
-if (!this.fromTime && !this.toTime) {
-  const checkInDateTime = new Date(enquiryForm.checkInDate).getTime();
-  const checkOutDateTime = new Date(enquiryForm.checkOutDate).getTime();
-  enquiryForm.fromTime = checkInDateTime;
-  enquiryForm.toTime = checkOutDateTime;
-  this.token.saveTime(String(checkInDateTime));
-  this.token.saveToTime(String(checkOutDateTime));
-} else {
-  const checkInDateTime = new Date(
-    `${enquiryForm.checkInDate} ${this.fromTime}`
-  ).getTime();
-  const checkOutDateTime = new Date(
-    `${enquiryForm.checkInDate} ${this.toTime}`
-  ).getTime();
-  enquiryForm.fromTime = checkInDateTime;
-  enquiryForm.toTime = checkOutDateTime;
-  this.token.saveTime(String(checkInDateTime));
-  this.token.saveToTime(String(checkOutDateTime));
-}
+this.businessUser = this.token.getProperty();
+const zone = 'Asia/Kolkata'; // India
 
+
+const accommodation = this.businessUser.businessServiceDtoList.find(
+  item => item.name === 'Accommodation'
+);
+const fromTime = accommodation?.checkInTime ?? '12:00';
+const toTime = accommodation?.checkOutTime ?? '12:00';
+
+
+const getPropertyTimestamp = (guestDate: string, propertyTime: string) => {
+  const [year, month, day] = guestDate.includes('-') && guestDate.split('-')[0].length === 4
+    ? guestDate.split('-').map(Number) // yyyy-MM-dd
+    : guestDate.split('-').reverse().map(Number); // dd-MM-yyyy
+
+  const [hour, minute] = propertyTime.split(':').map(Number);
+
+  // India is UTC+5:30
+  const IST_OFFSET = 5.5 * 60; // in minutes
+
+  // Convert property date + time to UTC timestamp
+  const utcTimestamp = Date.UTC(year, month - 1, day, hour, minute) - IST_OFFSET * 60 * 1000;
+
+  return utcTimestamp;
+};
+
+
+this.combinedDateFromTime = getPropertyTimestamp(this.booking.fromDate, fromTime);
+this.combinedDateToTime = getPropertyTimestamp(this.booking.toDate, toTime);
+
+
+this.tokenFromTime = this.combinedDateFromTime;
+this.tokenToTime = this.combinedDateToTime;
+    enquiryForm.fromTime = this.tokenFromTime;
+    enquiryForm.toTime = this.tokenToTime;
+    this.token.saveTime(String(enquiryForm.fromTime));
+    this.token.saveToTime(String(enquiryForm.toTime));
     enquiryForm.accountManager = '';
     enquiryForm.consultantPerson = '';
     enquiryForm.noOfRooms = Number(plan.selectedRoomnumber);
@@ -2012,7 +2446,8 @@ if (!this.fromTime && !this.toTime) {
     enquiryForm.accommodationType = enquiryForm.accommodationType || '';
     enquiryForm.specialNotes = enquiryForm.specialNotes || '';
     enquiryForm.alternativeLocation = enquiryForm.alternativeLocation || '';
-
+    enquiryForm.roomTariffBeforeDiscount = (plan.actualRoomPrice).toFixed(2);
+    enquiryForm.totalRoomTariffBeforeDiscount = enquiryForm.roomTariffBeforeDiscount * plan.nights * plan.selectedRoomnumber;
     enquiryForm.totalAmount = plan.price + plan.taxPercentageperroom;
     enquiryForm.discountAmountPercentage = booking.discountPercentage;
     enquiryForm.noOfNights = plan.nights;
@@ -2227,9 +2662,137 @@ if (!this.fromTime && !this.toTime) {
     return false;
   }
 
+  isRoomSoldOut(plan: any): boolean {
+  if (!this.availabilityLoaded) {
+    return false;
+  }
+  return !this.availableRoomIdSet.has(plan.roomId);
+}
+
+hasAnySoldOutRoom(): boolean {
+  if (!this.availabilityLoaded) return false;
+  return this.bookingSummaryDetails?.selectedPlansSummary?.some(
+    plan => this.isRoomSoldOut(plan)
+  );
+}
+
+scrollToSoldOut() {
+  const el = document.getElementById('soldOutSection');
+  if (el) {
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+}
+
+scrollToSoldOutOne() {
+  const el = document.getElementById('soldOutSectionOne');
+  if (el) {
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+}
+
+onEditBooking() {
+this.PropertyUrl = this.token.getPropertyUrl();
+  if (!this.PropertyUrl) return;
+
+  sessionStorage.removeItem('bookingsResponseList');
+  sessionStorage.removeItem('bookingSummaryDetails');
+  sessionStorage.removeItem('EnquiryResponseList');
+
+  // tell the previous page where to scroll
+  sessionStorage.setItem('scrollTo', 'accmdOne');
+
+  window.location.href = this.PropertyUrl; // no # in URL
+}
+
+checkingAvailabilityOne(): Promise<boolean> {
+  return new Promise((resolve, reject) => {
+    this.availabilityLoaded = false;
+    this.isSuccess = true;
+    this.headerTitle = 'Success!';
+    this.bodyMessage = 'CheckAvailability Clicked ';
+
+    this.showSuccess(this.contentDialog);
+
+    setTimeout(() => {
+      this.showAlert = false;
+      this.changeDetectorRefs.detectChanges();
+    }, 1000);
+
+    this.booking.propertyId = this.businessUser.id;
+
+    this.hotelBookingService
+      .checkAvailabilityByProperty(
+        this.booking.fromDate,
+        this.booking.toDate,
+        this.booking.noOfRooms,
+        this.booking.noOfPersons,
+        this.booking.propertyId
+      )
+      .subscribe(
+        (response) => {
+          const roomListOne = response.body.roomList || [];
+
+          const sortedRoomsOne = roomListOne.sort(
+            (a: any, b: any) => b.roomOnlyPrice - a.roomOnlyPrice
+          );
+
+          this.availableRoomsOne = sortedRoomsOne.filter(room => {
+            const rates = room.ratesAndAvailabilityDtos;
+            if (!rates || rates.length === 0) return false;
+
+            const isStopSellOBE =
+              rates[0]?.stopSellOBE !== null && rates[0]?.stopSellOBE !== false;
+
+            const isStopSellOTA =
+              rates[0]?.stopSellOTA !== null && rates[0]?.stopSellOTA !== false;
+
+            return (
+              rates.length === this.booking.noOfNights &&
+              !isStopSellOBE &&
+              !isStopSellOTA
+            );
+          });
+          console.log('this.availableRoomsOne',this.availableRoomsOne);
+          this.soldOutRooms = sortedRoomsOne.filter(room => {
+            const rates = room.ratesAndAvailabilityDtos;
+            if (!rates || rates.length !== this.booking.noOfNights) return true;
+
+            const isStopSellOBE =
+              rates[0]?.stopSellOBE !== null && rates[0]?.stopSellOBE !== false;
+
+            const isStopSellOTA =
+              rates[0]?.stopSellOTA !== null && rates[0]?.stopSellOTA !== false;
+
+            return isStopSellOBE || isStopSellOTA;
+          });
+          this.availableRoomIdSet.clear();
+          this.availableRoomsOne.forEach(room => { this.availableRoomIdSet.add(room.id); });
+
+          this.availabilityLoaded = true;
+
+          // ✅ resolve AFTER everything is done
+          resolve(this.hasAnySoldOutRoom());
+        },
+        (error) => {
+          this.availabilityLoaded = true;
+          reject(error);
+        }
+      );
+  });
+}
+
+
 async  payAndCheckout() {
-  if (this.isPayDisabled) return; // Prevent double clicks
+  if (this.isPayDisabled) return;
   this.isPayDisabled = true;
+  const hasSoldOut = await this.checkingAvailabilityOne();
+  if(hasSoldOut) {
+  if (this.hasAnySoldOutRoom()) {
+    this.scrollToSoldOut();
+    this.scrollToSoldOutOne();
+    return;
+  }
+}
   sessionStorage.removeItem('EnquiryResponseList');
   this.isPayNowDisabled = true;
 const bookingSummaryStr = sessionStorage.getItem('bookingSummaryDetails');
@@ -3694,6 +4257,7 @@ if (bookingSummaryStr) {
       this.cardPaymentAvailable = true;
     }
      else if (this.businessUser.paymentGateway === 'PayU') {
+      this.showModal = true;
       this.payment.paymentMode = 'UPI';
       this.payment.status = 'NotPaid';
       this.payment.failureCode = environment.failureCode;
@@ -3950,9 +4514,7 @@ if (bookingSummaryStr) {
         this.payment.transactionAmount = Number(
           Number((((firstPlanOne?.finalPrice) / 100) * 20).toFixed(2))
         );
-        this.payment.amount = Number(
-          Number((((firstPlanOne?.finalPrice) / 100) * 20).toFixed(2))
-        );
+        this.payment.amount = Number(Number((((firstPlanOne?.finalPrice) / 100) * 20).toFixed(2)));
 
         this.booking.advanceAmount = Number(
           Number((((firstPlanOne?.finalPrice) / 100) * 20).toFixed(2))
@@ -4046,7 +4608,10 @@ if (bookingSummaryStr) {
           this.token.saveBookingData(this.booking);
           this.token.savePaymentData(this.payment);
           this.token.savePropertyData(this.businessUser);
-
+        //    const url = this.router.serializeUrl(
+        //   this.router.createUrlTree(['/checkout-rayzorpay'])
+        // );
+        // window.open(url, '_blank');
           this.router.navigate(['/checkout-rayzorpay']);
         }
       });
@@ -4074,6 +4639,10 @@ processPaymentPayU(payment: Payment) {
           } else {
             this.paymentLoader = false;
             this.payment = response.body;
+                    this.openBookingProcess(
+          this.equitycreatedData.enquiryId,
+          this.payment.referenceNumber
+        );
            this.token.saveBookingData(this.booking);
           this.token.savePaymentData(this.payment);
           this.token.savePropertyData(this.businessUser);
@@ -4105,26 +4674,24 @@ processPaymentPayU(payment: Payment) {
     );
   }
   paymentIntentPayU() {
-  this.paymentLoader = true;
+    const params = new HttpParams()
+      .set('propertyId', this.businessUser.id)
+      .set('transactionAmount', this.payment.transactionAmount)
+      .set('reference', this.payment.referenceNumber)
+      .set('customerName', this.payment.name)
+      .set('customerMobile', this.booking.mobile)
+      .set('customerEmail', this.payment.email)
+      .set('source', 'THM')
+      .set('callbackUrl', environment.callbackUrl)
+      .set('failureCode', environment.failureCode);
 
-  const params = new HttpParams()
-    .set('propertyId', this.businessUser.id)
-    .set('transactionAmount', this.payment.transactionAmount)
-    .set('reference', this.payment.referenceNumber)
-    .set('customerName', this.payment.name)
-    .set('customerMobile', this.booking.mobile)
-    .set('customerEmail', this.payment.email)
-    .set('source', 'THM');
-  const url = 'https://payu.payment.uat.bookone.io/api/payu/paymentIntent/THM';
+    const url =
+      `https://payu.payment.uat.bookone.io/api/payu/paymentIntent/THM?${params.toString()}`;
 
-  // Build the full URL
-  const fullUrl = `${url}?${params.toString()}`;
+    window.open(url, '_blank');
+  }
 
-  this.paymentLoader = false;
 
-  // Redirect the browser to PayU
-  window.location.href = fullUrl;
-}
   processPaymentPayTM(payment: Payment) {
     this.paymentLoader = true;
     this.changeDetectorRefs.detectChanges();
@@ -5044,7 +5611,6 @@ const accommodation = this.businessUser.businessServiceDtoList.find(
 const fromTime = accommodation?.checkInTime ?? '12:00';
 const toTime = accommodation?.checkOutTime ?? '12:00';
 
-// 3️⃣ Function: combine guest date + property time → UTC timestamp
 const getPropertyTimestamp = (guestDate: string, propertyTime: string) => {
   const [year, month, day] = guestDate.includes('-') && guestDate.split('-')[0].length === 4
     ? guestDate.split('-').map(Number) // yyyy-MM-dd
@@ -5325,7 +5891,7 @@ const accommodation = this.businessUser.businessServiceDtoList.find(
 const fromTime = accommodation?.checkInTime ?? '12:00';
 const toTime = accommodation?.checkOutTime ?? '12:00';
 
-// 3️⃣ Function: combine guest date + property time → UTC timestamp
+
 const getPropertyTimestamp = (guestDate: string, propertyTime: string) => {
   const [year, month, day] = guestDate.includes('-') && guestDate.split('-')[0].length === 4
     ? guestDate.split('-').map(Number) // yyyy-MM-dd
@@ -7686,7 +8252,7 @@ const accommodation = this.businessUser.businessServiceDtoList.find(
 const fromTime = accommodation?.checkInTime ?? '12:00';
 const toTime = accommodation?.checkOutTime ?? '12:00';
 
-// 3️⃣ Function: combine guest date + property time → UTC timestamp
+
 const getPropertyTimestamp = (guestDate: string, propertyTime: string) => {
   const [year, month, day] = guestDate.includes('-') && guestDate.split('-')[0].length === 4
     ? guestDate.split('-').map(Number) // yyyy-MM-dd
@@ -7828,7 +8394,7 @@ const accommodation = this.businessUser.businessServiceDtoList.find(
 const fromTime = accommodation?.checkInTime ?? '12:00';
 const toTime = accommodation?.checkOutTime ?? '12:00';
 
-// 3️⃣ Function: combine guest date + property time → UTC timestamp
+
 const getPropertyTimestamp = (guestDate: string, propertyTime: string) => {
   const [year, month, day] = guestDate.includes('-') && guestDate.split('-')[0].length === 4
     ? guestDate.split('-').map(Number) // yyyy-MM-dd
@@ -8032,7 +8598,6 @@ this.tokenToTime = this.combinedDateToTime;
 
   async submitForm(plan: any, bookingSummary: any) {
     const booking: any = this.booking;
-
 if (this.specialDiscountData) {
   booking.netAmount = Number(plan.discountedPrice.toFixed(2));
   booking.gstAmount = Number(plan.taxPercentageperroom.toFixed(2));
@@ -8128,7 +8693,7 @@ const accommodation = this.businessUser.businessServiceDtoList.find(
 const fromTime = accommodation?.checkInTime ?? '12:00';
 const toTime = accommodation?.checkOutTime ?? '12:00';
 
-// 3️⃣ Function: combine guest date + property time → UTC timestamp
+
 const getPropertyTimestamp = (guestDate: string, propertyTime: string) => {
   const [year, month, day] = guestDate.includes('-') && guestDate.split('-')[0].length === 4
     ? guestDate.split('-').map(Number) // yyyy-MM-dd
