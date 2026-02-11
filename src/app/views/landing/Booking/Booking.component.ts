@@ -336,7 +336,7 @@ private STEP_MESSAGES = {
   errorData: any;
 paidEnquiry = false;
 private bookingStartTime: number;
-private BOOKING_TIMEOUT = 2 * 60 * 1000; // 2 minutes
+private BOOKING_TIMEOUT = 50 * 1000; // 50 seconds
   constructor(
     private token: TokenStorage,
     private ngZone: NgZone,
