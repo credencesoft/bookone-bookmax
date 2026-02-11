@@ -334,7 +334,9 @@ private STEP_MESSAGES = {
     bookingTimeout: 'Booking creation is taking longer than expected.'
   };
   errorData: any;
-
+paidEnquiry = false;
+private bookingStartTime: number;
+private BOOKING_TIMEOUT = 2 * 60 * 1000; // 2 minutes
   constructor(
     private token: TokenStorage,
     private ngZone: NgZone,
@@ -618,26 +620,40 @@ if (parsed.discountPercentage) {
       this.progressPercent += 1;
     }
   }
-  private startPaymentStatusPolling() {
-    if (this.paymentPoller) return;
+private startPaymentStatusPolling() {
 
-    this.activeStep = 1;
-    this.aiMessage = this.STEP_MESSAGES.paymentProcessing;
-    this.paymentStartTime = Date.now();
+  if (this.paymentPoller) return;
 
-    this.paymentPoller = setInterval(() => {
+  this.activeStep = 1;
+  this.aiMessage = this.STEP_MESSAGES.paymentProcessing;
+  this.paymentStartTime = Date.now();
 
-      const TEN_MINUTES = 10 * 60 * 1000;
+  const FOUR_MINUTES = 4 * 60 * 1000;
 
-      if (Date.now() - this.paymentStartTime > TEN_MINUTES) {
+  this.paymentPoller = setInterval(() => {
+
+    const elapsedTime = Date.now() - this.paymentStartTime;
+
+    // ⏱ 4 minute timeout
+    if (elapsedTime > FOUR_MINUTES) {
+
+      clearInterval(this.paymentPoller);
+      this.paymentPoller = null;
+
+      // Only fail if still not completed
+      if (!this.completed) {
+        this.aiMessage = 'Payment verification timed out.';
         this.handlePaymentFailure();
-        return;
       }
 
-      this.checkPaymentStatus();
+      return;
+    }
 
-    }, 5000);
-  }
+    this.checkPaymentStatus();
+
+  }, 5000);
+}
+
 private checkPaymentStatus() {
 
   this.hotelBookingService
@@ -761,21 +777,49 @@ private handlePmsSuccess() {
   this.animateProgressTo(85);
   this.startBookingPolling();
 }
-
-
 private startBookingPolling() {
+
   const enquiryStr = sessionStorage.getItem('EnquiryResponseList');
   if (!enquiryStr) return;
 
   const enquiryList = JSON.parse(enquiryStr);
-  this.bookedEnquiries = [];
+
+  this.bookingStartTime = Date.now();
 
   this.bookingPoller = setInterval(() => {
+
+    const elapsed = Date.now() - this.bookingStartTime;
+
+    // ⏱ If booking not created within timeout
+    if (elapsed > this.BOOKING_TIMEOUT) {
+
+      clearInterval(this.bookingPoller);
+      this.bookingPoller = null;
+
+      if (!this.completed) {
+        this.handlePaidEnquiryState();
+      }
+
+      return;
+    }
+
     enquiryList.forEach(enquiry => {
       this.checkBookingStatus(enquiry);
     });
+
   }, 5000);
 }
+private handlePaidEnquiryState() {
+
+  this.paidEnquiry = true;
+  this.completed = false;
+  this.failed = false;
+
+  this.aiMessage = 'Payment received. Awaiting booking confirmation...';
+
+  this.animateProgressTo(100);
+}
+
 private checkBookingStatus(enquiry: any) {
   this.hotelBookingService
     .checkBookingStatus(enquiry.enquiryId)
