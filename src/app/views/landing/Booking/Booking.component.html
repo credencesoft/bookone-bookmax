@@ -2245,12 +2245,12 @@
     </button> -->
 
     <!-- Content Header -->
-    <h3 class="fw-bold mb-5 text-dark" *ngIf="!completed && !failed">
+    <h3 class="fw-bold mb-5 text-dark" *ngIf="!completed && !failed && !paidEnquiry">
       Securely Processing
     </h3>
 
     <!-- Stepper (Hidden on final views for cleaner look) -->
-    <div class="stepper-container px-3" *ngIf="!completed && !failed">
+    <div class="stepper-container px-3" *ngIf="!completed && !failed && !paidEnquiry">
       <div *ngFor="let step of steps; let i = index" class="step-item"
            [class.active]="activeStep === i"
            [class.completed]="step.status === 'completed'"
@@ -2281,7 +2281,7 @@
     </div>
 
     <!-- Active Loader Section -->
-    <div *ngIf="!completed && !failed">
+    <div *ngIf="!completed && !failed && !paidEnquiry">
       <div class="loader-box">
         <svg class="svg-loader" viewBox="0 0 120 120">
           <circle class="loader-ring-bg" cx="60" cy="60" r="54"></circle>
