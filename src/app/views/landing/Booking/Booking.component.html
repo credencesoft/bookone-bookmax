@@ -2299,6 +2299,12 @@
       <p class="status-text">
         "{{aiMessage}}"
       </p>
+      <p class="text-danger fw-semibold mt-2"
+        *ngIf="activeStep === 1 && !completed && !failed">
+        Please complete your secure payment within
+        <strong>{{ minutes }}:{{ seconds < 10 ? '0' + seconds : seconds }}</strong>
+        to avoid session expiry.
+      </p>
 
       <div class="security-box d-flex gap-3 text-start align-items-center">
         <div class="warning-icon-bg">!</div>
@@ -2321,7 +2327,7 @@
       <p class="text-secondary small mb-4 px-4">Great news! Your selected room is booked. A receipt and digital pass have been sent to your email.</p>
 
       <button style="font-size: 17px;" class="btn btn-primary w-100 py-3 fw-bold rounded-4 shadow-lg" (click)="goToConfirmation()">
-        Go to Dashboard
+        View Booking Details
       </button>
     </div>
 
