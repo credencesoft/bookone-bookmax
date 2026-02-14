@@ -8267,7 +8267,7 @@ this.tokenToTime = this.combinedDateToTime;
     this.enquiryForm.noOfExtraChild = this.booking.noOfExtraChild;
     this.enquiryForm.couponCode = this.booking.couponCode;
     this.enquiryForm.promotionName = this.booking.promotionName;
-    this.enquiryForm.externalSite = 'Website';
+    this.enquiryForm.externalSite = 'WebSite';
     this.enquiryForm.source = 'Bookone Connect';
     this.enquiryForm.beforeTaxAmount = this.booking.beforeTaxAmount;
     if (
