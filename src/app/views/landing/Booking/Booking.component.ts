@@ -337,6 +337,8 @@ private STEP_MESSAGES = {
 paidEnquiry = false;
 private bookingStartTime: number;
 private BOOKING_TIMEOUT = 50 * 1000; // 50 seconds
+remainingSeconds = 120;
+private countdownTimer: any;
   constructor(
     private token: TokenStorage,
     private ngZone: NgZone,
@@ -628,14 +630,15 @@ private startPaymentStatusPolling() {
   this.aiMessage = this.STEP_MESSAGES.paymentProcessing;
   this.paymentStartTime = Date.now();
 
-  const FOUR_MINUTES = 4 * 60 * 1000;
-
+  const TWO_MINUTES = 2 * 60 * 1000;
+   this.remainingSeconds = 120;
+  this.startCountdown();
   this.paymentPoller = setInterval(() => {
 
     const elapsedTime = Date.now() - this.paymentStartTime;
 
     // ⏱ 4 minute timeout
-    if (elapsedTime > FOUR_MINUTES) {
+    if (elapsedTime > TWO_MINUTES) {
 
       clearInterval(this.paymentPoller);
       this.paymentPoller = null;
@@ -653,6 +656,28 @@ private startPaymentStatusPolling() {
 
   }, 5000);
 }
+
+get minutes(): number {
+  return Math.floor(this.remainingSeconds / 60);
+}
+
+get seconds(): number {
+  return this.remainingSeconds % 60;
+}
+
+startCountdown() {
+    this.remainingSeconds = 120;
+  this.countdownTimer = setInterval(() => {
+
+    if (this.remainingSeconds > 0) {
+      this.remainingSeconds--;
+    } else {
+      clearInterval(this.countdownTimer);
+    }
+
+  }, 1000);
+}
+
 
 private checkPaymentStatus() {
 
@@ -907,6 +932,15 @@ private startProgressAnimation() {
 private stopAllTimers() {
   this.clearPaymentPoller();
   this.clearBookingPoller();
+    if (this.paymentPoller) {
+    clearInterval(this.paymentPoller);
+    this.paymentPoller = null;
+  }
+
+  if (this.countdownTimer) {
+    clearInterval(this.countdownTimer);
+    this.countdownTimer = null;
+  }
   if (this.progressTimer) clearInterval(this.progressTimer);
 }
 
@@ -4688,7 +4722,15 @@ processPaymentPayU(payment: Payment) {
     const url =
       `https://payu.payment.uat.bookone.io/api/payu/paymentIntent/THM?${params.toString()}`;
 
-    window.open(url, '_blank');
+       const paymentWindow = window.open(url, '_blank');
+
+  const TWO_MINUTES = 2.3 * 60 * 1000;
+
+  setTimeout(() => {
+    if (paymentWindow && !paymentWindow.closed) {
+      paymentWindow.close();
+    }
+  }, TWO_MINUTES);
   }
 
 
