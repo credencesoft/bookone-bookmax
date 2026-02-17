@@ -593,7 +593,8 @@ if (parsed.discountPercentage) {
     return text.split(' ').slice(0, count).join(' ');
   }
   openBookingProcess(enquiryId: number, transactionId: string) {
-    this.resetState();
+    if(this.businessUser.paymentGateway === 'PayU') {
+          this.resetState();
 
     this.enquiryId = enquiryId;
     this.transactionId = transactionId;
@@ -608,6 +609,23 @@ if (parsed.discountPercentage) {
       if (!this.showModal || this.failed || this.completed) return;
       this.startPaymentStatusPolling();
     }, 20000);
+    } else if (this.businessUser.paymentGateway === 'razorpay') {
+               this.resetState();
+
+    this.enquiryId = enquiryId;
+    this.transactionId = transactionId;
+
+    this.showModal = true;
+
+    // STEP 1 – enquiry already completed
+    this.markEnquiryCompleted();
+
+    // STEP 2 – start payment polling after 40 seconds
+    this.paymentDelayTimer = setTimeout(() => {
+      if (!this.showModal || this.failed || this.completed) return;
+      this.startPaymentStatusPolling();
+    }, 20000);
+    }
   }
   private markEnquiryCompleted() {
     this.activeStep = 0;
@@ -651,8 +669,11 @@ private startPaymentStatusPolling() {
 
       return;
     }
-
+    if(this.businessUser.paymentGateway === 'razorpay') {
+      this.checkPaymentStatusRazorpay();
+    } else {
     this.checkPaymentStatus();
+    }
 
   }, 5000);
 }
@@ -677,7 +698,30 @@ startCountdown() {
 
   }, 1000);
 }
+private checkPaymentStatusRazorpay() {
 
+  this.hotelBookingService
+    .checkPaymentStatusRazorPay(this.businessUser.id, this.transactionId)
+    .subscribe({
+      next: res => {
+        const status = res.status.toLowerCase();
+        // this.errorData = tx.error_Message;
+
+        if (status === 'paid') {
+          this.handlePaymentSuccess();
+        } else if (status === 'failed') {
+          this.handlePaymentFailure();
+        }
+        else {
+          this.onPaymentPending();
+        }
+      },
+      error: () => {
+        // network or gateway lag ≠ failure
+        this.onPaymentPending();
+      }
+    });
+}
 
 private checkPaymentStatus() {
 
@@ -4007,6 +4051,7 @@ if (bookingSummaryStr) {
 
       this.cardPaymentAvailable = true;
     } else if (this.businessUser.paymentGateway === 'razorpay') {
+            this.showModal = true;
       this.payment.paymentMode = 'Razorpay';
       this.payment.status = 'NotPaid';
       this.payment.businessServiceName = 'Accommodation';
@@ -4638,15 +4683,26 @@ if (bookingSummaryStr) {
         this.paymentLoader = false;
         if (response.status === 200) {
           this.payment = response.body;
-
+          this.openBookingProcess(
+          this.equitycreatedData.enquiryId,
+          this.payment.razorpayOrderId
+        );
           this.token.saveBookingData(this.booking);
           this.token.savePaymentData(this.payment);
           this.token.savePropertyData(this.businessUser);
-        //    const url = this.router.serializeUrl(
-        //   this.router.createUrlTree(['/checkout-rayzorpay'])
-        // );
-        // window.open(url, '_blank');
-          this.router.navigate(['/checkout-rayzorpay']);
+           const url = this.router.serializeUrl(
+          this.router.createUrlTree(['/checkout-rayzorpay'])
+        );
+                         const paymentWindow = window.open(url, '_blank');
+
+                const TWO_MINUTES = 2.3 * 60 * 1000;
+
+                setTimeout(() => {
+                  if (paymentWindow && !paymentWindow.closed) {
+                    paymentWindow.close();
+                  }
+                }, TWO_MINUTES);
+          // this.router.navigate(['/checkout-rayzorpay']);
         }
       });
   }

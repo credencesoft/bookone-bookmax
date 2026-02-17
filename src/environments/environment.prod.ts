@@ -35,5 +35,6 @@ export const environment = {
     payuUrl: 'https://payu.payment.uat.bookone.io',
   callbackUrl: 'https://bookone.io/payment-confirmation',
   failureCode:'https://bookone.io/payment-failure',
-  callbackUrlPayment:'https://bookone.io/confirm-payment'
+  callbackUrlPayment:'https://bookone.io/confirm-payment',
+    razorPay: 'https://razorpay.bookonepms.com',
 };

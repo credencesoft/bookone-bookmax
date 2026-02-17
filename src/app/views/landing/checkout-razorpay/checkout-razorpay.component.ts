@@ -149,7 +149,7 @@ if (this.businessUser.paymentGatewayApiKey === keyId) {
       ondismiss: () => {
         console.warn('Payment popup closed by user.');
         this.zone.run(() => {
-          this.router.navigate(['/confirm']); // fallback page
+          this.router.navigate(['/payment-failure']); // fallback page
         });
       }
     }
@@ -198,7 +198,7 @@ if (this.businessUser.paymentGatewayApiKey === keyId) {
         this.changeDetectorRefs.detectChanges();
         this.loading = false;
         // ✅ Redirect after showing the success message
-        this.router.navigate(['/booking-confirm']);
+        this.router.navigate(['/payment-confirmation']);
       }, 3000); // Delay redirect by 3 seconds
     } else {
       this.paymentLoader = false;
