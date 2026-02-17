@@ -2243,11 +2243,25 @@
     <!-- <button class="close-btn" (click)="closeModal()" [disabled]="!completed && !failed" aria-label="Close modal">
       <span aria-hidden="true">&times;</span>
     </button> -->
-
-    <!-- Content Header -->
-    <h3 class="fw-bold mb-5 text-dark" *ngIf="!completed && !failed && !paidEnquiry">
+    <div class="mb-5">
+          <!-- Content Header -->
+    <h3 class="fw-bold  text-dark" *ngIf="!completed && !failed && !paidEnquiry">
       Securely Processing
     </h3>
+              <!-- Timer + Message -->
+  <div class="loader-timer-wrapper"
+       *ngIf="activeStep === 1 && !completed && !failed && !paidEnquiry"
+       [class.urgent]="minutes === 0 && seconds <= 30">
+    <span class="timer-emoji">⏳</span>
+  <span class="time-value">
+    {{ minutes }}:{{ seconds < 10 ? '0' + seconds : seconds }}
+  </span>
+  <span class="time-message">
+    left to complete payment
+  </span>
+      </div>
+    </div>
+
 
     <!-- Stepper (Hidden on final views for cleaner look) -->
     <div class="stepper-container px-3" *ngIf="!completed && !failed && !paidEnquiry">
@@ -2291,6 +2305,7 @@
         <div class="percentage-text">
           {{progressPercent}}<span class="percentage-symbol">%</span>
         </div>
+
         <div class="satellite-container">
           <div class="satellite-dot"></div>
         </div>
@@ -2298,12 +2313,6 @@
 
       <p class="status-text">
         "{{aiMessage}}"
-      </p>
-      <p class="text-danger fw-semibold mt-2"
-        *ngIf="activeStep === 1 && !completed && !failed">
-        Please complete your secure payment within
-        <strong>{{ minutes }}:{{ seconds < 10 ? '0' + seconds : seconds }}</strong>
-        to avoid session expiry.
       </p>
 
       <div class="security-box d-flex gap-3 text-start align-items-center">
