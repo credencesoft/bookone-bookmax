@@ -2873,7 +2873,15 @@ async  payAndCheckout() {
 }
   sessionStorage.removeItem('EnquiryResponseList');
   this.isPayNowDisabled = true;
+
 const bookingSummaryStr = sessionStorage.getItem('bookingSummaryDetails');
+ const bookingSummary = bookingSummaryStr
+      ? JSON.parse(bookingSummaryStr)
+      : null;
+        const plans = bookingSummary.selectedPlansSummary;
+          if (plans.length >= 2) {
+        this.groupBookingId = Math.floor(10000000 + Math.random() * 90000000);
+      }
 if (bookingSummaryStr) {
   this.bookingSummaryDetails = JSON.parse(bookingSummaryStr);
 
