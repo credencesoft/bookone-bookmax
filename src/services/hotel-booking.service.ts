@@ -433,6 +433,16 @@ fetchBookingById(bookingId: number) {
 
     return this.http.get<any>(url);
   }
+  checkPaymentStatusRazorPay(
+    propertyId: number,
+    orderId : string
+  ): Observable<any> {
+    const url =
+      environment.razorPay + `/api/razorpay/hotelmate/order-status/` + orderId +
+      `?propertyId=${propertyId}`;
+
+    return this.http.get<any>(url);
+  }
    convertEnquiryToPMS(payload: any): Observable<HttpResponse<any>> {
     const url = PAYU_URL + '/api/payu/convert-to-pms';
 
