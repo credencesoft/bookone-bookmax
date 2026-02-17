@@ -4326,3 +4326,66 @@ background: #ffffff;
     font-size: 0.95rem;
   }
 }
+/* ===== TIMER WITH MESSAGE ===== */
+
+.loader-timer-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #64748b;
+  transition: all 0.3s ease;
+  text-align: center;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.timer-icon {
+  width: 14px;
+  height: 14px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+}
+
+.time-value {
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: #0a4f6e;
+}
+
+.time-message {
+    font-size: 0.85rem;
+    font-weight: 500;
+    opacity: 0.8;
+}
+
+/* Urgent State */
+
+.loader-timer-wrapper.urgent {
+  color: #dc2626;
+  animation: urgentPulse 1s infinite;
+}
+
+.loader-timer-wrapper.urgent .time-value {
+  color: #dc2626;
+}
+
+@keyframes urgentPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+.timer-emoji {
+  font-size: 16px;
+  display: inline-block;
+  animation: flipTimer 2s infinite ease-in-out;
+}
+
+@keyframes flipTimer {
+  0% { transform: rotate(0deg); }
+  50% { transform: rotate(180deg); }
+  100% { transform: rotate(360deg); }
+}
