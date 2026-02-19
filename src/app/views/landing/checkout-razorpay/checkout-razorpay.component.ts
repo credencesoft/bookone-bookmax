@@ -199,7 +199,7 @@ if (this.businessUser.paymentGatewayApiKey === keyId) {
         this.loading = false;
         // ✅ Redirect after showing the success message
         this.router.navigate(['/payment-confirmation']);
-      }, 3000); // Delay redirect by 3 seconds
+      }, 1000); // Delay redirect by 3 seconds
     } else {
       this.paymentLoader = false;
       setTimeout(() => {
