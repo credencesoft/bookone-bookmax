@@ -4,7 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "node --max_old_space_size=12048 ./node_modules/@angular/cli/bin/ng build && node rename-build-files.js ",
+    "build": "node --max_old_space_size=12048 ./node_modules/@angular/cli/bin/ng build --configuration production && node rename-build-files.js ",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "dev:ssr": "ng run demoSSR:serve-ssr",
