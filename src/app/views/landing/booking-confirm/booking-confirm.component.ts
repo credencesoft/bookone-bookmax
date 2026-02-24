@@ -30,9 +30,10 @@ import { Images } from 'src/app/model/image';
 import { log } from 'console';
 
 @Component({
-  selector: 'app-booking-confirm',
-  templateUrl: './booking-confirm.component.html',
-  styleUrls: ['./booking-confirm.component.scss']
+    selector: 'app-booking-confirm',
+    templateUrl: './booking-confirm.component.html',
+    styleUrls: ['./booking-confirm.component.scss'],
+    standalone: false
 })
 export class BookingConfirmComponent {
   businessUser: BusinessUser;

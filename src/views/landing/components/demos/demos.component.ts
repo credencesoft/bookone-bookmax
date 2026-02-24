@@ -3,10 +3,11 @@ import { Component, OnInit } from '@angular/core';
 import { SharedAnimations } from 'src/shared/animations/shared-animations';
 
 @Component({
-  selector: 'app-demos',
-  templateUrl: './demos.component.html',
-  styleUrls: ['./demos.component.scss'],
-  animations:[SharedAnimations]
+    selector: 'app-demos',
+    templateUrl: './demos.component.html',
+    styleUrls: ['./demos.component.scss'],
+    animations: [SharedAnimations],
+    standalone: false
 })
 export class DemosComponent implements OnInit {
   public isCollapsed = true;

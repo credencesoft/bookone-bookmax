@@ -11,9 +11,10 @@ import { TokenStorage } from 'src/token.storage';
 // import { TokenStorage } from 'src/app/token.storage';
 
 @Component({
-  selector: 'app-onboarding-couponcode-form',
-  templateUrl: './onboarding-couponcode-form.component.html',
-  styleUrls: ['./onboarding-couponcode-form.component.scss']
+    selector: 'app-onboarding-couponcode-form',
+    templateUrl: './onboarding-couponcode-form.component.html',
+    styleUrls: ['./onboarding-couponcode-form.component.scss'],
+    standalone: false
 })
 export class OnboardingCouponcodeFormComponent {
   isPopupVisible: boolean = false;

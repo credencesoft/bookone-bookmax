@@ -28,9 +28,10 @@ import { AuthService } from 'src/app/auth/auth.service';
 const TOKEN_PREFIX = "Bearer ";
 
 @Component({
-  selector: 'app-Login-cancel-page',
-  templateUrl: './Login-cancel-page.component.html',
-  styleUrls: ['./Login-cancel-page.component.css']
+    selector: 'app-Login-cancel-page',
+    templateUrl: './Login-cancel-page.component.html',
+    styleUrls: ['./Login-cancel-page.component.css'],
+    standalone: false
 })
 export class LoginCancelPageComponent implements OnInit {
   emailt :UntypedFormControl = new UntypedFormControl();

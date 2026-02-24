@@ -1,7 +1,7 @@
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { CheckoutService } from 'paytm-blink-checkout-angular';
+import { CheckoutService } from 'src/services/paytm-checkout.service';
 import { Subscription } from 'rxjs';
 import { Booking } from 'src/app/model/booking';
 import { Payment } from 'src/app/model/payment';
@@ -10,9 +10,10 @@ import { HotelBookingService } from 'src/services/hotel-booking.service';
 import { TokenStorage } from 'src/token.storage';
 
 @Component({
-  selector: 'app-CheckoutPhonepeComponent',
-  templateUrl: './CheckoutPhonepeComponent.component.html',
-  styleUrls: ['./CheckoutPhonepeComponent.component.css']
+    selector: 'app-CheckoutPhonepeComponent',
+    templateUrl: './CheckoutPhonepeComponent.component.html',
+    styleUrls: ['./CheckoutPhonepeComponent.component.css'],
+    standalone: false
 })
 export class CheckoutPhonepeComponentComponent implements OnInit {
 
@@ -37,7 +38,7 @@ export class CheckoutPhonepeComponentComponent implements OnInit {
     private token: TokenStorage,
     private hotelBookingService: HotelBookingService,
     private changeDetectorRefs: ChangeDetectorRef,
-    private http: HttpClientModule,
+    private http: HttpClient,
     private router: Router
   ) {
     this.businessUser = new BusinessUser();

@@ -1,274 +1,289 @@
 <!-- Vertical navbar -->
 
 <!-- Vertical Navbar -->
-<div class="vertical-nav" id="sidebar" *ngIf="isdone">
-  <div>
-    <button class="close-btn" (click)="closeNavbar()">
-      <img src="/media-be/images/x-mark.png" alt="Close" />
-    </button>
-  </div>
-
-  <ul class="nav-menu">
-    <li class="nav-item">
-      <img
-        *ngIf="businessUser?.logoUrl"
-        [src]="businessUser?.logoUrl"
-        alt="Logo"
-        class="logo-imagetwo"
-      />
-      <a
-        *ngIf="businessUser?.website"
-        [href]="this.website"
-        target="_top"
-        class="nav-link"
-      >
-        <i class="fas fa-home"></i> Home
-      </a>
-    </li>
-    <hr *ngIf="businessUser?.website" />
-
-    <li class="nav-item">
-      <a
-        *ngIf="businessUser?.website && socialmedialist?.aboutUs"
-        [href]="socialmedialist?.aboutUs"
-        target="_top"
-        class="nav-link"
-      >
-        <i class="fas fa-info-circle"></i> About
-      </a>
-    </li>
-    <hr *ngIf="businessUser?.website && socialmedialist?.aboutUs" />
-    <li class="nav-item">
-      <a
-        *ngIf="businessUser?.website && socialmedialist?.blogPageUrl"
-        [href]="socialmedialist?.blogPageUrl"
-        target="_top"
-        class="nav-link"
-      >
-        <i class="fas fa-info-circle"></i> Blogs
-      </a>
-    </li>
-    <hr *ngIf="businessUser?.website && socialmedialist?.blogPageUrl" />
-    <!-- <li class="nav-item">
+@if (isdone) {
+  <div class="vertical-nav" id="sidebar">
+    <div>
+      <button class="close-btn" (click)="closeNavbar()">
+        <img src="/media-be/images/x-mark.png" alt="Close" />
+      </button>
+    </div>
+    <ul class="nav-menu">
+      <li class="nav-item">
+        @if (businessUser?.logoUrl) {
+          <img
+            [src]="businessUser?.logoUrl"
+            alt="Logo"
+            class="logo-imagetwo"
+            />
+        }
+        @if (businessUser?.website) {
+          <a
+            [href]="this.website"
+            target="_top"
+            class="nav-link"
+            >
+            <i class="fas fa-home"></i> Home
+          </a>
+        }
+      </li>
+      @if (businessUser?.website) {
+        <hr />
+      }
+      <li class="nav-item">
+        @if (businessUser?.website && socialmedialist?.aboutUs) {
+          <a
+            [href]="socialmedialist?.aboutUs"
+            target="_top"
+            class="nav-link"
+            >
+            <i class="fas fa-info-circle"></i> About
+          </a>
+        }
+      </li>
+      @if (businessUser?.website && socialmedialist?.aboutUs) {
+        <hr />
+      }
+      <li class="nav-item">
+        @if (businessUser?.website && socialmedialist?.blogPageUrl) {
+          <a
+            [href]="socialmedialist?.blogPageUrl"
+            target="_top"
+            class="nav-link"
+            >
+            <i class="fas fa-info-circle"></i> Blogs
+          </a>
+        }
+      </li>
+      @if (businessUser?.website && socialmedialist?.blogPageUrl) {
+        <hr />
+      }
+      <!-- <li class="nav-item">
       <a
         *ngIf="businessUser?.website && socialmedialist?.csr"
         [href]="socialmedialist?.csr"
         target="_top"
         class="nav-link"
-      >
+        >
         <i class="fas fa-info-circle"></i> CSR
       </a>
     </li> -->
     <!-- <hr *ngIf="businessUser?.website && socialmedialist?.csr" /> -->
     <li class="nav-item">
-      <a
-        *ngIf="businessUser?.website && socialmedialist?.contact"
-        [href]="socialmedialist?.contact"
-        target="_top"
-        class="nav-link"
-      >
-        <i class="fas fa-info-circle"></i> Contact
-      </a>
+      @if (businessUser?.website && socialmedialist?.contact) {
+        <a
+          [href]="socialmedialist?.contact"
+          target="_top"
+          class="nav-link"
+          >
+          <i class="fas fa-info-circle"></i> Contact
+        </a>
+      }
     </li>
     <!-- <hr *ngIf="businessUser?.website && socialmedialist?.contact" />
-
     <li class="nav-item">
       <a
         *ngIf="businessUser?.website && socialmedialist?.termsAndConditions"
         href="{{ socialmedialist?.termsAndConditions }}"
         class="nav-link"
-      >
+        >
         <i class="fas fa-file-contract"></i> Terms & Conditions
       </a>
     </li>
     <hr *ngIf="businessUser?.website && socialmedialist?.termsAndConditions" />
-
     <li class="nav-item">
       <a
         *ngIf="businessUser?.website && socialmedialist?.privacyPolicy"
         href="{{ socialmedialist?.privacyPolicy }}"
         class="nav-link"
-      >
+        >
         <i class="fas fa-user-secret"></i> Privacy Policy
       </a>
     </li>
     <hr *ngIf="businessUser?.website && socialmedialist?.privacyPolicy" />
-
     <li class="nav-item">
       <a
         *ngIf="businessUser?.website && socialmedialist?.paymentTerms"
         href="{{ socialmedialist?.paymentTerms }}"
         class="nav-link"
-      >
+        >
         <i class="fas fa-credit-card"></i> Payment Terms
       </a>
     </li>
     <hr *ngIf="businessUser?.website && socialmedialist?.paymentTerms" /> -->
   </ul>
 </div>
+}
 
-<nav
-  class="navbar navbar-dark top-navbar desktop-view-ui"
-  *ngIf="showheader === true"
->
-  <div
-    class="container-div"
+@if (showheader === true) {
+  <nav
+    class="navbar navbar-dark top-navbar desktop-view-ui"
+    >
+    <div
+      class="container-div"
     style="
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin: auto;
     "
-  >
-    <div
-      class="left-section"
-      *ngIf="businessUser?.logoUrl"
-      style="display: flex; align-items: center"
-    >
-    <a [href]="businessUser?.website" target="_blank">
-        <img
-          class="logo-image"
-          [src]="businessUser?.logoUrl"
-          alt="Business Logo"
-          style="height: 68px"
-        />
-      </a>
-
-    </div>
-
-    <div class="header-section-content">
-      <div *ngIf="businessUser?.website">
-        <a [href]="businessUser.website" target="_top" style="color: white"
-          >Home</a
-        >
-      </div>
-      <div *ngIf="businessUser?.website && socialmedialist?.aboutUs">
-        <a [href]="socialmedialist?.aboutUs" target="_top" style="color: white"
-          >About</a
-        >
-      </div>
-      <div *ngIf="businessUser?.website && socialmedialist?.blogPageUrl">
-        <a
-          [href]="socialmedialist?.blogPageUrl"
-          target="_top"
-          style="color: white"
-          >Blogs</a
-        >
-      </div>
-      <!-- <div>
-        <a
-          *ngIf="businessUser?.website && socialmedialist?.csr"
-          [href]="socialmedialist?.csr"
-          target="_top"
-          style="color: white"
-          >CSR</a
-        >
-      </div> -->
-      <div *ngIf="businessUser?.website && socialmedialist?.contact">
-        <a [href]="socialmedialist?.contact" target="_top" style="color: white"
-          >Contact</a
-        >
-      </div>
-      <!-- <div *ngIf="businessUser?.website && socialmedialist?.termsAndConditions">
-        <a
-          [href]="socialmedialist?.termsAndConditions"
-          target="_top"
-          style="color: white"
-          >Terms & Conditions</a
-        >
-      </div>
-      <div *ngIf="businessUser?.website && socialmedialist?.privacyPolicy">
-        <a
-          [href]="socialmedialist?.privacyPolicy"
-          target="_top"
-          style="color: white"
-          >Privacy Policy</a
-        >
-      </div>
-      <div *ngIf="businessUser?.website && socialmedialist?.paymentTerms">
-        <a
-
-          [href]="socialmedialist?.paymentTerms"
-          target="_top"
-          style="color: white"
-          >Payment Terms</a
-        >
-      </div> -->
-    </div>
-
-    <!-- Right Section: Book Now Button -->
-    <div style="display: flex; gap: 10px; align-items: center">
-      <div>
-        <a
-        *ngIf="websiteUrlBookingEngine"
-          [href]="getWhatsappShareUrlOne()"
-          target="_blank"
-          class="Whatsapp-btn-header"
-        >
-          <img
-            src="media-be/images/whatsapp-icons.svg"
-            style="margin-right: 6px"
-          />
-          Book via WhatsApp
-        </a>
-        <a
-        *ngIf="!websiteUrlBookingEngine"
-          [href]="getWhatsappShareUrlOne()"
-          target="_blank"
-          class="Whatsapp-btn-header"
-        >
-          <img
-            src="media-be/images/whatsapp-icons.svg"
-            style="margin-right: 6px"
-          />
-          Book via WhatsApp
-        </a>
-      </div>
-      <div>
-        <a class="blinking-unique-btn" [href]="'tel:' + (websiteUrlBookingEngine ? businessUser?.mobile : '7326079861')">
-          <div class="icon-embed-small-01 w-embed">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            xmlns:xlink="http://www.w3.org/1999/xlink"
-            aria-hidden="true"
-            role="img"
-            class="iconify iconify--ph"
-            width="100%"
-            height="100%"
-            preserveAspectRatio="xMidYMid meet"
-            viewBox="0 0 256 256"
-          >
-            <path
-              fill="Currentcolor"
-              d="M144.27 45.93a8 8 0 0 1 9.8-5.66a86.22 86.22 0 0 1 61.66 61.66a8 8 0 0 1-5.66 9.8a8.2 8.2 0 0 1-2.07.27a8 8 0 0 1-7.73-5.94a70.35 70.35 0 0 0-50.33-50.33a8 8 0 0 1-5.67-9.8m-2.33 41.8c13.79 3.68 22.65 12.54 26.33 26.33A8 8 0 0 0 176 120a8.2 8.2 0 0 0 2.07-.27a8 8 0 0 0 5.66-9.8c-5.12-19.16-18.5-32.54-37.66-37.66a8 8 0 1 0-4.13 15.46m81.94 95.35A56.26 56.26 0 0 1 168 232C88.6 232 24 167.4 24 88a56.26 56.26 0 0 1 48.92-55.88a16 16 0 0 1 16.62 9.52l21.12 47.15v.12a16 16 0 0 1-1.27 15.09c-.18.27-.37.52-.57.77L88 129.45c7.49 15.22 23.41 31 38.83 38.51l24.34-20.71a8 8 0 0 1 .75-.56a16 16 0 0 1 15.17-1.4l.13.06l47.11 21.11a16 16 0 0 1 9.55 16.62m-15.88-2h-.11l-47-21.05l-24.35 20.71a8 8 0 0 1-.74.56a16 16 0 0 1-15.75 1.14c-18.73-9.05-37.4-27.58-46.46-46.11a16 16 0 0 1 1-15.7a6 6 0 0 1 .57-.77L96 95.15l-21-47a.6.6 0 0 1 0-.12A40.2 40.2 0 0 0 40 88a128.14 128.14 0 0 0 128 128a40.21 40.21 0 0 0 40-34.93Z"
-            ></path>
-          </svg>
-        </div>
-        &nbsp;
-           {{ getFormattedNumber() }}
-        </a>
-      </div>
-      <!-- <div>
-          <a style="background-color: #fff; border-radius: 50%; padding: 15px 12px;">
-      <img src="media-be/images/robot-icon.svg" style="height:37px" />
-    </a>
-         </div> -->
-
-      <!-- <button
-        class="blinking-unique-btn"
-        (click)="scrollToAccommodation($event)"
       >
-        Book Now
-      </button> -->
-    </div>
-  </div>
-</nav>
+      @if (businessUser?.logoUrl) {
+        <div
+          class="left-section"
+          style="display: flex; align-items: center"
+          >
+          <a [href]="businessUser?.website" target="_blank">
+            <img
+              class="logo-image"
+              [src]="businessUser?.logoUrl"
+              alt="Business Logo"
+              style="height: 68px"
+              />
+            </a>
+          </div>
+        }
+        <div class="header-section-content">
+          @if (businessUser?.website) {
+            <div>
+              <a [href]="businessUser.website" target="_top" style="color: white"
+                >Home</a
+                >
+              </div>
+            }
+            @if (businessUser?.website && socialmedialist?.aboutUs) {
+              <div>
+                <a [href]="socialmedialist?.aboutUs" target="_top" style="color: white"
+                  >About</a
+                  >
+                </div>
+              }
+              @if (businessUser?.website && socialmedialist?.blogPageUrl) {
+                <div>
+                  <a
+                    [href]="socialmedialist?.blogPageUrl"
+                    target="_top"
+                    style="color: white"
+                    >Blogs</a
+                    >
+                  </div>
+                }
+                <!-- <div>
+                <a
+                  *ngIf="businessUser?.website && socialmedialist?.csr"
+                  [href]="socialmedialist?.csr"
+                  target="_top"
+                  style="color: white"
+                  >CSR</a
+                  >
+                </div> -->
+                @if (businessUser?.website && socialmedialist?.contact) {
+                  <div>
+                    <a [href]="socialmedialist?.contact" target="_top" style="color: white"
+                      >Contact</a
+                      >
+                    </div>
+                  }
+                  <!-- <div *ngIf="businessUser?.website && socialmedialist?.termsAndConditions">
+                  <a
+                    [href]="socialmedialist?.termsAndConditions"
+                    target="_top"
+                    style="color: white"
+                    >Terms & Conditions</a
+                    >
+                  </div>
+                  <div *ngIf="businessUser?.website && socialmedialist?.privacyPolicy">
+                    <a
+                      [href]="socialmedialist?.privacyPolicy"
+                      target="_top"
+                      style="color: white"
+                      >Privacy Policy</a
+                      >
+                    </div>
+                    <div *ngIf="businessUser?.website && socialmedialist?.paymentTerms">
+                      <a
+                        [href]="socialmedialist?.paymentTerms"
+                        target="_top"
+                        style="color: white"
+                        >Payment Terms</a
+                        >
+                      </div> -->
+                    </div>
+                    <!-- Right Section: Book Now Button -->
+                    <div style="display: flex; gap: 10px; align-items: center">
+                      <div>
+                        @if (websiteUrlBookingEngine) {
+                          <a
+                            [href]="getWhatsappShareUrlOne()"
+                            target="_blank"
+                            class="Whatsapp-btn-header"
+                            >
+                            <img
+                              src="media-be/images/whatsapp-icons.svg"
+                              style="margin-right: 6px"
+                              />
+                              Book via WhatsApp
+                            </a>
+                          }
+                          @if (!websiteUrlBookingEngine) {
+                            <a
+                              [href]="getWhatsappShareUrlOne()"
+                              target="_blank"
+                              class="Whatsapp-btn-header"
+                              >
+                              <img
+                                src="media-be/images/whatsapp-icons.svg"
+                                style="margin-right: 6px"
+                                />
+                                Book via WhatsApp
+                              </a>
+                            }
+                          </div>
+                          <div>
+                            <a class="blinking-unique-btn" [href]="'tel:' + (websiteUrlBookingEngine ? businessUser?.mobile : '7326079861')">
+                              <div class="icon-embed-small-01 w-embed">
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  xmlns:xlink="http://www.w3.org/1999/xlink"
+                                  aria-hidden="true"
+                                  role="img"
+                                  class="iconify iconify--ph"
+                                  width="100%"
+                                  height="100%"
+                                  preserveAspectRatio="xMidYMid meet"
+                                  viewBox="0 0 256 256"
+                                  >
+                                  <path
+                                    fill="Currentcolor"
+                                    d="M144.27 45.93a8 8 0 0 1 9.8-5.66a86.22 86.22 0 0 1 61.66 61.66a8 8 0 0 1-5.66 9.8a8.2 8.2 0 0 1-2.07.27a8 8 0 0 1-7.73-5.94a70.35 70.35 0 0 0-50.33-50.33a8 8 0 0 1-5.67-9.8m-2.33 41.8c13.79 3.68 22.65 12.54 26.33 26.33A8 8 0 0 0 176 120a8.2 8.2 0 0 0 2.07-.27a8 8 0 0 0 5.66-9.8c-5.12-19.16-18.5-32.54-37.66-37.66a8 8 0 1 0-4.13 15.46m81.94 95.35A56.26 56.26 0 0 1 168 232C88.6 232 24 167.4 24 88a56.26 56.26 0 0 1 48.92-55.88a16 16 0 0 1 16.62 9.52l21.12 47.15v.12a16 16 0 0 1-1.27 15.09c-.18.27-.37.52-.57.77L88 129.45c7.49 15.22 23.41 31 38.83 38.51l24.34-20.71a8 8 0 0 1 .75-.56a16 16 0 0 1 15.17-1.4l.13.06l47.11 21.11a16 16 0 0 1 9.55 16.62m-15.88-2h-.11l-47-21.05l-24.35 20.71a8 8 0 0 1-.74.56a16 16 0 0 1-15.75 1.14c-18.73-9.05-37.4-27.58-46.46-46.11a16 16 0 0 1 1-15.7a6 6 0 0 1 .57-.77L96 95.15l-21-47a.6.6 0 0 1 0-.12A40.2 40.2 0 0 0 40 88a128.14 128.14 0 0 0 128 128a40.21 40.21 0 0 0 40-34.93Z"
+                                  ></path>
+                                </svg>
+                              </div>
+                              &nbsp;
+                              {{ getFormattedNumber() }}
+                            </a>
+                          </div>
+                          <!-- <div>
+                          <a style="background-color: #fff; border-radius: 50%; padding: 15px 12px;">
+                            <img src="media-be/images/robot-icon.svg" style="height:37px" />
+                          </a>
+                        </div> -->
+                        <!-- <button
+                        class="blinking-unique-btn"
+                        (click)="scrollToAccommodation($event)"
+                        >
+                        Book Now
+                      </button> -->
+                    </div>
+                  </div>
+                </nav>
+              }
 
-<!-- <nav class="navbar navbar-dark top-navbar mobile-view-ui" *ngIf="showheader === true">
-      <div class="container-div">
-        <div class="left-section">
-            <img class="logo-image" [src]="businessUser?.logoUrl" alt="Business Logo">
-        </div>
+              <!-- <nav class="navbar navbar-dark top-navbar mobile-view-ui" *ngIf="showheader === true">
+              <div class="container-div">
+                <div class="left-section">
+                  <img class="logo-image" [src]="businessUser?.logoUrl" alt="Business Logo">
+                </div>
 
         <div style="float: right;
         display: flex;
@@ -278,115 +293,117 @@
 
 
 
-        <button class="navbar-toggler" *ngIf="businessUser?.website" (click)="toggleListingDetails()" type="button" aria-controls="navbarToggleExternalContent" aria-expanded="false" aria-label="Toggle navigation">
-            <img src="media-be/images/nav-toggle.png" alt="Toggle Navigation">
-        </button>
-      </div>
-    </div>
+                  <button class="navbar-toggler" *ngIf="businessUser?.website" (click)="toggleListingDetails()" type="button" aria-controls="navbarToggleExternalContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <img src="media-be/images/nav-toggle.png" alt="Toggle Navigation">
+                  </button>
+                </div>
+              </div>
 
-    </nav> -->
+            </nav> -->
 
-<nav
-  class="navbar navbar-dark top-navbar mobile-view-ui"
-  *ngIf="showheader === true"
->
-  <div
-    class="container-div"
-    style="display: flex; justify-content: space-between; align-items: center; gap:14px"
-  >
-    <div>
-      <div
-        class="left-section"
-        *ngIf="businessUser?.logoUrl"
-        style="display: flex; align-items: center"
-      >
-      <a [href]="businessUser?.website" target="_blank">
-        <img
-          class="logo-image"
-          [src]="businessUser?.logoUrl"
-          alt="Business Logo"
-          style="height: 49px; width: auto !important"
-        />
-      </a>
+            @if (showheader === true) {
+              <nav
+                class="navbar navbar-dark top-navbar mobile-view-ui"
+                >
+                <div
+                  class="container-div"
+                  style="display: flex; justify-content: space-between; align-items: center; gap:14px"
+                  >
+                  <div>
+                    @if (businessUser?.logoUrl) {
+                      <div
+                        class="left-section"
+                        style="display: flex; align-items: center"
+                        >
+                        <a [href]="businessUser?.website" target="_blank">
+                          <img
+                            class="logo-image"
+                            [src]="businessUser?.logoUrl"
+                            alt="Business Logo"
+                            style="height: 49px; width: auto !important"
+                            />
+                          </a>
+                        </div>
+                      }
+                    </div>
+                    <div class="d-flex" style="gap: 12px; align-items: center;">
+                      <div>
+                        @if (!websiteUrlBookingEngine) {
+                          <a
+                            [href]="getWhatsappShareUrlOne()"
+                            target="_blank"
+                            class="Whatsapp-btn-header"
+                            >
+                            <img
+                              src="media-be/images/whatsapp-icons.svg"
+                              style="margin-right: 6px"
+                              />
+                            </a>
+                          }
+                          @if (websiteUrlBookingEngine) {
+                            <a
+                              [href]="getWhatsappShareUrlOne()"
+                              target="_blank"
+                              class="Whatsapp-btn-header"
+                              >
+                              <img
+                                src="media-be/images/whatsapp-icons.svg"
+                                style="margin-right: 6px"
+                                />
+                              </a>
+                            }
+                          </div>
+                          <div>
+                            <a class="blinking-unique-btn" [href]="'tel:' + (websiteUrlBookingEngine ? businessUser?.mobile : '7326079861')">
+                              <div class="icon-embed-small-01 w-embed">
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  xmlns:xlink="http://www.w3.org/1999/xlink"
+                                  aria-hidden="true"
+                                  role="img"
+                                  class="iconify iconify--ph"
+                                  width="100%"
+                                  height="100%"
+                                  preserveAspectRatio="xMidYMid meet"
+                                  viewBox="0 0 256 256"
+                                  >
+                                  <path
+                                    fill="Currentcolor"
+                                    d="M144.27 45.93a8 8 0 0 1 9.8-5.66a86.22 86.22 0 0 1 61.66 61.66a8 8 0 0 1-5.66 9.8a8.2 8.2 0 0 1-2.07.27a8 8 0 0 1-7.73-5.94a70.35 70.35 0 0 0-50.33-50.33a8 8 0 0 1-5.67-9.8m-2.33 41.8c13.79 3.68 22.65 12.54 26.33 26.33A8 8 0 0 0 176 120a8.2 8.2 0 0 0 2.07-.27a8 8 0 0 0 5.66-9.8c-5.12-19.16-18.5-32.54-37.66-37.66a8 8 0 1 0-4.13 15.46m81.94 95.35A56.26 56.26 0 0 1 168 232C88.6 232 24 167.4 24 88a56.26 56.26 0 0 1 48.92-55.88a16 16 0 0 1 16.62 9.52l21.12 47.15v.12a16 16 0 0 1-1.27 15.09c-.18.27-.37.52-.57.77L88 129.45c7.49 15.22 23.41 31 38.83 38.51l24.34-20.71a8 8 0 0 1 .75-.56a16 16 0 0 1 15.17-1.4l.13.06l47.11 21.11a16 16 0 0 1 9.55 16.62m-15.88-2h-.11l-47-21.05l-24.35 20.71a8 8 0 0 1-.74.56a16 16 0 0 1-15.75 1.14c-18.73-9.05-37.4-27.58-46.46-46.11a16 16 0 0 1 1-15.7a6 6 0 0 1 .57-.77L96 95.15l-21-47a.6.6 0 0 1 0-.12A40.2 40.2 0 0 0 40 88a128.14 128.14 0 0 0 128 128a40.21 40.21 0 0 0 40-34.93Z"
+                                  ></path>
+                                </svg>
+                              </div>
+                            </a>
+                          </div>
+                          <div>
+                            @if (businessUser?.website) {
+                              <button
+                                class="navbar-toggler"
+                                (click)="toggleListingDetails()"
+                                type="button"
+                                aria-controls="navbarToggleExternalContent"
+                                aria-expanded="false"
+                                aria-label="Toggle navigation"
+                                >
+                                <img src="media-be/images/nav-toggle.png" alt="Toggle Navigation" />
+                              </button>
+                            }
+                          </div>
+                        </div>
+                        <!-- <div>
+                        <button
+                          class="blinking-unique-btn"
+                          (click)="scrollToAccommodation($event)"
+                          >
+                          Book Now
+                        </button>
+                      </div> -->
+                    </div>
+                  </nav>
+                }
 
-      </div>
-    </div>
+                <!-- Styles -->
 
-    <div class="d-flex" style="gap: 12px; align-items: center;">
-      <div>
-        <a
-          *ngIf="!websiteUrlBookingEngine"
-          [href]="getWhatsappShareUrlOne()"
-          target="_blank"
-          class="Whatsapp-btn-header"
-        >
-          <img
-            src="media-be/images/whatsapp-icons.svg"
-            style="margin-right: 6px"
-          />
-        </a>
-        <a
-        *ngIf="websiteUrlBookingEngine"
-          [href]="getWhatsappShareUrlOne()"
-          target="_blank"
-          class="Whatsapp-btn-header"
-        >
-          <img
-            src="media-be/images/whatsapp-icons.svg"
-            style="margin-right: 6px"
-          />
-        </a>
-      </div>
-      <div>
-        <a class="blinking-unique-btn" [href]="'tel:' + (websiteUrlBookingEngine ? businessUser?.mobile : '7326079861')">
-          <div class="icon-embed-small-01 w-embed">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            xmlns:xlink="http://www.w3.org/1999/xlink"
-            aria-hidden="true"
-            role="img"
-            class="iconify iconify--ph"
-            width="100%"
-            height="100%"
-            preserveAspectRatio="xMidYMid meet"
-            viewBox="0 0 256 256"
-          >
-            <path
-              fill="Currentcolor"
-              d="M144.27 45.93a8 8 0 0 1 9.8-5.66a86.22 86.22 0 0 1 61.66 61.66a8 8 0 0 1-5.66 9.8a8.2 8.2 0 0 1-2.07.27a8 8 0 0 1-7.73-5.94a70.35 70.35 0 0 0-50.33-50.33a8 8 0 0 1-5.67-9.8m-2.33 41.8c13.79 3.68 22.65 12.54 26.33 26.33A8 8 0 0 0 176 120a8.2 8.2 0 0 0 2.07-.27a8 8 0 0 0 5.66-9.8c-5.12-19.16-18.5-32.54-37.66-37.66a8 8 0 1 0-4.13 15.46m81.94 95.35A56.26 56.26 0 0 1 168 232C88.6 232 24 167.4 24 88a56.26 56.26 0 0 1 48.92-55.88a16 16 0 0 1 16.62 9.52l21.12 47.15v.12a16 16 0 0 1-1.27 15.09c-.18.27-.37.52-.57.77L88 129.45c7.49 15.22 23.41 31 38.83 38.51l24.34-20.71a8 8 0 0 1 .75-.56a16 16 0 0 1 15.17-1.4l.13.06l47.11 21.11a16 16 0 0 1 9.55 16.62m-15.88-2h-.11l-47-21.05l-24.35 20.71a8 8 0 0 1-.74.56a16 16 0 0 1-15.75 1.14c-18.73-9.05-37.4-27.58-46.46-46.11a16 16 0 0 1 1-15.7a6 6 0 0 1 .57-.77L96 95.15l-21-47a.6.6 0 0 1 0-.12A40.2 40.2 0 0 0 40 88a128.14 128.14 0 0 0 128 128a40.21 40.21 0 0 0 40-34.93Z"
-            ></path>
-          </svg>
-        </div>
-        </a>
-      </div>
-      <div>
-        <button
-          class="navbar-toggler"
-          *ngIf="businessUser?.website"
-          (click)="toggleListingDetails()"
-          type="button"
-          aria-controls="navbarToggleExternalContent"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-        >
-          <img src="media-be/images/nav-toggle.png" alt="Toggle Navigation" />
-        </button>
-      </div>
-    </div>
-
-    <!-- <div>
-              <button
-        class="blinking-unique-btn"
-        (click)="scrollToAccommodation($event)"
-      >
-        Book Now
-      </button>
-    </div> -->
-  </div>
-</nav>
-
-<!-- Styles -->
-
-<!-- <div class="banner-container" *ngIf="!businessUser?.website">
-  <img src="media-be/images/BookOne Website Bannerr.png" alt="Website Banner" class="banner-image">
-</div> -->
+                <!-- <div class="banner-container" *ngIf="!businessUser?.website">
+                <img src="media-be/images/BookOne Website Bannerr.png" alt="Website Banner" class="banner-image">
+              </div> -->

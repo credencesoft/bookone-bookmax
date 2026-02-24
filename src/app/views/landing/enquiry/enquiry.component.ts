@@ -24,9 +24,10 @@ import { Property } from 'src/app/model/property';
 
 
 @Component({
-  selector: 'app-enquiry',
-  templateUrl: './enquiry.component.html',
-  styleUrls: ['./enquiry.component.scss']
+    selector: 'app-enquiry',
+    templateUrl: './enquiry.component.html',
+    styleUrls: ['./enquiry.component.scss'],
+    standalone: false
 })
 export class EnquiryComponent implements OnInit {
 

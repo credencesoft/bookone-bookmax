@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { NguCarouselConfig } from "@ngu/carousel";
 @Component({
-  selector: "app-testimonial-caurosel",
-  templateUrl: "./testimonial-caurosel.component.html",
-  styleUrls: ["./testimonial-caurosel.component.scss"]
+    selector: "app-testimonial-caurosel",
+    templateUrl: "./testimonial-caurosel.component.html",
+    styleUrls: ["./testimonial-caurosel.component.scss"],
+    standalone: false
 })
 export class TestimonialCauroselComponent implements OnInit {
   public carouselTileItems: Array<any> = [

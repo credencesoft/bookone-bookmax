@@ -1,44 +1,49 @@
 <paytm-checkout></paytm-checkout>
 <div class="main-wrapper">
 
-    <!-- <title-bar title="Booking Checkout" subtitle="Fill details for booking"></title-bar> -->
+  <!-- <title-bar title="Booking Checkout" subtitle="Fill details for booking"></title-bar> -->
 
-    <div class="content">
-        <div class="container">
-            <div class="row">
-                <div class="col-12" *ngIf="payment?.failureMessage">
-                    <h2>ERROR: {{payment?.failureCode}}</h2>
-                    <p>{{payment?.failureMessage}}</p>
-                    <!-- <h5 style="color: red;">Oops!! Seems your payment is not successful but we have confirmed your booking. Please arrange the payment with Property to keep your booking alive.</h5> -->
-                    <h5 style="color: red;">Oops!! Seems your payment is not successful. Please try again later.</h5>
-
-                    <button class="btn btn-primary" type="button" (click)="onGoHome()" *ngIf="!headertitlePayment">Go Back</button>
-
+  <div class="content">
+    <div class="container">
+      <div class="row">
+        @if (payment?.failureMessage) {
+          <div class="col-12">
+            <h2>ERROR: {{payment?.failureCode}}</h2>
+            <p>{{payment?.failureMessage}}</p>
+            <!-- <h5 style="color: red;">Oops!! Seems your payment is not successful but we have confirmed your booking. Please arrange the payment with Property to keep your booking alive.</h5> -->
+            <h5 style="color: red;">Oops!! Seems your payment is not successful. Please try again later.</h5>
+            @if (!headertitlePayment) {
+              <button class="btn btn-primary" type="button" (click)="onGoHome()">Go Back</button>
+            }
+          </div>
+        }
+        @if (this.payment.transactionAmount === 0) {
+          <h5  style="color: red;">Oops!  Payment will not happen, because the transaction amount is very low. </h5>
+        }
+        @if (!headertitlePayment) {
+          <a href="{{PropertyUrl}}">
+            <button class="btn btn-primary" type="button">Go Back</button>
+          </a>
+        }
+        <div>
+          @if (headertitlePayment) {
+            <div class="payment-error-message">
+              <div class="message-container">
+                <div class="icon">
+                  <i class="fas fa-exclamation-circle"></i>
                 </div>
-                <h5  style="color: red;" *ngIf="this.payment.transactionAmount === 0">Oops!  Payment will not happen, because the transaction amount is very low. </h5>
-                <a href="{{PropertyUrl}}" *ngIf="!headertitlePayment">
-                   <button class="btn btn-primary" type="button">Go Back</button>
-                   </a>
-<div>
-  <div class="payment-error-message" *ngIf="headertitlePayment">
-    <div class="message-container">
-      <div class="icon">
-        <i class="fas fa-exclamation-circle"></i>
-      </div>
-      <div class="message-content">
-        <h2>{{ headertitlePayment }}</h2>
-        <p>{{ bodyMessagePayment }}</p>
+                <div class="message-content">
+                  <h2>{{ headertitlePayment }}</h2>
+                  <p>{{ bodyMessagePayment }}</p>
+                  <button class="btn btn-primary" type="button" style="    margin-right: 20px;" (click)="closewindow()">Back to Payment Page</button>
+                </div>
+              </div>
+            </div>
+          }
 
-          <button class="btn btn-primary" type="button" style="    margin-right: 20px;" (click)="closewindow()">Back to Payment Page</button>
-
-
-
-      </div>
-    </div>
-  </div>
-
-</div>
-                   <div *ngIf="loadersnipper"  class="loading-spinner" style="    padding: 56px;
+        </div>
+        @if (loadersnipper) {
+<div  class="loading-spinner" style="    padding: 56px;
                    display: flex;
                    justify-content: center;
                    margin: auto;
@@ -46,11 +51,12 @@
 
                    margin-top: 200px;
                ">
-                  <div class="card" style="margin-top: 60px;padding: 56px;">
-                    Connecting Please Wait...
-                  </div>
-                  </div>
+            <div class="card" style="margin-top: 60px;padding: 56px;">
+              Connecting Please Wait...
             </div>
-        </div>
+          </div>
+        }
+      </div>
     </div>
+  </div>
 </div>

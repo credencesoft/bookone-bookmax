@@ -3,10 +3,11 @@ import { SharedAnimations } from 'src/shared/animations/shared-animations';
 // import { SharedAnimations } from 'src/app/shared/animations/shared-animations';
 
 @Component({
-  selector: 'app-intro-nine',
-  templateUrl: './intro-nine.component.html',
-  styleUrls: ['./intro-nine.component.scss'],
-  animations:[SharedAnimations]
+    selector: 'app-intro-nine',
+    templateUrl: './intro-nine.component.html',
+    styleUrls: ['./intro-nine.component.scss'],
+    animations: [SharedAnimations],
+    standalone: false
 })
 export class IntroNineComponent implements OnInit {
 

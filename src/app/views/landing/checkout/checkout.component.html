@@ -1,78 +1,64 @@
 <paytm-checkout></paytm-checkout>
 <div class="main-wrapper">
 
-    <!-- <title-bar title="Booking Checkout" subtitle="Fill details for booking"></title-bar> -->
+  <!-- <title-bar title="Booking Checkout" subtitle="Fill details for booking"></title-bar> -->
 
-    <div class="content">
-        <div class="container">
-            <div class="row">
-                <div class="col-12" *ngIf="payment.failureMessage !== null" style="display: flex; justify-content: center;">
-                  <div class="card shadow-lg" style="max-width: 500px; width: 100%; border-radius: 10px;margin-top: 10rem;">
-
-                    <div class="card-header bg-primary text-white text-center">
-                      <h5 class="mb-0" style="color:#fff !important">Important Notice</h5>
-                    </div>
-
-
-                    <div class="card-body text-center">
-                      <h2>ERROR: {{payment.failureCode}}</h2>
-                      <p>{{payment.failureMessage}}</p>
-                      <p class="card-text text-muted">
-                        Oops!! Seems your payment is not successful. Please try again later.
-                      </p>
-
-                      <a (click)="onGoHome()"class="btn btn-primary btn-sm me-2">Go Back</a>
-                    </div>
-
-
-                  </div>
-
-                </div>
-                <div class="col-12" *ngIf="paymentFailed === true && payment.failureMessage === null" style="display: flex; justify-content: center;">
-                  <div class="card shadow-lg" style="max-width: 500px; width: 100%; border-radius: 10px;margin-top: 10rem;">
-
-                    <div class="card-header bg-primary text-white text-center">
-                      <h5 class="mb-0" style="color: #fff !important">Important Notice</h5>
-                    </div>
-
-
-                    <div class="card-body text-center">
-                      <p class="card-text text-muted">
-                        Oops!! Seems the Paytm payment gateway is not working. Please try another way.
-
-                      </p>
-
-                      <a (click)="onGoHome()"class="btn btn-primary btn-sm me-2">Go Back</a>
-                    </div>
-
-
-                  </div>
-
+  <div class="content">
+    <div class="container">
+      <div class="row">
+        @if (payment.failureMessage !== null) {
+          <div class="col-12" style="display: flex; justify-content: center;">
+            <div class="card shadow-lg" style="max-width: 500px; width: 100%; border-radius: 10px;margin-top: 10rem;">
+              <div class="card-header bg-primary text-white text-center">
+                <h5 class="mb-0" style="color:#fff !important">Important Notice</h5>
               </div>
-              <div class="col-12" *ngIf="this.payment.transactionAmount === 0" style="display: flex; justify-content: center;">
-                <div class="card shadow-lg" style="max-width: 500px; width: 100%; border-radius: 10px;margin-top: 10rem;">
-                  <!-- Card Header -->
-                  <div class="card-header bg-primary text-white text-center">
-                    <h5 class="mb-0" style="color: #fff !important">Important Notice</h5>
-                  </div>
-
-                  <!-- Card Body -->
-                  <div class="card-body text-center">
-                    <p class="card-text text-muted">
-                      Oops!  Payment will not happen, because the transaction amount is very low.
-
-                    </p>
-
-                    <a (click)="onGoHome()"class="btn btn-primary btn-sm me-2">Go Back</a>
-                  </div>
-
-
-                </div>
-
+              <div class="card-body text-center">
+                <h2>ERROR: {{payment.failureCode}}</h2>
+                <p>{{payment.failureMessage}}</p>
+                <p class="card-text text-muted">
+                  Oops!! Seems your payment is not successful. Please try again later.
+                </p>
+                <a (click)="onGoHome()"class="btn btn-primary btn-sm me-2">Go Back</a>
+              </div>
             </div>
+          </div>
+        }
+        @if (paymentFailed === true && payment.failureMessage === null) {
+          <div class="col-12" style="display: flex; justify-content: center;">
+            <div class="card shadow-lg" style="max-width: 500px; width: 100%; border-radius: 10px;margin-top: 10rem;">
+              <div class="card-header bg-primary text-white text-center">
+                <h5 class="mb-0" style="color: #fff !important">Important Notice</h5>
+              </div>
+              <div class="card-body text-center">
+                <p class="card-text text-muted">
+                  Oops!! Seems the Paytm payment gateway is not working. Please try another way.
+                </p>
+                <a (click)="onGoHome()"class="btn btn-primary btn-sm me-2">Go Back</a>
+              </div>
+            </div>
+          </div>
+        }
+        @if (this.payment.transactionAmount === 0) {
+          <div class="col-12" style="display: flex; justify-content: center;">
+            <div class="card shadow-lg" style="max-width: 500px; width: 100%; border-radius: 10px;margin-top: 10rem;">
+              <!-- Card Header -->
+              <div class="card-header bg-primary text-white text-center">
+                <h5 class="mb-0" style="color: #fff !important">Important Notice</h5>
+              </div>
+              <!-- Card Body -->
+              <div class="card-body text-center">
+                <p class="card-text text-muted">
+                  Oops!  Payment will not happen, because the transaction amount is very low.
+                </p>
+                <a (click)="onGoHome()"class="btn btn-primary btn-sm me-2">Go Back</a>
+              </div>
+            </div>
+          </div>
+        }
 
 
-                   <div *ngIf="loadersnipper"  class="loading-spinner" style="    padding: 56px;
+        @if (loadersnipper) {
+<div  class="loading-spinner" style="    padding: 56px;
                    display: flex;
                    justify-content: center;
                    margin: auto;
@@ -80,11 +66,12 @@
 
                    margin-top: 100px;
                ">
-                  <div class="card" style="margin-top: 40px;padding: 56px;">
-                    Connecting Please Wait...
-                  </div>
-                  </div>
+            <div class="card" style="margin-top: 40px;padding: 56px;">
+              Connecting Please Wait...
             </div>
-        </div>
+          </div>
+        }
+      </div>
     </div>
+  </div>
 </div>

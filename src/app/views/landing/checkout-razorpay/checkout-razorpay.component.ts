@@ -1,7 +1,7 @@
 // import { Component } from '@angular/core';
 // import { Email } from './../ecosystem/ecosystem.component';
 // import { Component } from '@angular/core';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { ChangeDetectorRef, Component, NgZone } from '@angular/core';
 import { Router } from '@angular/router';
 import { CheckoutService } from 'paytm-blink-checkout-angular';
@@ -16,9 +16,10 @@ import { TokenStorage } from 'src/token.storage';
 declare var Razorpay:any;
 // declare var Razorpay:any;
 @Component({
-  selector: 'app-checkout-razorpay',
-  templateUrl: './checkout-razorpay.component.html',
-  styleUrls: ['./checkout-razorpay.component.scss']
+    selector: 'app-checkout-razorpay',
+    templateUrl: './checkout-razorpay.component.html',
+    styleUrls: ['./checkout-razorpay.component.scss'],
+    standalone: false
 })
 export class CheckoutRazorpayComponent {
 

@@ -1,13 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, NavigationEnd, ActivatedRoute  } from '@angular/router';
 import { Meta, Title } from '@angular/platform-browser';
+import { isPlatformBrowser } from '@angular/common';
+import { Inject, PLATFORM_ID } from '@angular/core';
 import { filter, map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 declare const dataLayer: any;
 @Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+    selector: 'app-root',
+    templateUrl: './app.component.html',
+    styleUrls: ['./app.component.css'],
+    standalone: false
 })
 export class AppComponent implements OnInit {
   token = null;
@@ -15,11 +18,13 @@ export class AppComponent implements OnInit {
   constructor(private router: Router,
     public titleService: Title,
     private activatedRoute: ActivatedRoute,
+    @Inject(PLATFORM_ID) private platformId: Object,
    ) {}
 
   ngOnInit() {
-    const hostname = window.location.hostname;
-    const pathname = window.location.pathname;
+    const isBrowser = isPlatformBrowser(this.platformId);
+    const hostname = isBrowser ? window.location.hostname : '';
+    const pathname = isBrowser ? window.location.pathname : '';
 
 
     if (pathname.includes('booking-complete')) {
@@ -37,7 +42,7 @@ export class AppComponent implements OnInit {
      this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe((event: NavigationEnd) => {
-        if (typeof dataLayer !== 'undefined') {
+        if (isBrowser && typeof dataLayer !== 'undefined') {
           dataLayer.push({
             event: 'virtual_pageview',
             pagePath: event.urlAfterRedirects,

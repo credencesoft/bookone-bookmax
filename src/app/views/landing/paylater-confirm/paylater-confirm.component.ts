@@ -8,9 +8,10 @@ import { ListingService } from 'src/services/listing.service';
 import { TokenStorage } from 'src/token.storage';
 
 @Component({
-  selector: 'app-paylater-confirm',
-  templateUrl: './paylater-confirm.component.html',
-  styleUrls: ['./paylater-confirm.component.scss'],
+    selector: 'app-paylater-confirm',
+    templateUrl: './paylater-confirm.component.html',
+    styleUrls: ['./paylater-confirm.component.scss'],
+    standalone: false
 })
 export class PaylaterConfirmComponent {
   propertyDetails: any;

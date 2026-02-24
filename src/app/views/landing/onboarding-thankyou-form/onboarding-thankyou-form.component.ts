@@ -3,7 +3,7 @@ import { ChangeDetectorRef, Component, ElementRef, Input } from '@angular/core';
 import { FormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgbCalendar, NgbDateParserFormatter, NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { NgbDate } from '@ng-bootstrap/ng-bootstrap/datepicker/ngb-date';
+import { NgbDate } from '@ng-bootstrap/ng-bootstrap';
 import { json } from 'express';
 // import { Address } from 'ngx-google-places-autocomplete/objects/address';
 import { debounceTime } from 'rxjs';
@@ -34,9 +34,10 @@ import { TokenStorage } from 'src/token.storage';
 // import { TokenStorage } from 'src/app/token.storage';
 
 @Component({
-  selector: 'app-onboarding-thankyou-form',
-  templateUrl: './onboarding-thankyou-form.component.html',
-  styleUrls: ['./onboarding-thankyou-form.component.scss']
+    selector: 'app-onboarding-thankyou-form',
+    templateUrl: './onboarding-thankyou-form.component.html',
+    styleUrls: ['./onboarding-thankyou-form.component.scss'],
+    standalone: false
 })
 export class OnboardingThankyouFormComponent {
   options: any = {

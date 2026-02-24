@@ -9,7 +9,7 @@
           padding-top: 122px;
           margin-top: -37px; ">Fill In a Few Details About
           Your
-          Property</h2><br>
+        Property</h2><br>
       </div>
     </div>
 
@@ -39,7 +39,7 @@ justify-content: center;">
 
         <p class="thankyoupara"> Thank you for sharing the information. The provided details are sufficient for us to
           establish contact
-          with you. If you could provide additional information, the onboarding process can be expedited. </p>
+        with you. If you could provide additional information, the onboarding process can be expedited. </p>
       </div>
 
 
@@ -58,12 +58,13 @@ justify-content: center;">
     <div style="display: flex;
 justify-content: center;">
       <div class="bar" style="margin-top: 100px;">
-        <ng-container *ngFor="let n of [0, 1, 2]"> <!-- Assuming elSet is 3 -->
+        @for (n of [0, 1, 2]; track n) {
+          <!-- Assuming elSet is 3 -->
           <input class="bar-input" type="radio" name="input" [id]="'input_' + n" />
           <div class="bar-view">
             <label class="bar-button" [for]="'input_' + n"></label>
           </div>
-        </ng-container>
+        }
       </div>
     </div>
 
@@ -85,7 +86,7 @@ justify-content: center;">
 
 
           <p class="mini-card-title">
-            Address</p>
+          Address</p>
         </div>
       </div>
     </div>
@@ -107,10 +108,10 @@ justify-content: center;">
 
 
       </div>
-  </div>
+    </div>
 
-  <div >
-    <form #contactForm3=ngForm role="form"
+    <div >
+      <form #contactForm3=ngForm role="form"
         style="background: #FFF;
   border: 0.5px solid #221950;
   background: #FFF;
@@ -118,32 +119,32 @@ justify-content: center;">
         <div class=" mb-4">
 
 
-            <div class="row justify-content-center">
-                <div class="col-lg-8">
+          <div class="row justify-content-center">
+            <div class="col-lg-8">
                     <input style="border-radius: 30px;margin-top: 20px;
                     border: 0.5px solid #221950;
                     background: #FFF;" type="text" name="Search by Address Look up" class="form-control"
-                                placeholder="Search by Address Look up"  ngx-google-places-autocomplete
-                                [options]="options"
-                                (onAddressChange)="handleAddressChange($event)" required>
-                            <br>
-                            <!-- <div class="row " style="margin-top: 800px;">
-                              <div class="col-6 offset-3" style="margin-top: 800px;">
-                                    <input class="form-control"
-                                        ngx-google-places-autocomplete
-                                        [options]="options"
-                                        (onAddressChange)="handleAddressChange($event)"
-                                    />
-                              </div>
-                            </div> -->
+                placeholder="Search by Address Look up"  ngx-google-places-autocomplete
+                [options]="options"
+                (onAddressChange)="handleAddressChange($event)" required>
+                <br>
+                  <!-- <div class="row " style="margin-top: 800px;">
+                  <div class="col-6 offset-3" style="margin-top: 800px;">
+                    <input class="form-control"
+                      ngx-google-places-autocomplete
+                      [options]="options"
+                      (onAddressChange)="handleAddressChange($event)"
+                      />
+                    </div>
+                  </div> -->
 
 
                 </div>
                 <span class="Rectangleonboard">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="294" height="80" viewBox="0 0 294 80" fill="none">
-                        <path d="M59.5 0H293.5V80H59.5V19H0L59.5 0Z" fill="#221950" fill-opacity="0.4"/>
-                        <text x="80" y="50" fill="black" style="font-size: 13px;">It will pick your location from google</text>
-                    </svg>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="294" height="80" viewBox="0 0 294 80" fill="none">
+                    <path d="M59.5 0H293.5V80H59.5V19H0L59.5 0Z" fill="#221950" fill-opacity="0.4"/>
+                    <text x="80" y="50" fill="black" style="font-size: 13px;">It will pick your location from google</text>
+                  </svg>
 
 
                 </span>
@@ -151,113 +152,115 @@ justify-content: center;">
 
 
 
-            </div>
-            <h4 class="col-lg-8" style="text-align: center; margin-top: -18px;"> OR</h4>
-            <div class="row justify-content-center">
+              </div>
+              <h4 class="col-lg-8" style="text-align: center; margin-top: -18px;"> OR</h4>
+              <div class="row justify-content-center">
                 <div class="col-lg-8">
 
 
 
 
-<!--
+                  <!--
                     <input style="border-radius: 30px;
                     border: 0.5px solid #221950;
                     background: #FFF;" type="text" name="Search by city" class="form-control"
-                                placeholder="Search by city" required> -->
-                                <input *ngIf="isShowSubUrb == false"
-                                type="text"
+                    placeholder="Search by city" required> -->
+                    @if (isShowSubUrb == false) {
+                      <input
+                        type="text"
                                 style="border-radius: 30px;
                                 border: 0.5px solid #221950;
                                 background: #FFF;" name="Search by city"class="form-control"
-                                placeholder="Search by city"
-                                id="name"
-                                [(ngModel)]="searchResultCity"
-
-
-                                #searchCity="ngModel"
-                                (keydown)="getCityBySearch($event)"
-                                autocomplete="off"
-                              />
-                              <input *ngIf="isShowSubUrb == true"
-                              type="text"
+                        placeholder="Search by city"
+                        id="name"
+                        [(ngModel)]="searchResultCity"
+                        #searchCity="ngModel"
+                        (keydown)="getCityBySearch($event)"
+                        autocomplete="off"
+                        />
+                    }
+                    @if (isShowSubUrb == true) {
+                      <input
+                        type="text"
                               style="border-radius: 30px;
                               border: 0.5px solid #221950;
                               background: #FFF;" name="Search by Suburb"class="form-control"
-                              placeholder="Search by Suburb"
-                              id="name"
-                              [(ngModel)]="searchResultSuburb"
-
-
-                              #searchCity="ngModel"
-                              (keydown)="getSubUrbyBySearch($event)"
-                              autocomplete="off"
-                            />
+                        placeholder="Search by Suburb"
+                        id="name"
+                        [(ngModel)]="searchResultSuburb"
+                        #searchCity="ngModel"
+                        (keydown)="getSubUrbyBySearch($event)"
+                        autocomplete="off"
+                        />
+                    }
+                    @if (isAddressSearch && isShowSubUrb == false) {
+                      <div
+                        class="list-holder"
+                        no-padding
+                        no-margin
+                        style="z-index: 1000; position: absolute; width: max-content;background-color: white;"
+                        >
+                        @for (city of searchFilteredCities; track city; let i = $index) {
+                          <div
+                            (click)="onSelectCity(city)"
+                            >
+                            <div class="item business-text city-list">
                               <div
-                  class="list-holder"
-                  no-padding
-                  no-margin
-                  *ngIf="isAddressSearch && isShowSubUrb == false"
-                  style="z-index: 1000; position: absolute; width: max-content;background-color: white;"
-                >
-                  <div
-                    *ngFor="let city of searchFilteredCities; let i = index"
-                    (click)="onSelectCity(city)"
-                  >
-                    <div class="item business-text city-list">
-                      <div
-                        class="p-2 text-align heading-medium font-14 text-transform text-default"
-                        style="font-weight: 600"
-                      >
-                        {{ city }}
+                                class="p-2 text-align heading-medium font-14 text-transform text-default"
+                                style="font-weight: 600"
+                                >
+                                {{ city }}
+                              </div>
+                              <!-- <h6 class="text-muted" style="font-size: 12px; line-height: 0px;">{{city.countryName}}</h6> -->
+                            </div>
+                          </div>
+                        }
                       </div>
-                      <!-- <h6 class="text-muted" style="font-size: 12px; line-height: 0px;">{{city.countryName}}</h6> -->
-                    </div>
-                  </div>
-                </div>
-                <div
-                  class="list-holder"
-                  no-padding
-                  no-margin
-                  *ngIf="isAddressSearch && isShowSubUrb == true"
-                  style="z-index: 1000; position: absolute; width: max-content;background-color: white;"
-                >
-                  <div
-                    *ngFor="let suburb of searchFilteredCities; let i = index"
-                    (click)="onSelectSuburb(suburb) "
-                  >
-                    <div class="item business-text city-list">
+                    }
+                    @if (isAddressSearch && isShowSubUrb == true) {
                       <div
-                        class="p-2 text-align heading-medium font-14 text-transform text-default"
-                        style="font-weight: 600"
-                      >
-
-
-                        {{ suburb }}
+                        class="list-holder"
+                        no-padding
+                        no-margin
+                        style="z-index: 1000; position: absolute; width: max-content;background-color: white;"
+                        >
+                        @for (suburb of searchFilteredCities; track suburb; let i = $index) {
+                          <div
+                            (click)="onSelectSuburb(suburb) "
+                            >
+                            <div class="item business-text city-list">
+                              <div
+                                class="p-2 text-align heading-medium font-14 text-transform text-default"
+                                style="font-weight: 600"
+                                >
+                                {{ suburb }}
+                              </div>
+                              <!-- <h6 class="text-muted" style="font-size: 12px; line-height: 0px;">{{city.countryName}}</h6> -->
+                            </div>
+                          </div>
+                        }
                       </div>
-                      <!-- <h6 class="text-muted" style="font-size: 12px; line-height: 0px;">{{city.countryName}}</h6> -->
-                    </div>
-                  </div>
-                </div>
-                            <br>
+                    }
+                    <br>
                     </div>
                     <span class="Rectangleonboard">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="294" height="80" viewBox="0 0 294 80" fill="none">
-                            <path d="M59.5 0H293.5V80H59.5V19H0L59.5 0Z" fill="#221950" fill-opacity="0.4"/>
-                            <text x="70" y="40" fill="black" style="font-size: 13px;">Add manually your address by the help</text>
-                            <text x="70" y="60" fill="black" style="font-size: 13px;">of city</text>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="294" height="80" viewBox="0 0 294 80" fill="none">
+                        <path d="M59.5 0H293.5V80H59.5V19H0L59.5 0Z" fill="#221950" fill-opacity="0.4"/>
+                        <text x="70" y="40" fill="black" style="font-size: 13px;">Add manually your address by the help</text>
+                        <text x="70" y="60" fill="black" style="font-size: 13px;">of city</text>
 
 
-                        </svg>
+                      </svg>
 
 
                     </span>
-                    </div>
-            <div class="row with-forms">
+                  </div>
+                  <div class="row with-forms">
 
 
 
 
-                <div class="col-lg-6">
+                    <div class="col-lg-6">
                     <div class="form-group mb-4" style="color: #484848;
 
 
@@ -265,24 +268,24 @@ justify-content: center;">
                         font-weight: 600;">
 
 
-                          Street Number
+                        Street Number
                         <input style="border-radius: 30px;
                           border: 0.5px solid #221950;
                           background: #FFF;" type="text" name="Enter Your Street Number" [(ngModel)]="address.streetNumber"  class="form-control"
-                            placeholder="Enter Your Street Number" required>
+                          placeholder="Enter Your Street Number" required>
 
 
 
 
 
 
-                    </div>
+                        </div>
 
 
-                </div>
+                      </div>
 
 
-                <div class="col-lg-6">
+                      <div class="col-lg-6">
                     <div class="form-group mb-4" style="color: #484848;
 
 
@@ -290,24 +293,28 @@ justify-content: center;">
                     font-weight: 600;">
 
 
-                    Street Name*
+                          Street Name*
                         <input style="border-radius: 30px;
               border: 0.5px solid #221950;
               background: #FFF;" type="text" name="Enter Your Street Name"  [(ngModel)]="address.streetName" class="form-control" [formControl]="streetNamecontrol"
                             placeholder="Enter Your Street Name " required>
-                        <div *ngIf="(streetNamecontrol.touched || contactForm3.submitted) && streetNamecontrol.errors">
-                          <span *ngIf="streetNamecontrol.errors.required" class="text-danger">Street Name is required </span><br>
-                        </div>
-                        <br>
+                            @if ((streetNamecontrol.touched || contactForm3.submitted) && streetNamecontrol.errors) {
+                              <div>
+                                @if (streetNamecontrol.errors.required) {
+                                  <span class="text-danger">Street Name is required </span>
+                                  }<br>
+                                </div>
+                              }
+                              <br>
 
 
 
 
-                    </div>
-                </div>
+                              </div>
+                            </div>
 
 
-                <div class="col-lg-6">
+                            <div class="col-lg-6">
                     <div class="form-group mb-4" style="color: #484848;
 
 
@@ -315,21 +322,21 @@ justify-content: center;">
         font-weight: 600;">
 
 
-                        Locality
+                                Locality
                         <input style="border-radius: 30px;
               border: 0.5px solid #221950;
               background: #FFF;" type="text" name="Enter Your Locality"  [(ngModel)]="address.locality"   class="form-control" [formControl]="localitycontrol"
-                            placeholder="Enter Your Locality" required>
-                        <br>
+                                  placeholder="Enter Your Locality" required>
+                                  <br>
 
 
 
 
-                    </div>
-                </div>
+                                  </div>
+                                </div>
 
 
-                <div class="col-lg-6">
+                                <div class="col-lg-6">
                     <div class="form-group mb-4" style="color: #484848;
 
 
@@ -337,21 +344,21 @@ justify-content: center;">
         font-weight: 600;">
 
 
-                        Suburb
+                                    Suburb
                         <input style="border-radius: 30px;
               border: 0.5px solid #221950;
               background: #FFF;" type="text" name="Enter Your Suburb" [formControl]="subUrbcontrol"
-                            class="form-control"  [(ngModel)]="address.suburb" placeholder="Enter Your Suburb" required>
-                        <br>
+                                      class="form-control"  [(ngModel)]="address.suburb" placeholder="Enter Your Suburb" required>
+                                      <br>
 
 
 
 
-                    </div>
-                </div>
+                                      </div>
+                                    </div>
 
 
-                <div class="col-lg-6">
+                                    <div class="col-lg-6">
                     <div class="form-group mb-4" style="color: #484848;
 
 
@@ -359,24 +366,28 @@ justify-content: center;">
         font-weight: 600;">
 
 
-                         City*
+                                        City*
                         <input style="border-radius: 30px;
               border: 0.5px solid #221950;
               background: #FFF;" type="text" name="Enter Your City" [(ngModel)]="address.city" class="form-control" [formControl]="citycontrol"
-                            placeholder="Enter Your City" required>
-                          <div *ngIf="(citycontrol.touched || contactForm3.submitted) && citycontrol.errors">
-                            <span *ngIf="citycontrol.errors.required" class="text-danger">City is required </span><br>
-                          </div>
-                        <br>
+                                          placeholder="Enter Your City" required>
+                                          @if ((citycontrol.touched || contactForm3.submitted) && citycontrol.errors) {
+                                            <div>
+                                              @if (citycontrol.errors.required) {
+                                                <span class="text-danger">City is required </span>
+                                                }<br>
+                                              </div>
+                                            }
+                                            <br>
 
 
 
 
-                    </div>
-                </div>
+                                            </div>
+                                          </div>
 
 
-                <div class="col-lg-6">
+                                          <div class="col-lg-6">
                     <div class="form-group mb-4" style="color: #484848;
 
 
@@ -384,19 +395,19 @@ justify-content: center;">
         font-weight: 600;">
 
 
-                        Postcode
+                                              Postcode
                         <input style="border-radius: 30px;
               border: 0.5px solid #221950;
               background: #FFF;" type="text" name="Enter Your Postcode"
-                            class="form-control" [formControl]="postcodecontrol"  placeholder="Enter Your Postcode" [(ngModel)]="address.postcode" required>
-                        <br>
+                                                class="form-control" [formControl]="postcodecontrol"  placeholder="Enter Your Postcode" [(ngModel)]="address.postcode" required>
+                                                <br>
 
 
 
 
-                    </div>
-                </div>
-                <div class="col-lg-6">
+                                                </div>
+                                              </div>
+                                              <div class="col-lg-6">
                     <div class="form-group mb-4" style="color: #484848;
 
 
@@ -404,24 +415,28 @@ justify-content: center;">
         font-weight: 600;">
 
 
-                       State*
+                                                  State*
                         <input style="border-radius: 30px;
               border: 0.5px solid #221950;
               background: #FFF;" type="text" name="Enter Your State" [(ngModel)]="address.state" class="form-control" [formControl]="statecontrol"
-                            placeholder="Enter Your State" required>
-                        <div *ngIf="(statecontrol.touched || contactForm3.submitted) && statecontrol.errors">
-                          <span *ngIf="statecontrol.errors.required" class="text-danger">State is required </span><br>
-                        </div>
-                        <br>
+                                                    placeholder="Enter Your State" required>
+                                                    @if ((statecontrol.touched || contactForm3.submitted) && statecontrol.errors) {
+                                                      <div>
+                                                        @if (statecontrol.errors.required) {
+                                                          <span class="text-danger">State is required </span>
+                                                          }<br>
+                                                        </div>
+                                                      }
+                                                      <br>
 
 
 
 
-                    </div>
-                </div>
+                                                      </div>
+                                                    </div>
 
 
-                <div class="col-lg-6">
+                                                    <div class="col-lg-6">
                     <div class="form-group mb-4" style="color: #484848;
 
 
@@ -429,52 +444,56 @@ justify-content: center;">
         font-weight: 600;">
 
 
-                        Country*
+                                                        Country*
                         <input style="border-radius: 30px;
               border: 0.5px solid #221950;
               background: #FFF;" type="text"   [(ngModel)]="address.country" name="Enter Your Country" [formControl]="countrycontrol"
-                            class="form-control" placeholder="Enter Your Country" required>
-                        <div *ngIf="(countrycontrol.touched || contactForm3.submitted) && countrycontrol.errors">
-                          <span *ngIf="countrycontrol.errors.required" class="text-danger">Country is required </span><br>
-                        </div>
-                        <br>
+                                                          class="form-control" placeholder="Enter Your Country" required>
+                                                          @if ((countrycontrol.touched || contactForm3.submitted) && countrycontrol.errors) {
+                                                            <div>
+                                                              @if (countrycontrol.errors.required) {
+                                                                <span class="text-danger">Country is required </span>
+                                                                }<br>
+                                                              </div>
+                                                            }
+                                                            <br>
 
 
 
 
-                    </div>
-                </div>
+                                                            </div>
+                                                          </div>
 
 
 
 
-            </div>
+                                                        </div>
 
 
-        </div>
-    </form>
+                                                      </div>
+                                                    </form>
 
 
-</div>
+                                                  </div>
 
 
 <div style="display: flex;
 justify-content: center; flex-wrap: wrap;">
-  <div>
-      <button class="prevbutton" [routerLink]="['/onboardingCouponcode-form']"> Prev</button>
-  </div>
-  <div>
+                                                    <div>
+                                                      <button class="prevbutton" [routerLink]="['/onboardingCouponcode-form']"> Prev</button>
+                                                    </div>
+                                                    <div>
       <button class="nextbutton"  [disabled]="streetNamecontrol.errors ||
       citycontrol.errors || statecontrol.errors || countrycontrol.errors" [routerLink]="['/onboardingRoomdetails-form']" (click)="next()"> Next</button>
 
 
-  </div>
-</div>
+                                                    </div>
+                                                  </div>
 
 
 
 
 
-  </div>
-  <app-footer></app-footer>
-</div>
+                                                </div>
+                                                <app-footer></app-footer>
+                                              </div>

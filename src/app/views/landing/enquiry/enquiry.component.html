@@ -6,247 +6,230 @@
     <div class="container-fluid mb-3 pt-5">
       <h2 class="enquiryh2" style="text-align: center; font-weight: 600 !important;color: #000000; ">Enquiry History</h2>
       <br>
-    </div>
-<!--
-    <div class="row justify-content-center" style="margin-bottom: 20px;">
-      <div class="tabs">
-        <div col="6">
-
-          <button [ngClass]="{'active-tab': selectedTab === 'booking'}" (click)="selectTab('booking');resetBookings()"
-            style="border-radius: 20px 0px 0px 0px;">
-            Booking
-          </button>
-        </div>
-        <div col="6">
-
-          <button [ngClass]="{'active-tab': selectedTab === 'enquiry'}" (click)="selectTab('enquiry');resetBookings()"
-            style="margin-left: 10px;border-radius: 0px 20px 0px 0px;">
-            Enquiry
-          </button>
-        </div>
       </div>
+      <!--
+      <div class="row justify-content-center" style="margin-bottom: 20px;">
+        <div class="tabs">
+          <div col="6">
+
+            <button [ngClass]="{'active-tab': selectedTab === 'booking'}" (click)="selectTab('booking');resetBookings()"
+              style="border-radius: 20px 0px 0px 0px;">
+              Booking
+            </button>
+          </div>
+          <div col="6">
+
+            <button [ngClass]="{'active-tab': selectedTab === 'enquiry'}" (click)="selectTab('enquiry');resetBookings()"
+              style="margin-left: 10px;border-radius: 0px 20px 0px 0px;">
+              Enquiry
+            </button>
+          </div>
+        </div>
 
 
 
 
-    </div> -->
+      </div> -->
 
 
 
-    <div>
+      <div>
 
-      <div class="content1">
-
-
-        <ng-container>
-          <div class="container" *ngIf="selectedTabdefaultenquiry">
-            <div class="row">
-              <div class="col-lg-12">
+        <div class="content1">
 
 
-                <div class="row justify-content-center" style="margin-bottom: 40px;">
-
-                  <div>
-                    <strong class="gridradio2">Search by:</strong>
+          <ng-container>
+            @if (selectedTabdefaultenquiry) {
+              <div class="container">
+                <div class="row">
+                  <div class="col-lg-12">
+                    <div class="row justify-content-center" style="margin-bottom: 40px;">
+                      <div>
+                        <strong class="gridradio2">Search by:</strong>
+                      </div>
+                      <div class="gridradio">
+                        <input type="radio" id="emailRadio1" name="contactType" [(ngModel)]="selectedOptionenquiry" (click)="resetBookings()" value="emailRadio1">
+                        <label class="radio-container" for="emailRadio1">Email</label>
+                      </div>
+                      <div class="gridradio">
+                        <input type="radio" id="mobileRadio1" name="contactType" [(ngModel)]="selectedOptionenquiry" (click)="resetBookings()" value="mobileRadio1">
+                        <label class="radio-container" for="mobileRadio1">Mobile</label>
+                      </div>
+                      <div class="gridradio">
+                        <input type="radio" id="bookingIdRadio1" name="contactType" [(ngModel)]="selectedOptionenquiry" (click)="resetBookings()"
+                          value="bookingIdRadio1">
+                          <label class="radio-container" for="bookingIdRadio1">Enquiry ID</label>
+                        </div>
+                      </div>
+                      <!-- <div class="radiosection">
+                      <div class="row justify-content-center">
+                        <div class="col-12" style="text-align: center;">
+                          <strong class="gridradio-a">Search by:</strong> <br>
+                        </div>
+                        <div class="gridradio">
+                          <input type="radio" id="emailRadio2" name="contactType" [(ngModel)]="selectedOptionenquiry" value="emailRadio2">
+                          <label class="radio-container" for="emailRadio2">Email</label>
+                        </div>
+                        <div class="gridradio">
+                          <input type="radio" id="mobileRadio2" name="contactType" [(ngModel)]="selectedOptionenquiry" value="mobileRadio2">
+                          <label class="radio-container" for="mobileRadio2">Mobile</label>
+                        </div>
+                        <div class="gridradio">
+                          <input type="radio" id="bookingIdRadio3" name="contactType" [(ngModel)]="selectedOptionenquiry"
+                            value="bookingIdRadio3">
+                            <label class="radio-container" for="bookingIdRadio3">Booking ID</label>
+                          </div>
+                        </div>
+                      </div> -->
+                    </div>
                   </div>
+                  <!-- <p style="text-align: center; color: #fff; font-size: 20px; margin-top: 33px;">
+                  Quickly find <b style="font-weight: 700;">enquiries</b> by entering your
+                  phone number on Bookone Booking Engine
+                </p> -->
+              </div>
+            }
 
-                  <div class="gridradio">
-                    <input type="radio" id="emailRadio1" name="contactType" [(ngModel)]="selectedOptionenquiry" (click)="resetBookings()" value="emailRadio1">
-                    <label class="radio-container" for="emailRadio1">Email</label>
+            <div>
+
+              @if (selectedOptionenquiry === 'emailRadio1' || selectedOptionenquiry === 'emailRadio2') {
+                <div class="container">
+                  <div class="row justify-content-center">
+                    <div class="col-md-12">
+                      <div class="form-group mb-4">
+                        <input type="text"
+                          [(ngModel)]="email"
+                          style="border-radius: 30px; border: 0.5px solid #271a55; margin-top: -20px; background: #FFF;"
+                          class="form-control" placeholder="Search your booking by Email" required />
+                          <span class="sorting-arrow">
+                            <img src="media-be/images/Searchnotification.png" (click)="getbookingsbyenquiryemail()" style="width: 23px; height: 23px;" alt="" />
+                          </span>
+                        </div>
+                      </div>
+                      <div>
+                        <p style="text-align: center; color: #fff; font-size: 20px; margin-top: 33px;">
+                          Quickly find <b style="font-weight: 700;">enquiry</b> by entering your
+                          Email ID on Bookone Booking Engine
+                        </p>
+                      </div>
+                    </div>
                   </div>
+                }
 
-                  <div class="gridradio">
-                    <input type="radio" id="mobileRadio1" name="contactType" [(ngModel)]="selectedOptionenquiry" (click)="resetBookings()" value="mobileRadio1">
-                    <label class="radio-container" for="mobileRadio1">Mobile</label>
-                  </div>
-
-                  <div class="gridradio">
-                    <input type="radio" id="bookingIdRadio1" name="contactType" [(ngModel)]="selectedOptionenquiry" (click)="resetBookings()"
-                      value="bookingIdRadio1">
-                    <label class="radio-container" for="bookingIdRadio1">Enquiry ID</label>
-                  </div>
-
-
-                </div>
-
-                <!-- <div class="radiosection">
+                <!-- <div class="container" *ngIf="selectedOptionenquiry === 'mobileRadio1' || selectedOptionenquiry === 'mobileRadio2'">
                 <div class="row justify-content-center">
+                  <div class="col-md-12">
+                    <div class="form-group mb-4" style="position: relative; display: flex; align-items: center;">
+                      <div style="display: flex; align-items: center; width: 100%; border-radius: 30px; border: 0.5px solid #271a55; background: #FFF;">
+                        <select [(ngModel)]="CodeNumber" style="border: none; background: transparent; padding: 10px; border-top-left-radius: 30px; border-bottom-left-radius: 30px;">
+                          <option *ngFor="let country of countryCode.countries" [value]="country.countryCode">{{country.name}} {{ country.countryCode }}</option>
+                        </select>
 
-                  <div class="col-12" style="text-align: center;">
-                    <strong class="gridradio-a">Search by:</strong> <br>
-                  </div>
+                        <input type="text"
+                          (ng2TelOutput)="getNumber($event)"
+                          (input)="validatePhoneNumber()"
+                          [(ngModel)]="phoneNumber"
+                          style="flex-grow: 1; border: none; background: #FFF; padding: 10px; border-top-right-radius: 30px; border-bottom-right-radius: 30px;"
+                          class="form-control" placeholder="Search your booking by Mobile number" required />
 
-                  <div class="gridradio">
-                    <input type="radio" id="emailRadio2" name="contactType" [(ngModel)]="selectedOptionenquiry" value="emailRadio2">
-                    <label class="radio-container" for="emailRadio2">Email</label>
-                  </div>
+                          <span class="sorting-arrow" style="position: absolute; right: 10px;">
+                            <img src="media-be/images/Searchnotification.png"
+                              style="width: 23px; height: 23px;"
+                              (click)="getbookingsbymobileNumber2()"
+                              alt="" />
+                            </span>
+                          </div>
+                        </div>
+                      </div>
 
-                  <div class="gridradio">
-                    <input type="radio" id="mobileRadio2" name="contactType" [(ngModel)]="selectedOptionenquiry" value="mobileRadio2">
-                    <label class="radio-container" for="mobileRadio2">Mobile</label>
-                  </div>
-
-                  <div class="gridradio">
-                    <input type="radio" id="bookingIdRadio3" name="contactType" [(ngModel)]="selectedOptionenquiry"
-                      value="bookingIdRadio3">
-                    <label class="radio-container" for="bookingIdRadio3">Booking ID</label>
-                  </div>
-
-
-                </div>
-              </div> -->
-
-              </div>
-            </div>
-            <!-- <p style="text-align: center; color: #fff; font-size: 20px; margin-top: 33px;">
-              Quickly find <b style="font-weight: 700;">enquiries</b> by entering your
-              phone number on Bookone Booking Engine
-            </p> -->
-
-
-
-          </div>
-
-          <div>
-
-            <div class="container" *ngIf="selectedOptionenquiry === 'emailRadio1' || selectedOptionenquiry === 'emailRadio2'">
-              <div class="row justify-content-center">
-                <div class="col-md-12">
-                  <div class="form-group mb-4">
-                    <input type="text"
-
-                    [(ngModel)]="email"
-                      style="border-radius: 30px; border: 0.5px solid #271a55; margin-top: -20px; background: #FFF;"
-                      class="form-control" placeholder="Search your booking by Email" required />
-                    <span class="sorting-arrow">
-                      <img src="media-be/images/Searchnotification.png" (click)="getbookingsbyenquiryemail()" style="width: 23px; height: 23px;" alt="" />
-                    </span>
-                  </div>
-
-                </div>
-
-                <div>
-                  <p style="text-align: center; color: #fff; font-size: 20px; margin-top: 33px;">
-                    Quickly find <b style="font-weight: 700;">enquiry</b> by entering your
-                    Email ID on Bookone Booking Engine
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <!-- <div class="container" *ngIf="selectedOptionenquiry === 'mobileRadio1' || selectedOptionenquiry === 'mobileRadio2'">
-              <div class="row justify-content-center">
-                <div class="col-md-12">
-                  <div class="form-group mb-4" style="position: relative; display: flex; align-items: center;">
-                    <div style="display: flex; align-items: center; width: 100%; border-radius: 30px; border: 0.5px solid #271a55; background: #FFF;">
-                      <select [(ngModel)]="CodeNumber" style="border: none; background: transparent; padding: 10px; border-top-left-radius: 30px; border-bottom-left-radius: 30px;">
-                        <option *ngFor="let country of countryCode.countries" [value]="country.countryCode">{{country.name}} {{ country.countryCode }}</option>
-                      </select>
-
-                      <input type="text"
-                        (ng2TelOutput)="getNumber($event)"
-                        (input)="validatePhoneNumber()"
-                        [(ngModel)]="phoneNumber"
-                        style="flex-grow: 1; border: none; background: #FFF; padding: 10px; border-top-right-radius: 30px; border-bottom-right-radius: 30px;"
-                        class="form-control" placeholder="Search your booking by Mobile number" required />
-
-                      <span class="sorting-arrow" style="position: absolute; right: 10px;">
-                        <img src="media-be/images/Searchnotification.png"
-                          style="width: 23px; height: 23px;"
-                          (click)="getbookingsbymobileNumber2()"
-                          alt="" />
-                      </span>
+                      <div>
+                        <p style="text-align: center; color: #fff; font-size: 20px; margin-top: 33px;">
+                          Quickly find <b style="font-weight: 700;">enquiry</b> by entering your phone number on Bookone Booking Engine
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                </div>
-
-                <div>
-                  <p style="text-align: center; color: #fff; font-size: 20px; margin-top: 33px;">
-                    Quickly find <b style="font-weight: 700;">enquiry</b> by entering your phone number on Bookone Booking Engine
-                  </p>
-                </div>
-              </div>
-            </div> -->
-
-            <div class="container" *ngIf="selectedOptionenquiry === 'mobileRadio1' || selectedOptionenquiry === 'mobileRadio2'">
-              <div class="row justify-content-center">
-                <div class="col-md-12">
-                  <div class="form-group mb-4" style="position: relative; display: flex; align-items: center;">
-                    <div style="display: flex; align-items: center; width: 100%; border-radius: 30px; border: 0.5px solid #271a55; background: #FFF;">
-                      <select [(ngModel)]="CodeNumber" style="border: none; background: transparent; padding: 10px; border-top-left-radius: 30px; border-bottom-left-radius: 30px;">
-                        <option *ngFor="let country of countryCode.countries" [value]="country.countryCode">{{country.name}} {{ country.countryCode }}</option>
-                      </select>
-
-                      <input type="text"
-                        (ng2TelOutput)="getNumber($event)"
-                        (input)="validatePhoneNumber()"
-                        [(ngModel)]="phoneNumber"
-                        style="flex-grow: 1; border: none; background: #FFF; padding: 10px; border-top-right-radius: 30px; border-bottom-right-radius: 30px;"
-                        class="form-control" placeholder="Search your booking by Mobile number" required />
-
-                      <span class="sorting-arrow" style="position: absolute; right: 10px;">
-                        <img src="media-be/images/Searchnotification.png"
-                          style="width: 23px; height: 23px;"
-                          (click)="getbookingsbymobileNumber2()"
-                          alt="" />
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                <div>
-                  <p style="text-align: center; color: #fff; font-size: 20px; margin-top: 33px;">
-                    Quickly find <b style="font-weight: 700;">enquiry</b> by entering your phone number on Bookone Booking Engine
-                  </p>
-                </div>
-              </div>
-            </div>
-
-
-            <div class="container" *ngIf="selectedOptionenquiry === 'bookingIdRadio3' || selectedOptionenquiry === 'bookingIdRadio1'">
-              <div class="row justify-content-center" >
-                <div class="col-md-12">
-                  <div class="form-group mb-4">
-                    <input type="text" [(ngModel)]="bookingId"
-                      style="border-radius: 30px; border: 0.5px solid #271a55; margin-top: -20px; background: #FFF;"
-                      class="form-control" placeholder="Search your booking by Enquiry Id" required />
-                    <span class="sorting-arrow">
-                      <img src="media-be/images/Searchnotification.png"
-                      style="width: 23px; height: 23px;"
-                      (click)="getbookingsbybookingIdenquiry()"  alt="" />
-                    </span>
-                  </div>
-
-                </div>
-
-                <div>
-                  <p style="text-align: center; color: #fff; font-size: 20px; margin-top: 33px;">
-                    Quickly find <b style="font-weight: 700;">enquiry</b> by entering your
-                    Enquiry Id on Bookone Booking Engine
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="container">
-            <div id="verificationSuccessText" *ngIf="verificationSuccessenquiry">
-              <div class="row">
-                <div class="col-md-12">
-                  <!-- <div class="form-group mb-4">
-                    <input type="text"
-                      style="border-radius: 30px; border: 0.5px solid #271a55; margin-top: -80px; background: #FFF;"
-                      class="form-control" placeholder="Search your booking by phone number" required />
-                    <span class="sorting-arrow">
-                      <img src="media-be/images/Searchnotification.png" alt="" />
-                    </span>
                   </div> -->
 
-                </div>
-              </div>
-              <div class="row" style="margin-top: 70px; display: flex; flex-wrap: wrap;">
-                <div class="col-12 col-md-6 col-lg-4" style="margin-top: 20px;" *ngFor="let item of paginatedData">
+                  @if (selectedOptionenquiry === 'mobileRadio1' || selectedOptionenquiry === 'mobileRadio2') {
+                    <div class="container">
+                      <div class="row justify-content-center">
+                        <div class="col-md-12">
+                          <div class="form-group mb-4" style="position: relative; display: flex; align-items: center;">
+                            <div style="display: flex; align-items: center; width: 100%; border-radius: 30px; border: 0.5px solid #271a55; background: #FFF;">
+                              <select [(ngModel)]="CodeNumber" style="border: none; background: transparent; padding: 10px; border-top-left-radius: 30px; border-bottom-left-radius: 30px;">
+                                @for (country of countryCode.countries; track country) {
+                                  <option [value]="country.countryCode">{{country.name}} {{ country.countryCode }}</option>
+                                }
+                              </select>
+                              <input type="text"
+                                (ng2TelOutput)="getNumber($event)"
+                                (input)="validatePhoneNumber()"
+                                [(ngModel)]="phoneNumber"
+                                style="flex-grow: 1; border: none; background: #FFF; padding: 10px; border-top-right-radius: 30px; border-bottom-right-radius: 30px;"
+                                class="form-control" placeholder="Search your booking by Mobile number" required />
+                                <span class="sorting-arrow" style="position: absolute; right: 10px;">
+                                  <img src="media-be/images/Searchnotification.png"
+                                    style="width: 23px; height: 23px;"
+                                    (click)="getbookingsbymobileNumber2()"
+                                    alt="" />
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                            <div>
+                              <p style="text-align: center; color: #fff; font-size: 20px; margin-top: 33px;">
+                                Quickly find <b style="font-weight: 700;">enquiry</b> by entering your phone number on Bookone Booking Engine
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      }
 
+
+                      @if (selectedOptionenquiry === 'bookingIdRadio3' || selectedOptionenquiry === 'bookingIdRadio1') {
+                        <div class="container">
+                          <div class="row justify-content-center" >
+                            <div class="col-md-12">
+                              <div class="form-group mb-4">
+                                <input type="text" [(ngModel)]="bookingId"
+                                  style="border-radius: 30px; border: 0.5px solid #271a55; margin-top: -20px; background: #FFF;"
+                                  class="form-control" placeholder="Search your booking by Enquiry Id" required />
+                                  <span class="sorting-arrow">
+                                    <img src="media-be/images/Searchnotification.png"
+                                      style="width: 23px; height: 23px;"
+                                      (click)="getbookingsbybookingIdenquiry()"  alt="" />
+                                    </span>
+                                  </div>
+                                </div>
+                                <div>
+                                  <p style="text-align: center; color: #fff; font-size: 20px; margin-top: 33px;">
+                                    Quickly find <b style="font-weight: 700;">enquiry</b> by entering your
+                                    Enquiry Id on Bookone Booking Engine
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+                          }
+                        </div>
+
+                        <div class="container">
+                          @if (verificationSuccessenquiry) {
+                            <div id="verificationSuccessText">
+                              <div class="row">
+                                <div class="col-md-12">
+                                  <!-- <div class="form-group mb-4">
+                                  <input type="text"
+                                    style="border-radius: 30px; border: 0.5px solid #271a55; margin-top: -80px; background: #FFF;"
+                                    class="form-control" placeholder="Search your booking by phone number" required />
+                                    <span class="sorting-arrow">
+                                      <img src="media-be/images/Searchnotification.png" alt="" />
+                                    </span>
+                                  </div> -->
+                                </div>
+                              </div>
+                              <div class="row" style="margin-top: 70px; display: flex; flex-wrap: wrap;">
+                                @for (item of paginatedData; track item) {
+                                  <div class="col-12 col-md-6 col-lg-4" style="margin-top: 20px;">
                   <div style="border-radius: 30px 30px 30px 0px;
                     border: 0.5px solid #fff;
                     background: #271a55;display: inline-flex;
@@ -254,61 +237,58 @@
                     flex-direction: row;
                     justify-content: center;
                     align-items: flex-start;     padding: 4px 47px 2px 38px; margin-top: -20px;">
-
-                    <div style="text-align: center; font-size: 13px; margin-bottom: 4px;">
+                                      <div style="text-align: center; font-size: 13px; margin-bottom: 4px;">
                       <div style="color: #fff;
                         font-weight: 700; "> {{item?.firstName}}{{item?.lastName}} </div>
-                     <div style="color: #FFF;"> {{item.propertyName}} </div>
-                     <div style="color: #FFF;">Enquiry ID: {{item.enquiryId}} </div>
-                    </div>
-
-                  </div>
+                                        <div style="color: #FFF;"> {{item.propertyName}} </div>
+                                        <div style="color: #FFF;">Enquiry ID: {{item.enquiryId}} </div>
+                                      </div>
+                                    </div>
                   <div style="border-radius: 50px;
                     border: 1px solid  #000;
                     margin-top: -46px;
                     padding-top: 57px;">
-
-                    <div class="row">
-
-                      <div class="col-5">
+                                      <div class="row">
+                                        <div class="col-5">
                         <p style="font-size: 13px; margin-left: 18px;
                           margin-bottom: 24px;">
                           <b style="
                             font-weight: 700;color: #000;">Checkin Date:</b> <br>
-                          {{item.checkInDate }} <br>
+                                            {{item.checkInDate }} <br>
                           <b style="
                             font-weight: 700;color: #000;">Created Date:</b> <br>
-                          {{item?.createdDate}} <br>
+                                            {{item?.createdDate}} <br>
                           <!-- <b style="
                             font-weight: 700;">Location:</b> <br>
-                          {{item?.customerAddress}}<br> -->
+                                          {{item?.customerAddress}}<br> -->
                           <b style="
                             font-weight: 700;color: #000;">Room Type:</b> <br>
-                          {{item?.roomType}}<br>
+                                          {{item?.roomType}}<br>
                           <b style="
                             font-weight: 700;color: #000;">Phone Number:</b> <br>
-                          {{item?.phone}}<br>
+                                          {{item?.phone}}<br>
                           <b style="
                           font-weight: 700;color: #000;">Source:</b> <br>
-                          {{item?.source}} <br>
-                        </p>
-                      </div>
-                      <div class="col-7">
+                                          {{item?.source}} <br>
+                                        </p>
+                                      </div>
+                                      <div class="col-7">
                         <p style="font-size: 13px;
                         margin-bottom: 24px;margin-left: -17px;">
                           <b style="
                           font-weight: 700;color: #000;">Checkout Date:</b> <br>
-                          {{item?.checkOutDate}}<br>
+                                          {{item?.checkOutDate}}<br>
                           <b style="
                           font-weight: 700;color: #000;">Status:</b> <br>
-                          {{item?.status}} <br>
+                                          {{item?.status}} <br>
                           <b style="
                           font-weight: 700;color: #000;">Room Plan:</b> <br>
-                          {{item?.roomRatePlanName}} <br>
+                                          {{item?.roomRatePlanName}} <br>
                           <b style="
                           font-weight: 700;color: #000;">Email:</b> <br>
-                           <span class="email-text">{{ item?.email }}</span><br>
-                          <div  *ngIf="item.propertyName !=  null && item.propertyName !=  undefined " style="border-radius: 30px 0px 30px 30px;
+                                          <span class="email-text">{{ item?.email }}</span><br>
+                                          @if (item.propertyName !=  null && item.propertyName !=  undefined ) {
+<div  style="border-radius: 30px 0px 30px 30px;
                           border: -10.5px solid #fff;
                           background: #271a55;
                           display: inline-flex;
@@ -319,43 +299,36 @@
                           margin-top: 20px; float: right;
                           margin-bottom: -6px;
                       ">
-
-                            <div style="text-align: center; font-size: 13px; margin-bottom: 4px;" >
+                                              <div style="text-align: center; font-size: 13px; margin-bottom: 4px;" >
                               <button style="background-color: #fff; color: #221950; width: max-content;
                               height: 40px;
                               border-radius: 15px; margin-right: 15px;
                               font-weight: 700;padding-left: 10px;
     padding-right: 10px; " (click)="PayViaUpi(item)">
-                        Pay Now
-
-                            </button>
-                            </div>
-
-                            <div  style="text-align: center; font-size: 13px; margin-bottom: 4px;">
+                                                  Pay Now
+                                                </button>
+                                              </div>
+                                              <div  style="text-align: center; font-size: 13px; margin-bottom: 4px;">
                               <button class="btn btn-danger" (click)="enquiryStatusVoid(item?.enquiryId)" style="background-color: #fff; color: #221950;width: max-content;
                               height: 40px;
                               border-radius: 15px;
                               font-weight: 700; ">Void</button>
+                                              </div>
+                                            </div>
+                                          }
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                }
+                              </div>
                             </div>
+                          }
 
-                          </div>
-
-
-                      </div>
-
-                    </div>
-
-
-                  </div>
-
-                </div>
-
-              </div>
-            </div>
-
-            <div class="row justify-content-center" *ngIf="verificationenquirySuccess2 && bookingEnquiry != null && bookingEnquiry.status != 'Void'" style="margin-top: 70px; display: flex; flex-wrap: wrap;">
-              <div class="col-12 col-md-6 col-lg-4" style="margin-top: 20px;" *ngFor="let item1 of bookingEnquiry">
-
+                          @if (verificationenquirySuccess2 && bookingEnquiry != null && bookingEnquiry.status != 'Void') {
+                            <div class="row justify-content-center" style="margin-top: 70px; display: flex; flex-wrap: wrap;">
+                              @for (item1 of bookingEnquiry; track item1) {
+                                <div class="col-12 col-md-6 col-lg-4" style="margin-top: 20px;">
                 <div style="border-radius: 30px 30px 30px 0px;
                 border: 0.5px solid #fff;
                 background: #271a55;display: inline-flex;
@@ -363,67 +336,70 @@
                 flex-direction: row;
                 justify-content: center;
                 align-items: flex-start;     padding: 4px 47px 2px 38px; margin-top: -20px;">
-
-                  <div style="text-align: center; font-size: 13px; margin-bottom: 4px;">
+                                    <div style="text-align: center; font-size: 13px; margin-bottom: 4px;">
                     <div style="color: #fff;
                     font-weight: 700; "> {{item1?.firstName }} {{item1?.lastName}} </div>
-                    <div style="color: #FFF;">
-                    {{item1?.propertyName}} </div>
-                    <div style="color: #FFF;">Enquiry ID: {{item1.enquiryId}} </div>
-
-                  </div>
-
-                </div>
+                                      <div style="color: #FFF;">
+                                      {{item1?.propertyName}} </div>
+                                      <div style="color: #FFF;">Enquiry ID: {{item1.enquiryId}} </div>
+                                    </div>
+                                  </div>
                 <div style="border-radius: 50px;
                 border: 1px solid  #000;
                 margin-top: -46px;
                 padding-top: 57px;">
-
-                  <div class="row">
-
-                    <div class="col-5">
+                                    <div class="row">
+                                      <div class="col-5">
                       <p style="font-size: 13px; margin-left: 18px;
                         margin-bottom: 24px;">
                         <b style="
                           font-weight: 700;color:#000">Checkin Date:</b> <br>
-                        {{item1?.checkInDate }} <br>
+                                          {{item1?.checkInDate }} <br>
                         <b style="
                           font-weight: 700;color:#000">Created Date:</b> <br>
-                        {{item1?.createdDate |  date:'d MMM yyyy':'GMT'}} <br>
+                                          {{item1?.createdDate |  date:'d MMM yyyy':'GMT'}} <br>
                         <b style="
                           font-weight: 700;color:#000">Room Type:</b> <br>
-                        {{item1?.roomType}} <br>
+                                          {{item1?.roomType}} <br>
                         <b style="
                           font-weight: 700;color:#000">Phone Number:</b> <br>
-                        {{item1?.phone}}<br>
+                                          {{item1?.phone}}<br>
                         <b style="
                           font-weight: 700;color:#000">Source:</b> <br>
-                                <div class="source">
-                                  <div *ngIf="(bookingdata?.externalSite === 'The Hotel Mate' || bookingdata?.externalSite === 'Easemytrip' || bookingdata?.externalSite === 'GOBIBO,MMT' || bookingdata?.externalSite === 'Agoda' || bookingdata?.externalSite === 'Yatra' || bookingdata?.externalSite === 'Booking.com' || bookingdata?.externalSite === 'Expedia' || bookingdata?.externalSite === 'SiteMinder' || bookingdata?.externalSite === 'BookOne Connect' || bookingdata?.externalSite === 'Google Hotel Ads' || bookingdata?.externalSite === 'Airbnb' || bookingdata?.externalSite === 'Trivago' || bookingdata?.externalSite === 'Clear trip' || bookingdata?.externalSite === 'OYO'  || bookingdata?.externalSite === 'Via.com' || bookingdata?.externalSite === 'Travel Guru' || bookingdata?.externalSite === 'IRCTC' || bookingdata?.externalSite === 'Hotels.com' || bookingdata?.externalSite === 'BookingJini' || bookingdata?.externalSite === 'Fab'  || bookingdata?.externalSite === 'Treebo' || bookingdata?.externalSite === 'Go Room Go' || bookingdata?.externalSite === 'Pie Rooms')" >
-                                    <div *ngFor="let externalsite of externalSites">
-                                         <span *ngIf="bookingdata?.externalSite === externalsite.externalSiteName"><img src="{{externalsite.logo}}"  height="22px" width="62px" ></span>
-                                    </div>
-                                  </div>
-                                  <div>
-                                      <span *ngIf="(bookingdata?.externalSite != 'The Hotel Mate' && bookingdata?.externalSite != 'Easemytrip' && bookingdata?.externalSite != 'GOBIBO,MMT' && bookingdata?.externalSite != 'Agoda' && bookingdata?.externalSite != 'Yatra' && bookingdata?.externalSite != 'Booking.com' && bookingdata?.externalSite != 'Expedia' && bookingdata?.externalSite != 'SiteMinder' && bookingdata?.externalSite != 'BookOne Connect' && bookingdata?.externalSite != 'Google Hotel Ads' && bookingdata?.externalSite != 'Airbnb' && bookingdata?.externalSite != 'Trivago' && bookingdata?.externalSite != 'Clear trip' && bookingdata?.externalSite != 'OYO' && bookingdata?.externalSite != 'Via.com' && bookingdata?.externalSite != 'Travel Guru' && bookingdata?.externalSite != 'IRCTC' && bookingdata?.externalSite != 'Hotels.com' && bookingdata?.externalSite != 'BookingJini' && bookingdata?.externalSite != 'Fab' && bookingdata?.externalSite != 'Treebo' && bookingdata?.externalSite != 'Go Room Go' && bookingdata?.externalSite != 'Pie Rooms' )">{{bookingdata?.externalSite}}</span>
-                                  </div>
-                                </div><br>
-                    </div>
-                    <div class="col-7">
+                                          <div class="source">
+                                            @if ((bookingdata?.externalSite === 'The Hotel Mate' || bookingdata?.externalSite === 'Easemytrip' || bookingdata?.externalSite === 'GOBIBO,MMT' || bookingdata?.externalSite === 'Agoda' || bookingdata?.externalSite === 'Yatra' || bookingdata?.externalSite === 'Booking.com' || bookingdata?.externalSite === 'Expedia' || bookingdata?.externalSite === 'SiteMinder' || bookingdata?.externalSite === 'BookOne Connect' || bookingdata?.externalSite === 'Google Hotel Ads' || bookingdata?.externalSite === 'Airbnb' || bookingdata?.externalSite === 'Trivago' || bookingdata?.externalSite === 'Clear trip' || bookingdata?.externalSite === 'OYO'  || bookingdata?.externalSite === 'Via.com' || bookingdata?.externalSite === 'Travel Guru' || bookingdata?.externalSite === 'IRCTC' || bookingdata?.externalSite === 'Hotels.com' || bookingdata?.externalSite === 'BookingJini' || bookingdata?.externalSite === 'Fab'  || bookingdata?.externalSite === 'Treebo' || bookingdata?.externalSite === 'Go Room Go' || bookingdata?.externalSite === 'Pie Rooms')) {
+                                              <div >
+                                                @for (externalsite of externalSites; track externalsite) {
+                                                  <div>
+                                                    @if (bookingdata?.externalSite === externalsite.externalSiteName) {
+                                                      <span><img src="{{externalsite.logo}}"  height="22px" width="62px" ></span>
+                                                    }
+                                                  </div>
+                                                }
+                                              </div>
+                                            }
+                                            <div>
+                                              @if ((bookingdata?.externalSite != 'The Hotel Mate' && bookingdata?.externalSite != 'Easemytrip' && bookingdata?.externalSite != 'GOBIBO,MMT' && bookingdata?.externalSite != 'Agoda' && bookingdata?.externalSite != 'Yatra' && bookingdata?.externalSite != 'Booking.com' && bookingdata?.externalSite != 'Expedia' && bookingdata?.externalSite != 'SiteMinder' && bookingdata?.externalSite != 'BookOne Connect' && bookingdata?.externalSite != 'Google Hotel Ads' && bookingdata?.externalSite != 'Airbnb' && bookingdata?.externalSite != 'Trivago' && bookingdata?.externalSite != 'Clear trip' && bookingdata?.externalSite != 'OYO' && bookingdata?.externalSite != 'Via.com' && bookingdata?.externalSite != 'Travel Guru' && bookingdata?.externalSite != 'IRCTC' && bookingdata?.externalSite != 'Hotels.com' && bookingdata?.externalSite != 'BookingJini' && bookingdata?.externalSite != 'Fab' && bookingdata?.externalSite != 'Treebo' && bookingdata?.externalSite != 'Go Room Go' && bookingdata?.externalSite != 'Pie Rooms' )) {
+                                                <span>{{bookingdata?.externalSite}}</span>
+                                              }
+                                            </div>
+                                          </div><br>
+                                        </div>
+                                        <div class="col-7">
                       <p style="font-size: 13px;
                       margin-bottom: 24px; margin-left: -17px;">
                         <b style="
                         font-weight: 700;color:#000">Checkout Date:</b> <br>
-                        {{item1?.checkOutDate}}<br>
+                                            {{item1?.checkOutDate}}<br>
                         <b style="
                         font-weight: 700;color:#000">Status:</b> <br>
-                        {{item1?.status}} <br>
+                                            {{item1?.status}} <br>
                         <b style="
                         font-weight: 700;color: #000;">Room Plan:</b> <br>
-                        {{item1 ?.roomRatePlanName}} <br>
+                                            {{item1 ?.roomRatePlanName}} <br>
                         <b style="
                         font-weight: 700;color:#000">Email:</b> <br>
-                        <span class="email-text">{{ item1?.email }}</span><br>
+                                            <span class="email-text">{{ item1?.email }}</span><br>
                         <div style="border-radius: 30px 0px 30px 30px;
                         border: -10.5px solid #fff;
                         background: #271a55;
@@ -436,69 +412,64 @@
                         margin-bottom: -6px;
                         width: 175px;
                     ">
-
-<div style="text-align: center; font-size: 13px; margin-bottom: 4px;" >
+                                              <div style="text-align: center; font-size: 13px; margin-bottom: 4px;" >
   <button style="background-color: #fff; color: #221950; width: max-content;
   height: 40px;
   border-radius: 15px; margin-right: 15px;
   font-weight: 700; padding-left: 10px;
     padding-right: 10px;" (click)="PayViaUpi(item1)">
-Pay Now
-
-</button>
-</div>
-
-<div  style="text-align: center; font-size: 13px; margin-bottom: 4px;">
+                                                  Pay Now
+                                                </button>
+                                              </div>
+                                              <div  style="text-align: center; font-size: 13px; margin-bottom: 4px;">
   <button class="btn btn-danger" (click)="enquiryStatusVoid(item1?.enquiryId)" style="background-color: #fff; color: #221950;width: max-content;
   height: 40px;
   border-radius: 15px;
   font-weight: 700; ">Void</button>
-</div>
+                                              </div>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  }
+                                </div>
+                              }
 
+                            </div>
+
+                            @if (nodatafound === true ) {
+                              <div>
+                                <div class="custom-card-section">
+                                  <div class="custom-card">
+                                    <div class="custom-card-content">
+                                      <h2 style="text-align: center;">
+                                        OOOPS! <br>
+                                      There is no data found</h2>
+                                      <div class="row justify-content-center">
+                                        <img src="media-be/images/Saderror.png" alt="sad" class="image-custum" />
+                                      </div>
+                                      <!-- <p>{{ card.description }}</p> -->
+                                    </div>
+                                    <!-- <p class="text-center"> There is no data found  </p> -->
+                                  </div>
+                                </div>
+                              </div>
+                            }
+
+                          </ng-container>
+                          @if (paginatedData?.length > 0) {
+                            <div class="allignment">
+                              <span>Items per page:{{this.pageSize}}</span>
+                              <button (click)="changePage(currentPage - 1)" [disabled]="currentPage === 1">Previous</button>
+                              <span>Page {{ currentPage }} of {{ totalPages() }}</span>
+                              <button (click)="changePage(currentPage + 1)" [disabled]="currentPage === totalPages()">Next</button>
+                            </div>
+                          }
                         </div>
 
+                      </div>
+
+
                     </div>
-
                   </div>
-
-
-                </div>
-
-              </div>
-
-
-            </div>
-
-          </div>
-
-          <div *ngIf="nodatafound === true ">
-            <div class="custom-card-section">
-              <div class="custom-card">
-                <div class="custom-card-content">
-                  <h2 style="text-align: center;">
-                    OOOPS! <br>
-                    There is no data found</h2>
-                  <div class="row justify-content-center">
-                  <img src="media-be/images/Saderror.png" alt="sad" class="image-custum" />
-                </div>
-                  <!-- <p>{{ card.description }}</p> -->
-              </div>
-                <!-- <p class="text-center"> There is no data found  </p> -->
-              </div>
-            </div>
-          </div>
-
-        </ng-container>
-        <div *ngIf="paginatedData?.length > 0" class="allignment">
-          <span>Items per page:{{this.pageSize}}</span>
-          <button (click)="changePage(currentPage - 1)" [disabled]="currentPage === 1">Previous</button>
-          <span>Page {{ currentPage }} of {{ totalPages() }}</span>
-          <button (click)="changePage(currentPage + 1)" [disabled]="currentPage === totalPages()">Next</button>
-        </div>
-      </div>
-
-    </div>
-
-
-  </div>
-</div>

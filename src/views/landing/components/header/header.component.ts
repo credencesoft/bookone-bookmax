@@ -4,15 +4,17 @@ import {
   HostListener,
   HostBinding,
   Inject,
-  Input
+  Input,
+  DOCUMENT
 } from '@angular/core';
-import {DOCUMENT} from '@angular/common';
+
 import {WINDOW_PROVIDERS, WINDOW} from '../../helpers/window.helpers';
 
 @Component({
-  selector: 'app-header',
-  templateUrl: './header.component.html',
-  styleUrls: ['./header.component.scss']
+    selector: 'app-header',
+    templateUrl: './header.component.html',
+    styleUrls: ['./header.component.scss'],
+    standalone: false
 })
 export class HeaderComponent implements OnInit {
   constructor(

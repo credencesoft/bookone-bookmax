@@ -1623,7 +1623,8 @@
 
 <div class="container-div margin-bottom-40px">
   <div class="website-web-vision">
-    <div class="row margin-top-40px">
+    @if(businessUser){
+          <div class="row margin-top-40px">
       <div class="col-12 col-lg-7">
         <h2 class="hero-heading">{{ businessUser?.name }}</h2>
         <p class="hero-subheading font-weight-bold">
@@ -1847,12 +1848,14 @@
         </div>
       </div>
     </div>
+    }
+
   </div>
 
   <!-- web view -->
   <!-- mob view -->
-
-  <div class="website-mob-vision">
+@if(businessUser){
+    <div class="website-mob-vision">
     <h2 class="hero-heading">{{ businessUser?.name }}</h2>
     <p class="hero-subheading font-weight-bold">
       <img src="media-be/images/location-icons.svg" alt="" width="17px" />
@@ -2031,6 +2034,8 @@
 
     </div>
   </div>
+}
+
 
   <!-- mob view -->
   <div class="modal fade" style="overflow: auto !important;" tabindex="-1" id="galleryModal" #galleryModalRef>
@@ -2053,9 +2058,10 @@
         </div>
         <div class="modal-body">
           <div class="row">
-            <div
+            @for (img of businessUser?.imageList; track $index; let idx = $index) {
+              <div
               class="col-6 col-md-3 col-lg-3 ng-star-inserted padding-right-0px"
-              *ngFor="let img of businessUser.imageList; let idx = index"
+
             >
               <img
                 [src]="img.url"
@@ -2064,6 +2070,8 @@
                 style="cursor: pointer"
               />
             </div>
+            }
+
           </div>
         </div>
       </div>
@@ -3361,9 +3369,12 @@
         <h5 class="font-weight-bold mb-3">Booking Summary &nbsp;&nbsp;</h5>
 
         <!-- Dates & Guests -->
-        <small *ngIf="!isBookingAllowed()" class="text-danger">
+         @if(!isBookingAllowed()) {
+          <small class="text-danger">
           Please select minimum {{ rooms }} room(s) to proceed.
         </small>
+         }
+
         <div class="date-guest-box mb-4">
           <div class="row no-gutters border-bottom">
             <div class="col-6 pr-2 border-right padding-10px">

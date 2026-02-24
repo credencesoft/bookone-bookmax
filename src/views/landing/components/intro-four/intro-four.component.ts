@@ -3,10 +3,11 @@ import { Component, OnInit } from '@angular/core';
 import { SharedAnimations } from 'src/shared/animations/shared-animations';
 
 @Component({
-  selector: 'app-intro-four',
-  templateUrl: './intro-four.component.html',
-  styleUrls: ['./intro-four.component.scss'],
-  animations:[SharedAnimations]
+    selector: 'app-intro-four',
+    templateUrl: './intro-four.component.html',
+    styleUrls: ['./intro-four.component.scss'],
+    animations: [SharedAnimations],
+    standalone: false
 })
 export class IntroFourComponent implements OnInit {
 

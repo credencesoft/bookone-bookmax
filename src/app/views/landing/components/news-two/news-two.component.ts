@@ -3,9 +3,10 @@ import { WpApiPosts } from 'wp-api-angular';
 import { WPAPIService } from 'src/app/services/wpapi.service';
 
 @Component({
-  selector: 'app-news-two',
-  templateUrl: './news-two.component.html',
-  styleUrls: ['./news-two.component.scss']
+    selector: 'app-news-two',
+    templateUrl: './news-two.component.html',
+    styleUrls: ['./news-two.component.scss'],
+    standalone: false
 })
 export class NewsTwoComponent implements OnInit {
   @Input() token;

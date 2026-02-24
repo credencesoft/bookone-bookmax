@@ -5,9 +5,10 @@ import { ActivatedRoute } from '@angular/router';
 import { WPAPIService } from 'src/services/wpapi.service';
 
 @Component({
-  selector: 'app-news',
-  templateUrl: './news.component.html',
-  styleUrls: ['./news.component.scss']
+    selector: 'app-news',
+    templateUrl: './news.component.html',
+    styleUrls: ['./news.component.scss'],
+    standalone: false
 })
 export class NewsComponent implements OnInit {
   // @Input() token;

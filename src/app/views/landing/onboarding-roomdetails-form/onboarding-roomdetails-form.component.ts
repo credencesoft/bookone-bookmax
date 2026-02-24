@@ -37,9 +37,10 @@ export class EnquiryForm {
 }
 
 @Component({
-  selector: 'app-onboarding-roomdetails-form',
-  templateUrl: './onboarding-roomdetails-form.component.html',
-  styleUrls: ['./onboarding-roomdetails-form.component.scss']
+    selector: 'app-onboarding-roomdetails-form',
+    templateUrl: './onboarding-roomdetails-form.component.html',
+    styleUrls: ['./onboarding-roomdetails-form.component.scss'],
+    standalone: false
 })
 
 export class OnboardingRoomdetailsFormComponent {

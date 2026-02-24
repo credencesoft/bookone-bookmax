@@ -1,9 +1,10 @@
 import {Component, OnInit} from "@angular/core";
 
 @Component({
-  selector: "app-landing-v9",
-  templateUrl: "./landing-v9.component.html",
-  styleUrls: ["./landing-v9.component.scss"]
+    selector: "app-landing-v9",
+    templateUrl: "./landing-v9.component.html",
+    styleUrls: ["./landing-v9.component.scss"],
+    standalone: false
 })
 export class LandingV9Component implements OnInit {
   backgroundColor = "landing-sky-blue";

@@ -1,58 +1,45 @@
 <div class="landing_wrap " [ngClass]="[backgroundColor]">
-    <app-header></app-header>
-    <div class="main-wrapper">
+  <app-header></app-header>
+  <div class="main-wrapper">
 
 
-        <div class=" mt-4">
-            <div class="container-fluid mb-3 "
-                style="background-color: #221950;border-bottom-left-radius: 70%; border-bottom-right-radius: 70%;padding-bottom: 2rem;">
+    <div class=" mt-4">
+      <div class="container-fluid mb-3 "
+        style="background-color: #221950;border-bottom-left-radius: 70%; border-bottom-right-radius: 70%;padding-bottom: 2rem;">
                 <h2 class="enquiryh2" style="text-align: center; font-weight: 600 !important;color: white;    height: 194px;
                 padding-top: 122px;
                 margin-top: -37px; ">Fill In a Few Details About
-                    Your
-                    Property</h2><br>
-            </div>
-        </div>
-        <div class="container">
+          Your
+        Property</h2><br>
+      </div>
+    </div>
+    <div class="container">
             <h5 class="form-header" style="text-align: center;
             font-size: 23px;
             margin-top: 62px;
             padding: 10px;">One Step Away From Joining Our Ecosystem</h5>
-        </div>
+    </div>
 
-        <div class="row justify-content-center" *ngIf="hidediv === false">
-            <div class="happybox">
-
-
-
-
-
-
-                <p class="headingcoupon">
-                    We provide
-                    BookOne PMS, Channel Manager, Google Hotel Center, SMO, OTA setup, SEO, Google Search Engine &
-                    Optimization, Payment Integration.</p>
-
-
-                <p class="headingcoupon2">Are you
-                    interested in any of the software , Use the coupon code to
-                    available</p>
-                <div>
-
-
-
-
-
-
-                    <div class="row justify-content-center" style="margin-bottom: 40px;">
-                        <div>
+    @if (hidediv === false) {
+      <div class="row justify-content-center">
+        <div class="happybox">
+          <p class="headingcoupon">
+            We provide
+            BookOne PMS, Channel Manager, Google Hotel Center, SMO, OTA setup, SEO, Google Search Engine &
+          Optimization, Payment Integration.</p>
+          <p class="headingcoupon2">Are you
+            interested in any of the software , Use the coupon code to
+          available</p>
+          <div>
+            <div class="row justify-content-center" style="margin-bottom: 40px;">
+              <div>
                             <!-- <div style="display: inline-flex;
                              align-items: center;padding: 9px;
                              border-radius: 10px;
                              background: rgba(255, 248, 248, 0.90);
                              height: 65px; border: none;">
-                              <span>{{campainId}}</span>
-                             </div> -->
+                <span>{{campainId}}</span>
+              </div> -->
                             <input placeholder="Enter promo code" style="    display: inline-flex;
                                 align-items: center;
                                 text-indent: 10px;
@@ -60,8 +47,6 @@
                                 background: rgba(255, 248, 248, 0.90);
                                 height: 65px; border: none;
                                 " [(ngModel)]="coupon" readonly>
-
-
                             <button style="       border-radius: 10px;
                                 border: 3px solid #261a55;
                                 background: #261a55;
@@ -71,117 +56,85 @@
                                 color: #FFF;
                                 text-align: center;
                                 font-weight: 700;" (click)="openPopup()">APPLY</button>
-
-
-                        </div>
-                    </div>
-
-
-
-
-
-
-                </div>
-                <div>
-
-
-                </div>
-
-
+              </div>
             </div>
+          </div>
+          <div>
+          </div>
         </div>
+      </div>
+    }
 
 
-        <div class="popup-container" *ngIf="isPopupVisible">
-            <div class="popup"
-                style="padding: 50px;background: #221950; margin-left: 20px; margin-right: 20px;  z-index: 1; position: relative;">
-                <!-- Add content for your popup here -->
+    @if (isPopupVisible) {
+      <div class="popup-container">
+        <div class="popup"
+          style="padding: 50px;background: #221950; margin-left: 20px; margin-right: 20px;  z-index: 1; position: relative;">
+          <!-- Add content for your popup here -->
                 <p style=" color: #FFF; font-size: 22px;
               text-align: center;
               font-weight: 700;"> Congratulations! <br> The Coupon code will be applied on the final offer <br>
-                </p>
+          </p>
                 <button (click)="closePopup()" style="background: #261a55;
               padding: 8px 62px 6px 58px; color: #FFF;">OK</button>
-                <div class="row justify-content-center">
-                    <i> <img src="media-be/images/Happy.png" alt="" class="happycouponcodeimg" /></i>
-
-
-
-
-                </div>
-            </div>
+          <div class="row justify-content-center">
+            <i> <img src="media-be/images/Happy.png" alt="" class="happycouponcodeimg" /></i>
+          </div>
         </div>
+      </div>
+    }
 
 
-        <div *ngIf="hidediv === true">
-            <div class="happybox">
-
-
-
-
-
-
-                <p class="couponcodepara">
-                    Please fill out the form, <br>
-
-
-                    and We will get back to you soon.</p>
-                <div>
-                    <div class="container">
-                        <div class="row">
-                            <div class="col align-self-start">
-
-
-                            </div>
-                            <div class="col-12">
-                                <div class="">
-                                    <div class="container" style="margin-bottom: 20px;">
-                                        <div class="row justify-content-center">
-                                            <i> <img src="media-be/images/Happy.png" alt=""
-                                                    class="happycouponcodeimg" /></i>
-
-
-
-
-                                        </div>
-                                    </div>
-                                </div>
-
-
-                            </div>
-                            <div class="col align-self-end">
-
-
-                            </div>
-
-
-                        </div>
+    @if (hidediv === true) {
+      <div>
+        <div class="happybox">
+          <p class="couponcodepara">
+            Please fill out the form, <br>
+          and We will get back to you soon.</p>
+          <div>
+            <div class="container">
+              <div class="row">
+                <div class="col align-self-start">
+                </div>
+                <div class="col-12">
+                  <div class="">
+                    <div class="container" style="margin-bottom: 20px;">
+                      <div class="row justify-content-center">
+                        <i> <img src="media-be/images/Happy.png" alt=""
+                        class="happycouponcodeimg" /></i>
+                      </div>
                     </div>
+                  </div>
                 </div>
-
-
+                <div class="col align-self-end">
+                </div>
+              </div>
             </div>
+          </div>
         </div>
+      </div>
+    }
 
-        <div class="bar" style="margin-top: 50px;">
-            <ng-container *ngFor="let n of [0, 1, 2]"> <!-- Assuming elSet is 3 -->
-                <input class="bar-input" type="radio" name="input" [id]="'input_' + n" />
-                <div class="bar-view">
-                    <label class="bar-button" [for]="'input_' + n"></label>
-                </div>
-            </ng-container>
+    <div class="bar" style="margin-top: 50px;">
+      @for (n of [0, 1, 2]; track n) {
+        <!-- Assuming elSet is 3 -->
+        <input class="bar-input" type="radio" name="input" [id]="'input_' + n" />
+        <div class="bar-view">
+          <label class="bar-button" [for]="'input_' + n"></label>
         </div>
-        <div class="d-flex justify-content-end">
-            <div style="width: 83%;">
-                <div style="margin-top: 10px;">
-                    <div>
+      }
+    </div>
+    <div class="d-flex justify-content-end">
+      <div style="width: 83%;">
+        <div style="margin-top: 10px;">
+          <div>
 
 
-                        <div >
-                            <img class="bar-views" src="media-be/images/Polygon 1.png" alt=""
-                                style="width: 30px; margin-left: 60px;margin-inline-start: 45px;" />
-                        </div>
-                        <div class="mini-card" style="margin-bottom: 30px; ">
+            <div >
+              <img class="bar-views" src="media-be/images/Polygon 1.png" alt=""
+                style="width: 30px; margin-left: 60px;margin-inline-start: 45px;" />
+              </div>
+              <div class="mini-card" style="margin-bottom: 30px; ">
                             <div style="display: inline-flex;
                                                     justify-content: center;
                                                     align-items: center;border-radius: 500px;
@@ -191,18 +144,18 @@
                                                 padding-top: 10px; margin-inline-start: -30px; ">
 
 
-                                <p class="mini-card-title">
-                                    Business details</p>
-                            </div>
-                        </div>
-                    </div>
+                  <p class="mini-card-title">
+                  Business details</p>
                 </div>
+              </div>
             </div>
+          </div>
         </div>
+      </div>
 
 
-        <div >
-            <div class="col-md-6 offset-md-3">
+      <div >
+        <div class="col-md-6 offset-md-3">
                 <div style=" margin-top: 50px;
           border-radius: 30px;color: #FFF;
             text-align: center;
@@ -216,21 +169,21 @@
         margin-right: 94px;"> Business Details</div>
 
 
-            </div>
         </div>
+      </div>
 
 
-        <div >
-            <form #contactForm2=ngForm role="form"
+      <div >
+        <form #contactForm2=ngForm role="form"
                 style="background: #FFF;
                 border: 0.5px solid #221950;
                 background: #FFF;
                 box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25); padding: 30px; border-radius: 60px;  margin-top: -15px; margin-bottom: 50px; margin-left: 40px; margin-right: 40px;">
-                <div class=" mb-4">
+          <div class=" mb-4">
 
 
-                    <div class="row with-forms">
-                        <div class="col-lg-6">
+            <div class="row with-forms">
+              <div class="col-lg-6">
                             <div class="form-group mb-4" style="color: #484848;
 
 
@@ -238,18 +191,22 @@
                         font-weight: 600;">
 
 
-                                Hotel Name
+                  Hotel Name
                                 <input style="border-radius: 30px;
                               border: 0.5px solid #221950;
                               background: #FFF;" type="text" [formControl]="hotelnameControl" name="name" class="form-control"
-                                    placeholder="Enter your hotel name" [(ngModel)]="businessLineDTO.name" required>
-                                <div *ngIf="(hotelnameControl.touched || contactForm2.submitted) && hotelnameControl.errors">
-                                    <span *ngIf="hotelnameControl.errors.required" class="text-danger">Hotel Name is required
-                                    </span><br>
-                                </div>
-                            </div>
+                    placeholder="Enter your hotel name" [(ngModel)]="businessLineDTO.name" required>
+                    @if ((hotelnameControl.touched || contactForm2.submitted) && hotelnameControl.errors) {
+                      <div>
+                        @if (hotelnameControl.errors.required) {
+                          <span class="text-danger">Hotel Name is required
+                          </span>
+                          }<br>
                         </div>
-                        <div class="col-lg-6">
+                      }
+                    </div>
+                  </div>
+                  <div class="col-lg-6">
                             <div class="form-group mb-4" style="color: #484848;
 
 
@@ -257,25 +214,31 @@
                       font-weight: 600;">
 
 
-                                Mobile Number
+                      Mobile Number
                                 <input style="border-radius: 30px;
                             border: 0.5px solid #221950;
                             background: #FFF;" type="tel" name="phone" class="form-control" [formControl]="phoneControl"
-                                    pattern="(9[976]\d|8[987530]\d|6[987]\d|5[90]\d|42\d|3[875]\d|2[98654321]\d|9[8543210]|8[6421]|6[6543210]|5[87654321]|4[987654310]|3[9643210]|2[70]|7|1)\d{1,11}$"
-                                    placeholder="Enter your mobile number" [(ngModel)]="businessLineDTO.mobile" required>
-                                <div *ngIf="(phoneControl.touched || contactForm2.submitted) && phoneControl.errors">
-                                    <span *ngIf="phoneControl.errors.required" class="text-danger">Mobile Number is required
-                                    </span>
-                                    <span *ngIf="phoneControl.errors.pattern" class="text-danger">Please enter valid phone
-                                        number</span>
-                                </div>
+                        pattern="(9[976]\d|8[987530]\d|6[987]\d|5[90]\d|42\d|3[875]\d|2[98654321]\d|9[8543210]|8[6421]|6[6543210]|5[87654321]|4[987654310]|3[9643210]|2[70]|7|1)\d{1,11}$"
+                        placeholder="Enter your mobile number" [(ngModel)]="businessLineDTO.mobile" required>
+                        @if ((phoneControl.touched || contactForm2.submitted) && phoneControl.errors) {
+                          <div>
+                            @if (phoneControl.errors.required) {
+                              <span class="text-danger">Mobile Number is required
+                              </span>
+                            }
+                            @if (phoneControl.errors.pattern) {
+                              <span class="text-danger">Please enter valid phone
+                              number</span>
+                            }
+                          </div>
+                        }
 
 
-                            </div>
-                        </div>
+                      </div>
+                    </div>
 
 
-                        <div class="col-lg-6">
+                    <div class="col-lg-6">
                             <div class="form-group mb-4" style="color: #484848;
 
 
@@ -283,17 +246,21 @@
                       font-weight: 600;">
 
 
-                                Owner Name
+                        Owner Name
                                 <input style="border-radius: 30px;
                             border: 0.5px solid #221950;
                             background: #FFF;" type="text" [formControl]="nameControl" name="Name" class="form-control"
-                                    placeholder="Enter Your Owner Name" [(ngModel)]="businessLineDTO.ownerName" required>
-                                <div *ngIf="(nameControl.touched || contactForm2.submitted) && nameControl.errors">
-                                    <span *ngIf="nameControl.errors.required" class="text-danger">Owner Name is required </span><br>
-                                </div>
+                          placeholder="Enter Your Owner Name" [(ngModel)]="businessLineDTO.ownerName" required>
+                          @if ((nameControl.touched || contactForm2.submitted) && nameControl.errors) {
+                            <div>
+                              @if (nameControl.errors.required) {
+                                <span class="text-danger">Owner Name is required </span>
+                                }<br>
+                              </div>
+                            }
 
 
-                            </div>
+                          </div>
                         </div>
 
 
@@ -305,25 +272,31 @@
                       font-weight: 600;">
 
 
-                                Email ID
+                            Email ID
                                 <input style="border-radius: 30px;
                             border: 0.5px solid #221950;
                             background: #FFF;" [formControl]="fromEmailControl" type="text"
-                                    name="Enter Your Email Id, e.g. xyz@gmail.com" class="form-control"
-                                    placeholder="Enter Your Email Id, e.g. xyz@gmail.com"
-                                    pattern="^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$" [(ngModel)]="businessLineDTO.email" required>
-                                <div *ngIf="(fromEmailControl.touched || contactForm2.submitted) && fromEmailControl.errors">
-                                    <span *ngIf="fromEmailControl.errors.required" class="text-danger">Email is required </span>
-                                    <span *ngIf="fromEmailControl.errors.pattern" class="text-danger">Please enter valid
-                                        email</span><br>
-                                </div>
+                              name="Enter Your Email Id, e.g. xyz@gmail.com" class="form-control"
+                              placeholder="Enter Your Email Id, e.g. xyz@gmail.com"
+                              pattern="^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$" [(ngModel)]="businessLineDTO.email" required>
+                              @if ((fromEmailControl.touched || contactForm2.submitted) && fromEmailControl.errors) {
+                                <div>
+                                  @if (fromEmailControl.errors.required) {
+                                    <span class="text-danger">Email is required </span>
+                                  }
+                                  @if (fromEmailControl.errors.pattern) {
+                                    <span class="text-danger">Please enter valid
+                                    email</span>
+                                    }<br>
+                                  </div>
+                                }
+                              </div>
                             </div>
-                        </div>
 
 
 
 
-                        <div class="col-lg-12">
+                            <div class="col-lg-12">
                             <div class="form-group mb-4" style="color: #484848;
 
 
@@ -335,78 +308,80 @@
                                 <input type="text" [formControl]="selectedOptionControl" [(ngModel)]="this.businessLineDTO.howDidYouHearAboutUs " (click)="toggleDropdown()" style="border-radius: 30px;
                         border: 0.5px solid #221950;
                         background: #FFF;" name="How did you hear about us?" class="form-control"
-                                    placeholder="How did you hear about us?" required>
-                                <span class="sorting-arrow"><img src="media-be/images/Sort Down.png" alt=""
-                                        style="width: 40px;" /></span>
-                                <!-- <span class="sorting-arrow" [ngClass]="{ 'open': isDropdownOpen }">&#9660;</span> -->
-                                <div>
-                                <ul class="dropdown-list" *ngIf="isDropdownOpen">
-                                    <li *ngFor="let option of dropdownOptions" (click)="selectOption(option)">{{ option }}</li>
-                                </ul>
-                                <br>
-
-
-
-
-                                </div>
-                                <div *ngIf="(selectedOptionControl.touched || contactForm2.submitted) && selectedOptionControl.errors">
-                                    <span *ngIf="selectedOptionControl.errors.required" class="text-danger">required* </span>
+                                  placeholder="How did you hear about us?" required>
+                                  <span class="sorting-arrow"><img src="media-be/images/Sort Down.png" alt=""
+                                  style="width: 40px;" /></span>
+                                  <!-- <span class="sorting-arrow" [ngClass]="{ 'open': isDropdownOpen }">&#9660;</span> -->
+                                  <div>
+                                    @if (isDropdownOpen) {
+                                      <ul class="dropdown-list">
+                                        @for (option of dropdownOptions; track option) {
+                                          <li (click)="selectOption(option)">{{ option }}</li>
+                                        }
+                                      </ul>
+                                    }
                                     <br>
-                                </div>
+
+
+
+
+                                    </div>
+                                    @if ((selectedOptionControl.touched || contactForm2.submitted) && selectedOptionControl.errors) {
+                                      <div>
+                                        @if (selectedOptionControl.errors.required) {
+                                          <span class="text-danger">required* </span>
+                                        }
+                                        <br>
+                                        </div>
+                                      }
 
 
 
 
 
 
-                            </div>
+                                    </div>
 
 
-                        </div>
-                        <div class="col-lg-12" *ngIf="this.businessLineDTO.howDidYouHearAboutUs === 'Others'">
+                                  </div>
+                                  @if (this.businessLineDTO.howDidYouHearAboutUs === 'Others') {
+                                    <div class="col-lg-12">
                             <div class="form-group mb-4" style="color: #484848;
 
 
                 font-size: 15px;
                 font-weight: 600; margin-top: -10px;" >
-
-
-                                Can you briefly share how you found out about us?
-
-
+                                        Can you briefly share how you found out about us?
                                 <input    style="border-radius: 30px;
                       border: 0.5px solid #221950;
                       background: #FFF;" type="text" name="Can you briefly share how you found out about us?"
-                                    class="form-control" [formControl]="selectedOptionothersControl" placeholder="Can you briefly share how you found out about us?"
-                                    [(ngModel)]="foundustext" required>
-                                <br>
+                                          class="form-control" [formControl]="selectedOptionothersControl" placeholder="Can you briefly share how you found out about us?"
+                                          [(ngModel)]="foundustext" required>
+                                          <br>
+                                            @if ((selectedOptionothersControl.touched || contactForm2.submitted) && selectedOptionothersControl.errors) {
+                                              <div>
+                                                @if (selectedOptionothersControl.errors.required) {
+                                                  <span class="text-danger">required * </span>
+                                                }
+                                                <br>
+                                                </div>
+                                              }
+                                            </div>
+                                          </div>
+                                        }
 
 
-                                <div *ngIf="(selectedOptionothersControl.touched || contactForm2.submitted) && selectedOptionothersControl.errors">
-                                    <span *ngIf="selectedOptionothersControl.errors.required" class="text-danger">required * </span>
-                                    <br>
+                                      </div>
+                                    </div>
+                                  </form>
+
+
                                 </div>
-
-
-
-
-                            </div>
-
-
-                        </div>
-
-
-                    </div>
-                </div>
-            </form>
-
-
-        </div>
 
 
         <div style="display: flex;
         justify-content: center;">
-            <div>
+                                  <div>
                 <button style="border-radius: 25px;
                 background: #221950;width: 226px;
                 padding: 5px 80px 4px 79px; border: none; margin-bottom: 50px; color: #FFF;
@@ -419,8 +394,8 @@
                 nameControl.value === undefined || nameControl.value ===null ||
                 fromEmailControl.value === undefined || fromEmailControl.value ===null ||
                 selectedOptionControl.value === undefined || selectedOptionControl.value === null || selectedOptionothersControl.value === undefined || selectedOptionothersControl.value === null" (click)="next()"> Next</button>
-            </div>
-        </div>
+                                  </div>
+                                </div>
 
 
 
@@ -429,7 +404,7 @@
 
 
 
-    </div>
+                              </div>
 
-    <app-footer></app-footer>
-</div>
+                              <app-footer></app-footer>
+                            </div>

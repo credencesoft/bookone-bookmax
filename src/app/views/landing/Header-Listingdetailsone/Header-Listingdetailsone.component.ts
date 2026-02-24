@@ -1,13 +1,14 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Inject, Input, OnInit, Output, PLATFORM_ID } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Location } from '@angular/common';
+import { isPlatformBrowser, Location } from '@angular/common';
 import { TokenStorage } from 'src/token.storage';
 import { BusinessUser } from 'src/app/model/user';
 
 @Component({
-  selector: 'app-Header-Listingdetailsone',
-  templateUrl: './Header-Listingdetailsone.component.html',
-  styleUrls: ['./Header-Listingdetailsone.component.css']
+    selector: 'app-Header-Listingdetailsone',
+    templateUrl: './Header-Listingdetailsone.component.html',
+    styleUrls: ['./Header-Listingdetailsone.component.css'],
+    standalone: false
 })
 export class HeaderListingdetailsoneComponent implements OnInit {
   // @Output() bookNowClicked = new EventEmitter<void>();
@@ -59,21 +60,10 @@ export class HeaderListingdetailsoneComponent implements OnInit {
     private location: Location,
     private token:TokenStorage,
     private acRoute: ActivatedRoute,
+    @Inject(PLATFORM_ID) private platformId: Object,
   ) {
     // this.propertydetails = this.token.getProperty();
     // //console.log("propertydata="+ JSON.stringify(this.propertydetails))
-   this.checkBookingEngineFlag();
-  setInterval(() => {
-    this.checkBookingEngineFlag();
-        this.website = this.businessUser?.website;
-      this.businessUser?.socialMediaLinks?.forEach(element => {
-        this.socialmedialist=element
-      });
-      if (this.businessUser != null ) {
-        this.showheader = true
-      }
-  }, 1000);
-    this.PropertyUrl = this.token.getPropertyUrl();
     //console.log("property url:" + this.PropertyUrl)
     this.website = this.businessUser?.website;
 
@@ -101,9 +91,23 @@ export class HeaderListingdetailsoneComponent implements OnInit {
 
  }
   ngOnInit() {
+    if (isPlatformBrowser(this.platformId)) {
+       this.checkBookingEngineFlag();
+  setInterval(() => {
+    this.checkBookingEngineFlag();
+        this.website = this.businessUser?.website;
+      this.businessUser?.socialMediaLinks?.forEach(element => {
+        this.socialmedialist=element
+      });
+      if (this.businessUser != null ) {
+        this.showheader = true
+      }
+  }, 1000);
+    this.PropertyUrl = this.token.getPropertyUrl();
     this.website = this.businessUser?.website;
 
     //console.log('new link is',this.website);
+}
   }
 checkBookingEngineFlag(): void {
   const bookingEngineFlag = sessionStorage.getItem('BookingEngine');

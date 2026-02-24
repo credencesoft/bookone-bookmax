@@ -1,9 +1,10 @@
 import {Component, OnInit} from "@angular/core";
 
 @Component({
-  selector: "app-landing-v2",
-  templateUrl: "./landing-v2.component.html",
-  styleUrls: ["./landing-v2.component.scss"]
+    selector: "app-landing-v2",
+    templateUrl: "./landing-v2.component.html",
+    styleUrls: ["./landing-v2.component.scss"],
+    standalone: false
 })
 export class LandingV2Component implements OnInit {
   backgroundColor = "landing-indigo-light";

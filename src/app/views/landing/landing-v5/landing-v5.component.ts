@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'app-landing-v5',
-  templateUrl: './landing-v5.component.html',
-  styleUrls: ['./landing-v5.component.scss']
+    selector: 'app-landing-v5',
+    templateUrl: './landing-v5.component.html',
+    styleUrls: ['./landing-v5.component.scss'],
+    standalone: false
 })
 export class LandingV5Component implements OnInit {
 

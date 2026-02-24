@@ -1,21 +1,23 @@
-<div class="main-wrapper payment-page desktop-view" *ngIf="showContent ===true">
-  <!--Title Bar -->
-  <title-bar title="Booking Details" subtitle=""></title-bar>
-  <!-- Container -->
-  <div class="content">
-    <div class="container">
-
-      <div class="confirmation-container">
-        <div class="confirmation-image">
-          <img *ngIf="businessUser?.logoUrl" src="{{businessUser?.logoUrl}}" alt="" width="100%" height="auto">
-
-          <img *ngIf="!businessUser.logoUrl" src="media-be/images/app-logo.png" alt="" width="100%">
-        </div>
-        <div class="confirmation-text">
-          <h2 style="font-weight: bold;">Your booking at {{businessUser.name}} is confirmed!</h2>
-          <p>Please complete the payment to secure your reservation.
-
-            <!-- <span class="text-muted"><small *ngIf="businessUser.address">
+@if (showContent ===true) {
+  <div class="main-wrapper payment-page desktop-view">
+    <!--Title Bar -->
+    <title-bar title="Booking Details" subtitle=""></title-bar>
+    <!-- Container -->
+    <div class="content">
+      <div class="container">
+        <div class="confirmation-container">
+          <div class="confirmation-image">
+            @if (businessUser?.logoUrl) {
+              <img src="{{businessUser?.logoUrl}}" alt="" width="100%" height="auto">
+            }
+            @if (!businessUser.logoUrl) {
+              <img src="media-be/images/app-logo.png" alt="" width="100%">
+            }
+          </div>
+          <div class="confirmation-text">
+            <h2 style="font-weight: bold;">Your booking at {{businessUser.name}} is confirmed!</h2>
+            <p>Please complete the payment to secure your reservation.
+              <!-- <span class="text-muted"><small *ngIf="businessUser.address">
               <p class="description">
                 {{businessUser.address.streetNumber? businessUser.address.streetNumber + ', ' : '' }}
                 {{businessUser.address.streetName? businessUser.address.streetName + ', ' : '' }}
@@ -26,12 +28,10 @@
               </p>
             </small></span> -->
           </p>
-
         </div>
       </div>
       <div class="row">
         <div class="col-md-6 booking-details">
-
           <div class="row">
             <div class="col-6" style="font-weight: bold;">
               <p>BOOKING STATUS</p>
@@ -39,7 +39,6 @@
               <p>Room Type</p>
               <p>Number Of Nights</p>
               <p>Number Of Guests</p>
-
               <p>Number Of Rooms</p>
               <p>Room Price</p>
               <p>Extra Pax Charge ({{booking.noOfExtraPerson}})</p>
@@ -51,7 +50,6 @@
               <p>{{booking.roomName}}</p>
               <p>{{DiffDate}}</p>
               <p>{{booking.noOfPersons}}</p>
-
               <p>{{booking.noOfRooms}}</p>
               <p>{{booking.roomPrice | currency: currency:'symbol':'1.2-2' }}</p>
               <p>{{booking.extraPersonCharge | currency: currency:'symbol':'1.2-2'}}</p>
@@ -59,7 +57,6 @@
             </div>
           </div>
         </div>
-
         <div class="col-md-6 reservation-details mt-3 mt-md-0">
           <div class="card p-3 mb-3 custom-shadow">
             <div class="check-in-out d-flex justify-content-between">
@@ -79,7 +76,6 @@
               <span>Reservation ID:</span>
               <span>{{booking.propertyReservationNumber}}</span>
             </div>
-
             <div class="d-flex justify-content-between" style="margin-bottom: 5px;">
               <span>Guest Name:</span>
               <span>{{booking.firstName}} {{booking.lastName}}</span>
@@ -92,8 +88,8 @@
               <span>Phone Number:</span>
               <span>{{booking.mobile}}</span>
             </div>
+          </div>
         </div>
-      </div>
       </div>
       <!-- <p class="payment-header"  style="margin-top: 10px;">Payment Details</p>
       <div class="row">
@@ -106,9 +102,7 @@
           <div  style="font-weight: bold;"> {{payment.referenceNumber}}</div>
         </div>
       </div>
-
       <hr> -->
-
       <div class="row" style="margin-top: 10px;">
         <div class="col-6">
           <p>Total Net Amount</p>
@@ -117,7 +111,6 @@
           <p >{{payment?.netReceivableAmount | currency: currency:'symbol':'1.2-2' }}</p>
         </div>
       </div>
-
       <div class="row">
         <div class="col-6">
           <p>Tax Amount</p>
@@ -126,7 +119,6 @@
           <p> {{payment?.taxAmount | currency: currency:'symbol':'1.2-2' }}</p>
         </div>
       </div>
-
       <div class="row">
         <div class="col-6">
           <p>Total Booking Amount</p>
@@ -134,141 +126,147 @@
         <div class="col-6 text-right">
           <p > {{payment?.netReceivableAmount +  payment?.taxAmount | currency: currency:'symbol':'1.2-2' }}</p>
         </div>
-
-     </div>
-
-      <h4 *ngIf="services && services.length > 0" style="font-weight: bold;margin-top: 10px;">Add-on Services</h4>
-      <table *ngIf="services && services.length > 0" style=" border: none; width:100%">
-        <tr *ngFor="let fac of services">
-          <td style="width:50%;">
-           <div class="d-flex "   *ngIf="fac.name !== null && fac.name !== undefined && fac.serviceType !== 'Distance' && fac.serviceType !== 'RestaurantHotel' && fac.serviceType !== 'DistanceRailway'">
-            <div style="display: flex; gap:4px;margin-top: 10px;">
-
-              <img *ngIf="!fac.imageUrl" src="https://static.thenounproject.com/png/3421816-200.png" alt="icon" style=" width: 26px;height: 23px;">
-
-
-              <img *ngIf="fac.imageUrl" [src]="fac.imageUrl" alt="icon" style="width: 26px;height: 23px;">
-
-              <br>
-
-              <p>{{fac.name }} * {{fac.count}} <br>
-
-                <b *ngIf="fac.servicePrice !== null && fac.servicePrice !== undefined && fac.servicePrice > 0 &&  fac.taxAmount !== null && fac.taxAmount !== undefined">
-                 ₹ {{fac.servicePrice}} +
-                 ₹ {{fac.taxAmount }} ({{fac.taxPercentage}}% tax)
-              </b>
-              <b style="text-align: right;" *ngIf="fac.servicePrice == null || fac.servicePrice == undefined || fac.servicePrice == 0">₹ {{0 }}</b>
-
-              </p>
-            </div>
-          </div></td>
-          <td style="text-align: right;width:50%" *ngIf="fac.servicePrice !== null || fac.servicePrice !== undefined">₹ {{fac.afterTaxAmount * fac.count}}
-          </td>
-        </tr>
-
-      </table>
-
-      <div class="row total-amount">
-        <div class="col-6">
-          <p>Total Payable Amount</p>
-        </div>
-        <div class="col-6 text-right">
-          <!-- <p *ngIf="this.advPanyment === 0 || this.advPanyment === 'null' ||  this.advPanyment === 'undefined'">  {{payment.transactionAmount | currency: currency:'symbol':'1.2-2' }}</p> -->
-          <p > {{booking.payableAmount | currency: currency:'symbol':'1.2-2' }}</p>
-        </div>
-
-     </div>
-
-      <div class="row total-amount">
-        <div class="col-6">
-          <p>Advance Amount</p>
-        </div>
-        <div class="col-6 text-right">
-          <p *ngIf="this.advPanyment === 0 || this.advPanyment === 'null' ||  this.advPanyment === 'undefined'">  {{payment.transactionAmount | currency: currency:'symbol':'1.2-2' }}</p>
-          <p *ngIf="this.advPanyment > 0"> {{this.advPanyment| currency: currency:'symbol':'1.2-2' }}</p>
-        </div>
       </div>
-
-      <div style="text-align: center; color: red;
+      @if (services && services.length > 0) {
+        <h4 style="font-weight: bold;margin-top: 10px;">Add-on Services</h4>
+      }
+      @if (services && services.length > 0) {
+        <table style=" border: none; width:100%">
+          @for (fac of services; track fac) {
+            <tr>
+              <td style="width:50%;">
+                @if (fac.name !== null && fac.name !== undefined && fac.serviceType !== 'Distance' && fac.serviceType !== 'RestaurantHotel' && fac.serviceType !== 'DistanceRailway') {
+                  <div class="d-flex "  >
+                    <div style="display: flex; gap:4px;margin-top: 10px;">
+                      @if (!fac.imageUrl) {
+                        <img src="https://static.thenounproject.com/png/3421816-200.png" alt="icon" style=" width: 26px;height: 23px;">
+                      }
+                      @if (fac.imageUrl) {
+                        <img [src]="fac.imageUrl" alt="icon" style="width: 26px;height: 23px;">
+                      }
+                      <br>
+                        <p>{{fac.name }} * {{fac.count}} <br>
+                          @if (fac.servicePrice !== null && fac.servicePrice !== undefined && fac.servicePrice > 0 &&  fac.taxAmount !== null && fac.taxAmount !== undefined) {
+                            <b>
+                              ₹ {{fac.servicePrice}} +
+                              ₹ {{fac.taxAmount }} ({{fac.taxPercentage}}% tax)
+                            </b>
+                          }
+                          @if (fac.servicePrice == null || fac.servicePrice == undefined || fac.servicePrice == 0) {
+                            <b style="text-align: right;">₹ {{0 }}</b>
+                          }
+                        </p>
+                      </div>
+                    </div>
+                  }</td>
+                  @if (fac.servicePrice !== null || fac.servicePrice !== undefined) {
+                    <td style="text-align: right;width:50%">₹ {{fac.afterTaxAmount * fac.count}}
+                    </td>
+                  }
+                </tr>
+              }
+            </table>
+          }
+          <div class="row total-amount">
+            <div class="col-6">
+              <p>Total Payable Amount</p>
+            </div>
+            <div class="col-6 text-right">
+              <!-- <p *ngIf="this.advPanyment === 0 || this.advPanyment === 'null' ||  this.advPanyment === 'undefined'">  {{payment.transactionAmount | currency: currency:'symbol':'1.2-2' }}</p> -->
+              <p > {{booking.payableAmount | currency: currency:'symbol':'1.2-2' }}</p>
+            </div>
+          </div>
+          <div class="row total-amount">
+            <div class="col-6">
+              <p>Advance Amount</p>
+            </div>
+            <div class="col-6 text-right">
+              @if (this.advPanyment === 0 || this.advPanyment === 'null' ||  this.advPanyment === 'undefined') {
+                <p>  {{payment.transactionAmount | currency: currency:'symbol':'1.2-2' }}</p>
+              }
+              @if (this.advPanyment > 0) {
+                <p> {{this.advPanyment| currency: currency:'symbol':'1.2-2' }}</p>
+              }
+            </div>
+          </div>
+          @if (payment.status === 'Paid') {
+<div style="text-align: center; color: red;
      margin-top: 10px;
     font-size: 17px;
     font-weight: bold;
-      " *ngIf="payment.status === 'Paid'">
-        The advance amount has already been paid.
+      ">
+              The advance amount has already been paid.
+            </div>
+          }
+          <button class="pay-now-btn" (click)="phonepay()" [disabled]="payment.status === 'Paid'" style="margin-bottom: 10px;"
+          [ngClass]="{'disabled-btn-pay': payment.status === 'Paid', 'enabled-btn-pay': payment.status !== 'Paid'}">PAY NOW</button>
+        </div>
       </div>
-
-      <button class="pay-now-btn" (click)="phonepay()" [disabled]="payment.status === 'Paid'" style="margin-bottom: 10px;"
-       [ngClass]="{'disabled-btn-pay': payment.status === 'Paid', 'enabled-btn-pay': payment.status !== 'Paid'}">PAY NOW</button>
-
     </div>
-  </div>
-</div>
+  }
 
 
 
-<div class="main-wrapper payment-page mobile-view" *ngIf="showContent ===true">
-  <!--Title Bar -->
-  <title-bar title="Booking Details" subtitle=""></title-bar>
-  <!-- Container -->
-  <div class="content">
-    <div class="container">
-
-      <div class="confirmation-container-mobile">
-        <div class="confirmation-image" style="margin: auto;">
-          <img *ngIf="businessUser?.logoUrl" src="{{businessUser?.logoUrl}}" alt="" width="100%" height="auto">
-
-          <img *ngIf="!businessUser.logoUrl" src="media-be/images/app-logo.png" alt="" width="100%">
-        </div>
-        <div class="confirmation-text" style="margin: auto;text-align:center ;margin-top: 10px;">
-          <h3 style="font-weight: bold;" >Your booking at {{businessUser.name}} is confirmed!</h3>
-          <p style="color: #031eaa;font-weight: bold;">Please complete the payment to secure your reservation.
-
-            <!-- <span class="text-muted"><small *ngIf="businessUser.address">
-              <p class="description">
-                {{businessUser.address.streetNumber? businessUser.address.streetNumber + ', ' : '' }}
-                {{businessUser.address.streetName? businessUser.address.streetName + ', ' : '' }}
-                {{businessUser.address.suburb? businessUser.address.suburb + ', ' : '' }}
-                {{businessUser.address.locality? businessUser.address.locality + ', ' : '' }}
-                {{businessUser.address.city? businessUser.address.city + ', ' : '' }}
-                {{ businessUser.address.country? businessUser.address.country : '' }}
-              </p>
-            </small></span> -->
-          </p>
-
-        </div>
-      </div>
-      <div class="row" style="padding: 10px;">
-        <div class="col-md-6  mobile-booking-details" style="border: 1px solid #e0e0e0;border-radius: 10px;">
-
-          <div class="row">
-            <div class="col-6" style="font-weight: bold;">
-              <p>BOOKING STATUS</p>
-              <p>Hotel Name</p>
-              <p>Room Type</p>
-              <p>Number Of Nights</p>
-              <p>Number Of Guests</p>
-
-              <p>Number Of Rooms</p>
-              <p>Room Price</p>
-              <p>Extra Pax Charge ({{booking.noOfExtraPerson}})</p>
-              <p>Extra Child Charge ({{booking.purposeOfVisit}})</p>
+  @if (showContent ===true) {
+    <div class="main-wrapper payment-page mobile-view">
+      <!--Title Bar -->
+      <title-bar title="Booking Details" subtitle=""></title-bar>
+      <!-- Container -->
+      <div class="content">
+        <div class="container">
+          <div class="confirmation-container-mobile">
+            <div class="confirmation-image" style="margin: auto;">
+              @if (businessUser?.logoUrl) {
+                <img src="{{businessUser?.logoUrl}}" alt="" width="100%" height="auto">
+              }
+              @if (!businessUser.logoUrl) {
+                <img src="media-be/images/app-logo.png" alt="" width="100%">
+              }
             </div>
-            <div class="col-6 text-right"  style="font-weight: bold;">
-              <p>{{booking.bookingStatus}}</p>
-              <p style="    font-size: 12px;">{{businessUser.name}}</p>
-              <p>{{booking.roomName}}</p>
-              <p>{{DiffDate}}</p>
-              <p>{{booking.noOfPersons}}</p>
-
-              <p>{{booking.noOfRooms}}</p>
-              <p>{{booking.roomPrice | currency: currency:'symbol':'1.2-2' }}</p>
-              <p>{{booking.extraPersonCharge | currency: currency:'symbol':'1.2-2'}}</p>
-              <p>{{booking.extraChildCharge | currency: currency:'symbol':'1.2-2'}}</p>
-            </div>
+            <div class="confirmation-text" style="margin: auto;text-align:center ;margin-top: 10px;">
+              <h3 style="font-weight: bold;" >Your booking at {{businessUser.name}} is confirmed!</h3>
+              <p style="color: #031eaa;font-weight: bold;">Please complete the payment to secure your reservation.
+                <!-- <span class="text-muted"><small *ngIf="businessUser.address">
+                <p class="description">
+                  {{businessUser.address.streetNumber? businessUser.address.streetNumber + ', ' : '' }}
+                  {{businessUser.address.streetName? businessUser.address.streetName + ', ' : '' }}
+                  {{businessUser.address.suburb? businessUser.address.suburb + ', ' : '' }}
+                  {{businessUser.address.locality? businessUser.address.locality + ', ' : '' }}
+                  {{businessUser.address.city? businessUser.address.city + ', ' : '' }}
+                  {{ businessUser.address.country? businessUser.address.country : '' }}
+                </p>
+              </small></span> -->
+            </p>
+          </div>
+        </div>
+        <div class="row" style="padding: 10px;">
+          <div class="col-md-6  mobile-booking-details" style="border: 1px solid #e0e0e0;border-radius: 10px;">
+            <div class="row">
+              <div class="col-6" style="font-weight: bold;">
+                <p>BOOKING STATUS</p>
+                <p>Hotel Name</p>
+                <p>Room Type</p>
+                <p>Number Of Nights</p>
+                <p>Number Of Guests</p>
+                <p>Number Of Rooms</p>
+                <p>Room Price</p>
+                <p>Extra Pax Charge ({{booking.noOfExtraPerson}})</p>
+                <p>Extra Child Charge ({{booking.purposeOfVisit}})</p>
+              </div>
+              <div class="col-6 text-right"  style="font-weight: bold;">
+                <p>{{booking.bookingStatus}}</p>
+                <p style="    font-size: 12px;">{{businessUser.name}}</p>
+                <p>{{booking.roomName}}</p>
+                <p>{{DiffDate}}</p>
+                <p>{{booking.noOfPersons}}</p>
+                <p>{{booking.noOfRooms}}</p>
+                <p>{{booking.roomPrice | currency: currency:'symbol':'1.2-2' }}</p>
+                <p>{{booking.extraPersonCharge | currency: currency:'symbol':'1.2-2'}}</p>
+                <p>{{booking.extraChildCharge | currency: currency:'symbol':'1.2-2'}}</p>
+              </div>
             </div>
           </div>
         </div>
-
         <div class="col-md-6 reservation-details mt-3 mt-md-0">
           <div class="card p-3 mb-3 custom-shadow">
             <div class="check-in-out d-flex justify-content-between">
@@ -288,7 +286,6 @@
               <span>Reservation ID:</span>
               <span>{{booking.propertyReservationNumber}}</span>
             </div>
-
             <div class="d-flex justify-content-between" style="margin-bottom: 5px;">
               <span>Guest Name:</span>
               <span>{{booking.firstName}} {{booking.lastName}}</span>
@@ -301,121 +298,126 @@
               <span>Phone Number:</span>
               <span>{{booking.mobile}}</span>
             </div>
+          </div>
         </div>
       </div>
-      </div>
- <div class="card" style="padding: 10px;background-color:#f7f7f7 ;margin-top: 10px;">
-  <!-- <p class="payment-header" style="font-size: 20px;">Payment Details</p>
-  <div class="row">
-    <div class="col-6">
-      <p>Payment ID</p>
-      <div style="font-weight: bold;" > {{payment.id}}</div>
-    </div>
-    <div class="col-6 text-right">
-      <p>Payment Ref ID</p>
-      <div  style="font-weight: bold;"> {{payment.referenceNumber}}</div>
-    </div>
-  </div>
-
-  <hr> -->
-
-  <div class="row" style="margin-top: 10px;">
-    <div class="col-6">
-      <p>Total Net Amount</p>
-    </div>
-    <div class="col-6 text-right">
-      <p >{{payment?.netReceivableAmount | currency: currency:'symbol':'1.2-2' }}</p>
-    </div>
-  </div>
-
-  <div class="row">
-    <div class="col-6">
-      <p>Tax Amount</p>
-    </div>
-    <div class="col-6 text-right">
-      <p> {{payment?.taxAmount | currency: currency:'symbol':'1.2-2' }}</p>
-    </div>
-  </div>
-
-  <div class="row">
-    <div class="col-6">
-      <p>Total Booking Amount</p>
-    </div>
-    <div class="col-6 text-right">
-      <p > {{payment?.netReceivableAmount +  payment?.taxAmount | currency: currency:'symbol':'1.2-2' }}</p>
-    </div>
-
- </div>
-
-  <h4 style="font-weight: bold;margin-top: 10px;">Add-on Services</h4>
-  <table style=" border: none; width:100%">
-    <tr *ngFor="let fac of services">
-      <td style="width:50%;">
-       <div class="d-flex "   *ngIf="fac.name !== null && fac.name !== undefined && fac.serviceType !== 'Distance' && fac.serviceType !== 'RestaurantHotel' && fac.serviceType !== 'DistanceRailway'">
-        <div style="display: flex; gap:4px;margin-top: 10px;">
-
-          <img *ngIf="!fac.imageUrl" src="https://static.thenounproject.com/png/3421816-200.png" alt="icon" style=" width: 26px;height: 23px;">
-
-
-          <img *ngIf="fac.imageUrl" [src]="fac.imageUrl" alt="icon" style="width: 26px;height: 23px;">
-
-          <br>
-
-          <p>{{fac.name }} * {{fac.count}} <br>
-
-            <b *ngIf="fac.servicePrice !== null && fac.servicePrice !== undefined && fac.servicePrice > 0 &&  fac.taxAmount !== null && fac.taxAmount !== undefined">
-             ₹ {{fac.servicePrice}} +
-             ₹ {{fac.taxAmount }} ({{fac.taxPercentage}}% tax)
-          </b>
-          <b style="text-align: right;" *ngIf="fac.servicePrice == null || fac.servicePrice == undefined || fac.servicePrice == 0">₹ {{0 }}</b>
-
-          </p>
+      <div class="card" style="padding: 10px;background-color:#f7f7f7 ;margin-top: 10px;">
+        <!-- <p class="payment-header" style="font-size: 20px;">Payment Details</p>
+        <div class="row">
+          <div class="col-6">
+            <p>Payment ID</p>
+            <div style="font-weight: bold;" > {{payment.id}}</div>
+          </div>
+          <div class="col-6 text-right">
+            <p>Payment Ref ID</p>
+            <div  style="font-weight: bold;"> {{payment.referenceNumber}}</div>
+          </div>
         </div>
-      </div></td>
-      <td style="text-align: right;width:50%" *ngIf="fac.servicePrice !== null || fac.servicePrice !== undefined">₹ {{fac.afterTaxAmount * fac.count}}
-      </td>
-    </tr>
-
-  </table>
-
-  <div class="row total-amount">
-    <div class="col-6">
-      <p>Total Payable Amount</p>
-    </div>
-    <div class="col-6 text-right">
-      <!-- <p *ngIf="this.advPanyment === 0 || this.advPanyment === 'null' ||  this.advPanyment === 'undefined'">  {{payment.transactionAmount | currency: currency:'symbol':'1.2-2' }}</p> -->
-      <p > {{booking.payableAmount | currency: currency:'symbol':'1.2-2' }}</p>
-    </div>
-
- </div>
-
-  <div class="row total-amount">
-    <div class="col-6">
-      <p>Advance Amount</p>
-    </div>
-    <div class="col-6 text-right">
-      <p *ngIf="this.advPanyment === 0 || this.advPanyment === 'null' ||  this.advPanyment === 'undefined'">  {{payment.transactionAmount | currency: currency:'symbol':'1.2-2' }}</p>
-      <p *ngIf="this.advPanyment > 0"> {{this.advPanyment| currency: currency:'symbol':'1.2-2' }}</p>
-    </div>
-  </div>
-  <div style="text-align: center; color: red;
+        <hr> -->
+        <div class="row" style="margin-top: 10px;">
+          <div class="col-6">
+            <p>Total Net Amount</p>
+          </div>
+          <div class="col-6 text-right">
+            <p >{{payment?.netReceivableAmount | currency: currency:'symbol':'1.2-2' }}</p>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-6">
+            <p>Tax Amount</p>
+          </div>
+          <div class="col-6 text-right">
+            <p> {{payment?.taxAmount | currency: currency:'symbol':'1.2-2' }}</p>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-6">
+            <p>Total Booking Amount</p>
+          </div>
+          <div class="col-6 text-right">
+            <p > {{payment?.netReceivableAmount +  payment?.taxAmount | currency: currency:'symbol':'1.2-2' }}</p>
+          </div>
+        </div>
+        <h4 style="font-weight: bold;margin-top: 10px;">Add-on Services</h4>
+        <table style=" border: none; width:100%">
+          @for (fac of services; track fac) {
+            <tr>
+              <td style="width:50%;">
+                @if (fac.name !== null && fac.name !== undefined && fac.serviceType !== 'Distance' && fac.serviceType !== 'RestaurantHotel' && fac.serviceType !== 'DistanceRailway') {
+                  <div class="d-flex "  >
+                    <div style="display: flex; gap:4px;margin-top: 10px;">
+                      @if (!fac.imageUrl) {
+                        <img src="https://static.thenounproject.com/png/3421816-200.png" alt="icon" style=" width: 26px;height: 23px;">
+                      }
+                      @if (fac.imageUrl) {
+                        <img [src]="fac.imageUrl" alt="icon" style="width: 26px;height: 23px;">
+                      }
+                      <br>
+                        <p>{{fac.name }} * {{fac.count}} <br>
+                          @if (fac.servicePrice !== null && fac.servicePrice !== undefined && fac.servicePrice > 0 &&  fac.taxAmount !== null && fac.taxAmount !== undefined) {
+                            <b>
+                              ₹ {{fac.servicePrice}} +
+                              ₹ {{fac.taxAmount }} ({{fac.taxPercentage}}% tax)
+                            </b>
+                          }
+                          @if (fac.servicePrice == null || fac.servicePrice == undefined || fac.servicePrice == 0) {
+                            <b style="text-align: right;">₹ {{0 }}</b>
+                          }
+                        </p>
+                      </div>
+                    </div>
+                  }</td>
+                  @if (fac.servicePrice !== null || fac.servicePrice !== undefined) {
+                    <td style="text-align: right;width:50%">₹ {{fac.afterTaxAmount * fac.count}}
+                    </td>
+                  }
+                </tr>
+              }
+            </table>
+            <div class="row total-amount">
+              <div class="col-6">
+                <p>Total Payable Amount</p>
+              </div>
+              <div class="col-6 text-right">
+                <!-- <p *ngIf="this.advPanyment === 0 || this.advPanyment === 'null' ||  this.advPanyment === 'undefined'">  {{payment.transactionAmount | currency: currency:'symbol':'1.2-2' }}</p> -->
+                <p > {{booking.payableAmount | currency: currency:'symbol':'1.2-2' }}</p>
+              </div>
+            </div>
+            <div class="row total-amount">
+              <div class="col-6">
+                <p>Advance Amount</p>
+              </div>
+              <div class="col-6 text-right">
+                @if (this.advPanyment === 0 || this.advPanyment === 'null' ||  this.advPanyment === 'undefined') {
+                  <p>  {{payment.transactionAmount | currency: currency:'symbol':'1.2-2' }}</p>
+                }
+                @if (this.advPanyment > 0) {
+                  <p> {{this.advPanyment| currency: currency:'symbol':'1.2-2' }}</p>
+                }
+              </div>
+            </div>
+            @if (payment.status === 'Paid') {
+<div style="text-align: center; color: red;
       margin-top: 10px;
     font-size: 19px;
     font-weight: bold;
-  " *ngIf="payment.status === 'Paid'">
-    The advance amount has already been paid.
-  </div>
- </div>
-      <button class="pay-now-btn" (click)="phonepay()" [disabled]="payment.status === 'Paid'" style="margin-bottom: 10px;"
-      [ngClass]="{'disabled-btn-pay': payment.status === 'Paid', 'enabled-btn-pay': payment.status !== 'Paid'}"
-      >PAY NOW</button>
+  ">
+                The advance amount has already been paid.
+              </div>
+            }
+          </div>
+          <button class="pay-now-btn" (click)="phonepay()" [disabled]="payment.status === 'Paid'" style="margin-bottom: 10px;"
+            [ngClass]="{'disabled-btn-pay': payment.status === 'Paid', 'enabled-btn-pay': payment.status !== 'Paid'}"
+          >PAY NOW</button>
+        </div>
+      </div>
+    }
 
-    </div>
-  </div>
-
-  <div class="loader-overlay" *ngIf="loadingOne">
-    <div class="spinner-border text-primary" role="status">
-      <!-- <span class="visually-hidden">Loading...</span> -->
-    </div>
-  </div>
+    @if (loadingOne) {
+      <div class="loader-overlay">
+        <div class="spinner-border text-primary" role="status">
+          <!-- <span class="visually-hidden">Loading...</span> -->
+        </div>
+      </div>
+    }
 

@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
 // import { Booking } from './model/booking';
 // import { BusinessServiceTypes } from './model/businessServiceTypes';
 // import { Customer } from './model/customer';
@@ -21,6 +21,7 @@ import { Router } from "@angular/router";
 import { BusinessService } from './app/model/businessService';
 import { Property } from './app/model/property';
 import { EnquiryDto } from './app/model/enquiry';
+import { isPlatformBrowser } from '@angular/common';
 // import { String } from 'cypress/types/lodash';
 
 const SELECTED_COUNTRY = 'selectedCountry';
@@ -79,7 +80,9 @@ const Save_Child_Charge = 'saveChildCharge';
 
 @Injectable()
 export class TokenStorage {
-  constructor(private router: Router) {}
+  constructor(private router: Router,
+     @Inject(PLATFORM_ID) private platformId: Object
+  ) {}
   public setItem(key, value) {
     value = JSON.stringify(value);
     window.sessionStorage.setItem(key, value);
@@ -142,6 +145,7 @@ export class TokenStorage {
 
     getSelectedServices() {
       // return JSON.parse(sessionStorage.getItem('selectedServices') );
+
     return JSON.parse(sessionStorage.getItem(SELECTED_SERVICE_DATA) as string);
 
     }
@@ -212,6 +216,7 @@ export class TokenStorage {
   localStorage.removeItem(BOOKINGDATA);
   }
   public saveEnquiryData(enquiry: EnquiryDto) {
+
     sessionStorage.removeItem(ENQUIRYDATA);
       if (enquiry !== null || enquiry !== undefined) {
       sessionStorage.setItem(ENQUIRYDATA, JSON.stringify(enquiry));
@@ -220,15 +225,18 @@ export class TokenStorage {
       }
     }
     public getEnquiryData(): EnquiryDto {
+
       return JSON.parse(sessionStorage.getItem(ENQUIRYDATA) as string);
     }
   clearCountry() {
   localStorage.removeItem(COUNTRY);
   }
   public getBookingData(): Booking {
+
     return JSON.parse(sessionStorage.getItem(BOOKINGDATA) as string);
   }
   public clearBookingData() {
+
     return sessionStorage.removeItem(BOOKINGDATA);
   }
   public saveProperty(property: BusinessUser) {
@@ -694,6 +702,7 @@ export class TokenStorage {
     return localStorage.getItem(WEBSITE_BOOKING_URL);
   }
   public saveBookingEngineBoolean(checkbookingengine: string){
+
     sessionStorage.removeItem(CHECK_BOOKING_ENGINE);
     if (checkbookingengine !== null || checkbookingengine !== undefined) {
       sessionStorage.setItem(CHECK_BOOKING_ENGINE, checkbookingengine);
@@ -702,6 +711,7 @@ export class TokenStorage {
     }
   }
   public getBookingEngineBoolean() {
+
     return sessionStorage.getItem(CHECK_BOOKING_ENGINE);
   }
   clearwebsitebookingURL() {

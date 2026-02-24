@@ -24,10 +24,11 @@ declare var Stripe: any;
 
 declare var window: any;
 @Component({
-  selector: 'app-payment',
-  templateUrl: './payment.component.html',
-  styleUrls: ['./payment.component.scss'],
-  providers: [DatePipe],
+    selector: 'app-payment',
+    templateUrl: './payment.component.html',
+    styleUrls: ['./payment.component.scss'],
+    providers: [DatePipe],
+    standalone: false
 })
 export class PaymentComponent implements OnInit {
 

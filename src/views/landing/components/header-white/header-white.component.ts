@@ -4,15 +4,17 @@ import {
   HostListener,
   HostBinding,
   Inject,
-  Input
+  Input,
+  DOCUMENT
 } from "@angular/core";
-import {DOCUMENT} from "@angular/common";
+
 import {WINDOW_PROVIDERS, WINDOW} from "../../helpers/window.helpers";
 
 @Component({
-  selector: "app-header-white",
-  templateUrl: "./header-white.component.html",
-  styleUrls: ["./header-white.component.scss"]
+    selector: "app-header-white",
+    templateUrl: "./header-white.component.html",
+    styleUrls: ["./header-white.component.scss"],
+    standalone: false
 })
 export class HeaderWhiteComponent implements OnInit {
   isFixed;

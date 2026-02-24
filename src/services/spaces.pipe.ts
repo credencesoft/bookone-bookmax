@@ -1,6 +1,9 @@
 import { Pipe, PipeTransform } from '@angular/core'
 
-@Pipe({ name: 'convertToSpaces' })
+@Pipe({
+    name: 'convertToSpaces',
+    standalone: false
+})
 
 export class ConvertToSpacesPipe implements PipeTransform {
 

@@ -4,9 +4,10 @@ import { Observable } from 'rxjs';
 import { BlogPostService } from 'src/services/blog-post.service';
 
 @Component({
-  selector: 'app-book-one-connect',
-  templateUrl: './book-one-connect.component.html',
-  styleUrls: ['./book-one-connect.component.scss']
+    selector: 'app-book-one-connect',
+    templateUrl: './book-one-connect.component.html',
+    styleUrls: ['./book-one-connect.component.scss'],
+    standalone: false
 })
 export class BookOneConnectComponent {
   backgroundColor: string;

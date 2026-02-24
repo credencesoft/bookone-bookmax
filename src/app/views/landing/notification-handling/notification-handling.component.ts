@@ -20,9 +20,10 @@ import { CountryList } from 'src/model/country';
 // import { NgbCalendar } from '@ng-bootstrap/ng-bootstrap/datepicker/ngb-calendar';
 
 @Component({
-  selector: 'app-notification-handling',
-  templateUrl: './notification-handling.component.html',
-  styleUrls: ['./notification-handling.component.scss']
+    selector: 'app-notification-handling',
+    templateUrl: './notification-handling.component.html',
+    styleUrls: ['./notification-handling.component.scss'],
+    standalone: false
 })
 export class NotificationHandlingComponent {
 

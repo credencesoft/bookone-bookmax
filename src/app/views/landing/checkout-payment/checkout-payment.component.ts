@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, OnInit } from "@angular/core";
 import { Router } from "@angular/router";
-import { CheckoutService } from "paytm-blink-checkout-angular";
+import { CheckoutService } from "src/services/paytm-checkout.service";
 // import { CheckoutService } from "paytm-blink-checkout-angular";
 import { Subscription } from "rxjs";
 import { Booking } from "src/app/model/booking";
@@ -12,9 +12,10 @@ import { Location} from "@angular/common";
 
 
 @Component({
-  selector: "app-checkout",
-  templateUrl: "./checkout-payment.component.html",
-  styleUrls: ["./checkout-payment.component.css"],
+    selector: "app-checkout",
+    templateUrl: "./checkout-payment.component.html",
+    styleUrls: ["./checkout-payment.component.css"],
+    standalone: false
 })
 export class CheckoutPaymentComponent implements OnInit {
   businessUser: BusinessUser;

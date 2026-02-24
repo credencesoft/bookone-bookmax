@@ -49,7 +49,7 @@ import { HeaderComponent } from './components/header/header.component';
 import { HeaderWhiteComponent } from './components/header-white/header-white.component';
 import { IntroNineComponent } from './components/intro-nine/intro-nine.component';
 import { LandingV9Component } from './landing-v9/landing-v9.component';
-// import { GooglePlaceModule } from "ngx-google-places-autocomplete";
+import { GooglePlaceModule } from 'ngx-google-places-autocomplete';
 import { SideNavComponent } from './side-nav/side-nav.component';
 import { DialogModule } from 'primeng/dialog';
 import { ToastModule } from 'primeng/toast';
@@ -75,20 +75,17 @@ import { DynamicPricingComponent } from './components/dynamic-pricing/dynamic-pr
 import { AboutCredencesoftComponent } from './components/about-credencesoft/about-credencesoft.component';
 import { ContactDetailsComponent } from './components/contact-details/contact-details.component';
 import { OurFeaturesComponent } from './components/our-features/our-features.component';
-import {
-  MatCheckboxModule,
-  MatInputModule,
-  MatSelectModule,
-  MatRadioModule,
-  MatFormFieldModule,
-  MatTableModule
-} from '@angular/material';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatRadioModule } from '@angular/material/radio';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatTableModule } from '@angular/material/table';
 import { CallToActionComponent } from './components/call-to-action/call-to-action.component';
 import { SubscribeEmailComponent } from './components/subscribe-email/subscribe-email.component';
 import { PrivacyComponent } from './components/privacy/privacy.component';
 import { PrivacyPolicyComponent } from './privacy-policy/privacy-policy.component';
 import { OnboardingCouponcodeFormComponent } from './onboarding-couponcode-form/onboarding-couponcode-form.component';
-import { GooglePlaceModule } from 'ngx-google-places-autocomplete';
 // import { CheckoutModule } from 'paytm-blink-checkout-angular';
 import { TokenStorage } from 'src/token.storage';
 import { BookOneConnectComponent } from 'src/app/views/landing/book-one-connect/book-one-connect.component';
@@ -96,7 +93,7 @@ import { ListingDetailOneComponent } from './ListingDetailOne/ListingDetailOne.c
 import { SlickCarouselModule } from 'ngx-slick-carousel';
 // import { BookingComponent } from 'src/app/views/landing/Booking/Booking.component';
 import { RouterModule, Routes } from '@angular/router';
-import { AgmCoreModule } from '@agm/core';
+import { GoogleMapsModule } from '@angular/google-maps';
 import { BookingComponent } from './Booking/Booking.component';
 import { environment } from 'src/environments/environment';
 import { HeaderListingdetailsoneComponent } from './Header-Listingdetailsone/Header-Listingdetailsone.component';
@@ -108,7 +105,6 @@ import { EnquiryComponent } from './enquiry/enquiry.component';
 import { LoginDetailsComponent } from './login-details/login-details.component';
 import { CheckoutComponent } from './checkout/checkout.component';
 import { BookingCompleteComponent } from './booking-complete/booking-complete.component';
-import { CheckoutModule } from 'paytm-blink-checkout-angular';
 import { BrowserModule } from '@angular/platform-browser';
 import { PaymentComponent } from './payment/payment.component';
 import { CheckoutPaymentComponent } from './checkout-payment/checkout-payment.component';
@@ -139,14 +135,12 @@ import { BookingConfirmationVoucherComponent } from './booking-confirmation-vouc
     LandingRoutingModule,
     NguCarouselModule,
     NgbModule,
-    GooglePlaceModule,
     ReactiveFormsModule,
     NgbModule,
-    CheckoutModule,
     CarouselModule,
     MatCheckboxModule,
     MatInputModule,
-    AgmCoreModule.forRoot({ apiKey: environment.googleKey }),
+    GoogleMapsModule,
     SlickCarouselModule,
     FormsModule,
     MatSelectModule,
@@ -156,6 +150,7 @@ import { BookingConfirmationVoucherComponent } from './booking-confirmation-vouc
     MatFormFieldModule,
     MatTableModule,
     CalendarModule,
+    GooglePlaceModule,
   ],
   declarations: [
     LandingV1Component,

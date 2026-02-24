@@ -23,6 +23,10 @@
             "polyfills": ["src/polyfills.ts", "zone.js"],
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
+             "allowedCommonJsDependencies": [
+              "ngx-google-places-autocomplete",
+              "wp-api-angular"
+            ],
             "assets": [
               "src/favicon.ico",
               "src/media-be",
@@ -44,6 +48,8 @@
           },
           "configurations": {
             "production": {
+              "aot": false,
+              "buildOptimizer": false,
               "budgets": [
                 {
                   "type": "initial",
@@ -59,6 +65,7 @@
               "outputHashing": "none"
             },
             "development": {
+              "aot": false,
               "buildOptimizer": false,
               "optimization": false,
               "vendorChunk": true,
@@ -67,16 +74,16 @@
               "namedChunks": true
             }
           },
-          "defaultConfiguration": "production"
+          "defaultConfiguration": "development"
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "demoSSR:build:production"
+              "buildTarget": "demoSSR:build:production"
             },
             "development": {
-              "browserTarget": "demoSSR:build:development"
+              "buildTarget": "demoSSR:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -84,7 +91,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "demoSSR:build"
+            "buildTarget": "demoSSR:build"
           }
         },
         "test": {
@@ -112,13 +119,14 @@
               "optimization": false,
               "sourceMap": true,
               "extractLicenses": false,
-              "vendorChunk": true
+              "vendorChunk": true,
+              "buildOptimizer": false
             }
           },
           "defaultConfiguration": "production"
         },
         "serve-ssr": {
-          "builder": "@nguniversal/builders:ssr-dev-server",
+          "builder": "@angular-devkit/build-angular:ssr-dev-server",
           "configurations": {
             "development": {
               "browserTarget": "demoSSR:build:development",
@@ -132,7 +140,7 @@
           "defaultConfiguration": "development"
         },
         "prerender": {
-          "builder": "@nguniversal/builders:prerender",
+          "builder": "@angular-devkit/build-angular:prerender",
           "options": {
             "routes": ["/"]
           },
@@ -153,5 +161,31 @@
   },
   "cli": {
     "analytics": false
+  },
+  "schematics": {
+    "@schematics/angular:component": {
+      "type": "component"
+    },
+    "@schematics/angular:directive": {
+      "type": "directive"
+    },
+    "@schematics/angular:service": {
+      "type": "service"
+    },
+    "@schematics/angular:guard": {
+      "typeSeparator": "."
+    },
+    "@schematics/angular:interceptor": {
+      "typeSeparator": "."
+    },
+    "@schematics/angular:module": {
+      "typeSeparator": "."
+    },
+    "@schematics/angular:pipe": {
+      "typeSeparator": "."
+    },
+    "@schematics/angular:resolver": {
+      "typeSeparator": "."
+    }
   }
 }

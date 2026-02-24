@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'app-landing-layout',
-  templateUrl: './landing-layout.component.html',
-  styleUrls: ['./landing-layout.component.scss']
+    selector: 'app-landing-layout',
+    templateUrl: './landing-layout.component.html',
+    styleUrls: ['./landing-layout.component.scss'],
+    standalone: false
 })
 export class LandingLayoutComponent implements OnInit {
 

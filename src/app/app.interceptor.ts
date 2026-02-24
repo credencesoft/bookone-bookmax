@@ -7,14 +7,7 @@ import { BehaviorSubject } from "rxjs";
 import { catchError, finalize, map } from "rxjs/operators";
 import { timeout } from "rxjs/operators";
 import { SESSION_APP_ID } from "./app.component";
-import {
-  HttpInterceptor,
-  HttpRequest,
-  HttpHandler,
-  HttpEvent,
-  HttpErrorResponse,
-  HTTP_INTERCEPTORS,
-} from "@angular/common/http";
+import { HttpInterceptor, HttpRequest, HttpHandler, HttpEvent, HttpErrorResponse, HTTP_INTERCEPTORS } from "@angular/common/http";
 import { Logger } from "src/services/logger.service";
 
 export const DEFAULT_TIMEOUT = new InjectionToken<number>("defaultTimeout");

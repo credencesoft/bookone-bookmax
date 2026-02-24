@@ -3,8 +3,6 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
 import { AuthLayoutComponent } from './shared/components/layouts/auth-layout/auth-layout.component';
-import { LandingModule } from './views/landing/landing.module';
-import { SessionsModule } from './views/sessions/sessions.module';
 export const AppRoutes: Routes  = [
   {
     path: '',
@@ -17,7 +15,9 @@ export const AppRoutes: Routes  = [
     children: [
       {
         path: 'sessions',
-        loadChildren: ()=> SessionsModule }
+        loadChildren: () =>
+          import('./views/sessions/sessions.module').then(m => m.SessionsModule)
+      }
     ]
   },
   {
@@ -26,7 +26,9 @@ export const AppRoutes: Routes  = [
     children: [
       {
         path: '',
-        loadChildren: ()=> LandingModule }
+        loadChildren: () =>
+          import('./views/landing/landing.module').then(m => m.LandingModule)
+      }
 
     ]
   },
@@ -34,7 +36,7 @@ export const AppRoutes: Routes  = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(AppRoutes)],
+  imports: [RouterModule.forRoot(AppRoutes, { scrollPositionRestoration: 'enabled' })],
   exports: [RouterModule]
 })
 export class AppRoutingModule { }

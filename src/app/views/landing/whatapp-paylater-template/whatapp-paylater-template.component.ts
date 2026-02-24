@@ -8,9 +8,10 @@ import { ListingService } from 'src/services/listing.service';
 import { TokenStorage } from 'src/token.storage';
 
 @Component({
-  selector: 'app-whatapp-paylater-template',
-  templateUrl: './whatapp-paylater-template.component.html',
-  styleUrls: ['./whatapp-paylater-template.component.css']
+    selector: 'app-whatapp-paylater-template',
+    templateUrl: './whatapp-paylater-template.component.html',
+    styleUrls: ['./whatapp-paylater-template.component.css'],
+    standalone: false
 })
 export class WhatappPaylaterTemplateComponent implements OnInit {
   bookingId: any;

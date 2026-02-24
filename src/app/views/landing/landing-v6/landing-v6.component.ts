@@ -1,9 +1,10 @@
 import {Component, OnInit} from "@angular/core";
 
 @Component({
-  selector: "app-landing-v6",
-  templateUrl: "./landing-v6.component.html",
-  styleUrls: ["./landing-v6.component.scss"]
+    selector: "app-landing-v6",
+    templateUrl: "./landing-v6.component.html",
+    styleUrls: ["./landing-v6.component.scss"],
+    standalone: false
 })
 export class LandingV6Component implements OnInit {
   backgroundColor = "landing-gradient-blue-red";

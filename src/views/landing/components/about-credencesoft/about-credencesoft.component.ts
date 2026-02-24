@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'app-about-credencesoft',
-  templateUrl: './about-credencesoft.component.html',
-  styleUrls: ['./about-credencesoft.component.scss']
+    selector: 'app-about-credencesoft',
+    templateUrl: './about-credencesoft.component.html',
+    styleUrls: ['./about-credencesoft.component.scss'],
+    standalone: false
 })
 export class AboutCredencesoftComponent implements OnInit {
 

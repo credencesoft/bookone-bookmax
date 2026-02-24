@@ -14,9 +14,10 @@ import { CancelServiceService } from '../cancel-service.service';
 import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
-  selector: 'app-cancel-booking',
-  templateUrl: './cancel-booking.component.html',
-  styleUrls: ['./cancel-booking.component.css']
+    selector: 'app-cancel-booking',
+    templateUrl: './cancel-booking.component.html',
+    styleUrls: ['./cancel-booking.component.css'],
+    standalone: false
 })
 export class CancelBookingComponent implements OnInit {
   @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;

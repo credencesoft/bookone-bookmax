@@ -6,9 +6,10 @@ import { ListingService } from 'src/services/listing.service';
 import { TokenStorage } from 'src/token.storage';
 
 @Component({
-  selector: 'app-booking-confirmation-voucher',
-  templateUrl: './booking-confirmation-voucher.component.html',
-  styleUrls: ['./booking-confirmation-voucher.component.scss'],
+    selector: 'app-booking-confirmation-voucher',
+    templateUrl: './booking-confirmation-voucher.component.html',
+    styleUrls: ['./booking-confirmation-voucher.component.scss'],
+    standalone: false
 })
 export class BookingConfirmationVoucherComponent {
   businessUser: any;

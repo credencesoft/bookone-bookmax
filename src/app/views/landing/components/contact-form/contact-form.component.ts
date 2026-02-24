@@ -16,10 +16,11 @@ export interface Email {
 
 
 @Component({
-  selector: 'app-contact-form',
-  templateUrl: './contact-form.component.html',
-  styleUrls: ['./contact-form.component.scss'],
-  animations: [SharedAnimations]
+    selector: 'app-contact-form',
+    templateUrl: './contact-form.component.html',
+    styleUrls: ['./contact-form.component.scss'],
+    animations: [SharedAnimations],
+    standalone: false
 })
 export class ContactFormComponent implements OnInit {
   serviceType = [

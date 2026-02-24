@@ -24,10 +24,11 @@ import { BusinessServiceDtoList } from 'src/app/model/businessServiceDtoList';
 import { PropertyServiceDTO } from 'src/app/model/PropertyServices';
 
 @Component({
-  selector: 'app-Confirm-Booking',
-  templateUrl: './Confirm-Booking.component.html',
-  providers: [DatePipe],
-  styleUrls: ['./Confirm-Booking.component.scss'],
+    selector: 'app-Confirm-Booking',
+    templateUrl: './Confirm-Booking.component.html',
+    providers: [DatePipe],
+    styleUrls: ['./Confirm-Booking.component.scss'],
+    standalone: false
 })
 export class ConfirmBookingComponent implements OnInit {
   businessUser: BusinessUser;

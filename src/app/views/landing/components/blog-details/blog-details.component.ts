@@ -6,9 +6,10 @@ import {map, take} from 'rxjs/operators';
 import { WPAPIService } from 'src/app/services/wpapi.service';
 // import { butterService } from 'src/app/services/butter-cms.service';
 @Component({
-  selector: 'app-blog-details',
-  templateUrl: './blog-details.component.html',
-  styleUrls: ['./blog-details.component.scss']
+    selector: 'app-blog-details',
+    templateUrl: './blog-details.component.html',
+    styleUrls: ['./blog-details.component.scss'],
+    standalone: false
 })
 export class BlogDetailsComponent implements OnInit {
   @Input() token;

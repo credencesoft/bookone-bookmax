@@ -16,9 +16,10 @@ import { BusinessUser } from 'src/app/model/user';
 import { HeaderListingdetailsoneComponent } from '../Header-Listingdetailsone/Header-Listingdetailsone.component';
 // import { NgbCalendar } from '@ng-bootstrap/ng-bootstrap/datepicker/ngb-calendar';
 @Component({
-  selector: 'app-manage-enquiry',
-  templateUrl: './manage-enquiry.component.html',
-  styleUrls: ['./manage-enquiry.component.css']
+    selector: 'app-manage-enquiry',
+    templateUrl: './manage-enquiry.component.html',
+    styleUrls: ['./manage-enquiry.component.css'],
+    standalone: false
 })
 
 

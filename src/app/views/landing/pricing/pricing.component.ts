@@ -2,9 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { Meta } from '@angular/platform-browser';
 
 @Component({
-  selector: 'app-pricing',
-  templateUrl: './pricing.component.html',
-  styleUrls: ['./pricing.component.scss']
+    selector: 'app-pricing',
+    templateUrl: './pricing.component.html',
+    styleUrls: ['./pricing.component.scss'],
+    standalone: false
 })
 export class PricingComponent implements OnInit {
 

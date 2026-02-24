@@ -9,66 +9,72 @@
 <img
   src="media-be/images/BookOne Website Bannerr.png"
   style="margin-bottom: 15px;"
-/>
+  />
 
 
 
-<div class="noofbook" style="background-color: #cfcfcf; display: flex; flex-direction: column;box-shadow: 0 0 10px 2px rgba(0, 0, 0, 0.2);padding: 20px;margin: 10px; ">
-  <div class="row">
-    <div class="col" style="max-width: 33%;">
-      <h3>Total Numbers Of Bookings</h3>
-    </div>
-    <div class="col" style="max-width: 50%;">
-      <b>{{bookings?.length}}</b>
+  <div class="noofbook" style="background-color: #cfcfcf; display: flex; flex-direction: column;box-shadow: 0 0 10px 2px rgba(0, 0, 0, 0.2);padding: 20px;margin: 10px; ">
+    <div class="row">
+      <div class="col" style="max-width: 33%;">
+        <h3>Total Numbers Of Bookings</h3>
+      </div>
+      <div class="col" style="max-width: 50%;">
+        <b>{{bookings?.length}}</b>
+      </div>
     </div>
   </div>
-</div>
 
-<div class="responsive-box" *ngFor="let booking of bookings">
-
-  <div class="container text-center" >
-    <div class="row">
-      <div class="col">
-        <h1>{{booking?.firstName}} {{booking?.lastName}}</h1>
-        </div>
-    </div>
-    <div class="row">
-      <div class="col">
-        Check-In : {{booking?.fromDate | date}}
-        <br>
-        Check-Out : {{booking?.toDate | date}}
-      </div>
-      <div class="col">
-        {{booking?.bookingStatus}}<br>
-        Booking ID : {{booking?.propertyReservationNumber}}
-      </div>
-      <div class="col" >
-        <div *ngIf="(bookingdata?.externalSite === 'The Hotel Mate' || bookingdata?.externalSite === 'Easemytrip' || bookingdata?.externalSite === 'GOBIBO,MMT' || bookingdata?.externalSite === 'Agoda' || bookingdata?.externalSite === 'Yatra' || bookingdata?.externalSite === 'Booking.com' || bookingdata?.externalSite === 'Expedia' || bookingdata?.externalSite === 'SiteMinder' || bookingdata?.externalSite === 'BookOne Connect' || bookingdata?.externalSite === 'Google Hotel Ads' || bookingdata?.externalSite === 'Airbnb' || bookingdata?.externalSite === 'Trivago' || bookingdata?.externalSite === 'Clear trip' || bookingdata?.externalSite === 'OYO'  || bookingdata?.externalSite === 'Via.com' || bookingdata?.externalSite === 'Travel Guru' || bookingdata?.externalSite === 'IRCTC' || bookingdata?.externalSite === 'Hotels.com' || bookingdata?.externalSite === 'BookingJini' || bookingdata?.externalSite === 'Fab'  || bookingdata?.externalSite === 'Treebo' || bookingdata?.externalSite === 'Go Room Go' || bookingdata?.externalSite === 'Pie Rooms')" >
-          <div *ngFor="let externalsite of externalSites">
-               <span *ngIf="bookingdata?.externalSite === externalsite.externalSiteName"><img src="{{externalsite.logo}}"  height="22px" width="62px" ></span>
+  @for (booking of bookings; track booking) {
+    <div class="responsive-box">
+      <div class="container text-center" >
+        <div class="row">
+          <div class="col">
+            <h1>{{booking?.firstName}} {{booking?.lastName}}</h1>
           </div>
         </div>
-        <div>
-            <span *ngIf="(bookingdata?.externalSite != 'The Hotel Mate' && bookingdata?.externalSite != 'Easemytrip' && bookingdata?.externalSite != 'GOBIBO,MMT' && bookingdata?.externalSite != 'Agoda' && bookingdata?.externalSite != 'Yatra' && bookingdata?.externalSite != 'Booking.com' && bookingdata?.externalSite != 'Expedia' && bookingdata?.externalSite != 'SiteMinder' && bookingdata?.externalSite != 'BookOne Connect' && bookingdata?.externalSite != 'Google Hotel Ads' && bookingdata?.externalSite != 'Airbnb' && bookingdata?.externalSite != 'Trivago' && bookingdata?.externalSite != 'Clear trip' && bookingdata?.externalSite != 'OYO' && bookingdata?.externalSite != 'Via.com' && bookingdata?.externalSite != 'Travel Guru' && bookingdata?.externalSite != 'IRCTC' && bookingdata?.externalSite != 'Hotels.com' && bookingdata?.externalSite != 'BookingJini' && bookingdata?.externalSite != 'Fab' && bookingdata?.externalSite != 'Treebo' && bookingdata?.externalSite != 'Go Room Go' && bookingdata?.externalSite != 'Pie Rooms' )">{{bookingdata?.externalSite}}</span>
+        <div class="row">
+          <div class="col">
+            Check-In : {{booking?.fromDate | date}}
+            <br>
+              Check-Out : {{booking?.toDate | date}}
+            </div>
+            <div class="col">
+              {{booking?.bookingStatus}}<br>
+              Booking ID : {{booking?.propertyReservationNumber}}
+            </div>
+            <div class="col" >
+              @if ((bookingdata?.externalSite === 'The Hotel Mate' || bookingdata?.externalSite === 'Easemytrip' || bookingdata?.externalSite === 'GOBIBO,MMT' || bookingdata?.externalSite === 'Agoda' || bookingdata?.externalSite === 'Yatra' || bookingdata?.externalSite === 'Booking.com' || bookingdata?.externalSite === 'Expedia' || bookingdata?.externalSite === 'SiteMinder' || bookingdata?.externalSite === 'BookOne Connect' || bookingdata?.externalSite === 'Google Hotel Ads' || bookingdata?.externalSite === 'Airbnb' || bookingdata?.externalSite === 'Trivago' || bookingdata?.externalSite === 'Clear trip' || bookingdata?.externalSite === 'OYO'  || bookingdata?.externalSite === 'Via.com' || bookingdata?.externalSite === 'Travel Guru' || bookingdata?.externalSite === 'IRCTC' || bookingdata?.externalSite === 'Hotels.com' || bookingdata?.externalSite === 'BookingJini' || bookingdata?.externalSite === 'Fab'  || bookingdata?.externalSite === 'Treebo' || bookingdata?.externalSite === 'Go Room Go' || bookingdata?.externalSite === 'Pie Rooms')) {
+                <div >
+                  @for (externalsite of externalSites; track externalsite) {
+                    <div>
+                      @if (bookingdata?.externalSite === externalsite.externalSiteName) {
+                        <span><img src="{{externalsite.logo}}"  height="22px" width="62px" ></span>
+                      }
+                    </div>
+                  }
+                </div>
+              }
+              <div>
+                @if ((bookingdata?.externalSite != 'The Hotel Mate' && bookingdata?.externalSite != 'Easemytrip' && bookingdata?.externalSite != 'GOBIBO,MMT' && bookingdata?.externalSite != 'Agoda' && bookingdata?.externalSite != 'Yatra' && bookingdata?.externalSite != 'Booking.com' && bookingdata?.externalSite != 'Expedia' && bookingdata?.externalSite != 'SiteMinder' && bookingdata?.externalSite != 'BookOne Connect' && bookingdata?.externalSite != 'Google Hotel Ads' && bookingdata?.externalSite != 'Airbnb' && bookingdata?.externalSite != 'Trivago' && bookingdata?.externalSite != 'Clear trip' && bookingdata?.externalSite != 'OYO' && bookingdata?.externalSite != 'Via.com' && bookingdata?.externalSite != 'Travel Guru' && bookingdata?.externalSite != 'IRCTC' && bookingdata?.externalSite != 'Hotels.com' && bookingdata?.externalSite != 'BookingJini' && bookingdata?.externalSite != 'Fab' && bookingdata?.externalSite != 'Treebo' && bookingdata?.externalSite != 'Go Room Go' && bookingdata?.externalSite != 'Pie Rooms' )) {
+                  <span>{{bookingdata?.externalSite}}</span>
+                }
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              Total amount : {{booking?.totalAmount}}
+            </div>
+            <div class="col">
+              Payed amount : {{booking?.payableAmount}}
+            </div>
+            <div class="col">
+              Not Payed amount : {{booking?.outstandingAmount}}
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-
-    <div class="row">
-      <div class="col">
-        Total amount : {{booking?.totalAmount}}
-      </div>
-      <div class="col">
-        Payed amount : {{booking?.payableAmount}}
-      </div>
-      <div class="col">
-        Not Payed amount : {{booking?.outstandingAmount}}
-      </div>
-    </div>
-
-
-  </div>
-  </div>
+    }
 
 
 

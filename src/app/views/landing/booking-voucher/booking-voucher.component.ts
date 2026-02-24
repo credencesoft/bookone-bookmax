@@ -8,9 +8,10 @@ import { ListingService } from 'src/services/listing.service';
 import { TokenStorage } from 'src/token.storage';
 
 @Component({
-  selector: 'app-booking-voucher',
-  templateUrl: './booking-voucher.component.html',
-  styleUrls: ['./booking-voucher.component.scss'],
+    selector: 'app-booking-voucher',
+    templateUrl: './booking-voucher.component.html',
+    styleUrls: ['./booking-voucher.component.scss'],
+    standalone: false
 })
 export class BookingVoucherComponent {
   propertyDetails: any;

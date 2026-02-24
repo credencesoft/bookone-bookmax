@@ -4,9 +4,10 @@ import { HotelBookingService } from 'src/services/hotel-booking.service';
 import { TokenStorage } from 'src/token.storage';
 
 @Component({
-  selector: 'app-confirm-payment',
-  templateUrl: './confirm-payment.component.html',
-  styleUrls: ['./confirm-payment.component.scss']
+    selector: 'app-confirm-payment',
+    templateUrl: './confirm-payment.component.html',
+    styleUrls: ['./confirm-payment.component.scss'],
+    standalone: false
 })
 export class ConfirmPaymentComponent {
   payment:Payment;

@@ -1,9 +1,10 @@
 import { Component, Input } from '@angular/core';
 
 @Component({
-  selector: 'app-number-counter',
-  templateUrl: './number-counter.component.html',
-  styleUrls: ['./number-counter.component.css']
+    selector: 'app-number-counter',
+    templateUrl: './number-counter.component.html',
+    styleUrls: ['./number-counter.component.css'],
+    standalone: false
 })
 export class NumberCounterComponent {
   @Input() numberOfProperties: number = 0;

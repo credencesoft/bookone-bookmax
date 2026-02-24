@@ -31,9 +31,10 @@ import { Images } from 'src/app/model/image';
 
 
 @Component({
-  selector: 'app-booking-complete',
-  templateUrl: './booking-complete.component.html',
-  styleUrls: ['./booking-complete.component.scss'],
+    selector: 'app-booking-complete',
+    templateUrl: './booking-complete.component.html',
+    styleUrls: ['./booking-complete.component.scss'],
+    standalone: false
 })
 export class BookingCompleteComponent implements OnInit {
   businessUser: BusinessUser;

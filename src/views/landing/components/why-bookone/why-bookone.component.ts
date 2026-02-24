@@ -2,9 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { NguCarouselConfig } from '@ngu/carousel';
 
 @Component({
-  selector: 'app-why-bookone',
-  templateUrl: './why-bookone.component.html',
-  styleUrls: ['./why-bookone.component.scss']
+    selector: 'app-why-bookone',
+    templateUrl: './why-bookone.component.html',
+    styleUrls: ['./why-bookone.component.scss'],
+    standalone: false
 })
 export class WhyBookoneComponent implements OnInit {
   public carouselTileItems: Array<any> = [

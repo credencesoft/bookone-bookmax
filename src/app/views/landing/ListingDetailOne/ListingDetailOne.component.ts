@@ -47,7 +47,6 @@ import { DomSanitizer, Meta, SafeUrl, Title } from '@angular/platform-browser';
 import { FormControl, FormGroup, NgForm, Validators } from '@angular/forms';
 import { environment } from 'src/environments/environment';
 import { API_URL_NZ } from 'src/app/app.component';
-import { ScrollBar } from '@ng-bootstrap/ng-bootstrap/util/scrollbar';
 // import { ScrollDirective } from '../scroll.directive';
 // import { BlogPostService } from 'src/app/services/blog-post.service';
 import { Observable } from 'rxjs';
@@ -81,10 +80,11 @@ interface RoomOne {
 }
 
 @Component({
-  selector: 'list-detail-one',
-  templateUrl: './ListingDetailOne.component.html',
-  styleUrls: ['./ListingDetailOne.component.scss'],
-  encapsulation: ViewEncapsulation.None,
+    selector: 'list-detail-one',
+    templateUrl: './ListingDetailOne.component.html',
+    styleUrls: ['./ListingDetailOne.component.scss'],
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class ListingDetailOneComponent implements OnInit {
   isLoadingProperty : boolean;
@@ -924,6 +924,8 @@ guestDataArray: Array<{
 isRoomDescriptionExpanded = false;
 descriptionWordLimit = 30;
 expandedRoomDescriptions: { [roomId: string]: boolean } = {};
+  private readonly isBrowser: boolean;
+
   constructor(
     private listingService: ListingService,
     public SchemaService:SchemaService,
@@ -954,6 +956,7 @@ expandedRoomDescriptions: { [roomId: string]: boolean } = {};
     private cd: ChangeDetectorRef,
     @Inject(PLATFORM_ID) private platformId: Object,
   ) {
+
         this.acRoute.queryParams.subscribe((params) => {
       if (params['hotelID'] !== undefined) {
         this.hotelID = params['hotelID'];
@@ -1039,7 +1042,7 @@ if (params['Children'] !== undefined) {
       );
       this.token.saveLandingPrice(this.landingrice);
 
-      if (!params['hotelID'] && !params['BookingEngine']) {
+      if (!params['hotelID'] && !params['bookingEngine']) {
         this.getDynamicNameFromUrl(this.currentUrl);
       }
               if (params['utm_medium'] !== undefined) {
@@ -1057,16 +1060,23 @@ if (params['Children'] !== undefined) {
         sessionStorage.removeItem('utm_source');
       }
     });
-    const today = new Date();
+  }
+
+  ngOnInit() {
+    if (isPlatformBrowser(this.platformId)) {
+        const today = new Date();
     this.minDateForCheckIn = new NgbDate(
       today.getFullYear(),
       today.getMonth() + 1,
       today.getDate()
     );
     // this.checkAvailabilityDisabled = true;
-let currentUrl = window.location.href;
+if (isPlatformBrowser(this.platformId)) {
+  const currentUrl = window.location.href;
+    this.token.savePropertyUrl(currentUrl);
+}
 
-this.token.savePropertyUrl(currentUrl);
+
     this.serviceDto = new PropertyServiceDTO();
     this.businessServiceDto = new BusinessServiceDtoList();
     this.businessService = new BusinessServiceDtoList();
@@ -1077,20 +1087,24 @@ this.token.savePropertyUrl(currentUrl);
     // this.updateTag();
     this.token.clearwebsitebookingURL();
     // this.token.saveSelectedServices(this.selectedServices);
-    const savedRooms = sessionStorage.getItem('bookingSummary');
-  if (savedRooms) {
-    try {
-      this.additionalRooms = JSON.parse(savedRooms);
-    } catch (e) {
-      console.error('Invalid bookingSummary data', e);
-      this.additionalRooms = [];
-    }
-  }
-    this.bookingMinDate = calendar.getToday();
+
+      const savedRooms = sessionStorage.getItem('bookingSummary');
+      if (savedRooms) {
+        try {
+          this.additionalRooms = JSON.parse(savedRooms);
+        } catch (e) {
+          console.error('Invalid bookingSummary data', e);
+          this.additionalRooms = [];
+        }
+      }
+
+
+    this.bookingMinDate = this.calendar.getToday();
     this.bookingengineurl = this.token.getwebsitebookingURL();
-    sessionStorage.removeItem('enquiryNo');
-    sessionStorage.removeItem('bookingsResponseList');
-    sessionStorage.removeItem('EnquiryResponseList');
+
+      sessionStorage.removeItem('enquiryNo');
+      sessionStorage.removeItem('bookingsResponseList');
+      sessionStorage.removeItem('EnquiryResponseList');
 
     this.selectedServicesOne = this.token?.getSelectedServices();
     setTimeout(() => {
@@ -1103,7 +1117,7 @@ this.token.savePropertyUrl(currentUrl);
     this.token.saveBookingEngineBoolean('normalUrl');
 
     this.selectedServices = [];
-    this.oneDayFromDate = calendar.getToday();
+    this.oneDayFromDate = this.calendar.getToday();
     this.triggerEventService.events$.forEach((event) =>
       console.log(this.publishPage(event))
     );
@@ -1149,7 +1163,7 @@ this.token.savePropertyUrl(currentUrl);
 
     } else {
             this.fromDate = this.calendar.getToday();
-      this.todayDate = calendar.getToday();
+      this.todayDate = this.calendar.getToday();
       this.toDate = this.calendar.getNext(this.calendar.getToday(), 'd', 1);
     }
 
@@ -1193,24 +1207,25 @@ this.token.savePropertyUrl(currentUrl);
         this.totalExtraAmount +
         this.booking.taxAmount;
     }
-    const savedBooking = sessionStorage.getItem('bookingSummaryDetails');
-  if (savedBooking) {
-    const data = JSON.parse(savedBooking);
-    this.selectedPlansSummary = data.selectedPlansSummary || [];
 
-    // Rebuild selectedGuestsByPlan and selectedRoomsByPlan
-    this.selectedGuestsByPlan = {};
-    this.selectedRoomsByPlan = {};
+      const savedBooking = sessionStorage.getItem('bookingSummaryDetails');
+      if (savedBooking) {
+        const data = JSON.parse(savedBooking);
+        this.selectedPlansSummary = data.selectedPlansSummary || [];
 
-    this.selectedPlansSummary.forEach(plan => {
-      this.selectedGuestsByPlan[plan.planName] = {
-        adults: plan.adults,
-        children: plan.children
-      };
-      this.selectedRoomsByPlan[plan.planName] = plan.selectedRoomnumber;
+        // Rebuild selectedGuestsByPlan and selectedRoomsByPlan
+        this.selectedGuestsByPlan = {};
+        this.selectedRoomsByPlan = {};
 
-    });
-  }
+        this.selectedPlansSummary.forEach(plan => {
+          this.selectedGuestsByPlan[plan.planName] = {
+            adults: plan.adults,
+            children: plan.children
+          };
+          this.selectedRoomsByPlan[plan.planName] = plan.selectedRoomnumber;
+        });
+      }
+
     // this.toDate = calendar.getNext(calendar.getToday(), 'd', 10);
     if (
       this.token?.getRoomsData() !== null &&
@@ -1219,8 +1234,8 @@ this.token.savePropertyUrl(currentUrl);
       this.availableRooms = this.token?.getRoomsData();
       this.shortrooms = this.token.getRoomsData();
     }
-    this.acRoute.url.subscribe((urlSegments) => {
-      this.currentUrl = window.location.href; // Use window.location.href to get the full URL
+    this.acRoute.url.subscribe(() => {
+      this.currentUrl = window.location.href;
     });
     if (
       this.token.getBookingData() !== null &&
@@ -1353,7 +1368,6 @@ this.token.savePropertyUrl(currentUrl);
     });
 
     this.bookingPrice = this.token.getBookingRoomPrice();
-    (this.googleUrlToken = this), token.getBookingEngineBoolean();
 
     this.googleUrl = this.token.getPropertyUrl();
     if (this.activeForGoogleHotelCenter === true) {
@@ -1385,12 +1399,11 @@ this.token.savePropertyUrl(currentUrl);
       this.extraChildChargee = 0;
     }
     this.blogPosts$ = this.contentfulService.getAllEntries();
-  }
 
-  ngOnInit() {
-    localStorage.removeItem('selectPromo');
+      localStorage.removeItem('selectPromo');
 
-const couponCodeValues = sessionStorage.getItem('selectedPromoData');
+
+    const couponCodeValues = sessionStorage.getItem('selectedPromoData');
 
 
 if (couponCodeValues) {
@@ -1423,7 +1436,8 @@ if (storedBooking) {
     }
 
     this.isReadMore = this.policies.map(() => false);
-    window.addEventListener('df-request-sent', (event) => {
+
+      window.addEventListener('df-request-sent', (event) => {
       this.propertyusername = this.businessUser.name;
 
       const chatbotElement = document.getElementById('chatbot');
@@ -1456,6 +1470,7 @@ if (storedBooking) {
         .then((response) => response.json())
         .catch((error) => console.error('Error:', error));
     });
+
     if (this.city != null && this.city != undefined) {
       this.offerService.getPropertyListByCity(this.city).subscribe((res) => {
         this.restaurantData = res.body.filter(
@@ -1545,7 +1560,9 @@ if (storedBooking) {
       if (this.data.id === undefined) {
         this.getPropertyDetailsBySeoName(this.data);
       }
-      this.changeDetectorRefs.detectChanges();
+
+        this.changeDetectorRefs.detectChanges();
+
 
       // this.updateTag();
       // }
@@ -1572,9 +1589,11 @@ if (storedBooking) {
     // this.adults = this.adults;
     // this.checkingAvailability();
     //  this.getTotalTaxFee();
-    localStorage.removeItem('landingrice');
-  }
 
+      localStorage.removeItem('landingrice');
+
+  }
+  }
 roomDescriptionPreview(room: any): string {
   if (!room?.description) return '';
 
@@ -1728,6 +1747,7 @@ get currentCategories() {
   return this.categories.slice(start, start + 2);
 }
 restoreGuestSelectionsFromSummary() {
+
   // ✅ Restore selectedPlansSummary
   const savedSummary = sessionStorage.getItem('bookingSummaryDetails');
   if (!savedSummary) return;
@@ -3018,14 +3038,28 @@ sortAndLimitRooms() {
   }
 
   getDynamicNameFromUrl(url: string): string | null {
-    const fullUrl = this.locationBack.prepareExternalUrl(
-      this.locationBack.path(true)
-    );
+    let name: string | null = null;
 
-    // You can also access the current URL with window.location.href
-    const domain = window.location.hostname; // Get the domain part from the URL
-    const name = domain.split('.')[1]; // This will extract 'saanaira-resort-spa'
-    if (this.name) {
+
+      const effectiveUrl = url || window.location.href;
+      const hostname = new URL(effectiveUrl).hostname;
+      const hostParts = hostname.split('.');
+
+      // booking.{seoName}.bookone.io => use {seoName}
+      if (hostParts.length >= 3 && hostParts[0] === 'booking') {
+        name = hostParts[1];
+      }
+
+
+    // Fallback to route param for /:detail route.
+    if (!name) {
+      const routeDetail = this.acRoute.snapshot.params['detail'];
+      if (routeDetail) {
+        name = routeDetail;
+      }
+    }
+
+    if (name) {
       this.getPropertyDetailsBySeoName(name);
     }
 
@@ -3373,7 +3407,7 @@ if (roomKey) {
 
   // }
   ngAfterViewInit() {
-    // this.token.saveSelectedServices(this.selectedServices);
+if (isPlatformBrowser(this.platformId)) {
     setTimeout(() => {
       window.scrollTo({
         top: 0,
@@ -3391,6 +3425,7 @@ if (roomKey) {
       sessionStorage.removeItem('scrollTo');
     }, 100);
   }
+}
   }
 
   backClicked() {
@@ -4095,48 +4130,72 @@ onCheckOutClosed(): void {
       return;
     }
 
-  const schema = {
-  "@context": "https://schema.org",
-  "@type": "Hotel",
-  "name": this.businessUser?.name,
-  "url": `https://bookone.io/detail/${this.businessUser?.id}`,
-  "identifier": this.businessUser?.id,
-  "address": {
-    "@type": "PostalAddress",
-    "streetAddress": this.businessUser?.address?.streetName,
-    "addressLocality": this.businessUser?.address?.city,
-    "postalCode": this.businessUser?.address?.postcode,
-    "addressCountry": this.businessUser?.address?.country
-  },
-  "telephone": this.businessUser?.mobile,
-  "makesOffer": [{
-    "@type": ["Offer", "LodgingReservation"],
-    "checkinTime": `${this.checkinDate}T14:00:00`,   // e.g. "2025-11-26T14:00:00"
-    "checkoutTime": `${this.checkoutDate}T11:00:00`, // e.g. "2025-11-28T11:00:00"
-    "name": "Economy",
-    "priceSpecification": {
-      "@type": "CompoundPriceSpecification",
-      "price": this.totalAmountParam,       // total amount
-      "priceCurrency": this.businessUser.localCurrency.toUpperCase(),
-      "priceComponent": [
-        {
-          "@type": "UnitPriceSpecification",
-          "name": "Base rate",
-          "price": this.totalAmountParam - this.taxAmountParam,
-          "priceCurrency": this.businessUser.localCurrency.toUpperCase()
+    const currency = this.businessUser?.localCurrency?.toUpperCase?.() || 'USD';
+    const totalAmount = Number(this.totalAmountParam);
+    const taxAmount = Number(this.taxAmountParam);
+    const hasValidPricing =
+      Number.isFinite(totalAmount) &&
+      totalAmount > 0 &&
+      Number.isFinite(taxAmount) &&
+      taxAmount >= 0;
+    const hasValidStayDates = !!this.checkinDate && !!this.checkoutDate;
+    const propertyUrl = this.businessUser?.seoFriendlyName
+      ? `https://thehotelmate.co/${this.businessUser.seoFriendlyName}`
+      : `https://thehotelmate.co/detail/${this.businessUser?.id}`;
+
+    const schema: any = {
+      "@context": "https://schema.org",
+      "@type": "Hotel",
+      "name": this.businessUser?.name,
+      "url": propertyUrl,
+      "identifier": this.businessUser?.id,
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": this.businessUser?.address?.streetName,
+        "addressLocality": this.businessUser?.address?.city,
+        "postalCode": this.businessUser?.address?.postcode,
+        "addressCountry": this.businessUser?.address?.country
+      },
+      "telephone": this.businessUser?.mobile
+    };
+
+    if (hasValidPricing) {
+      const offer: any = {
+        "@type": "Offer",
+        "name": "Economy",
+        "priceSpecification": {
+          "@type": "CompoundPriceSpecification",
+          "price": totalAmount,
+          "priceCurrency": currency,
+          "priceComponent": [
+            {
+              "@type": "UnitPriceSpecification",
+              "name": "Base rate",
+              "price": totalAmount - taxAmount,
+              "priceCurrency": currency
+            },
+            {
+              "@type": "UnitPriceSpecification",
+              "name": "Tax",
+              "price": taxAmount,
+              "priceCurrency": currency
+            }
+          ]
         },
-        {
-          "@type": "UnitPriceSpecification",
-          "name": "Tax",
-          "price": this.taxAmountParam,
-          "priceCurrency": this.businessUser.localCurrency.toUpperCase()
-        }
-      ]
-    },
-    "availability": "https://schema.org/InStock"
-  }]
-};
-  console.log("schema",schema);
+        "availability": "https://schema.org/InStock"
+      };
+
+      if (hasValidStayDates) {
+        offer.itemOffered = {
+          "@type": "LodgingReservation",
+          "checkinTime": `${this.checkinDate}T14:00:00`,
+          "checkoutTime": `${this.checkoutDate}T11:00:00`
+        };
+      }
+
+      schema.makesOffer = [offer];
+    }
+
     this.SchemaService.setSchema(schema);
   }
 
@@ -4408,6 +4467,7 @@ onCheckOutClosed(): void {
       (data) => {
         if (data.status === 200) {
           this.businessUser = data.body;
+          this.generateAndSetSchema();
           this.propertyData = this.businessUser;
                    this.accommodationData =
           this.propertyData.businessServiceDtoList?.filter(
@@ -4431,7 +4491,8 @@ onCheckOutClosed(): void {
           );
 
           this.updateTag();
-          this.changeDetectorRefs.detectChanges();
+            this.changeDetectorRefs.detectChanges();
+
           this.token.saveProperty(this.businessUser);
           this.accommodationData = this.businessUser.businessServiceDtoList?.filter(
           (entry) => entry.name === 'Accommodation'
@@ -6833,17 +6894,19 @@ calculateConvenienceFee(totalAmount: number, percentage: number): number {
 //   }
 
 getTotalTaxPrice(): number {
-  const savedBooking = sessionStorage.getItem('bookingSummaryDetails');
-  if (savedBooking) {
-    const data = JSON.parse(savedBooking);
-    this.selectedPlansSummary = data.selectedPlansSummary;
-  }
 
-  const couponCodeValues = sessionStorage.getItem('selectedPromoData');
-  if (couponCodeValues) {
-    const parsed = JSON.parse(couponCodeValues); // convert to object
-    this.specialDiscountData = parsed;
-  }
+    const savedBooking = sessionStorage.getItem('bookingSummaryDetails');
+    if (savedBooking) {
+      const data = JSON.parse(savedBooking);
+      this.selectedPlansSummary = data.selectedPlansSummary;
+    }
+
+    const couponCodeValues = sessionStorage.getItem('selectedPromoData');
+    if (couponCodeValues) {
+      const parsed = JSON.parse(couponCodeValues); // convert to object
+      this.specialDiscountData = parsed;
+    }
+
 
   if (this.selectedPlansSummary) {
     if (this.specialDiscountData) {
@@ -7763,3 +7826,5 @@ onYesClick() {
     this.isPopupOpen = false;
   }
 }
+
+

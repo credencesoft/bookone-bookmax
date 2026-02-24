@@ -30,9 +30,10 @@ import { Para } from 'src/app/model/parameters';
 import { Images } from 'src/app/model/image';
 import { OrderService } from 'src/app/services/order.service';
 @Component({
-  selector: 'app-whatsapp-redirect-page',
-  templateUrl: './whatsapp-redirect-page.component.html',
-  styleUrls: ['./whatsapp-redirect-page.component.css']
+    selector: 'app-whatsapp-redirect-page',
+    templateUrl: './whatsapp-redirect-page.component.html',
+    styleUrls: ['./whatsapp-redirect-page.component.css'],
+    standalone: false
 })
 export class WhatsappRedirectPageComponent implements OnInit {
   businessUser: BusinessUser;

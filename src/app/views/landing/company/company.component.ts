@@ -2,9 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { Meta } from '@angular/platform-browser';
 
 @Component({
-  selector: 'app-company',
-  templateUrl: './company.component.html',
-  styleUrls: ['./company.component.scss']
+    selector: 'app-company',
+    templateUrl: './company.component.html',
+    styleUrls: ['./company.component.scss'],
+    standalone: false
 })
 export class CompanyComponent implements OnInit {
 

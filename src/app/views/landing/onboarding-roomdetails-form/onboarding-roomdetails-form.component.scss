@@ -5,7 +5,8 @@ $yellow: #221950;
 $blue-light: #221950;
 $blue: #221950;
 $smooth: cubic-bezier(0, 0.72, 0.58, 1);
-
+@use "sass:math";
+@use "sass:color";
 .bar {
   display: flex;
   flex-direction: row-reverse;
@@ -23,14 +24,14 @@ $smooth: cubic-bezier(0, 0.72, 0.58, 1);
     &:checked {
       ~ .bar-view {
         @for $n from 1 through $elCount {
-          $r: $elCount - $n + 1;
+          $r: ($elCount - $n) + 1;
           @if $r % 2 == 0 {
             &:nth-child(#{$r}) {
               &:after {
-                transition-delay: 0.1s * ($n / 2 - 1);
+                transition-delay: 0.1s * (math.div($n, 2) - 1);
               }
               .bar-button:before {
-                transition-delay: 0.1s * ($n / 2 - 1) + 0.06s;
+                transition-delay: 0.1s * (math.div($n, 2) - 1) + 0.06s;
               }
             }
           }
@@ -85,10 +86,10 @@ $smooth: cubic-bezier(0, 0.72, 0.58, 1);
         @if $n % 2 == 0 {
           &:nth-child(#{$n}) {
             &:after {
-              transition-delay: 0.1s * ($n / 2 - 1);
+              transition-delay: 0.1s * (math.div($n, 2) - 1);
             }
             .bar-button:before {
-              transition-delay: 0.1s * ($n / 2 - 1) + 0.06s;
+              transition-delay: 0.1s * (math.div($n, 2) - 1) + 0.06s;
             }
           }
         }
@@ -153,7 +154,7 @@ html, body {
   height: 100%;
   display: flex;
   flex-direction: column;
-  background: linear-gradient(to bottom right, transparentize($yellow, 0.9), #fff);
+  background: linear-gradient(to bottom right, color.adjust($yellow, $alpha: -0.9), #fff);
 }
 
 

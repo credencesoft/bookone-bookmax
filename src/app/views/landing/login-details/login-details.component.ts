@@ -16,9 +16,10 @@ import { ListingService } from 'src/services/listing.service';
 import { CountryList } from 'src/model/country';
 
 @Component({
-  selector: 'app-login-details',
-  templateUrl: './login-details.component.html',
-  styleUrls: ['./login-details.component.css']
+    selector: 'app-login-details',
+    templateUrl: './login-details.component.html',
+    styleUrls: ['./login-details.component.css'],
+    standalone: false
 })
 export class LoginDetailsComponent implements OnInit {
   @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
