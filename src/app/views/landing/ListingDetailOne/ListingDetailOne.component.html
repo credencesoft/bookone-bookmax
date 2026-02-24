@@ -268,7 +268,7 @@
               >Check-in</small
             ><br />
             <span class="text-dark">{{
-              this.booking.fromDate | date : "dd-MM-yyyy"
+              booking?.fromDate | date : "dd-MM-yyyy"
             }}</span>
           </div>
           <div class="col-6 pl-2 padding-10px">
@@ -276,7 +276,7 @@
               >Checkout</small
             ><br />
             <span class="text-dark">{{
-              this.booking.toDate | date : "dd-MM-yyyy"
+              booking?.toDate | date : "dd-MM-yyyy"
             }}</span>
           </div>
         </div>
@@ -3382,7 +3382,7 @@
                 >Check-in</small
               ><br />
               <span class="text-dark">{{
-                this.booking.fromDate | date : "dd-MM-yyyy"
+                booking?.fromDate | date : "dd-MM-yyyy"
               }}</span>
             </div>
             <div class="col-6 pl-2 padding-10px">
@@ -3390,7 +3390,7 @@
                 >Checkout</small
               ><br />
               <span class="text-dark">{{
-                this.booking.toDate | date : "dd-MM-yyyy"
+                booking?.toDate | date : "dd-MM-yyyy"
               }}</span>
             </div>
           </div>
@@ -3948,7 +3948,7 @@
   <div class="margin-top-30px">
     <div class="row mr-0 ml-0">
       <div class="col-lg-12 pl-0 pr-0">
-        <div style="margin-top: 20px" *ngIf="businessUser.businessDescription">
+        <div style="margin-top: 20px" *ngIf="businessUser?.businessDescription">
           <div
             style="
               display: inline-block;
@@ -3959,9 +3959,9 @@
           </div>
 
           <div class="about-content">
-            <div *ngIf="businessUser.businessDescription">
-              <p [innerHTML]="businessUser.businessDescription">
-                {{ businessUser.businessDescription }}
+            <div *ngIf="businessUser?.businessDescription">
+              <p [innerHTML]="businessUser?.businessDescription">
+                {{ businessUser?.businessDescription }}
               </p>
             </div>
           </div>

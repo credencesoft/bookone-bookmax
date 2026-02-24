@@ -287,7 +287,7 @@ currentPage = 0; // page index
   propertyDetails: any = {
     address: '',
   };
-  businessUser: BusinessUser;
+  businessUser: BusinessUser = new BusinessUser();
 
   data: any = [];
   details: Details;
@@ -364,7 +364,7 @@ promoSelected = false;
   oneDayToDate: NgbDate | null;
   dateFromDate: string;
   dateToDate: string;
-  booking: Booking;
+  booking: Booking = new Booking();
   loaderHotelBooking = false;
   allPalnPrice: boolean;
   checkAvailabilityStatusHide = true;
@@ -956,6 +956,7 @@ expandedRoomDescriptions: { [roomId: string]: boolean } = {};
     private cd: ChangeDetectorRef,
     @Inject(PLATFORM_ID) private platformId: Object,
   ) {
+    this.isBrowser = isPlatformBrowser(this.platformId);
 
         this.acRoute.queryParams.subscribe((params) => {
       if (params['hotelID'] !== undefined) {
@@ -1033,7 +1034,7 @@ if (params['Children'] !== undefined) {
         this.token.savewebsitebookingURL(websitebookingURL);
 
       }
-        if (params['bookingEngine'] === undefined) {
+        if (params['bookingEngine'] === undefined && this.isBrowser) {
                   sessionStorage.removeItem('BookingEngine');
         }
 
@@ -1045,18 +1046,18 @@ if (params['Children'] !== undefined) {
       if (!params['hotelID'] && !params['bookingEngine']) {
         this.getDynamicNameFromUrl(this.currentUrl);
       }
-              if (params['utm_medium'] !== undefined) {
+              if (params['utm_medium'] !== undefined && this.isBrowser) {
         this.utmMedium = params['utm_medium'];
         sessionStorage.setItem('utm_medium', this.utmMedium);
-      } else {
+      } else if (this.isBrowser) {
         sessionStorage.removeItem('utm_medium');
       }
 
 
-      if (params['utm_source'] !== undefined && params['utm_source'] != '') {
+      if (params['utm_source'] !== undefined && params['utm_source'] != '' && this.isBrowser) {
         this.utmSource = params['utm_source'];
         sessionStorage.setItem('utm_source', this.utmSource);
-      } else {
+      } else if (this.isBrowser) {
         sessionStorage.removeItem('utm_source');
       }
     });
@@ -3812,7 +3813,7 @@ onCheckOutClosed(): void {
     }
 
     let ogImage = this.businessUser.logoUrl;
-    let ogUrl = 'https://thehotelmate.co/' + this.businessUser.seoFriendlyName;
+    let ogUrl = 'https://bookone.io/' + this.businessUser.seoFriendlyName;
     let ogSiteName = '';
     this.metaService.updateTag({ name: 'title', content: title });
     this.titleService.setTitle(title);
@@ -4140,8 +4141,8 @@ onCheckOutClosed(): void {
       taxAmount >= 0;
     const hasValidStayDates = !!this.checkinDate && !!this.checkoutDate;
     const propertyUrl = this.businessUser?.seoFriendlyName
-      ? `https://thehotelmate.co/${this.businessUser.seoFriendlyName}`
-      : `https://thehotelmate.co/detail/${this.businessUser?.id}`;
+      ? `https://bookone.io/${this.businessUser.seoFriendlyName}`
+      : `https://bookone.io/detail/${this.businessUser?.id}`;
 
     const schema: any = {
       "@context": "https://schema.org",
@@ -4197,6 +4198,7 @@ onCheckOutClosed(): void {
     }
 
     this.SchemaService.setSchema(schema);
+    console.log('Generated JSON-LD schema:', JSON.stringify(schema));
   }
 
   increament(breakfastservice) {
@@ -4845,11 +4847,14 @@ onCheckOutClosed(): void {
     );
   }
   getGoogleReview(id) {
-    this.listingService.getGoogleReview(id).subscribe((response) => {
-      this.googleReviews = response.body;
-      // this.cdrf.detectChanges();
-      // this.chunkReviews();
-    });
+    this.listingService.getGoogleReview(id).subscribe(
+      (response) => {
+        this.googleReviews = response.body;
+      },
+      () => {
+        this.googleReviews = [];
+      }
+    );
   }
   getCustomerReview(id) {
     this.loader = true;
