@@ -80,10 +80,7 @@ jobs:
       - name: Build Container Image
         id: build-container-image
         run: |
-          docker build --no-cache \
-            -t ${{ env.IMAGE_URI }}:latest \
-            -t ${{ env.IMAGE_URI }}:${{ env.COMMIT_ID }} \
-            .
+          docker build -t ${{ env.IMAGE_URI }}:latest -t ${{ env.IMAGE_URI }}:${{ env.COMMIT_ID }} .
 
       - name: Push Container Image to Registry
         id: upload-container-image
