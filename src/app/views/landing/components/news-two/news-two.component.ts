@@ -1,5 +1,4 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { WpApiPosts } from 'wp-api-angular';
 import { WPAPIService } from 'src/app/services/wpapi.service';
 
 @Component({
@@ -30,5 +29,5 @@ export class NewsTwoComponent implements OnInit {
   //     console.log(this.posts);
   //   });
   // }
-  
+
 }

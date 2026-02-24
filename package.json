@@ -24,7 +24,6 @@
     "@angular/flex-layout": "^9.0.0-beta.28",
     "@angular/forms": "^21.1.5",
     "@angular/google-maps": "^21.1.5",
-    "@angular/http": "^7.2.16",
     "@angular/localize": "^21.1.5",
     "@angular/material": "^21.1.5",
     "@angular/platform-browser": "^21.1.5",
@@ -80,7 +79,6 @@
     "webpack-dev-server": "4.11.1",
     "webpack-merge": "5.8.0",
     "webpack-subresource-integrity": "5.1.0",
-    "wp-api-angular": "^3.0.0-beta8",
     "wpapi": "^1.2.2",
     "zone.js": "~0.15.1"
   },
