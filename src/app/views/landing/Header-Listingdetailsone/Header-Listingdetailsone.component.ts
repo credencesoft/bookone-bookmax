@@ -169,7 +169,7 @@ checkBookingEngineFlag(): void {
   }
 
       getWhatsappShareUrlOne(): string {
-        if (this.businessUser.id !== 3469) {
+        if (this.businessUser.id !== 3469 || this.businessUser.id !== 701 || this.businessUser.id !== 1909) {
               const baseUrl = 'https://api.whatsapp.com/send';
     const phoneNumber = '919004126958';
     this.dynamicText = this.businessUser.name;
