@@ -21,7 +21,6 @@ export function WpApiLoaderFactory(http: Http) {
   return new WpApiStaticLoader(http, 'https://blog.bookonepms.com/wp-json/wp/v2/', '');
 }
 import { LocationStrategy, HashLocationStrategy, PathLocationStrategy } from '@angular/common';
-import { GooglePlaceModule } from 'ngx-google-places-autocomplete';
 import { SlickCarouselModule } from 'ngx-slick-carousel';
 import { TokenStorage } from 'src/token.storage';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
@@ -39,7 +38,6 @@ import { CalendarModule } from 'primeng/calendar';
         NgSelectModule,
         NgbModule,
         MatTableModule,
-        GooglePlaceModule,
         GoogleMapsModule,
         AppRoutingModule,
         BrowserModule,
