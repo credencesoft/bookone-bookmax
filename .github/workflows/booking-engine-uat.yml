@@ -23,7 +23,7 @@ env:
   AWS_REGION: ap-south-1
   AWS_SECRET: bookone_uat_deployment_credentials
 
-  BRANCH: release-uat-booking-engine
+  BRANCH: BE-Migration-NewDev
   
   # generated do not touch
   # IDENTITY_PROVIDER: projects/${{ env.GCP_PROJECT_NUMBER }}/locations/global/workloadIdentityPools/${{ env.GCP_IDENTITY_POOL_NAME }}/providers/${GCP_IDENTITY_PROVIDER_NAME}
