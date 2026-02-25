@@ -79,6 +79,7 @@ export class HeaderListingdetailsoneComponent implements OnInit {
 
    }
  ngAfterViewInit() {
+  if (isPlatformBrowser(this.platformId)) {
                     this.acRoute.queryParams.subscribe((params) => {
                 if (params['bookingEngine'] !== undefined) {
                   this.urlLocation = params['bookingEngine'];
@@ -88,7 +89,7 @@ export class HeaderListingdetailsoneComponent implements OnInit {
                   sessionStorage.setItem('BookingEngine', 'true');
                 }
     });
-
+  }
  }
   ngOnInit() {
     if (isPlatformBrowser(this.platformId)) {
