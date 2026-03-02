@@ -1,0 +1,27 @@
+{
+  "project_name": "b1pms",
+  "tier_name": "webui",
+  "main_container_port": 4200,
+  "env_name": "prod",
+  "version": "1",
+  "default_region": "ap-south-1",
+  "dns_name": "testprod.bookonepms.com",
+  "alb_name": "client-websites",
+  "vpc_id": "vpc-cff012a4",
+  "security_group_id": "sg-052ef7272230538f1",
+  "subnet_ids": ["subnet-12616a7a", "subnet-e397eeaf", "subnet-dbb536a0"],
+
+  "ecs_cluster_name": "bookone-pms",
+  "ecs_cluster_arn": "arn:aws:ecs:ap-south-1:153432822124:cluster/bookone-pms",
+  "ecs_service_name": "webui-prod2",
+  "ecs_service_arn": "arn:aws:ecs:ap-south-1:153432822124:service/bookone-pms/webui-prod",
+  "ecs_task_def_name": "b1pms-webui-prod",
+  "main_container_name": "main_container",
+  "ecr_repo_name": "b1pms-webui-prod",
+  "ecr_repo_uri": "153432822124.dkr.ecr.ap-south-1.amazonaws.com/b1pms-webui-prod",
+  "ip_target_group_name": "b1pms-webui-prod",
+  "alb_arn": "arn:aws:elasticloadbalancing:ap-south-1:153432822124:loadbalancer/app/client-websites/d27cc344080ddda3",
+  "cpu": 2048,
+  "memory": 4096,
+  "aws_account_id": "153432822124"
+}

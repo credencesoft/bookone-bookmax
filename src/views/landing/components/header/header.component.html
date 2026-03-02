@@ -1,0 +1,153 @@
+<nav id="home-header" [ngClass]="{'header-fixed': isFixed}" class="navbar navbar-expand-lg text-16  ">
+    <div class="container-fluid">
+
+
+        <div class="d-flex flex-grow-1 mobile_menu">
+            <span class="w-100 d-lg-none d-block">
+    <!-- hidden spacer to center brand on mobile --></span>
+            <!-- <a class="navbar-brand d-none d-lg-inline-block" href="#">
+    Navbar 6
+  </a> -->
+
+            <div class="w-100 text-left">
+                <button class="navbar-toggler" type="button" (click)="isCollapsed = !isCollapsed" [attr.aria-expanded]="!isCollapsed" aria-controls="collapseExample">
+      <span class="navbar-toggler-icon">
+<i class="eva eva-menu-outline text-30 text-white"></i>
+      </span>
+
+    </button>
+            </div>
+            <a class="navbar-brand-two mx-auto  d-inline-block" href="#">
+                <img src="assets/images/landing/lOGO_d/logo_white.png" alt="logo">
+            </a>
+        </div>
+        <div class="collapse  navbar-collapse flex-grow-1 text-right" id="collapseExample" [ngbCollapse]="isCollapsed" style="
+        padding-top: 20px;
+    ">
+
+            <ul class="navbar-nav ml-auto flex-nowrap" style="padding-top: 10px;">
+                <li class="nav-item" (click)="hidemenu()">
+                    <a routerLink="/home" routerLinkActive="router-link-active"  class="nav-link m-2 menu-item nav-active">Home</a>
+                </li>
+                <li (click)="hidemenu()" class="nav-item">
+                    <a routerLink="/pricing" routerLinkActive="router-link-active"  class="nav-link m-2 menu-item nav-active">Pricing</a>
+                </li>
+                <li (click)="hidemenu()" class="nav-item">
+                    <a routerLink="/company" routerLinkActive="router-link-active" class="nav-link m-2 menu-item">Company</a>
+                </li>
+                <!-- drop down menu start
+                <li class="nav-item">
+                    <a class="nav-link m-2 menu-item">Other Sections</a>-->
+                    <!-- First  Drop Down
+                    <ul>
+                        <li (click)="hidemenu()" class="nav-item">
+                            <a href="#" scrollTo="teams-wrap" class="  menu-item">Team</a>
+                        </li>
+                        <li (click)="hidemenu()" class="nav-item">
+                            <a href="#" scrollTo="testimonials-wrap" class="  menu-item">Testimonial</a>
+                        </li>
+                        <li (click)="hidemenu()" class="nav-item">
+                            <a href="#" scrollTo="extra-feature-wrap" class="  menu-item">Extra features</a>
+                        </li>
+
+                    </ul>
+                </li>-->
+                <!-- drop down menu end -->
+                <li (click)="hidemenu()" class="nav-item">
+                    <a routerLink="/blog" routerLinkActive="router-link-active" class="nav-link m-2 menu-item">Blog</a>
+                </li>
+                <li (click)="hidemenu()" class="nav-item">
+                    <a routerLink="/faqs" routerLinkActive="router-link-active" class="nav-link m-2 menu-item">FAQs</a>
+                </li>
+
+
+
+
+                <li (click)="hidemenu()" class="nav-item">
+                    <a routerLink='/contact' routerLinkActive="router-link-active" class="nav-link m-2 menu-item">Contact Us</a>
+                </li>
+                <li (click)="hidemenu()" class="nav-item">
+                  <a routerLink='/book-one-connect' routerLinkActive="router-link-active" class="nav-link m-2 menu-item">BookOne Connect</a>
+              </li>
+              <li (click)="hidemenu()" class="nav-item">
+                <a routerLink='/booking' routerLinkActive="router-link-active" class="nav-link m-2 menu-item">booking</a>
+            </li>
+            <li (click)="hidemenu()" class="nav-item">
+              <a routerLink='/detail' routerLinkActive="router-link-active" class="nav-link m-2 menu-item">detail</a>
+          </li>
+              <li (click)="hidemenu()" class="nav-item">
+                <a routerLink='/listing-one' routerLinkActive="router-link-active" class="nav-link m-2 menu-item">Listing-One</a>
+            </li>
+            <li (click)="hidemenu()" class="nav-item">
+              <a routerLink='/booking-hide' routerLinkActive="router-link-active" class="nav-link m-2 menu-item">Bot</a>
+          </li>
+
+                <li (click)="hidemenu()" class="nav-item">
+
+                <a id="" class="btn btn-warning btn-lg pl-5 pr-5 pb-2 mt-2 mb-4 text-uppercase
+ button" href="https://app.bookonelocal.in/" role="button">Sign in</a>
+                </li>
+            </ul>
+            <!-- <ul class="navbar-nav ml-auto flex-nowrap">
+                <li class="nav-item" (click)="hidemenu()">
+                    <a href="#" scrollTo="intro-wrap" class="nav-link m-2 menu-item nav-active">Home</a>
+                </li>
+                <li (click)="hidemenu()" class="nav-item">
+                    <a href="#" scrollTo="features-wrap" class="nav-link m-2 menu-item nav-active">Features</a>
+                </li>
+                <li (click)="hidemenu()" class="nav-item">
+                    <a href="#" scrollTo="services-wrap" class="nav-link m-2 menu-item">Services</a>
+                </li> -->
+              <!--   drop down menu start-->
+                <!-- <li class="nav-item">
+                    <a class="nav-link m-2 menu-item">Other Sections</a>  -->
+                    <!-- First  Drop Down -->
+                    <!-- <ul>
+                        <li (click)="hidemenu()" class="nav-item">
+                            <a href="#" scrollTo="teams-wrap" class="  menu-item">Team</a>
+                        </li>
+                        <li (click)="hidemenu()" class="nav-item">
+                            <a href="#" scrollTo="testimonials-wrap" class="  menu-item">Testimonial</a>
+                        </li>
+                        <li (click)="hidemenu()" class="nav-item">
+                            <a href="#" scrollTo="extra-feature-wrap" class="  menu-item">Extra features</a>
+                        </li>
+                        <li><a>Second Level</a> -->
+                            <!-- Second  Drop Down -->
+                            <!-- <ul>
+                                <li (click)="hidemenu()" class="nav-item">
+                                    <a href="#" scrollTo="news-wrap" class="  menu-item">Blog</a>
+                                </li>
+                                <li (click)="hidemenu()" class="nav-item">
+                                    <a href="#" scrollTo="faqs-wrap" class="  menu-item">Faqs</a>
+                                </li>
+                                <li><a>Third Level</a> -->
+                                    <!-- Third  Drop Down -->
+                                    <!-- <ul>
+                                        <li><a href="#">Menu Item</a></li>
+                                        <li><a href="#">Menu Item</a></li>
+
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li> -->
+                <!-- drop down menu end -->
+                <!-- <li (click)="hidemenu()" class="nav-item">
+                    <a href="#" scrollTo="works-wrap" class="nav-link m-2 menu-item">Works</a>
+                </li>
+                <li (click)="hidemenu()" class="nav-item">
+                    <a href="#" scrollTo="pricing-wrap" class="nav-link m-2 menu-item">Pricing</a>
+                </li>
+
+
+
+
+                <li (click)="hidemenu()" class="nav-item">
+                    <a href="#" scrollTo="contacts-wrap" class="nav-link m-2 menu-item">Contact Us</a>
+                </li>
+            </ul> -->
+        </div>
+    </div>
+</nav>

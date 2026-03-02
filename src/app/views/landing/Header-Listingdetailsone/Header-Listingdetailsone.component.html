@@ -1,0 +1,144 @@
+<!-- Vertical navbar -->
+
+<!-- Vertical Navbar -->
+<div class="vertical-nav" id="sidebar" *ngIf="isdone">
+  <div>
+    <button class="close-btn" (click)="closeNavbar()">
+      <img src="/assets/images/x-mark.png" alt="Close">
+    </button>
+  </div>
+
+
+  <ul class="nav-menu" >
+
+    <!-- <li class="nav-item">
+      <img *ngIf="businessUser?.logoUrl" [src]="logoUrl" alt="Logo" class="logo-imagetwo">
+      <a  href="{{PropertyUrl}}" class="nav-link">
+        <i class="fas fa-home"></i> Dashboard
+    </a>
+  </li>
+    <hr> -->
+
+    <li class="nav-item">
+      <img *ngIf="businessUser?.logoUrl" [src]="businessUser?.logoUrl" alt="Logo" class="logo-imagetwo">
+      <a *ngIf="businessUser?.website" href="{{ this.website }}" class="nav-link">
+        <i class="fas fa-home"></i> Home
+      </a>
+    </li>
+    <hr *ngIf="businessUser?.website">
+<!--
+    <li class="nav-item">
+      <a *ngIf="businessUser?.website" href="{{ this.website }}" class="nav-link">
+        <i class="fa-regular fa-address-card"></i> About
+      </a>
+    </li>
+    <hr *ngIf="businessUser?.website"> -->
+
+    <!-- <li class="nav-item">
+      <a *ngIf="businessUser?.website" href="{{ this.website }}" class="nav-link">
+        <i class="fa-solid fa-house-chimney"></i> Rooms
+      </a>
+    </li>
+    <hr *ngIf="businessUser?.website"> -->
+
+    <!-- <li class="nav-item">
+      <a *ngIf="businessUser?.website" href="{{ this.website }}" class="nav-link">
+        <i class="fa-brands fa-servicestack"></i> Ammenities
+      </a>
+    </li>
+    <hr *ngIf="businessUser?.website"> -->
+
+    <!-- <li class="nav-item">
+      <a *ngIf="businessUser?.website" href="{{ this.website }}" class="nav-link">
+        <i class="fa-solid fa-phone"></i> Contact Us
+      </a>
+    </li>
+    <hr *ngIf="businessUser?.website"> -->
+
+    <li class="nav-item">
+      <a *ngIf="businessUser?.website && socialmedialist?.aboutUs" href="{{socialmedialist?.aboutUs}}" class="nav-link">
+        <i class="fas fa-info-circle"></i> About Us
+      </a>
+    </li>
+    <hr *ngIf="businessUser?.website && socialmedialist?.aboutUs">
+
+    <li class="nav-item">
+      <a *ngIf="businessUser?.website && socialmedialist?.termsAndConditions" href="{{socialmedialist?.termsAndConditions}}" class="nav-link">
+        <i class="fas fa-file-contract"></i> Terms & Conditions
+      </a>
+    </li>
+    <hr *ngIf="businessUser?.website && socialmedialist?.termsAndConditions">
+
+    <li class="nav-item">
+      <a *ngIf="businessUser?.website && socialmedialist?.privacyPolicy" href="{{socialmedialist?.privacyPolicy}}" class="nav-link">
+        <i class="fas fa-user-secret"></i> Privacy Policy
+      </a>
+    </li>
+    <hr *ngIf="businessUser?.website && socialmedialist?.privacyPolicy">
+
+    <li class="nav-item">
+      <a *ngIf="businessUser?.website && socialmedialist?.paymentTerms" href="{{socialmedialist?.paymentTerms}}" class="nav-link">
+        <i class="fas fa-credit-card"></i> Payment Terms
+      </a>
+    </li>
+    <hr *ngIf="businessUser?.website && socialmedialist?.paymentTerms">
+
+    <!-- <li class="nav-item">
+      <a routerLink="/manage-property" [state]="{ businessUser: businessUser }" class="nav-link">
+        <i class="fas fa-cogs"></i> Manage Property
+      </a>
+    </li>
+    <hr> -->
+
+    <!-- <li class="nav-item">
+      <a routerLink="/history" class="nav-link">
+        <i class="fas fa-history"></i> Manage Bookings
+      </a>
+    </li>
+    <hr> -->
+
+    <!-- <li class="nav-item">
+      <a routerLink="/manage-enquiry" class="nav-link">
+        <i class="fas fa-envelope"></i> Manage Enquiry
+      </a>
+    </li> -->
+    <!-- <hr> -->
+
+
+
+  </ul>
+</div>
+
+<!-- Top Navbar -->
+<nav class="navbar navbar-dark top-navbar">
+  <div class="container-div">
+    <!-- Left Section: Logo and Business Name -->
+    <div class="left-section">
+        <img class="logo-image" [src]="businessUser?.logoUrl" alt="Business Logo">
+        <span class="title-nav">{{ businessUser?.name }}</span>
+    </div>
+
+    <!-- Right Section: Toggle Button -->
+     <div style="float: right;
+     display: flex;
+     gap: 7px;">
+
+          <button class="blinking-unique-btn" (click)="scrollToAccommodation()">Book Now</button>
+
+
+
+    <button class="navbar-toggler" (click)="toggleListingDetails()" type="button" aria-controls="navbarToggleExternalContent" aria-expanded="false" aria-label="Toggle navigation">
+        <img src="assets/images/nav-toggle.png" alt="Toggle Navigation">
+    </button>
+  </div>
+</div>
+
+</nav>
+
+<!-- Styles -->
+
+
+<div class="banner-container" *ngIf="!businessUser?.website">
+  <img src="assets/images/BookOne Website Bannerr.png" alt="Website Banner" class="banner-image">
+</div>
+

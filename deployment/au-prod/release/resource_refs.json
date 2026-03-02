@@ -1,0 +1,25 @@
+{
+  "ecsTaskExecutionRoleArn": "arn:aws:iam::912195358089:role/ecsTaskExecutionRole",
+  "main_container_port": 4200,
+  "default_region": "ap-southeast-2",
+  "dns_name": "bookonepms.co.nz",
+  "alb_name": "bol-au-prod",
+  "vpc_id": "vpc-0c011da2184fcf284",
+  "subnet_ids": [
+    "subnet-044a64a30b840f86a",
+    "subnet-0413961e7252ebeb5",
+    "subnet-03c3665613f1bc12b"
+  ],
+  "ecs_cluster_name": "default",
+  "ecs_cluster_arn": "arn:aws:ecs:ap-southeast-2:912195358089:cluster/default",
+  "ecs_task_def_name": "webui-pms",
+  "main_container_name": "main_container",
+  "ecr_repo_name": "webui-pms",
+  "external_container_registry": false,
+  "ecr_repo_uri": "912195358089.dkr.ecr.ap-southeast-2.amazonaws.com/webui-pms",
+  "ip_target_group_name": "webui-pms",
+  "alb_arn": "arn:aws:elasticloadbalancing:ap-southeast-2:912195358089:loadbalancer/app/bol-au-prod/2a0a0e21049bb810",
+  "cpu": 2048,
+  "memory": 4096,
+  "aws_account_id": "912195358089"
+}

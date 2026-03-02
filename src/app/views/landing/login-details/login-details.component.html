@@ -1,0 +1,290 @@
+<!-- <nav class="navbar navbar-dark " style="height: 80px; background-color: #1e1f20;"> 
+  <div class="container-div">
+    <span class="title-nav-title" style="margin-top: 15px;text-align: left; color: #fff;padding-bottom: 10px; margin-left: 60px;">{{ businessUser?.name }}</span>
+  </div>
+</nav>
+
+
+
+<img
+  src="assets/images/BookOne Website Bannerr.png"
+  style="margin-bottom: 15px;"
+/> -->
+<app-Header-Listingdetailsone  [businessUser]="businessUser"> </app-Header-Listingdetailsone>
+
+
+
+
+  
+<div>
+  <div class="container-fluid mb-3 pt-5">
+    <h2 class="enquiryh2" style="text-align: center; font-weight: 600 !important;color:#000000"></h2>
+    <br>
+  </div>
+
+
+
+  <div class="container" *ngIf="selectedTabdefault">
+    <div class="row justify-content-center" style="margin-bottom: 40px;">
+
+      <div>
+        <strong class="gridradio2">Search by:</strong>
+      </div>
+
+      <div class="gridradio">
+        <input type="radio" id="EmailRadio" name="contactType" [(ngModel)]="selectedOption" (click)="resetBookings()" value="EmailRadio">
+        <label class="radio-container" for="EmailRadio">Email</label>
+      </div>
+
+      <div class="gridradio">
+        <input type="radio" id="MobileRadio" name="contactType" [(ngModel)]="selectedOption" (click)="resetBookings()" value="MobileRadio">
+        <label class="radio-container" for="MobileRadio">Mobile</label>
+      </div>
+
+      <div class="gridradio">
+        <input type="radio" id="BookingId" name="contactType"  [(ngModel)]="selectedOption" (click)="resetBookings()"
+          value="BookingId">
+        <label class="radio-container" for="BookingId">Booking ID</label>
+      </div>
+
+
+    </div>
+
+   
+<!-- 
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="form-group mb-4">
+     
+        </div>
+     
+      </div>
+    </div> -->
+
+
+  </div>
+
+
+  <div class="container" *ngIf="selectedOption === 'email' || selectedOption === 'EmailRadio'">
+    <div class="row justify-content-center">
+      <div class="col-md-12">
+        <div class="form-group mb-5 d-flex">
+          <input type="text"
+
+          [(ngModel)]="email"
+            style="border-radius: 30px; border: 0.5px solid #271a55; margin-top: -20px; background: #FFF;"
+            class="form-control" placeholder="Search your booking by Email" required />
+            <div class="search-alignment">
+          <span class="search-button-data">
+            <img src="assets/images/Searchnotification.png" (click)="getbookingsbyemail()" alt="" style="width: 31px; height: 23px;" />
+          </span>
+        </div>
+        </div>
+
+      </div>
+      <div>
+        <p style="text-align: center; color: #fff; font-size: 20px; margin-top: 33px;">
+          Quickly find <b style="font-weight: 700;">bookings</b> by entering your
+          email ID on Bookone Booking Engine
+        </p>
+      </div>
+    </div>
+  </div>
+
+
+
+  <div class="container" *ngIf="selectedOption === 'mobile' || selectedOption === 'MobileRadio'">
+    <div class="row justify-content-center">
+      <div class="col-md-12">
+        <div class="form-group mb-5 d-flex">
+          <input type="text"
+          (ng2TelOutput)="getNumber($event)"
+          (input)="validatePhoneNumber()"
+          [(ngModel)]="phoneNumber"
+            style="border-radius: 30px; border: 0.5px solid #271a55; margin-top: -20px; background: #FFF;"
+            class="form-control" placeholder="Search your booking by Mobile number" required />
+
+            <div class="search-alignment">
+          <span class="search-button-data">
+            <img src="assets/images/Searchnotification.png"
+            (click)="getbookingsbymobileNumber()"
+            alt=""
+            style="width: 31px; height: 23px;"
+            />
+          </span>
+        </div>
+        </div>
+
+      </div>
+
+      <div>
+        <p style="text-align: center; color: #fff; font-size: 20px; margin-top: 33px;">
+          Quickly find <b style="font-weight: 700;">bookings</b> by entering your
+          phone number on Bookone Booking Engine
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="container" *ngIf="selectedOption === 'bookingId' || selectedOption === 'BookingId'">
+    <div class="row justify-content-center">
+      <div class="col-md-12">
+        <div class="form-group mb-5 d-flex">
+          <input type="text" [(ngModel)]="bookingId"
+            style="border-radius: 30px; border: 0.5px solid #271a55; margin-top: -20px; background: #FFF;"
+            class="form-control" placeholder="Search your booking by Booking Id" required />
+            <div class="search-alignment">
+          <span class="search-button-data">
+            <img src="assets/images/Searchnotification.png" (click)="getbookingsbybookingId()" style="width: 31px; height: 23px;"  alt="" />
+          </span>
+        </div>
+        </div>
+
+      </div>
+      <div>
+        <p style="text-align: center; color: #fff; font-size: 20px; margin-top: 33px;">
+          Quickly find <b style="font-weight: 700;">bookings</b> by entering your
+          Booking Id on Bookone Booking Engine
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="container mt-4">
+  <div class="noofbook bg-light p-4 shadow rounded">
+    <div class="row">
+      <div class="col-md-6">
+        <h3 class="mb-0">Total Numbers Of Bookings</h3>
+      </div>
+      <div class="col-md-6 text-md-right">
+        <h3 class="mb-0"><b>{{ bookings?.length }}</b></h3>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mt-4" *ngIf="bookingdata == null">
+    <div class="col">
+
+      <div class="card mb-3" *ngFor="let booking of paginatedData">
+        <div class="card-header">
+          <h5 class="card-title mb-0">{{ booking?.firstName }} {{ booking?.lastName }}</h5>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-6">
+              <p><strong>Check-In:</strong> {{ booking?.fromDate | date }}</p>
+              <p><strong>Check-Out:</strong> {{ booking?.toDate | date }}</p>
+              <p><strong>Status:</strong> {{ booking?.bookingStatus }}</p>
+            </div>
+            <div class="col-md-6">
+              <p><strong>Phone No.:</strong> {{ booking?.mobile}}</p>
+              <p><strong>Email ID:</strong> {{ booking?.email}}</p>
+              <p><strong>Booking ID:</strong> {{ booking?.id}}</p>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <p><strong>Total Amount:</strong> {{ booking?.totalAmount }}</p>
+              <p><strong> Room Name:</strong> {{ booking?.roomName}}</p>
+              <p><strong> Room Plan:</strong> {{ booking?.roomRatePlanName}}</p>
+            </div>
+            <div class="col-md-6">
+              <p><strong>Paid Amount:</strong> {{ booking?.payableAmount }}</p>
+              <p><strong>Remaining Amount:</strong> {{ (booking?.totalAmount)- (booking?.payableAmount)}}</p>
+            </div>
+          </div>
+          <div class="row" style="margin-left: -2px;">
+            <div *ngIf="(booking?.externalSite === 'The Hotel Mate' || booking?.externalSite === 'Easemytrip' || booking?.externalSite === 'GOBIBO,MMT' || booking?.externalSite === 'Agoda' || booking?.externalSite === 'Yatra' || booking?.externalSite === 'Booking.com' || booking?.externalSite === 'Expedia' || booking?.externalSite === 'SiteMinder' || booking?.externalSite === 'BookOne Connect' || booking?.externalSite === 'Google Hotel Ads' || booking?.externalSite === 'Airbnb' || booking?.externalSite === 'Trivago' || booking?.externalSite === 'Clear trip' || booking?.externalSite === 'OYO'  || booking?.externalSite === 'Via.com' || booking?.externalSite === 'Travel Guru' || booking?.externalSite === 'IRCTC' || booking?.externalSite === 'Hotels.com' || booking?.externalSite === 'BookingJini' || booking?.externalSite === 'Fab'  || booking?.externalSite === 'Treebo' || booking?.externalSite === 'Go Room Go' || booking?.externalSite === 'Pie Rooms')" >
+              <div *ngFor="let externalsite of externalSites">      
+                   <span *ngIf="booking?.externalSite === externalsite.externalSiteName"><img src="{{externalsite.logo}}"  height="22px" width="62px" ></span>
+              </div>
+            </div>
+            <div>    
+                <span *ngIf="(booking?.externalSite != 'The Hotel Mate' && booking?.externalSite != 'Easemytrip' && booking?.externalSite != 'GOBIBO,MMT' && booking?.externalSite != 'Agoda' && booking?.externalSite != 'Yatra' && booking?.externalSite != 'Booking.com' && booking?.externalSite != 'Expedia' && booking?.externalSite != 'SiteMinder' && booking?.externalSite != 'BookOne Connect' && booking?.externalSite != 'Google Hotel Ads' && booking?.externalSite != 'Airbnb' && booking?.externalSite != 'Trivago' && booking?.externalSite != 'Clear trip' && booking?.externalSite != 'OYO' && booking?.externalSite != 'Via.com' && booking?.externalSite != 'Travel Guru' && booking?.externalSite != 'IRCTC' && booking?.externalSite != 'Hotels.com' && booking?.externalSite != 'BookingJini' && booking?.externalSite != 'Fab' && booking?.externalSite != 'Treebo' && booking?.externalSite != 'Go Room Go' && booking?.externalSite != 'Pie Rooms' )">{{booking?.externalSite}}</span>
+            </div>
+          </div>
+          <div class="row booking-actions" style="float: inline-end;">
+            <div class="col-md-6 text-right">
+              <button *ngIf="booking?.bookingStatus && !isInvalidStatus(booking.bookingStatus)" class="btn btn-danger cancel-booking-btn" (click)="cancelBooking(booking.id)" style="background-color: #221950;border-color: #221950;">Cancel</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <div class="row mt-4" *ngIf="bookingdata != null">
+    <div class="col">
+
+      <div class="card mb-3">
+        <div class="card-header">
+          <h5 class="card-title mb-0">{{ bookingdata?.firstName }} {{ bookingdata?.lastName }}</h5>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-6">
+              <p><strong>Check-In:</strong> {{ bookingdata?.fromDate | date }}</p>
+              <p><strong>Check-Out:</strong> {{ bookingdata?.toDate | date }}</p>
+              <p><strong>Status:</strong> {{ bookingdata?.bookingStatus }}</p>
+            </div>
+            <div class="col-md-6">
+              <p><strong>Phone No.:</strong> {{ bookingdata?.mobile}}</p>
+              <p><strong>Email ID:</strong> {{ bookingdata?.email}}</p>
+              <p><strong>Booking ID:</strong> {{ bookingdata?.id}}</p>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <p><strong>Total Amount:</strong> {{ bookingdata?.totalAmount }}</p>
+              <p><strong> Room Name:</strong> {{ bookingdata?.roomName}}</p>
+              <p><strong> Room Plan:</strong> {{ bookingdata?.roomRatePlanName}}</p>
+            </div>
+            <div class="col-md-6">
+              <p><strong>Paid Amount:</strong> {{ bookingdata?.payableAmount }}</p>
+              <p><strong>Remaining Amount:</strong> {{ (bookingdata?.totalAmount)- (bookingdata?.payableAmount)}}</p>
+            </div>
+          </div>
+          <div class="row" style="margin-left: -2px; float: left;">
+            <div *ngIf="(bookingdata?.externalSite === 'The Hotel Mate' || bookingdata?.externalSite === 'Easemytrip' || bookingdata?.externalSite === 'GOBIBO,MMT' || bookingdata?.externalSite === 'Agoda' || bookingdata?.externalSite === 'Yatra' || bookingdata?.externalSite === 'Booking.com' || bookingdata?.externalSite === 'Expedia' || bookingdata?.externalSite === 'SiteMinder' || bookingdata?.externalSite === 'BookOne Connect' || bookingdata?.externalSite === 'Google Hotel Ads' || bookingdata?.externalSite === 'Airbnb' || bookingdata?.externalSite === 'Trivago' || bookingdata?.externalSite === 'Clear trip' || bookingdata?.externalSite === 'OYO'  || bookingdata?.externalSite === 'Via.com' || bookingdata?.externalSite === 'Travel Guru' || bookingdata?.externalSite === 'IRCTC' || bookingdata?.externalSite === 'Hotels.com' || bookingdata?.externalSite === 'BookingJini' || bookingdata?.externalSite === 'Fab'  || bookingdata?.externalSite === 'Treebo' || bookingdata?.externalSite === 'Go Room Go' || bookingdata?.externalSite === 'Pie Rooms')" >
+              <div *ngFor="let externalsite of externalSites">      
+                   <span *ngIf="bookingdata?.externalSite === externalsite.externalSiteName"><img src="{{externalsite.logo}}"  height="22px" width="62px" ></span>
+              </div>
+            </div>
+            <div>    
+                <span *ngIf="(bookingdata?.externalSite != 'The Hotel Mate' && bookingdata?.externalSite != 'Easemytrip' && bookingdata?.externalSite != 'GOBIBO,MMT' && bookingdata?.externalSite != 'Agoda' && bookingdata?.externalSite != 'Yatra' && bookingdata?.externalSite != 'Booking.com' && bookingdata?.externalSite != 'Expedia' && bookingdata?.externalSite != 'SiteMinder' && bookingdata?.externalSite != 'BookOne Connect' && bookingdata?.externalSite != 'Google Hotel Ads' && bookingdata?.externalSite != 'Airbnb' && bookingdata?.externalSite != 'Trivago' && bookingdata?.externalSite != 'Clear trip' && bookingdata?.externalSite != 'OYO' && bookingdata?.externalSite != 'Via.com' && bookingdata?.externalSite != 'Travel Guru' && bookingdata?.externalSite != 'IRCTC' && bookingdata?.externalSite != 'Hotels.com' && bookingdata?.externalSite != 'BookingJini' && bookingdata?.externalSite != 'Fab' && bookingdata?.externalSite != 'Treebo' && bookingdata?.externalSite != 'Go Room Go' && bookingdata?.externalSite != 'Pie Rooms' )">{{bookingdata?.externalSite}}</span>
+            </div>
+          </div>
+          <div class="row booking-actions" style="float: inline-end;">
+            <div class="col-md-6 text-right">
+              <button *ngIf="bookingdata?.bookingStatus && !isInvalidStatus(bookingdata.bookingStatus)" class="btn btn-danger cancel-booking-btn" (click)="cancelBookings(bookingdata.id)" style="background-color: #221950;border-color: #221950;">Cancel</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div *ngIf="paginatedData?.length > 0" class="allignment">
+    <span>Items per page:{{this.pageSize}}</span> 
+    <button (click)="changePage(currentPage - 1)" [disabled]="currentPage === 1">Previous</button>
+    <span>Page {{ currentPage }} of {{ totalPages() }}</span>
+    <button (click)="changePage(currentPage + 1)" [disabled]="currentPage === totalPages()">Next</button>
+  </div>
+</div>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  

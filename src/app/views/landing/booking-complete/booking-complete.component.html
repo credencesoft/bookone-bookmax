@@ -1,0 +1,238 @@
+<div class="main-wrapper">
+  <!--Title Bar -->
+  <!-- <title-bar title="Booking Details" subtitle="Here is your final information"></title-bar> -->
+ <div>
+  <div id="print-section">
+    <!--Your html stuff that you want to print-->
+  </div>
+  <!-- <button class="btn" printSectionId="print-section" ngxPrint>print</button>  -->
+
+ </div>
+  <!-- Container -->
+  <div class="content">
+    <div class="container">
+      <div class="row">
+        <!-- Sidebar -->
+        <div class="col-12" *ngIf="payment.failureCode !== null">
+          <h2>ERROR: {{payment.failureCode}}</h2>
+          <p>{{payment.failureMessage}}</p>
+          <h5 style="color: red;">Oops!! Seems your payment is not successful but we have confirmed your booking. Please arrange the payment with Property to keep your booking alive.</h5>
+          <button class="btn btn-primary" type="button" (click)="onGoHome()">Go Back</button>
+      </div>
+        <div class="col-lg-12 col-md-12">
+
+
+          <div *ngIf="bookingConfirmed" style="padding-top: 6rem ;">
+
+
+            <img class="thankyou-enquiry" src="assets/images/demo.png" alt="Avatar" />
+            <h2 class="thankyou-enquiry1">Thank You for Choosing BookOne Connect.</h2>
+            <p class="thankyou-enquiry2">Reservation No: {{ booking.propertyReservationNumber }}</p>
+            <p class="cont">This is a confirmed booking.</p>
+            <div >
+              <p class="cont1">
+                Thank you for your Booking regarding the {{ businessUser.name }}. We want to assure
+                you that we are diligently handling your booking and will provide
+                a response shortly.
+              </p>
+            </div>
+            <div class="cardenquiry">
+            <div  *ngIf="businessUser.logoUrl">
+              <img [src]="businessUser.logoUrl" class="enquiry-logo" alt="" />
+            </div>
+            <div class="cardpr">
+              <br />
+              <p class="cardpr1">
+                Mean while, please have a look at the procedure of the booking
+              </p>
+            </div>
+            <div>
+              <!-- <p></p> -->
+              <!-- <ol class="lists-enquiry" >
+                <li style="color: #484848 !important;">Reservation details are submitted to {{ businessUser.name }}.</li>
+                <li style="color: #484848 !important;">
+                  Once the hotel confirms your booking, we will notify you promptly.
+                </li>
+                <li style="color: #484848 !important;">
+                  In the event of any price fluctuations, you will be duly informed.
+                </li>
+                <li style="color: #484848 !important;">
+                  In the case we can't accommodate your booking request, we'll provide
+                  suitable alternative options that match your preferences.
+                </li>
+              </ol> -->
+
+
+              <div>
+                <p class="enquiry-details">Booking Details</p>
+              </div>
+
+
+              <div class="cardenquiry1">
+                <div class="cardenquiry1a">
+                  <table class="vl">
+                    <tr>
+                      <th class="cardenquiry1b">Reservation No</th>
+                      <th class="cardenquiry1b">{{ booking.propertyReservationNumber }}</th>
+                    </tr>
+                    <tr>
+                      <td class="cardenquiry1c">Guest</td>
+                      <td class="cardenquiry1c">
+                        {{ booking.firstName }} {{ booking.lastName }}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="cardenquiry1c">Email Id</td>
+                      <td class="cardenquiry1c">{{ booking.email }}</td>
+                    </tr>
+                    <tr>
+                      <td class="cardenquiry1c">Phone</td>
+                      <td class="cardenquiry1c">{{ booking.mobile }}</td>
+                    </tr>
+                    <tr>
+                      <td class="cardenquiry1c">Selected Room</td>
+                      <td class="cardenquiry1c">{{ booking.roomName }}</td>
+                    </tr>
+                    <tr *ngIf="booking.roomPrice != null && booking.roomPrice != undefined ">
+                      <td class="cardenquiry1c">Room Price</td>
+                      <td class="cardenquiry1c">
+                        {{
+                        booking.roomPrice | currency : currency : "symbol" : "1.2-2"
+                        }}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="cardenquiry1c">No of Person(s)</td>
+                      <td class="cardenquiry1c">{{ booking.noOfPersons }}</td>
+                    </tr>
+                    <tr>
+                      <td class="cardenquiry1c">No of Children(s)</td>
+                      <td class="cardenquiry1c">{{ booking.noOfChildren }}</td>
+                    </tr>
+
+
+                    <tr>
+                      <td class="cardenquiry1c">Total Amount</td>
+                      <td class="cardenquiry1c">
+                        {{
+                        booking.totalAmount | currency : currency : "symbol" : "1.2-2"
+                        }}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="cardenquiry1c">Advance Amount</td>
+                      <td class="cardenquiry1c">
+                        {{
+                        booking.advanceAmount | currency : currency : "symbol" : "1.2-2"
+                        }}
+                      </td>
+                    </tr>
+
+ <tr>
+                      <td class="cardenquiry1c">Special Notes</td>
+                      <td class="cardenquiry1c">
+                        {{
+                        booking.notes
+                        }}
+                      </td>
+                    </tr>
+
+
+                    <!-- <tr *ngIf="discountPercentage">
+
+
+                      <td class="cardenquiry1c">Discount:</td>
+                      <td class="cardenquiry1c">{{ booking.discountPercentage }}%</td>
+                    </tr>
+                    <tr *ngIf="discountPercentage">
+                      <td class="cardenquiry1c">Discount Amount: </td>
+                      <td class="cardenquiry1c"> {{
+                        booking.discountAmount
+                        | currency : currency : "symbol" : "1.2-2"
+                        }}</td>
+
+
+
+
+                    </tr> -->
+                    <!-- <tr>
+                      <td class="cardenquiry1c">Notes</td>
+                      <td class="cardenquiry1c">{{ booking.notes }}</td>
+                    </tr> -->
+                  </table>
+                </div>
+              </div>
+
+
+              <a href="{{PropertyUrl}}"><button style="display: flex;justify-content: center; background-color: darkblue;color: white;margin-top: 10px !important;margin: auto;">Go to Home</button></a>
+            </div>
+          </div>
+          <div *ngIf="enquirySent == true">
+            <h4 class="mb-3 mt-4" >Your Payment was not successful! But an enquiry for your booking is sent!</h4>
+
+            <div class="row" >
+
+              <div class="col-lg-4 col-md-4">
+                <!-- Booking Summary -->
+                <div class="order-summary-widget">
+                  <div class="listing-item">
+                    <img *ngIf="businessUser.logoUrl" src="{{businessUser.logoUrl}}" alt="" width="100%" height="auto">
+
+                    <img *ngIf="!businessUser.logoUrl" src="assets/images/app-logo.png" alt="" width="100%">
+                    <div class="listing-item-content pt-3">
+                      <!-- <div>
+                <span class="pull-left badge badge-pill list-banner badge-success text-uppercase">{{businessUser.businessType}}</span>
+              </div> -->
+                      <h3>{{businessUser.name}}</h3>
+                      <span><small *ngIf="businessUser.address">
+                          <p class="description">
+                            {{businessUser.address.streetNumber? businessUser.address.streetNumber + ', ' : '' }}
+                            {{businessUser.address.streetName? businessUser.address.streetName + ', ' : '' }}
+                            {{businessUser.address.suburb? businessUser.address.suburb + ', ' : '' }}
+                            {{businessUser.address.locality? businessUser.address.locality + ', ' : '' }}
+                            {{businessUser.address.city? businessUser.address.city + ', ' : '' }}
+                            {{ businessUser.address.country? businessUser.address.country : '' }}
+                          </p>
+                        </small></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- Content -->
+              <div class="col-lg-8 col-md-8 padding-right-30">
+                <ul class="summery"  >
+
+                  <!-- <li><b>Reservation No:</b> {{ enquiryForm.id }}</li> -->
+                  <li><b>Full guest name: </b> {{ enquiryForm.firstName }} {{enquiryForm.lastName}}</li>
+                  <li><b>Email: </b> <span> {{enquiryForm.email}}</span></li>
+                  <li><b>Phone: </b><span> {{enquiryForm.mobile}}</span></li>
+                  <li><b>Selected Room: </b><span> {{enquiryForm.roomName}}</span></li>
+                  <li><b>Room Price: </b><span>
+                      {{enquiryForm.roomPrice | currency: currency:'symbol':'1.2-2' }} </span>
+                  </li>
+                  <li><b>No Of Person(s): </b><span> {{enquiryForm.noOfPersons}}</span></li>
+
+                  </ul>
+              </div>
+
+            </div>
+
+          </div>
+          <ngb-alert class="mt-3" *ngIf="showAlert" [type]="alertType" (close)="showAlert = false">
+            <strong>{{headerTitle}}</strong> {{bodyMessage}}</ngb-alert>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-10904222935" ng-if="bookingConfirmed"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'AW-10904222935');
+</script>

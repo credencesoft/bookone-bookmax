@@ -1,0 +1,158 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%; /* Ensures the body takes the full height */
+  }
+  
+  .confrm {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center; /* Vertically centers content */
+    height: 100vh; /* Full viewport height */
+    background: linear-gradient(180deg, #f7f9fc 0%, #e3f2fd 100%);
+  }
+  
+  .tick-container {
+    margin-bottom: 20px;
+  }
+  
+  .tick-mark {
+    width: 60px;
+    height: 60px;
+    background-color: #4caf50;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    animation: popIn 0.6s ease-in-out;
+  }
+  
+  .tick-mark::after {
+    content: '';
+    width: 30px;
+    height: 15px;
+    border-left: 5px solid white;
+    border-bottom: 5px solid white;
+    transform: rotate(-45deg);
+    position: absolute;
+  }
+  
+  .confirmation-card {
+    background: white;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    padding: 20px;
+    border-radius: 10px;
+    max-width: 450px; /* Maximum width for larger screens */
+    width: 90%; /* Responsive width for smaller screens */
+    text-align: center;
+  }
+  
+  .confirmation-card h2 {
+    font-size: 24px;
+    margin-bottom: 15px;
+  }
+  
+  .confirmation-card p {
+    font-size: 16px;
+    margin-bottom: 20px;
+  }
+  
+  .confirmation-card .btn {
+    padding: 10px 20px;
+    border-radius: 25px;
+  }
+  
+  /* Responsive styles */
+  @media (max-width: 768px) {
+    .confirmation-card {
+      padding: 15px;
+    }
+  
+    .confirmation-card h2 {
+      font-size: 20px;
+    }
+  
+    .confirmation-card p {
+      font-size: 14px;
+    }
+  
+    .tick-mark {
+      width: 50px;
+      height: 50px;
+    }
+  
+    .tick-mark::after {
+      width: 25px;
+      height: 12px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .confirmation-card {
+      padding: 10px;
+      max-width: 300px; /* Adjusted max-width for smaller screens */
+      justify-content: center;
+      margin: auto;
+    }
+  
+    .confirmation-card h2 {
+      font-size: 18px;
+    }
+  
+    .confirmation-card p {
+      font-size: 12px;
+    }
+  
+    .tick-mark {
+      width: 40px;
+      height: 40px;
+    }
+  
+    .tick-mark::after {
+      width: 20px;
+      height: 10px;
+    }
+
+   
+    
+  }
+  .tick-container{
+    justify-content: center;
+    display: flex;
+}
+
+.confirmation-card{
+    margin: auto;
+}
+
+
+@keyframes drawTick {
+    0% {
+      width: 0;
+      height: 0;
+      opacity: 0;
+    }
+    50% {
+      width: 25px;
+      height: 50px;
+      opacity: 0.5;
+    }
+    100% {
+      width: 25px;
+      height: 50px;
+      opacity: 1;
+    }
+  }
+
+@keyframes popIn {
+    0% {
+      transform: scale(0);
+      opacity: 0;
+    }
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }

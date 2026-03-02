@@ -1,0 +1,2360 @@
+<div class="pt-5" *ngIf="!bookingConfirmed && !isEnquiry">
+  <div class="container-fluid pt-5"
+    style="background-color: #f8feee; border-bottom-left-radius: 40%; border-bottom-right-radius: 40%;padding-bottom: 1.5rem;">
+    <h1 style="text-align: center; font-weight: 700 !important;">The Final Step</h1>
+    <h3 style="text-align: center; font-weight: 600 !important;">Review Your Booking Details</h3>
+  </div>
+  <div class="container-fluid">
+    <div class="row ">
+      <div class="col-md-6 pt-5 p-0">
+        <button class="btn btn-sm btn-outline-primary m-3 GB" (click)="backClicked()" *ngIf="!bookingConfirmed">
+          Go Back
+        </button>
+          <div class="mb-4 pb-4 p-3" style="border-bottom: 1px solid black; ">
+          <h1>{{businessUser.name}}</h1>
+          <h3>Step 1:</h3>
+          <h5 style="font-weight: 400 !important;">Property Amenities and Details</h5>
+          <div class="row facrow1 mr-md-4" style="justify-content: space-between;">
+            <div class="col-xl-1 col-6 p-1" *ngFor="let fac of businessUser.propertyServicesList | slice:0:6">
+              <div class="d-flex justify-content-center text-center" id="facility1"
+                *ngIf="fac.name !== null && fac.name !== undefined">
+                <div>
+                  <img *ngIf="fac.imageUrl == null || fac.imageUrl == undefined" src="assets/images/service.png" alt="icon">
+                  <img *ngIf="fac.imageUrl != null && fac.imageUrl != undefined" src="{{fac.imageUrl}}" alt="icon">
+                  <br>
+
+                  <p>{{fac.name| slice:0:14}}</p>
+                </div>
+              </div>
+            </div>
+            <ng-container *ngIf="businessUser?.propertyServicesList?.length>7">
+              <div class="col-xl-1 p-1" *ngIf="!showAll">
+                <div class="d-flex justify-content-center text-center" id="facility1">
+                  <div>
+                    <p style="font-size: 17px;padding: 0; margin: 0;">+{{businessUser.propertyServicesList.length-7}}<br>
+                    <p>Amenities</p>
+                  </div>
+                </div>
+              </div>
+            </ng-container>
+          </div>
+          <ng-container *ngIf="totalExtraAmount>0">
+            <h5 class="mb-2" style="font-weight: 600 !important;margin-top: 20px;">Service Included</h5>
+            <label for="mealplan" class="form-label" style="width: 100%;">Confirmed Meal Option</label>
+            <select class="form-select" aria-label="Meal Options" disabled style="width:80%; border-radius: 26px; height: 2.5rem">
+              <option><span *ngFor="let service of addServiceList;let i= index">{{service.name}}{{i === addServiceList.length -1 ? '' : ',&nbsp;' }}</span></option>
+            </select>
+          </ng-container>
+          <!-- <label for="bedchoice" class="form-label" style="width: 100%;">Confirm Bed Choice</label>
+          <select class="form-select" aria-label="Bed Choice" style="width:80%; border-radius: 26px; height: 2.5rem">
+            <option selected value="2beds">2 Seperate Beds</option>
+            <option value="1bed">Single Bed</option>
+            <option value="kingbed">King Sized Bed</option>
+          </select> -->
+          </div>
+          <form (ngSubmit)="orderForm?.form.valid && onSubmit(orderForm)" #orderForm="ngForm" *ngIf="!bookingConfirmed">
+          <div class="mb-4 pb-4 p-3" style="border-bottom: 1px solid black; ">
+            <h3 class="mb-2">Step 2: Personal Information</h3>
+            <div class="row pr-md-2 p-0 m-0" style="justify-content: flex-start; ">
+              <div class="col-sm-5 p-0 pr-sm-3" style="width: 80%;">
+                <h5 style="font-weight: 400 !important;">First Name*</h5>
+                <input type="text" class="form-control" placeholder="First Name" id="firstName" name="firstName" [(ngModel)]="booking.firstName"
+                #firstName="ngModel" name="firstName"required style="border-radius: 26px; height: 2.5rem; border: 1px solid rgb(133, 133, 133);">
+                <span class="text-danger" *ngIf="
+                                              (firstName.touched || orderForm.submitted) &&
+                                              firstName.errors?.required
+                                            ">
+                  First Name is required
+                </span>
+              </div>
+              <div class="col-sm-5 p-0 pr-sm-3" style="width: 80%;">
+                <h5 style="font-weight: 400 !important;">Last Name*</h5>
+                <input type="text" class="form-control" placeholder="Last Name" id="lastName" name="lastName" [(ngModel)]="booking.lastName"
+                #lastName="ngModel" required style="border-radius: 26px; height: 2.5rem; border: 1px solid rgb(133, 133, 133);">
+                <span class="text-danger" *ngIf="
+                                              (lastName.touched || orderForm.submitted) &&
+                                              lastName.errors?.required
+                                            ">
+                  Last Name is required
+                </span>
+              </div>
+            </div>
+            <h5 style="font-weight: 400 !important;">Email*</h5>
+            <input type="email" class="form-control" placeholder="eg: mrjames@xyz.com" style="width:80%; border-radius: 26px; height: 2.5rem; border: 1px solid rgb(133, 133, 133);"
+            id="email" name="email" [(ngModel)]="booking.email" #email="ngModel" required email>
+            <span class="text-danger" *ngIf="
+                                          (email.touched || orderForm.submitted) &&
+                                          email.errors?.required
+                                        ">
+              Email is required
+            </span>
+            <span class="text-danger" *ngIf="
+                                          (email.touched || orderForm.submitted) &&
+                                          email.errors?.email
+                                        ">
+              Enter a valid email
+            </span>
+            <h5 style="font-weight: 400 !important;">Phone Number*</h5>
+            <input type="tel" maxlength="10" class="form-control" placeholder="eg: 8912345678" [(ngModel)]="booking.mobile"  id="mobile" name="mobile" required style="width:80%; border-radius: 26px; height: 2.5rem; border: 1px solid rgb(133, 133, 133);">
+            <span class="text-danger" *ngIf="!mobileHasError" >
+              Invalid Phone number
+            </span>
+          </div>
+          </form>
+          <!-- Payment Information
+            <div class="mb-4 pb-4 p-3" style="border-bottom: 1px solid black; ">
+            <h3 class="mb-2">Step 3: Payment Information</h3>
+            <div class="row px-3">
+              <div class="form-check pt-2 px-4">
+                <input class="form-check-input" type="radio" [(ngModel)]="payment" name="payment" id="visa" value="Visa">
+                <label class="form-check-label" for="Visa">
+                  Visa
+                </label>
+              </div>
+              <div class="form-check pt-2 px-4">
+                <input class="form-check-input" type="radio" [(ngModel)]="payment" name="payment" id="upi" value="UPI">
+                <label class="form-check-label" for="UPI">
+                  UPI
+                </label>
+              </div>
+              <div class="form-check pt-2 px-4">
+                <input class="form-check-input" type="radio" [(ngModel)]="payment" name="payment" id="netbanking" value="Net Banking">
+                <label class="form-check-label" for="Net Banking">
+                  Net Banking
+                </label>
+              </div>
+            </div>
+            <div class="form-group" *ngIf="payment == 'Visa' || !payment">
+              <h5 style="font-weight: 400 !important;">Name On Card</h5>
+              <input type="name" class="form-control" placeholder="eg: Mr James"
+                style="width:80%; border-radius: 26px; height: 2.5rem; border: 1px solid rgb(133, 133, 133);">
+              <h5 style="font-weight: 400 !important;">Card Number</h5>
+              <input type="number" class="form-control" placeholder="**** **** **** *****"
+                style="width:80%; border-radius: 26px; height: 2.5rem; border: 1px solid rgb(133, 133, 133);">
+              <div class="row p-0 m-0" style="justify-content: flex-start; ">
+                <div class="col-sm-5">
+                  <h5 style="font-weight: 400 !important;">Valid Until</h5>
+                  <input type="name" class="form-control" placeholder="MM/YY"
+                    style="border-radius: 26px; height: 2.5rem; border: 1px solid rgb(133, 133, 133);">
+                </div>
+                <div class="col-sm-5">
+                  <h5 style="font-weight: 400 !important;">CVC</h5>
+                  <input type="number" maxlength="3" class="form-control" placeholder="***"
+                    style="border-radius: 26px; height: 2.5rem; border: 1px solid rgb(133, 133, 133);">
+                </div>
+              </div>
+            </div>
+          </div> -->
+          <div class="mb-4 pb-4 p-3">
+            <h3 class="mb-2">House Rules</h3>
+            <div class="row">
+              <div class="col-5">
+                <h5>Check In:</h5>
+                <p>{{ booking.fromDate | date: "EEE, MMM d, y" }}</p>
+              </div>
+              <div class="col-5">
+                <h5>Check Out:</h5>
+                <p>{{ booking.toDate | date: "EEE, MMM d, y" }}</p>
+              </div>
+            </div>
+            <h5>Beware</h5>
+            <div *ngIf="!pet">
+              <img src="assets/images/pet icon_new.svg" alt="" style="width: 30px; height: 30px;"> No Pets Allowed
+            </div>
+          </div>
+      </div>
+      <div class="col-md-6 pt-5" style="justify-content: space-evenly; display: flex; flex-direction: column;">
+        <div class="container mt-md-5" >
+          <div class="card m-3 p-3 pb-3" style="border: 1px solid black; border-radius: 20px; box-shadow: 2px 2px 5px 0px rgba(163,163,163,1)">
+            <img *ngIf="propertyData.imageList?.length" src="{{ propertyData.imageList[0].url }}"  style="border-radius: 20px;">
+            <img *ngIf="propertyData.imageList[0] == undefined || !propertyData.imageList" src="https://via.placeholder.com/400x300" style="border-radius: 20px;">
+            <h3>{{businessUser.name}}</h3>
+            <p [innerHTML]="businessUser.businessDescription">{{businessUser.businessDescription}}</p>
+            <div class="d-flex">
+              <span style="font-weight: 700;">Check In: </span>&nbsp;&nbsp;
+              <span>{{ booking.fromDate | date: "EEE, MMM d, y" }}</span>
+            </div>
+            <div class="d-flex pb-2" style="border-bottom: 1px solid black;">
+              <span style="font-weight: 700;">Check Out: </span>&nbsp;&nbsp;
+              <span>{{ booking.toDate | date: "EEE, MMM d, y" }}</span>
+            </div>
+            <div class="d-flex pt-2 pb-2" style="border-bottom: 1px solid black; justify-content: space-between; flex-wrap: wrap;">
+              <div class="col-sm-6 p-0">
+                <p style="font-weight: 700;">{{ booking.roomType }}</p>
+                <table>
+                  <tr>
+                    <td>No of Guest(s):</td>
+                    <td>{{ booking.noOfPersons }} Adults, {{booking.noOfChildren}} Children</td>
+                  </tr>
+                  <tr>
+                    <td>No of Rooms:</td>
+                    <td>{{ booking.noOfRooms }}</td>
+                  </tr>
+                  <tr>
+                    <td>No of Night(s):</td>
+                    <td>{{ DiffDate }}</td>
+                  </tr>
+
+                  <tr>
+                    <td>Room Price:</td>
+                    <td>{{(booking.roomPrice)| currency: currency:"symbol":"1.2-2"}}</td>
+                  </tr>
+
+                  <tr *ngIf="booking.extraPersonCharge >0">
+                    <td>Extra Person charges:</td>
+                    <td>{{booking.extraPersonCharge | currency: currency:"symbol":"1.2-2"}}</td>
+                  </tr>
+                  <tr *ngIf="booking.extraChildCharge >0">
+                    <td>Extra Child charges:</td>
+                    <td>{{booking.extraChildCharge | currency: currency:"symbol":"1.2-2"}}</td>
+                  </tr>
+                  <tr  *ngIf="totalExtraAmount >0">
+                    <td>Service Charge:</td>
+                    <td>{{ totalExtraAmount| currency: currency:"symbol":"1.2-2"}}</td>
+                  </tr>
+
+                  <tr>
+                    <td>Total Net Amount:</td>
+                    <td>{{booking.netAmount | currency: currency:"symbol":"1.2-2"}}</td>
+                  </tr>
+
+
+                  <tr>
+                    <td>{{ businessUser.taxDetails[0].name }} Charges:</td>
+                    <td>
+                      <span>{{
+                        (this.booking.netAmount *
+                        this.booking.taxPercentage) /
+                        100 | currency: currency:"symbol":"1.2-2"
+                        }}</span>
+               ( {{this.taxPercentage}}%)</td>
+                  </tr>
+                  <tr *ngIf="discountPercentage">
+                    <td>Discount:</td>
+                    <td>{{ discountPercentage }}%</td>
+                  </tr>
+                </table>
+              </div>
+              <div class="col-sm-6 text-right p-0" *ngIf="booking.roomRatePlanName === 'GHC'">
+                Room Plan: Economy
+              </div>
+              <div class="col-sm-6 text-right p-0" *ngIf="booking.roomRatePlanName !== 'GHC'">
+                Room Plan: {{booking.roomRatePlanName}}
+              </div>
+            </div>
+            <div class="col-sm-6 p-0">
+              <table>
+                <tr>
+                  <td style="font-weight: 800;">Grand Total:</td>
+                  <td style="font-weight: 800;">{{booking.totalAmount | currency: currency:"symbol":"1.2-2"}}</td>
+                </tr>
+                <tr style="visibility: hidden;">
+                  <td>Total Room Price:</td>
+                  <td>{{booking.totalAmount | currency: currency:"symbol":"1.2-2"}}</td>
+                </tr>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div class="d-flex justify-content-center mb-4">
+          <button class="btn btn-primary text-white FB"type="button"  [disabled]=" paymentLoader || submitButtonDisable || !validateFrom()" *ngIf="value === false"
+            (click)="submitForm()">Enquiry Now</button>
+            <button class="btn btn-primary text-white FB"type="button"  [disabled]=" paymentLoader || submitButtonDisable || !validateFrom()"  *ngIf="value === true && businessUser.paymentGateway != null"
+            (click)="payAndCheckout()">Pay Now</button>
+            <button class="btn btn-primary text-white FB"type="button"  [disabled]=" paymentLoader || submitButtonDisable || !validateFrom()" (click)="onCashPaymentSubmit()"  *ngIf="businessUser.paymentGateway == null && businessUser.website && value === true"
+            (click)="payAndCheckout()">Pay At Hotel</button>
+       </div>
+      </div>
+    </div>
+  </div>
+</div>
+  <!-- <div class="container">
+    <form #enquiryListForm="ngForm" *ngIf="successMessage === false">
+      <h2 class="enquiryh2" style="font-weight: 600 !important;">Where do you want to go?</h2>
+      <div class="row with-forms">
+        <div class="col-6">
+          <div class="form-group mb-4">
+            <div class="input-group input-group-alternative">
+              <div class="input-group-prepend">
+                <span class="input-group-text"><i class="ni ni-user-run"></i></span>
+              </div>
+              <input type="text" name="location" #location="ngModel" class="form-control" placeholder="City" required
+                [(ngModel)]="enquiryForm.location">
+              <br>
+            </div>
+            <div *ngIf="(location.touched || enquiryForm.submitted) && location.errors">
+              <span *ngIf="location.errors?.required" class="text-danger">City is required</span>
+            </div>
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="form-group mb-4">
+            <div class="input-group input-group-alternative">
+              <div class="input-group-prepend">
+                <span class="input-group-text"><i class="ni ni-user-run"></i></span>
+              </div>
+              <input type="text" name="country" #country="ngModel" class="form-control" placeholder="Country" readonly
+                [(ngModel)]="enquiryForm.country">
+              <br>
+              <!-- <span *ngIf="locationControl?.errors.required" class="text-danger" > Location is required </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+  </div>
+  <div class="container">
+    <div class="row">
+      <!-- Sidebar
+
+      <!-- Content
+      <div class="col-lg-12 col-md-12 padding-right-30">
+        <div *ngIf="loader" class="progress">
+          <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="100"
+            aria-valuemin="0" aria-valuemax="100" style="width: 100%"></div>
+        </div>
+        <div class="d-flex">
+          <button class="btn btn-sm btn-outline-primary mb-4" (click)="backClicked()" *ngIf="!bookingConfirmed">
+            Go Back
+          </button>
+          <h4 class="mb-4" *ngIf="!bookingConfirmed">Booking Confirmation</h4>
+        </div>
+        <div class="container">
+          <div class="row">
+            <div class="col-xs-12 col-md-8 cartPackages">
+              <div class="packages pack0 marginTop10 card shadow">
+                <div class="row date-align" *ngIf="!bookingConfirmed">
+                  <div class="desktopVersion">
+                    <!-- <div class="paddingLeft10 floatleft font14">
+								 <span class="lightColor font10 hoteltext"></span><br>
+								 Paramount Riverfront Resort & Spa
+							  </div>
+							 Property Name
+                    <div class="paddingLeft10 floatleft font12">
+                      <span class="lightColor font10">CHECK-IN</span><br />
+                      {{ booking.fromDate | date: "EEE, MMM d, y" }}
+                    </div>
+                    <!-- check in finished
+                  </div>
+
+                  <input type="hidden" name="checkIn118777_358500000000001_0" data-date-format="dd-mm-yyyy"
+                    class="datepicker" value="18-07-2022" />
+
+                  <div class="desktopVersion ml-4">
+                    <div class="paddingLeft10 floatleft font12">
+                      <span class="lightColor font10">CHECK-OUT</span><br />
+                      {{ booking.toDate | date: "EEE, MMM d, y" }}
+                    </div>
+                  </div>
+
+                  <input type="hidden" name="checkOut118777_358500000000001_0" data-date-format="dd-mm-yyyy"
+                    class="datepicker" value="19-07-2022" />
+                </div>
+                <!-- <div class="clear"></div> --
+                <hr class="horizontalLine" *ngIf="!bookingConfirmed" />
+                <div class="row" *ngIf="!bookingConfirmed">
+                  <div class="col-xs-12 col-sm-4 col-md-4 booking-details-page cartImagepopup"
+                    onclick="openImageModal(118777);showSlides(1);currentSlide(1);">
+                    <!-- <img
+                        src="https://homesweb.staah.net/imagelibrary/medium_1641366252_3585_SAG_0727-Edit.jpg"
+                        width="100%"
+                      /> --
+
+                    <img *ngIf="
+                        propertyData.imageList[0] === undefined ||
+                        !propertyData.imageList
+                      " src="https://via.placeholder.com/400x300" alt="" width="100%" style="margin-bottom: 20px"
+                      class="rounded shadow-lg" />
+                    <img *ngIf="propertyData.imageList?.length" src="{{ propertyData.imageList[0].url }}" alt=""
+                      width="100%" style="margin-bottom: 20px" class="rounded shadow-lg" />
+                    <!-- <img *ngIf="room.imageList?.length" src="{{ room.imageList[0].url }}" alt="" width="100%"
+					  style="margin-bottom: 20px" class="rounded shadow-lg"
+					  (click)="open(content, room, room.name)" /> --
+                  </div>
+                  <div class="col-xs-12 col-sm-6 col-md-6 headingColor">
+                    <div class="packagesHeading-cart font18 mbpaddingtop10 packageDescriptionPointer">
+                      {{ booking.roomType }}
+                    </div>
+
+                    <!-- <div
+                        class="packagesDesc CartpackageIncludes packageIncludes"
+                      >
+                        &gt; Breakfast &gt; Wi-Fi &gt; Swimming pool access
+                        <a
+                          href="javascript:void(0)"
+                          onclick="showModalBox()"
+                          class="packageDescriptionPointer"
+                          style="font-size: 10px"
+                          ><br />More info</a
+                        >
+                      </div> --
+                  </div>
+                  <div class="room-number">
+                    No of rooms :
+                    <strong>{{ booking.noOfRooms }}</strong>
+                  </div>
+
+                  <div class="col-xs-2 col-sm-2 room-align paddingRight0">
+                    No Of ROOM<br />
+                    <div class="form-control form-height">
+                      {{ booking.noOfRooms }}
+                    </div>
+                  </div>
+                  <div class="col-xs-12 col-sm-2 col-md-2 paddingRight0 child-bed-policy"></div>
+                </div>
+                <hr class="horizontalLine" *ngIf="!bookingConfirmed" />
+                <div class="roomsextrainform" id="roomsInf_118777_0">
+                  <!-- <form class="form" (ngSubmit)="orderForm.form.valid && onSubmit(orderForm)" #orderForm="ngForm"*ngIf="!bookingConfirmed"> --
+
+                  <div *ngIf="loader" class="progress">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
+                      aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%"></div>
+                  </div>
+                  <!-- <button class="btn btn-sm btn-outline-primary mb-4" (click)="backClicked()"
+							*ngIf="!bookingConfirmed">
+							<i class="fa fa-arrow-left" aria-hidden="true"></i>
+						</button> --
+                  <form class="form" (ngSubmit)="orderForm?.form.valid && onSubmit(orderForm)" #orderForm="ngForm"
+                    *ngIf="!bookingConfirmed">
+                    <!-- <h4 class="mb-4">Personal Details</h4>
+					 <div class="row mb-4">
+						 <div class="col-md-6">
+							 <div class="form-group">
+								 <input type="text" placeholder="First Name" class="form-control form-control-alternative">
+							 </div>
+						 </div>
+						 <div class="col-md-6">
+							 <div class="form-group">
+								 <input type="text" placeholder="Last Name" class="form-control form-control-alternative">
+							 </div>
+						 </div>
+						 <div class="col-md-6">
+							 <div class="form-group">
+								 <input type="text" placeholder="E mail" class="form-control form-control-alternative">
+							 </div>
+						 </div>
+						 <div class="col-md-6">
+							 <div class="form-group">
+								 <input type="text" placeholder="Phone" class="form-control form-control-alternative">
+							 </div>
+						 </div>
+					 </div>
+					 <h4 class="mb-3">Payment Method</h4>
+					 <div class="nav-wrapper">
+						 <ul class="nav nav-pills nav-fill flex-column flex-md-row" id="tabs-icons-text" role="tablist">
+							 <li class="nav-item">
+								 <a class="nav-link mb-sm-3 mb-md-0 active" id="tabs-icons-text-1-tab" data-toggle="tab" href="#tabs-icons-text-1" role="tab" aria-controls="tabs-icons-text-1" aria-selected="true"><i class="fa fa-credit-card mr-2"></i>Credit/Debit Card</a>
+							 </li>
+							 <li class="nav-item">
+								 <a class="nav-link mb-sm-3 mb-md-0" id="tabs-icons-text-2-tab" data-toggle="tab" href="#tabs-icons-text-2" role="tab" aria-controls="tabs-icons-text-2" aria-selected="false"><i class="fa fa-paypal  mr-2"></i>Paypal</a>
+							 </li>
+						 </ul>
+					 </div>
+					 <div class="card shadow">
+						 <div class="card-body">
+							 <div class="tab-content" id="myTabContent">
+								 <div class="tab-pane fade show active" id="tabs-icons-text-1" role="tabpanel" aria-labelledby="tabs-icons-text-1-tab">
+
+										 <div class="row">
+											 <div class="col-md-12">
+												 <div class="form-group">
+													 <input type="text" placeholder="Name" class="form-control form-control-alternative">
+												 </div>
+											 </div>
+											 <div class="col-md-12">
+												 <div class="form-group">
+													 <input type="text" placeholder="Card Number" class="form-control form-control-alternative">
+												 </div>
+											 </div>
+											 <div class="col-md-6">
+												 <select class="custom-select mb-4 form-control-alternative">
+													 <option selected>Month</option>
+													 <option value="January">January</option>
+													 <option value="February">February</option>
+													 <option value="March">March</option>
+													 <option value="April"> 	April</option>
+													 <option value="May">May</option>
+													 <option value="June">June</option>
+													 <option value="July">July</option>
+													 <option value="August">August</option>
+													 <option value="September">September</option>
+													 <option value="October">October</option>
+													 <option value="November"> 	November</option>
+													 <option value="December"> 	December</option>
+												 </select>
+											 </div>
+											 <div class="col-md-6">
+												 <select class="custom-select mb-4 form-control-alternative">
+													 <option selected>Year</option>
+													 <option value="2018">2018</option>
+													 <option value="2019">2019</option>
+													 <option value="2020">2020</option>
+													 <option value="2021">2021</option>
+													 <option value="2022">2022</option>
+													 <option value="2023">2023</option>
+												 </select>
+											 </div>
+											 <div class="col-md-12">
+												 <div class="form-group">
+													 <input type="text" placeholder="CVV" class="form-control form-control-alternative">
+												 </div>
+											 </div>
+											 <div class="col-md-12">
+												 <button class="btn btn-primary" type="button">Submit</button>
+											 </div>
+										 </div>
+								 </div>
+								 <div class="tab-pane fade" id="tabs-icons-text-2" role="tabpanel" aria-labelledby="tabs-icons-text-2-tab">
+									 <p>Paypal is easiest way to pay online</p>
+									 <p>
+										 <button type="button" class="btn btn-primary"> <i class="fa fa-paypal"></i> Log in my Paypal </button>
+									 </p>
+									 <p><strong>Note:</strong> Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+										 tempor incididunt ut labore et dolore magna aliqua.
+									 </p>
+								 </div>
+							 </div>
+						 </div>
+					 </div> --
+                    <!-- <h4 class="mb-4">Booking Checkout</h4> --
+                    <h6>Please fill up all the fields</h6>
+                    <div class="row mb-4">
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          <label class="form-label" for="firstName">First Name*</label>
+                          <input type="text" placeholder="First Name" id="firstName"
+                            class="form-control form-height form-control-alternative" [(ngModel)]="booking.firstName"
+                            #firstName="ngModel" name="firstName" required />
+                          <span class="text-danger" *ngIf="
+                              (firstName.touched || orderForm.submitted) &&
+                              firstName.errors?.required
+                            ">
+                            First Name is required
+                          </span>
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          <label class="form-label" for="lastName">Last Name*</label>
+                          <input type="text" placeholder="Last Name" id="lastName"
+                            class="form-control form-height form-control-alternative" name="lastName"
+                            [(ngModel)]="booking.lastName" #lastName="ngModel" required />
+                          <span class="text-danger" *ngIf="
+                              (lastName.touched || orderForm.submitted) &&
+                              lastName.errors?.required
+                            ">
+                            Last Name is required
+                          </span>
+                        </div>
+                      </div>
+                      <!-- <div class="col-md-12" *ngIf="!verified  && !customerExist">
+									<div class="btn-group">
+										<Label>Verification Method</Label>
+										<div class="form-check form-check-inline ml-3">
+											<input class="form-check-input" type="radio" name="verifyOpt" id="verifyOpt1"
+												[(ngModel)]="verifyOption" #verifyOpt1="ngModel"
+												(ngModelChange)="clickEmail()" value="email" [disabled]="lookup">
+											<label class="form-check-label" for="verifyOpt1">Email</label>
+										</div>
+										<div class="form-check form-check-inline">
+											<input class="form-check-input" type="radio" name="verifyOpt"
+												[(ngModel)]="verifyOption" #verifyOpt2="ngModel"
+												(ngModelChange)="clickPhone()" id="verifyOpt2" value="sms"
+												[disabled]="lookup">
+											<label class="form-check-label" for="verifyOpt2">SMS</label>
+										</div>
+
+									</div><button class="btn btn-rounded btn-outline-primary btn-sm ml-3" id="reload"
+										(click)="onReload()" [disabled]="">Reset</button>
+								</div> --
+
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          <label class="form-label" for="email">Email</label>
+                          <input type="email" placeholder="E-mail"
+                            class="form-control form-height form-control-alternative w-100" id="email" name="email"
+                            [(ngModel)]="booking.email" #email="ngModel" required email />
+                          <span class="text-danger" *ngIf="
+                              (email.touched || orderForm.submitted) &&
+                              email.errors?.required
+                            ">
+                            Email is required
+                          </span>
+                          <span class="text-danger" *ngIf="
+                              (email.touched || orderForm.submitted) &&
+                              email.errors?.email
+                            ">
+                            Enter a valid email
+                          </span>
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          <label class="form-label" for="mobile">Phone</label>
+                          <input type="text" [(ngModel)]="booking.mobile" (ngModelChange)="mobileTextChange()"
+                            ng2TelInput [ng2TelInputOptions]="{ initialCountry: 'in' }"
+                            (hasError)="phoneHasError($event)" (ng2TelOutput)="getNumber($event)" id="mobile"
+                            class="form-control form-height form-control-alternative w-100" id="mobile" name="mobile"
+                            required />
+                          <br />
+                          <span class="text-danger" *ngIf="!mobileHasError">
+                            Invalid Phone number
+                          </span>
+                          <!-- <span class="text-danger"
+											*ngIf="(mobile.touched || orderForm.submitted) && mobile.errors?.required">
+											Phone is required
+										</span> --
+                        </div>
+                      </div>
+
+                      <!-- *ngIf="!verified && (order.mobile !== null || order.email !== null)" -->
+                      <!-- <div class="col-md-12" *ngIf="!verified && !customerExist || order.email !== '' && order.mobile !== '' " > -->
+                      <!-- <div class="col-md-12"
+									*ngIf="lookup && !customerExist && !verified &&  (booking.email !== '' || booking.mobile !== '') ">
+									<div class="form-group">
+										<label>User Not Exist! Send Verification Code</label>
+										<button class="btn btn-rounded btn-outline-primary btn-sm ml-3"
+											(click)="checkCustomer()">{{sendBtn}}</button>
+
+									</div>
+								</div> -->
+                      <!-- <div class="col-md-6"
+									*ngIf="!lookup && !customerExist && (booking.email !== '' || isVerified && mobileHasError)">
+									<div class="form-group">
+
+										<button class="btn btn-rounded btn-outline-primary " (click)="customerLookup()"
+											[disabled]="(booking.email === '' || !orderForm.valid ) && !mobileHasError ">Search</button>
+									</div>
+								</div> -->
+                      <!-- <div class="col-md-6" *ngIf="verificationSend && !verified">
+									<div class="form-group">
+										<label>Verification Code Sent! Enter the code below</label>
+										<input type="text" placeholder="Verification Code" name="verifyCode" id="verifyCode"
+											[(ngModel)]="verificationCode" #verifyCode="ngModel" minlength="6" maxlength="6"
+											class="form-control form-control-alternative">
+									</div>
+								</div> -->
+                      <!-- <div class="col-md-3" *ngIf="verificationSend && !verified">
+									<div class="form-group">
+										<label>Click to verify</label>
+										<button (click)="varificationSend()" class="btn btn-rounded btn-outline-primary"
+											[disabled]="verificationCode === '' || verificationCode === null || !orderForm.valid">Verify</button>
+									</div>
+								</div> -->
+                      <!-- <div class="col-md-12" *ngIf="verified && verifySuccessMessage ">
+									<p class="text-success">Verification Success!</p>
+								</div> -->
+                      <!-- <div class="col-md-12" *ngIf="verifiedPending && verifySuccessMessage">
+									<p class="text-warning">Verification Error!</p>
+								</div> --
+                    </div>
+                    <h4 class="mb-3 mt-4">Booking Overview</h4>
+
+                    <div class="row">
+                      <div class="col-md-12">
+                        <label class="form-label" for="mobile">Special Notes</label>
+                        <textarea type="text" placeholder="Special Notes"
+                          class="form-control form-height form-control-alternative mb-3" id="note" name="note"
+                          [(ngModel)]="booking.notes"></textarea>
+                        <p class="text-muted">
+                          Type your requests in English here – we'll share them
+                          with the property. Special requests cannot be
+                          guaranteed, but the property will do its best to meet
+                          your needs. You can always make a special request
+                          after your booking is complete!
+                        </p>
+                      </div>
+                      <div class="col-md-12">
+                        <label class="form-label" for="mobile">Promotion</label>
+                        <!-- <input type="text" placeholder="Promo Code"
+										class="form-control form-control-alternative mb-3" id="note" name="promoCode"
+										[(ngModel)]="promoCode" />
+								<button  class="btn btn-primary" type="button"  (click)="applyPromoCode()" [disabled]="promoCode === null">Apply</button>
+								 --
+                        <ul class="form-check" ngbRadioGroup name="radioBasic" [(ngModel)]="promoCode">
+                          <li>
+                            <div>
+                              <label ngbButtonLabel class="form-check-label text-default"
+                                style="padding: 0; white-space: normal" (click)="applyPromoCode('')">
+                                <input ngbButton type="radio" class="form-check-input" [value]="" />
+                                No offer</label>
+                              <!-- <button class="btn btn-primary" type="button" (click)="applyPromoCode(offer)">Apply Promo</button> --
+                            </div>
+                          </li>
+                          <li *ngFor="let offer of businessOfferDto">
+                            <div>
+                              <label ngbButtonLabel class="form-check-label text-default"
+                                style="padding: 0; white-space: normal" (click)="applyPromoCode(offer)">
+                                <input ngbButton type="radio" class="form-check-input" [value]="offer" />
+                                {{ offer.name }} Code:
+                                {{ offer.couponCode }}</label>
+                            </div>
+                          </li>
+                        </ul>
+                        <ngb-alert class="mt-3" *ngIf="promoMessage !== ''" [type]="'info'"
+                          (close)="(promoMessage === '')" (click)="promoMessage = ''">
+                          <strong>Promo Code: </strong>
+                          {{ promoMessage }}</ngb-alert>
+                      </div>
+                      <div class="col-md-6">
+                        <ul class="summery">
+                          <!-- <li><b>Date: </b> <span> {{booking.fromDate  | date:'EEE, MMM d, y'}} - {{booking.toDate | date:'EEE, MMM d, y'}}</span></li> -->
+                          <!-- <li><b>Number of Night(s): </b> <span> {{DiffDate}}</span></li> --
+                          <li>
+                            <b>Room Plan: </b><span *ngIf="booking.roomRatePlanName !=='GHC'">{{
+                              booking.roomRatePlanName }}</span>
+                            <span *ngIf="booking.roomRatePlanName ==='GHC'">Economy</span>
+                          </li>
+                          <li>
+                            <b>Room Type: </b><span>{{ booking.roomName }}</span>
+                          </li>
+                          <li *ngIf="booking.noOfPersons >0">
+                            <b>No Of Person(s): </b><span>{{ booking.noOfPersons }}</span>
+                          </li>
+                          <li *ngIf=" booking.noOfExtraPerson >0">
+                            <b>No Of Extra Person(s): </b><span>{{ booking.noOfExtraPerson }}</span>
+                          </li>
+                          <li *ngIf=" booking.extraPersonCharge >0">
+                            <b>Extra Person charges: </b><span>
+                              {{
+                              booking.extraPersonCharge
+                              | currency: currency:"symbol":"1.2-2"
+                              }}</span>
+                          </li>
+
+                          <li *ngIf="booking.netAmount >0">
+                            <b>Net Amount: </b>
+                            <span>
+                              {{
+                              booking.netAmount
+                              | currency: currency:"symbol":"1.2-2"
+                              }}
+                            </span>
+                          </li>
+                          <li *ngIf="  totalExtraAmount >0">
+                            <b>Extra Service Amount: </b>
+                            <span>
+                              {{
+                              totalExtraAmount
+                              | currency: currency:"symbol":"1.2-2"
+                              }}
+                            </span>
+                          </li>
+                          <li *ngIf="discountPercentage">
+                            <b>Discount: </b>{{ discountPercentage }}%
+                          </li>
+                          <!-- <li>
+											<h5>Total Amount: <span>
+													{{booking.totalAmount + totalExtraAmount | currency: currency:'symbol':'1.2-2' }} </span>
+											</h5>
+										</li>
+										<li>
+											<h5>Advance Amount: <span>
+													{{(booking.totalAmount + totalExtraAmount)  | currency: currency:'symbol':'1.2-2' }} </span>
+											</h5>
+										</li> -->
+                          <!-- <li class="total-costs"><b>Total Cost: </b><span> 546.00</span></li> --
+                        </ul>
+                      </div>
+                      <div class="col-md-6">
+                        <ul class="summery">
+                          <li *ngIf="booking.noOfRooms >0">
+                            <b>No Of Room(s): </b><span>{{ booking.noOfRooms }}</span>
+                          </li>
+                          <li *ngIf="booking.noOfChildren  >0">
+                            <b>No Of Child: </b><span>{{ booking.noOfChildren }}</span>
+                          </li>
+                          <li *ngIf="DiffDate >0">
+                            <b>No of Night(s): </b><span>{{ DiffDate}}</span>
+                          </li>
+                          <li *ngIf="booking.noOfExtraChild >0">
+                            <b>No Of Extra Child(s): </b><span>{{ booking.noOfExtraChild }}</span>
+                          </li>
+                          <li *ngIf=" booking.extraChildCharge >0">
+                            <b>Extra Child charges: </b><span>{{
+                              booking.extraChildCharge
+                              | currency: currency:"symbol":"1.2-2"
+                              }}</span>
+                          </li>
+
+                          <li *ngIf=" booking.roomPrice >0">
+                            <b>Room Price: </b><span>
+                              {{
+                              booking.roomPrice
+                              | currency: currency:"symbol":"1.2-2"
+                              }}
+                            </span>
+                          </li>
+                          <li>
+                            <b>Tax Amount ({{ this.taxPercentage }}%): </b>
+                            <p style="color: #653813;font-weight: bolder" *ngIf="businessUser.taxDetails">
+                              {{ businessUser.taxDetails[0].name }} & charges
+                              <span>{{
+                                (this.booking.netAmount *
+                                this.booking.taxPercentage) /
+                                100 | currency: currency:"symbol":"1.2-2"
+                                }}</span>
+                            </p>
+                          </li>
+                          <li *ngIf="discountPercentage">
+                            <b>Discount Amount: </b>{{
+                            booking.discountAmount
+                            | currency: currency:"symbol":"1.2-2"
+                            }}
+                          </li>
+
+                          <!-- <li class="total-costs"><b>Total Cost: </b><span> 546.00</span></li> --
+                        </ul>
+                      </div>
+                      <!-- <div class="col-md-12">
+									<button class="btn btn-primary" type="button"
+										[disabled]="!orderForm.form.valid  || paymentLoader || submitButtonDisable"
+										(click)="onCashPaymentSubmit()">Confirm</button>
+
+								</div> --
+                    </div>
+                  </form>
+                  <div *ngIf="bookingConfirmed && !isEnquiry">
+                    <h4 class="mb-3 mt-4">Thank you for your booking!</h4>
+
+                    <div class="row">
+                      <div class="col-12">
+                        <ul class="summery">
+                          <li>
+                            <b>Reservation No:</b>
+                            {{ booking.propertyReservationNumber }}
+                          </li>
+                          <li>
+                            <b>Full guest name: </b> {{ booking.firstName }}
+                            {{ booking.lastName }}
+                          </li>
+                          <li>
+                            <b>Email: </b> <span> {{ booking.email }}</span>
+                          </li>
+                          <li>
+                            <b>Phone: </b><span> {{ booking.mobile }}</span>
+                          </li>
+                          <li>
+                            <b>Selected Room: </b><span> {{ booking.roomName }}</span>
+                          </li>
+                          <li>
+                            <b>Room Price: </b><span>
+                              {{
+                              booking.roomPrice
+                              | currency: currency:"symbol":"1.2-2"
+                              }}
+                            </span>
+                          </li>
+                          <li>
+                            <b>No Of Person(s): </b><span> {{ booking.noOfPersons }}</span>
+                          </li>
+                          <li>
+                            <b>Extra Service Amount: </b><span>
+                              {{
+                              totalExtraAmount
+                              | currency: currency:"symbol":"1.2-2"
+                              }}
+                            </span>
+                          </li>
+
+                          <li>
+                            <b>Net Amount: </b>
+                            <span>
+                              {{
+                              payment.netReceivableAmount
+                              | currency: currency:"symbol":"1.2-2"
+                              }}
+                            </span>
+                          </li>
+                          <li>
+                            <b>Tax Amount ({{ this.taxPercentage }}%): </b>
+                            <span>
+                              {{
+                              payment.taxAmount
+                              | currency: currency:"symbol":"1.2-2"
+                              }}</span>
+                          </li>
+                          <li *ngIf="discountPercentage">
+                            <b>Discount: </b>{{ booking.discountPercentage }}%
+                          </li>
+                          <li></li>
+                          <li *ngIf="discountPercentage">
+                            <b>Discount Amount: </b>{{
+                            booking.discountAmount
+                            | currency: currency:"symbol":"1.2-2"
+                            }}
+                          </li>
+
+                          <li>
+                            <b>Special Notes:</b>
+                            <span> {{ booking.notes }}</span>
+                          </li>
+                          <li>
+                            <b>Payment method:</b>
+                            <span> {{ payment.paymentMode }}</span>
+                          </li>
+
+                          <li *ngIf="payment.paymentMode === 'Card'">
+                            <h5>
+                              Paid amount:<span>
+                                {{
+                                payment.transactionChargeAmount
+                                | currency: currency:"symbol":"1.2-2"
+                                }}
+                              </span>
+                            </h5>
+                          </li>
+                          <li *ngIf="payment.paymentMode === 'Cash'">
+                            <h5>Payment Status:<span> Not Paid </span></h5>
+                          </li>
+                        </ul>
+                      </div>
+                      <div class="col-md-12">
+                        <button class="btn btn-primary" type="button" (click)="onGoHome()">
+                          Go Back
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+
+
+                  <!-- add here -->
+
+                  <!-- <div *ngIf="bookingConfirmed && isEnquiry">
+                    <h4 class="mb-3 mt-4">Thank You for Choosing Hotelmate.</h4>
+                    <b>Enquiry No:</b>
+                            #{{ enquiryNo }}
+                    <p>This is not a confirmed booking.</p>
+                    <div class="row">
+                      <div class="col-12">
+                        Thank you for your enquiry regarding the GreenStar Inn. We want to assure you that we are diligently handling your booking request and will provide a response shortly.</div>
+
+
+
+                        <span class=" heading_business_name text-center" style="display: block;">{{ businessUser.name }}</span> -->
+                  <!-- <div class="col-12 mt-1">
+                       If you have any additional questions, please feel free to reach out to us at +919040443275 / +918328818871.
+                      </div>
+                      <div class="col-12 mt-2">
+                        Thank you for considering The HotelMate.
+                      </div> -->
+                  <!-- </div>
+
+                    <div style=" vertical-align: middle;
+            position: absolute;z-index: 1;
+    margin-top: -47px;
+    margin-left: -50px;
+        " *ngIf="businessUser.logoUrl">
+            <img [src]="businessUser.logoUrl" alt="" height="120px" width="120px"
+              style="text-align:center ;border-radius: 50%;box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;">
+          </div>
+
+                    <div class="row mt-2">
+                      <div class="col-12">
+                        <ul class="summery">
+                          <li>
+                            <b>Enquiry No:</b>
+                            #{{ enquiryNo }}
+                          </li>
+                          <li>
+                            <b>Full guest name: </b> {{ booking.firstName }}
+                            {{ booking.lastName }}
+                          </li>
+                          <li>
+                            <b>Email: </b> <span> {{ booking.email }}</span>
+                          </li>
+                          <li>
+                            <b>Phone: </b><span> {{ booking.mobile }}</span>
+                          </li>
+                          <li>
+                            <b>Selected Room: </b
+                            ><span> {{ booking.roomName }}</span>
+                          </li>
+                          <li>
+                            <b>Room Price: </b
+                            ><span>
+                              {{
+                                booking.roomPrice
+                                  | currency: currency:"symbol":"1.2-2"
+                              }}
+                            </span>
+                          </li>
+                          <li>
+                            <b>No Of Person(s): </b
+                            ><span> {{ booking.noOfPersons }}</span>
+                          </li>
+                          <li>
+                            <b>Extra Service Amount: </b
+                            ><span>
+                              {{
+                                totalExtraAmount
+                                  | currency: currency:"symbol":"1.2-2"
+                              }}
+                            </span>
+                          </li>
+
+                          <li>
+                            <b>Net Amount: </b>
+                            <span>
+                              {{
+                                booking.netAmount
+                                  | currency: currency:"symbol":"1.2-2"
+                              }}
+                            </span>
+                          </li>
+                          <li>
+                            <b>Tax Amount: </b>
+                            <span>
+                              {{
+                                booking.taxAmount
+                                  | currency: currency:"symbol":"1.2-2"
+                              }}</span
+                            >
+                          </li>
+                          <li *ngIf="discountPercentage">
+                            <b>Discount: </b>{{ booking.discountPercentage }}%
+                          </li>
+                          <li></li>
+                          <li *ngIf="discountPercentage">
+                            <b>Discount Amount: </b
+                            >{{
+                              booking.discountAmount
+                                | currency: currency:"symbol":"1.2-2"
+                            }}
+                          </li>
+
+                          <li>
+                            <b>Special Notes:</b>
+                            <span> {{ booking.notes }}</span>
+                          </li>
+
+
+                        </ul>
+                        <div class="modal-header">
+            <h5 class="modal-title text-center" id="exampleModalLabel">
+              <h3>Rules & Policies</h3>
+            </h5>
+
+          </div>
+
+                      </div>
+                      <div class="col-md-12">
+                        <button
+                          class="btn btn-primary"
+                          type="button"
+                          (click)="Home()"
+                        >
+                          Go Back
+                        </button>
+                      </div>
+                    </div>
+                  </div> --
+
+
+                  <hr class="horizontalLine" *ngIf="!bookingConfirmed" />
+                  <div id="childage_118777_0_1" class="row"></div>
+                  <input type="hidden" id="maxGuest118777_358500000000001" value="3" />
+                </div>
+                <div style="clear: both"></div>
+
+                <div id="hideEx_118777_358500000000001_0" style="display: none"></div>
+                <input type="hidden" name="hideEx_118777_358500000000001_0" value="" />
+                <input type="hidden" id="datesArr118777_358500000000001_0" value="1" />
+
+                <div id="roomComponentsIndividual_118777_358500000000001_0"
+                  name="roomComponentsIndividual_118777_358500000000001_0" class="packageHeading room_package_total">
+                  <div class="packages_price_filter marginTop10" *ngIf="!bookingConfirmed">
+                    <div class="row">
+                      <div class="col-lg-9 col-md-9 col-xs-9 col-sm-9">
+                        <img src="assets/images/info.png" width="20px" />
+                        &nbsp;
+                        Net Amount
+                      </div>
+                      <div class="col-lg-3 col-md-3 col-xs-3 col-sm-3">
+                        <div class="BBTax text-right room_package_total">
+                          <span>{{
+                            booking.netAmount
+                            | currency: currency:"symbol":"1.2-2"
+                            }}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div style="clear: both"></div>
+
+                <div id="recExIds_118777_358500000000001_0" name="recExIds_118777_358500000000001_0"
+                  style="display: none"></div>
+                <div id="taxComponentsIndividual_118777_358500000000001_0" *ngIf="!bookingConfirmed"
+                  name="taxComponentsIndividual_118777_358500000000001_0" class="packageHeading package_total">
+                  <div class="packages_price_filter marginTop10">
+                    <div class="row">
+                      <div class="col-lg-9 col-md-9 col-xs-9 col-sm-9 gst-price">
+                        <img src="assets/images/info.png" width="20px" />
+                        &nbsp; GST
+                        <!-- <i class="fa-fa-solid fa-fa-circle-info"></i> --
+                      </div>
+                      <div class="col-lg-3 col-md-3 col-xs-3 col-sm-3 per_358500000000001_0">
+                        <!-- krushita chnage price based on flag--
+                        <div class="BBTax text-right package_total">
+                          <span class="newTotalAmount">
+                            <!--479.88--{{
+                            (this.booking.netAmount *
+                            this.booking.taxPercentage) /
+                            100 | currency: currency:"symbol":"1.2-2"
+                            }}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- <div id="taxInfo-118777_358500000000001_0_358500000000001" >
+													GST
+												</div> --
+                </div>
+                <hr class="horizontalLine1" *ngIf="!bookingConfirmed" />
+                <div class="row" *ngIf="!bookingConfirmed">
+                  <div class="col-xs-12 col-md-8"></div>
+                  <div class="col-xs-12 col-md-4 booking-details-page">
+                    <div class="roomPriceCol text-right">
+                      <span class="lightColor font10">TOTAL</span>
+                      <div class="packages_boxLRA">
+                        <div class="onlyPkgPricetext price" style="font-size: 700 !important"
+                          id="amountDisplay_118777_358500000000001_0">
+                          {{
+                          booking.totalAmount
+                          | currency: currency:"symbol":"1.2-2"
+                          }}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- End of col-xs-12 --
+
+                  <input type="hidden" name="amount_118777_358500000000001_0" id="amount_118777_358500000000001_0"
+                    value="" />
+                  <div id="taxComponentDescription118777_358500000000001_0"></div>
+                </div>
+              </div>
+
+              <div class="modal fade cartPackageinclusionmodel" id="cartPackageinclusion118777_358500000000001_0"
+                tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                        ×
+                      </button>
+                      <h4 class="modal-title">
+                        Flexible Rate with Breakfast - Deluxe Room, King/Twin
+                        bed, Balcony
+                      </h4>
+                    </div>
+                    <div class="modal-body">
+                      <p>&gt; Breakfast</p>
+                      <br />
+                      <br />
+                      <p>&gt; Wi-Fi</p>
+                      <br />
+                      <br />
+                      <p>&gt; Swimming pool access</p>
+                      <br />
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-default" data-dismiss="modal">
+                        Close
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="cartRightHeader id col-xs-12 col-md-4 booking-details-page" *ngIf="!bookingConfirmed">
+              <div style="position: relative" style="background-color: white">
+                <div class="packages marginTop10 cartRight totalchargebox card shadow" id="myTotalBox"
+                  style="margin-top: 75.2px">
+                  <span class="font14">Total Charge</span>
+                  <hr class="horizontalLine" />
+                  <div class="roomPriceCol">
+                    <div name="totalwithoutTax" id="totalwithoutTax"
+                      class="packageHeading packages_boxLRA onlyPkgPricetext currency" style="display: inline-flex">
+                      <span class="newTotalAmount">
+                        {{
+                        booking.totalAmount
+                        | currency: currency:"symbol":"1.2-2"
+                        }}</span>
+                    </div>
+                  </div>
+
+                  <!-- End of Packages--
+                  <div class="clear"></div>
+                  <!-- <h4
+                    class="mb-3 mt-4"
+                    *ngIf="
+                      (booking.email &&
+                        booking.mobile &&
+                        booking.firstName &&
+                        booking.lastName !== null) ||
+                      (booking.email &&
+                        booking.mobile &&
+                        booking.firstName &&
+                        booking.lastName !== undefined)
+                    "
+                  >
+                    Payment Method
+                  </h4> --
+                  <div *ngIf="paymentLoader" class="progress">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
+                      aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%"></div>
+                  </div>
+                  <!-- <div
+                    class="nav-wrapper"
+                    *ngIf="validateFrom()">
+
+                    <ul
+                      class="nav nav-pills nav-fill flex-column flex-md-row"
+                      id="tabs-icons-text"
+                      role="tablist"
+                    >
+                      <li class="nav-item">
+                        <a
+                          class="nav-link mb-sm-3 mb-md-0 active show"
+                          id="tabs-icons-text-2-tab"
+                          data-toggle="tab"
+                          href="#tabs-icons-text-2"
+                          role="tab"
+                          aria-controls="tabs-icons-text-2"
+                          aria-selected="false"
+                          ><i
+                            class="fa fa-money mr-2"
+                            (click)="cashOnDelivery()"
+                          ></i
+                          >Pay While Check-in</a
+                        >
+                      </li>
+                      <li class="nav-item">
+                        <a
+                          class="nav-link mb-sm-3 mb-md-0"
+                          id="tabs-icons-text-1-tab"
+                          data-toggle="tab"
+                          href="#tabs-icons-text-1"
+                          role="tab"
+                          aria-controls="tabs-icons-text-1"
+                          aria-selected="true"
+                          (click)="cardPayment()"
+                          ><i class="fa fa-credit-card mr-2"></i>Credit/Debit
+                          Card</a
+                        >
+                      </li>
+
+                      <li
+                        class="nav-item"
+                        *ngIf="
+                          businessUser.bankAccount !== undefined &&
+                          businessUser.bankAccount !== null
+                        "
+                      >
+                        <a
+                          class="nav-link mb-sm-3 mb-md-0"
+                          id="tabs-icons-text-3-tab"
+                          data-toggle="tab"
+                          href="#tabs-icons-text-3"
+                          role="tab"
+                          aria-controls="tabs-icons-text-3"
+                          aria-selected="false"
+                          (click)="bankPayment()"
+                          ><i class="fa fa- mr-2"></i>Bank Transfer</a
+                        >
+                      </li>
+
+                      <li
+                        class="nav-item nav-item-align"
+                        *ngIf="
+                          businessUser.mobileWallet !== undefined &&
+                          businessUser.mobileWallet !== null &&
+                          businessUser.paymentGateway !== 'paytm'
+                        "
+                      >
+                        <a
+                          class="nav-link mb-sm-3 mb-md-0"
+                          id="tabs-icons-text-4-tab"
+                          data-toggle="tab"
+                          href="#tabs-icons-text-4"
+                          role="tab"
+                          aria-controls="tabs-icons-text-4"
+                          aria-selected="false"
+                          (click)="MobileWallet()"
+                          ><i class="fa fa- mr-2"></i>Mobile Wallet</a
+                        >
+                      </li>
+                      <li
+                        class="nav-item nav-item-align"
+
+                      >
+                        <a
+                          class="nav-link mb-sm-3 mb-md-0 active show"
+                          id="tabs-icons-text-5-tab"
+                          data-toggle="tab"
+                          href="#tabs-icons-text-5"
+                          role="tab"
+                          aria-controls="tabs-icons-text-5"
+                          aria-selected="false"
+                          (click)="Upi()"
+                          ><i class="fa fa- mr-2"></i>UPI</a
+                        >
+                      </li>
+                    </ul>
+                  </div> --
+                  <div class="card shadow">
+                    <div class="card-body">
+                      <div class="tab-content" id="myTabContent">
+
+                        <div class="col-md-12">
+                          <div *ngIf="value=== false">
+                          <button class="btn btn-primary" type="button"  [disabled]="
+                              paymentLoader ||
+                              submitButtonDisable ||
+                              !validateFrom()
+                            " (click)="submitForm()">
+                            CONFIRM
+                          </button>
+                        </div>
+                          <div *ngIf="value === true">
+<span>You have to pay <strong> 20 % </strong> as an advance Amount.</span><br>
+                          <button class="btn btn-primary" type="button"   [disabled]="
+                          paymentLoader ||
+                          submitButtonDisable ||
+                          !validateFrom()
+                        " (click)="payAndCheckout()">
+                        UPI
+                      </button>
+                    </div>
+                        </div>
+
+                        <!-- <div
+                          class="tab-pane fade"
+                          id="tabs-icons-text-1"
+                          role="tabpanel"
+                          aria-labelledby="tabs-icons-text-1-tab"
+                        >
+                          <form #payForm="ngForm">
+                            <div
+                              class="row"
+                              *ngIf="
+                                !cashPayment &&
+                                businessUser.paymentGateway === 'eway'
+                              "
+                            >
+                              <div
+                                id="eway-secure-panel"
+                                style="width: 100%; margin-bottom: 1rem"
+                                class="col-md-12"
+                              ></div>
+
+                              <div class="col-md-12">
+                                <button
+                                  class="btn btn-primary"
+                                  type="button"
+                                  [disabled]="
+                                    paymentLoader || submitButtonDisable
+                                  "
+                                  (click)="onCardPaymentSubmit()"
+                                >
+                                  Confirm
+                                </button>
+                              </div>
+                            </div>
+                            <div
+                              class="row"
+                              *ngIf="
+                                !cashPayment &&
+                                businessUser.paymentGateway !== 'eway'
+                              "
+                            >
+                              <div class="col-md-12">
+                                <h5>Confirm booking by advance card payment</h5>
+                                <p>
+                                  Pay the total amount
+                                  {{
+                                    booking.totalAmount
+                                      | currency: currency:"symbol":"1.2-2"
+                                  }}
+                                  now and checking in at the hotel.
+                                </p>
+                                <div class="form-group">
+                                  <label for="date">Name On Card*</label>
+
+                                  <input
+                                    type="text"
+                                    placeholder="Name"
+                                    name="name"
+                                    [(ngModel)]="payment.name"
+                                    #name="ngModel"
+                                    required
+                                    class="form-control form-control-alternative"
+                                  />
+                                  <span
+                                    class="text-danger"
+                                    *ngIf="
+                                      (name.touched || payForm.submitted) &&
+                                      name.errors?.required
+                                    "
+                                  >
+                                    Name is required
+                                  </span>
+                                </div>
+                              </div>
+                              <div class="col-md-12">
+                                <div class="form-group">
+                                  <label for="date">Card Number*</label>
+
+                                  <input
+                                    type="text"
+                                    placeholder="Card Number"
+                                    name="cardNumber"
+                                    minlength="16"
+                                    maxlength="16"
+                                    pattern="[0-9]+"
+                                    [(ngModel)]="payment.cardNumber"
+                                    #cardNumber="ngModel"
+                                    required
+                                    class="form-control form-control-alternative"
+                                  />
+                                  <span
+                                    class="text-danger"
+                                    *ngIf="
+                                      (cardNumber.touched ||
+                                        payForm.submitted) &&
+                                      cardNumber.errors?.required
+                                    "
+                                  >
+                                    Card Number is required
+                                  </span>
+                                  <span
+                                    class="text-danger"
+                                    *ngIf="
+                                      (cardNumber.touched ||
+                                        payForm.submitted) &&
+                                      cardNumber.errors?.minlength
+                                    "
+                                  >
+                                    Card Number length is 16 digit
+                                  </span>
+                                  <span
+                                    class="text-danger"
+                                    *ngIf="
+                                      (cardNumber.touched ||
+                                        payForm.submitted) &&
+                                      cardNumber.errors?.pattern
+                                    "
+                                  >
+                                    Invalid Card Number
+                                  </span>
+                                </div>
+                              </div>
+                              <div class="col-md-6">
+                                <label for="date">Month*</label>
+                                <select
+                                  class="custom-select mb-4 form-control-alternative"
+                                  required
+                                  placeholder="Exp Month"
+                                  name="expMonth"
+                                  [(ngModel)]="payment.expMonth"
+                                  #expMonth="ngModel"
+                                >
+                                  <option value="" selected>Month</option>
+                                  <option value="01">January</option>
+                                  <option value="02">February</option>
+                                  <option value="03">March</option>
+                                  <option value="04">April</option>
+                                  <option value="05">May</option>
+                                  <option value="06">June</option>
+                                  <option value="07">July</option>
+                                  <option value="08">August</option>
+                                  <option value="09">September</option>
+                                  <option value="10">October</option>
+                                  <option value="11">November</option>
+                                  <option value="12">December</option>
+                                </select>
+                                <span
+                                  class="text-danger"
+                                  *ngIf="
+                                    (expMonth.touched || payForm.submitted) &&
+                                    expMonth.errors?.required
+                                  "
+                                >
+                                  Exp Month is required
+                                </span>
+                              </div>
+                              <div class="col-md-6">
+                                <label for="date">Year*</label>
+                                <select
+                                  class="custom-select mb-4 form-control-alternative"
+                                  required
+                                  placeholder="Exp Year"
+                                  name="expYear"
+                                  [(ngModel)]="payment.expYear"
+                                  #expYear="ngModel"
+                                >
+                                  <option value="" selected>Year</option>
+                                  <option value="2020">2020</option>
+                                  <option value="2021">2021</option>
+                                  <option value="2022">2022</option>
+                                  <option value="2023">2023</option>
+                                  <option value="2024">2024</option>
+                                  <option value="2025">2025</option>
+                                  <option value="2026">2026</option>
+                                </select>
+                                <span
+                                  class="text-danger"
+                                  *ngIf="
+                                    (expYear.touched || payForm.submitted) &&
+                                    expYear.errors?.required
+                                  "
+                                >
+                                  Exp Year is required
+                                </span>
+                              </div>
+                              <div class="col-md-12">
+                                <div class="form-group">
+                                  <label for="date">CVV*</label>
+                                  <input
+                                    type="text"
+                                    placeholder="CVV"
+                                    name="cvv"
+                                    required
+                                    minlength="3"
+                                    maxlength="4"
+                                    pattern="[0-9]+"
+                                    [(ngModel)]="payment.cvv"
+                                    #cvv="ngModel"
+                                    class="form-control form-control-alternative"
+                                  />
+                                  <span
+                                    class="text-danger"
+                                    *ngIf="
+                                      (cvv.touched || payForm.submitted) &&
+                                      cvv.errors?.required
+                                    "
+                                  >
+                                    CCV is required
+                                  </span>
+                                  <span
+                                    class="text-danger"
+                                    *ngIf="
+                                      (cvv.touched || payForm.submitted) &&
+                                      cvv.errors?.minlength
+                                    "
+                                  >
+                                    CCV minimum length is 3 digit
+                                  </span>
+                                  <span
+                                    class="text-danger"
+                                    *ngIf="
+                                      (cvv.touched || payForm.submitted) &&
+                                      cvv.errors?.pattern
+                                    "
+                                  >
+                                    Invalid CCV Number
+                                  </span>
+                                </div>
+                              </div>
+                              <div class="col-md-12">
+                                <button
+                                  class="btn btn-primary"
+                                  type="button"
+                                  [disabled]="
+                                    paymentLoader ||
+                                    submitButtonDisable ||
+                                    !mobileHasError
+                                  "
+                                  (click)="onCardPaymentSubmit()"
+                                >
+                                  Confirm
+                                </button>
+                              </div>
+                            </div>
+                          </form>
+                        </div> -->
+                        <!-- <div
+                          class="tab-pane fade show active"
+                          id="tabs-icons-text-2"
+                          role="tabpanel"
+                          aria-labelledby="tabs-icons-text-2-tab"
+                        >
+                          <form action="">
+                            <div class="row">
+                              <div class="col-md-12">
+                                <h5>Confirm booking</h5>
+                                <p>
+                                  Pay the total amount
+                                  {{
+                                    booking.totalAmount
+                                      | currency: currency:"symbol":"1.2-2"
+                                  }}
+                                  when you check-in at the hotel.
+                                </p>
+                              </div>
+                              <div class="col-md-12 mt-3">
+                                <button
+                                  class="btn btn-primary"
+                                  type="button"
+                                  (click)="onCashPaymentSubmit()"
+                                >
+                                  Confirm
+                                </button>
+                              </div>
+                            </div>
+                          </form>
+                        </div> -->
+                        <!-- <div
+                          class="tab-pane fade"
+                          id="tabs-icons-text-3"
+                          role="tabpanel"
+                          aria-labelledby="tabs-icons-text-3-tab"
+                        >
+                          <form action="" *ngIf="bankAccount !== undefined">
+                            <div class="row">
+                              <div class="col-md-12">
+                                <h5>Bank Information</h5>
+
+                                <div class="row mb-4">
+                                  <div class="col-md-12">
+                                    <div class="form-group">
+                                      <label for="streetNumberc"
+                                        >Bank Name</label
+                                      >
+                                      <input
+                                        type="text"
+                                        id="BankName"
+                                        placeholder="Bank Name"
+                                        readonly
+                                        class="form-control form-control-alternative"
+                                        [(ngModel)]="bankAccount.bankName"
+                                        type="text"
+                                        name="BankName"
+                                        #BankName="ngModel"
+                                      />
+                                    </div>
+                                  </div>
+
+                                  <div class="col-md-12">
+                                    <div class="form-group">
+                                      <label for="Branch">Branch Name</label>
+                                      <input
+                                        type="text"
+                                        id="Branch"
+                                        placeholder="Branch Name"
+                                        class="form-control form-control-alternative"
+                                        readonly
+                                        [(ngModel)]="bankAccount.branchName"
+                                        type="text"
+                                        name="Branch"
+                                        #Branch="ngModel"
+                                      />
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <div class="row mb-4">
+                                  <div class="col-md-12">
+                                    <div class="form-group">
+                                      <label for="AccountName"
+                                        >Account Name</label
+                                      >
+                                      <input
+                                        type="text"
+                                        id="AccountName"
+                                        placeholder="Account Name"
+                                        readonly
+                                        class="form-control form-control-alternative"
+                                        [(ngModel)]="bankAccount.accountName"
+                                        type="text"
+                                        name="AccountName"
+                                        #AccountName="ngModel"
+                                      />
+                                    </div>
+                                  </div>
+
+                                  <div class="col-md-12">
+                                    <div class="form-group">
+                                      <label for="Branch">Account Number</label>
+                                      <input
+                                        type="text"
+                                        id="AccountNumber"
+                                        placeholder="Account Number"
+                                        class="form-control form-control-alternative"
+                                        readonly
+                                        [(ngModel)]="bankAccount.accountNumber"
+                                        type="text"
+                                        name="AccountNumber"
+                                        #AccountNumber="ngModel"
+                                      />
+                                    </div>
+                                  </div>
+
+                                  <div class="col-md-12">
+                                    <div class="form-group">
+                                      <label for="Branch">Swift Code</label>
+                                      <input
+                                        type="text"
+                                        id="SwiftCode"
+                                        placeholder="Swift Code"
+                                        class="form-control form-control-alternative"
+                                        readonly
+                                        [(ngModel)]="bankAccount.swiftCode"
+                                        type="text"
+                                        name="SwiftCode"
+                                        #SwiftCode="ngModel"
+                                      />
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <p>
+                                  Please pay
+                                  {{
+                                    booking.totalAmount | number: "1.2-2"
+                                  }}
+                                  using following bank details and share the
+                                  transaction reference number below.
+                                </p>
+
+                                <div class="row mb-4">
+                                  <div class="col-md-12">
+                                    <div class="form-group">
+                                      <label for="ReceiptNumber"
+                                        >Transaction Reference Number</label
+                                      >
+                                      <input
+                                        type="text"
+                                        id="ReceiptNumber"
+                                        placeholder="Transaction Reference Number"
+                                        class="form-control form-control-alternative"
+                                        [(ngModel)]="payment.receiptNumber"
+                                        type="text"
+                                        name="ReceiptNumber"
+                                        #ReceiptNumber="ngModel"
+                                      />
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                              <div class="col-md-12">
+                                <button
+                                  class="btn btn-primary"
+                                  type="button"
+                                  (click)="onBankPaymentSubmit()"
+                                >
+                                  Confirm
+                                </button>
+                              </div>
+                            </div>
+                          </form>
+                        </div> -->
+                        <!-- <div
+                          class="tab-pane fade"
+                          id="tabs-icons-text-4"
+                          role="tabpanel"
+                          aria-labelledby="tabs-icons-text-4-tab"
+                        >
+                          <form action="">
+                            <div class="row" *ngIf="mobileWallet !== undefined">
+                              <div class="col-md-12">
+                                <h5>Mobile Wallet Information</h5>
+
+                                <div class="row mb-4">
+                                  <div class="col-md-12">
+                                    <div class="form-group">
+                                      <label for="streetNumberc"
+                                        >First Name</label
+                                      >
+                                      <input
+                                        type="text"
+                                        id="FirstName"
+                                        placeholder="First Name"
+                                        readonly
+                                        class="form-control form-control-alternative"
+                                        [(ngModel)]="mobileWallet.firstName"
+                                        type="text"
+                                        name="FirstName"
+                                        #FirstName="ngModel"
+                                      />
+                                    </div>
+                                  </div>
+
+                                  <div class="col-md-12">
+                                    <div class="form-group">
+                                      <label for="Branch">Last Name</label>
+                                      <input
+                                        type="text"
+                                        id="LastName"
+                                        placeholder="Last Name"
+                                        class="form-control form-control-alternative"
+                                        readonly
+                                        [(ngModel)]="mobileWallet.lastName"
+                                        type="text"
+                                        name="LastName"
+                                        #LastName="ngModel"
+                                      />
+                                    </div>
+                                  </div>
+
+                                  <div class="col-md-12">
+                                    <div class="form-group">
+                                      <label for="Branch">Phone Number</label>
+                                      <input
+                                        type="text"
+                                        id="PhoneNumber"
+                                        placeholder="Phone Number"
+                                        class="form-control form-control-alternative"
+                                        readonly
+                                        [(ngModel)]="mobileWallet.phoneNumber"
+                                        type="text"
+                                        name="PhoneNumber"
+                                        #PhoneNumber="ngModel"
+                                      />
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <div class="row mb-4">
+                                  <div class="col-md-12">
+                                    <div class="form-group">
+                                      <label for="AccountName"
+                                        >Wallet Provider</label
+                                      >
+                                      <input
+                                        type="text"
+                                        id="WalletProvider"
+                                        placeholder="Wallet Provider"
+                                        readonly
+                                        class="form-control form-control-alternative"
+                                        [(ngModel)]="
+                                          mobileWallet.walletProvider
+                                        "
+                                        type="text"
+                                        name="WalletProvider"
+                                        #WalletProvider="ngModel"
+                                      />
+                                    </div>
+                                  </div>
+
+                                  <div class="col-md-12">
+                                    <div class="form-group">
+                                      <label for="Branch">Wallet Url</label>
+                                      <input
+                                        type="text"
+                                        id="WalletUrl"
+                                        placeholder="Wallet Url"
+                                        class="form-control form-control-alternative"
+                                        readonly
+                                        [(ngModel)]="mobileWallet.walletUrl"
+                                        type="text"
+                                        name="WalletUrl"
+                                        #WalletUrl="ngModel"
+                                      />
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <p>
+                                  Please pay
+                                  {{
+                                    booking.totalAmount | number: "1.2-2"
+                                  }}
+                                  using following mobile wallet details and
+                                  share the transaction reference number below.
+                                </p>
+
+                                <div class="row mb-4">
+                                  <div class="col-md-12">
+                                    <div class="form-group">
+                                      <label for="ReceiptNumber"
+                                        >Transaction Reference Number</label
+                                      >
+                                      <input
+                                        type="text"
+                                        id="ReceiptNumber"
+                                        placeholder="Transaction Reference Number"
+                                        class="form-control form-control-alternative"
+                                        [(ngModel)]="payment.receiptNumber"
+                                        type="text"
+                                        name="ReceiptNumber"
+                                        #ReceiptNumber="ngModel"
+                                      />
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div class="col-md-12">
+                                <button
+                                  class="btn btn-primary"
+                                  type="button"
+                                  [disabled]="
+                                    paymentLoader ||
+                                    submitButtonDisable ||
+                                    !mobileHasError ||
+                                    payment.receiptNumber === undefined ||
+                                    payment.receiptNumber === ''
+                                  "
+                                  (click)="onWalletPaymentSubmit()"
+                                >
+                                  Confirm
+                                </button>
+                              </div>
+                            </div>
+                          </form>
+                        </div> -->
+
+                        <!-- <div
+                          class="tab-pane fade active show"
+                          id="tabs-icons-text-5"
+                          role="tabpanel"
+                          aria-labelledby="tabs-icons-text-5-tab"
+                        >
+                          <form action="">
+                            <div
+                              class="row"
+
+                            >
+                              <div class="col-12">
+                                You will be charged 20% of the booking amount
+                                as an advance amount.<br>
+                                <button
+                                  class="btn btn-primary checkout_btn"
+                                  aria-selected="true"
+                                  (click)="payAndCheckout()"
+                                >
+                                  <img src="assets/images/upi.webp" height="50px" width="50px"/>{{(booking.totalAmount / 100)*20  | currency: currency:'symbol':'1.2-2'}}Pay via UPI
+                                </button>
+                              </div>
+                            </div>
+                          </form>
+                        </div> -->
+                        <!-- <form action="">
+												  <div class="row">
+													  <div class="col-md-12">
+														  <div class="form-group">
+															  <input type="text" placeholder="Full Name"
+																  class="form-control form-control-alternative">
+														  </div>
+													  </div>
+													  <div class="col-md-12">
+														  <div class="form-group">
+															  <input type="text" placeholder="Bank Name"
+																  class="form-control form-control-alternative">
+														  </div>
+													  </div>
+													  <div class="col-md-12">
+														  <div class="form-group">
+															  <input type="text" placeholder="A/C Number"
+																  class="form-control form-control-alternative">
+														  </div>
+													  </div>
+													  <div class="col-md-6">
+														  <div class="form-group">
+															  <input type="text" placeholder="A/C Type"
+																  class="form-control form-control-alternative">
+														  </div>
+													  </div>
+													  <div class="col-md-6">
+														  <div class="form-group">
+															  <input type="text" placeholder="Swift Code"
+																  class="form-control form-control-alternative">
+														  </div>
+													  </div>
+													  <div class="col-md-12">
+														  <button class="btn btn-primary" type="button"
+															  [disabled]="!orderForm.form.valid  || loader"
+															  (click)="onCashPaymentSubmit(content)">Click n Collect</button>
+													  </div>
+												  </div>
+											  </form>
+										  </div> --
+
+
+
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+<!-- <div *ngIf="bookingConfirmed && isEnquiry" style="padding-top: 6rem ;">
+    <img class="thankyou-enquiry" src="assets/images/demo.png" alt="Avatar" />
+    <h2 class="thankyou-enquiry1">Thank You for Choosing Hotelmate.</h2>
+    <p class="thankyou-enquiry2">Enquiry No: #{{ enquiryNo }}</p>
+    <p class="cont">This is not a confirmed booking.</p>
+    <div >
+      <p class="cont1">
+        Thank you for your enquiry regarding the {{ businessUser.name }}. We want to assure
+        you that we are diligently handling your booking request and will provide
+        a response shortly.
+      </p>
+    </div>
+  </div> -->
+  <!-- <div class="cardenquiry">
+    <div  *ngIf="businessUser.logoUrl">
+      <img [src]="businessUser.logoUrl" class="enquiry-logo" alt="" />
+    </div>
+    <div class="cardpr">
+      <br />
+      <p class="cardpr1">
+        MeanWhile, please have a look at the procedure of the booking
+      </p>
+    </div>
+    <div>
+      <p></p>
+      <ol class="lists-enquiry">
+        <li>Reservation details are submitted to {{ businessUser.name }}.</li>
+        <li>
+          Once the hotel confirms your booking, we will notify you promptly.
+        </li>
+        <li>
+          In the event of any price fluctuations, you will be duly informed.
+        </li>
+        <li>
+          In the case we can't accommodate your booking request, we'll provide
+          suitable alternative options that match your preferences.
+        </li>
+      </ol>
+
+      <div>
+        <p class="enquiry-details">Enquiry Details</p>
+      </div>
+
+      <div class="cardenquiry1">
+        <div class="cardenquiry1a">
+          <table class="vl">
+            <tr>
+              <th class="cardenquiry1b">Enquiry No</th>
+              <th class="cardenquiry1b">#{{ enquiryNo }}</th>
+            </tr>
+            <tr>
+              <td class="cardenquiry1c">Guest</td>
+              <td class="cardenquiry1c">
+                {{ booking.firstName }} {{ booking.lastName }}
+              </td>
+            </tr>
+            <tr>
+              <td class="cardenquiry1c">Email Id</td>
+              <td class="cardenquiry1c">{{ booking.email }}</td>
+            </tr>
+            <tr>
+              <td class="cardenquiry1c">Phone</td>
+              <td class="cardenquiry1c">{{ booking.mobile }}</td>
+            </tr>
+            <tr>
+              <td class="cardenquiry1c">Selected Room</td>
+              <td class="cardenquiry1c">{{ booking.roomName }}</td>
+            </tr>
+            <tr>
+              <td class="cardenquiry1c">Room Price</td>
+              <td class="cardenquiry1c">
+                {{
+                booking.roomPrice | currency : currency : "symbol" : "1.2-2"
+                }}
+              </td>
+            </tr>
+            <tr>
+              <td class="cardenquiry1c">No of Person(s)</td>
+              <td class="cardenquiry1c">{{ booking.noOfPersons }}</td>
+            </tr>
+            <tr>
+              <td class="cardenquiry1c">Extra Service Amount</td>
+              <td class="cardenquiry1c">
+                {{
+                totalExtraAmount | currency : currency : "symbol" : "1.2-2"
+                }}
+              </td>
+            </tr>
+            <tr>
+              <td class="cardenquiry1c">Net Amount</td>
+              <td class="cardenquiry1c">
+                {{
+                booking.netAmount | currency : currency : "symbol" : "1.2-2"
+                }}
+              </td>
+            </tr>
+            <tr>
+              <td class="cardenquiry1c">Tax Amount</td>
+              <td class="cardenquiry1c">
+                {{
+                booking.taxAmount | currency : currency : "symbol" : "1.2-2"
+                }}
+              </td>
+            </tr>
+            <tr *ngIf="discountPercentage">
+
+              <td class="cardenquiry1c">Discount:</td>
+              <td class="cardenquiry1c">{{ booking.discountPercentage }}%</td>
+            </tr>
+            <tr *ngIf="discountPercentage">
+              <td class="cardenquiry1c">Discount Amount: </td>
+              <td class="cardenquiry1c"> {{
+                booking.discountAmount
+                | currency : currency : "symbol" : "1.2-2"
+                }}</td>
+
+
+            </tr>
+            <tr>
+              <td class="cardenquiry1c">Notes</td>
+              <td class="cardenquiry1c">{{ booking.notes }}</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+
+
+      <!-- <div id="accordion"  class="enquiry-terms">
+        <div class="card" style="border-radius: 70px;">
+          <div class="card-header" id="headingOne"  style="border-radius: 20px;">
+            <h5 class="mb-0">
+              <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                Collapsible Group Item #1
+              </button>
+            </h5>
+          </div>
+
+          <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
+            <div class="card-body">
+              Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="enquiry-terms">
+        <div style="display: flex;justify-content: space-between;">
+          <a class="enquiry-terms-a" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false"
+            aria-controls="collapseExample">
+            Terms & Conditions {{ businessUser.name }}
+          </a>
+          <img class="arrowdownfoot" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false"
+            aria-controls="collapseExample" src="assets/images/Keyboard arrow down.png" />
+        </div>
+        <div class="collapse" id="collapseExample">
+          <div class="card card-body tandc"
+            style="text-align: justify; margin-left: 2%; margin-right: 4%; border-radius: 2%; margin-top: 0.5pc; width: 95%; "
+            *ngFor="let item of accommodationvalue">
+            <span [innerHTML]="item.policy">{{item.policy}}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div> -->
+
+  <!-- <div>
+    <img class="arrowfoot" (click)="Home()" src="assets/images/Arrow.png" />
+    <p class="foot2" (click)="Home()">Back to home</p>
+    <p class="foot1">
+      If you have any additional questions, please feel free to reach out to us
+      at <br />+918328818871/+919040443275.
+    </p>
+</div> -->
+
+
+<div *ngIf="bookingConfirmed && isEnquiry" style="padding-top: 6rem ;">
+
+  <img class="thankyou-enquiry" src="assets/images/demo.png" alt="Avatar" />
+  <h2 class="thankyou-enquiry1">Thank You for Choosing BookOne Connect.</h2>
+  <p class="thankyou-enquiry2">Enquiry No: #{{ enquiryNo }}</p>
+  <p class="cont">This is not a confirmed booking.</p>
+  <div >
+    <p class="cont1">
+      Thank you for your enquiry regarding the {{ businessUser.name }}. We want to assure
+      you that we are diligently handling your booking request and will provide
+      a response shortly.
+    </p>
+  </div>
+  <div class="cardenquiry">
+  <div  *ngIf="businessUser.logoUrl">
+    <img [src]="businessUser.logoUrl" class="enquiry-logo" alt="" />
+  </div>
+  <div class="cardpr">
+    <br />
+    <p class="cardpr1">
+      MeanWhile, please have a look at the procedure of the booking
+    </p>
+  </div>
+  <div>
+    <p></p>
+    <ol class="lists-enquiry" >
+      <li style="color: #484848 !important;">Reservation details are submitted to {{ businessUser.name }}.</li>
+      <li style="color: #484848 !important;">
+        Once the hotel confirms your booking, we will notify you promptly.
+      </li>
+      <li style="color: #484848 !important;">
+        In the event of any price fluctuations, you will be duly informed.
+      </li>
+      <li style="color: #484848 !important;">
+        In the case we can't accommodate your booking request, we'll provide
+        suitable alternative options that match your preferences.
+      </li>
+    </ol>
+
+
+    <div>
+      <p class="enquiry-details">Enquiry Details</p>
+    </div>
+
+
+    <div class="cardenquiry1">
+      <div class="cardenquiry1a">
+        <table class="vl">
+          <tr>
+            <th class="cardenquiry1b">Enquiry No</th>
+            <th class="cardenquiry1b">#{{ enquiryNo }}</th>
+          </tr>
+          <tr>
+            <td class="cardenquiry1c">Guest</td>
+            <td class="cardenquiry1c">
+              {{ booking.firstName }} {{ booking.lastName }}
+            </td>
+          </tr>
+          <tr>
+            <td class="cardenquiry1c">Email Id</td>
+            <td class="cardenquiry1c">{{ booking.email }}</td>
+          </tr>
+          <tr>
+            <td class="cardenquiry1c">Phone</td>
+            <td class="cardenquiry1c">{{ booking.mobile }}</td>
+          </tr>
+          <tr>
+            <td class="cardenquiry1c">Selected Room</td>
+            <td class="cardenquiry1c">{{ booking.roomName }}</td>
+          </tr>
+          <tr>
+            <td class="cardenquiry1c">Room Price</td>
+            <td class="cardenquiry1c">
+              {{
+              booking.roomPrice | currency : currency : "symbol" : "1.2-2"
+              }}
+            </td>
+          </tr>
+          <tr>
+            <td class="cardenquiry1c">No of Person(s)</td>
+            <td class="cardenquiry1c">{{ booking.noOfPersons }}</td>
+          </tr>
+          <tr>
+            <td class="cardenquiry1c">No of Children(s)</td>
+            <td class="cardenquiry1c">{{ booking.noOfChildren }}</td>
+          </tr>
+          <tr>
+            <td class="cardenquiry1c">Extra Service Amount</td>
+            <td class="cardenquiry1c">
+              {{
+              totalExtraAmount | currency : currency : "symbol" : "1.2-2"
+              }}
+            </td>
+          </tr>
+          <tr>
+            <td class="cardenquiry1c">Net Amount</td>
+            <td class="cardenquiry1c">
+              {{
+              booking.netAmount | currency : currency : "symbol" : "1.2-2"
+              }}
+            </td>
+          </tr>
+          <tr>
+            <td class="cardenquiry1c">Tax Amount</td>
+            <td class="cardenquiry1c">
+              {{
+              booking.taxAmount | currency : currency : "symbol" : "1.2-2"
+              }}
+            </td>
+          </tr>
+          <tr>
+            <td class="cardenquiry1c">Total Amount</td>
+            <td class="cardenquiry1c">
+              {{
+              booking.totalAmount | currency : currency : "symbol" : "1.2-2"
+              }}
+            </td>
+          </tr>
+          <tr *ngIf="discountPercentage">
+
+
+            <td class="cardenquiry1c">Discount:</td>
+            <td class="cardenquiry1c">{{ booking.discountPercentage }}%</td>
+          </tr>
+          <tr *ngIf="discountPercentage">
+            <td class="cardenquiry1c">Discount Amount: </td>
+            <td class="cardenquiry1c"> {{
+              booking.discountAmount
+              | currency : currency : "symbol" : "1.2-2"
+              }}</td>
+
+
+
+
+          </tr>
+          <tr>
+            <td class="cardenquiry1c">Notes</td>
+            <td class="cardenquiry1c">{{ booking.notes }}</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+
+    <div class="enquiry-terms">
+      <div style="display: flex;justify-content: space-between;">
+        <a class="enquiry-terms-a" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false"
+          aria-controls="collapseExample">
+          Terms & Conditions {{ businessUser.name }}
+        </a>
+        <img class="arrowdownfoot" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false"
+          aria-controls="collapseExample" src="assets/images/Keyboard arrow down.png" />
+      </div>
+      <div class="collapse" id="collapseExample">
+        <div class="card card-body tandc"
+          style="text-align: justify; margin-left: 2%; margin-right: 4%; border-radius: 2%; margin-top: 0.5pc; width: 95%;height:200px;scroll-behavior: smooth;
+          overflow-y: scroll;"
+          *ngFor="let item of accommodationvalue">
+          <span [innerHTML]="item.policy">{{item.policy}}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div>
+  <a href="{{PropertyUrl}}">
+  <img class="arrowfoot" src="assets/images/Arrow.png" />
+    <p  class="foot2" href="{{PropertyUrl}}">Back to dashboard</p>
+    </a>
+  <p class="foot1">
+    If you have any additional questions, please feel free to reach out to us
+    at <br />+918328818871/+919040443275.
+  </p>
+</div>
+
+</div>
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-10904222935" ng-if="bookingConfirmed && isEnquiry"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'AW-10904222935');
+</script>
+
+
+
+

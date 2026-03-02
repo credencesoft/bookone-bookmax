@@ -1,0 +1,457 @@
+<section id="pricing-wrap" class="pricing-one-wrap p-t-b-80">
+  <div class="container">
+    <div class="row mb-5">
+        <div class="col-md-12 section-header mb-5">
+            <h2 class="font-weight-bold text-center">Choose A Plan</h2>
+            <p></p>
+        </div>
+        <div class="col-sm-12 col-md-12 col-lg-12  text-center">
+            <div class="card-title" >
+                <select (change)="onCountryChange()" class="col-md-6 col-lg-3 btn btn-raised ripple btn-secondary btn-xl dropdown-toggle m-1" [(ngModel)]="country"  type="number" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
+
+                    <option class="dropdown-menu" value="US">Select Country</option>
+                    <option class="dropdown-item" value="US">USA</option>
+                    <option class="dropdown-item" value="IN">India</option>
+                    <option class="dropdown-item" value="NZ">New Zealand</option>
+                    <option class="dropdown-item" value="EU">Europe</option>
+                    <option class="dropdown-item" value="UK">England</option>
+                    <option class="dropdown-item" value="AU">Australia</option>
+                    <option class="dropdown-item" value="BD">Bangladesh</option>
+                 </select>
+                
+                
+                 <select (change)="onPropertyChange()" class="col-md-6 col-lg-3 btn btn-raised ripple btn-secondary btn-xl dropdown-toggle m-1" [(ngModel)]="propertySize" type="number" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <option class="dropdown-menu" value="0">Select Property Size</option>
+                    <option class="dropdown-item" value="2">1 to 10 rooms</option>
+                    <option class="dropdown-item" value="5">11 to 20 rooms</option>
+                    <option class="dropdown-item" value="10">21 to 40 rooms</option>
+                    <option class="dropdown-item" value="15">41 to 100 rooms</option>
+                    <option class="dropdown-item" value="20">100+ rooms</option>
+                </select>
+                <input matInput (change)="onRoomChange()" type="number" min="1" max="200" [(ngModel)]="noOfRoom" [formControl]="noOfRoomControl" class="col-md-6 col-lg-3 m-1 btn btn-secondary btn-xl formControl" placeholder="No of Rooms" placement="top" ngbTooltip="No of Rooms" style="pointer-events:all;">
+                <!-- <button (click)="viewPrice()" type="button" class="btn btn-raised ripple btn-secondary m-1 btn-xl">View Price</button> -->
+               
+            </div>
+            <p class="text-center">{{this.subscriptionCount}} Subscription Selected</p>
+        </div>
+       
+    </div>
+    <div class="row mb-5">
+        <!-- <div class="col-md-12 section-header mb-5 text-center">
+            <h2 class="font-weight-bold">Our Solution</h2>
+            <p class="text-center"></p>
+        </div> -->
+              <div class="col-md-6 col-lg-3 text-center">
+            <div *ngIf ="HWChecked" (click)="HWcheck()" class="card p-4 mb-4 solution-container active"   triggers="mouseenter:mouseleave" popoverClass="my-custom-class" popoverTitle="Hotel Website" ngbPopover="Hotel Info,
+              Contact,
+              Photo Gallery,
+              Hotel Policies,
+              Rooms,
+              Hotel Layout Map,
+              Amenities,
+              Services,
+              Booking Button,
+              Nearby attraction">
+                <i class="eva eva-browser-outline text-50"></i>
+                <h2 class="font-weight-bold card-title mb-2 mt-2">Hotel Website</h2>
+                <p class="card-text"></p>
+            </div>
+            <div *ngIf ="!HWChecked" (click)="HWcheck()" class="card p-4 mb-4 solution-container "   triggers="mouseenter:mouseleave" popoverClass="my-custom-class" popoverTitle="Hotel Website" ngbPopover="Hotel Info,
+              Contact,
+              Photo Gallery,
+              Hotel Policies,
+              Rooms,
+              Hotel Layout Map,
+              Amenities,
+              Services,
+              Booking Button,
+              Nearby attraction">
+                <i class="eva eva-browser-outline text-50"></i>
+                <h2 class="font-weight-bold card-title mb-2 mt-2">Hotel Website</h2>
+                <p class="card-text"></p>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-3 text-center">
+            <div  *ngIf ="BEChecked" (click)="BEcheck()" class="card p-4 mb-4 solution-container active"   triggers="mouseenter:mouseleave" popoverClass="my-custom-class" popoverTitle="Booking Engine" ngbPopover="Instant Availability Check through hotel website, 
+                  Make a reservation, 
+                  Online payment, 
+                  Reservation Confirmation At Hotel Website,
+                  No Third-party redirection,
+                  Booking Button">
+                <i class="eva eva-calendar-outline text-50"></i>
+                <h2 class="font-weight-bold card-title mb-2 mt-2">Booking Engine</h2>
+                <p class="card-text"></p>
+            </div>
+            <div  *ngIf ="!BEChecked" (click)="BEcheck()" class="card p-4 mb-4 solution-container"   triggers="mouseenter:mouseleave" popoverClass="my-custom-class" popoverTitle="Booking Engine" ngbPopover="Instant Availability Check through hotel website, 
+                  Make a reservation, 
+                  Online payment, 
+                  Reservation Confirmation At Hotel Website,
+                  No Third-party redirection,
+                  Booking Button">
+                <i class="eva eva-calendar-outline text-50"></i>
+                <h2 class="font-weight-bold card-title mb-2 mt-2">Booking Engine</h2>
+                <p class="card-text"></p>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-3 text-center">
+            <div  *ngIf ="BMChecked" (click)="BMcheck()"  class="card p-4 mb-4 solution-container active"    triggers="mouseenter:mouseleave" popoverClass="my-custom-class" popoverTitle="Booking Management" ngbPopover="Add Remove Guest,
+                  Date Change,
+                  Room Change,
+                  Send Payement Link,
+                  Cancellation,
+                  Copy Previous Booking,
+                  Check-In Process,
+                  Check-out Process,
+                  Booking History / Guest History" >
+                <i class="eva eva-clock-outline text-50"></i>
+                <h2 class="font-weight-bold card-title mb-2 mt-2">Booking Management</h2>
+                <p class="card-text"></p>
+            </div>
+            <div  *ngIf ="!BMChecked" (click)="BMcheck()"  class="card p-4 mb-4 solution-container "    triggers="mouseenter:mouseleave" popoverClass="my-custom-class" popoverTitle="Booking Management" ngbPopover="Add Remove Guest,
+                  Date Change,
+                  Room Change,
+                  Send Payement Link,
+                  Cancellation,
+                  Copy Previous Booking,
+                  Check-In Process,
+                  Check-out Process,
+                  Booking History / Guest History">
+                <i class="eva eva-clock-outline text-50"></i>
+                <h2 class="font-weight-bold card-title mb-2 mt-2">Booking Management</h2>
+                <p class="card-text"></p>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-3 text-center">
+            <div *ngIf ="CMChecked" (click)="CMcheck()"  class="card p-4 mb-4 solution-container active"   triggers="mouseenter:mouseleave" popoverClass="my-custom-class" popoverTitle="Channel Management" ngbPopover="Connectivity to Major Onilne Travel Agencies,
+                  Property Setup,
+                  Room Setup,
+                  Real Time Availability Synchronisation,
+                  Central Reservation System">
+                <i class="eva eva-cast-outline text-50"></i>
+                <h2 class="font-weight-bold card-title mb-2 mt-2">Channel Management</h2>
+                <p class="card-text"></p>
+            </div>
+            <div *ngIf ="!CMChecked" (click)="CMcheck()"  class="card p-4 mb-4 solution-container "   triggers="mouseenter:mouseleave" popoverClass="my-custom-class" popoverTitle="Channel Management" ngbPopover="Connectivity to Major Onilne Travel Agencies,
+                  Property Setup,
+                  Room Setup,
+                  Real Time Availability Synchronisation,
+                  Central Reservation System">
+                <i class="eva eva-cast-outline text-50"></i>
+                <h2 class="font-weight-bold card-title mb-2 mt-2">Channel Management</h2>
+                <p class="card-text"></p>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-3 text-center">
+            <div *ngIf ="RevenueMChecked" (click)="RevenueMcheck()" class="card p-4 mb-4 solution-container active"   triggers="mouseenter:mouseleave" popoverClass="my-custom-class" popoverTitle="Revenue Management" ngbPopover="Income and Expense,
+                  GST Invoice,
+                  Monthly Reporting,
+                  Yearly Reporting,
+                  Dashboard View">
+                <i class="eva eva-star-outline text-50"></i>
+                <h2 class="font-weight-bold card-title mb-2 mt-2">Revenue Management</h2>
+                <p class="card-text"></p>
+            </div>
+            <div *ngIf ="!RevenueMChecked" (click)="RevenueMcheck()" class="card p-4 mb-4 solution-container "   triggers="mouseenter:mouseleave" popoverClass="my-custom-class" popoverTitle="Revenue Management" ngbPopover="Income and Expense,
+            GST Invoice,
+            Monthly Reporting,
+            Yearly Reporting,
+            Dashboard View">
+          <i class="eva eva-star-outline text-50"></i>
+          <h2 class="font-weight-bold card-title mb-2 mt-2">Revenue Management</h2>
+          <p class="card-text"></p>
+      </div>
+        </div>
+  
+        <div class="col-md-6 col-lg-3 text-center">
+            <div *ngIf ="AnalyticsChecked" (click)="Analyticscheck()" class="card p-4 mb-4 solution-container active"   triggers="mouseenter:mouseleave" popoverClass="my-custom-class" popoverTitle="Analytics" ngbPopover="Guest Analytics,
+                  Average Room Rent,
+                  Monthly Sales Comparision,
+                  Monthly Sales Comapred to Prebvious Year Month,
+                  Comparision Direct Booking Vs Channel Bookings,
+                  Commission Paid Month wise,
+                  Top Performing Channels,
+                  Total Sales">
+                <i class="eva eva-trending-up-outline text-50"></i>
+                <h2 class="font-weight-bold card-title mb-2 mt-2">Analytics</h2>
+                <p class="card-text"></p>
+            </div>
+            <div *ngIf ="!AnalyticsChecked" (click)="Analyticscheck()" class="card p-4 mb-4 solution-container "   triggers="mouseenter:mouseleave" popoverClass="my-custom-class" popoverTitle="Analytics" ngbPopover="Guest Analytics,
+                  Average Room Rent,
+                  Monthly Sales Comparision,
+                  Monthly Sales Comapred to Prebvious Year Month,
+                  Comparision Direct Booking Vs Channel Bookings,
+                  Commission Paid Month wise,
+                  Top Performing Channels,
+                  Total Sales">
+                <i class="eva eva-trending-up-outline text-50"></i>
+                <h2 class="font-weight-bold card-title mb-2 mt-2">Analytics</h2>
+                <p class="card-text"></p>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-3 text-center">
+            <div *ngIf ="RoomMChecked" (click)="RoomMcheck()" class="card p-4 mb-4 solution-container active"   triggers="mouseenter:mouseleave" popoverClass="my-custom-class" popoverTitle="Room Management" ngbPopover="Room Allocation,
+                  Room Release,
+                  Room Dashboard Weekly View,
+                  Room Dashboard Daily View,
+                  Room Status">
+                <i class="eva eva-options-2-outline text-50"></i>
+                <h2 class="font-weight-bold card-title mb-2 mt-2">Room Management</h2>
+                <p class="card-text"></p>
+            </div>
+            <div *ngIf ="!RoomMChecked" (click)="RoomMcheck()" class="card p-4 mb-4 solution-container "   triggers="mouseenter:mouseleave" popoverClass="my-custom-class" popoverTitle="Room Management" ngbPopover="Room Allocation,
+                  Room Release,
+                  Room Dashboard Weekly View,
+                  Room Dashboard Daily View,
+                  Room Status">
+                <i class="eva eva-options-2-outline text-50"></i>
+                <h2 class="font-weight-bold card-title mb-2 mt-2">Room Management</h2>
+                <p class="card-text"></p>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-3 text-center">
+            <div *ngIf ="MAChecked" (click)="MAcheck()" class="card p-4 mb-4 solution-container active"   triggers="mouseenter:mouseleave" popoverClass="my-custom-class" popoverTitle="Mobile App" ngbPopover="iOS and Android Mobile App Managing the PMS">
+                <i class="eva eva-smartphone-outline text-50"></i>
+                <h2 class="font-weight-bold card-title mb-2 mt-2">Mobile App</h2>
+                <p class="card-text"></p>
+            </div>
+            <div *ngIf ="!MAChecked" (click)="MAcheck()" class="card p-4 mb-4 solution-container "   triggers="mouseenter:mouseleave" popoverClass="my-custom-class" popoverTitle="Mobile App" ngbPopover="iOS and Android Mobile App Managing the PMS">
+                <i class="eva eva-smartphone-outline text-50"></i>
+                <h2 class="font-weight-bold card-title mb-2 mt-2">Mobile App</h2>
+                <p class="card-text"></p>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-3 text-center">
+            <div *ngIf ="CRMChecked" (click)="CRMcheck()" class="card p-4 mb-4 solution-container active"   triggers="mouseenter:mouseleave" popoverClass="my-custom-class" popoverTitle="CRM" ngbPopover="Guest Relationship Management, Guest Preferences, Guest Behaviour, Expericence, Offers & Loyalty">
+                <i class="eva eva-people-outline text-50"></i>
+                <h2 class="font-weight-bold card-title mb-2 mt-2">CRM</h2>
+                <p class="card-text"></p>
+            </div>
+            <div *ngIf ="!CRMChecked" (click)="CRMcheck()" class="card p-4 mb-4 solution-container "   triggers="mouseenter:mouseleave" popoverClass="my-custom-class" popoverTitle="CRM" ngbPopover="Guest Relationship Management, Guest Preferences, Guest Behaviour, Expericence, Offers & Loyalty">
+                <i class="eva eva-people-outline text-50"></i>
+                <h2 class="font-weight-bold card-title mb-2 mt-2">CRM</h2>
+                <p class="card-text"></p>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-3 text-center">
+            <div *ngIf ="MUChecked" (click)="MUcheck()" class="card p-4 mb-4 solution-container active"   triggers="mouseenter:mouseleave" popoverClass="my-custom-class" popoverTitle="Multi User Setup" ngbPopover="Extra User and user management">
+                <i class="eva eva-person-add-outline text-50"></i>
+                <h2 class="font-weight-bold card-title mb-2 mt-2">Multi User Setup</h2>
+                <p class="card-text"></p>
+            </div>
+            <div *ngIf ="!MUChecked" (click)="MUcheck()" class="card p-4 mb-4 solution-container "   triggers="mouseenter:mouseleave" popoverClass="my-custom-class" popoverTitle="Multi User Setup" ngbPopover="Extra User and user management">
+                <i class="eva eva-person-add-outline text-50"></i>
+                <h2 class="font-weight-bold card-title mb-2 mt-2">Multi User Setup</h2>
+                <p class="card-text"></p>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-3 text-center">
+            <div *ngIf ="OPIChecked" (click)="OPIcheck()" class="card p-4 mb-4 solution-container active"   triggers="mouseenter:mouseleave" popoverClass="my-custom-class" popoverTitle="Online Payment Integration" ngbPopover="Integration with Major Payment Gateways such as Stripe, Paypal, Paymark.">
+                <i class="eva eva-credit-card-outline text-50"></i>
+                <h2 class="font-weight-bold card-title mb-2 mt-2">Online Payment Integration</h2>
+                <p class="card-text"></p>
+            </div>
+            <div *ngIf ="!OPIChecked" (click)="OPIcheck()" class="card p-4 mb-4 solution-container "   triggers="mouseenter:mouseleave" popoverClass="my-custom-class" popoverTitle="Online Payment Integration" ngbPopover="Integration with Major Payment Gateways such as Stripe, Paypal, Paymark.">
+                <i class="eva eva-credit-card-outline text-50"></i>
+                <h2 class="font-weight-bold card-title mb-2 mt-2">Online Payment Integration</h2>
+                <p class="card-text"></p>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-3 text-center">
+            <div *ngIf ="HMAChecked" (click)="HMAcheck()" class="card p-4 mb-4 solution-container active"   triggers="mouseenter:mouseleave" popoverClass="my-custom-class" popoverTitle="Hotel Mobile App" ngbPopover="iOS and Android Mobile App for Hotel or Group">
+                <i class="eva eva-smartphone-outline text-50"></i>
+                <h2 class="font-weight-bold card-title mb-2 mt-2">Hotel Mobile App</h2>
+                <p class="card-text">
+                 
+                </p>
+            </div>
+            <div *ngIf ="!HMAChecked" (click)="HMAcheck()" class="card p-4 mb-4 solution-container "   triggers="mouseenter:mouseleave" popoverClass="my-custom-class" popoverTitle="Hotel Mobile App" ngbPopover="iOS and Android Mobile App for Hotel or Group">
+                <i class="eva eva-smartphone-outline text-50"></i>
+                <h2 class="font-weight-bold card-title mb-2 mt-2">Hotel Mobile App</h2>
+                <p class="card-text">
+                 
+                </p>
+            </div>
+        </div>
+  
+   <!-- <button type="button" class="btn btn-outline-secondary btn-xl " placement="right" triggers="mouseenter:mouseleave" popoverClass="my-custom-class" popoverTitle="T" ngbPopover="iOS and Android Mobile App for Hotel or Group 
+                  Hotel Info
+                  Contact
+                  Photo Gallery
+                  Hotel Policies
+                  Rooms
+                  Hotel Layout Map
+                  Amenities
+                  Services
+                  Booking Button
+                  Nearby attraction">
+                    Tooltip on right
+                  </button> -->
+      </div>
+    <!-- <div class="row mb-5">
+        <div class="col-sm-12 col-md-12 col-lg-12  text-center">
+            <div class="card">
+                <div class="card-body">
+                    <p class="text-16 font-weight-700 mt-3">Basic</p>
+
+                    <h2 class="display-3 font-weight-bold mt-4 mb-4">Free</h2>
+                    <div class="switch round mdb-color-switch">
+                        <label>
+                          <input type="checkbox">
+                          <span class="lever"></span>
+                          On
+                        </label>
+                      </div>
+                    <p class="text-shadow mb-2">3 Projects</p>
+                    <p class="text-shadow mb-2">1 Initial Concept Included</p>
+                    <p class="text-shadow mb-2">Logo Transparency</p>
+
+                    <button class="btn btn-secondary btn-raised mt-5 mb-4">CHOOSE THE PLAN</button>
+
+                </div>
+            </div>
+        </div>
+       
+    </div> -->
+      <div class="row">
+          <!-- <div class="col-md-12 section-header mb-5">
+              <h2 class="font-weight-bold">Choose a Plan</h2>
+              <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Placeat ea quam laborum, ducimus,
+                  laboriosam sint dolorum aspernatur libero.</p>
+          </div> -->
+          <div class="col-sm-6 col-md-6 col-lg-3 mb-lg-0  mb-4  pricing-single-wrap">
+              <div class="card  o-hidden">
+                  <div class="card-header  text-center p-3 mb-2">
+                      <h3 class="card-title font-weight-bold mb-2 text-uppercase">Monthly Subscription</h3>
+                      <p class="text-uppercase mb-0">Base Price</p>
+                  </div>
+                  <div class="card-body pt-0 text-center">
+
+                      <p class="card-text  mb-2">
+                          <span class="money text-shadow  text-45 font-weight-bold"><sup
+                                  class="text-30 font-weight-normal">{{ this.symbol }}</sup>{{(this.monthlyPrice - ((this.discountAmount /100)*monthlyPrice)) * this.noOfRoom * this.cRate | number : '1.2-2'}}</span>
+                          <span>/Month x 1</span>
+                      </p>
+                      <div class="offer-lists mb-4">
+
+                          <ul class="list-group  list-group-flush">
+
+                              <!-- <li class="list-group-item p-1 ">or $1599 one time</li> -->
+                              <li class="list-group-item p-1 ">Total Discount: {{this.discountAmount}}%</li>
+                              <li class="list-group-item p-1 ">Total: {{ this.symbol }}{{(this.monthlyPrice - ((this.discountAmount /100)*monthlyPrice)) * this.noOfRoom * this.cRate | number : '1.2-2'}}/Month</li>
+
+                              <li class="list-group-item p-1 text-muted"></li>
+                              <li class="list-group-item p-1 text-muted"></li>
+                              <li class="list-group-item p-1 text-muted"></li>
+                          </ul>
+
+                      </div>
+
+                      <a class="btn btn-gradient half-button  pl-5 pr-5 pt-2 pb-2 " (click)="onmonthlySubscription()">Request Demo</a>
+                  </div>
+              </div>
+          </div>
+          <!-- end of card -->
+          <div class="col-sm-6 col-md-6 col-lg-3 mb-lg-0  mb-4  pricing-single-wrap">
+              <div class="card  o-hidden">
+                  <div class="card-header text-center p-3 mb-2">
+                      <h3 class="card-title font-weight-bold mb-2 text-uppercase">Half Yearly Subscription</h3>
+                      <p class="text-uppercase mb-0">5% Discount</p>
+                  </div>
+                  <div class="card-body pt-0 text-center">
+
+                      <p class="card-text  mb-2">
+                        <span class="p-1 text-muted">{{ this.symbol }}{{(this.monthlyPrice - (( this.discountAmount  / 100) * monthlyPrice)) * this.noOfRoom * this.cRate | number : '1.2-2'}} </span>
+                          <span class="money text-shadow  text-45 font-weight-bold"><sup
+                                  class="text-30 font-weight-normal">{{ this.symbol }}</sup>{{(this.monthlyPrice - (((this.halfYearlyDiscount +  this.discountAmount ) / 100) * monthlyPrice)) * this.noOfRoom * this.cRate | number : '1.2-2'}}</span>
+                          <span>/Month x 6</span> 
+                      </p>
+                      <div class="offer-lists mb-4">
+
+                          <ul class="list-group  list-group-flush">
+                              <!-- <li class="list-group-item p-1 ">PER MONTH FOR 10 ROOMS</li> -->
+                              <li class="list-group-item p-1 ">Total Discount: {{this.discountAmount + this. halfYearlyDiscount}}%</li>
+                              <li class="list-group-item p-1 ">Total: {{ this.symbol }}{{(this.halfyearlyPrice - (((this.halfYearlyDiscount +  this.discountAmount ) / 100) * halfyearlyPrice)) * this.noOfRoom * this.cRate | number : '1.2-2'}}</li>
+
+                              <li class="list-group-item p-1 text-muted"></li>
+                              <li class="list-group-item p-1 text-muted"></li>
+                              <li class="list-group-item p-1 text-muted"></li>
+                          </ul>
+
+                      </div>
+
+                      <a class="btn btn-gradient half-button  pl-5 pr-5 pt-2 pb-2 " (click)="onhalfYearSubscription()">Request Demo</a>
+                  </div>
+              </div>
+          </div>
+          <!-- end of card -->
+          <div class="col-sm-6 col-md-6 col-lg-3 mb-lg-0 mb-md-0 mb-sm-0 mb-4  pricing-single-wrap">
+              <div class="card  o-hidden">
+                  <div class="card-header text-center p-3 mb-2  bg-gradient text-white">
+                      <h3 class="card-title text-white font-weight-bold mb-2 text-uppercase">Yearly Subscription</h3>
+                      <p class="text-uppercase mb-0">10% Discount</p>
+                  </div>
+                  <div class="card-body pt-0 text-center">
+
+                      <p class="card-text  mb-2">
+                        <span class="p-1 text-muted">{{ this.symbol }}{{(this.monthlyPrice - (((this.subscriptionCount + this.propertySize) / 100)*monthlyPrice)) * this.noOfRoom * this.cRate | number : '1.2-2'}} </span>
+                          <span class="money text-shadow  text-45 font-weight-bold"><sup
+                                  class="text-30 font-weight-normal">{{ this.symbol }}</sup>{{(this.monthlyPrice - (((this.yearlyDiscount +  this.discountAmount ) / 100)*monthlyPrice)) * this.noOfRoom * this.cRate | number : '1.2-2'}}</span>
+                          <span>/Month x 12</span>
+                      </p>
+                      <div class="offer-lists mb-4">
+
+                          <ul class="list-group  list-group-flush">
+                              <!-- <li class="list-group-item p-1 ">10 Users access</li> -->
+                              <li class="list-group-item p-1 ">Total Discount: {{this.discountAmount + this. yearlyDiscount}}%</li>
+                              <li class="list-group-item p-1 ">Total: {{ this.symbol }}{{(this.yearlyPrice - (((this.yearlyDiscount +  this.discountAmount ) / 100)*yearlyPrice)) * this.noOfRoom * this.cRate | number : '1.2-2'}}</li>
+
+                              <li class="list-group-item p-1 text-muted"></li>
+                              <li class="list-group-item p-1 text-muted"></li>
+                              <li class="list-group-item p-1 text-muted"></li>
+                          </ul>
+
+                      </div>
+
+                      <a  class="btn btn-gradient half-button  pl-5 pr-5 pt-2 pb-2 " (click)="onYearSubscription()">Request Demo</a>
+                  </div>
+              </div>
+          </div>
+          <!-- end of card -->
+          <div class="col-sm-6 col-md-6 col-lg-3 mb-lg-0 mb-md-0 mb-sm-0   pricing-single-wrap">
+              <div class="card  o-hidden">
+                  <div class="card-header text-center p-3 mb-2">
+                      <h3 class="card-title font-weight-bold mb-2 text-uppercase">2 Years Subscription</h3>
+                      <p class="text-uppercase mb-0">15% Discount
+                      </p>
+                  </div>
+                  <div class="card-body pt-0 text-center">
+
+                      <p class="card-text  mb-2">
+                        <span class="p-1 text-muted">{{ this.symbol }}{{(this.monthlyPrice - (( this.discountAmount / 100)*monthlyPrice)) * this.noOfRoom * this.cRate | number : '1.2-2'}} </span>
+                          <span class="money text-shadow  text-45 font-weight-bold"><sup class="text-30 font-weight-normal">{{ this.symbol }}</sup>{{(this.monthlyPrice - (((this.twoYearDiscount + this.discountAmount ) / 100)*monthlyPrice)) * this.noOfRoom * this.cRate | number : '1.2-2'}}</span>
+                          <span>/Month x 24</span>
+                      </p>
+                      <div class="offer-lists mb-4">
+
+                          <ul class="list-group  list-group-flush">
+                              <!-- <li class="list-group-item p-1 ">Customized Solution</li> -->
+                              <li class="list-group-item p-1 ">Total Discount: {{this.discountAmount + this.twoYearDiscount}}%</li>
+                              <li class="list-group-item p-1 ">Total: {{ this.symbol }}{{(this.twoYearlyPrice - (((this.twoYearDiscount + this.discountAmount ) / 100)*twoYearlyPrice)) * this.noOfRoom * this.cRate | number : '1.2-2'}}</li>
+
+                              <li class="list-group-item p-1 text-muted"></li>
+                              <li class="list-group-item p-1 text-muted"></li>
+                              <li class="list-group-item p-1 text-muted"></li>
+                          </ul>
+
+                      </div>
+
+                      <a class="btn btn-gradient half-button  pl-5 pr-5 pt-2 pb-2 " (click)="on2YearSubscription()">Request Demos</a>
+                  </div>
+              </div>
+          </div>
+          <!-- end of card -->
+
+
+      </div>
+  </div>
+</section>

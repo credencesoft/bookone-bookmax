@@ -1,0 +1,130 @@
+<section id="intro-wrap" class="blog-details-wrap"*ngFor="let post of posts">
+    <div class="blog_header p-t-b-80 " >
+        
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12 text-white" >
+                    
+                    <h1 class="mt-4 text-white">  {{post.title.rendered}}</h1>
+
+
+                    <p class="lead text-white">
+                        by {{post._embedded['author'][0].name}}
+                    </p>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="container p-t-b-80">
+
+        <div class="row">
+            
+
+            <div class="col-lg-8">
+                <!-- <img *ngIf="post._embedded['wp:featuredmedia']" class="card-img" style="opacity: 30%;" [src]= "post._embedded['wp:featuredmedia'][0].source_url" alt="Card image"> -->
+                
+                <div class="post-body" [innerHTML]="post.content.rendered"></div>
+                <hr>
+                <!-- <div *ngIf="post.meta.previous_post"><a [routerLink]="post.meta.previous_post"><</a></div>
+                <div *ngIf="post.meta.next_post"><a [routerLink]="post.meta.next_post">></a></div> -->
+                <!-- Comments Form -->
+                <!-- <div class="card my-5 mb-5">
+                    <h5 class="card-header">Leave a Comment:</h5>
+                    <div class="card-body">
+                        <form>
+                            <div class="form-group">
+                                <textarea class="form-control" rows="3"></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-gradient">Submit</button>
+                        </form>
+                    </div>
+                </div> -->
+
+                <!-- Single Comment -->
+                <!-- <div class="media mb-4">
+                    <img class="d-flex mr-3 w-10 rounded-circle" src="./assets/images/landing/faces/15.jpg" alt="">
+                    <div class="media-body">
+                        <h5 class="mt-0">Jhon Doe</h5>
+                        Lorem ipsum, dolor sit amet consectetur adipisicing elit. Quis, tenetur. Repellat a quaerat culpa illo excepturi. Dignissimos, officia eum! Architecto dolores porro dolor delectus corrupti earum nesciunt sapiente aliquam dignissimos?
+                    </div>
+                </div> -->
+
+                <!-- Comment with nested comments -->
+                <!-- <div class="media">
+                    <img class="d-flex mr-3 w-10 rounded-circle" src="./assets/images/landing/faces/13.jpg" alt="">
+                    <div class="media-body">
+                        <h5 class="mt-0">Alex Petro</h5>
+                        Lorem ipsum, dolor sit amet consectetur adipisicing elit. Quis, tenetur. Repellat a quaerat culpa illo excepturi. Dignissimos, officia eum! Architecto dolores porro dolor delectus corrupti earum nesciunt sapiente aliquam dignissimos?
+
+                        <div class="media mt-4">
+                            <img class="d-flex mr-3 w-10 rounded-circle" src="./assets/images/landing/faces/12.jpg" alt="">
+                            <div class="media-body">
+                                <h5 class="mt-0"> Jassica Pearl</h5>
+                                Lorem ipsum, dolor sit amet consectetur adipisicing elit. Quis, tenetur. Repellat a quaerat culpa illo excepturi. Dignissimos, officia eum! Architecto dolores porro dolor delectus corrupti earum nesciunt sapiente aliquam dignissimos?
+                            </div>
+                        </div>
+
+                        <div class="media mt-4">
+                            <img class="d-flex mr-3 w-10 rounded-circle" src="./assets/images/landing/faces/5.jpg" alt="">
+                            <div class="media-body">
+                                <h5 class="mt-0">Micheal Clark</h5>
+                                Lorem ipsum, dolor sit amet consectetur adipisicing elit. Quis, tenetur. Repellat a quaerat culpa illo excepturi. Dignissimos, officia eum! Architecto dolores porro dolor delectus corrupti earum nesciunt sapiente aliquam dignissimos?
+                            </div>
+                        </div>
+
+                    </div>
+                </div> -->
+
+            </div>
+
+            <!-- end of col-8 -->
+            <div class="col-md-4">
+
+
+                <!-- <div class="card my-4">
+                    <h5 class="card-header">Search</h5>
+                    <div class="card-body">
+                        <div class="input-group">
+                            <input type="text" class="form-control rounded-pill" placeholder="Search for...">
+                            <span class="input-group-btn ml-2" ngModel name="search">
+              <button class="btn  btn-gradient" type="button" (click)="getSearch()" >Search</button>
+            </span>
+                        </div>
+                    </div>
+                </div> -->
+
+
+                <div class="card my-4">
+                    <h5 class="card-header">Categories</h5>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <ul class="list-unstyled mb-0"  >
+                                    <li *ngFor= 'let category of categories'>
+                                        <a  (click)="getCategoryFilter(category.slug)" >{{category.name}}</a>
+                                    </li>
+                                    
+                                </ul>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="card my-4">
+                    <h5 class="card-header">Welcome to our Blog</h5>
+                    <div class="card-body">
+                        
+                    </div>
+                </div>
+        
+            </div>
+        </div>
+        <!-- /.row -->
+    </div>
+    <!-- /.container -->
+</section>
