@@ -195,6 +195,7 @@ currentPage = 0; // page index
   priceingO: any;
   serviceChargePercentage: any;
   singleextraAdultChargeBookOne: any;
+   singleextraChildChargeBookOne: any;
   toggleListingDetails() {
     this.showListingDetails = !this.showListingDetails;
   }
@@ -2253,7 +2254,14 @@ resetLastChangedAge(planCode: string) {
         this.singleextraAdultChargeBookOne = 0;
       }
 
+
+
       this.extraChildCount = extraChildren;
+      if(this.extraChildCount > 0) {
+          this.singleextraChildChargeBookOne = ele1.extraChargePerChild;
+        } else {
+          this.singleextraChildChargeBookOne = 0;
+        }
       this.singleextraChildCount = this.singleextraChild;
       this.singleextraChildrenCharge = this.singleextraChild * ele1.extraChargePerChild;
       // if(this.singleextraChild > 0) {
@@ -2305,6 +2313,7 @@ resetLastChangedAge(planCode: string) {
     const singleextraAdultCharges = this.singleextraAdultCharge;
     const singleextraChildrenCharges = this.singleextraChildrenCharge;
     const singleextraAdultChargeBookOne = this.singleextraAdultChargeBookOne;
+    const singleextraChildrenChargeBookOne = this.singleextraChildChargeBookOne;
     if (this.businessUser.taxDetails.length > 0) {
       this.businessUser.taxDetails.forEach((element) => {
         if (element.name === 'GST') {
@@ -2414,6 +2423,7 @@ resetLastChangedAge(planCode: string) {
       SingleDayextraPersonChildCountAmount,
       singleextraAdultCharges,
       singleextraAdultChargeBookOne,
+      singleextraChildrenChargeBookOne,
       singleextraChildrenCharges,
       SingleDayextraPersonAdultCountAmount,
       roomId,
