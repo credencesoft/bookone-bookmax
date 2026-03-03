@@ -1,0 +1,650 @@
+.container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  padding: 20px;
+}
+
+.header img {
+  width: 100px;
+  height: 100px;
+}
+
+.header h1 {
+  margin-left: 20px;
+}
+
+.body {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+}
+
+.sidebar {
+  width: 20%;
+  padding: 20px;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+}
+
+.sidebar li {
+  margin-bottom: 10px;
+}
+
+.content {
+  flex: 1;
+  padding: 20px;
+}
+
+.content img {
+  width: 100%;
+  height: 100%;
+}
+
+.footer {
+  padding: 20px;
+  text-align: center;
+}
+.xyz{
+  background-color: #292763;
+}
+.zigzag-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.zigzag-item {
+  width: 48%; /* Adjust the width as needed */
+  margin-bottom: 20px;
+  transform: translateY(0);
+  transition: transform 0.3s ease-in-out;
+}
+
+.zigzag-item:nth-child(odd) {
+  transform: translateY(30px);
+}
+
+.page-footer {
+  background: url(/assets/images/Rectangle-4.png) no-repeat;
+  width: 97%;
+    height: 406px;
+    color: white;
+    font-size: 17px;
+    margin: 0;
+    margin-top: 100px;
+    border-radius: 0px 1191px 0px 273px;
+    margin-bottom: 100px;
+}
+
+.cardClickable2a {
+  border-radius: 25px;
+        border: 1px solid #000000;
+        background: linear-gradient(
+          180deg,
+          #020045 0%,
+          rgba(2, 0, 69, 0) 100%
+        );
+        text-align: left;
+        margin-top: 20px;
+        height: 147px;
+    width: 156px;
+}
+
+.textcol2a {
+  text-align: center;
+  font-weight: 700;
+  font-size: 13px
+}
+
+.imgcol {
+  display: flex;
+  justify-content: center;
+}
+
+.textcol2a {
+  text-align: center;
+    font-weight: 700;
+    font-size: 15px;
+}
+
+.minicard {
+  padding-left: 114px;
+}
+
+
+
+// .footer-support {
+//   margin-top: -36px;
+//     width: 300px;
+//     height: 265px;
+//     margin-left: 202px;
+// }
+
+// .footer-support1 {
+
+//     width: 300px;
+//     height: 265px;
+
+// }
+
+// img {
+//   max-width: 100%;
+//   height: auto;
+// }
+
+@media (max-width: 767px) {
+  /* Styles for mobile devices */
+
+  .col-1 {
+    display: none;
+  }
+
+  .col-3 {
+    padding-top: 0;
+  }
+
+  h1 {
+    font-size: 30px;
+  }
+
+  .zig-section {
+    display: none;
+  }
+}
+
+@media (max-width: 767px) {
+  /* Styles for mobile devices */
+
+  .cardClickable {
+    width: 100%;
+    margin-bottom: 20px;
+  }
+
+  .imgcol {
+    text-align: center;
+    margin-left: 6px;
+  }
+
+  .textcol {
+    font-size: 16px;
+  }
+}
+@media (max-width: 767px) {
+  body {
+    font-size: 16px;
+  }
+}
+.image-text-container {
+  display: flex; /* Use flexbox for layout */
+  align-items: center; /* Vertically align content */
+}
+
+/* Style for the image */
+.image-text-container img {
+  height: 20px;
+  margin-right: 10px; /* Add some spacing between the image and text */
+}
+
+@media (min-width: 767px) {
+  .col-6 {
+    width: 50%;
+  }
+  .textcol {
+    font-size: 20px;
+  }
+}
+
+@media (min-width: 1100px){
+  .footer-support {
+    margin-top: -36px;
+      width: 300px;
+      height: 265px;
+      margin-left: 120px;
+  }
+
+  .footer-support1 {
+
+    width: 360px;
+    height: 265px;
+
+
+  }
+
+  .connect2 {
+    padding-left: 150px;
+    padding-right: 65px;
+  }
+
+  .minicard {
+    padding-left: 114px;
+    margin-top: -13px;
+  }
+
+  .tab-page-footer {
+    display: none;
+
+  }
+
+  .mob-page-footer {
+    display: none;
+  }
+
+  .mob-page {
+    display: none;
+  }
+  .mobile_view_header{
+    display: none;
+  }
+  .mobile_view_header1{
+    display: none;
+  }
+
+  .tab-zig-section {
+    display: none;
+  }
+
+  .font-weight-bold {
+    padding-top: 50px;
+  }
+}
+
+@media (max-width: 767px) {
+  /* Styles for tablet view and below (up to 768px width) */
+  .sdfg {
+    // display: none !important;
+    width: 350px  }
+    .textcol-viw-10{
+      width: 350px
+     }
+.viw{
+  width: 350px !important
+}
+.textcol-viw-8{
+  margin-left: -16px !important
+}
+.textcol-viw-6{
+  margin-left: -16px !important
+
+}
+.textcol-viw{
+  margin-left: -14px !important
+
+}
+.textcol-viw-3{
+  margin-left: -42px !important
+}
+.challeng{
+  display: none !important;
+}
+.desktop_view_challen{
+  display: none !important;
+}
+// .cont-pg{
+//   width: 100px !important;
+//   text-align: center !important;
+//   padding-left: 20px !important;
+// }
+
+.image-text-container{
+  padding-left: 110px;
+}
+
+.light-firstone{
+  background-color: #292763 !important;
+}
+.mobile_view_header{
+  display: block !important;
+  color: #292763;
+  font-size: 40px;
+  font-weight: 700;
+  font-family: Inter;
+}
+.colimginn{
+  font-size: 30px !important;
+}
+    }
+
+
+
+
+
+    @media (max-width: 992px) {
+      /* Media query for phone and tablet views (max-width: 992px) */
+      .right-image-wrap {
+        background: linear-gradient(124deg, rgba(41, 39, 99, 0.9) 55.7%, rgba(41, 39, 99, 0) 70.98%);
+      }
+
+      .page-footer {
+        display: none;
+      }
+
+      .zig-section {
+        display: none;
+      }
+    }
+
+    @media (min-width: 767px) and (max-width: 1099px) {
+      .fluidone{
+        height: 367px;
+      }
+
+      .tab-page-footer {
+        background: url(/assets/images/Rectangle-4.png) no-repeat;
+        width: 97%;
+    height: 362px;
+    border-radius: 0px 1000px 0px 100px;
+    margin-top: 84px;
+    margin-bottom: 157px;
+      }
+
+      .footer-support11a {
+        height: 200px;
+        width: 238px;
+      }
+
+      .footer-support11 {
+        margin-top: -55px;
+      }
+
+      .mob-page-footer {
+        display: none;
+      }
+      .mob-page {
+        display: none;
+      }
+      .mobile_view_header{
+        display: none;
+      }
+      .mobile_view_header1{
+        display: none;
+      }
+      .zig-section {
+        display: none;
+      }
+
+      .tab-zig-itemA {
+        display: grid;
+        grid-template-columns: auto auto;
+        // grid-gap: 20px;
+    
+      }
+
+      .tab-zig-item {
+        margin-left: 10px;
+        margin-right: 14px;
+        margin-bottom: 10px;
+      }
+      .font-weight-bold {
+        padding-top: 40px;
+      }
+
+      .fluidone {
+        height: 296px;
+    }
+    }
+
+
+.textcol-viw{
+  font-weight: 700;
+  font-size: 19px;
+  padding: 10px;
+  background-color: #6798c8;
+  text-align: left;
+  margin-top: 20px;
+  height: 50px;
+  margin-bottom: -10px;
+  display: initial;
+  margin-left: -10px;
+
+}
+
+.textcol-viw-1{
+  text-align: center;
+  font-size: 13px;
+  text-align: left;
+  text-align: justify;
+  font-size: 20px;
+  margin-left: 5px;
+  margin-right: 5px;
+
+}
+
+.textcol-viw-3{
+  font-weight: 700;
+  font-size: 19px;
+  padding: 10px;
+  background-color: #6798c8;
+  text-align: left;
+  margin-top: 20px;
+  height: 50px;
+  margin-bottom: -10px;
+  display: initial;
+  margin-left: -10px;
+
+}
+.textcol-viw-4{
+  text-align: center;
+  font-size: 13px;
+  text-align: left;
+  text-align: justify;
+  font-size: 20px;
+  margin-left: 5px;
+  margin-right: 5px;
+
+}
+
+.textcol-viw-5{
+  text-align: center;
+  font-size: 13px;
+  text-align: left;
+  text-align: justify;
+  font-size: 20px;
+  margin-left: 5px;
+  margin-right: 5px;
+
+}
+
+.textcol-viw-6{
+  font-weight: 700;
+  font-size: 19px;
+  padding: 10px;
+  background-color: #6798c8;
+  text-align: left;
+  margin-top: 20px;
+  height: 50px;
+  margin-bottom: -10px;
+  display: initial;
+  margin-left: -10px;
+
+}
+.textcol-viw-7{
+  text-align: justify;
+    font-size: 20px;
+    margin-left: 5px;
+    margin-right: 5px;
+
+}
+.textcol-viw-8{
+  font-weight: 700;
+  font-size: 19px;
+  padding: 10px;
+  background-color: #6798c8;
+  text-align: left;
+  margin-top: 20px;
+  height: 50px;
+  margin-bottom: -10px;
+  display: initial;
+  margin-left: -10px;
+
+}
+.textcol-viw-9 {
+  height: 80px;
+    text-align: justify;
+    font-size: 20px;
+    margin-left: 5px;
+    margin-right: 5px;
+    padding-top: 15px;
+}
+
+.textcol-viw-10{
+  font-weight: 700;
+  font-size: 19px;
+  padding: 10px;
+  background-color: #6798c8;
+  text-align: left;
+  margin-top: 20px;
+  height: 50px;
+  margin-bottom: -10px;
+  display: initial;
+  margin-left: -10px;
+}
+
+/* Default styles for larger screens */
+.cardClickable-viw {
+  margin-left: 20px;
+}
+
+.textcol-viw-10 {
+  font-weight: 700;
+  font-size: 19px;
+  padding: 10px;
+  background-color: #6798c8;
+  text-align: left;
+  margin-top: 20px;
+  height: 50px;
+  margin-bottom: -10px;
+  display: initial;
+  margin-left: -10px;
+}
+
+.textcol-viw-9 {
+  height: 80px;
+  text-align: justify;
+  font-size: 20px;
+  margin-left: 5px;
+  margin-right: 5px;
+  padding-top: 15px;
+}
+
+/* Media query for tablets (portrait) */
+@media screen and (max-width: 767px) {
+  .cardClickable-viw {
+    margin-left: 10px; /* Adjust the margin for smaller screens */
+  }
+
+  .textcol-viw-10 {
+    font-size: 16px; /* Adjust the font size for smaller screens */
+    height: 40px; /* Adjust the height for smaller screens */
+  }
+
+  .textcol-viw-9 {
+    font-size: 16px; /* Adjust the font size for smaller screens */
+  }
+  .tab-page-footer {
+    display: none;
+  }
+
+  .mob-page-footer {
+    background: url(/assets/images/Rectangle-4.png) no-repeat;
+    width: 366px;
+    height: 286px;
+    border-radius: 0px 200px 0px 34px;
+    margin-top: 48px;
+    margin-left: 5px;
+    margin-bottom: 174px;
+  }
+
+  .cardClickable2a {
+    border-radius: 25px;
+    border: 1px solid #000000;
+    background: linear-gradient(180deg, #020045 0%, rgba(2, 0, 69, 0) 100%);
+    text-align: left;
+    margin-top: 20px;
+    height: 147px;
+    width: 113px;
+    padding: 5px;
+    margin-left: 3px;
+}
+
+.textcol2a {
+  text-align: center;
+  font-weight: 700;
+  font-size: 13px;
+  color: #fff !important;
+}
+
+.zig-section {
+  display: none;
+}
+
+.tab-zig-item {
+  margin: auto !important;
+  display: flex !important;
+}
+
+
+
+  /* Add further adjustments for tablet view as needed */
+}
+
+/* Media query for phones */
+@media screen and (max-width: 576px) {
+  .cardClickable-viw {
+    margin-left: 10px; /* Adjust the margin for smaller screens */
+  }
+
+  .textcol-viw-10 {
+    font-size: 14px; /* Adjust the font size for smaller screens */
+    height: 30px; /* Adjust the height for smaller screens */
+  }
+
+  .textcol-viw-9 {
+    font-size: 14px; /* Adjust the font size for smaller screens */
+    height: 60px; /* Adjust the height for smaller screens */
+    padding-top: 10px;
+  }
+
+
+
+  /* Add further adjustments for phone view as needed */
+}
+
+.light-firstone{
+  background: linear-gradient( 124deg, rgba(41, 39, 99, 0.9) 55.7%, rgba(41, 39, 99, 0) 70.98% );
+  height: auto;
+}
+
+
+
+.desktop_view_challen{
+  display: block;
+}
+.card_style_google{
+  margin-bottom: 40px;
+}
+.fgd{
+  display: block;
+}
+@media(max-width:500px){
+  .fgd{
+    display: none !important;
+  }
+  .fluidone{
+    height: 309px !important;
+  }
+
+}
+
+
+
+

@@ -1,0 +1,401 @@
+$elSet: 3;
+$elCount: $elSet * 2;
+$orange-light: #221950;
+$yellow: #221950;
+$blue-light: #221950;
+$blue: #221950;
+$smooth: cubic-bezier(0, 0.72, 0.58, 1);
+
+
+.bar {
+  display: flex;
+  flex-direction: row-reverse;
+  margin: auto auto 0;
+  // width: 2000px;
+  max-width: calc(100% - 200px);
+
+
+  &-input {
+    opacity: 0;
+    pointer-events: none;
+    position: absolute;
+    // top: -9999px;
+    // left: -9999px;
+
+
+    &:checked {
+      ~.bar-view {
+        @for $n from 1 through $elCount {
+          $r: $elCount - $n +1;
+
+
+          @if $r % 2==0 {
+            &:nth-child(#{$r}) {
+              &:after {
+                transition-delay: 0.1s * ($n / 2 - 1);
+              }
+
+
+              .bar-button:before {
+                transition-delay: 0.1s * ($n / 2 - 1) + 0.06s;
+              }
+            }
+          }
+        }
+
+
+        &:after {
+          transform: scaleX(1);
+        }
+
+
+        .bar-button:before {
+          transform: none;
+          opacity: 1;
+        }
+      }
+
+
+      +.bar-view {
+        .bar-button:after {
+          opacity: 1;
+        }
+      }
+    }
+  }
+
+
+  &-view {
+    display: flex;
+    flex-grow: 1;
+    position: relative;
+
+
+    &:after {
+      height: 2px;
+      top: calc(50% - 1px);
+      transition: transform 0.06s $smooth;
+      transform: scaleX(0);
+      background: $orange-light;
+      transform-origin: left;
+      z-index: 1;
+    }
+
+
+    &:not(:last-child) {
+
+
+      &:before,
+      &:after {
+        content: '';
+        width: calc(100% - 24px);
+        position: absolute;
+        right: calc(50% + 12px);
+      }
+
+
+      &:before {
+        height: 6px;
+        top: calc(50% - 3px);
+        background: $blue;
+      }
+
+
+      @for $n from 1 through $elCount {
+        @if $n % 2==0 {
+          &:nth-child(#{$n}) {
+            &:after {
+              transition-delay: 0.1s * ($n / 2 - 1);
+            }
+
+
+            .bar-button:before {
+              transition-delay: 0.1s * ($n / 2 - 1) + 0.06s;
+            }
+          }
+        }
+      }
+    }
+  }
+
+
+  &-button {
+    display: block;
+    width: 30px;
+    height: 30px;
+    margin: auto;
+    border-radius: 50%;
+    border: 3px solid $blue;
+    position: relative;
+    cursor: pointer;
+    box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.3), 2px 2px 8px rgba(0, 0, 0, 0.1);
+
+
+    &:hover:after {
+      transform: none;
+      opacity: 1;
+
+
+    }
+
+
+    &:before,
+    &:after {
+      content: '';
+      position: absolute;
+      pointer-events: none;
+
+
+    }
+
+
+    &:before {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      transform: scale(0.3);
+      opacity: 0;
+      transition: transform 0.2s $smooth, opacity 0.2s $smooth;
+    }
+
+
+    &:after {
+      border: 8px solid transparent;
+      border-top-color: $blue-light;
+      bottom: calc(100% + 10px);
+      left: calc(50% - 8px);
+      transform: translateY(-10px);
+      opacity: 0;
+    }
+  }
+}
+
+
+.command {
+
+
+  letter-spacing: 1px;
+  margin: 30px auto auto;
+  animation: fade 1s ease infinite;
+}
+
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(to bottom right, transparentize($yellow, 0.9), #fff);
+}
+
+
+
+
+
+
+* {
+  box-sizing: border-box;
+
+
+  &:before,
+  &:after {
+    box-sizing: inherit;
+  }
+}
+
+
+.dropdown-container {
+  position: relative;
+  display: inline-block;
+}
+
+
+.dropdown-input {
+  padding: 5px;
+}
+
+
+.sorting-arrow {
+  position: absolute;
+  top: 45px;
+  right: 30px;
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+
+
+
+
+
+
+.dropdown-list {
+  padding: 0;
+  margin-top: 10px;
+  border-radius: 10px;
+  border: 0.5px solid #221950;
+  background: #FFF;
+
+
+  overflow-y: auto;
+}
+
+
+.dropdown-list li {
+  padding: 5px;
+  cursor: pointer;
+  border-radius: 10px 10px 0px 0px;
+  border-bottom: 0.5px solid #000;
+}
+
+
+.dropdown-list li:hover {
+  background-color: #f0f0f0;
+}
+
+
+.couponcodepara {
+  color: #FFF;
+  text-align: center;
+
+
+  margin-top: 20px;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+
+.happycouponcodeimg {
+  width: 112px;
+}
+
+
+.happybox {
+  height: auto;
+  border-radius: 60px;
+  background: #221950;
+  margin-top: 20px;
+  margin: auto;
+  width: 50%;
+  padding-top: 10px;
+
+}
+
+
+.popup-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  /* Semi-transparent background to dim the rest of the page */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1;
+}
+
+
+.popup {
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+  text-align: center;
+}
+
+
+.headingcoupon {
+  color: #FFF;
+  text-align: center;
+
+
+  font-size: 15px;
+  font-weight: 700;
+  padding-left: 40px;
+  padding-right: 40px;
+  padding-top: 40px;
+  padding-bottom: 20px;
+}
+
+
+.headingcoupon2 {
+  color: #FFF;
+  text-align: center;
+
+
+  font-size: 20px;
+  font-weight: 700;
+  padding-bottom: 20px;
+  padding-left: 40px;
+  padding-right: 40px;
+}
+
+
+@media (max-width: 992px) {
+  .bar-views {
+    margin-left: 120px;
+  }
+
+
+}
+
+
+
+
+
+
+
+
+@media (max-width: 768px) {
+  .bar {
+    display: none;
+  }
+
+
+  .mini-card {
+    display: none;
+  }
+
+
+  .bar-views {
+    display: none;
+  }
+
+
+  .couponcodepara {
+    color: #FFF;
+    text-align: center;
+
+
+    margin-top: 20px;
+    font-size: 20px;
+    font-weight: 700;
+  }
+
+
+  .happycouponcodeimg {
+    width: 106px;
+  }
+
+
+  .happybox {
+    padding-left: 17px;
+    padding-right: 13px;
+    padding-top: 10px;
+    height: auto;
+    border-radius: 60px;
+    background: #221950;
+    margin-left: 45px;
+    margin-right: 45px;
+    margin-top: 20px;
+    margin: auto;
+  width: 70%;
+  }
+
+
+}
+
+
+
