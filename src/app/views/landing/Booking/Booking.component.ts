@@ -2438,7 +2438,7 @@ this.tokenToTime = this.combinedDateToTime;
         ? booking.totalAmount -
           (plan.extraPersonCharge + plan.extraPersonChildCountAmount)
         : plan.price -
-          (enquiryForm.extraPersonCharge + enquiryForm.extraChildCharge);
+          (enquiryForm.extraPersonCharge + plan.extraPersonChildCountAmount);
 
     enquiryForm.externalSite = 'WebSite';
     enquiryForm.source = 'Bookone Connect';
