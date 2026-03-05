@@ -63,10 +63,6 @@ const routes: Routes = [
     component: PaymentComponent
   },
   {
-    path:'checkout-rayzorpay',
-    component:CheckoutRazorpayComponent,
-  },
-  {
     path: 'v1',
     component: LandingV1Component
   },
@@ -269,6 +265,10 @@ const routes: Routes = [
   {
     path: 'booking',
     component: BookingComponent, data: {title: 'booking'}
+  },
+    {
+    path:'checkout-rayzorpay',
+    component:CheckoutRazorpayComponent,
   },
   {
     path: ":detail",
