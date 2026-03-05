@@ -149,7 +149,7 @@ if (this.businessUser.paymentGatewayApiKey === keyId) {
       ondismiss: () => {
         console.warn('Payment popup closed by user.');
         this.zone.run(() => {
-          this.router.navigateByUrl('/payment-failure'); // fallback page
+          this.router.navigate(['/payment-failure']); // fallback page
         });
       }
     }
@@ -197,8 +197,8 @@ if (this.businessUser.paymentGatewayApiKey === keyId) {
         this.showSuccess(this.contentDialog);
         this.changeDetectorRefs.detectChanges();
         this.loading = false;
-        this.router.navigateByUrl('/payment-confirmation');
-      }, 1000); // Delay redirect by 3 seconds
+        this.router.navigate(['/payment-confirmation']);
+      }, 1000);
     } else {
       this.paymentLoader = false;
       setTimeout(() => {
