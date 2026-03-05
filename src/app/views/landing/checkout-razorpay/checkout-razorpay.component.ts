@@ -197,7 +197,6 @@ if (this.businessUser.paymentGatewayApiKey === keyId) {
         this.showSuccess(this.contentDialog);
         this.changeDetectorRefs.detectChanges();
         this.loading = false;
-        // ✅ Redirect after showing the success message
         this.router.navigateByUrl('/payment-confirmation');
       }, 1000); // Delay redirect by 3 seconds
     } else {
