@@ -4698,7 +4698,7 @@ if (bookingSummaryStr) {
           this.token.saveBookingData(this.booking);
           this.token.savePaymentData(this.payment);
           this.token.savePropertyData(this.businessUser);
-          const url = `${window.location.origin}/checkout-rayzorpay`;
+          const url = `https://bookone.io/checkout-rayzorpay`;
           const paymentWindow = window.open(url, '_blank');
 
           const TWO_MINUTES = 2.3 * 60 * 1000;
