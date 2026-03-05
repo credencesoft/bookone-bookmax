@@ -4698,18 +4698,16 @@ if (bookingSummaryStr) {
           this.token.saveBookingData(this.booking);
           this.token.savePaymentData(this.payment);
           this.token.savePropertyData(this.businessUser);
-           const url = this.router.serializeUrl(
-          this.router.createUrlTree(['/checkout-rayzorpay'])
-        );
-                         const paymentWindow = window.open(url, '_blank');
+          const url = `${window.location.origin}/checkout-rayzorpay`;
+          const paymentWindow = window.open(url, '_blank');
 
-                const TWO_MINUTES = 2.3 * 60 * 1000;
+          const TWO_MINUTES = 2.3 * 60 * 1000;
 
-                setTimeout(() => {
-                  if (paymentWindow && !paymentWindow.closed) {
-                    paymentWindow.close();
-                  }
-                }, TWO_MINUTES);
+          setTimeout(() => {
+            if (paymentWindow && !paymentWindow.closed) {
+              paymentWindow.close();
+            }
+          }, TWO_MINUTES);
           // this.router.navigate(['/checkout-rayzorpay']);
         }
       });
