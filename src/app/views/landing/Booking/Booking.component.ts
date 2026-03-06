@@ -656,7 +656,7 @@ private startPaymentStatusPolling() {
     const elapsedTime = Date.now() - this.paymentStartTime;
 
     // ⏱ 4 minute timeout
-    if (elapsedTime > TWO_MINUTES) {
+    if (elapsedTime >= TWO_MINUTES) {
 
       clearInterval(this.paymentPoller);
       this.paymentPoller = null;
