@@ -1985,40 +1985,45 @@ onIncrement(planCode: string, type: 'adults' | 'children', plan: any) {
 
   const adults = this.selectedGuestsByPlan[planCode].adults;
 
-  const above5Count = this.childAgesByPlan[planCode]
-    .filter(a => a !== null && a > 5).length;
+  const ages = this.childAgesByPlan[planCode];
+
+  const above5Count = ages.filter(a => a !== null && a > 5).length;
+  const under5Count = ages.filter(a => a !== null && a <= 5).length;
+
+  const totalPersons = adults + above5Count + under5Count;
 
   if (type === 'adults') {
 
-    const allowedAdults = maxOccupancy - above5Count;
-
-    if (adults < allowedAdults) {
-      this.selectedGuestsByPlan[planCode].adults++;
-    } else {
+    if (totalPersons >= maxOccupancy) {
       this.showTemporaryError(
         planCode,
         `Maximum occupancy of ${maxOccupancy} exceeded.`
       );
+      return;
     }
 
+    this.selectedGuestsByPlan[planCode].adults++;
     return;
   }
 
   if (type === 'children') {
-    if (this.childAgesByPlan[planCode].some(a => a === null)) {
+
+    if (ages.some(a => a === null)) {
       this.showTemporaryError(
         planCode,
         'Please select age for all existing children first.'
       );
       return;
     }
-    if ((adults + above5Count) >= maxOccupancy) {
+
+    if (totalPersons >= maxOccupancy) {
       this.showTemporaryError(
         planCode,
         `Maximum occupancy of ${maxOccupancy} exceeded.`
       );
       return;
     }
+
     this.selectedGuestsByPlan[planCode].children++;
     this.childAgesByPlan[planCode].push(null);
 

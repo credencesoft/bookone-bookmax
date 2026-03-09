@@ -322,7 +322,10 @@
                           | number: "1.2-2"
                       }}
                       per night</small
-                    >
+                    > <br *ngIf="
+                        plan.SingleDayextraPersonAdultCountAmount &&
+                        !activeForGoogleHotelCenter
+                      "/>
                     <small
                       *ngIf="
                         plan.SingleDayextraPersonChildCountAmount &&
@@ -335,7 +338,10 @@
                           | number: "1.2-2"
                       }}
                       per night</small
-                    >
+                    > <br *ngIf="
+                        plan.SingleDayextraPersonChildCountAmount &&
+                        !activeForGoogleHotelCenter
+                      " />
                   </div>
 
                   <div class="d-flex align-items-start">
@@ -3660,7 +3666,10 @@
                           | number: "1.2-2"
                       }}
                       per night</small
-                    >
+                    > <br *ngIf="
+                        plan.SingleDayextraPersonAdultCountAmount &&
+                        !activeForGoogleHotelCenter
+                      " />
                     <small
                       *ngIf="
                         plan.SingleDayextraPersonChildCountAmount &&
@@ -3673,7 +3682,10 @@
                           | number: "1.2-2"
                       }}
                       per night</small
-                    >
+                    > <br *ngIf="
+                        plan.SingleDayextraPersonChildCountAmount &&
+                        !activeForGoogleHotelCenter
+                      " />
                   </div>
 
                   <div class="d-flex align-items-start">
