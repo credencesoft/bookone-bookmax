@@ -1963,7 +1963,8 @@ onRoomSelect(roomName: string, planCode: string, count: number | string) {
   // }
 
 onIncrement(planCode: string, type: 'adults' | 'children', plan: any) {
-  this.guestSelectionErrors[planCode] = ''; // reset error
+
+  this.guestSelectionErrors[planCode] = '';
 
   const selectedRooms = this.selectedRoomsByPlan[planCode] || 0;
 
@@ -1975,43 +1976,54 @@ onIncrement(planCode: string, type: 'adults' | 'children', plan: any) {
   if (!this.selectedGuestsByPlan[planCode]) {
     this.selectedGuestsByPlan[planCode] = { adults: 0, children: 0 };
   }
+
   if (!this.childAgesByPlan[planCode]) {
     this.childAgesByPlan[planCode] = [];
   }
+
+  const maxOccupancy = plan.maximumOccupancy * selectedRooms;
+
+  const adults = this.selectedGuestsByPlan[planCode].adults;
+
+  const above5Count = this.childAgesByPlan[planCode]
+    .filter(a => a !== null && a > 5).length;
+
   if (type === 'adults') {
-  const above5Count = this.childAgesByPlan[planCode].filter(a => a !== null && a > 5).length;
-    const limit = (plan.maximumOccupancy ) * selectedRooms;
-    if (this.selectedGuestsByPlan[planCode].adults < limit) {
+
+    const allowedAdults = maxOccupancy - above5Count;
+
+    if (adults < allowedAdults) {
       this.selectedGuestsByPlan[planCode].adults++;
     } else {
-      this.showTemporaryError(planCode, `Max adults allowed is ${limit}.`);
+      this.showTemporaryError(
+        planCode,
+        `Maximum occupancy of ${maxOccupancy} exceeded.`
+      );
     }
+
     return;
   }
 
   if (type === 'children') {
-    const limit = ((plan.maximumOccupancy + plan.noOfChildren) * selectedRooms) - this.selectedGuestsByPlan[planCode].adults;
-    const below2yearslimit = 2 * selectedRooms;
-    const under2Count = this.childAgesByPlan[planCode].filter(a => a !== null && a <= 2).length;
-   const above5Count = this.childAgesByPlan[planCode].filter(a => a !== null && a > 5).length;
-    if (under2Count > below2yearslimit) {
-    this.showTemporaryError(planCode, `Only ${below2yearslimit} children under 5 years allowed.`);
-    return;
-  }
-    if (above5Count < limit) {
-      if (this.childAgesByPlan[planCode].some(a => a === null)) {
-        this.showTemporaryError(planCode, 'Please select age for all existing children first.');
-        return;
-      }
-      this.selectedGuestsByPlan[planCode].children++;
-      this.childAgesByPlan[planCode].push(null);
-    } else {
-      this.showTemporaryError(planCode, `Max children above 5 years allowed is ${limit}.`);
+    if (this.childAgesByPlan[planCode].some(a => a === null)) {
+      this.showTemporaryError(
+        planCode,
+        'Please select age for all existing children first.'
+      );
+      return;
     }
+    if ((adults + above5Count) >= maxOccupancy) {
+      this.showTemporaryError(
+        planCode,
+        `Maximum occupancy of ${maxOccupancy} exceeded.`
+      );
+      return;
+    }
+    this.selectedGuestsByPlan[planCode].children++;
+    this.childAgesByPlan[planCode].push(null);
+
     return;
   }
-
-
 }
 
 
@@ -2059,16 +2071,36 @@ onDecrement(planCode: string, type: 'adults' | 'children') {
 
 
 onChildAgeChange(planCode: string, plan: any) {
-    const selectedRooms = this.selectedRoomsByPlan[planCode] || 0;
-  const limit = plan.maximumOccupancy + plan.noOfChildren - this.selectedGuestsByPlan[planCode].adults * selectedRooms;
-  const above5Count = this.childAgesByPlan[planCode].filter(a => a !== null && a > 5).length;
-  const under2Count = this.childAgesByPlan[planCode].filter(a => a !== null && a <= 2).length;
 
-  // if (above5Count > limit) {
-  //   this.showTemporaryError(planCode, `Max children above 5 yrs allowed is ${limit}.`);
-  // } else if (under2Count > 2) {
-  //   this.showTemporaryError(planCode, 'Only 2 children under 2 years allowed.');
-  // }
+  const selectedRooms = this.selectedRoomsByPlan[planCode] || 0;
+  const maxOccupancy = plan.maximumOccupancy * selectedRooms;
+
+  const ages = this.childAgesByPlan[planCode] || [];
+
+  const adults = this.selectedGuestsByPlan[planCode]?.adults || 0;
+
+  const above5Count = ages.filter(a => a !== null && a > 5).length;
+  const under5Count = ages.filter(a => a !== null && a <= 5).length;
+
+  const under5Limit = 2 * selectedRooms;
+
+  if (under5Count > under5Limit) {
+    this.showTemporaryError(
+      planCode,
+      `Only ${under5Limit} children below 5 years allowed.`
+    );
+    return;
+  }
+
+  if ((adults + above5Count) > maxOccupancy) {
+    this.showTemporaryError(
+      planCode,
+      `Maximum occupancy of ${maxOccupancy} exceeded.`
+    );
+    return;
+  }
+
+  this.guestSelectionErrors[planCode] = '';
 }
 getChildCount(planCode: string) {
   return (this.childAgesByPlan[planCode] || []).filter(age => age > 0).length;
@@ -2168,28 +2200,29 @@ resetLastChangedAge(planCode: string) {
                 roomCount: selectedRooms
               };
 
-              // Step 3: Check if the plan already exists
               const existingIndex = guestDataArray.findIndex(
                 entry => entry.planCode === plan.code
               );
 
-              // Step 4: Update or add the entry
+
               if (existingIndex > -1) {
                 guestDataArray[existingIndex] = newEntry;
               } else {
                 guestDataArray.push(newEntry);
               }
 
-              // Step 5: Save the updated array back to sessionStorage
               sessionStorage.setItem('guestDataArray', JSON.stringify(guestDataArray));
-
-
 
               rates.roomRatePlans.forEach((ele1) => {
 
     if (plan.code === ele1.code) {
       const totalMinAdults = ele1.minimumOccupancy * selectedRooms;
-      const totalMinChildren = ele1.noOfChildren * selectedRooms;
+      const totalMinChildren =
+      selectedGuests.adults < (ele1.minimumOccupancy * selectedRooms)
+        ? (ele1.minimumOccupancy * selectedRooms) - selectedGuests.adults
+        : 0;
+        console.log('totalMinAdults is',totalMinAdults);
+        console.log('totalMinChildren is',totalMinChildren);
       // if (selectedRooms > 1) {
       // const singleRoomCountOccupancyAdult = ele1.minimumOccupancy * 1;
       // console.log('singleRoomCountOccupancyAdult is',singleRoomCountOccupancyAdult);
@@ -2210,27 +2243,29 @@ resetLastChangedAge(planCode: string) {
 
   const singleRoomCountOccupancyChild = ele1.noOfChildren * 1;
 
-  // Calculate total included adults/children for all rooms
-  const totalIncludedAdults = ele1.minimumOccupancy * selectedRooms;
-  const totalIncludedChildren = ele1.noOfChildren * selectedRooms;
+const totalIncludedAdults = ele1.minimumOccupancy * selectedRooms;
 
-  // Calculate total extra adults and children
-  const totalExtraAdults =
-    selectedGuests.adults > totalIncludedAdults
-      ? selectedGuests.adults - totalIncludedAdults
-      : 0;
 
-  const totalExtraChildren =
-    above5Count > totalIncludedChildren
-      ? above5Count - totalIncludedChildren
-      : 0;
+const totalIncludedChildren =
+  selectedGuests.adults < totalIncludedAdults
+    ? totalIncludedAdults - selectedGuests.adults
+    : 0;
 
-  // Divide evenly across rooms (average per room)
-  this.singleextraAdults =
-    totalExtraAdults > 0 ? totalExtraAdults / selectedRooms : 0;
+const totalExtraAdults =
+  selectedGuests.adults > totalIncludedAdults
+    ? selectedGuests.adults - totalIncludedAdults
+    : 0;
 
-  this.singleextraChild =
-    totalExtraChildren > 0 ? totalExtraChildren / selectedRooms : 0;
+const totalExtraChildren =
+  above5Count > totalIncludedChildren
+    ? above5Count - totalIncludedChildren
+    : 0;
+
+this.singleextraAdults =
+  totalExtraAdults > 0 ? totalExtraAdults / selectedRooms : 0;
+
+this.singleextraChild =
+  totalExtraChildren > 0 ? totalExtraChildren / selectedRooms : 0;
 
 }
 
