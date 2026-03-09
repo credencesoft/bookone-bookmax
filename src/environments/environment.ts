@@ -32,7 +32,7 @@ export const environment = {
   iosAppUrl: 'https://apps.apple.com/us/app/bookone-local/id1528910778',
   payuUrl: 'https://payu.payment.uat.bookone.io',
   country: 'in',
-  googleKey: '',
+  googleKey: 'AIzaSyD76Ocky2MYrAcI-f9H3XbxzsrSB0TsbJI',
   // callbackUrl: 'http://localhost:4200/#/details?ReferenceNumber='
   callbackUrl: 'https://bookone.io/payment-confirmation',
   failureCode:'https://bookone.io/payment-failure',

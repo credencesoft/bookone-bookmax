@@ -42,7 +42,7 @@ import { Room } from 'src/app/model/room';
 // import { Details } from '../ListWithSidebar/ListWithSidebar.component';
 
 import { RoomRatePlans } from 'src/app/model/roomRatePlans';
-import { DomSanitizer, Meta, SafeUrl, Title } from '@angular/platform-browser';
+import { DomSanitizer, Meta, SafeResourceUrl, SafeUrl, Title } from '@angular/platform-browser';
 // import { TriggerEventService } from 'src/app/services/trigger-event.service';
 import { FormControl, FormGroup, NgForm, Validators } from '@angular/forms';
 import { environment } from 'src/environments/environment';
@@ -925,7 +925,13 @@ isRoomDescriptionExpanded = false;
 descriptionWordLimit = 30;
 expandedRoomDescriptions: { [roomId: string]: boolean } = {};
   private readonly isBrowser: boolean;
-
+is24HourMode: boolean = false;
+selectedTime: string = '';
+timeSlots: string[] = [];
+filteredTimeSlots: string[] = [];
+  activeTab: 'photos' | 'tour' = 'photos';
+showModal = false;
+googleMapUrl!: SafeResourceUrl;
   constructor(
     private listingService: ListingService,
     public SchemaService:SchemaService,
@@ -1102,7 +1108,7 @@ if (isPlatformBrowser(this.platformId)) {
 
     this.bookingMinDate = this.calendar.getToday();
     this.bookingengineurl = this.token.getwebsitebookingURL();
-
+    this.generateTimeSlots();
       sessionStorage.removeItem('enquiryNo');
       sessionStorage.removeItem('bookingsResponseList');
       sessionStorage.removeItem('EnquiryResponseList');
@@ -1514,6 +1520,7 @@ if (storedBooking) {
       this.token.getProperty() !== null
     ) {
       this.propertyData = this.token.getProperty();
+
                    this.accommodationData =
           this.propertyData.businessServiceDtoList?.filter(
             (entry) => entry.name === 'Accommodation'
@@ -1595,6 +1602,39 @@ if (storedBooking) {
 
   }
   }
+generateTimeSlots() {
+  // Generate every 30 minutes
+  for (let hour = 0; hour < 24; hour++) {
+    for (let min of [0, 30]) {
+      const h = hour % 12 === 0 ? 12 : hour % 12;
+      const ampm = hour < 12 ? 'AM' : 'PM';
+      const minute = min === 0 ? '00' : '30';
+      this.timeSlots.push(`${h}:${minute} ${ampm}`);
+    }
+  }
+  this.filteredTimeSlots = [...this.timeSlots];
+}
+getLatLngFromPlaceId(placeId: string) {
+  const url = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&fields=geometry&key=${environment.googleKey}`;
+
+  this.http.get(url).subscribe((res: any) => {
+    const location = res.result.geometry.location;
+    const lat = location.lat;
+    const lng = location.lng;
+
+    this.generateStreetView(lat, lng);
+    console.log('Latitude:', lat, 'Longitude:', lng);
+  });
+}
+
+generateStreetView(lat: number, lng: number) {
+  const url = `https://www.google.com/maps/embed/v1/streetview?key=${environment.googleKey}&location=${lat},${lng}&heading=210&pitch=10&fov=80`;
+
+  this.googleMapUrl =
+    this.sanitizer.bypassSecurityTrustResourceUrl(url);
+
+  console.log("Street View URL:", url);
+}
 roomDescriptionPreview(room: any): string {
   if (!room?.description) return '';
 
@@ -1915,10 +1955,12 @@ onRoomSelect(roomName: string, planCode: string, count: number | string) {
 
   openGalleryModal() {
     $(`#${this.galleryModalRef.nativeElement.id}`).modal('show');
+    // this.showModal = true;
   }
 
   closeGalleryModal() {
     $(`#${this.galleryModalRef.nativeElement.id}`).modal('hide');
+    this.showModal = false;
   }
 
   openCarouselModal(index: number, fromGallery: boolean = false) {
@@ -6260,6 +6302,7 @@ this.token.savePropertyUrl(currentUrl);
           this.loaderHotelBooking = false;
 
           this.availableRooms = response.body.roomList;
+          this.getLatLngFromPlaceId(this.businessUser.placeId);
             this.availableRooms = response.body.roomList.sort(
             (a: any, b: any) => b.roomOnlyPrice - a.roomOnlyPrice
           );
@@ -7089,6 +7132,11 @@ getTotalTaxPrice(): number {
       }
       this.fromDate = date;
       this.toDate = null;
+      if (this.isToday(date)) {
+      this.filterPastTimes();
+    } else {
+      this.filteredTimeSlots = [...this.timeSlots];
+    }
       this.minDateForCheckOut = date; // Disable dates before check-in for checkout
     } else if (type === 'checkout') {
       if (this.fromDate && date.after(this.fromDate)) {
@@ -7111,7 +7159,30 @@ getTotalTaxPrice(): number {
       date.before(this.hoveredDate)
     );
   }
+isToday(date: any): boolean {
+  const today = new Date();
+  return (
+    date.year === today.getFullYear() &&
+    date.month === today.getMonth() + 1 &&
+    date.day === today.getDate()
+  );
+}
 
+filterPastTimes() {
+  const now = new Date();
+  const currentMinutes = now.getHours() * 60 + now.getMinutes();
+
+  this.filteredTimeSlots = this.timeSlots.filter(time => {
+    const [hourMinute, period] = time.split(' ');
+    let [hour, minute] = hourMinute.split(':').map(Number);
+
+    if (period === 'PM' && hour !== 12) hour += 12;
+    if (period === 'AM' && hour === 12) hour = 0;
+
+    const totalMinutes = hour * 60 + minute;
+    return totalMinutes > currentMinutes;
+  });
+}
   isInside(date: NgbDate) {
     return this.toDate && date.after(this.fromDate) && date.before(this.toDate);
   }

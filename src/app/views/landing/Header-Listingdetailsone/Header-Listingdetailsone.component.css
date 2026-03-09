@@ -94,15 +94,15 @@ hr {
 }
 
 .header-section-content {
-  display: flex;
-  gap: 57px;
-  flex-grow: 1;
-  justify-content: center;
-  font-family: "Plus Jakarta Sans";
-  text-transform: uppercase;
-  font-weight: 400;
-  letter-spacing: 1px;
-  font-size: 19px;
+    display: flex;
+    gap: 57px;
+    flex-grow: 1;
+    justify-content: center;
+    font-family: "Plus Jakarta Sans";
+    text-transform: uppercase;
+    font-weight: 400;
+    letter-spacing: 1px;
+    font-size: 0.9rem;
 }
 
 .header-section-content a {
@@ -123,7 +123,7 @@ hr {
   background-color: var(--secondary, #0b01cc);
   color: #fff !important;
   font-family: "Plus Jakarta Sans";
-  font-size: 19px;
+  font-size: 0.9rem;
   font-weight: 400;
   display: flex;
   align-items: center;
@@ -142,7 +142,7 @@ hr {
   background: var(--secondary, #0b01cc);
   color: #fff !important;
   font-family: "Plus Jakarta Sans";
-font-size: 19px;
+font-size: 0.9rem;
   font-weight: 400;
   display: flex;
   align-items: center;
@@ -155,8 +155,8 @@ font-size: 19px;
 }
 
 .icon-embed-small-01 {
-  width: 1.7rem;
-  height: 1.7rem;
+  /* width: 1.7rem;
+  height: 1.7rem; */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -228,7 +228,7 @@ font-size: 19px;
   .header-section-content,
   .Whatsapp-btn-header,
   .blinking-unique-btn {
-    font-size: 19px;
+    font-size: 0.9rem;
   }
 }
 
