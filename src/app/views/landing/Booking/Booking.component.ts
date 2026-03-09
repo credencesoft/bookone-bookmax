@@ -656,7 +656,7 @@ private startPaymentStatusPolling() {
     const elapsedTime = Date.now() - this.paymentStartTime;
 
     // ⏱ 4 minute timeout
-    if (elapsedTime > TWO_MINUTES) {
+    if (elapsedTime >= TWO_MINUTES) {
 
       clearInterval(this.paymentPoller);
       this.paymentPoller = null;
@@ -2411,7 +2411,7 @@ this.tokenToTime = this.combinedDateToTime;
     enquiryForm.payableAmount = plan.price + plan.taxPercentageperroom;
     enquiryForm.roomName = plan.roomName;
     enquiryForm.extraPersonCharge = plan.extraPersonAdultCountAmount;
-    enquiryForm.extraChildCharge = plan.extraPersonChildCountAmount;
+    enquiryForm.extraChildCharge = plan.singleextraChildrenChargeBookOne;
     enquiryForm.noOfExtraChild = plan.extraCountChild;
       const bookingEngineFlag = sessionStorage.getItem('BookingEngine');
       this.websiteUrlBookingEngine = bookingEngineFlag === 'true';
@@ -2438,7 +2438,7 @@ this.tokenToTime = this.combinedDateToTime;
         ? booking.totalAmount -
           (plan.extraPersonCharge + plan.extraPersonChildCountAmount)
         : plan.price -
-          (enquiryForm.extraPersonCharge + enquiryForm.extraChildCharge);
+          (enquiryForm.extraPersonCharge + plan.extraPersonChildCountAmount);
 
     enquiryForm.externalSite = 'WebSite';
     enquiryForm.source = 'Bookone Connect';
@@ -4698,18 +4698,16 @@ if (bookingSummaryStr) {
           this.token.saveBookingData(this.booking);
           this.token.savePaymentData(this.payment);
           this.token.savePropertyData(this.businessUser);
-           const url = this.router.serializeUrl(
-          this.router.createUrlTree(['/checkout-rayzorpay'])
-        );
-                         const paymentWindow = window.open(url, '_blank');
+          const url = `${window.location.origin}/checkout-rayzorpay`;
+          const paymentWindow = window.open(url, '_blank');
 
-                const TWO_MINUTES = 2.3 * 60 * 1000;
+          const TWO_MINUTES = 2.3 * 60 * 1000;
 
-                setTimeout(() => {
-                  if (paymentWindow && !paymentWindow.closed) {
-                    paymentWindow.close();
-                  }
-                }, TWO_MINUTES);
+          setTimeout(() => {
+            if (paymentWindow && !paymentWindow.closed) {
+              paymentWindow.close();
+            }
+          }, TWO_MINUTES);
           // this.router.navigate(['/checkout-rayzorpay']);
         }
       });
