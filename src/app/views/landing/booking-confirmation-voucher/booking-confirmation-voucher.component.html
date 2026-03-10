@@ -425,13 +425,7 @@
                     <td>{{ booking?.noOfNights }}</td>
                     <td>{{ booking?.noOfRooms }}</td>
                     <td>₹{{ booking?.extraPersonCharge | number: "1.2-2" }}</td>
-                    <td>
-                      ₹{{
-                        booking?.extraChildCharge *
-                          booking?.noOfExtraChild *
-                          booking?.noOfNights | number: "1.2-2"
-                      }}
-                    </td>
+                    <td>₹{{ booking?.extraChildCharge | number: "1.2-2" }}</td>
                     <td *ngIf="booking?.discountAmount">
                       -₹{{ booking?.discountAmount | number: "1.2-2" }}
                     </td>
@@ -1009,13 +1003,7 @@
                 </div>
                 <div class="d-flex justify-content-between">
                   <div>Extra Child</div>
-                  <div>
-                    ₹{{
-                      booking?.extraChildCharge *
-                        booking?.noOfExtraChild *
-                        booking?.noOfNights | number: "1.2-2"
-                    }}
-                  </div>
+                  <div>₹{{ booking?.extraChildCharge | number: "1.2-2" }}</div>
                 </div>
                 <div
                   class="d-flex justify-content-between"

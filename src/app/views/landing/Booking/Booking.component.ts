@@ -2411,7 +2411,7 @@ this.tokenToTime = this.combinedDateToTime;
     enquiryForm.payableAmount = plan.price + plan.taxPercentageperroom;
     enquiryForm.roomName = plan.roomName;
     enquiryForm.extraPersonCharge = plan.extraPersonAdultCountAmount;
-    enquiryForm.extraChildCharge = plan.singleextraChildrenChargeBookOne;
+    enquiryForm.extraChildCharge = plan?.extraPersonChildCountAmount;
     enquiryForm.noOfExtraChild = plan.extraCountChild;
       const bookingEngineFlag = sessionStorage.getItem('BookingEngine');
       this.websiteUrlBookingEngine = bookingEngineFlag === 'true';

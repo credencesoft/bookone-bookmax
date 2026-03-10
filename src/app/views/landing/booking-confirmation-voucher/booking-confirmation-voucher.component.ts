@@ -38,13 +38,11 @@ export class BookingConfirmationVoucherComponent {
     private token: TokenStorage,
     private hotelBookingService: HotelBookingService,
     private listingService: ListingService,
-     private router: Router,
-     private changeDetectorRefs: ChangeDetectorRef,
+    private router: Router,
+    private changeDetectorRefs: ChangeDetectorRef,
   ) {
     this.businessUser = this.token.getPropertyData();
     this.getPropertyDetailsById(this.businessUser.id);
-
-
   }
   ngOnInit() {
     this.sequenceBookingConfirmation();
@@ -69,146 +67,145 @@ export class BookingConfirmationVoucherComponent {
     this.accommodationData.forEach((element) => {
       this.serviceChargePercentage = element.serviceChargePercentage;
     });
-     this.isReadMore = this.policies?.map(() => false);
-     setInterval(() => {
-    this.loadBookingSessionData();
-    this.checkBookingEngineFlag();
-        if (this.token.getBookingData() != null && this.token.getBookingData() != undefined)
-    {
-      this.booking = this.token.getBookingData();
-    }
-  }, 10);
+    this.isReadMore = this.policies?.map(() => false);
+    setInterval(() => {
+      this.loadBookingSessionData();
+      this.checkBookingEngineFlag();
+      if (
+        this.token.getBookingData() != null &&
+        this.token.getBookingData() != undefined
+      ) {
+        this.booking = this.token.getBookingData();
+      }
+    }, 10);
   }
   private sequenceBookingConfirmation() {
-
-  this.loadingData = true;
-  const cachedBookings = sessionStorage.getItem('bookingsResponseList');
-  if (cachedBookings) {
-    this.bookingsResponseList = JSON.parse(cachedBookings);
-    this.loadingData = false;
-    return;
-  }
-  const bookedStr = sessionStorage.getItem('BookedEnquiryList');
-  if (!bookedStr) {
-    console.error('BookedEnquiryList missing');
-    this.loadingData = false;
-    return;
-  }
-
-  const bookedEnquiries = JSON.parse(bookedStr);
-  if (!Array.isArray(bookedEnquiries) || bookedEnquiries.length === 0) {
-    console.error('BookedEnquiryList empty');
-    this.loadingData = false;
-    return;
-  }
-
-  this.fetchBookingsSequentially(bookedEnquiries);
-}
-private fetchBookingsSequentially(bookedEnquiries: any[]) {
-
-  this.bookingsResponseList = [];
-  this.loadingData = true;
-
-  let index = 0;
-  let fetchedBookingId: number | null = null;
-
-  const next = () => {
-
-    // ✅ Finished processing all enquiries
-    if (index >= bookedEnquiries.length) {
-      this.finalizeBookings();
+    this.loadingData = true;
+    const cachedBookings = sessionStorage.getItem('bookingsResponseList');
+    if (cachedBookings) {
+      this.bookingsResponseList = JSON.parse(cachedBookings);
+      this.loadingData = false;
+      return;
+    }
+    const bookedStr = sessionStorage.getItem('BookedEnquiryList');
+    if (!bookedStr) {
+      console.error('BookedEnquiryList missing');
+      this.loadingData = false;
       return;
     }
 
-    const enquiry = bookedEnquiries[index];
-    const bookingId = enquiry.bookingId || enquiry.bookingReservationId;
-
-    index++;
-
-    // ⏭ Skip if enquiry has no booking yet
-    if (!bookingId) {
-      next();
+    const bookedEnquiries = JSON.parse(bookedStr);
+    if (!Array.isArray(bookedEnquiries) || bookedEnquiries.length === 0) {
+      console.error('BookedEnquiryList empty');
+      this.loadingData = false;
       return;
     }
 
-    // 🛑 GROUP BOOKING PROTECTION
-    // If booking already fetched once, don't fetch again
-    if (fetchedBookingId === bookingId) {
-      next();
-      return;
-    }
+    this.fetchBookingsSequentially(bookedEnquiries);
+  }
+  private fetchBookingsSequentially(bookedEnquiries: any[]) {
+    this.bookingsResponseList = [];
+    this.loadingData = true;
 
-    fetchedBookingId = bookingId;
+    let index = 0;
+    let fetchedBookingId: number | null = null;
 
-    this.hotelBookingService.fetchBookingById(bookingId).subscribe({
-      next: booking => {
-        if (booking) {
-          this.bookingsResponseList.push(booking);
-        }
-      },
-      error: err => {
-        console.error('❌ Booking fetch failed:', bookingId, err);
-      },
-      complete: () => {
-        next();
+    const next = () => {
+      // ✅ Finished processing all enquiries
+      if (index >= bookedEnquiries.length) {
+        this.finalizeBookings();
+        return;
       }
-    });
-  };
 
-  next();
-}
+      const enquiry = bookedEnquiries[index];
+      const bookingId = enquiry.bookingId || enquiry.bookingReservationId;
 
+      index++;
 
-private finalizeBookings() {
+      // ⏭ Skip if enquiry has no booking yet
+      if (!bookingId) {
+        next();
+        return;
+      }
 
-  sessionStorage.setItem(
-    'bookingsResponseList',
-    JSON.stringify(this.bookingsResponseList)
-  );
+      // 🛑 GROUP BOOKING PROTECTION
+      // If booking already fetched once, don't fetch again
+      if (fetchedBookingId === bookingId) {
+        next();
+        return;
+      }
 
-  this.loadingData = false;
-}
+      fetchedBookingId = bookingId;
 
-checkBookingEngineFlag(): void {
-  const bookingEngineFlag = sessionStorage.getItem('BookingEngine');
-  this.websiteUrlBookingEngine = bookingEngineFlag === 'true';
-}
+      this.hotelBookingService.fetchBookingById(bookingId).subscribe({
+        next: (booking) => {
+          if (booking) {
+            this.bookingsResponseList.push(booking);
+          }
+        },
+        error: (err) => {
+          console.error('❌ Booking fetch failed:', bookingId, err);
+        },
+        complete: () => {
+          next();
+        },
+      });
+    };
 
-getUpdatedReservationNumber(value: string): string {
-  return value ? value.replace('-B-', '-BE-') : '';
-}
+    next();
+  }
+
+  private finalizeBookings() {
+    sessionStorage.setItem(
+      'bookingsResponseList',
+      JSON.stringify(this.bookingsResponseList),
+    );
+
+    this.loadingData = false;
+  }
+
+  checkBookingEngineFlag(): void {
+    const bookingEngineFlag = sessionStorage.getItem('BookingEngine');
+    this.websiteUrlBookingEngine = bookingEngineFlag === 'true';
+  }
+
+  getUpdatedReservationNumber(value: string): string {
+    return value ? value.replace('-B-', '-BE-') : '';
+  }
   getTrimmedDescription(description: string): string {
-  if (!description) return '';
+    if (!description) return '';
 
-  const words = description.split(/\s+/); // split by spaces
-  if (words.length <= 35) {
-    return description;
+    const words = description.split(/\s+/); // split by spaces
+    if (words.length <= 35) {
+      return description;
+    }
+
+    return words.slice(0, 35).join(' ') + '...';
   }
-
-  return words.slice(0, 35).join(' ') + '...';
-}
   loadBookingSessionData(): void {
-  const bookingDataDetails = sessionStorage.getItem('bookingSummaryDetails');
-  if (bookingDataDetails) {
-    this.bookingSummaryDetails = JSON.parse(bookingDataDetails);
-    this.totalDiscount = this.bookingsResponseList.reduce(
-    (sum, booking) => sum + (booking.discountAmount || 0),
-    0
-  );
-    this.calculateTotalGuestsFromPlans();
-    // console.log('bookingSummaryDetails', this.bookingSummaryDetails);
+    const bookingDataDetails = sessionStorage.getItem('bookingSummaryDetails');
+    if (bookingDataDetails) {
+      this.bookingSummaryDetails = JSON.parse(bookingDataDetails);
+      this.totalDiscount = this.bookingsResponseList.reduce(
+        (sum, booking) => sum + (booking.discountAmount || 0),
+        0,
+      );
+      this.calculateTotalGuestsFromPlans();
+      // console.log('bookingSummaryDetails', this.bookingSummaryDetails);
+    }
+
+    const bookingsResponseList = sessionStorage.getItem('bookingsResponseList');
+    if (bookingsResponseList) {
+      this.bookingsResponseList = JSON.parse(bookingsResponseList);
+      this.calculateTotalGuestsFromPlans();
+      // console.log('bookingsResponseList', this.bookingsResponseList);
+    }
   }
 
-  const bookingsResponseList = sessionStorage.getItem('bookingsResponseList');
-  if (bookingsResponseList) {
-    this.bookingsResponseList = JSON.parse(bookingsResponseList);
-    this.calculateTotalGuestsFromPlans();
-    // console.log('bookingsResponseList', this.bookingsResponseList);
-  }
-}
-
-   calculateServiceHours (){
-    this.accommodationService = this.businessUser.businessServiceDtoList.filter(service => service.name === "Accommodation");
+  calculateServiceHours() {
+    this.accommodationService = this.businessUser.businessServiceDtoList.filter(
+      (service) => service.name === 'Accommodation',
+    );
     // console.log(" this.accommodationService" + JSON.stringify( this.accommodationService))
   }
 
@@ -262,83 +259,76 @@ getUpdatedReservationNumber(value: string): string {
     }
   }
 
-   async getPropertyDetailsById(id: number) {
-
+  async getPropertyDetailsById(id: number) {
     try {
-
       const data = await this.listingService?.findByPropertyId(id).toPromise();
       if (data.status === 200) {
         this.businessUser = data.body;
         this.policies = this.businessUser.businessServiceDtoList.filter(
-          (ele) => ele.name === 'Accommodation'
+          (ele) => ele.name === 'Accommodation',
         );
-        this.calculateServiceHours()
-        this.businessUser?.socialMediaLinks.forEach(element => {
-          this.socialmedialist=element
+        this.calculateServiceHours();
+        this.businessUser?.socialMediaLinks.forEach((element) => {
+          this.socialmedialist = element;
         });
-
 
         this.token.saveProperty(this.businessUser);
         this.currency = this.businessUser.localCurrency.toUpperCase();
 
-        this.businessServiceDto = this.businessUser?.businessServiceDtoList.find(
-          (data) => data.name === this.businessUser.businessType
-        );
+        this.businessServiceDto =
+          this.businessUser?.businessServiceDtoList.find(
+            (data) => data.name === this.businessUser.businessType,
+          );
 
         if (this.businessUser.primaryColor !== undefined) {
           this.changeTheme(
             this.businessUser.primaryColor,
             this.businessUser.secondaryColor,
-            this.businessUser.tertiaryColor
+            this.businessUser.tertiaryColor,
           );
         }
 
-
-
-
-
         this.changeDetectorRefs.detectChanges();
       } else {
-        this.router.navigate(["/404"]);
+        this.router.navigate(['/404']);
       }
     } catch (error) {
-
       // Handle the error appropriately, if needed.
     }
   }
 
-     changeTheme(primary?: string, secondary?: string, tertiary?: string) {
-  // Default colors if none are passed
-  const defaultPrimary = "#232A45";   // blue
-  const defaultSecondary = "#0B01CC"; // green
-  const defaultTertiary = "#fff";  // yellow
+  changeTheme(primary?: string, secondary?: string, tertiary?: string) {
+    // Default colors if none are passed
+    const defaultPrimary = '#232A45'; // blue
+    const defaultSecondary = '#0B01CC'; // green
+    const defaultTertiary = '#fff'; // yellow
 
-  const p = primary || defaultPrimary;
-  const s = secondary || defaultSecondary;
-  const t = tertiary || defaultTertiary;
+    const p = primary || defaultPrimary;
+    const s = secondary || defaultSecondary;
+    const t = tertiary || defaultTertiary;
 
-  document.documentElement.style.setProperty('--primary', p);
-  document.documentElement.style.setProperty('--secondary', s);
-  document.documentElement.style.setProperty('--tertiary', t);
-  document.documentElement.style.setProperty('--button-primary', t);
+    document.documentElement.style.setProperty('--primary', p);
+    document.documentElement.style.setProperty('--secondary', s);
+    document.documentElement.style.setProperty('--tertiary', t);
+    document.documentElement.style.setProperty('--button-primary', t);
 
-  document.documentElement.style.setProperty(
-    '--primary-gradient',
-    `linear-gradient(180deg, ${t}, ${s})`
-  );
-  document.documentElement.style.setProperty(
-    '--secondary-gradient',
-    `linear-gradient(312deg, ${p}, ${s})`
-  );
-  document.documentElement.style.setProperty(
-    '--secondary-one-gradient',
-    `linear-gradient(180deg, ${p}, ${s})`
-  );
-  document.documentElement.style.setProperty(
-    '--third-gradient',
-    `linear-gradient(180deg, ${p}, ${s})`
-  );
-}
+    document.documentElement.style.setProperty(
+      '--primary-gradient',
+      `linear-gradient(180deg, ${t}, ${s})`,
+    );
+    document.documentElement.style.setProperty(
+      '--secondary-gradient',
+      `linear-gradient(312deg, ${p}, ${s})`,
+    );
+    document.documentElement.style.setProperty(
+      '--secondary-one-gradient',
+      `linear-gradient(180deg, ${p}, ${s})`,
+    );
+    document.documentElement.style.setProperty(
+      '--third-gradient',
+      `linear-gradient(180deg, ${p}, ${s})`,
+    );
+  }
 
   private loadBookingsFromSession() {
     const bookedStr = sessionStorage.getItem('BookedEnquiryList');
@@ -384,7 +374,6 @@ getUpdatedReservationNumber(value: string): string {
       });
     });
   }
-
 
   calculateTotalGuestsFromPlans() {
     this.totalPlanAdults =
