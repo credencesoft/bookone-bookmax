@@ -6289,7 +6289,6 @@ this.token.savePropertyUrl(currentUrl);
           // );
           this.soldOutRooms = sortedRoomsOne.filter(room => {
               const rates = room.ratesAndAvailabilityDtos;
-
               if (!rates || rates.length !== this.booking.noOfNights) {
                 return true;
               }
@@ -6488,6 +6487,7 @@ this.token.savePropertyUrl(currentUrl);
               });
             });
           });
+          console.log('roomWithGHCPlan is', this.availableRooms);
           this.planPrice = [];
           this.taxArray = [];
 
