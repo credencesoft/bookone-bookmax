@@ -892,7 +892,6 @@ export class BookingComponent implements OnInit {
 
     this.bookedEnquiries.push(enquiry);
 
-    // ✅ once all enquiries are booked
     const originalList = JSON.parse(
       sessionStorage.getItem('EnquiryResponseList') || '[]',
     );
@@ -1147,7 +1146,7 @@ export class BookingComponent implements OnInit {
     const hoursDifference =
       (fromDateTimestamp - createdDateTimestamp) / (1000 * 60 * 60);
 
-    return hoursDifference >= 48 && this.businessUser.paymentGateway != null;
+    return hoursDifference >= 24 && this.businessUser.paymentGateway != null;
   }
 
   showPayLater(): boolean {
@@ -1178,7 +1177,6 @@ export class BookingComponent implements OnInit {
       (entry) => entry.name === 'Accommodation',
     );
 
-    // ✅ If any accommodation has payLater = true → return true
     const hasPayLater = this.accommodationData?.some((a) => a.payLater);
     if (hasPayLater) return true;
     if (this.channelManagerIntegration) return false;
@@ -1192,9 +1190,9 @@ export class BookingComponent implements OnInit {
     const hoursDifference =
       (fromDateTimestamp - createdDateTimestamp) / (1000 * 60 * 60);
 
-    if (hoursDifference < 48) return true;
+    if (hoursDifference < 24) return true;
 
-    if (hoursDifference >= 48 && this.businessUser.paymentGateway == null)
+    if (hoursDifference >= 24 && this.businessUser.paymentGateway == null)
       return true;
 
     return false;
@@ -2884,7 +2882,6 @@ export class BookingComponent implements OnInit {
 
             this.availabilityLoaded = true;
 
-            // ✅ resolve AFTER everything is done
             resolve(this.hasAnySoldOutRoom());
           },
           (error) => {
@@ -11387,7 +11384,6 @@ export class BookingComponent implements OnInit {
       (response) => {
         this.paymentLoader = false;
         if (response.status === 200) {
-          this.showSuccess('✅ WhatsApp message sent successfully!');
         }
       },
       (error) => {
