@@ -10918,7 +10918,7 @@ sendWhatsappMessageToCustomer() {
   } else {
 
     bodyParameters.push(
-      { type: 'text', text: '9004126958' },
+      { type: 'text', text: '7326079861' },
       { type: 'text', text: '7326079861' }
     );
 
