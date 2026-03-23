@@ -167,7 +167,12 @@ checkBookingEngineFlag(): void {
       baseUrl + '?phone=' + phoneNumber + '&text=' + encodeURIComponent(message)
     );
   }
-
+formatUrl(url: string): string {
+  if (!url) return '';
+  return url.startsWith('http://') || url.startsWith('https://')
+    ? url
+    : 'https://' + url;
+}
       getWhatsappShareUrlOne(): string {
         if (this.businessUser.id !== 3469 && this.businessUser.id !== 701 && this.businessUser.id !== 1909 && this.businessUser.id !== 3468) {
               const baseUrl = 'https://api.whatsapp.com/send';
