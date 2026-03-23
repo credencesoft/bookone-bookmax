@@ -2373,7 +2373,7 @@ export class BookingComponent implements OnInit {
     enquiryForm.firstName = booking.firstName;
     enquiryForm.lastName = booking.lastName;
     enquiryForm.email = booking.email;
-    enquiryForm.phone = booking.mobile;
+    enquiryForm.phone = `91${booking.mobile}`;
     enquiryForm.checkOutDate = booking.toDate;
     enquiryForm.checkInDate = booking.fromDate;
     enquiryForm.noOfPerson = plan.adults;
