@@ -196,6 +196,7 @@ currentPage = 0; // page index
   serviceChargePercentage: any;
   singleextraAdultChargeBookOne: any;
    singleextraChildChargeBookOne: any;
+  roomRateOrderEnabled: boolean = false;
   toggleListingDetails() {
     this.showListingDetails = !this.showListingDetails;
   }
@@ -1217,7 +1218,7 @@ this.token.savePropertyUrl(currentUrl);
       this.token?.getRoomsData() !== null &&
       this.token?.getRoomsData() !== undefined
     ) {
-      this.availableRooms = this.token?.getRoomsData();
+      this.availableRooms = this.getFilteredDataBasedOnRoomRateOrder(this.token?.getRoomsData());
       this.shortrooms = this.token.getRoomsData();
     }
     this.acRoute.url.subscribe((urlSegments) => {
@@ -3584,7 +3585,7 @@ if (roomKey) {
       .subscribe(
         (response) => {
           this.loaderHotelBooking = false;
-          this.availableRooms = response.body.roomList;
+          this.availableRooms = this.getFilteredDataBasedOnRoomRateOrder(response?.body?.roomList);
           this.availableRooms = this.availableRooms.filter(room =>
           room.ratesAndAvailabilityDtos?.length > 0 &&
           (room.ratesAndAvailabilityDtos[0]?.stopSellOBE === null || room.ratesAndAvailabilityDtos[0]?.stopSellOBE === false) &&
@@ -4459,6 +4460,9 @@ onCheckOutClosed(): void {
         if (data.status === 200) {
           this.businessUser = data.body;
           this.propertyData = this.businessUser;
+           this.roomRateOrderEnabled = !!this.propertyData.businessServiceDtoList?.some(
+            (entry) => entry.roomRateOrder === true
+          );
                    this.accommodationData =
           this.propertyData.businessServiceDtoList?.filter(
             (entry) => entry.name === 'Accommodation'
@@ -6243,15 +6247,9 @@ this.token.savePropertyUrl(currentUrl);
         (response) => {
           this.loaderHotelBooking = false;
 
-          this.availableRooms = response.body.roomList;
-            this.availableRooms = response.body.roomList.sort(
-            (a: any, b: any) => b.roomOnlyPrice - a.roomOnlyPrice
-          );
-          const roomListOne = response.body.roomList || [];
+          const roomListOne = response?.body?.roomList || [];
+          const sortedRoomsOne = this.getFilteredDataBasedOnRoomRateOrder(roomListOne);
 
-          const sortedRoomsOne = roomListOne.sort(
-            (a: any, b: any) => b.roomOnlyPrice - a.roomOnlyPrice
-          );
           this.availableRooms = sortedRoomsOne.filter(room => {
                 const rates = room.ratesAndAvailabilityDtos;
 
@@ -7271,7 +7269,7 @@ isPlanVisible(filteredPlans: any[], roomName: string) {
       .subscribe(
         (response) => {
           this.loaderHotelBooking = false;
-          this.availableRooms = response.body.roomList;
+          this.availableRooms = this.getFilteredDataBasedOnRoomRateOrder(response?.body?.roomList);
                     this.availableRooms = this.availableRooms.filter(room =>
           room.ratesAndAvailabilityDtos?.length > 0 &&
           (room.ratesAndAvailabilityDtos[0]?.stopSellOBE === null || room.ratesAndAvailabilityDtos[0]?.stopSellOBE === false) &&
@@ -7811,5 +7809,35 @@ onYesClick() {
 
   onNo() {
     this.isPopupOpen = false;
+  }
+
+  getFilteredDataBasedOnRoomRateOrder(roomList: any[]): any[] {
+    try {
+      if (!roomList || roomList.length === 0) return [];
+      const sortedRooms = [...roomList];  
+      if (this.roomRateOrderEnabled) {
+        return sortedRooms.sort((a: any, b: any) => this.getPrimaryRoomRateAmount(a) - this.getPrimaryRoomRateAmount(b));
+      }
+      return sortedRooms.sort((a: any, b: any) => (Number(b?.roomOnlyPrice) || 0) - (Number(a?.roomOnlyPrice) || 0));
+    } 
+    catch (error) {
+      console.error('Error in getFilteredDataBasedOnRoomRateOrder: ',error);
+      return roomList || [];
+    }
+  }
+  
+  private getPrimaryRoomRateAmount(room: any): number {
+    try{
+      const amount = room?.ratesAndAvailabilityDtos?.find((rate: any) => rate?.roomRatePlans?.length > 0)?.roomRatePlans?.[0]?.amount;
+      const parsedAmount = Number(amount);
+      if (!Number.isNaN(parsedAmount) && parsedAmount > 0) {
+        return parsedAmount;
+      }
+      return Number(room?.roomOnlyPrice) || 0;
+    }
+    catch(error){
+      console.error('Error in getPrimaryRoomRateAmount: ', error);
+      return 0;
+    }
   }
 }

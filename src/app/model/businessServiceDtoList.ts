@@ -48,5 +48,6 @@ export class BusinessServiceDtoList {
   ];
   cmIntegration: any;
   bookoneActive: any;
+  roomRateOrder: boolean;
   constructor() {}
 }
