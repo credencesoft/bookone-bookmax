@@ -18,6 +18,7 @@ export class RoomRatePlans {
   propertyServicesList: any[];
   otaPlanList:any[];
   noOfChildren: number;
+  onedayPlan?: boolean;
 
   constructor() {}
 }

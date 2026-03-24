@@ -1593,14 +1593,18 @@ roomDescriptionPreview(room: any): string {
 getTotalAdults(): number {
   return this.selectedPlansSummary.reduce((sum, plan) => sum + (plan.adults || 0), 0);
 }
-getFilteredPlans(plans: any[]) {
-  if (!plans) return [];
-  return this.websiteUrlBookingEngine
-    ? plans.filter(
-        p => p.name?.trim().toLowerCase() !== 'economy'
-      )
-    : plans;
-}
+
+  getFilteredPlans(plans: any[]) {
+    try{
+      if (!plans) return [];
+      return this.websiteUrlBookingEngine ? plans.filter(p => p?.name?.trim().toLowerCase() !== 'economy') : plans;
+    }
+    catch(error){
+      console.error('Error filtering plans:', error);
+      return [];
+    }
+  }
+
 getTotalChildren(): number {
   return this.selectedPlansSummary.reduce((sum, plan) => sum + (plan.children || 0), 0);
 }
@@ -6741,6 +6745,17 @@ isPlanSelected(planName: string): boolean {
 
 }
 
+shouldShowSpecificRoom(room: any): boolean {
+  const hasOneDayPlan = room?.ratesAndAvailabilityDtos?.some((rate: any) =>
+    rate?.roomRatePlans?.some((plan: any) => plan?.onedayPlan === true)
+  );
+
+  if (hasOneDayPlan) {
+    return Number(this.booking?.noOfNights) === 1;
+  }
+
+  return true;
+}
 
   toggleDropdownNights(index) {
     this.isOpen = !this.isOpen;
