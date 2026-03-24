@@ -196,6 +196,7 @@ currentPage = 0; // page index
   serviceChargePercentage: any;
   singleextraAdultChargeBookOne: any;
    singleextraChildChargeBookOne: any;
+  roomRateOrderEnabled: boolean = false;
   toggleListingDetails() {
     this.showListingDetails = !this.showListingDetails;
   }
@@ -1217,7 +1218,7 @@ this.token.savePropertyUrl(currentUrl);
       this.token?.getRoomsData() !== null &&
       this.token?.getRoomsData() !== undefined
     ) {
-      this.availableRooms = this.token?.getRoomsData();
+      this.availableRooms = this.getFilteredDataBasedOnRoomRateOrder(this.token?.getRoomsData());
       this.shortrooms = this.token.getRoomsData();
     }
     this.acRoute.url.subscribe((urlSegments) => {
@@ -3584,7 +3585,7 @@ if (roomKey) {
       .subscribe(
         (response) => {
           this.loaderHotelBooking = false;
-          this.availableRooms = response.body.roomList;
+          this.availableRooms = this.getFilteredDataBasedOnRoomRateOrder(response?.body?.roomList);
           this.availableRooms = this.availableRooms.filter(room =>
           room.ratesAndAvailabilityDtos?.length > 0 &&
           (room.ratesAndAvailabilityDtos[0]?.stopSellOBE === null || room.ratesAndAvailabilityDtos[0]?.stopSellOBE === false) &&
@@ -3637,10 +3638,12 @@ if (roomKey) {
 
     // Automatically set next day as default checkout if not chosen yet
     if (!this.toDate) {
+      const nextDay = this.calendar.getNext(this.fromDate, 'd', 1);
+      this.toDate = nextDay;
       this.booking.toDate = this.getDateFormatYearMonthDay(
-        this.fromDate.day + 1,
-        this.fromDate.month,
-        this.fromDate.year
+        nextDay.day,
+        nextDay.month,
+        nextDay.year
       );
     }
 
@@ -4452,6 +4455,26 @@ onCheckOutClosed(): void {
     }
   }
 
+  getBookingUnitLabel(accommodationData: BusinessServiceDtoList[] = []) {
+    try {
+      let bookingLabel = {
+        label: 'Room',
+      };
+      if(!accommodationData || accommodationData.length === 0) {
+        return bookingLabel;
+      }
+      const accommodation = accommodationData.find((entry) => entry?.name?.trim().toLowerCase() === 'accommodation');
+      if(accommodation?.bookingButtonLabelText === "Book Houseboat" && accommodation?.businessTermResource === 'Houseboat' && accommodation?.businessProductName === 'Houseboat'){
+        bookingLabel.label = 'Houseboat';
+      }
+      return bookingLabel;
+    } 
+    catch (error) {
+      console.error('Error parsing booking unit label:', error);    
+      return { label: 'Room' };
+    }
+  }
+    
   getPropertyDetailsBySeoName(seoName: string) {
     this.loader = true;
     this.listingService.findPropertyBySEOName(seoName).subscribe(
@@ -4459,13 +4482,11 @@ onCheckOutClosed(): void {
         if (data.status === 200) {
           this.businessUser = data.body;
           this.propertyData = this.businessUser;
-                   this.accommodationData =
-          this.propertyData.businessServiceDtoList?.filter(
-            (entry) => entry.name === 'Accommodation'
-          );
-        this.accommodationData?.forEach((element) => {
-          this.smartRecommendationsBoolean = element.smartRecommendation;
-        });
+          this.accommodationData = this.propertyData?.businessServiceDtoList?.filter((entry) => entry?.name === 'Accommodation');
+          this.roomRateOrderEnabled = this.accommodationData?.some((entry) => entry?.roomRateOrder === true) || false;
+          this.accommodationData?.forEach((element) => {
+            this.smartRecommendationsBoolean = element.smartRecommendation;
+          });
           this.getGoogleReview(this.businessUser.id);
           this.showStaticContent = true;
           // this.businessUser.businessServiceDtoList.filter(ele =>
@@ -4484,11 +4505,11 @@ onCheckOutClosed(): void {
           this.changeDetectorRefs.detectChanges();
           this.token.saveProperty(this.businessUser);
           this.accommodationData = this.businessUser.businessServiceDtoList?.filter(
-          (entry) => entry.name === 'Accommodation'
-        );
-        this.accommodationData.forEach((element) => {
-          this.serviceChargePercentage = element.serviceChargePercentage;
-        });
+            (entry) => entry.name === 'Accommodation'
+          );
+          this.accommodationData?.forEach((element) => {
+            this.serviceChargePercentage = element.serviceChargePercentage;
+          });
           if (this.urlLocation !== undefined && this.urlLocation !== null) {
             this.triggerEventService.newEvent(this.urlLocation);
           }
@@ -6243,15 +6264,9 @@ this.token.savePropertyUrl(currentUrl);
         (response) => {
           this.loaderHotelBooking = false;
 
-          this.availableRooms = response.body.roomList;
-            this.availableRooms = response.body.roomList.sort(
-            (a: any, b: any) => b.roomOnlyPrice - a.roomOnlyPrice
-          );
-          const roomListOne = response.body.roomList || [];
+          const roomListOne = response?.body?.roomList || [];
+          const sortedRoomsOne = this.getFilteredDataBasedOnRoomRateOrder(roomListOne);
 
-          const sortedRoomsOne = roomListOne.sort(
-            (a: any, b: any) => b.roomOnlyPrice - a.roomOnlyPrice
-          );
           this.availableRooms = sortedRoomsOne.filter(room => {
                 const rates = room.ratesAndAvailabilityDtos;
 
@@ -7070,8 +7085,8 @@ getTotalTaxPrice(): number {
         return; // Prevent past date selection
       }
       this.fromDate = date;
-      this.toDate = null;
-      this.minDateForCheckOut = date; // Disable dates before check-in for checkout
+      this.toDate = this.calendar.getNext(date, 'd', 1);
+      this.minDateForCheckOut = this.toDate; // Disable dates before the auto-selected checkout
     } else if (type === 'checkout') {
       if (this.fromDate && date.after(this.fromDate)) {
         this.toDate = date;
@@ -7082,6 +7097,7 @@ getTotalTaxPrice(): number {
     if (this.fromDate && this.toDate) {
       this.getDiffDate(this.toDate, this.fromDate);
     }
+    this.checkingAvailability();
   }
 
   isHovered(date: NgbDate) {
@@ -7271,7 +7287,7 @@ isPlanVisible(filteredPlans: any[], roomName: string) {
       .subscribe(
         (response) => {
           this.loaderHotelBooking = false;
-          this.availableRooms = response.body.roomList;
+          this.availableRooms = this.getFilteredDataBasedOnRoomRateOrder(response?.body?.roomList);
                     this.availableRooms = this.availableRooms.filter(room =>
           room.ratesAndAvailabilityDtos?.length > 0 &&
           (room.ratesAndAvailabilityDtos[0]?.stopSellOBE === null || room.ratesAndAvailabilityDtos[0]?.stopSellOBE === false) &&
@@ -7811,5 +7827,35 @@ onYesClick() {
 
   onNo() {
     this.isPopupOpen = false;
+  }
+
+  getFilteredDataBasedOnRoomRateOrder(roomList: any[]): any[] {
+    try {
+      if (!roomList || roomList.length === 0) return [];
+      const sortedRooms = [...roomList];  
+      if (this.roomRateOrderEnabled) {
+        return sortedRooms.sort((a: any, b: any) => this.getPrimaryRoomRateAmount(a) - this.getPrimaryRoomRateAmount(b));
+      }
+      return sortedRooms.sort((a: any, b: any) => (Number(b?.roomOnlyPrice) || 0) - (Number(a?.roomOnlyPrice) || 0));
+    } 
+    catch (error) {
+      console.error('Error in getFilteredDataBasedOnRoomRateOrder: ',error);
+      return roomList || [];
+    }
+  }
+  
+  private getPrimaryRoomRateAmount(room: any): number {
+    try{
+      const amount = room?.ratesAndAvailabilityDtos?.find((rate: any) => rate?.roomRatePlans?.length > 0)?.roomRatePlans?.[0]?.amount;
+      const parsedAmount = Number(amount);
+      if (!Number.isNaN(parsedAmount) && parsedAmount > 0) {
+        return parsedAmount;
+      }
+      return Number(room?.roomOnlyPrice) || 0;
+    }
+    catch(error){
+      console.error('Error in getPrimaryRoomRateAmount: ', error);
+      return 0;
+    }
   }
 }

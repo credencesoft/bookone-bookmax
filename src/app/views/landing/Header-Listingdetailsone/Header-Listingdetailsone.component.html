@@ -17,13 +17,13 @@
         class="logo-imagetwo"
       />
       <a
-        *ngIf="businessUser?.website"
-        [href]="this.website"
-        target="_top"
-        class="nav-link"
-      >
-        <i class="fas fa-home"></i> Home
-      </a>
+      *ngIf="businessUser?.website"
+      [href]="formatUrl(businessUser?.website)"
+      target="_top"
+      class="nav-link"
+    >
+      <i class="fas fa-home"></i> Home
+    </a>
     </li>
     <hr *ngIf="businessUser?.website" />
 
@@ -138,7 +138,7 @@
 
     <div class="header-section-content">
       <div *ngIf="businessUser?.website">
-        <a [href]="businessUser.website" target="_top" style="color: white"
+        <a [href]="formatUrl(businessUser?.website)" target="_top" style="color: white"
           >Home</a
         >
       </div>
