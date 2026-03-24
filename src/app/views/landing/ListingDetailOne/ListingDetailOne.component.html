@@ -2776,10 +2776,10 @@
                 </div>
 
                 <div class="col-12 col-lg-7 spacing-manage">
-                  <div class="d-flex justify-content-between" style="gap: 15px">
+                  <div class="d-flex justify-content-between room-header-row" style="gap: 15px">
                     <h3 class="margin-top-mobile-30px">{{ room.name }}</h3>
                     <div
-                      class="d-flex"
+                      class="d-flex room-occupancy-meta"
                       style="gap: 15px; width: 100px; align-items: center"
                     >
                       <div>
@@ -2832,11 +2832,11 @@
                       <!-- web view Plans sub-Section -->
                       <div class="card-title website-web-vision">
                         <div
-                          class="d-flex justify-content-between align-item-center"
+                          class="d-flex justify-content-between align-item-center plan-header-row"
                           style="gap: 20px"
                         >
                           <div
-                            class="d-flex align-item-center"
+                            class="d-flex align-item-center plan-header-main"
                             style="gap: 15px"
                           >
                             <div
@@ -2865,7 +2865,7 @@
                             </div>
                           </div>
                           <div
-                            class="d-flex align-item-center"
+                            class="d-flex align-item-center plan-price-group"
                             style="gap: 5px"
                           >
                             <div class="pricing">
@@ -2887,14 +2887,14 @@
                           {{ guestSelectionErrors[plan.code] }}
                         </div>
                         <div
-                          class="d-flex justify-content-between align-items-start"
+                          class="d-flex justify-content-between align-items-start plan-controls-row"
                         >
                           <div class="d-flex room-number">
                             <div>
                               <label
                                 class="input-group-text"
                                 for="inputGroupSelect01"
-                                >Room</label
+                                >{{ getBookingUnitLabel(accommodationData)?.label }}</label
                               >
                             </div>
                             <select
@@ -2972,7 +2972,7 @@
                               >
                             </div>
                           </div>
-                          <div class="d-block">
+                          <div class="d-block child-control-block">
                             <div class="d-flex room-number">
                               <div>Child</div>
                               <div class="d-flex increament-bg">
@@ -3038,7 +3038,7 @@
                             </div>
                           </div>
 
-                          <div class="d-flex room-number">
+                          <div class="d-flex room-number select-action">
                             <div
                               class="selected"
                               (click)="onPlanSelect(plan.code, rates)"
@@ -3053,11 +3053,11 @@
                       <!-- mob view Plans Section -->
                       <div class="card-title website-mob-vision">
                         <div
-                          class="d-flex justify-content-between align-item-center"
+                          class="d-flex justify-content-between align-item-center mobile-plan-header"
                           style="gap: 12px"
                         >
                           <div
-                            class="d-flex align-item-center"
+                            class="d-flex align-item-center mobile-plan-header-main"
                             style="gap: 15px"
                           >
                             <div
@@ -3086,7 +3086,7 @@
                             </div>
                           </div>
                           <div
-                            class="d-flex align-item-center"
+                            class="d-flex align-item-center mobile-plan-price"
                             style="gap: 5px"
                           >
                             <div class="pricing">
@@ -3108,14 +3108,14 @@
                           {{ guestSelectionErrors[plan.code] }}
                         </div>
                         <div
-                          class="d-flex justify-content-between align-items-end"
+                          class="d-flex justify-content-between align-items-end mobile-plan-controls"
                         >
                           <div class="d-flex room-number">
                             <div>
                               <label
                                 class="input-group-text"
                                 for="inputGroupSelect01"
-                                >Room</label
+                                >{{ getBookingUnitLabel(accommodationData)?.label }}</label
                               >
                             </div>
                             <select
@@ -3147,7 +3147,7 @@
                               </option>
                             </select>
                           </div>
-                          <div class="d-flex room-numberOne">
+                          <div class="d-flex room-numberOne mobile-control-group">
                             <div>
                               <img
                                 src="media-be/images/profile-pic.svg"
@@ -3195,7 +3195,7 @@
                               </div>
                             </div>
                           </div>
-                          <div class="d-block room-number">
+                          <div class="d-block room-number mobile-control-group">
                             <div class="margin-bottom-5px">
                               Child
                               <span class="tooltip-one"
@@ -3260,9 +3260,9 @@
                           </div>
                         </div>
                         <div
-                          class="d-flex justify-content-center margin-top-20px"
+                          class="d-flex justify-content-center margin-top-20px mobile-select-row"
                         >
-                          <div class="d-flex room-number">
+                          <div class="d-flex room-number mobile-select-action">
                             <div
                               class="selected"
                               (click)="

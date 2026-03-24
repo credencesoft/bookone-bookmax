@@ -4453,6 +4453,26 @@ onCheckOutClosed(): void {
     }
   }
 
+  getBookingUnitLabel(accommodationData: BusinessServiceDtoList[] = []) {
+    try {
+      let bookingLabel = {
+        label: 'Room',
+      };
+      if(!accommodationData || accommodationData.length === 0) {
+        return bookingLabel;
+      }
+      const accommodation = accommodationData.find((entry) => entry?.name?.trim().toLowerCase() === 'accommodation');
+      if(accommodation?.bookingButtonLabelText === "Book Houseboat" && accommodation?.businessTermResource === 'Houseboat' && accommodation?.businessProductName === 'Houseboat'){
+        bookingLabel.label = 'Houseboat';
+      }
+      return bookingLabel;
+    } 
+    catch (error) {
+      console.error('Error parsing booking unit label:', error);    
+      return { label: 'Room' };
+    }
+  }
+    
   getPropertyDetailsBySeoName(seoName: string) {
     this.loader = true;
     this.listingService.findPropertyBySEOName(seoName).subscribe(
@@ -4460,16 +4480,11 @@ onCheckOutClosed(): void {
         if (data.status === 200) {
           this.businessUser = data.body;
           this.propertyData = this.businessUser;
-           this.roomRateOrderEnabled = !!this.propertyData.businessServiceDtoList?.some(
-            (entry) => entry.roomRateOrder === true
-          );
-                   this.accommodationData =
-          this.propertyData.businessServiceDtoList?.filter(
-            (entry) => entry.name === 'Accommodation'
-          );
-        this.accommodationData?.forEach((element) => {
-          this.smartRecommendationsBoolean = element.smartRecommendation;
-        });
+          this.accommodationData = this.propertyData?.businessServiceDtoList?.filter((entry) => entry?.name === 'Accommodation');
+          this.roomRateOrderEnabled = this.accommodationData?.some((entry) => entry?.roomRateOrder === true) || false;
+          this.accommodationData?.forEach((element) => {
+            this.smartRecommendationsBoolean = element.smartRecommendation;
+          });
           this.getGoogleReview(this.businessUser.id);
           this.showStaticContent = true;
           // this.businessUser.businessServiceDtoList.filter(ele =>
@@ -4488,11 +4503,11 @@ onCheckOutClosed(): void {
           this.changeDetectorRefs.detectChanges();
           this.token.saveProperty(this.businessUser);
           this.accommodationData = this.businessUser.businessServiceDtoList?.filter(
-          (entry) => entry.name === 'Accommodation'
-        );
-        this.accommodationData.forEach((element) => {
-          this.serviceChargePercentage = element.serviceChargePercentage;
-        });
+            (entry) => entry.name === 'Accommodation'
+          );
+          this.accommodationData?.forEach((element) => {
+            this.serviceChargePercentage = element.serviceChargePercentage;
+          });
           if (this.urlLocation !== undefined && this.urlLocation !== null) {
             this.triggerEventService.newEvent(this.urlLocation);
           }

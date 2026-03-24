@@ -19,6 +19,7 @@ export class BusinessServiceDtoList {
   advanceAmountPercentage:number;
   businessTermLocation: string;
   businessTermResource: string;
+  businessTermsResource?: string;
 
   businessProductName: string;
   businessServiceName: string;
@@ -49,5 +50,6 @@ export class BusinessServiceDtoList {
   cmIntegration: any;
   bookoneActive: any;
   roomRateOrder: boolean;
+  bookingButtonLabelText: string;
   constructor() {}
 }
