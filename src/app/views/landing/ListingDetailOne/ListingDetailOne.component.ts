@@ -3638,10 +3638,12 @@ if (roomKey) {
 
     // Automatically set next day as default checkout if not chosen yet
     if (!this.toDate) {
+      const nextDay = this.calendar.getNext(this.fromDate, 'd', 1);
+      this.toDate = nextDay;
       this.booking.toDate = this.getDateFormatYearMonthDay(
-        this.fromDate.day + 1,
-        this.fromDate.month,
-        this.fromDate.year
+        nextDay.day,
+        nextDay.month,
+        nextDay.year
       );
     }
 
@@ -7083,8 +7085,8 @@ getTotalTaxPrice(): number {
         return; // Prevent past date selection
       }
       this.fromDate = date;
-      this.toDate = null;
-      this.minDateForCheckOut = date; // Disable dates before check-in for checkout
+      this.toDate = this.calendar.getNext(date, 'd', 1);
+      this.minDateForCheckOut = this.toDate; // Disable dates before the auto-selected checkout
     } else if (type === 'checkout') {
       if (this.fromDate && date.after(this.fromDate)) {
         this.toDate = date;
@@ -7095,6 +7097,7 @@ getTotalTaxPrice(): number {
     if (this.fromDate && this.toDate) {
       this.getDiffDate(this.toDate, this.fromDate);
     }
+    this.checkingAvailability();
   }
 
   isHovered(date: NgbDate) {
