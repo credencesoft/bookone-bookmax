@@ -2201,7 +2201,7 @@
               &nbsp;&nbsp; {{ businessUser?.name }} Gallery
             </h4>
             <button class="select-mannual" (click)="selectRoomsbtn()">
-              Select Rooms
+              Select {{ getBookingUnitLabel(accommodationData)?.label }}s
             </button>
           </div>
           <div class="modal-body">
@@ -2458,7 +2458,7 @@
     </div>
 
     <div class="margin-top-40px" id="accmdOne">
-      <h4 class="rooms-heading-starts">Select Rooms</h4>
+      <h4 class="rooms-heading-starts">Select {{ getBookingUnitLabel(accommodationData)?.label }}s</h4>
     </div>
 
     <div class="image-container">
@@ -2665,7 +2665,7 @@
                       {{
                         getMinAvailableRooms(room.ratesAndAvailabilityDtos)
                       }}
-                      room(s)
+                      {{ getBookingUnitLabel(accommodationData)?.label }}(s)
                     </div>
                     <div
                       *ngIf="
