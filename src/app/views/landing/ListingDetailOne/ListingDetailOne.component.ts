@@ -922,6 +922,7 @@ guestDataArray: Array<{
   isLoadingWhatsapp: boolean = false;
     checkinDate: string;
   checkoutDate: string;
+  showRetainedDatesNotice = false;
 isRoomDescriptionExpanded = false;
 descriptionWordLimit = 30;
 expandedRoomDescriptions: { [roomId: string]: boolean } = {};
@@ -956,6 +957,8 @@ expandedRoomDescriptions: { [roomId: string]: boolean } = {};
     @Inject(PLATFORM_ID) private platformId: Object,
   ) {
         this.acRoute.queryParams.subscribe((params) => {
+      this.applyRetainedDateParams(params);
+
       if (params['hotelID'] !== undefined) {
         this.hotelID = params['hotelID'];
       }
@@ -1063,6 +1066,11 @@ if (params['Children'] !== undefined) {
       today.getFullYear(),
       today.getMonth() + 1,
       today.getDate()
+    );
+    this.minDateForCheckOut = this.calendar.getNext(
+      this.minDateForCheckIn,
+      'd',
+      1
     );
     // this.checkAvailabilityDisabled = true;
 let currentUrl = window.location.href;
@@ -1194,6 +1202,15 @@ this.token.savePropertyUrl(currentUrl);
         this.totalExtraAmount +
         this.booking.taxAmount;
     }
+    this.applyPrefilledDates();
+    if (!this.fromDate) {
+      this.fromDate = this.calendar.getToday();
+    }
+    if (!this.toDate) {
+      this.toDate = this.calendar.getNext(this.fromDate, 'd', 1);
+    }
+    this.enforceMinimumCheckoutDate();
+
     const savedBooking = sessionStorage.getItem('bookingSummaryDetails');
   if (savedBooking) {
     const data = JSON.parse(savedBooking);
@@ -2181,6 +2198,7 @@ resetLastChangedAge(planCode: string) {
     const plan = rates.roomRatePlans.find((p) => p.code === planCode && rates.roomId === roomId);
     // Reset
   if (!plan) return;
+  if (this.isPlanRestrictedForCurrentStay(plan)) return;
   const childAges = (this.childAgesByPlan[planCode] || []).map(a => Number(a));
   const below5Count = childAges.filter(a => !isNaN(a) && a <= 5).length;
   const above5Count = childAges.filter(a => !isNaN(a) && a > 5).length;
@@ -2810,6 +2828,10 @@ getTotalWithoutTax(plan: any): number {
 
 
 onSelectPlanFromSmartCard(plan: any): void {
+  if (this.isPlanRestrictedForCurrentStay(plan)) {
+    return;
+  }
+
   const planCode = plan.planCode;
   // find the rate from availableRooms
   const rate = this.getRateByPlanCodeSmartCard(planCode);
@@ -2846,6 +2868,10 @@ onGhCPlanSelect(){
 
 
 onSelectPlanFromPopup(plan: any): void {
+  if (this.isPlanRestrictedForCurrentStay(plan)) {
+    return;
+  }
+
   const planCode = plan.code;
 
   // 1. Assign default selection
@@ -3907,6 +3933,105 @@ onCheckOutClosed(): void {
         (1000 * 60 * 60 * 24)
     );
   }
+
+  private applyRetainedDateParams(params: any) {
+    const checkinValue = this.getFirstQueryParamValue(params, [
+      'arrival',
+      'checkin',
+      'check_in',
+      'start_date',
+    ]);
+    const checkoutValue = this.getFirstQueryParamValue(params, [
+      'departure',
+      'checkout',
+      'check_out',
+      'end_date',
+    ]);
+    const guestValue = this.getFirstQueryParamValue(params, [
+      'num_guests',
+      'guests',
+      'adults',
+    ]);
+
+    if (checkinValue) {
+      this.checkinDate = checkinValue;
+      this.showRetainedDatesNotice = true;
+    }
+
+    if (checkoutValue) {
+      this.checkoutDate = checkoutValue;
+    }
+
+    if (guestValue) {
+      const parsedGuests = Number(guestValue);
+      if (!Number.isNaN(parsedGuests) && parsedGuests > 0) {
+        this.adultno = parsedGuests;
+        this.adults = parsedGuests;
+      }
+    }
+  }
+
+  private getFirstQueryParamValue(params: any, aliases: string[]): string | null {
+    for (const alias of aliases) {
+      const value = params?.[alias];
+      if (value !== undefined && value !== null && `${value}`.trim() !== '') {
+        return `${value}`.trim();
+      }
+    }
+    return null;
+  }
+
+  private applyPrefilledDates() {
+    const parsedCheckin = this.parseIsoDateString(this.checkinDate);
+    if (!parsedCheckin) {
+      return;
+    }
+
+    this.fromDate = parsedCheckin;
+
+    const parsedCheckout = this.parseIsoDateString(this.checkoutDate);
+    this.toDate = parsedCheckout || this.addDaysToNgbDate(parsedCheckin, 1);
+  }
+
+  private parseIsoDateString(value: string): NgbDate | null {
+    if (!value) {
+      return null;
+    }
+
+    const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value.trim());
+    if (!match) {
+      return null;
+    }
+
+    const [, year, month, day] = match;
+    return new NgbDate(Number(year), Number(month), Number(day));
+  }
+
+  private addDaysToNgbDate(date: NgbDate, days: number): NgbDate {
+    const nextDate = new Date(date.year, date.month - 1, date.day);
+    nextDate.setDate(nextDate.getDate() + days);
+    return new NgbDate(
+      nextDate.getFullYear(),
+      nextDate.getMonth() + 1,
+      nextDate.getDate()
+    );
+  }
+
+  private enforceMinimumCheckoutDate() {
+    if (!this.fromDate) {
+      return;
+    }
+
+    const nextDay = this.addDaysToNgbDate(this.fromDate, 1);
+    this.minDateForCheckOut = nextDay;
+
+    if (!this.toDate || this.toDate.before(nextDay)) {
+      this.toDate = nextDay;
+    }
+
+    this.getDiffDate(this.toDate, this.fromDate);
+  }
+
   toggleRoomsAndOccupancy() {
     if (this.roomsAndOccupancy === false) {
       this.roomsAndOccupancy = true;
@@ -6245,12 +6370,12 @@ this.token.savePropertyUrl(currentUrl);
 
           this.availableRooms = response.body.roomList;
             this.availableRooms = response.body.roomList.sort(
-            (a: any, b: any) => b.roomOnlyPrice - a.roomOnlyPrice
+            (a: any, b: any) => a.roomOnlyPrice - b.roomOnlyPrice
           );
           const roomListOne = response.body.roomList || [];
 
           const sortedRoomsOne = roomListOne.sort(
-            (a: any, b: any) => b.roomOnlyPrice - a.roomOnlyPrice
+            (a: any, b: any) => a.roomOnlyPrice - b.roomOnlyPrice
           );
           this.availableRooms = sortedRoomsOne.filter(room => {
                 const rates = room.ratesAndAvailabilityDtos;
@@ -7070,11 +7195,11 @@ getTotalTaxPrice(): number {
         return; // Prevent past date selection
       }
       this.fromDate = date;
-      this.toDate = null;
-      this.minDateForCheckOut = date; // Disable dates before check-in for checkout
+      this.enforceMinimumCheckoutDate();
     } else if (type === 'checkout') {
-      if (this.fromDate && date.after(this.fromDate)) {
-        this.toDate = date;
+      if (this.fromDate) {
+        const minCheckoutDate = this.addDaysToNgbDate(this.fromDate, 1);
+        this.toDate = date.before(minCheckoutDate) ? minCheckoutDate : date;
       }
     }
 
@@ -7082,6 +7207,29 @@ getTotalTaxPrice(): number {
     if (this.fromDate && this.toDate) {
       this.getDiffDate(this.toDate, this.fromDate);
     }
+  }
+
+  getPlanMaximumLengthOfStay(plan: any): number | null {
+    const rawValue =
+      plan?.maximumLengthOfStay ??
+      plan?.roomMaximumLengthOfStay ??
+      plan?.maxLengthOfStay;
+
+    const parsedValue = Number(rawValue);
+    if (!Number.isNaN(parsedValue) && parsedValue > 0) {
+      return parsedValue;
+    }
+
+    return plan?.onedayPlan ? 1 : null;
+  }
+
+  hasSingleNightRestriction(plan: any): boolean {
+    return this.getPlanMaximumLengthOfStay(plan) === 1 || plan?.onedayPlan === true;
+  }
+
+  isPlanRestrictedForCurrentStay(plan: any): boolean {
+    const maxStay = this.getPlanMaximumLengthOfStay(plan);
+    return maxStay !== null && Number(this.DiffDate || 0) > maxStay;
   }
 
   isHovered(date: NgbDate) {

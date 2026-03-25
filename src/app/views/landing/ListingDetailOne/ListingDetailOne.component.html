@@ -874,6 +874,9 @@
       <div [ngStyle]="{ 'margin-top': businessUser?.website ? '0px' : '0px' }">
         <div class="website-web-vision">
           <div class="card checkAvaCard">
+            <div *ngIf="showRetainedDatesNotice" class="retained-dates-notice">
+              Retained travel dates from your referral link.
+            </div>
             <div id="checkin">
               <div class="row d-flex checkAva2">
                 <div class="checkAva3">
@@ -984,7 +987,7 @@
                         outsideDays="hidden"
                         [startDate]="toDate"
                         tabindex="-1"
-                        [minDate]="fromDate"
+                        [minDate]="minDateForCheckOut"
                       />
                     </div>
                   </div>
@@ -1378,7 +1381,7 @@
                           outsideDays="hidden"
                           [startDate]="toDate"
                           tabindex="-1"
-                          [minDate]="fromDate"
+                          [minDate]="minDateForCheckOut"
                         />
                       </div>
                     </div>
@@ -1892,8 +1895,22 @@
                             <button
                               (click)="onSelectPlanFromSmartCard(plan)"
                               class="select-mannual"
+                              [disabled]="isPlanRestrictedForCurrentStay(plan)"
+                              [title]="
+                                isPlanRestrictedForCurrentStay(plan)
+                                  ? 'This houseboat is available for 1 night only.'
+                                  : ''
+                              "
                             >
-                              Choose <i class="fa-solid fa-arrow-right"></i>
+                              {{
+                                isPlanRestrictedForCurrentStay(plan)
+                                  ? "1-night only"
+                                  : "Choose"
+                              }}
+                              <i
+                                *ngIf="!isPlanRestrictedForCurrentStay(plan)"
+                                class="fa-solid fa-arrow-right"
+                              ></i>
                             </button>
                           </div>
                         </div>
@@ -2617,8 +2634,13 @@
                           <button
                             class="btn select-plan"
                             (click)="onSelectPlanFromPopup(plan)"
+                            [disabled]="isPlanRestrictedForCurrentStay(plan)"
                           >
-                            Select Plan
+                            {{
+                              isPlanRestrictedForCurrentStay(plan)
+                                ? "1-night only"
+                                : "Select Plan"
+                            }}
                           </button>
                         </div>
                       </div>
@@ -2852,6 +2874,12 @@
                               }}
                             </div>
                             <div
+                              *ngIf="hasSingleNightRestriction(plan)"
+                              class="one-night-badge"
+                            >
+                              1-night only
+                            </div>
+                            <div
                               class="ViewDetails"
                               (click)="togglePanel(room, i)"
                               style="cursor: pointer"
@@ -3038,15 +3066,30 @@
                             </div>
                           </div>
 
-                          <div class="d-flex room-number">
-                            <div
-                              class="selected"
-                              (click)="onPlanSelect(plan.code, rates)"
-                            >
-                              Select
+                            <div class="d-flex room-number">
+                              <div
+                                class="selected"
+                                [class.disabled-select]="
+                                  isPlanRestrictedForCurrentStay(plan)
+                                "
+                                [attr.title]="
+                                  isPlanRestrictedForCurrentStay(plan)
+                                    ? 'This houseboat is available for 1 night only.'
+                                    : null
+                                "
+                                (click)="
+                                  !isPlanRestrictedForCurrentStay(plan) &&
+                                    onPlanSelect(plan.code, rates)
+                                "
+                              >
+                              {{
+                                isPlanRestrictedForCurrentStay(plan)
+                                  ? "1-night only"
+                                  : "Select"
+                              }}
+                              </div>
                             </div>
                           </div>
-                        </div>
                       </div>
                       <!-- web view Plans Section -->
 
@@ -3071,6 +3114,12 @@
                                     "..."
                                   : plan.name
                               }}
+                            </div>
+                            <div
+                              *ngIf="hasSingleNightRestriction(plan)"
+                              class="one-night-badge"
+                            >
+                              1-night only
                             </div>
                             <div
                               class="ViewDetails"
@@ -3265,12 +3314,21 @@
                           <div class="d-flex room-number">
                             <div
                               class="selected"
+                              [class.disabled-select]="
+                                isPlanRestrictedForCurrentStay(plan)
+                              "
                               (click)="
-                                onPlanSelect(plan.code, rates);
-                                bookingSummaryView()
+                                !isPlanRestrictedForCurrentStay(plan) &&
+                                  onPlanSelect(plan.code, rates);
+                                !isPlanRestrictedForCurrentStay(plan) &&
+                                  bookingSummaryView()
                               "
                             >
-                              Select
+                              {{
+                                isPlanRestrictedForCurrentStay(plan)
+                                  ? "1-night only"
+                                  : "Select"
+                              }}
                             </div>
                           </div>
                         </div>
