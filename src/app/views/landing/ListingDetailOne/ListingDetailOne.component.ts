@@ -6750,17 +6750,13 @@ isPlanSelected(planName: string): boolean {
 
 }
 
-shouldShowSpecificRoom(room: any): boolean {
-  const hasOneDayPlan = room?.ratesAndAvailabilityDtos?.some((rate: any) =>
-    rate?.roomRatePlans?.some((plan: any) => plan?.onedayPlan === true)
-  );
+  shouldDisableRoomImageClick(room: any): boolean {
+    const hasOneDayPlan = room?.ratesAndAvailabilityDtos?.some((rate: any) =>
+      rate?.roomRatePlans?.some((plan: any) => plan?.onedayPlan === true)
+    );
 
-  if (hasOneDayPlan) {
-    return Number(this.booking?.noOfNights) === 1;
+    return Number(this.booking?.noOfNights) > 1 && !!hasOneDayPlan;
   }
-
-  return true;
-}
 
   toggleDropdownNights(index) {
     this.isOpen = !this.isOpen;

@@ -2201,7 +2201,7 @@
               &nbsp;&nbsp; {{ businessUser?.name }} Gallery
             </h4>
             <button class="select-mannual" (click)="selectRoomsbtn()">
-              Select Rooms
+              Select {{ getBookingUnitLabel(accommodationData)?.label }}s
             </button>
           </div>
           <div class="modal-body">
@@ -2458,7 +2458,7 @@
     </div>
 
     <div class="margin-top-40px" id="accmdOne">
-      <h4 class="rooms-heading-starts">Select Rooms</h4>
+      <h4 class="rooms-heading-starts">Select {{ getBookingUnitLabel(accommodationData)?.label }}s</h4>
     </div>
 
     <div class="image-container">
@@ -2629,19 +2629,13 @@
             </div>
           </div>
 
-          <div
-            class="card-rooms card margin-top-20px"
-            *ngIf="this.availableRooms?.length > 0 && shouldShowSpecificRoom(room)"
-          >
+          <div class="card-rooms card margin-top-20px" *ngIf="availableRooms?.length > 0">
             <div
               *ngFor="let rates of room.ratesAndAvailabilityDtos; let r = index"
             >
-              <div
-                class="d-flex justify-content-between flex-wrap-one"
-                *ngIf="
-                  room.id === rates.roomId &&
-                  r < 1 &&
-                  (rates.stopSellOBE === false || rates.stopSellOBE === null)
+              <div class="d-flex justify-content-between flex-wrap-one"
+                *ngIf="room?.id === rates?.roomId &&
+                  r < 1 && (rates?.stopSellOBE === false || rates?.stopSellOBE === null)
                 "
               >
                 <div class="col-12 col-lg-5 spacing-manage">
@@ -2650,7 +2644,9 @@
                     style="
                       border: 1px solid #e0e0e0;
                       border-radius: 20px;
-                      cursor: pointer;
+                    "
+                    [style.cursor]="
+                      shouldDisableRoomImageClick(room) ? 'default' : 'pointer'
                     "
                   >
                     <!-- Top Badge -->
@@ -2665,7 +2661,7 @@
                       {{
                         getMinAvailableRooms(room.ratesAndAvailabilityDtos)
                       }}
-                      room(s)
+                      {{ getBookingUnitLabel(accommodationData)?.label }}(s)
                     </div>
                     <div
                       *ngIf="
@@ -2679,7 +2675,9 @@
                     <!-- Room Image -->
                     <!-- Fallback image if imageList is empty or undefined -->
                     <img
-                      (click)="togglePanel(room, i)"
+                      (click)="
+                        !shouldDisableRoomImageClick(room) && togglePanel(room, i)
+                      "
                       *ngIf="!room.imageList || room.imageList.length === 0"
                       src="https://themissionneighbourhood.com/images/no-image.png"
                       class="w-100"
@@ -2692,7 +2690,9 @@
 
                     <!-- Show single image if only one or two images but they are same -->
                     <img
-                      (click)="togglePanel(room, i)"
+                      (click)="
+                        !shouldDisableRoomImageClick(room) && togglePanel(room, i)
+                      "
                       *ngIf="
                         room.imageList?.length > 0 &&
                         (room.imageList.length === 1 ||
@@ -2710,7 +2710,9 @@
 
                     <!-- Show carousel only if there are 2+ unique images -->
                     <div
-                      (click)="togglePanel(room, i)"
+                      (click)="
+                        !shouldDisableRoomImageClick(room) && togglePanel(room, i)
+                      "
                       *ngIf="
                         room.imageList?.length > 1 &&
                         room.imageList[0]?.url !== room.imageList[1]?.url
@@ -2758,7 +2760,10 @@
                         </div>
 
                         <div
-                          (click)="togglePanel(room, i)"
+                          (click)="
+                            !shouldDisableRoomImageClick(room) &&
+                            togglePanel(room, i)
+                          "
                           [style.top.px]="
                             (room.roomFacilities?.length || 0) > 0 ? null : -17
                           "
@@ -2830,7 +2835,7 @@
                       }"
                     >
                       <!-- web view Plans sub-Section -->
-                      <div class="card-title website-web-vision">
+                      <div class="card-title website-web-vision" [class.disabled-room]="booking?.noOfNights > 1 && plan?.onedayPlan">
                         <div
                           class="d-flex justify-content-between align-item-center"
                           style="gap: 20px"
@@ -2882,7 +2887,7 @@
                           </div>
                         </div>
                       </div>
-                      <div class="card-data website-web-vision">
+                      <div class="card-data website-web-vision" [class.disabled-room]="booking?.noOfNights > 1 && plan?.onedayPlan">
                         <div class="error-text">
                           {{ guestSelectionErrors[plan.code] }}
                         </div>
@@ -3051,7 +3056,7 @@
                       <!-- web view Plans Section -->
 
                       <!-- mob view Plans Section -->
-                      <div class="card-title website-mob-vision">
+                      <div class="card-title website-mob-vision" [class.disabled-room]="booking?.noOfNights > 1 && plan?.onedayPlan">
                         <div
                           class="d-flex justify-content-between align-item-center"
                           style="gap: 12px"
@@ -3103,7 +3108,7 @@
                           </div>
                         </div>
                       </div>
-                      <div class="card-data website-mob-vision">
+                      <div class="card-data website-mob-vision" [class.disabled-room]="booking?.noOfNights > 1 && plan?.onedayPlan">
                         <div class="error-text">
                           {{ guestSelectionErrors[plan.code] }}
                         </div>
@@ -3426,7 +3431,9 @@
                     style="
                       border: 1px solid #e0e0e0;
                       border-radius: 20px;
-                      cursor: pointer;
+                    "
+                    [style.cursor]="
+                      shouldDisableRoomImageClick(room) ? 'default' : 'pointer'
                     "
                   >
                     <!-- Top Badge -->
@@ -3440,7 +3447,10 @@
                     <!-- Room Image -->
                     <!-- Fallback image if imageList is empty or undefined -->
                     <img
-                      (click)="togglePanelOne(room, i)"
+                      (click)="
+                        !shouldDisableRoomImageClick(room) &&
+                        togglePanelOne(room, i)
+                      "
                       *ngIf="!room.imageList || room.imageList.length === 0"
                       src="https://themissionneighbourhood.com/images/no-image.png"
                       class="w-100"
@@ -3453,7 +3463,10 @@
 
                     <!-- Show single image if only one or two images but they are same -->
                     <img
-                      (click)="togglePanelOne(room, i)"
+                      (click)="
+                        !shouldDisableRoomImageClick(room) &&
+                        togglePanelOne(room, i)
+                      "
                       *ngIf="
                         room.imageList?.length > 0 &&
                         (room.imageList.length === 1 ||
@@ -3471,7 +3484,10 @@
 
                     <!-- Show carousel only if there are 2+ unique images -->
                     <div
-                      (click)="togglePanelOne(room, i)"
+                      (click)="
+                        !shouldDisableRoomImageClick(room) &&
+                        togglePanelOne(room, i)
+                      "
                       *ngIf="
                         room.imageList?.length > 1 &&
                         room.imageList[0]?.url !== room.imageList[1]?.url
@@ -3519,7 +3535,10 @@
                         </div>
 
                         <div
-                          (click)="togglePanelOne(room, i)"
+                          (click)="
+                            !shouldDisableRoomImageClick(room) &&
+                            togglePanelOne(room, i)
+                          "
                           [style.top.px]="
                             (room.roomFacilities?.length || 0) > 0 ? null : -17
                           "
