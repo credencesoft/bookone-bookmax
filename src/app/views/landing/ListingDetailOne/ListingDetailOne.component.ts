@@ -177,14 +177,14 @@ export class ListingDetailOneComponent implements OnInit {
   extraChildrenCharge: number;
   extraAdultCount: number;
   extraChildCount: number;
-showBookingSummary: boolean = false;
+  showBookingSummary: boolean = false;
   soldOutRooms: any;
   paramsroomId: any;
   specialDiscountPercentage: any;
   specialDiscountData: any;
   smartLoading: boolean = true;
   categories: { key: string, label: string }[] = [];
-currentPage = 0; // page index
+  currentPage = 0; // page index
   successMessagewhatsapp: string;
   errorMessagewhatsapp: string;
   errorMessagePrivate: string;
@@ -926,6 +926,11 @@ guestDataArray: Array<{
 isRoomDescriptionExpanded = false;
 descriptionWordLimit = 30;
 expandedRoomDescriptions: { [roomId: string]: boolean } = {};
+  public ACCOMMODATIONBUSINESSTERM = {
+    Label: 'Book Houseboat',
+    TERM: 'Houseboat'
+  };
+
   constructor(
     private listingService: ListingService,
     public SchemaService:SchemaService,
@@ -4468,8 +4473,8 @@ onCheckOutClosed(): void {
         return bookingLabel;
       }
       const accommodation = accommodationData.find((entry) => entry?.name?.trim().toLowerCase() === 'accommodation');
-      if(accommodation?.bookingButtonLabelText === "Book Houseboat" && accommodation?.businessTermResource === 'Houseboat' && accommodation?.businessProductName === 'Houseboat'){
-        bookingLabel.label = 'Houseboat';
+      if(accommodation?.bookingButtonLabelText === this.ACCOMMODATIONBUSINESSTERM?.Label && accommodation?.businessTermResource === this.ACCOMMODATIONBUSINESSTERM?.TERM && accommodation?.businessProductName === this.ACCOMMODATIONBUSINESSTERM?.TERM){
+        bookingLabel.label = this.ACCOMMODATIONBUSINESSTERM?.TERM;
       }
       return bookingLabel;
     } 
