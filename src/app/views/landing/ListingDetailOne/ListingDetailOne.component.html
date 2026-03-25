@@ -2641,6 +2641,7 @@
                 <div class="col-12 col-lg-5 spacing-manage">
                   <div
                     class="position-relative bg-white rounded-4 overflow-hidden shadow"
+                    [class.disabled-room]="shouldDisableRoomImageClick(room)"
                     style="
                       border: 1px solid #e0e0e0;
                       border-radius: 20px;
@@ -2685,7 +2686,9 @@
                         aspect-ratio: 4/3;
                         object-fit: cover;
                         border-radius: 0;
-                      "
+                      " [style.cursor]="
+                      shouldDisableRoomImageClick(room) ? 'default' : 'pointer'
+                    "
                     />
 
                     <!-- Show single image if only one or two images but they are same -->
@@ -2705,7 +2708,9 @@
                         aspect-ratio: 4/3;
                         object-fit: cover;
                         border-radius: 0;
-                      "
+                      " [style.cursor]="
+                      shouldDisableRoomImageClick(room) ? 'default' : 'pointer'
+                    "
                     />
 
                     <!-- Show carousel only if there are 2+ unique images -->
@@ -2719,7 +2724,9 @@
                       "
                       id="carouselExampleIndicators"
                       class="carousel slide"
-                      data-ride="carousel"
+                      data-ride="carousel" [style.cursor]="
+                      shouldDisableRoomImageClick(room) ? 'default' : 'pointer'
+                    "
                     >
                       <div class="carousel-inner img_size_room">
                         <div
@@ -2735,7 +2742,9 @@
                               aspect-ratio: 4/3;
                               object-fit: cover;
                               border-radius: 0;
-                            "
+                            " [style.cursor]="
+                      shouldDisableRoomImageClick(room) ? 'default' : 'pointer'
+                    "
                           />
                         </div>
                       </div>
@@ -2781,7 +2790,11 @@
                 </div>
 
                 <div class="col-12 col-lg-7 spacing-manage">
-                  <div class="d-flex justify-content-between" style="gap: 15px">
+                  <div
+                    class="d-flex justify-content-between"
+                    style="gap: 15px"
+                    [class.disabled-room]="shouldDisableRoomImageClick(room)"
+                  >
                     <h3 class="margin-top-mobile-30px">{{ room.name }}</h3>
                     <div
                       class="d-flex"
@@ -2806,7 +2819,10 @@
                       </div>
                     </div>
                   </div>
-                  <div *ngIf="rates.roomRatePlans.length === 1">
+                  <div
+                    *ngIf="rates.roomRatePlans.length === 1"
+                    [class.disabled-room]="shouldDisableRoomImageClick(room)"
+                  >
                     <div [innerHTML]="roomDescriptionPreview(room)"></div>
                     <span
                       *ngIf="
@@ -3428,6 +3444,7 @@
                 <div class="col-12 col-lg-5 spacing-manage">
                   <div
                     class="position-relative bg-white rounded-4 overflow-hidden shadow"
+                    [class.disabled-room]="shouldDisableRoomImageClick(room)"
                     style="
                       border: 1px solid #e0e0e0;
                       border-radius: 20px;
@@ -3556,7 +3573,11 @@
                 </div>
 
                 <div class="col-12 col-lg-7 spacing-manage">
-                  <div class="d-flex justify-content-between" style="gap: 15px">
+                  <div
+                    class="d-flex justify-content-between"
+                    style="gap: 15px"
+                    [class.disabled-room]="shouldDisableRoomImageClick(room)"
+                  >
                     <h3 class="margin-top-mobile-30px">{{ room.name }}</h3>
                     <div
                       class="d-flex"
@@ -3581,7 +3602,10 @@
                       </div>
                     </div>
                   </div>
-                  <div class="d-block margin-top-30px">
+                  <div
+                    class="d-block margin-top-30px"
+                    [class.disabled-room]="shouldDisableRoomImageClick(room)"
+                  >
                     <div
                       class="roomDescription"
                       [innerHTML]="room.description"
