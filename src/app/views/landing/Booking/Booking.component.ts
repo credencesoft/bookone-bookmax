@@ -339,6 +339,7 @@ export class BookingComponent implements OnInit {
   private BOOKING_TIMEOUT = 50 * 1000; // 50 seconds
   remainingSeconds = 120;
   private countdownTimer: any;
+  roomLabel: string = 'Room';
   constructor(
     private token: TokenStorage,
     private ngZone: NgZone,
@@ -503,6 +504,16 @@ export class BookingComponent implements OnInit {
       isBookingEngine = true;
     }
     this.propertyData.shortName = this.token.getProperty().shortName;
+    const savedLabel = localStorage.getItem('savedBookingLabel');
+    console.log('savedLabel data is',savedLabel);
+    if (savedLabel) {
+    try {
+      const parsedData = JSON.parse(savedLabel);
+      this.roomLabel = parsedData.label || 'Room'; 
+    } catch (e) {
+      console.error("Error parsing token", e);
+    }
+  }
   }
 
   ngOnInit() {

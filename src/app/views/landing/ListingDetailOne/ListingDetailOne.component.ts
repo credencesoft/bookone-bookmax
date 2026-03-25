@@ -4476,6 +4476,8 @@ onCheckOutClosed(): void {
       if(accommodation?.bookingButtonLabelText === this.ACCOMMODATIONBUSINESSTERM?.Label && accommodation?.businessTermResource === this.ACCOMMODATIONBUSINESSTERM?.TERM && accommodation?.businessProductName === this.ACCOMMODATIONBUSINESSTERM?.TERM){
         bookingLabel.label = this.ACCOMMODATIONBUSINESSTERM?.TERM;
       }
+
+      localStorage.setItem('savedBookingLabel', JSON.stringify(bookingLabel));
       return bookingLabel;
     } 
     catch (error) {
