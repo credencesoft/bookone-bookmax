@@ -7852,6 +7852,12 @@ onYesClick() {
     try {
       if (!roomList || roomList.length === 0) return [];
       const sortedRooms = [...roomList];  
+       const activeGoogleHotelCenter = sessionStorage.getItem('checkbookingengine');
+    if (activeGoogleHotelCenter === 'googlehotelcenter') {
+      return sortedRooms.sort((a, b) => {const priceA = Number(a?.roomOnlyPrice) || 0;const priceB = Number(b?.roomOnlyPrice) || 0; 
+        return priceA - priceB;});
+    }
+
       if (this.roomRateOrderEnabled) {
         return sortedRooms.sort((a: any, b: any) => this.getPrimaryRoomRateAmount(a) - this.getPrimaryRoomRateAmount(b));
       }
