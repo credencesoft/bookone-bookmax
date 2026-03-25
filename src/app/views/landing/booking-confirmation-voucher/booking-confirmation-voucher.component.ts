@@ -32,6 +32,7 @@ export class BookingConfirmationVoucherComponent {
   policies: any;
   isReadMore: any;
   accommodationService: any;
+  roomLabel: string = 'Room';
 
   constructor(
     private http: HttpClient,
@@ -43,6 +44,17 @@ export class BookingConfirmationVoucherComponent {
   ) {
     this.businessUser = this.token.getPropertyData();
     this.getPropertyDetailsById(this.businessUser.id);
+
+    const savedLabel = localStorage.getItem('savedBookingLabel');
+    console.log('savedLabel data is',savedLabel);
+    if (savedLabel) {
+    try {
+      const parsedData = JSON.parse(savedLabel);
+      this.roomLabel = parsedData.label || 'Room'; 
+    } catch (e) {
+      console.error("Error parsing token", e);
+    }
+  }
   }
   ngOnInit() {
     this.sequenceBookingConfirmation();

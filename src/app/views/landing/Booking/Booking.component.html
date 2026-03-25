@@ -773,7 +773,7 @@
                   "
                 >
                   <div class="d-flex justify-content-between line-height-27px">
-                    <div class="color-graying">Total Room Price</div>
+                    <div class="color-graying">Total {{this.roomLabel}} Price</div>
 
                     <div style="color: #3b82f6; font-weight: 500">
                       ₹
@@ -796,7 +796,7 @@
                   </div>
 
                   <div class="d-flex justify-content-between line-height-27px">
-                    <div class="color-graying">Total Tax on Room Price</div>
+                    <div class="color-graying">Total Tax on {{this.roomLabel}} Price</div>
 
                     <div style="font-weight: 500">
                       ₹ {{ bookingSummaryDetails?.totalTax | number : "1.2-2" }}
@@ -1300,7 +1300,7 @@
                 </h5>
 
                 <div class="d-flex justify-content-between line-height-27px">
-                  <div class="color-graying">Total Room Price</div>
+                  <div class="color-graying">Total {{roomLabel}} Price</div>
 
                   <div style="color: #3b82f6; font-weight: 500">
                     ₹
@@ -1324,7 +1324,7 @@
                   </div>
 
                 <div class="d-flex justify-content-between line-height-27px">
-                  <div class="color-graying">Total Tax on Room Price</div>
+                  <div class="color-graying">Total Tax on {{this.roomLabel}} Price</div>
 
                   <div style="font-weight: 500">
                     ₹ {{ bookingSummaryDetails?.totalTax | number : "1.2-2" }}

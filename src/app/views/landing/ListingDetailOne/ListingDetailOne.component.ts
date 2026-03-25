@@ -4473,9 +4473,13 @@ onCheckOutClosed(): void {
         return bookingLabel;
       }
       const accommodation = accommodationData.find((entry) => entry?.name?.trim().toLowerCase() === 'accommodation');
-      if(accommodation?.bookingButtonLabelText === this.ACCOMMODATIONBUSINESSTERM?.Label && accommodation?.businessTermResource === this.ACCOMMODATIONBUSINESSTERM?.TERM && accommodation?.businessProductName === this.ACCOMMODATIONBUSINESSTERM?.TERM){
-        bookingLabel.label = this.ACCOMMODATIONBUSINESSTERM?.TERM;
-      }
+      if (accommodation?.businessProductName === 'Accomodation') {
+         bookingLabel.label = 'Room'; 
+      } else {
+         bookingLabel.label = accommodation?.businessProductName;
+     }
+
+      localStorage.setItem('savedBookingLabel', JSON.stringify(bookingLabel));
       return bookingLabel;
     } 
     catch (error) {
@@ -6511,7 +6515,6 @@ this.token.savePropertyUrl(currentUrl);
               });
             });
           });
-          console.log('roomWithGHCPlan is', this.availableRooms);
           this.planPrice = [];
           this.taxArray = [];
 
@@ -7849,6 +7852,12 @@ onYesClick() {
     try {
       if (!roomList || roomList.length === 0) return [];
       const sortedRooms = [...roomList];  
+       const activeGoogleHotelCenter = sessionStorage.getItem('checkbookingengine');
+    if (activeGoogleHotelCenter === 'googlehotelcenter') {
+      return sortedRooms.sort((a, b) => {const priceA = Number(a?.roomOnlyPrice) || 0;const priceB = Number(b?.roomOnlyPrice) || 0; 
+        return priceA - priceB;});
+    }
+
       if (this.roomRateOrderEnabled) {
         return sortedRooms.sort((a: any, b: any) => this.getPrimaryRoomRateAmount(a) - this.getPrimaryRoomRateAmount(b));
       }

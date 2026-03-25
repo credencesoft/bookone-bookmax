@@ -147,6 +147,7 @@ textToCopyOne: string = 'This is some text to copy';
   url: string;
   activeGoogleCenter: boolean = false;
   paymentRefNo: any;
+  roomLabel: string = "Room";
   constructor(
     private http: HttpClient,
     private token: TokenStorage,
@@ -333,6 +334,17 @@ textToCopyOne: string = 'This is some text to copy';
     this.accommodationData.forEach((element) => {
        this.serviceChargePercentage = element.serviceChargePercentage;
     });
+
+    const savedLabel = localStorage.getItem('savedBookingLabel');
+    console.log('savedLabel data is',savedLabel);
+    if (savedLabel) {
+    try {
+      const parsedData = JSON.parse(savedLabel);
+      this.roomLabel = parsedData.label || 'Room'; 
+    } catch (e) {
+      console.error("Error parsing token", e);
+    }
+  }
   }
 
 
