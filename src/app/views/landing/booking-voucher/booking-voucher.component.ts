@@ -40,6 +40,7 @@ export class BookingVoucherComponent {
   expanded: boolean = false;
     totalDiscount = 0;
       websiteUrlBookingEngine: boolean = false;
+  roomLabel: string = 'Room';
   constructor(
     private token: TokenStorage,
     private hotelBookingService: HotelBookingService,
@@ -94,6 +95,17 @@ export class BookingVoucherComponent {
           setInterval(() => {
     this.checkBookingEngineFlag();
   }, 10);
+
+   const savedLabel = localStorage.getItem('savedBookingLabel');
+    console.log('savedLabel data is',savedLabel);
+    if (savedLabel) {
+    try {
+      const parsedData = JSON.parse(savedLabel);
+      this.roomLabel = parsedData.label || 'Room'; 
+    } catch (e) {
+      console.error("Error parsing token", e);
+    }
+  }
   }
 
   ngOnInIt() {}

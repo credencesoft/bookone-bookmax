@@ -41,6 +41,7 @@ export class WhatappPaylaterTemplateComponent implements OnInit {
   // totalPercentage: number;
   showMore:boolean  =false
   socialmedialist:any;
+  roomLabel: string = 'Room';
   constructor(
     private acRoute: ActivatedRoute,
     private hotelbooking:HotelBookingService,
@@ -62,6 +63,16 @@ export class WhatappPaylaterTemplateComponent implements OnInit {
   //  }else{
   //    this.getOfferDetails();
   //  }
+  const savedLabel = localStorage.getItem('savedBookingLabel');
+    console.log('savedLabel data is',savedLabel);
+    if (savedLabel) {
+    try {
+      const parsedData = JSON.parse(savedLabel);
+      this.roomLabel = parsedData.label || 'Room'; 
+    } catch (e) {
+      console.error("Error parsing token", e);
+    }
+  }
 
   }
 

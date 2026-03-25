@@ -122,6 +122,7 @@ calculatedServices: any[];
 totalServiceCost: number = 0;
 bookingroomPrice: string;
 taxPercentage: number;
+  roomLabel: string = 'Room';
 
   constructor(
     private http: HttpClient,
@@ -179,6 +180,16 @@ this.storedPromo = localStorage.getItem('selectPromo');
    }else{
      this.getOfferDetails();
    }
+    const savedLabel = localStorage.getItem('savedBookingLabel');
+    console.log('savedLabel data is',savedLabel);
+    if (savedLabel) {
+    try {
+      const parsedData = JSON.parse(savedLabel);
+      this.roomLabel = parsedData.label || 'Room'; 
+    } catch (e) {
+      console.error("Error parsing token", e);
+    }
+  }
 
   }
 
