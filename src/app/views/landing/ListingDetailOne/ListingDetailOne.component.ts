@@ -4473,9 +4473,11 @@ onCheckOutClosed(): void {
         return bookingLabel;
       }
       const accommodation = accommodationData.find((entry) => entry?.name?.trim().toLowerCase() === 'accommodation');
-      if(accommodation?.bookingButtonLabelText === this.ACCOMMODATIONBUSINESSTERM?.Label && accommodation?.businessTermResource === this.ACCOMMODATIONBUSINESSTERM?.TERM && accommodation?.businessProductName === this.ACCOMMODATIONBUSINESSTERM?.TERM){
-        bookingLabel.label = this.ACCOMMODATIONBUSINESSTERM?.TERM;
-      }
+      if (accommodation?.businessProductName === 'Accomodation') {
+         bookingLabel.label = 'Room'; 
+      } else {
+         bookingLabel.label = accommodation?.businessProductName;
+     }
 
       localStorage.setItem('savedBookingLabel', JSON.stringify(bookingLabel));
       return bookingLabel;
@@ -6513,7 +6515,6 @@ this.token.savePropertyUrl(currentUrl);
               });
             });
           });
-          console.log('roomWithGHCPlan is', this.availableRooms);
           this.planPrice = [];
           this.taxArray = [];
 
