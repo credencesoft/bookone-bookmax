@@ -86,6 +86,12 @@ background-color: #f5f5f5;
   color: black;
 }
 
+.disabled-room {
+  opacity: 0.5;
+  pointer-events: none; /* Prevents clicks on the entire container */
+  filter: grayscale(1);
+}
+
 .checkAva8 {
   display: flex;
   justify-content: center;
