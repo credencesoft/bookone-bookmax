@@ -3068,6 +3068,9 @@
                             </div>
                           </div>
                         </div>
+                          <div *ngIf="booking?.noOfNights > 1 && plan?.onedayPlan" class="plan-warning-text">
+                              This plan is only available for 1-night stays. Please adjust your dates to select this {{ getBookingUnitLabel(accommodationData)?.label }}s.
+                            </div>
                       </div>
                       <!-- web view Plans Section -->
 
