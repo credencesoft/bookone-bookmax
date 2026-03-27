@@ -4464,17 +4464,17 @@ onCheckOutClosed(): void {
     }
   }
 
-  getBookingUnitLabel(room: Room) {
+  getBookingUnitLabel(room?: Room | null) {
     try{
       const accmmodationService = this.accommodationData;
-      if(!room){
-        return 'Room';
-      }
       if(!room?.businessProductName?.trim()){
         const accommodationService = accmmodationService?.find(service => service?.name === 'Accommodation');
         if(accommodationService && accommodationService?.businessProductName?.trim()){
           return accommodationService.businessProductName;
         }
+      }
+      if(!room){
+        return 'Room';
       }
       const productName = room?.businessProductName;
       return productName ? productName : 'Room';
