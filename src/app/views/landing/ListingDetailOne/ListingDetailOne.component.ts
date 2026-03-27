@@ -4464,66 +4464,25 @@ onCheckOutClosed(): void {
     }
   }
 
-  // getBookingUnitLabel(accommodationData: BusinessServiceDtoList[] = []) {
-  //   try {
-  //     let bookingLabel = {
-  //       label: 'Room',
-  //     };
-  //     if(!accommodationData || accommodationData.length === 0) {
-  //       return bookingLabel;
-  //     }
-  //     const accommodation = accommodationData.find((entry) => entry?.name?.trim().toLowerCase() === 'accommodation');
-  //     const productName = accommodation?.businessProductName || 'Room';
-  //     const characterLimit = 15;
-  //     if (accommodation?.businessProductName === 'Accomodation' && productName.length > characterLimit) {
-  //        bookingLabel.label = 'Room'; 
-  //     } else {
-  //        bookingLabel.label = accommodation?.businessProductName;
-  //    }
-
-  //     localStorage.setItem('savedBookingLabel', JSON.stringify(bookingLabel));
-  //     return bookingLabel;
-  //   } 
-  //   catch (error) {
-  //     console.error('Error parsing booking unit label:', error);    
-  //     return { label: 'Room' };
-  //   }
-  // }
-
-  getBookingUnitLabel(accommodationData: BusinessServiceDtoList[] = []) {
-  try {
-    let bookingLabel = {
-      label: 'Room',
-      fullLabel: 'Room' 
-    };
-
-    if (!accommodationData || accommodationData.length === 0) {
-      return bookingLabel;
+  getBookingUnitLabel(room: Room) {
+    try{
+      const accmmodationService = this.accommodationData;
+      if(!room){
+        return 'Room';
+      }
+      if(!room?.businessProductName?.trim()){
+        const accommodationService = accmmodationService?.find(service => service?.name === 'Accommodation');
+        if(accommodationService && accommodationService?.businessProductName?.trim()){
+          return accommodationService.businessProductName;
+        }
+      }
+      const productName = room?.businessProductName;
+      return productName ? productName : 'Room';
     }
-
-    const accommodation = accommodationData.find((entry) => entry?.name?.trim().toLowerCase() === 'accommodation');
-    
-    let productName = (accommodation?.businessProductName === 'Accomodation') 
-      ? 'Room' 
-      : accommodation?.businessProductName || 'Room';
-
-    bookingLabel.fullLabel = productName;
-
-    const characterLimit = 8;
-    if (productName.length > characterLimit) {
-      bookingLabel.label = productName.substring(0, characterLimit) + '...';
-    } else {
-      bookingLabel.label = productName;
+    catch(error){
+      console.error('Error in getBookingUnitLabel: ', error);
     }
-
-    localStorage.setItem('savedBookingLabel', JSON.stringify(bookingLabel));
-    return bookingLabel;
-  } 
-  catch (error) {
-    console.error('Error parsing booking unit label:', error);    
-    return { label: 'Room', fullLabel: 'Room' };
   }
-}
     
   getPropertyDetailsBySeoName(seoName: string) {
     this.loader = true;

@@ -48,5 +48,6 @@ export class Room {
     roomRatePlans: RoomRatePlans[];
     ratesAndAvailabilityDtos: RatesAndAvailability[];
   roomsAvailable: number;
+  businessProductName: string;
     constructor() { }
 }

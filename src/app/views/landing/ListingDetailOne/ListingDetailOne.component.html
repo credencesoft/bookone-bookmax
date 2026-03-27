@@ -2200,8 +2200,8 @@
               ></i>
               &nbsp;&nbsp; {{ businessUser?.name }} Gallery
             </h4>
-            <button class="select-mannual" (click)="selectRoomsbtn()" [title]="getBookingUnitLabel(accommodationData)?.fullLabel">
-              Select {{getBookingUnitLabel(accommodationData)?.label}}s
+            <button class="select-mannual" (click)="selectRoomsbtn()">
+              Select s
             </button>
           </div>
           <div class="modal-body">
@@ -2458,7 +2458,7 @@
     </div>
 
     <div class="margin-top-40px" id="accmdOne">
-      <h4 class="rooms-heading-starts" [title]="getBookingUnitLabel(accommodationData)?.fullLabel">Select {{getBookingUnitLabel(accommodationData)?.label}}s</h4>
+      <h4 class="rooms-heading-starts" >Select s</h4>
     </div>
 
     <div class="image-container">
@@ -2662,7 +2662,7 @@
                       {{
                         getMinAvailableRooms(room.ratesAndAvailabilityDtos)
                       }}
-                      {{ getBookingUnitLabel(accommodationData)?.label }}(s)
+                      {{ getBookingUnitLabel(room) }}(s)
                     </div>
                     <div
                       *ngIf="
@@ -2916,7 +2916,7 @@
                                 class="input-group-text"
                                 for="inputGroupSelect01"
                                 [title]="getBookingUnitLabel(accommodationData)?.fullLabel"
-                                >{{ getBookingUnitLabel(accommodationData)?.label }}</label
+                                >{{ getBookingUnitLabel(room) }}</label
                               >
                             </div>
                             <select
@@ -3070,7 +3070,7 @@
                           </div>
                         </div>
                           <div *ngIf="booking?.noOfNights > 1 && plan?.onedayPlan" class="plan-warning-text">
-                              This plan is only available for 1-night stays. Please adjust your dates to select this {{ getBookingUnitLabel(accommodationData)?.label }}s.
+                              This plan is only available for 1-night stays. Please adjust your dates to select this {{ getBookingUnitLabel(room) }}s.
                             </div>
                       </div>
                       <!-- web view Plans Section -->
@@ -3140,7 +3140,7 @@
                               <label
                                 class="input-group-text"
                                 for="inputGroupSelect01" [title]="getBookingUnitLabel(accommodationData)?.fullLabel"
-                                >{{ getBookingUnitLabel(accommodationData)?.label }}</label
+                                >{{ getBookingUnitLabel(room) }}</label
                               >
                             </div>
                             <select
@@ -3300,7 +3300,7 @@
                           </div>
                         </div>
                         <div *ngIf="booking?.noOfNights > 1 && plan?.onedayPlan" class="plan-warning-text">
-                              This plan is only available for 1-night stays. Please adjust your dates to select this {{ getBookingUnitLabel(accommodationData)?.label }}s.
+                              This plan is only available for 1-night stays. Please adjust your dates to select this {{ getBookingUnitLabel(room) }}s.
                             </div>
                       </div>
                       <!-- mob view Plans Section -->
@@ -3619,7 +3619,7 @@
                     ></div>
                     <div class="margin-top-20px">
                       <p class="sold-out-header" [title]="getBookingUnitLabel(accommodationData)?.fullLabel">
-                        See similar {{ getBookingUnitLabel(accommodationData)?.label }}s or adjust your dates to find
+                        See similar {{ getBookingUnitLabel(room) }}s or adjust your dates to find
                         availability.
                       </p>
                     </div>
@@ -3631,7 +3631,7 @@
                         (click)="scrollToAccommodationDash()"
                         class="dates-seemore" [title]="getBookingUnitLabel(accommodationData)?.fullLabel"
                       >
-                        See More {{ getBookingUnitLabel(accommodationData)?.label }}s
+                        See More {{ getBookingUnitLabel(room) }}s
                       </button>
                     </div>
                   </div>
