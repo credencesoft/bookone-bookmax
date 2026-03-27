@@ -46,11 +46,12 @@ export class BookingConfirmationVoucherComponent {
     this.getPropertyDetailsById(this.businessUser.id);
 
      const savedLabel = localStorage.getItem('savedBookingLabel');
-console.log('Raw savedLabel from storage:', savedLabel);
-
+     
 if (savedLabel) {
   try {
-    this.roomLabel = JSON.parse(savedLabel);
+    const parsedData = JSON.parse(savedLabel);    
+    this.roomLabel = parsedData.fullLabel || parsedData.label || 'Room';
+    
   } catch (e) {
     this.roomLabel = savedLabel || 'Room';
     console.error("Error parsing label, using raw value instead", e);

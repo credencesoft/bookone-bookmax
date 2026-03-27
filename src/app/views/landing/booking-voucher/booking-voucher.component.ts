@@ -100,7 +100,9 @@ export class BookingVoucherComponent {
 
 if (savedLabel) {
   try {
-    this.roomLabel = JSON.parse(savedLabel);
+    const parsedData = JSON.parse(savedLabel);    
+    this.roomLabel = parsedData.fullLabel || parsedData.label || 'Room';
+    
   } catch (e) {
     this.roomLabel = savedLabel || 'Room';
     console.error("Error parsing label, using raw value instead", e);
