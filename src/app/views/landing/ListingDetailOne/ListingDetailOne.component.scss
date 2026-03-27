@@ -91,6 +91,16 @@ background-color: #f5f5f5;
   pointer-events: none; /* Prevents clicks on the entire container */
   filter: grayscale(1);
 }
+// /* Add this to your component's CSS file */
+// .input-group-text {
+//   max-width: 100px;           /* Adjust this width to match your UI space */
+//   display: inline-block;
+//   white-space: nowrap;       /* Keeps text on one line */
+//   overflow: hidden;          /* Hides the overflow */
+//   text-overflow: ellipsis;   /* Adds the '...' */
+//   vertical-align: middle;
+//   cursor: pointer;           /* Gives the user a hint that they can hover */
+// }
 
 .checkAva8 {
   display: flex;
@@ -704,6 +714,14 @@ padding: 16px 12px;
   border-radius: 0.25rem;
   color: #000 !important;
   font-family: "Poppins" !important;
+   display: inline-block;
+  white-space: nowrap;       
+  overflow: hidden;   
+  text-overflow: ellipsis;  
+  vertical-align: middle;
+  background-color: transparent !important;
+  border: none !important;
+  cursor: pointer; 
 }
 .border-radius-20px {
   border-radius: 20px;
@@ -762,6 +780,14 @@ padding: 16px 12px;
   border-radius: 7px;
   height: 25px;
 }
+
+.plan-warning-text {
+    font-size: 12px;
+    font-weight: 500;
+    margin-bottom: 10px;
+    padding: 5px 10px;
+}
+
 .room-number {
   align-items: center;
   gap: 8px;

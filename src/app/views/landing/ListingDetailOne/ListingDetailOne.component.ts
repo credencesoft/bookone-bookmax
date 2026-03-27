@@ -4464,29 +4464,66 @@ onCheckOutClosed(): void {
     }
   }
 
-  getBookingUnitLabel(accommodationData: BusinessServiceDtoList[] = []) {
-    try {
-      let bookingLabel = {
-        label: 'Room',
-      };
-      if(!accommodationData || accommodationData.length === 0) {
-        return bookingLabel;
-      }
-      const accommodation = accommodationData.find((entry) => entry?.name?.trim().toLowerCase() === 'accommodation');
-      if (accommodation?.businessProductName === 'Accomodation') {
-         bookingLabel.label = 'Room'; 
-      } else {
-         bookingLabel.label = accommodation?.businessProductName;
-     }
+  // getBookingUnitLabel(accommodationData: BusinessServiceDtoList[] = []) {
+  //   try {
+  //     let bookingLabel = {
+  //       label: 'Room',
+  //     };
+  //     if(!accommodationData || accommodationData.length === 0) {
+  //       return bookingLabel;
+  //     }
+  //     const accommodation = accommodationData.find((entry) => entry?.name?.trim().toLowerCase() === 'accommodation');
+  //     const productName = accommodation?.businessProductName || 'Room';
+  //     const characterLimit = 15;
+  //     if (accommodation?.businessProductName === 'Accomodation' && productName.length > characterLimit) {
+  //        bookingLabel.label = 'Room'; 
+  //     } else {
+  //        bookingLabel.label = accommodation?.businessProductName;
+  //    }
 
-      localStorage.setItem('savedBookingLabel', JSON.stringify(bookingLabel));
+  //     localStorage.setItem('savedBookingLabel', JSON.stringify(bookingLabel));
+  //     return bookingLabel;
+  //   } 
+  //   catch (error) {
+  //     console.error('Error parsing booking unit label:', error);    
+  //     return { label: 'Room' };
+  //   }
+  // }
+
+  getBookingUnitLabel(accommodationData: BusinessServiceDtoList[] = []) {
+  try {
+    let bookingLabel = {
+      label: 'Room',
+      fullLabel: 'Room' 
+    };
+
+    if (!accommodationData || accommodationData.length === 0) {
       return bookingLabel;
-    } 
-    catch (error) {
-      console.error('Error parsing booking unit label:', error);    
-      return { label: 'Room' };
     }
+
+    const accommodation = accommodationData.find((entry) => entry?.name?.trim().toLowerCase() === 'accommodation');
+    
+    let productName = (accommodation?.businessProductName === 'Accomodation') 
+      ? 'Room' 
+      : accommodation?.businessProductName || 'Room';
+
+    bookingLabel.fullLabel = productName;
+
+    const characterLimit = 8;
+    if (productName.length > characterLimit) {
+      bookingLabel.label = productName.substring(0, characterLimit) + '...';
+    } else {
+      bookingLabel.label = productName;
+    }
+
+    localStorage.setItem('savedBookingLabel', JSON.stringify(bookingLabel));
+    return bookingLabel;
+  } 
+  catch (error) {
+    console.error('Error parsing booking unit label:', error);    
+    return { label: 'Room', fullLabel: 'Room' };
   }
+}
     
   getPropertyDetailsBySeoName(seoName: string) {
     this.loader = true;
