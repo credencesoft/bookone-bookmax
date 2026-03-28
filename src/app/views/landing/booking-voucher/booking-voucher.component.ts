@@ -101,7 +101,8 @@ export class BookingVoucherComponent {
   }
 
   ngOnInIt() {
-
+     this.roomLabelValue = localStorage?.getItem('selectedplan');
+ console.log('roomLabelValue is',this.roomLabelValue);
   }
 
   async getPropertyDetailsById(id: number) {

@@ -363,6 +363,8 @@ calculateConvenienceFee(totalAmount: number, percentage: number): number {
 }
 
   ngOnInit() {
+      this.roomLabelValue = localStorage?.getItem('selectedplan');
+ console.log('roomLabelValue is',this.roomLabelValue);
         const couponCodeValues = sessionStorage.getItem('selectedPromoData');
 
 if (couponCodeValues) {

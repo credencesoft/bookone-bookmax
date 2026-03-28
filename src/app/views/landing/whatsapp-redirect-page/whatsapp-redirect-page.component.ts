@@ -201,6 +201,8 @@ console.log(' this.roomLabelValue is', this.roomLabelValue);
   }
 
   ngOnInit() {
+      this.roomLabelValue = localStorage?.getItem('selectedplan');
+ console.log('roomLabelValue is',this.roomLabelValue);
     this.acRoute.queryParams.subscribe((params) => {
       if (params["bookingId"] !== undefined) {
         this.bookingId = params["bookingId"];
