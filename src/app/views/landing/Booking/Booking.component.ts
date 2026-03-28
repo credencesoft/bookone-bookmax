@@ -63,6 +63,10 @@ import { EnquiryForm } from '../onboarding-roomdetails-form/onboarding-roomdetai
 import { PropertyEnquiryDto } from 'src/model/propertyEnquiryDto';
 import { externalReservationDtoList } from 'src/app/model/externalReservation';
 import { RoomDetail } from 'src/app/model/RoomDetail';
+import {
+  CountryList,
+  CountryListInterFace,
+} from 'src/app/model/country';
 import { MessageService } from 'primeng/api';
 declare var Stripe: any;
 
@@ -180,6 +184,10 @@ export class BookingComponent implements OnInit {
 
   ngbDate: any;
   mobileHasError: boolean = false;
+  countryCode: string = '';
+  phoneWithoutCode: string = '';
+  selectedCountry: string = '';
+  CountryArray: CountryList;
   taxPercentage = 0;
   subTotalAmount: number = 0;
   totalAmount: number = 0;
@@ -390,6 +398,7 @@ export class BookingComponent implements OnInit {
     this.mobileWallet = new MobileWallet();
     this.bankAccount = new BankAccount();
     this.customerDto = new Customer();
+    this.CountryArray = new CountryList();
     this.addServiceList = [];
     this.parameterss = [];
     this.parameterss2 = [];
@@ -533,6 +542,7 @@ export class BookingComponent implements OnInit {
    this.roomLabelValue = localStorage.getItem('selectedplan');
     
     this.clearFormField(this.booking);
+    this.initializeCountrySelection();
     const couponCodeValues = sessionStorage.getItem('selectedPromoData');
 
     if (couponCodeValues) {
@@ -1075,30 +1085,12 @@ export class BookingComponent implements OnInit {
       bookingData.lastName = '';
       bookingData.email = '';
       bookingData.mobile = '';
+      this.phoneWithoutCode = '';
+      this.mobileHasError = false;
       if (this.booking.notes) bookingData.notes = '';
     } catch (error) {
       console.error('Error in clearFormField : ', error);
     }
-  }
-
-  validateMobile(): void {
-    const mobile = this.booking.mobile;
-    // Allow only numbers and ensure exactly 10 digits
-    if (mobile && /^[0-10]{1,10}$/.test(mobile)) {
-      this.mobileHasError = mobile.length !== 10; // Error if not exactly 10 digits
-    } else {
-      this.mobileHasError = true; // Error for invalid input
-    }
-  }
-
-  validateForm(): boolean {
-    const mobile = this.booking.mobile;
-    // Ensure the phone number is exactly 10 digits
-    if (mobile != null && mobile != '') {
-      this.mobileHasError = !(mobile && /^\d{10}$/.test(mobile));
-    }
-    // Return true if there are no validation errors
-    return !this.mobileHasError;
   }
 
   setApi() {
@@ -1296,7 +1288,9 @@ export class BookingComponent implements OnInit {
     externalreservation.lastName = booking?.lastName;
     externalreservation.bookoneReservationId =
       booking?.propertyReservationNumber;
-    externalreservation.contactNumber = '+91' + booking?.mobile;
+    externalreservation.contactNumber = this.buildFullPhoneNumber(
+      booking?.mobile,
+    );
     externalreservation.propertyBusinessEmail = booking?.businessEmail;
     externalreservation.noOfChildrenAbove5Years = booking?.noOfChildren;
     externalreservation.noOfChildrenBelow5Years =
@@ -1809,9 +1803,12 @@ export class BookingComponent implements OnInit {
 
   clickEmail() {
     this.booking.mobile = '';
+    this.phoneWithoutCode = '';
+    this.mobileHasError = false;
   }
   checkCustomer() {
     this.loader = true;
+    this.syncBookingMobile();
 
     if (this.verifyOption === 'email') {
       this.message.email = this.booking.email;
@@ -1858,7 +1855,7 @@ export class BookingComponent implements OnInit {
   }
   getNumber(obj) {
     Logger.log(JSON.stringify(obj));
-    this.booking.mobile = obj;
+    this.setMobileNumberByCode(obj);
   }
   onVerified() {
     this.isVerified = true;
@@ -1877,7 +1874,8 @@ export class BookingComponent implements OnInit {
             // Logger.log('Get customer ' + JSON.stringify(data.body));
             this.booking.firstName = data.body.firstName;
             this.booking.lastName = data.body.lastName;
-            this.booking.mobile = data.body.mobile;
+            //this.booking.mobile = data.body.mobile;
+            this.setMobileNumberByCode(data.body.mobile);
             this.bookingData.customerDtoList.push(data.body);
             this.booking.customerId = this.bookingData.customerDtoList[0].id;
             this.lookup = true;
@@ -2067,6 +2065,7 @@ export class BookingComponent implements OnInit {
   }
 
   validateFrom() {
+    this.syncBookingMobile();
     if (
       EMAIL_Expression.test(this.booking.email) === true &&
       this.booking.firstName != null &&
@@ -2075,9 +2074,12 @@ export class BookingComponent implements OnInit {
       this.booking.lastName != null &&
       this.booking.lastName != undefined &&
       this.booking.lastName != '' &&
-      this.booking.mobile != null &&
-      this.booking.mobile != undefined &&
-      this.booking.mobile != '' &&
+      // this.booking.mobile != null &&
+      // this.booking.mobile != undefined &&
+      // this.booking.mobile != '' &&
+      this.phoneWithoutCode != null &&
+      this.phoneWithoutCode != undefined &&
+      this.phoneWithoutCode != '' &&
       this.validateForm()
     ) {
       return true;
@@ -2123,7 +2125,7 @@ export class BookingComponent implements OnInit {
     this.enquiryForm.firstName = this.booking.firstName;
     this.enquiryForm.lastName = this.booking.lastName;
     this.enquiryForm.email = this.booking.email;
-    this.enquiryForm.phone = this.booking.mobile;
+    this.enquiryForm.phone = this.getFullPhoneNumber();
     this.enquiryForm.checkOutDate = this.booking.toDate;
     this.enquiryForm.checkInDate = this.booking.fromDate;
     // const toDate = new Date(this.booking.toDate);
@@ -2401,7 +2403,7 @@ export class BookingComponent implements OnInit {
     enquiryForm.firstName = booking.firstName;
     enquiryForm.lastName = booking.lastName;
     enquiryForm.email = booking.email;
-    enquiryForm.phone = `91${booking.mobile}`;
+    enquiryForm.phone = this.buildFullPhoneNumber(booking.mobile);
     enquiryForm.checkOutDate = booking.toDate;
     enquiryForm.checkInDate = booking.fromDate;
     enquiryForm.noOfPerson = plan.adults;
@@ -8087,7 +8089,7 @@ export class BookingComponent implements OnInit {
     enquiryForm.firstName = booking.firstName;
     enquiryForm.lastName = booking.lastName;
     enquiryForm.email = booking.email;
-    enquiryForm.phone = booking.mobile;
+    enquiryForm.phone = this.buildFullPhoneNumber(booking.mobile);
     enquiryForm.checkOutDate = booking.toDate;
     enquiryForm.checkInDate = booking.fromDate;
     enquiryForm.noOfPerson = plan.adults;
@@ -10045,7 +10047,7 @@ export class BookingComponent implements OnInit {
     this.enquiryForm.firstName = this.booking.firstName;
     this.enquiryForm.lastName = this.booking.lastName;
     this.enquiryForm.email = this.booking.email;
-    this.enquiryForm.phone = this.booking.mobile;
+    this.enquiryForm.phone = this.getFullPhoneNumber();
     this.enquiryForm.taxAmount = this.taxAmountBooking;
     this.enquiryForm.min =
       this.booking.totalAmount + this.booking.totalServiceAmount;
@@ -10476,7 +10478,7 @@ export class BookingComponent implements OnInit {
     enquiryForm.firstName = booking.firstName;
     enquiryForm.lastName = booking.lastName;
     enquiryForm.email = booking.email;
-    enquiryForm.phone = booking.mobile;
+    enquiryForm.phone = this.buildFullPhoneNumber(booking.mobile);
     enquiryForm.checkOutDate = booking.toDate;
     enquiryForm.checkInDate = booking.fromDate;
     enquiryForm.noOfPerson = plan.adults;
@@ -11328,6 +11330,192 @@ sendWhatsappMessageToPropertyOwner() {
     const totalAmount = Number(booking.totalAmount || booking.payableAmount || 0);
     booking.advanceAmount = this.getAdvancePlanPayableAmount(totalAmount);
   }
+
+  private getPhonePattern(): RegExp {
+    return /^[0-9]{6,15}$/;
+  }
+
+  private normalizeCountrySearchValue(value: string): string {
+    return (value || '')
+      .toLowerCase()
+      .replace(/zealand/g, 'zeland')
+      .replace(/[^a-z0-9]/g, '');
+  }
+
+  private findCountry(searchValue: string): CountryListInterFace | undefined {
+    if (!searchValue) {
+      return undefined;
+    }
+
+    const normalizedSearch = this.normalizeCountrySearchValue(searchValue);
+    return this.CountryArray?.countries?.find((country) => {
+      const normalizedValue = this.normalizeCountrySearchValue(country.value);
+      const normalizedViewValue = this.normalizeCountrySearchValue(
+        country.viewValue,
+      );
+
+      return (
+        normalizedValue === normalizedSearch ||
+        normalizedViewValue === normalizedSearch ||
+        country.countryCode === searchValue
+      );
+    });
+  }
+
+  private getDefaultCountry(): CountryListInterFace {
+    const preferredCountry =
+      this.propertyData?.address?.country ||
+      this.token.getCountry() ||
+      this.token.getProperty()?.address?.country ||
+      'India';
+
+    return (
+      this.findCountry(preferredCountry) ||
+      this.findCountry('India') ||
+      this.CountryArray.countries[0]
+    );
+  }
+
+  private initializeCountrySelection(): void {
+    this.CountryArray = new CountryList();
+    const defaultCountry = this.getDefaultCountry();
+
+    this.selectedCountry = defaultCountry?.value || '';
+    this.countryCode = defaultCountry?.countryCode || '';
+
+    if (this.booking?.mobile) {
+      this.setMobileNumberByCode(this.booking.mobile);
+      return;
+    }
+
+    this.syncBookingMobile();
+  }
+
+  private syncBookingMobile(): void {
+    this.booking.mobile =
+      this.phoneWithoutCode && this.countryCode
+        ? `${this.countryCode}${this.phoneWithoutCode}`
+        : '';
+  }
+
+  private extractMatchedCountryFromPhoneNumber(
+    phoneNumber: string,
+  ): CountryListInterFace | undefined {
+    const sanitizedNumber = (phoneNumber || '').trim();
+    if (!sanitizedNumber) {
+      return undefined;
+    }
+
+    const sortedCountries = [...(this.CountryArray?.countries || [])].sort(
+      (a, b) => b.countryCode.length - a.countryCode.length,
+    );
+
+    return sortedCountries.find((country) => {
+      const countryCodeDigits = country.countryCode.replace('+', '');
+
+      return (
+        sanitizedNumber.startsWith(country.countryCode) ||
+        sanitizedNumber.startsWith(countryCodeDigits)
+      );
+    });
+  }
+
+  private buildFullPhoneNumber(phoneNumber?: string): string {
+    const rawNumber = (phoneNumber ?? '').toString().trim();
+    if (!rawNumber) {
+      return '';
+    }
+
+    if (rawNumber.startsWith('+')) {
+      return rawNumber;
+    }
+
+    const matchedCountry = this.extractMatchedCountryFromPhoneNumber(rawNumber);
+    if (matchedCountry) {
+      return `+${rawNumber.replace(/^\+/, '')}`;
+    }
+
+    const localNumber = rawNumber.replace(/\D/g, '');
+    if (!localNumber || !this.countryCode) {
+      return '';
+    }
+
+    return `${this.countryCode}${localNumber}`;
+  }
+
+  private getFullPhoneNumber(): string {
+    this.syncBookingMobile();
+    return this.booking.mobile || '';
+  }
+
+  setCountry(code: string): void {
+    const selectedCountry =
+      this.findCountry(code) ||
+      this.findCountry(this.selectedCountry) ||
+      this.getDefaultCountry();
+
+    this.selectedCountry = selectedCountry?.value || '';
+    this.countryCode = selectedCountry?.countryCode || '';
+    this.syncBookingMobile();
+
+    if (this.phoneWithoutCode) {
+      this.validateMobile();
+    }
+  }
+
+  validateMobile(): void {
+    const mobile = (this.phoneWithoutCode || '').trim();
+    this.mobileHasError = !(mobile && this.getPhonePattern().test(mobile));
+    this.syncBookingMobile();
+  }
+
+  validateForm(): boolean {
+    const mobile = (this.phoneWithoutCode || '').trim();
+    if (mobile != null && mobile !== '') {
+      this.mobileHasError = !this.getPhonePattern().test(mobile);
+    } else {
+      this.mobileHasError = true;
+    }
+
+    this.syncBookingMobile();
+    return !this.mobileHasError;
+  }
+
+  setMobileNumberByCode(phoneNumber: string): void {
+    const sanitizedNumber = (phoneNumber || '').toString().trim();
+    const defaultCountry = this.getDefaultCountry();
+
+    if (!sanitizedNumber) {
+      this.selectedCountry = defaultCountry?.value || '';
+      this.countryCode = defaultCountry?.countryCode || '';
+      this.phoneWithoutCode = '';
+      this.mobileHasError = false;
+      this.syncBookingMobile();
+      return;
+    }
+
+    const matchedCountry = this.extractMatchedCountryFromPhoneNumber(
+      sanitizedNumber,
+    );
+
+    if (matchedCountry) {
+      this.selectedCountry = matchedCountry.value;
+      this.countryCode = matchedCountry.countryCode;
+      const normalizedNumber = sanitizedNumber.startsWith('+')
+        ? sanitizedNumber
+        : `+${sanitizedNumber}`;
+      this.phoneWithoutCode = normalizedNumber
+        .slice(matchedCountry.countryCode.length)
+        .replace(/\D/g, '');
+    } else {
+      this.selectedCountry = defaultCountry?.value || '';
+      this.countryCode = defaultCountry?.countryCode || '';
+      this.phoneWithoutCode = sanitizedNumber.replace(/\D/g, '');
+    }
+
+    this.validateMobile();
+  }
+
 
 }
 
