@@ -33,6 +33,7 @@ export class BookingConfirmationVoucherComponent {
   isReadMore: any;
   accommodationService: any;
   roomLabel: string = 'Room';
+  roomLabelValue: string;
 
   constructor(
     private http: HttpClient,
@@ -61,6 +62,7 @@ if (savedLabel) {
 }
   }
   ngOnInit() {
+    this.roomLabelValue = localStorage.getItem('selectedplan');
     this.sequenceBookingConfirmation();
 
     const bookingDataDetails = sessionStorage.getItem('bookingSummaryDetails');

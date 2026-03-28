@@ -340,6 +340,7 @@ export class BookingComponent implements OnInit {
   remainingSeconds = 120;
   private countdownTimer: any;
   roomLabel: string = 'Room';
+  roomLabelValue: string;
   constructor(
     private token: TokenStorage,
     private ngZone: NgZone,
@@ -504,24 +505,26 @@ export class BookingComponent implements OnInit {
       isBookingEngine = true;
     }
     this.propertyData.shortName = this.token.getProperty().shortName;
-      const savedLabel = localStorage.getItem('savedBookingLabel');
-console.log('savedLabel data is', savedLabel);
+//       const savedLabel = localStorage.getItem('savedBookingLabel');
+// console.log('savedLabel data is', savedLabel);
 
-if (savedLabel) {
-  try {
-    const parsedData = JSON.parse(savedLabel);    
-    this.roomLabel = parsedData.fullLabel || parsedData.label || 'Room';
+// if (savedLabel) {
+//   try {
+//     const parsedData = JSON.parse(savedLabel);    
+//     this.roomLabel = parsedData.fullLabel || parsedData.label || 'Room';
     
-  } catch (e) {
-    this.roomLabel = savedLabel || 'Room';
-    console.error("Error parsing label, using raw value instead", e);
-  }
-} else {
-  this.roomLabel = 'Room';
-}
+//   } catch (e) {
+//     this.roomLabel = savedLabel || 'Room';
+//     console.error("Error parsing label, using raw value instead", e);
+//   }
+// } else {
+//   this.roomLabel = 'Room';
+// }  
   }
 
   ngOnInit() {
+   this.roomLabelValue = localStorage.getItem('selectedplan');
+    
     this.clearFormField(this.booking);
     const couponCodeValues = sessionStorage.getItem('selectedPromoData');
 

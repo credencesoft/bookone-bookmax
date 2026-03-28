@@ -42,6 +42,7 @@ export class WhatappPaylaterTemplateComponent implements OnInit {
   showMore:boolean  =false
   socialmedialist:any;
   roomLabel: string = 'Room';
+  roomLabelValue: string;
   constructor(
     private acRoute: ActivatedRoute,
     private hotelbooking:HotelBookingService,
@@ -81,6 +82,7 @@ if (savedLabel) {
   }
 
   ngOnInit() {
+    this.roomLabelValue = localStorage.getItem('selectedplan');
     this.acRoute.queryParams.subscribe((params) => {
       if (params["bookingId"] !== undefined) {
         this.bookingId = params["bookingId"];

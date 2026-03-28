@@ -122,6 +122,7 @@ totalServiceCost: number = 0;
 bookingroomPrice: string;
 taxPercentage: number;
   roomLabel: string = 'Room';
+  roomLabelValue: string;
 
   constructor(
     private http: HttpClient,
@@ -198,7 +199,7 @@ if (savedLabel) {
 
   ngOnInit() {
 
-
+this.roomLabelValue = localStorage.getItem('selectedplan');
     this.acRoute.queryParams.subscribe((params) => {
       if (params["bookingId"] !== undefined) {
         this.bookingId = params["bookingId"];

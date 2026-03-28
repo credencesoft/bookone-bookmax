@@ -3063,7 +3063,7 @@
                           <div class="d-flex room-number">
                             <div
                               class="selected"
-                              (click)="onPlanSelect(plan.code, rates)"
+                              (click)="onPlanSelect(plan.code, rates, room)"
                             >
                               Select
                             </div>
@@ -3291,7 +3291,7 @@
                             <div
                               class="selected"
                               (click)="
-                                onPlanSelect(plan.code, rates);
+                                onPlanSelect(plan.code, rates , room);
                                 bookingSummaryView()
                               "
                             >
