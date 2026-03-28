@@ -127,24 +127,26 @@ export class PaylaterConfirmComponent {
     this.checkBookingEngineFlag();
   }, 10);
 
-    const savedLabel = localStorage.getItem('savedBookingLabel');
+//     const savedLabel = localStorage.getItem('savedBookingLabel');
 
-if (savedLabel) {
-  try {
-    const parsedData = JSON.parse(savedLabel);    
-    this.roomLabel = parsedData.fullLabel || parsedData.label || 'Room';
+// if (savedLabel) {
+//   try {
+//     const parsedData = JSON.parse(savedLabel);    
+//     this.roomLabel = parsedData.fullLabel || parsedData.label || 'Room';
     
-  } catch (e) {
-    this.roomLabel = savedLabel || 'Room';
-    console.error("Error parsing label, using raw value instead", e);
-  }
-} else {
-  this.roomLabel = 'Room';
-}
+//   } catch (e) {
+//     this.roomLabel = savedLabel || 'Room';
+//     console.error("Error parsing label, using raw value instead", e);
+//   }
+// } else {
+//   this.roomLabel = 'Room';
+// }
+ this.roomLabelValue = localStorage.getItem('selectedplan is');
+ console.log(' this.roomLabelValue is', this.roomLabelValue);
   }
 
   ngOnInIt() {
- this.roomLabelValue = localStorage.getItem('selectedplan');
+
   }
   loadBookingSessionData(): void {
   const bookingDataDetails = sessionStorage.getItem('bookingSummaryDetails');
