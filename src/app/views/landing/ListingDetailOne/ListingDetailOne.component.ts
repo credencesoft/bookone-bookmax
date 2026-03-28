@@ -5857,7 +5857,10 @@ this.token.savePropertyUrl(currentUrl);
     sessionStorage.setItem('bookingSummaryDetails', JSON.stringify(bookingData));
   }
 
-  this.router.navigate(['/booking']);
+  // this.router.navigate(['/booking']);
+  this.router.navigate(['/booking'], { 
+  queryParams: { businessProductName: 'room.businessproductName', } 
+});
 }
 
   opendate() {
