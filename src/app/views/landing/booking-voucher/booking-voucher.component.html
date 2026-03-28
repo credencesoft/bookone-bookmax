@@ -399,7 +399,7 @@
             <div class="booking-summary-footer">
                <div class="footer-borders">
                 <div class="d-flex justify-content-between">
-                  <div>Final {{roomLabelValue}} Tariff:</div>
+                  <div>Final Room Tariff:</div>
                   <div>₹{{ bookingSummaryDetails?.totalPlanPrice - totalDiscount  | number : "1.2-2" }}</div>
                 </div>
                 </div>
@@ -857,7 +857,7 @@
          <div class="card enquiry-details-card" style=" background-color: #16A34A1A; padding-top: 0px;">
                       <div class="booking-summary-footer">
                         <div class="d-flex justify-content-between" >
-                            <div>Final {{roomLabelValue}} Tariff:</div>
+                            <div>Final Room Tariff:</div>
                             <div>₹ {{ bookingSummaryDetails?.totalPlanPrice - totalDiscount  | number : "1.2-2" }}</div>
                         </div>
                         <div class="d-flex justify-content-between" *ngIf="bookingSummaryDetails?.totalAddOnsPrice > 0">
