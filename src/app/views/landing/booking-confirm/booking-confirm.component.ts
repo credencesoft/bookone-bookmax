@@ -350,8 +350,7 @@ textToCopyOne: string = 'This is some text to copy';
 // } else {
 //   this.roomLabel = 'Room';
 // }
- this.roomLabelValue = localStorage.getItem('selectedplan is');
-     console.log('here this.roomLabelValue is', this.roomLabelValue);
+ this.roomLabelValue = localStorage.getItem('selectedplan');
   }
 
 

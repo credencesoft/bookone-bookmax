@@ -97,8 +97,7 @@ export class BookingVoucherComponent {
     this.checkBookingEngineFlag();
   }, 10);
 
-    this.roomLabelValue = localStorage.getItem('selectedplan is');
-     console.log('here this.roomLabelValue is', this.roomLabelValue);
+    this.roomLabelValue = localStorage.getItem('selectedplan');
   }
 
   ngOnInIt() {
