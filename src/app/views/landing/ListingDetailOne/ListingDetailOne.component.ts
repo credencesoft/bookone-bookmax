@@ -1871,7 +1871,6 @@ onRoomSelect(roomName: string, planCode: string, count: number | string) {
     this.selectedGuestsByPlan[planCode] = { adults: 0, children: 0 };
   }
   this.selectedGuestsByPlan[planCode].adults = selectedCount;
-
 }
 
 
@@ -2855,7 +2854,41 @@ onGhCPlanSelect(){
     // this.checkingAvailability();
 }
 
-
+  initializeDefaultSelections() {
+    try{
+      if (!this.availableRooms) return;
+      this.availableRooms.forEach(room => {
+        // 1. Loop through the availability DTOs (dates/availability)
+        room.ratesAndAvailabilityDtos?.forEach(availabilityDto => {
+          
+          // 2. Loop through the actual rate plans inside that DTO
+          availabilityDto.roomRatePlans?.forEach(plan => {
+            
+            // Only process if it's a room-based plan
+            if (plan.nonRoomPlan) {
+              
+              // 3. Get the max available rooms. 
+              // Note: Based on your image, 'noOfAvailable' is at the availabilityDto level.
+              const maxAvailable = availabilityDto.noOfAvailable || 0;
+              const lastCount = maxAvailable > 0 ? maxAvailable : 0;
+    
+              // 4. Assign to the ngModel using the plan code (e.g., "DR-1")
+              this.selectedRoomsByPlan[plan.code] = lastCount;
+  
+              console.log(`Default selection for plan ${plan.code} set to ${lastCount} rooms based on availability.`);
+              // 5. Trigger your selection logic
+              // roomName from your image is "Deluxe Room"
+              this.onRoomSelect(availabilityDto.roomName, plan.code, lastCount);
+            }
+          });
+        });
+      });
+    }
+    catch(error){
+      console.error('Error in initializeDefaultSelections:', error);
+    }
+  }
+    
 onSelectPlanFromPopup(plan: any): void {
   const planCode = plan.code;
 
@@ -3596,6 +3629,7 @@ if (roomKey) {
         (response) => {
           this.loaderHotelBooking = false;
           this.availableRooms = this.getFilteredDataBasedOnRoomRateOrder(response?.body?.roomList);
+           this.initializeDefaultSelections();
           this.availableRooms = this.availableRooms.filter(room =>
           room.ratesAndAvailabilityDtos?.length > 0 &&
           (room.ratesAndAvailabilityDtos[0]?.stopSellOBE === null || room.ratesAndAvailabilityDtos[0]?.stopSellOBE === false) &&
@@ -6276,10 +6310,8 @@ this.token.savePropertyUrl(currentUrl);
       .subscribe(
         (response) => {
           this.loaderHotelBooking = false;
-
           const roomListOne = response?.body?.roomList || [];
           const sortedRoomsOne = this.getFilteredDataBasedOnRoomRateOrder(roomListOne);
-
           this.availableRooms = sortedRoomsOne.filter(room => {
                 const rates = room.ratesAndAvailabilityDtos;
 
@@ -6299,6 +6331,8 @@ this.token.savePropertyUrl(currentUrl);
                   !isStopSellOTA
                 );
               });
+
+            this.initializeDefaultSelections();
 
         //   this.availableRooms = this.availableRooms.filter(room =>
         //   room.ratesAndAvailabilityDtos?.length > 0 &&
@@ -7307,6 +7341,7 @@ isPlanVisible(filteredPlans: any[], roomName: string) {
         (response) => {
           this.loaderHotelBooking = false;
           this.availableRooms = this.getFilteredDataBasedOnRoomRateOrder(response?.body?.roomList);
+           this.initializeDefaultSelections();
                     this.availableRooms = this.availableRooms.filter(room =>
           room.ratesAndAvailabilityDtos?.length > 0 &&
           (room.ratesAndAvailabilityDtos[0]?.stopSellOBE === null || room.ratesAndAvailabilityDtos[0]?.stopSellOBE === false) &&
