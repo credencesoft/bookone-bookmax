@@ -6,6 +6,11 @@ import { BusinessServiceTypes } from './businessServiceTypes';
 // import { ClosedDays } from "./closedDays";
 // import { OpenDays } from "./openDays";
 
+export interface AdvanceDiscountSlab {
+  advancePercentage: number;
+  discountPercentage: number;
+}
+
 export class BusinessServiceDtoList {
   id: number;
   // closedDays: ClosedDays[];
@@ -17,6 +22,7 @@ export class BusinessServiceDtoList {
   canChangeBusinessAddress: boolean;
   provideBusinessAndCustomerAddress: boolean;
   advanceAmountPercentage:number;
+  advanceDiscountSlabs?: AdvanceDiscountSlab[];
   businessTermLocation: string;
   businessTermResource: string;
   businessTermsResource?: string;

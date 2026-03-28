@@ -327,6 +327,62 @@
                   </div>
                 </div>
               </div>
+              <div class="rooms-cards-pricing card" style="padding: 30px; margin-bottom: 20px"
+                *ngIf="showPayNow() && businessServiceDto">
+                <h5 class="margin-botton-20px booking-d-heading">
+                <i class="fa-solid fa-wallet" style="color: #031eaa;"></i>
+                  Select Advance Payment Plan
+                </h5>
+                <!-- <p
+                  style="font-size: 14px; color: #64748b; margin-bottom: 16px"
+                >
+                  Select a slab to calculate the payable advance and discount.
+                </p> -->
+
+                <div class="advance-payment-div">
+                  <div
+                    *ngFor="let slab of advanceDiscountSlabs"
+                    (click)="selectAdvancePaymentPlan(slab)"
+                    [ngClass]="{
+                        'advance-card': true,
+                        'selected': isAdvancePaymentPlanSelected(slab)
+                      }"
+                  >
+                    <div class="d-flex justify-content-between">
+                      <div  class="advance-text">
+                        <div class="advance-title">
+                          Pay {{ slab.advancePercentage }}% Advance
+                        </div>
+                        <div class="advance-discount">
+                          Get {{ slab.discountPercentage }} % Discount
+                        </div>
+                      </div>
+                      <!-- <div style="text-align: right">
+                        <div style="font-weight: 600; color: #0f172a">
+                          ₹{{
+                            getAdvancePlanPayableAmountForSlab(
+                              slab,
+                              getCurrentBookingTotalForAdvancePlan()
+                            ) | number : "1.2-2"
+                          }}
+                        </div>
+                        <div style="font-size: 12px; color: #16a34a">
+                          Save ₹{{
+                            getAdvancePlanDiscountAmountForSlab(
+                              slab,
+                              getCurrentBookingTotalForAdvancePlan()
+                            ) | number : "1.2-2"
+                          }}
+                        </div>
+                      </div> -->
+                    </div>
+                  </div>
+                </div>
+
+                <div *ngIf="isAdvancePaymentPlanRequired()" class="advance-payment-info">
+                  Select an advance payment plan to continue with Pay Now.
+                </div>
+              </div>
               <!-- Fill Your Details Section -->
               <form
                 (ngSubmit)="orderForm?.form.valid && onSubmit(orderForm)"
@@ -871,6 +927,59 @@
 
                   </div>
                 </div>
+                <div
+                  *ngIf="showPayNow() && hasSelectedAdvancePaymentPlan()"
+                  style="
+                    margin-top: 14px;
+                    padding-top: 14px;
+                    border-top: 1px solid #e5e7eb;
+                  "
+                >
+                  <!-- <div class="d-flex justify-content-between line-height-27px">
+                    <div class="color-graying">Selected Advance Plan</div>
+                    <div style="font-weight: 500">
+                      {{ getSelectedAdvancePercentage() }}% advance
+                    </div>
+                  </div> -->
+                  <div class="d-flex justify-content-between line-height-27px">
+                    <div class="color-graying">
+                      Advance Discount ({{ getSelectedAdvanceDiscountPercentage() }}%)
+                    </div>
+                    <div style="font-weight: 500">
+                      -₹{{ getAdvancePlanDiscountAmount() | number : "1.2-2" }}
+                    </div>
+                  </div>
+                  <div class="d-flex justify-content-between line-height-27px">
+                    <div class="color-graying">Total After Advance Discount</div>
+                    <div style="font-weight: 500">
+                      ₹{{ getAdvancePlanTotalAfterDiscount() | number : "1.2-2" }}
+                    </div>
+                  </div>
+                  <div class="d-flex justify-content-between line-height-27px">
+                    <div class="font-weight-600" style="font-size: 1rem">
+                      Advance Payable ({{ getSelectedAdvancePercentage() }}%)
+                    </div>
+                    <div class="font-weight-600" style="font-size: 1rem">
+                      ₹{{ getAdvancePlanPayableAmount() | number : "1.2-2" }}
+                    </div>
+                  </div>
+                </div>
+                <div
+                  *ngIf="
+                    showPayNow() &&
+                    hasAdvancePaymentPlans() &&
+                    !hasSelectedAdvancePaymentPlan()
+                  "
+                  style="
+                    margin-top: 14px;
+                    padding-top: 14px;
+                    border-top: 1px solid #e5e7eb;
+                    color: #b45309;
+                    font-size: 14px;
+                  "
+                >
+                  Select an advance plan above to see the Pay Now calculation.
+                </div>
 
               </div>
             </div>
@@ -937,6 +1046,7 @@
               [disabled]="
                 isPayNowDisabled ||
                 isPayDisabled ||
+                isAdvancePaymentPlanRequired() ||
                 ((!paymentLoader || !submitButtonDisable) && !validateFrom()) ||
                 !termsAccepted || booking?.email === 'HARRYPOTTER382741@gmail.com'
               "
@@ -1284,6 +1394,61 @@
                 </div>
               </div>
             </div>
+
+            
+
+              <div class="card p-4 mx-auto booking-heading" style="
+                                                                border-radius: 10px;
+                                                                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                                                                margin-bottom: 20px;
+                                                              " *ngIf="showPayNow() && businessServiceDto">
+                <h5 class="margin-botton-20px booking-d-heading">
+                  <i class="fa-solid fa-wallet" style="color: #031eaa;"></i>
+                  Select Advance Payment Plan
+                </h5>
+                <!-- <p style="font-size: 14px; color: #64748b; margin-bottom: 16px">
+                                  Select a slab to calculate the payable advance and discount.
+                                </p> -->
+
+                <div class="advance-payment-mob-div">
+                  <div class="advance-card-mob" *ngFor="let slab of advanceDiscountSlabs" (click)="selectAdvancePaymentPlan(slab)"
+                    [ngClass]="{ selected: isAdvancePaymentPlanSelected(slab) }">
+                    <div class="d-flex justify-content-between">
+                      <div class="advance-text">
+                        <div class="advance-title">
+                          Pay {{ slab.advancePercentage }}% Advance
+                        </div>
+                        <div class="advance-subtitle">
+                          Get {{ slab.discountPercentage }}% Discount
+                        </div>
+                      </div>
+                      <!-- <div style="text-align: right">
+                                        <div style="font-weight: 600; color: #0f172a">
+                                          ₹{{
+                                          getAdvancePlanPayableAmountForSlab(
+                                          slab,
+                                          getCurrentBookingTotalForAdvancePlan()
+                                          ) | number : "1.2-2"
+                                          }}
+                                        </div>
+                                        <div style="font-size: 12px; color: #16a34a">
+                                          Save ₹{{
+                                          getAdvancePlanDiscountAmountForSlab(
+                                          slab,
+                                          getCurrentBookingTotalForAdvancePlan()
+                                          ) | number : "1.2-2"
+                                          }}
+                                        </div>
+                                      </div> -->
+                    </div>
+                  </div>
+                </div>
+
+                <div *ngIf="isAdvancePaymentPlanRequired()" class="advance-payment-info">
+                  Select an advance payment plan to continue with Pay Now.
+                </div>
+              </div>
+
             <div
               class="col-12 padding-right-0px padding-left0px margin-top-20px"
             >
@@ -1395,7 +1560,63 @@
 
                   </div>
                 </div>
+
+                <div
+                  *ngIf="showPayNow() && hasSelectedAdvancePaymentPlan()"
+                  style="
+                    margin-top: 14px;
+                    padding-top: 14px;
+                    border-top: 1px solid #e5e7eb;
+                  "
+                >
+                  <!-- <div class="d-flex justify-content-between line-height-27px">
+                    <div class="color-graying">Selected Advance Plan</div>
+                    <div style="font-weight: 500">
+                      {{ getSelectedAdvancePercentage() }}% advance
+                    </div>
+                  </div> -->
+                  <div class="d-flex justify-content-between line-height-27px">
+                    <div class="color-graying">
+                      Advance Discount ({{ getSelectedAdvanceDiscountPercentage() }}%)
+                    </div>
+                    <div style="font-weight: 500">
+                      -₹{{ getAdvancePlanDiscountAmount() | number : "1.2-2" }}
+                    </div>
+                  </div>
+                  <div class="d-flex justify-content-between line-height-27px">
+                    <div class="color-graying">Total After Advance Discount</div>
+                    <div style="font-weight: 500">
+                      ₹{{ getAdvancePlanTotalAfterDiscount() | number : "1.2-2" }}
+                    </div>
+                  </div>
+                  <div class="d-flex justify-content-between line-height-27px">
+                    <div class="font-weight-600" style="font-size: 1rem">
+                      Advance Payable ({{ getSelectedAdvancePercentage() }}%)
+                    </div>
+                    <div class="font-weight-600" style="font-size: 1rem">
+                      ₹{{ getAdvancePlanPayableAmount() | number : "1.2-2" }}
+                    </div>
+                  </div>
+                </div>
+                <div
+                  *ngIf="
+                    showPayNow() &&
+                    hasAdvancePaymentPlans() &&
+                    !hasSelectedAdvancePaymentPlan()
+                  "
+                  style="
+                    margin-top: 14px;
+                    padding-top: 14px;
+                    border-top: 1px solid #e5e7eb;
+                    color: #b45309;
+                    font-size: 14px;
+                  "
+                >
+                  Select an advance plan above to see the Pay Now calculation.
+                </div>
+                
               </div>
+
               <!-- Fill Your Details Section -->
               <form
                 (ngSubmit)="orderForm?.form.valid && onSubmit(orderForm)"
@@ -1687,6 +1908,7 @@
               [disabled]="
                 isPayNowDisabled ||
                 isPayDisabled ||
+                isAdvancePaymentPlanRequired() ||
                 ((!paymentLoader || !submitButtonDisable) && !validateFrom()) ||
                 !termsAccepted || booking?.email === 'HARRYPOTTER382741@gmail.com'
               "
