@@ -3139,7 +3139,7 @@
                           <div class="d-flex room-number">
                             <div>
                               <label
-                                class="input-group-text"
+                                class="input-group-text truncate-text" [matTooltip]="fullText" matTooltipPosition="above" matTooltipShowDelay="300"
                                 for="inputGroupSelect01" [title]="getBookingUnitLabel(room)" [title]="getBookingUnitLabel(room).length > 8 ? getBookingUnitLabel(room) : ''"
                                 >{{ getBookingUnitLabel(room) | slice:0:8 }}{{ getBookingUnitLabel(room).length > 8 ? '...' : '' }}</label
                               >
