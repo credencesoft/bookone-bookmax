@@ -15,7 +15,10 @@ import {
 import { Location, DatePipe, formatDate } from '@angular/common';
 import { suburbList } from 'src/app/data/cityList.data';
 import { Booking } from 'src/app/model/booking';
-import { BusinessServiceDtoList } from 'src/app/model/businessServiceDtoList';
+import {
+  AdvanceDiscountSlab,
+  BusinessServiceDtoList,
+} from 'src/app/model/businessServiceDtoList';
 
 import { MessageDto } from 'src/app/model/MessageDto';
 import { Msg } from 'src/app/model/msg';
@@ -340,6 +343,8 @@ export class BookingComponent implements OnInit {
   remainingSeconds = 120;
   private countdownTimer: any;
   roomLabel: string = 'Room';
+  advanceDiscountSlabs: AdvanceDiscountSlab[] = [];
+  selectedAdvanceDiscountSlab: AdvanceDiscountSlab | null = null;
   constructor(
     private token: TokenStorage,
     private ngZone: NgZone,
@@ -570,6 +575,7 @@ export class BookingComponent implements OnInit {
         this.value = element.instantBooking;
       }
     });
+    this.initializeAdvancePaymentPlans();
     this.setApi();
     this.totalExtraAmount = 0;
     this.totalBeforeTaxAmount = 0;
@@ -1764,6 +1770,7 @@ export class BookingComponent implements OnInit {
     this.businessServiceDto = this.businessUser.businessServiceDtoList.find(
       (data) => data.name === 'Accommodation',
     );
+    this.initializeAdvancePaymentPlans();
 
     if (this.businessServiceDto.checkInTime !== null) {
       this.booking.fromTime =
@@ -2743,6 +2750,10 @@ export class BookingComponent implements OnInit {
         }
       }
     }
+    this.applyAdvancePlanToEnquiryForm(
+      enquiryForm,
+      enquiryForm.totalAmount || enquiryForm.payableAmount,
+    );
 
     this.paymentLoader = true;
     try {
@@ -6757,6 +6768,7 @@ export class BookingComponent implements OnInit {
     }
   }
   processPaymentRazorpay(payment: Payment) {
+    this.applyAdvancePlanToPayment(payment);
     this.paymentLoader = true;
     this.changeDetectorRefs.detectChanges();
 
@@ -6837,6 +6849,7 @@ export class BookingComponent implements OnInit {
   }
 
   processPaymentPayU(payment: Payment) {
+    this.applyAdvancePlanToPayment(payment);
     this.paymentLoader = true;
     this.changeDetectorRefs.detectChanges();
 
@@ -6917,6 +6930,7 @@ export class BookingComponent implements OnInit {
   }
 
   processPaymentPayTM(payment: Payment) {
+    this.applyAdvancePlanToPayment(payment);
     this.paymentLoader = true;
     this.changeDetectorRefs.detectChanges();
 
@@ -6965,6 +6979,7 @@ export class BookingComponent implements OnInit {
     );
   }
   processPaymentAtom(payment: Payment) {
+    this.applyAdvancePlanToPayment(payment);
     this.paymentLoader = true;
     this.changeDetectorRefs.detectChanges();
 
@@ -7014,6 +7029,7 @@ export class BookingComponent implements OnInit {
     );
   }
   processPaymentHDFC(payment: Payment) {
+    this.applyAdvancePlanToPayment(payment);
     this.paymentLoader = true;
     this.changeDetectorRefs.detectChanges();
 
@@ -7945,6 +7961,7 @@ export class BookingComponent implements OnInit {
     } else {
       booking.discountPercentage = 0;
     }
+    this.applyAdvancePlanToBooking(booking);
 
     Logger.log('createBooking ', JSON.stringify(booking));
 
@@ -8202,6 +8219,10 @@ export class BookingComponent implements OnInit {
       enquiryForm.taxPercentage = plan.taxpercentage;
       enquiryForm.totalAmount = Number(plan.finalPrice.toFixed(2));
     }
+    this.applyAdvancePlanToEnquiryForm(
+      enquiryForm,
+      enquiryForm.totalAmount || enquiryForm.payableAmount,
+    );
 
     this.paymentLoader = true;
     try {
@@ -10246,6 +10267,7 @@ export class BookingComponent implements OnInit {
         this.businessServiceDto = this.businessUser.businessServiceDtoList.find(
           (data) => data.name === this.businessUser.businessType,
         );
+        this.initializeAdvancePaymentPlans();
 
         this.businessUser?.socialMediaLinks.forEach((element) => {
           this.socialmedialist = element;
@@ -10586,6 +10608,10 @@ export class BookingComponent implements OnInit {
       enquiryForm.taxPercentage = plan.taxpercentage;
       enquiryForm.totalAmount = Number(plan.finalPrice.toFixed(2));
     }
+    this.applyAdvancePlanToEnquiryForm(
+      enquiryForm,
+      enquiryForm.totalAmount || enquiryForm.payableAmount,
+    );
     this.paymentLoader = true;
     const bookingForm = new Booking();
     bookingForm.businessEmail = this.token.getProperty().email;
@@ -10657,6 +10683,7 @@ export class BookingComponent implements OnInit {
       bookingForm.taxPercentage = plan.taxpercentage;
       bookingForm.totalAmount = Number(plan.finalPrice.toFixed(2));
     }
+    this.applyAdvancePlanToBooking(bookingForm);
     this.saveEnquiryTHM(bookingForm);
     try {
       const response: HttpResponse<EnquiryDto> = await this.hotelBookingService
@@ -11058,4 +11085,240 @@ sendWhatsappMessageToPropertyOwner() {
         }
       });
   }
+
+  private roundToTwo(value: number): number {
+    return Number((Number(value) || 0).toFixed(2));
+  }
+
+  private getAccommodationService(): BusinessServiceDtoList | undefined {
+    return this.businessUser?.businessServiceDtoList?.find(
+      (item) => item.name === 'Accommodation',
+    );
+  }
+
+  private initializeAdvancePaymentPlans(): void {
+    const accommodation = this.getAccommodationService();
+    this.businessServiceDto = accommodation || this.businessServiceDto;
+    this.advanceDiscountSlabs = (accommodation?.advanceDiscountSlabs || [])
+      .filter(
+        (slab) =>
+          slab &&
+          Number(slab.advancePercentage) > 0 &&
+          Number(slab.discountPercentage) >= 0,
+      )
+      .sort((a, b) => Number(a.advancePercentage) - Number(b.advancePercentage));
+
+    if (
+      this.selectedAdvanceDiscountSlab &&
+      !this.advanceDiscountSlabs.some(
+        (slab) =>
+          Number(slab.advancePercentage) ===
+          Number(this.selectedAdvanceDiscountSlab?.advancePercentage) &&
+          Number(slab.discountPercentage) ===
+          Number(this.selectedAdvanceDiscountSlab?.discountPercentage),
+      )
+    ) {
+      this.selectedAdvanceDiscountSlab = null;
+    }
+  }
+
+  hasAdvancePaymentPlans(): boolean {
+    return this.advanceDiscountSlabs.length > 0;
+  }
+
+  hasSelectedAdvancePaymentPlan(): boolean {
+    return !!this.selectedAdvanceDiscountSlab;
+  }
+
+  isAdvancePaymentPlanRequired(): boolean {
+    return this.hasAdvancePaymentPlans() && !this.hasSelectedAdvancePaymentPlan();
+  }
+
+  selectAdvancePaymentPlan(slab: AdvanceDiscountSlab | null): void {
+    this.selectedAdvanceDiscountSlab = slab;
+  }
+
+  isAdvancePaymentPlanSelected(slab: AdvanceDiscountSlab | null): boolean {
+    return (
+      !!slab &&
+      !!this.selectedAdvanceDiscountSlab &&
+      Number(slab.advancePercentage) ===
+      Number(this.selectedAdvanceDiscountSlab.advancePercentage) &&
+      Number(slab.discountPercentage) ===
+      Number(this.selectedAdvanceDiscountSlab.discountPercentage)
+    );
+  }
+
+  getSelectedAdvancePercentage(): number {
+    if (this.hasAdvancePaymentPlans() && !this.selectedAdvanceDiscountSlab) {
+      this.selectedAdvanceDiscountSlab = this.advanceDiscountSlabs[0] || null;
+    }
+
+    return Number(
+      this.selectedAdvanceDiscountSlab?.advancePercentage ??
+      this.businessServiceDto?.advanceAmountPercentage ??
+      20,
+    );
+  }
+
+  getSelectedAdvanceDiscountPercentage(): number {
+    if (this.hasAdvancePaymentPlans() && !this.selectedAdvanceDiscountSlab) {
+      this.selectedAdvanceDiscountSlab = this.advanceDiscountSlabs[0] || null;
+    }
+
+    return Number(this.selectedAdvanceDiscountSlab?.discountPercentage ?? 0);
+  }
+
+  getCurrentBookingTotalForAdvancePlan(): number {
+    const summaryTotal = Number(this.bookingSummaryDetails?.totalAmount || 0);
+    if (!summaryTotal) {
+      return Number(this.booking?.totalAmount || 0);
+    }
+
+    const totalPlanPrice = Number(this.bookingSummaryDetails?.totalPlanPrice || 0);
+    const couponDiscountPercentage = Number(
+      this.specialDiscountData?.discountPercentage || 0,
+    );
+    const discountedPlanPrice =
+      totalPlanPrice - (totalPlanPrice * couponDiscountPercentage) / 100;
+    const convenienceFee =
+      this.serviceChargePercentage && Number(this.serviceChargePercentage) > 0
+        ? this.calculateConvenienceFee(
+          couponDiscountPercentage > 0 ? discountedPlanPrice : totalPlanPrice,
+          this.serviceChargePercentage,
+        )
+        : 0;
+
+    return this.roundToTwo(summaryTotal + Number(convenienceFee || 0));
+  }
+
+  getAdvancePlanGrossAmount(totalAmount?: number): number {
+    return this.getAdvancePlanPayableAmount(totalAmount);
+  }
+
+  getAdvancePlanGrossAmountForSlab(
+    slab: AdvanceDiscountSlab | null,
+    totalAmount?: number,
+  ): number {
+    return this.getAdvancePlanPayableAmountForSlab(slab, totalAmount);
+  }
+
+  getAdvancePlanDiscountAmount(totalAmount?: number): number {
+    const baseAmount = Number(
+      totalAmount ?? this.getCurrentBookingTotalForAdvancePlan(),
+    );
+    return this.roundToTwo(
+      (baseAmount * this.getSelectedAdvanceDiscountPercentage()) / 100,
+    );
+  }
+
+  getAdvancePlanDiscountAmountForSlab(
+    slab: AdvanceDiscountSlab | null,
+    totalAmount?: number,
+  ): number {
+    const baseAmount = Number(totalAmount ?? this.getCurrentBookingTotalForAdvancePlan());
+    const discountPercentage = Number(slab?.discountPercentage || 0);
+    return this.roundToTwo((baseAmount * discountPercentage) / 100);
+  }
+
+  getAdvancePlanTotalAfterDiscount(totalAmount?: number): number {
+    const baseAmount = Number(
+      totalAmount ?? this.getCurrentBookingTotalForAdvancePlan(),
+    );
+    const discountAmount = this.getAdvancePlanDiscountAmount(totalAmount);
+    return this.roundToTwo(Math.max(baseAmount - discountAmount, 0));
+  }
+
+  getAdvancePlanTotalAfterDiscountForSlab(
+    slab: AdvanceDiscountSlab | null,
+    totalAmount?: number,
+  ): number {
+    const baseAmount = Number(totalAmount ?? this.getCurrentBookingTotalForAdvancePlan());
+    const discountAmount = this.getAdvancePlanDiscountAmountForSlab(
+      slab,
+      totalAmount,
+    );
+    return this.roundToTwo(Math.max(baseAmount - discountAmount, 0));
+  }
+
+  getAdvancePlanPayableAmount(totalAmount?: number): number {
+    const discountedTotal = this.getAdvancePlanTotalAfterDiscount(totalAmount);
+    return this.roundToTwo(
+      (discountedTotal * this.getSelectedAdvancePercentage()) / 100,
+    );
+  }
+
+  getAdvancePlanPayableAmountForSlab(
+    slab: AdvanceDiscountSlab | null,
+    totalAmount?: number,
+  ): number {
+    const discountedTotal = this.getAdvancePlanTotalAfterDiscountForSlab(
+      slab,
+      totalAmount,
+    );
+    const advancePercentage = Number(
+      slab?.advancePercentage ??
+      this.businessServiceDto?.advanceAmountPercentage ??
+      20,
+    );
+    return this.roundToTwo((discountedTotal * advancePercentage) / 100);
+  }
+
+  private applyAdvancePlanToPayment(payment: Payment): void {
+    if (!payment) {
+      return;
+    }
+
+    if (this.hasAdvancePaymentPlans() && !this.selectedAdvanceDiscountSlab) {
+      this.selectedAdvanceDiscountSlab = this.advanceDiscountSlabs[0] || null;
+    }
+
+    const totalAmount = Number(
+      payment.transactionAmount ||
+      payment.amount ||
+      payment.netReceivableAmount ||
+      this.getCurrentBookingTotalForAdvancePlan(),
+    );
+
+    const payableAdvanceAmount = this.getAdvancePlanPayableAmount(totalAmount);
+    payment.netReceivableAmount = payableAdvanceAmount;
+    payment.transactionAmount = payableAdvanceAmount;
+    payment.amount = payableAdvanceAmount;
+    payment.transactionChargeAmount = payableAdvanceAmount;
+    this.booking.advanceAmount = payableAdvanceAmount;
+  }
+
+  private applyAdvancePlanToEnquiryForm(
+    enquiryForm: EnquiryDto,
+    planTotalAmount?: number,
+  ): void {
+    if (!enquiryForm) {
+      return;
+    }
+
+    if (this.hasAdvancePaymentPlans() && !this.selectedAdvanceDiscountSlab) {
+      this.selectedAdvanceDiscountSlab = this.advanceDiscountSlabs[0] || null;
+    }
+
+    const totalAmount = Number(
+      planTotalAmount ?? enquiryForm.totalAmount ?? enquiryForm.payableAmount ?? 0,
+    );
+    enquiryForm.advanceAmount = this.getAdvancePlanPayableAmount(totalAmount);
+  }
+
+  private applyAdvancePlanToBooking(booking: Booking | any): void {
+    if (!booking) {
+      return;
+    }
+
+    if (this.hasAdvancePaymentPlans() && !this.selectedAdvanceDiscountSlab) {
+      this.selectedAdvanceDiscountSlab = this.advanceDiscountSlabs[0] || null;
+    }
+
+    const totalAmount = Number(booking.totalAmount || booking.payableAmount || 0);
+    booking.advanceAmount = this.getAdvancePlanPayableAmount(totalAmount);
+  }
+
 }
+
+
