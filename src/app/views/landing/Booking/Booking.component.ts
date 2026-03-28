@@ -520,6 +520,8 @@ export class BookingComponent implements OnInit {
 // } else {
 //   this.roomLabel = 'Room';
 // }  
+  this.roomLabelValue = localStorage?.getItem('selectedplan');
+ console.log('roomLabelValue is',this.roomLabelValue);
   }
 
   ngOnInit() {

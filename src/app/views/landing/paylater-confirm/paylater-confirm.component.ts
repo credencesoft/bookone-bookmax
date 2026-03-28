@@ -141,12 +141,13 @@ export class PaylaterConfirmComponent {
 // } else {
 //   this.roomLabel = 'Room';
 // }
- this.roomLabelValue = localStorage.getItem('selectedplan is');
+ this.roomLabelValue = localStorage.getItem('selectedplan');
  console.log(' this.roomLabelValue is', this.roomLabelValue);
   }
 
   ngOnInIt() {
-
+ this.roomLabelValue = localStorage.getItem('selectedplan');
+ console.log(' this.roomLabelValue is', this.roomLabelValue);
   }
   loadBookingSessionData(): void {
   const bookingDataDetails = sessionStorage.getItem('bookingSummaryDetails');

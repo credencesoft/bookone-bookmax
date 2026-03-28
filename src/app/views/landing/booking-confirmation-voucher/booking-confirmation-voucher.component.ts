@@ -60,9 +60,12 @@ export class BookingConfirmationVoucherComponent {
 // } else {
 //   this.roomLabel = 'Room';
 // }
- this.roomLabelValue = localStorage.getItem('selectedplan is');
+ this.roomLabelValue = localStorage?.getItem('selectedplan');
+ console.log('roomLabelValue is',this.roomLabelValue);
   }
   ngOnInit() {
+    this.roomLabelValue = localStorage?.getItem('selectedplan');
+ console.log('roomLabelValue is',this.roomLabelValue);
     this.sequenceBookingConfirmation();
 
     const bookingDataDetails = sessionStorage.getItem('bookingSummaryDetails');
