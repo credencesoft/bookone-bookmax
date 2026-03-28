@@ -46,23 +46,23 @@ export class BookingConfirmationVoucherComponent {
     this.businessUser = this.token.getPropertyData();
     this.getPropertyDetailsById(this.businessUser.id);
 
-     const savedLabel = localStorage.getItem('savedBookingLabel');
+//      const savedLabel = localStorage.getItem('savedBookingLabel');
      
-if (savedLabel) {
-  try {
-    const parsedData = JSON.parse(savedLabel);    
-    this.roomLabel = parsedData.fullLabel || parsedData.label || 'Room';
+// if (savedLabel) {
+//   try {
+//     const parsedData = JSON.parse(savedLabel);    
+//     this.roomLabel = parsedData.fullLabel || parsedData.label || 'Room';
     
-  } catch (e) {
-    this.roomLabel = savedLabel || 'Room';
-    console.error("Error parsing label, using raw value instead", e);
-  }
-} else {
-  this.roomLabel = 'Room';
-}
+//   } catch (e) {
+//     this.roomLabel = savedLabel || 'Room';
+//     console.error("Error parsing label, using raw value instead", e);
+//   }
+// } else {
+//   this.roomLabel = 'Room';
+// }
+ this.roomLabelValue = localStorage.getItem('selectedplan is');
   }
   ngOnInit() {
-    this.roomLabelValue = localStorage.getItem('selectedplan');
     this.sequenceBookingConfirmation();
 
     const bookingDataDetails = sessionStorage.getItem('bookingSummaryDetails');

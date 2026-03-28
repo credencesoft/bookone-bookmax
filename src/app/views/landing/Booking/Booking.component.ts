@@ -523,7 +523,8 @@ export class BookingComponent implements OnInit {
   }
 
   ngOnInit() {
-   this.roomLabelValue = localStorage.getItem('selectedplan');
+   this.roomLabelValue = localStorage.getItem('selectedplan is');
+   console.log('value isssss',this.roomLabelValue);
     
     this.clearFormField(this.booking);
     const couponCodeValues = sessionStorage.getItem('selectedPromoData');

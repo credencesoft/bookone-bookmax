@@ -336,20 +336,22 @@ textToCopyOne: string = 'This is some text to copy';
        this.serviceChargePercentage = element.serviceChargePercentage;
     });
 
-     const savedLabel = localStorage.getItem('savedBookingLabel');
+//      const savedLabel = localStorage.getItem('savedBookingLabel');
 
-if (savedLabel) {
-  try {
-    const parsedData = JSON.parse(savedLabel);    
-    this.roomLabel = parsedData.fullLabel || parsedData.label || 'Room';
+// if (savedLabel) {
+//   try {
+//     const parsedData = JSON.parse(savedLabel);    
+//     this.roomLabel = parsedData.fullLabel || parsedData.label || 'Room';
     
-  } catch (e) {
-    this.roomLabel = savedLabel || 'Room';
-    console.error("Error parsing label, using raw value instead", e);
-  }
-} else {
-  this.roomLabel = 'Room';
-}
+//   } catch (e) {
+//     this.roomLabel = savedLabel || 'Room';
+//     console.error("Error parsing label, using raw value instead", e);
+//   }
+// } else {
+//   this.roomLabel = 'Room';
+// }
+ this.roomLabelValue = localStorage.getItem('selectedplan is');
+     console.log('here this.roomLabelValue is', this.roomLabelValue);
   }
 
 
@@ -362,7 +364,6 @@ calculateConvenienceFee(totalAmount: number, percentage: number): number {
 }
 
   ngOnInit() {
-     this.roomLabelValue = localStorage.getItem('selectedplan');
         const couponCodeValues = sessionStorage.getItem('selectedPromoData');
 
 if (couponCodeValues) {
