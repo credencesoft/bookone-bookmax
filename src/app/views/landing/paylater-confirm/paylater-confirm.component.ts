@@ -49,6 +49,7 @@ export class PaylaterConfirmComponent {
     totalDiscount = 0;
   websiteUrlBookingEngine: boolean = false;
     roomLabel: string = 'Room';
+  roomLabelValue: string;
   constructor(
     private token: TokenStorage,
     private hotelBookingService: HotelBookingService,
@@ -143,7 +144,7 @@ if (savedLabel) {
   }
 
   ngOnInIt() {
-
+ this.roomLabelValue = localStorage.getItem('selectedplan');
   }
   loadBookingSessionData(): void {
   const bookingDataDetails = sessionStorage.getItem('bookingSummaryDetails');

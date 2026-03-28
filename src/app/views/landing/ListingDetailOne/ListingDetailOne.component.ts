@@ -2167,7 +2167,7 @@ resetLastChangedAge(planCode: string) {
   };
 
   // 2. Trigger plan selection
-  this.onPlanSelect(planCode, this.getRateByPlanCode(planCode));
+  this.onPlanSelect(planCode, this.getRateByPlanCode(planCode) , null);
   this.isPanelOpen = false;
   // 3. Scroll to the plan card — even if it's already in view
   setTimeout(() => {
@@ -2184,7 +2184,8 @@ resetLastChangedAge(planCode: string) {
   }, 100); // slight delay ensures DOM updates
 }
 
-  onPlanSelect(planCode: string, rates: any) {
+  onPlanSelect(planCode: string, rates: any , room: any) {
+    localStorage.setItem('selectedplan',room.businessProductName);
     const selectedRooms = this.selectedRoomsByPlan[planCode];
     const selectedGuests = this.selectedGuestsByPlan[planCode];
     const roomId = rates.roomId;
@@ -2836,7 +2837,7 @@ onSelectPlanFromSmartCard(plan: any): void {
   };
 
   // 2. Trigger plan selection with rate
-  this.onPlanSelect(planCode, rate);
+  this.onPlanSelect(planCode, rate , null);
   this.isPanelOpen = false;
 
   // 3. Scroll to the plan card — even if it's already in view
@@ -2866,7 +2867,7 @@ onSelectPlanFromPopup(plan: any): void {
   };
 
   // 2. Trigger plan selection
-  this.onPlanSelect(planCode, this.getRateByPlanCode(planCode));
+  this.onPlanSelect(planCode, this.getRateByPlanCode(planCode), null);
   this.isPanelOpen = false;
   // 3. Scroll to the plan card — even if it's already in view
   setTimeout(() => {
@@ -7569,7 +7570,7 @@ getAvailableRoomsForGHC(availableRooms: any[]) {
               };
 
               // 2. Trigger plan selection
-              this.onPlanSelect(plan.code, rate);
+              this.onPlanSelect(plan.code, rate, null);
               this.isPanelOpen = false;
               // 3. Scroll to the plan card — even if it's already in view
               setTimeout(() => {

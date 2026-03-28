@@ -41,6 +41,7 @@ export class BookingVoucherComponent {
     totalDiscount = 0;
       websiteUrlBookingEngine: boolean = false;
   roomLabel: string = 'Room';
+  roomLabelValue: string;
   constructor(
     private token: TokenStorage,
     private hotelBookingService: HotelBookingService,
@@ -112,7 +113,9 @@ if (savedLabel) {
 }
   }
 
-  ngOnInIt() {}
+  ngOnInIt() {
+     this.roomLabelValue = localStorage.getItem('selectedplan');
+  }
 
   async getPropertyDetailsById(id: number) {
     // debugger

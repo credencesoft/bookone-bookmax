@@ -148,6 +148,7 @@ textToCopyOne: string = 'This is some text to copy';
   activeGoogleCenter: boolean = false;
   paymentRefNo: any;
   roomLabel: string = "Room";
+  roomLabelValue: string;
   constructor(
     private http: HttpClient,
     private token: TokenStorage,
@@ -361,6 +362,7 @@ calculateConvenienceFee(totalAmount: number, percentage: number): number {
 }
 
   ngOnInit() {
+     this.roomLabelValue = localStorage.getItem('selectedplan');
         const couponCodeValues = sessionStorage.getItem('selectedPromoData');
 
 if (couponCodeValues) {
