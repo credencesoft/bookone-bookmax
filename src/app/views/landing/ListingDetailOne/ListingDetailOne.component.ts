@@ -2999,6 +2999,7 @@ removePlan(index: number): void {
       this.childAgesByPlan[entry.planCode] = entry.childAges || [];
     });
   }
+  this.initializeDefaultSelections();
 }
   publishPage(event: any) {
     if (
