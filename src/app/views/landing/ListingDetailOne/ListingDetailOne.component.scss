@@ -2038,6 +2038,11 @@ text-align: center;
 }
 
 @media (max-width: 600px) {
+.checkout-datepicker + ngb-datepicker.dropdown-menu,
+.checkout-datepicker ~ .dropdown-menu {
+    left: auto !important;
+    right: 0 !important;
+}
 .mobile-plan-header {
     flex-wrap: wrap;
     align-items: flex-start !important;

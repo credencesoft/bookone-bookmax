@@ -1367,7 +1367,7 @@
                       <div class="form-group" style="height: 0px">
                         <input
                           name="datepicker"
-                          class="form-control input-field-resize"
+                          class="form-control input-field-resize checkout-datepicker"
                           ngbDatepicker
                           #datepicker4="ngbDatepicker"
                           [autoClose]="true"
@@ -3069,7 +3069,7 @@
                           </div>
                         </div>
                         <div *ngIf="booking?.noOfNights > 1 && plan?.onedayPlan" class="plan-warning-text">
-                              This plan is only available for 1-night stays. Please adjust your dates to select this {{ getBookingUnitLabel(room) }}s.
+                              This plan is only available for 1-night stay. Please adjust your dates to select these {{ getBookingUnitLabel(room) }}s.
                         </div>
                       </div>
                       <!-- web view Plans Section -->
@@ -3132,7 +3132,7 @@
                           {{ guestSelectionErrors[plan.code] }}
                         </div>
                         <div
-                          class="d-flex justify-content-between align-items-end"
+                          class="d-flex justify-content-between align-items-end" [class.disabled-room]="booking?.noOfNights > 1 && plan?.onedayPlan"
                         >
                           <div class="d-flex room-number">
                             <div>
@@ -3287,7 +3287,7 @@
                           </div>
                         </div>
                         <div
-                          class="d-flex justify-content-center margin-top-20px"
+                          class="d-flex justify-content-center margin-top-20px" [class.disabled-room]="booking?.noOfNights > 1 && plan?.onedayPlan"
                         >
                           <div class="d-flex room-number">
                             <div
@@ -3302,7 +3302,7 @@
                           </div>
                         </div>
                         <div *ngIf="booking?.noOfNights > 1 && plan?.onedayPlan" class="plan-warning-text">
-                              This plan is only available for 1-night stays. Please adjust your dates to select this {{ getBookingUnitLabel(room) }}s.
+                              This plan is only available for 1-night stay. Please adjust your dates to select these {{ getBookingUnitLabel(room) }}s.
                             </div>
                       </div>
                       <!-- mob view Plans Section -->
