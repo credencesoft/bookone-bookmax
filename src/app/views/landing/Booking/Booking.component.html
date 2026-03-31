@@ -750,8 +750,17 @@
                     }}
                   </div>
                 </div> -->
+
+
+
+
+
+
+
+
+
                   <div
-                    class="d-flex justify-content-between line-height-27px"
+                    class="d-flex justify-content-between line-height-27px promo-discounts"
                     *ngIf="this.specialDiscountData?.discountPercentage"
                   >
                     <div class="color-graying">
@@ -770,24 +779,71 @@
                       }}
                     </div>
                   </div>
+
+                  <div class="d-flex justify-content-between line-height-27px advance-discounts" *ngIf="this.selectedAdvanceDiscountSlab?.discountPercentage">
+                    <div class="color-graying">
+                      Advance Discount ({{
+                      this.selectedAdvanceDiscountSlab?.discountPercentage
+                      }})%
+                    </div>
+                  
+                    <div>
+                      - ₹
+                      {{
+                      ( (plan.price *
+                      this.selectedAdvanceDiscountSlab?.discountPercentage) /
+                      100
+                      ) | number : "1.2-2"
+                      }}
+                    </div>
+                  </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
                   <div
-                    *ngIf="this.specialDiscountData?.discountPercentage"
+                    *ngIf="this.specialDiscountData?.discountPercentage || this.selectedAdvanceDiscountSlab?.discountPercentage"
                     class="d-flex justify-content-between line-height-27px"
                   >
                     <div class="color-graying">Tax & Services</div>
 
                     <div>
                       ₹
-                      {{
-                        ((plan.price -
-                          (plan.price *
-                            this.specialDiscountData?.discountPercentage) /
-                            100) *
-                          plan.taxpercentage) /
-                          100 | number : "1.2-2"
-                      }}
+                        {{
+                            (
+                              (plan.price -
+                                (plan.price *
+                                  (
+                                    (specialDiscountData?.discountPercentage || 0) +
+                                    (selectedAdvanceDiscountSlab?.discountPercentage || 0)
+                                  )) /
+                                  100) *
+                              plan.taxpercentage
+                            ) / 100 | number : "1.2-2"
+                          }}
                     </div>
                   </div>
+
+
+
+
+
+
+
+
+
+
+
+
                   <div
                     *ngIf="!this.specialDiscountData?.discountPercentage"
                     class="d-flex justify-content-between line-height-27px"
@@ -798,6 +854,7 @@
                       ₹ {{ plan.taxPercentageperroom | number : "1.2-2" }}
                     </div>
                   </div>
+                  
                   <div
                     *ngIf="
                       !this.specialDiscountData?.discountPercentage &&
@@ -815,28 +872,43 @@
                       }}
                     </div>
                   </div>
+
                   <div
-                    *ngIf="this.specialDiscountData?.discountPercentage"
+                    *ngIf="this.specialDiscountData?.discountPercentage || selectedAdvanceDiscountSlab?.discountPercentage"
                     class="d-flex justify-content-between line-height-27px"
                   >
                     <div class="color-graying font-weight-600">Total</div>
 
                     <div class="font-weight-600">
-                      ₹
+                      ₹    
                       {{
-                        plan.price -
+                        (
+                          plan.price -
                           (plan.price *
-                            this.specialDiscountData?.discountPercentage) /
+                            (
+                              (specialDiscountData?.discountPercentage || 0) +
+                              (selectedAdvanceDiscountSlab?.discountPercentage || 0)
+                            )) /
                             100 +
-                          ((plan.price -
-                            (plan.price *
-                              this.specialDiscountData?.discountPercentage) /
-                              100) *
-                            plan.taxpercentage) /
-                            100 | number : "1.2-2"
+                          (
+                            (
+                              plan.price -
+                              (plan.price *
+                                (
+                                  (specialDiscountData?.discountPercentage || 0) +
+                                  (selectedAdvanceDiscountSlab?.discountPercentage || 0)
+                                )) /
+                                100
+                            ) *
+                            plan.taxpercentage
+                          ) /
+                            100
+                        ) | number : "1.2-2"
                       }}
+                      <!-- ₹ {{ getTotalAmount(plan) | number:'1.2-2' }} -->
                     </div>
                   </div>
+
                   <hr *ngIf="!last" style="border: 1px solid #e5e7eb" />
                 </div>
                 <div class="d-flex justify-content-center" *ngIf="hasAnySoldOutRoom()">
@@ -866,15 +938,13 @@
                       }}
                     </div>
                   </div>
-                  <div class="d-flex justify-content-between line-height-27px" *ngIf="specialDiscountData?.discountPercentage">
-                    <div class="color-graying" style="color: #16A34A !important;">Discount Amount</div>
+                  <div class="d-flex justify-content-between line-height-27px" *ngIf="specialDiscountData?.discountPercentage || selectedAdvanceDiscountSlab?.discountPercentage">
+                    <div class="color-graying" style="color: #16A34A !important;">Total Discount Amount</div>
 
                     <div style="color: #16A34A !important; font-weight: 500">
                      -₹
                       {{
-                        (bookingSummaryDetails?.totalPlanPrice *
-                              specialDiscountData?.discountPercentage) /
-                              100 | number : "1.2-2"
+                        (bookingSummaryDetails?.totalPlanPrice * ((specialDiscountData?.discountPercentage || 0) + (selectedAdvanceDiscountSlab?.discountPercentage || 0))) / 100 | number : "1.2-2"
                       }}
                     </div>
                   </div>
@@ -973,24 +1043,30 @@
                     <div class="color-graying">
                       Advance Discount ({{ getSelectedAdvanceDiscountPercentage() }}%)
                     </div>
-                    <div style="font-weight: 500">
+                    <!-- <div style="font-weight: 500">
                       -₹{{ getAdvancePlanDiscountAmount() | number : "1.2-2" }}
-                    </div>
+                    </div> -->
                   </div>
-                  <div class="d-flex justify-content-between line-height-27px">
+                  <!-- <div class="d-flex justify-content-between line-height-27px">
                     <div class="color-graying">Total After Advance Discount</div>
                     <div style="font-weight: 500">
                       ₹{{ getAdvancePlanTotalAfterDiscount() | number : "1.2-2" }}
                     </div>
-                  </div>
+                  </div> -->
                   <div class="d-flex justify-content-between line-height-27px">
                     <div class="font-weight-600" style="font-size: 1rem">
-                      Advance Payable ({{ getSelectedAdvancePercentage() }}%)
+                      Advance Amount ({{ getSelectedAdvancePercentage() }}%)
                     </div>
-                    <div class="font-weight-600" style="font-size: 1rem">
-                      ₹{{ getAdvancePlanPayableAmount() | number : "1.2-2" }}
-                    </div>
+                    <!-- <div class="font-weight-600" style="font-size: 1rem">
+                      ₹{{ getAdvancePlanGrossAmount() | number : "1.2-2" }}
+                    </div> -->
                   </div>
+                  <!-- <div class="d-flex justify-content-between line-height-27px">
+                    <div class="color-graying">Outstanding Amount</div>
+                    <div style="font-weight: 500">
+                      ₹{{ getAdvancePlanOutstandingAmount() | number : "1.2-2" }}
+                    </div>
+                  </div> -->
                 </div>
                 <div
                   *ngIf="
@@ -1341,24 +1417,49 @@
                       }}
                     </div>
                   </div>
+                  
+                  <div class="d-flex justify-content-between line-height-27px advance-discounts"
+                    *ngIf="this.selectedAdvanceDiscountSlab?.discountPercentage">
+                    <div class="color-graying">
+                      Advance Discount ({{
+                      this.selectedAdvanceDiscountSlab?.discountPercentage
+                      }})%
+                    </div>
+
+                    <div>
+                      - ₹
+                      {{
+                      ( (plan.price *
+                      this.selectedAdvanceDiscountSlab?.discountPercentage) /
+                      100
+                      ) | number : "1.2-2"
+                      }}
+                    </div>
+                  </div>
+
                   <div
-                    *ngIf="this.specialDiscountData?.discountPercentage"
+                    *ngIf="this.specialDiscountData?.discountPercentage || this.selectedAdvanceDiscountSlab?.discountPercentage"
                     class="d-flex justify-content-between line-height-27px"
                   >
                     <div class="color-graying">Tax & Services</div>
 
                     <div>
                       ₹
-                      {{
-                        ((plan.price -
-                          (plan.price *
-                            this.specialDiscountData?.discountPercentage) /
-                            100) *
-                          plan.taxpercentage) /
-                          100 | number : "1.2-2"
-                      }}
+                        {{
+                            (
+                              (plan.price -
+                                (plan.price *
+                                  (
+                                    (specialDiscountData?.discountPercentage || 0) +
+                                    (selectedAdvanceDiscountSlab?.discountPercentage || 0)
+                                  )) /
+                                  100) *
+                              plan.taxpercentage
+                            ) / 100 | number : "1.2-2"
+                        }}
                     </div>
                   </div>
+
                   <div
                     *ngIf="!this.specialDiscountData?.discountPercentage"
                     class="d-flex justify-content-between line-height-27px"
@@ -1503,15 +1604,13 @@
                   </div>
                 </div>
 
-                <div class="d-flex justify-content-between line-height-27px" *ngIf="specialDiscountData?.discountPercentage">
-                    <div class="color-graying" style="color: #16A34A !important;">Discount Amount</div>
+                <div class="d-flex justify-content-between line-height-27px" *ngIf="specialDiscountData?.discountPercentage || selectedAdvanceDiscountSlab?.discountPercentage">
+                    <div class="color-graying" style="color: #16A34A !important;">Total Discount Amount</div>
 
                     <div style="color: #16A34A !important; font-weight: 500">
                      -₹
                       {{
-                        (bookingSummaryDetails?.totalPlanPrice *
-                              specialDiscountData?.discountPercentage) /
-                              100 | number : "1.2-2"
+                        (bookingSummaryDetails?.totalPlanPrice * ((specialDiscountData?.discountPercentage || 0) + (selectedAdvanceDiscountSlab?.discountPercentage || 0))) / 100 | number : "1.2-2"
                       }}
                     </div>
                   </div>
@@ -1567,6 +1666,7 @@
                   <div style="font-weight: 500">
                     <span *ngIf="specialDiscountData?.discountPercentage">₹{{ calculateConvenienceFee(bookingSummaryDetails?.totalPlanPrice - ((bookingSummaryDetails?.totalPlanPrice *
                               specialDiscountData?.discountPercentage) / 100), serviceChargePercentage) }}</span>
+
                     <span *ngIf="!specialDiscountData?.discountPercentage">₹{{ calculateConvenienceFee(bookingSummaryDetails?.totalPlanPrice, serviceChargePercentage) }}</span>
 
                   </div>
@@ -1578,8 +1678,14 @@
 
                   <div class="font-weight-600" style="font-size: 1rem">
                      <span *ngIf="serviceChargePercentage > 0">
-                      <span *ngIf="specialDiscountData?.discountPercentage">₹{{( bookingSummaryDetails?.totalAmount) + calculateConvenienceFee(bookingSummaryDetails?.totalPlanPrice - ((bookingSummaryDetails?.totalPlanPrice *
-                              specialDiscountData?.discountPercentage) / 100), serviceChargePercentage) | number : "1.2-2"}}</span>
+                      <span *ngIf="specialDiscountData?.discountPercentage">₹
+                        {{
+                          ( bookingSummaryDetails?.totalAmount) + calculateConvenienceFee(bookingSummaryDetails?.totalPlanPrice - ((bookingSummaryDetails?.totalPlanPrice *
+                              specialDiscountData?.discountPercentage) / 100), serviceChargePercentage) | number : "1.2-2"
+
+                              
+                            }}
+                          </span>
                     <span *ngIf="!specialDiscountData?.discountPercentage">₹{{( bookingSummaryDetails?.totalAmount) +  calculateConvenienceFee(bookingSummaryDetails?.totalPlanPrice, serviceChargePercentage) | number : "1.2-2" }}</span>
                     </span>
                     <span *ngIf="!serviceChargePercentage">
@@ -1607,24 +1713,30 @@
                     <div class="color-graying">
                       Advance Discount ({{ getSelectedAdvanceDiscountPercentage() }}%)
                     </div>
-                    <div style="font-weight: 500">
+                    <!-- <div style="font-weight: 500">
                       -₹{{ getAdvancePlanDiscountAmount() | number : "1.2-2" }}
-                    </div>
+                    </div> -->
                   </div>
                   <div class="d-flex justify-content-between line-height-27px">
                     <div class="color-graying">Total After Advance Discount</div>
-                    <div style="font-weight: 500">
+                    <!-- <div style="font-weight: 500">
                       ₹{{ getAdvancePlanTotalAfterDiscount() | number : "1.2-2" }}
-                    </div>
+                    </div> -->
                   </div>
                   <div class="d-flex justify-content-between line-height-27px">
                     <div class="font-weight-600" style="font-size: 1rem">
-                      Advance Payable ({{ getSelectedAdvancePercentage() }}%)
+                      Advance Amount ({{ getSelectedAdvancePercentage() }}%)
                     </div>
-                    <div class="font-weight-600" style="font-size: 1rem">
-                      ₹{{ getAdvancePlanPayableAmount() | number : "1.2-2" }}
-                    </div>
+                    <!-- <div class="font-weight-600" style="font-size: 1rem">
+                      ₹{{ getAdvancePlanGrossAmount() | number : "1.2-2" }}
+                    </div> -->
                   </div>
+                  <!-- <div class="d-flex justify-content-between line-height-27px">
+                    <div class="color-graying">Outstanding Amount</div>
+                    <div style="font-weight: 500">
+                      ₹{{ getAdvancePlanOutstandingAmount() | number : "1.2-2" }}
+                    </div>
+                  </div> -->
                 </div>
                 <div
                   *ngIf="
