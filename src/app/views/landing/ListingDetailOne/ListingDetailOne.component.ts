@@ -197,6 +197,7 @@ export class ListingDetailOneComponent implements OnInit {
   singleextraAdultChargeBookOne: any;
    singleextraChildChargeBookOne: any;
   roomRateOrderEnabled: boolean = false;
+  palnNonRoomPlan: boolean;
   toggleListingDetails() {
     this.showListingDetails = !this.showListingDetails;
   }
@@ -1971,17 +1972,15 @@ onRoomSelect(roomName: string, planCode: string, count: number | string) {
   //   }
   // }
 
-onIncrement(planCode: string, type: 'adults' | 'children', plan: any) {
-
+onIncrement(planCode: string, type: 'adults' | 'children', plan: any, room: any) {
   this.guestSelectionErrors[planCode] = '';
 
-  const selectedRooms = this.selectedRoomsByPlan[planCode] || 0;
-
-  if (selectedRooms === 0) {
+    const selectedRooms = this.selectedRoomsByPlan[planCode] || 0;
+  
+  if (selectedRooms === 0 && !plan?.nonRoomPlan) {
     this.showTemporaryError(planCode, 'Please add a room first.');
     return;
   }
-
   if (!this.selectedGuestsByPlan[planCode]) {
     this.selectedGuestsByPlan[planCode] = { adults: 0, children: 0 };
   }
@@ -1989,10 +1988,85 @@ onIncrement(planCode: string, type: 'adults' | 'children', plan: any) {
   if (!this.childAgesByPlan[planCode]) {
     this.childAgesByPlan[planCode] = [];
   }
+ if (plan?.nonRoomPlan) {
+    // let totalMaxOccupancy = 0;
+    // const lastPlan = room?.ratesAndAvailabilityDtos?.at(-1);
+    // totalMaxOccupancy += (plan?.maximumOccupancy * (lastPlan?.noOfAvailable || 0));
+    // const adults = (this.selectedGuestsByPlan[planCode].adults ?? 0) + 1;
+    // console.log('adult value issss',adults);
+    // const children = this.selectedGuestsByPlan[planCode].children || 0;
+    // const totalPersons = adults + children;
+    // this.selectedRoomsByPlan[planCode] = adults;
+  
 
-  const maxOccupancy = plan.maximumOccupancy * selectedRooms;
+    // if (type === 'adults') {
+    //   if (totalPersons <= totalMaxOccupancy) {
+    //     this.selectedGuestsByPlan[planCode].adults++;
+    //   return;
+    //   } else {
+    //      this.showTemporaryError(
+    //     planCode,
+    //     `Maximum occupancy of ${totalMaxOccupancy} exceeded.`
+    //   );
+    //   }
+    // } 
+    // else if (type === 'children') {
+    //   const ages = this.childAgesByPlan[planCode];
+    //   if (ages.some(a => a === null)) {
+    //     this.showTemporaryError(planCode, 'Please select age for all existing children first.');
+    //     return;
+    //   }
 
-  const adults = this.selectedGuestsByPlan[planCode].adults;
+    //   if (totalPersons < totalMaxOccupancy) {
+    //     this.selectedGuestsByPlan[planCode].children++;
+    //     this.childAgesByPlan[planCode].push(null);
+    //   } else {
+    //     this.showTemporaryError(planCode, `Maximum occupancy of ${totalMaxOccupancy} reached.`);
+    //   }
+    // }
+    // return;
+    // 1. Calculate the actual physical limit of the room
+const lastPlan = room?.ratesAndAvailabilityDtos?.at(-1);
+const maxCapacityPerRoom = plan?.maximumOccupancy || 0;
+const roomsAvailable = lastPlan?.noOfAvailable || 0;
+
+const totalMaxOccupancy = maxCapacityPerRoom * roomsAvailable;
+
+const currentAdults = this.selectedGuestsByPlan[planCode].adults ?? 0;
+const currentChildren = this.selectedGuestsByPlan[planCode].children ?? 0;
+
+if (type === 'adults') {
+    const projectedAdults = currentAdults + 1;
+    const projectedTotal = projectedAdults + currentChildren;
+
+    if (projectedTotal <= totalMaxOccupancy) {
+        this.selectedGuestsByPlan[planCode].adults++;
+        this.selectedRoomsByPlan[planCode] = projectedAdults; 
+    } else {
+        this.showTemporaryError(planCode, `Maximum occupancy of ${totalMaxOccupancy} exceeded.`);
+    }
+} 
+else if (type === 'children') {
+    const projectedChildren = currentChildren + 1;
+    const projectedTotal = currentAdults + projectedChildren;
+    const ages = this.childAgesByPlan[planCode];
+
+    // Validation: Check if existing children have ages assigned
+    if (ages.some(a => a === null)) {
+        this.showTemporaryError(planCode, 'Please select age for all existing children first.');
+        return;
+    }
+
+    if (projectedTotal <= totalMaxOccupancy) {
+        this.selectedGuestsByPlan[planCode].children++;
+        this.childAgesByPlan[planCode].push(null);
+    } else {
+        this.showTemporaryError(planCode, `Maximum occupancy of ${totalMaxOccupancy} reached.`);
+    }
+}
+}else {
+    const maxOccupancy = plan.maximumOccupancy * selectedRooms;
+     const adults = this.selectedGuestsByPlan[planCode].adults;
 
   const ages = this.childAgesByPlan[planCode];
 
@@ -2003,7 +2077,7 @@ onIncrement(planCode: string, type: 'adults' | 'children', plan: any) {
 
   if (type === 'adults') {
 
-    if (totalPersons >= maxOccupancy) {
+    if (totalPersons >= maxOccupancy && !plan?.nonRoomPlan) {
       this.showTemporaryError(
         planCode,
         `Maximum occupancy of ${maxOccupancy} exceeded.`
@@ -2025,7 +2099,7 @@ onIncrement(planCode: string, type: 'adults' | 'children', plan: any) {
       return;
     }
 
-    if (totalPersons >= maxOccupancy) {
+    if (totalPersons >= maxOccupancy && !plan?.nonRoomPlan) {
       this.showTemporaryError(
         planCode,
         `Maximum occupancy of ${maxOccupancy} exceeded.`
@@ -2037,6 +2111,7 @@ onIncrement(planCode: string, type: 'adults' | 'children', plan: any) {
     this.childAgesByPlan[planCode].push(null);
 
     return;
+  }
   }
 }
 
@@ -2858,26 +2933,16 @@ onGhCPlanSelect(){
     try{
       if (!this.availableRooms) return;
       this.availableRooms.forEach(room => {
-        // 1. Loop through the availability DTOs (dates/availability)
         room.ratesAndAvailabilityDtos?.forEach(availabilityDto => {
-          
-          // 2. Loop through the actual rate plans inside that DTO
           availabilityDto.roomRatePlans?.forEach(plan => {
-            
-            // Only process if it's a room-based plan
             if (plan.nonRoomPlan) {
-              
-              // 3. Get the max available rooms. 
-              // Note: Based on your image, 'noOfAvailable' is at the availabilityDto level.
-              const maxAvailable = availabilityDto.noOfAvailable || 0;
-              const lastCount = maxAvailable > 0 ? maxAvailable : 0;
+              this.palnNonRoomPlan = true;
+              const maxAvailable = this.serviceDto.count || 0;
+              const lastCount = maxAvailable >= 0 ? maxAvailable : 0;
     
-              // 4. Assign to the ngModel using the plan code (e.g., "DR-1")
               this.selectedRoomsByPlan[plan.code] = lastCount;
   
               console.log(`Default selection for plan ${plan.code} set to ${lastCount} rooms based on availability.`);
-              // 5. Trigger your selection logic
-              // roomName from your image is "Deluxe Room"
               this.onRoomSelect(availabilityDto.roomName, plan.code, lastCount);
             }
           });
