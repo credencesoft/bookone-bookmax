@@ -286,6 +286,15 @@ export class BookingComponent implements OnInit {
   specialDiscountPercentage: any;
   specialDiscountData: any;
   enteredCoupon: any;
+  // Multi-Discount Tracking Properties
+  couponDiscountAmount: number = 0;
+  advanceDiscountAmount: number = 0;
+  totalDiscountAmount: number = 0;
+  amountAfterDiscount: number = 0;
+  taxOnDiscountedAmount: number = 0;
+  convenienceFeeAmount: number = 0;
+  advancePaymentAmount: number = 0;
+  remainingPaymentAmount: number = 0;
   showTermsUniquePopup: boolean = false;
   showPrivacyUniquePopup: boolean = false;
   thmEnquiryDataList: Booking;
@@ -561,7 +570,8 @@ export class BookingComponent implements OnInit {
       this.storedActualNetAmount = OtaPlanAllPrice;
       this.otaTaxAmountValue = this.otaTaxAmount;
     } else {
-      this.storedActualNetAmount = this.booking.netAmount;
+      // Use booking summary total price if available
+      this.storedActualNetAmount = bookingSummary?.totalPlanPrice || this.booking.netAmount;
     }
     // this.storedActualNetAmount = this.booking.netAmount;
     this.actualTaxAmount = this.booking.gstAmount;
@@ -606,6 +616,31 @@ export class BookingComponent implements OnInit {
       zone: this.ngZone,
       loadAngularFunction: () => this.stripePaymentSuccess(),
     };
+    // Initialize multi-discount tracking properties
+    this.couponDiscountAmount = 0;
+    this.advanceDiscountAmount = 0;
+    this.totalDiscountAmount = 0;
+    this.amountAfterDiscount = this.storedActualNetAmount || this.booking.netAmount;
+    this.taxOnDiscountedAmount = bookingSummary?.totalTax || this.booking.taxAmount || 0;
+    this.convenienceFeeAmount = this.calculateConvenienceFee(this.storedActualNetAmount || this.booking.netAmount, this.serviceChargePercentage);
+    this.advancePaymentAmount = 0;
+    this.remainingPaymentAmount = (this.storedActualNetAmount || this.booking.netAmount) + (this.taxOnDiscountedAmount) + this.convenienceFeeAmount;
+
+    // If coupon was loaded from sessionStorage, initialize selectedCouponList and recalculate
+    if (this.specialDiscountData && this.specialDiscountData.discountPercentage) {
+      console.log('[DEBUG] Coupon found in sessionStorage:', this.specialDiscountData);
+      console.log('[DEBUG] storedActualNetAmount:', this.storedActualNetAmount);
+      console.log('[DEBUG] bookingSummary?.totalPlanPrice:', bookingSummary?.totalPlanPrice);
+      console.log('[DEBUG] bookingSummary?.totalTax:', bookingSummary?.totalTax);
+      this.selectedCouponList = this.specialDiscountData;
+      this.showTheSelectedCoupon = true;
+      this.calculateMultiDiscountAndTax();
+      console.log('[DEBUG] After calculateMultiDiscountAndTax - couponDiscountAmount:', this.couponDiscountAmount);
+      console.log('[DEBUG] After calculateMultiDiscountAndTax - totalDiscountAmount:', this.totalDiscountAmount);
+    } else {
+      console.log('[DEBUG] No coupon in sessionStorage');
+    }
+
     const storedPromo = localStorage.getItem('selectPromo');
     if (storedPromo == 'true') {
       this.selectedPromotionCheck = true;
@@ -1381,21 +1416,19 @@ export class BookingComponent implements OnInit {
         this.booking.netAmount = this.storedActualNetAmount;
       }
       this.selectedCouponList = coupon;
-      const finalPrice = this.calculateDiscountedPrice(
-        this.booking.netAmount,
-        coupon?.discountPercentage,
-      );
-      this.appliedCoupon = finalPrice;
-      this.getApplicableTaxPercentage();
-      this.booking.totalAmount =
-        this.appliedCoupon +
-        this.totalServiceCost +
-        (this.appliedCoupon * this.booking.taxPercentage) / 100;
       this.showTheSelectedCoupon = true;
       this.visiblePromotion = false;
       this.showingSuccessMessage = true;
+      
+      // Always use multi-discount calculation to ensure all properties updated
+      this.calculateMultiDiscountAndTax();
+      
       localStorage.setItem('selectedPromoData', JSON.stringify(coupon));
       localStorage.setItem('selectPromo', 'true');
+      
+      // Trigger change detection
+      this.changeDetectorRefs.markForCheck();
+      
       setTimeout(() => {
         this.showingSuccessMessage = false;
       }, 3000);
@@ -1427,12 +1460,30 @@ export class BookingComponent implements OnInit {
     try {
       this.showTheSelectedCoupon = false;
       this.selectedCouponList = [];
+      this.couponDiscountAmount = 0;
       this.booking.netAmount = this.storedActualNetAmount;
       this.bookingRoomPrice = this.storeNightPerRoom;
-      this.booking.totalAmount =
-        this.booking.netAmount +
-        (this.booking.netAmount * this.booking.taxPercentage) / 100;
+      
+      // Recalculate with only advance discount if it's selected
+      if (this.selectedAdvanceDiscountSlab) {
+        this.calculateMultiDiscountAndTax();
+      } else {
+        // No discounts applied
+        this.booking.totalAmount =
+          this.booking.netAmount +
+          (this.booking.netAmount * this.booking.taxPercentage) / 100;
+        this.totalDiscountAmount = 0;
+        this.advanceDiscountAmount = 0;
+        this.amountAfterDiscount = this.booking.netAmount;
+        this.taxOnDiscountedAmount = (this.booking.netAmount * this.booking.taxPercentage) / 100;
+        this.advancePaymentAmount = 0;
+        this.remainingPaymentAmount = this.booking.totalAmount;
+      }
+      
       this.visiblePromotion = false;
+      
+      // Trigger change detection
+      this.changeDetectorRefs.markForCheck();
     } catch (error) {
       console.error('Error in clearSelectedCoupons : ', error);
     }
@@ -11424,6 +11475,115 @@ sendWhatsappMessageToPropertyOwner() {
     }
   }
 
+  /**
+   * Handle advance payment plan selection
+   * Recalculates all discounts and taxes when user selects an advance payment plan
+   */
+  selectAdvancePaymentPlan(slab: AdvanceDiscountSlab): void {
+    try {
+      this.selectedAdvanceDiscountSlab = slab;
+      // Always recalculate to update all discount and payment amounts
+      this.calculateMultiDiscountAndTax();
+      // Trigger change detection
+      this.changeDetectorRefs.markForCheck();
+    } catch (error) {
+      console.error('Error in selectAdvancePaymentPlan:', error);
+    }
+  }
+
+  /**
+   * Check if a specific advance payment plan is selected
+   */
+  /**
+   * Calculate multi-discount with proper tax application
+   * Formula: 
+   * 1. Apply coupon discount to base amount
+   * 2. Apply advance discount to already discounted amount
+   * 3. Calculate tax on final discounted amount
+   * 4. Calculate advance and remaining payment amounts
+   */
+  calculateMultiDiscountAndTax(): void {
+    try {
+      const baseAmount = this.storedActualNetAmount;
+      console.log('[CALC] baseAmount:', baseAmount, 'selectedCouponList:', this.selectedCouponList, 'advanceSlab:', this.selectedAdvanceDiscountSlab);
+      let currentAmount = baseAmount;
+
+      // Step 1: Apply Coupon Discount
+      this.couponDiscountAmount = 0;
+      if (this.selectedCouponList?.discountPercentage) {
+        this.couponDiscountAmount =
+          (baseAmount * this.selectedCouponList.discountPercentage) / 100;
+        currentAmount = baseAmount - this.couponDiscountAmount;
+        console.log('[CALC] Coupon applied: discountPercentage=', this.selectedCouponList.discountPercentage, 'couponDiscountAmount=', this.couponDiscountAmount, 'currentAmount=', currentAmount);
+      }
+
+      // Step 2: Apply Advance Discount (percentage-based on already discounted amount)
+      this.advanceDiscountAmount = 0;
+      if (this.selectedAdvanceDiscountSlab?.discountPercentage) {
+        this.advanceDiscountAmount =
+          (currentAmount * this.selectedAdvanceDiscountSlab.discountPercentage) /
+          100;
+        currentAmount = currentAmount - this.advanceDiscountAmount;
+      }
+
+      // Step 3: Calculate Total Discount Amount
+      this.totalDiscountAmount =
+        this.couponDiscountAmount + this.advanceDiscountAmount;
+      this.amountAfterDiscount = currentAmount;
+
+      // Step 4: Apply Tax on Final Discounted Amount
+      this.getApplicableTaxPercentage();
+      this.taxOnDiscountedAmount =
+        (this.amountAfterDiscount * this.booking.taxPercentage) / 100;
+
+      // Step 5: Calculate Convenience Fee (on original price, NOT discounted amount)
+      this.convenienceFeeAmount = this.calculateConvenienceFee(baseAmount, this.serviceChargePercentage);
+
+      // Step 6: Calculate Advance and Remaining Payment Amounts (including convenience fee)
+      const totalPaymentAmount =
+        this.amountAfterDiscount + this.taxOnDiscountedAmount + this.convenienceFeeAmount;
+      const advancePercentage = this.selectedAdvanceDiscountSlab?.advancePercentage || 0;
+      this.advancePaymentAmount = (totalPaymentAmount * advancePercentage) / 100;
+      this.remainingPaymentAmount =
+        totalPaymentAmount - this.advancePaymentAmount;
+      
+      console.log('[CALC] Convenience Fee (on original price):', this.convenienceFeeAmount);
+      console.log('[CALC] Total Payment with Convenience Fee:', totalPaymentAmount);
+
+      // Update booking object with calculated values
+      this.booking.netAmount = this.amountAfterDiscount;
+      this.booking.discountAmount = this.totalDiscountAmount;
+      this.booking.taxAmount = this.taxOnDiscountedAmount;
+      this.booking.totalAmount = totalPaymentAmount;
+      this.booking.advanceAmount = this.advancePaymentAmount;
+
+      // Include service charges in total
+      this.booking.totalAmount =
+        this.amountAfterDiscount +
+        this.taxOnDiscountedAmount +
+        this.totalServiceCost;
+      
+      // Trigger change detection to update UI
+      this.changeDetectorRefs.markForCheck();
+    } catch (error) {
+      console.error('Error in calculateMultiDiscountAndTax:', error);
+    }
+  }
+
+  /**
+   * Get the selected advance discount percentage
+   */
+  getSelectedAdvanceDiscountPercentage(): number {
+    return this.selectedAdvanceDiscountSlab?.discountPercentage || 0;
+  }
+
+  /**
+   * Get the advance payment percentage (what percentage to pay now)
+   */
+  getSelectedAdvancePaymentPercentage(): number {
+    return this.selectedAdvanceDiscountSlab?.advancePercentage || 0;
+  }
+
   hasAdvancePaymentPlans(): boolean {
     return this.advanceDiscountSlabs.length > 0;
   }
@@ -11501,16 +11661,6 @@ sendWhatsappMessageToPropertyOwner() {
   //   };
   // }
 
-  selectAdvancePaymentPlan(slab: AdvanceDiscountSlab | null): void {
-    this.selectedAdvanceDiscountSlab = slab;
-    this.showTheSelectedCoupon = true;
-    this.selectedCouponList = {
-      couponCode: "Advance",
-      discountPercentage: slab?.discountPercentage ?? null,
-    };
-    this.selectedCoupon(this.selectedCouponList);
-  }
-
   isAdvancePaymentPlanSelected(slab: AdvanceDiscountSlab | null): boolean {
     return (
       !!slab &&
@@ -11520,14 +11670,6 @@ sendWhatsappMessageToPropertyOwner() {
       Number(slab.discountPercentage) ===
       Number(this.selectedAdvanceDiscountSlab.discountPercentage)
     );
-  }
-
-  getSelectedAdvancePercentage(): number {
-    return this.getAdvancePercentageForPlan();
-  }
-
-  getSelectedAdvanceDiscountPercentage(): number {
-    return this.getAdvanceDiscountPercentageForPlan();
   }
 
   getCurrentBookingTotalForAdvancePlan(): number {
