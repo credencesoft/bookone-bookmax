@@ -2910,7 +2910,7 @@
 
                         <div class="d-flex justify-content-between align-items-start" [class.disabled-room]="booking?.noOfNights > 1 && plan?.onedayPlan">
                           <div class="d-flex room-number">
-                            <div>
+                            <div *ngIf="!plan?.nonRoomPlan">
                               <label
                                 class="input-group-text"
                                 for="inputGroupSelect01"
@@ -3135,7 +3135,7 @@
                           class="d-flex justify-content-between align-items-end" [class.disabled-room]="booking?.noOfNights > 1 && plan?.onedayPlan"
                         >
                           <div class="d-flex room-number">
-                            <div>
+                            <div *ngIf="!plan?.nonRoomPlan">
                               <label
                                 class="input-group-text truncate-text" [matTooltip]="fullText" matTooltipPosition="above" matTooltipShowDelay="300"
                                 for="inputGroupSelect01" [title]="getBookingUnitLabel(room)" [title]="getBookingUnitLabel(room).length > 8 ? getBookingUnitLabel(room) : ''"
