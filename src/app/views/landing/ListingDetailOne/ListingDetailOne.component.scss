@@ -89,8 +89,19 @@ background-color: #f5f5f5;
 .disabled-room {
   opacity: 0.5;
   pointer-events: none; /* Prevents clicks on the entire container */
-  filter: grayscale(1);
+  flex-wrap: wrap;
+  // filter: grayscale(1);
 }
+// /* Add this to your component's CSS file */
+// .input-group-text {
+//   max-width: 100px;           /* Adjust this width to match your UI space */
+//   display: inline-block;
+//   white-space: nowrap;       /* Keeps text on one line */
+//   overflow: hidden;          /* Hides the overflow */
+//   text-overflow: ellipsis;   /* Adds the '...' */
+//   vertical-align: middle;
+//   cursor: pointer;           /* Gives the user a hint that they can hover */
+// }
 
 .checkAva8 {
   display: flex;
@@ -656,11 +667,9 @@ padding: 16px 12px;
   display: flex;
   gap: 10px;
   margin-top: 15px;
-  width: 100%;
 }
 .maiiin {
-  width: 100%;
-  flex: 1;
+  width: 75%;
 }
 .card-rooms {
   background-color: #fbfbfb;
@@ -706,6 +715,14 @@ padding: 16px 12px;
   border-radius: 0.25rem;
   color: #000 !important;
   font-family: "Poppins" !important;
+   display: inline-block;
+  white-space: nowrap;       
+  overflow: hidden;   
+  text-overflow: ellipsis;  
+  vertical-align: middle;
+  background-color: transparent !important;
+  border: none !important;
+  cursor: pointer; 
 }
 .border-radius-20px {
   border-radius: 20px;
@@ -764,6 +781,14 @@ padding: 16px 12px;
   border-radius: 7px;
   height: 25px;
 }
+
+.plan-warning-text {
+    font-size: 12px;
+    font-weight: 500;
+    margin-bottom: 10px;
+    padding: 5px 10px;
+}
+
 .room-number {
   align-items: center;
   gap: 8px;
@@ -1452,7 +1477,7 @@ position: absolute;
     border-radius: 20px;
 }
 .popup-heading {
-    font-size: 1.4rem;
+    font-size: 18px;
     font-weight: 400;
     font-family: "Poppins";
 }
@@ -1660,6 +1685,22 @@ position: absolute;
   color: #000 !important;           /* white text */
   font-weight: bold;
 }
+
+.plan-warning-text {
+    padding: 4px 8px;
+    font-size: 12px;
+    font-weight: 700;
+    margin-top: 10px;
+    border-radius: 4px;
+    display: inline-block; 
+    color: var(--secondary);
+}
+
+.card-data {
+    display: flex;
+    flex-direction: column;
+}
+
 .loader-overlay {
   position: fixed;
   top: 0;
@@ -1998,6 +2039,11 @@ text-align: center;
 }
 
 @media (max-width: 600px) {
+.checkout-datepicker + ngb-datepicker.dropdown-menu,
+.checkout-datepicker ~ .dropdown-menu {
+    left: auto !important;
+    right: 0 !important;
+}
 .mobile-plan-header {
     flex-wrap: wrap;
     align-items: flex-start !important;
