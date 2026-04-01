@@ -327,6 +327,51 @@
                   </div>
                 </div>
               </div>
+
+              <!-- Phase 4: Enhance Your Stay — desktop col-7 -->
+              <div *ngIf="addOnServices && addOnServices.length > 0"
+                class="rooms-cards-pricing card"
+                style="padding: 30px; margin-bottom: 20px">
+                <h5 class="margin-botton-20px booking-d-heading">
+                  <i class="fa-solid fa-sparkles" style="color: #0d9488; margin-right: 8px"></i>
+                  Enhance Your Stay
+                </h5>
+                <div class="row g-3">
+                  <div *ngFor="let addon of addOnServices" class="col-6">
+                    <div
+                      (click)="toggleAddOnSelection(addon)"
+                      [style.border]="isAddOnSelected(addon) ? '2px solid #0d9488' : '1.5px solid #e5e7eb'"
+                      [style.background-color]="isAddOnSelected(addon) ? '#f0fdfa' : '#ffffff'"
+                      style="border-radius: 10px; padding: 14px; cursor: pointer; transition: border 0.2s, background-color 0.2s; position: relative; min-height: 110px; display: flex; flex-direction: column; justify-content: space-between"
+                    >
+                      <!-- Checkmark when selected -->
+                      <div *ngIf="isAddOnSelected(addon)"
+                        style="position: absolute; top: 10px; right: 10px; color: #0d9488; font-size: 15px; font-weight: bold; line-height: 1">
+                        ✓
+                      </div>
+                      <!-- Icon + Name + Description -->
+                      <div class="d-flex align-items-start" style="gap: 12px">
+                        <div
+                          [style.background-color]="isAddOnSelected(addon) ? '#0d9488' : '#f3f4f6'"
+                          style="width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0">
+                          <i class="fa-solid fa-concierge-bell"
+                            [style.color]="isAddOnSelected(addon) ? '#ffffff' : '#9ca3af'"
+                            style="font-size: 14px"></i>
+                        </div>
+                        <div style="flex: 1; padding-right: 18px">
+                          <div style="font-weight: 600; color: #111827; font-size: 14px; line-height: 1.3">{{ addon.name }}</div>
+                          <div *ngIf="addon.description" style="font-size: 11px; color: #6b7280; margin-top: 3px; line-height: 1.4">{{ addon.description }}</div>
+                        </div>
+                      </div>
+                      <!-- Price -->
+                      <div style="margin-top: 12px; font-weight: 700; font-size: 14px; color: #0d9488">
+                        + ₹{{ addon.servicePrice | number: '1.0-0' }}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               <div class="rooms-cards-pricing card" style="padding: 30px; margin-bottom: 20px"
                 *ngIf="showPayNow() && businessServiceDto">
                 <h5 class="margin-botton-20px booking-d-heading">
@@ -646,6 +691,8 @@
                   />
                   Payment Summary
                 </h5>
+
+                <!-- Phase 4: Enhance Your Stay Section -->
                 <div
                 id="soldOutSectionOne"
                   *ngIf="hasAnySoldOutRoom()"
@@ -936,6 +983,11 @@
                       }}
                     </div>
                   </div>
+                  <!-- Phase 4: Enhancements single line -->
+                  <div *ngIf="selectedAddOns && selectedAddOns.length > 0" class="d-flex justify-content-between line-height-27px">
+                    <div class="color-graying">Enhancements ({{ selectedAddOns.length }})</div>
+                    <div style="font-weight: 500">₹{{ totalAddOnsAmount | number: '1.2-2' }}</div>
+                  </div>
                   <div class="d-flex justify-content-between line-height-27px" *ngIf="couponDiscountAmount > 0">
                     <div class="color-graying">Coupon Discount ({{ selectedCouponList?.discountPercentage || specialDiscountData?.discountPercentage }}%)</div>
                     <div style="color: #16A34A; font-weight: 500">-₹{{ couponDiscountAmount | number : "1.2-2" }}</div>
@@ -953,8 +1005,8 @@
                     <div style="font-weight: 500">₹{{ amountAfterDiscount | number : "1.2-2" }}</div>
                   </div>
                   <div class="d-flex justify-content-between line-height-27px">
-                    <div class="color-graying">Total Tax on {{this.roomLabel}} Price</div>
-                    <div style="font-weight: 500">₹ {{ taxOnDiscountedAmount | number : "1.2-2" }}</div>
+                    <div class="color-graying">Tax &amp; Services</div>
+                    <div style="font-weight: 500">₹ {{ (taxOnDiscountedAmount + getAddOnsTaxAtRoomRate()) | number : "1.2-2" }}</div>
                   </div>
 
                   <div
@@ -1007,11 +1059,11 @@
 
                 <div class="d-flex justify-content-between line-height-27px">
                   <div class="font-weight-600" style="font-size: 1rem">
-                    Total Amount
+                    Grand Total
                   </div>
 
                   <div class="font-weight-600" style="font-size: 1rem">
-                    ₹{{ (amountAfterDiscount + taxOnDiscountedAmount + convenienceFeeAmount) | number : "1.2-2" }}
+                    ₹{{ (amountAfterDiscount + totalAddOnsAmount + taxOnDiscountedAmount + getAddOnsTaxAtRoomRate() + convenienceFeeAmount) | number : "1.2-2" }}
                   </div>
                 </div>
                 <div
@@ -1148,17 +1200,40 @@
 
             <div class="col-12 padding-left0px padding-right-0px">
               <div class="card" style="padding: 10px">
-                <h5 class="margin-botton-20px booking-d-heading">
-                  <img
-                    src="media-be/images/calemder-frame.svg"
-                    alt="icon"
-                    width="20"
-                    height="20"
-                    style="margin-right: 5px"
-                  />
-                  Your Booking
-                </h5>
+                <div class="d-flex justify-content-between align-items-center margin-botton-20px"
+                  (click)="showMobileBookingDetails = !showMobileBookingDetails"
+                  style="cursor: pointer">
+                  <h5 class="booking-d-heading" style="margin: 0">
+                    <img
+                      src="media-be/images/calemder-frame.svg"
+                      alt="icon"
+                      width="20"
+                      height="20"
+                      style="margin-right: 5px"
+                    />
+                    Your Booking
+                  </h5>
+                  <span style="font-size: 12px; color: #0d9488; font-weight: 600">
+                    {{ showMobileBookingDetails ? 'Hide details' : 'View details' }}
+                    <i [class]="showMobileBookingDetails ? 'fa-solid fa-angle-up' : 'fa-solid fa-angle-down'" style="margin-left: 4px"></i>
+                  </span>
+                </div>
 
+                <!-- Compact summary — always visible -->
+                <div class="d-flex justify-content-between align-items-center" style="font-size: 13px; color: #374151; padding: 4px 0 8px 0">
+                  <span style="font-weight: 600; color: #0f172a">
+                    <i class="fa-solid fa-hotel" style="color:#031eaa; margin-right:5px; font-size:11px"></i>
+                    {{ businessUser?.name }}
+                  </span>
+                  <span style="color: #6b7280; font-size: 12px">
+                    {{ bookingSummaryDetails?.fromDate | date:'dd MMM' }} &ndash;
+                    {{ bookingSummaryDetails?.toDate | date:'dd MMM' }} &middot;
+                    {{ bookingSummaryDetails?.totalNights }} nights
+                  </span>
+                </div>
+
+                <!-- Expandable details -->
+                <div *ngIf="showMobileBookingDetails">
                 <h5 class="booking-heading">{{ businessUser?.name }}</h5>
                 <p class="booking-subheading">
                   <img
@@ -1487,10 +1562,50 @@
                     Start Over
                   </button>
                 </div>
+                </div><!-- end expanded details -->
               </div>
             </div>
 
-            
+            <!-- Phase 4: Enhance Your Stay — mobile layout -->
+            <div *ngIf="addOnServices && addOnServices.length > 0"
+              class="rooms-cards-pricing card"
+              style="padding: 20px; margin-bottom: 20px">
+              <h5 class="margin-botton-20px booking-d-heading">
+                <i class="fa-solid fa-sparkles" style="color: #0d9488; margin-right: 8px"></i>
+                Enhance Your Stay
+              </h5>
+              <div class="row g-3">
+                <div *ngFor="let addon of addOnServices" class="col-6">
+                  <div
+                    (click)="toggleAddOnSelection(addon)"
+                    [style.border]="isAddOnSelected(addon) ? '2px solid #0d9488' : '1.5px solid #e5e7eb'"
+                    [style.background-color]="isAddOnSelected(addon) ? '#f0fdfa' : '#ffffff'"
+                    style="border-radius: 10px; padding: 12px; cursor: pointer; transition: border 0.2s, background-color 0.2s; position: relative; min-height: 100px; display: flex; flex-direction: column; justify-content: space-between"
+                  >
+                    <div *ngIf="isAddOnSelected(addon)"
+                      style="position: absolute; top: 8px; right: 8px; color: #0d9488; font-size: 13px; font-weight: bold">
+                      ✓
+                    </div>
+                    <div class="d-flex align-items-start" style="gap: 10px">
+                      <div
+                        [style.background-color]="isAddOnSelected(addon) ? '#0d9488' : '#f3f4f6'"
+                        style="width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0">
+                        <i class="fa-solid fa-concierge-bell"
+                          [style.color]="isAddOnSelected(addon) ? '#ffffff' : '#9ca3af'"
+                          style="font-size: 13px"></i>
+                      </div>
+                      <div style="flex: 1; padding-right: 16px">
+                        <div style="font-weight: 600; color: #111827; font-size: 13px; line-height: 1.3">{{ addon.name }}</div>
+                        <div *ngIf="addon.description" style="font-size: 11px; color: #6b7280; margin-top: 2px">{{ addon.description }}</div>
+                      </div>
+                    </div>
+                    <div style="margin-top: 10px; font-weight: 700; font-size: 13px; color: #0d9488">
+                      + ₹{{ addon.servicePrice | number: '1.0-0' }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
 
               <div class="card p-4 mx-auto booking-heading" style="
                                                                 border-radius: 10px;
@@ -1569,6 +1684,11 @@
                     }}
                   </div>
                 </div>
+                <!-- Phase 4: Enhancements single line (mobile) -->
+                <div *ngIf="selectedAddOns && selectedAddOns.length > 0" class="d-flex justify-content-between line-height-27px">
+                  <div class="color-graying">Enhancements ({{ selectedAddOns.length }})</div>
+                  <div style="font-weight: 500">₹{{ totalAddOnsAmount | number: '1.2-2' }}</div>
+                </div>
 
                 <div class="d-flex justify-content-between line-height-27px" *ngIf="selectedCouponList?.discountPercentage || selectedAdvanceDiscountSlab?.discountPercentage">
                     <div class="color-graying" style="color: #16A34A !important;">Coupon Discount</div>
@@ -1591,8 +1711,8 @@
                 </div>
 
                 <div class="d-flex justify-content-between line-height-27px">
-                  <div class="color-graying">Total Tax on {{this.roomLabel}} Price</div>
-                  <div style="font-weight: 500">₹ {{ taxOnDiscountedAmount | number : "1.2-2" }}</div>
+                  <div class="color-graying">Tax &amp; Services</div>
+                  <div style="font-weight: 500">₹ {{ (taxOnDiscountedAmount + getAddOnsTaxAtRoomRate()) | number : "1.2-2" }}</div>
                 </div>
 
                 <div
@@ -1641,11 +1761,11 @@
                 </div>
                 <div class="d-flex justify-content-between line-height-27px">
                   <div class="font-weight-600" style="font-size: 1rem">
-                    Total Amount
+                    Grand Total
                   </div>
 
                   <div class="font-weight-600" style="font-size: 1rem">
-                    ₹{{ (amountAfterDiscount + taxOnDiscountedAmount + convenienceFeeAmount) | number : "1.2-2" }}
+                    ₹{{ (amountAfterDiscount + totalAddOnsAmount + taxOnDiscountedAmount + getAddOnsTaxAtRoomRate() + convenienceFeeAmount) | number : "1.2-2" }}
                   </div>
                 </div>
 
@@ -2039,6 +2159,39 @@
               Pay Now
             </button>
           </div>
+        </div>
+      </div>
+
+      <!-- Mobile sticky Pay Now bar -->
+      <div class="mob-sticky-pay-bar">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <div style="font-size: 11px; color: #6b7280; line-height: 1.2">Grand Total</div>
+            <div style="font-weight: 700; font-size: 15px; color: #0f172a">
+              ₹{{ amountAfterDiscount + totalAddOnsAmount + taxOnDiscountedAmount + getAddOnsTaxAtRoomRate() + convenienceFeeAmount | number: '1.2-2' }}
+            </div>
+          </div>
+          <button
+            class="Fillpaybtn mob-pay-btn"
+            type="button"
+            [disabled]="isPayNowDisabled || isPayDisabled || isAdvancePaymentPlanRequired() || ((!paymentLoader || !submitButtonDisable) && !validateFrom()) || !termsAccepted"
+            *ngIf="showPayNow()"
+            (click)="payAndCheckout()"
+          >Pay Now</button>
+          <button
+            class="Fillpaybtn mob-pay-btn"
+            type="button"
+            [disabled]="isCashPayDisabled || ((!paymentLoader || !submitButtonDisable) && !validateFrom()) || !termsAccepted"
+            *ngIf="showPayLater()"
+            (click)="onCashPaymentSubmit()"
+          >Pay Later</button>
+          <button
+            class="Fillpaybtn mob-pay-btn"
+            type="button"
+            [disabled]="isEnquiryDisabled || ((!paymentLoader || !submitButtonDisable) && !validateFrom()) || !termsAccepted"
+            *ngIf="showPayNow() === false && showPayLater() === false"
+            (click)="createAllEnquiries()"
+          >Enquiry Now</button>
         </div>
       </div>
     </div>

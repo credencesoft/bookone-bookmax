@@ -189,6 +189,7 @@ export class ListingDetailOneComponent implements OnInit {
   errorMessagewhatsapp: string;
   errorMessagePrivate: string;
   smartRecommendationsBoolean: any;
+  showSmartRecommendations: boolean = false;
   taxTotalSingle: number;
   utmMedium: any;
   utmSource: any;
@@ -215,8 +216,15 @@ export class ListingDetailOneComponent implements OnInit {
   dynamicCity: string;
   dynamicStreetName: string;
   dynamicLocality: string;
-  propertyServiceListData: any[] = [];
-  propertyServiceListDataOne: any[] = [];
+  // ✅ Renamed: Non-paid services for Property Highlights
+  amenitiesHighlights: any[] = [];
+  propertyServiceListData: any[] = [];  // Backward compatibility alias
+  // ✅ Renamed: Paid services for Add-on Services (Checkout)
+  addOnServices: any[] = [];
+  propertyServiceListDataOne: any[] = [];  // Backward compatibility alias
+  // ✅ New: Track selected add-ons in checkout
+  selectedAddOns: any[] = [];
+  selectedAddOnNames: string[] = [];
   savedServices: any[] = [];
   otaNames: string[] = [];
   dynamicCountryName: string;
@@ -1930,6 +1938,15 @@ onRoomSelect(roomName: string, planCode: string, count: number | string) {
     setTimeout(() => {
       this.openGalleryModal();
     }, 200);
+  }
+
+  // Open Smart Recommendations section
+  openSmartRecommendations() {
+    // Scroll to room selection area which contains smart recommendations
+    const element = document.getElementById('accmdOne');
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   }
 
   nextImage() {
@@ -3958,7 +3975,16 @@ onCheckOutClosed(): void {
 
         this.businessUser.propertyServicesList.forEach((ele) => {
           if (ele.id != null && ele.id != undefined) {
-            this.propertyServiceListData.push(ele);
+            // ✅ Separate non-paid and paid services
+            if (Number(ele.servicePrice) === 0 || ele.servicePrice == null) {
+              // Non-paid → Property Highlights
+              this.amenitiesHighlights.push(ele);
+              this.propertyServiceListData.push(ele);  // Backward compatibility
+            } else {
+              // Paid → Add-on Services
+              this.addOnServices.push(ele);
+              this.propertyServiceListDataOne.push(ele);  // Backward compatibility
+            }
           }
         });
 
@@ -4576,10 +4602,20 @@ onCheckOutClosed(): void {
           if (this.token?.getRoomsData() != null) {
             this.checkingAvailability();
           }
-          this.propertyServiceListDataOne =
-            this.businessUser.propertyServicesList.filter(
-              (ele) => Number(ele.servicePrice) > 0
-            );
+          
+          // ✅ Separate non-paid and paid services
+          this.businessUser.propertyServicesList.forEach((ele) => {
+            if (ele.id != null && ele.id != undefined) {
+              if (Number(ele.servicePrice) === 0 || ele.servicePrice == null) {
+                this.amenitiesHighlights.push(ele);
+                this.propertyServiceListData.push(ele);
+              } else {
+                this.addOnServices.push(ele);
+                this.propertyServiceListDataOne.push(ele);
+              }
+            }
+          });
+          
           if (
             this.selectedServices != null &&
             this.selectedServices != undefined
@@ -4587,7 +4623,7 @@ onCheckOutClosed(): void {
             this.savedServices = this.token
               ?.getSelectedServices()
               ?.forEach((ele) => {
-                this.propertyServiceListDataOne?.forEach((val) => {
+                this.addOnServices?.forEach((val) => {
                   if (ele.name === val.name) {
                     this.valSelected = true;
                     this.viewAddon = true;
@@ -5534,6 +5570,9 @@ this.token.savePropertyUrl(currentUrl);
           this.getTotalTaxFacility()).toFixed(2)),
     };
     sessionStorage.setItem('bookingSummaryDetails', JSON.stringify(bookingData));
+    
+    // Phase 4: Store add-on services in sessionStorage for Booking component
+    sessionStorage.setItem('addOnServices', JSON.stringify(this.addOnServices));
   } else if(this.specialDiscountData && !this.activeForGoogleHotelCenter){
     if (this.specialDiscountData) {
   this.selectedPlansSummary = this.selectedPlansSummary.map(plan => {
@@ -5686,6 +5725,8 @@ this.token.savePropertyUrl(currentUrl);
       this.getTotalAfterTaxAmountFacility()) - ((this.getTotalPlanPrice() * this.specialDiscountPercentage)/100)) + this.getTotalTaxPrice()).toFixed(2)),
   };
       sessionStorage.setItem('bookingSummaryDetails', JSON.stringify(bookingData));
+      // Phase 4: Store add-on services in sessionStorage for Booking component
+      sessionStorage.setItem('addOnServices', JSON.stringify(this.addOnServices));
     } else if(this.specialDiscountData && this.activeForGoogleHotelCenter){
     if (this.specialDiscountData) {
   this.selectedPlansSummary = this.selectedPlansSummary.map(plan => {
@@ -5834,6 +5875,8 @@ this.token.savePropertyUrl(currentUrl);
                     + this.getGrandTaxTotal()).toFixed(2)),
   };
       sessionStorage.setItem('bookingSummaryDetails', JSON.stringify(bookingData));
+      // Phase 4: Store add-on services in sessionStorage for Booking component
+      sessionStorage.setItem('addOnServices', JSON.stringify(this.addOnServices));
     }else {
 
    const bookingData = {
@@ -5858,6 +5901,8 @@ this.token.savePropertyUrl(currentUrl);
           this.getTotalTaxPrice()).toFixed(2)),
     };
     sessionStorage.setItem('bookingSummaryDetails', JSON.stringify(bookingData));
+    // Phase 4: Store add-on services in sessionStorage for Booking component
+    sessionStorage.setItem('addOnServices', JSON.stringify(this.addOnServices));
   }
 
   this.router.navigate(['/booking']);
@@ -7882,5 +7927,60 @@ onYesClick() {
       console.error('Error in getPrimaryRoomRateAmount: ', error);
       return 0;
     }
+  }
+
+  // ✅ Add-on Service Methods (Phase 2-3)
+  /**
+   * Toggle add-on service selection
+   * @param service - The service to toggle
+   */
+  toggleAddOnSelection(service: any) {
+    const index = this.selectedAddOns.findIndex(s => s.id === service.id);
+    if (index > -1) {
+      // Remove if already selected
+      this.selectedAddOns.splice(index, 1);
+      const nameIndex = this.selectedAddOnNames.indexOf(service.name);
+      if (nameIndex > -1) {
+        this.selectedAddOnNames.splice(nameIndex, 1);
+      }
+    } else {
+      // Add if not selected
+      this.selectedAddOns.push(service);
+      this.selectedAddOnNames.push(service.name);
+    }
+    this.cd.detectChanges();
+  }
+
+  /**
+   * Check if a service is already selected
+   * @param service - The service to check
+   */
+  isAddOnSelected(service: any): boolean {
+    return this.selectedAddOns.some(s => s.id === service.id);
+  }
+
+  /**
+   * Get selected add-ons for checkout
+   */
+  getSelectedAddOns(): any[] {
+    return this.selectedAddOns;
+  }
+
+  /**
+   * Get total add-ons amount (before tax)
+   */
+  getTotalAddOnsAmount(): number {
+    return this.selectedAddOns.reduce((total, addon) => {
+      return total + (Number(addon.servicePrice) || 0);
+    }, 0);
+  }
+
+  /**
+   * Clear all selected add-ons
+   */
+  clearAddOnSelections() {
+    this.selectedAddOns = [];
+    this.selectedAddOnNames = [];
+    this.cd.detectChanges();
   }
 }

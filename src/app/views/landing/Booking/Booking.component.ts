@@ -307,6 +307,7 @@ export class BookingComponent implements OnInit {
   isEnquiryDisabled = false;
   isCashPayDisabled = false;
   isPayDisabled = false;
+  showMobileBookingDetails: boolean = false;
   propertyMobileNumber: string;
   components1: Components[];
   bookoneActiveData: any;
@@ -362,6 +363,19 @@ export class BookingComponent implements OnInit {
   roomLabel: string = 'Room';
   advanceDiscountSlabs: AdvanceDiscountSlab[] = [];
   selectedAdvanceDiscountSlab: AdvanceDiscountSlab | null = null;
+  
+  // ✅ Phase 4: Add-on Services Tracking
+  addOnServices: any[] = [];                    // Available add-ons to display
+  selectedAddOns: any[] = [];                   // User-selected add-ons
+  selectedAddOnNames: string[] = [];            // Track selected add-on names
+  isAddOnServiceLoading: boolean = false;
+  showAddOnServices: boolean = false;
+  addOnsTaxPercentage: number = 18;             // Service tax (can be configured)
+  addOnsDiscountPercentage: number = 0;         // Service-level discount (optional)
+  totalAddOnsAmount: number = 0;                // Subtotal before tax
+  totalAddOnsTax: number = 0;                   // Tax on add-ons
+  totalAddOnsDiscount: number = 0;              // Discount on add-ons
+  
   constructor(
     private token: TokenStorage,
     private ngZone: NgZone,
@@ -647,6 +661,10 @@ export class BookingComponent implements OnInit {
       const selectedPromoData = localStorage.getItem('selectedPromoData');
       this.selectedCoupon(JSON.parse(selectedPromoData));
     }
+
+    // Phase 4: Initialize Add-ons from sessionStorage
+    this.initializeAddOnServices();
+
     this.token.clearBookingDataObj();
   }
   getFirstWords(text: string, count: number): string {
@@ -12030,7 +12048,172 @@ sendWhatsappMessageToPropertyOwner() {
     return discountedPrice + tax;
   }
 
+  /**
+   * Calculate what the add-ons tax would be at the same effective rate as room tax.
+   * This ensures add-ons are taxed at the same % as the room (e.g. 5%),
+   * so the combined "Tax & Services" line in the payment summary is correct.
+   */
+  getAddOnsTaxAtRoomRate(): number {
+    if (!this.amountAfterDiscount || this.amountAfterDiscount === 0 || this.totalAddOnsAmount === 0) {
+      return 0;
+    }
+    const effectiveRate = this.taxOnDiscountedAmount / this.amountAfterDiscount;
+    return this.totalAddOnsAmount * effectiveRate;
+  }
 
+  /**
+   * Phase 4: Initialize Add-ons from sessionStorage   * Retrieves add-ons data that was set by ListingDetailOne component
+   * Prepares UI for add-on selection and calculation
+   */
+  initializeAddOnServices(): void {
+    try {
+      const addOnsData = sessionStorage.getItem('addOnServices');
+      if (addOnsData) {
+        this.addOnServices = JSON.parse(addOnsData);
+        console.log('[DEBUG] Add-ons initialized from sessionStorage:', this.addOnServices);
+        this.showAddOnServices = this.addOnServices.length > 0;
+      } else {
+        console.log('[DEBUG] No add-ons found in sessionStorage');
+        this.addOnServices = [];
+        this.showAddOnServices = false;
+      }
+    } catch (error) {
+      console.error('[ERROR] Failed to parse add-ons from sessionStorage:', error);
+      this.addOnServices = [];
+      this.showAddOnServices = false;
+    }
+  }
+
+  /**
+   * Phase 4: Add-on Calculation Methods
+   * Independent calculation engine for "Enhance Your Stay" add-ons
+   * Tax: 18% (different from room tax 5%)
+   * Discount: Optional service discount, separate from coupon/advance
+   */
+
+  /**
+   * Toggle add-on service selection
+   * Adds/removes service from selectedAddOns array
+   */
+  toggleAddOnSelection(service: any): void {
+    const index = this.selectedAddOns.findIndex(s => s.id === service.id);
+    if (index > -1) {
+      // Remove from selection
+      this.selectedAddOns.splice(index, 1);
+      const nameIndex = this.selectedAddOnNames.findIndex(n => n === service.name);
+      if (nameIndex > -1) {
+        this.selectedAddOnNames.splice(nameIndex, 1);
+      }
+    } else {
+      // Add to selection
+      this.selectedAddOns.push(service);
+      this.selectedAddOnNames.push(service.name);
+    }
+    // Recalculate totals on selection change
+    this.calculateAddOnsTotals();
+  }
+
+  /**
+   * Check if service is currently selected
+   */
+  isAddOnSelected(service: any): boolean {
+    return this.selectedAddOns.some(s => s.id === service.id);
+  }
+
+  /**
+   * Get array of selected add-on services
+   */
+  getSelectedAddOns(): any[] {
+    return this.selectedAddOns;
+  }
+
+  /**
+   * Calculate add-ons subtotal (before tax and discount)
+   * Sum of all selected service prices
+   */
+  calculateTotalAddOnsAmount(): number {
+    return this.selectedAddOns.reduce((total, service) => {
+      return total + (Number(service.servicePrice) || 0);
+    }, 0);
+  }
+
+  /**
+   * Calculate add-ons tax at 18% rate
+   * Tax applied AFTER discount (if any)
+   */
+  calculateAddOnsTax(): number {
+    // First subtract discount from subtotal
+    const subtotalAfterDiscount = this.calculateTotalAddOnsAmount() - this.totalAddOnsDiscount;
+    // Then apply 18% tax
+    return (subtotalAfterDiscount * this.addOnsTaxPercentage) / 100;
+  }
+
+  /**
+   * Calculate add-ons discount (if service-level discount configured)
+   * Discount is optional and separate from coupon/advance
+   */
+  calculateAddOnsDiscount(): number {
+    if (this.addOnsDiscountPercentage <= 0) {
+      return 0;
+    }
+    const subtotal = this.calculateTotalAddOnsAmount();
+    return (subtotal * this.addOnsDiscountPercentage) / 100;
+  }
+
+  /**
+   * Calculate all add-ons totals at once
+   * Called whenever selection changes or discount config changes
+   */
+  calculateAddOnsTotals(): void {
+    this.totalAddOnsAmount = this.calculateTotalAddOnsAmount();
+    this.totalAddOnsDiscount = this.calculateAddOnsDiscount();
+    this.totalAddOnsTax = this.calculateAddOnsTax();
+  }
+
+  /**
+   * Get add-ons grand total (subtotal - discount + tax)
+   * Ready to add to room total for final payment
+   */
+  getAddOnsGrandTotal(): number {
+    return this.totalAddOnsAmount - this.totalAddOnsDiscount + this.totalAddOnsTax;
+  }
+
+  /**
+   * Get final grand total: room total + add-ons total + convenience fee
+   * This is the amount user pays at checkout
+   */
+  getGrandTotalWithAddOns(): number {
+    let roomTotal = 0;
+
+    // Calculate room total from all selected plans
+    if (this.bookingSummaryDetails?.selectedPlansSummary?.length > 0) {
+      roomTotal = this.bookingSummaryDetails.selectedPlansSummary.reduce((total, plan) => {
+        return total + this.getTotalAmount(plan);
+      }, 0);
+    }
+
+    // Get add-ons total
+    const addOnsTotal = this.getAddOnsGrandTotal();
+
+    // Convenience fee (if applicable, configured separately)
+    const convenienceFee = this.bookingSummaryDetails?.convenienceFeeAmount || 0;
+
+    return roomTotal + addOnsTotal + convenienceFee;
+  }
+
+  /**
+   * Clear all add-on selections
+   * Reset arrays and recalculate totals
+   */
+  clearAddOnSelections(): void {
+    this.selectedAddOns = [];
+    this.selectedAddOnNames = [];
+    this.calculateAddOnsTotals();
+  }
+
+  /**
+   * Phase 4: Add-on Calculation Methods (END)
+   */
 
 }
 

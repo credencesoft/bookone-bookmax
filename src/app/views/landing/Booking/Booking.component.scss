@@ -4952,3 +4952,36 @@ p-dialog .p-dialog-header .p-dialog-title {
 //     padding: 16px;
 //     line-height: 15px;
 // }
+
+// ── Mobile sticky Pay Now bar ──────────────────────────────
+.mob-sticky-pay-bar {
+  display: none;
+}
+
+@media (max-width: 1180px) {
+  .mob-sticky-pay-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #ffffff;
+    border-top: 1px solid #e5e7eb;
+    padding: 10px 16px;
+    z-index: 200;
+    box-shadow: 0 -4px 14px rgba(0, 0, 0, 0.12);
+    display: block;
+  }
+
+  .mob-pay-btn {
+    width: auto !important;
+    padding: 10px 22px !important;
+    font-size: 15px !important;
+    margin: 0 !important;
+    border-radius: 8px !important;
+  }
+
+  // Add bottom padding so content isn't hidden behind sticky bar
+  .booking-checkout-mobile-view .booking-summary-container {
+    padding-bottom: 80px;
+  }
+}
