@@ -1989,45 +1989,56 @@ onIncrement(planCode: string, type: 'adults' | 'children', plan: any, room: any)
     this.childAgesByPlan[planCode] = [];
   }
  if (plan?.nonRoomPlan) {
-    // let totalMaxOccupancy = 0;
-    // const lastPlan = room?.ratesAndAvailabilityDtos?.at(-1);
-    // totalMaxOccupancy += (plan?.maximumOccupancy * (lastPlan?.noOfAvailable || 0));
-    // const adults = (this.selectedGuestsByPlan[planCode].adults ?? 0) + 1;
-    // console.log('adult value issss',adults);
-    // const children = this.selectedGuestsByPlan[planCode].children || 0;
-    // const totalPersons = adults + children;
-    // this.selectedRoomsByPlan[planCode] = adults;
-  
+// const lastPlan = room?.ratesAndAvailabilityDtos?.at(-1);
+// const maxCapacityPerRoom = plan?.maximumOccupancy || 0;
+// const roomsAvailable = lastPlan?.noOfAvailable || 0;
 
-    // if (type === 'adults') {
-    //   if (totalPersons <= totalMaxOccupancy) {
-    //     this.selectedGuestsByPlan[planCode].adults++;
-    //   return;
-    //   } else {
-    //      this.showTemporaryError(
-    //     planCode,
-    //     `Maximum occupancy of ${totalMaxOccupancy} exceeded.`
-    //   );
-    //   }
-    // } 
-    // else if (type === 'children') {
-    //   const ages = this.childAgesByPlan[planCode];
-    //   if (ages.some(a => a === null)) {
-    //     this.showTemporaryError(planCode, 'Please select age for all existing children first.');
-    //     return;
-    //   }
+// const totalMaxOccupancy = maxCapacityPerRoom * roomsAvailable;
 
-    //   if (totalPersons < totalMaxOccupancy) {
-    //     this.selectedGuestsByPlan[planCode].children++;
-    //     this.childAgesByPlan[planCode].push(null);
-    //   } else {
-    //     this.showTemporaryError(planCode, `Maximum occupancy of ${totalMaxOccupancy} reached.`);
-    //   }
-    // }
-    // return;
-    // 1. Calculate the actual physical limit of the room
+// const currentAdults = this.selectedGuestsByPlan[planCode].adults ?? 0;
+// const currentChildren = this.selectedGuestsByPlan[planCode].children ?? 0;
+
+
+// if (type === 'adults') {
+//     const projectedAdults = currentAdults + 1;
+//     const projectedTotal = projectedAdults + currentChildren;
+
+//     if (projectedTotal <= totalMaxOccupancy) {
+//         this.selectedGuestsByPlan[planCode].adults++;
+//         this.selectedRoomsByPlan[planCode] = projectedAdults;
+//     } else {
+//         this.showTemporaryError(planCode, `Maximum occupancy of ${totalMaxOccupancy} exceeded.`);
+//     }
+// } 
+// else if (type === 'children') {
+//     const projectedChildren = currentChildren + 1;
+//     const projectedTotal = currentAdults + projectedChildren;
+//     const ages = this.childAgesByPlan[planCode];
+
+//     // Validation: Check if existing children have ages assigned
+//     if (ages.some(a => a === null)) {
+//         this.showTemporaryError(planCode, 'Please select age for all existing children first.');
+//         return;
+//     }
+
+//     if (projectedTotal <= totalMaxOccupancy) {
+//         this.selectedGuestsByPlan[planCode].children++;
+//         this.childAgesByPlan[planCode].push(null);
+//     } else {
+//         this.showTemporaryError(planCode, `Maximum occupancy of ${totalMaxOccupancy} reached.`);
+//     }
+
+//     const selectedRooms = Math.ceil(this.selectedGuestsByPlan[planCode].adults / maxCapacityPerRoom);
+
+//   if (selectedRooms === 0 && !plan?.nonRoomPlan) {
+//     this.showTemporaryError(planCode, 'Please add a room first.');
+//     return;
+//   }
+
+//   this.selectedRoomsByPlan[planCode] = selectedRooms;
+// }
 const lastPlan = room?.ratesAndAvailabilityDtos?.at(-1);
-const maxCapacityPerRoom = plan?.maximumOccupancy || 0;
+const maxCapacityPerRoom = plan?.maximumOccupancy || 1; // Avoid division by zero
 const roomsAvailable = lastPlan?.noOfAvailable || 0;
 
 const totalMaxOccupancy = maxCapacityPerRoom * roomsAvailable;
@@ -2035,24 +2046,15 @@ const totalMaxOccupancy = maxCapacityPerRoom * roomsAvailable;
 const currentAdults = this.selectedGuestsByPlan[planCode].adults ?? 0;
 const currentChildren = this.selectedGuestsByPlan[planCode].children ?? 0;
 
-const selectedRooms = Math.ceil(this.selectedGuestsByPlan[planCode].adults / maxCapacityPerRoom);
-
-  if (selectedRooms === 0 && !plan?.nonRoomPlan) {
-    this.showTemporaryError(planCode, 'Please add a room first.');
-    return;
-  }
-
-  this.selectedRoomsByPlan[planCode] = selectedRooms;
-
 if (type === 'adults') {
     const projectedAdults = currentAdults + 1;
     const projectedTotal = projectedAdults + currentChildren;
 
     if (projectedTotal <= totalMaxOccupancy) {
         this.selectedGuestsByPlan[planCode].adults++;
-        this.selectedRoomsByPlan[planCode] = selectedRooms; 
     } else {
         this.showTemporaryError(planCode, `Maximum occupancy of ${totalMaxOccupancy} exceeded.`);
+        return; 
     }
 } 
 else if (type === 'children') {
@@ -2060,7 +2062,6 @@ else if (type === 'children') {
     const projectedTotal = currentAdults + projectedChildren;
     const ages = this.childAgesByPlan[planCode];
 
-    // Validation: Check if existing children have ages assigned
     if (ages.some(a => a === null)) {
         this.showTemporaryError(planCode, 'Please select age for all existing children first.');
         return;
@@ -2071,8 +2072,20 @@ else if (type === 'children') {
         this.childAgesByPlan[planCode].push(null);
     } else {
         this.showTemporaryError(planCode, `Maximum occupancy of ${totalMaxOccupancy} reached.`);
+        return; 
     }
 }
+
+
+const totalGuests = this.selectedGuestsByPlan[planCode].adults + this.selectedGuestsByPlan[planCode].children;
+const selectedRooms = Math.ceil(totalGuests / maxCapacityPerRoom);
+
+if (selectedRooms === 0 && !plan?.nonRoomPlan) {
+    this.showTemporaryError(planCode, 'Please add a room first.');
+    return;
+}
+
+this.selectedRoomsByPlan[planCode] = selectedRooms;
 }else {
     const maxOccupancy = plan.maximumOccupancy * selectedRooms;
      const adults = this.selectedGuestsByPlan[planCode].adults;
@@ -5967,9 +5980,7 @@ this.token.savePropertyUrl(currentUrl);
   }
 
   // this.router.navigate(['/booking']);
-  this.router.navigate(['/booking'], { 
-  queryParams: { businessProductName: 'room.businessproductName', } 
-});
+  this.router.navigate(['/booking']);
 }
 
   opendate() {
