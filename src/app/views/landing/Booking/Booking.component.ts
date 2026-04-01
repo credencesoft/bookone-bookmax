@@ -12215,6 +12215,55 @@ sendWhatsappMessageToPropertyOwner() {
    * Phase 4: Add-on Calculation Methods (END)
    */
 
+  // ── Section 2: Add-On Services table helpers ──────────────────────────────
+
+  /** Sum of servicePrice for all selected add-ons (before tax) */
+  getServicesSubtotal(): number {
+    return this.selectedAddOns.reduce((sum, addon) => sum + (Number(addon.servicePrice) || 0), 0);
+  }
+
+  /** Sum of taxAmount for all selected add-ons */
+  getServicesTax(): number {
+    return this.selectedAddOns.reduce((sum, addon) => sum + (Number(addon.taxAmount) || 0), 0);
+  }
+
+  /** Grand total for selected add-ons (servicePrice + taxAmount per addon) */
+  getServicesTotal(): number {
+    return this.selectedAddOns.reduce(
+      (sum, addon) => sum + (Number(addon.servicePrice) || 0) + (Number(addon.taxAmount) || 0), 0
+    );
+  }
+
+  // ── Section 3: Order Summary helpers ─────────────────────────────────────
+
+  /** Grand Total = rooms after discounts + room tax + services (full) + convenience fee */
+  getNewGrandTotal(): number {
+    return (this.amountAfterDiscount || 0)
+      + (this.taxOnDiscountedAmount || 0)
+      + this.getServicesTotal()
+      + (this.convenienceFeeAmount || 0);
+  }
+
+  /**
+   * Pay Now = advance% of (rooms after all discounts + room tax)
+   *         + services total in full (add-ons always paid completely now)
+   *         + convenience fee in full
+   */
+  getNewPayNowAmount(): number {
+    if (!this.selectedAdvanceDiscountSlab) { return this.getNewGrandTotal(); }
+    const advancePct = (this.selectedAdvanceDiscountSlab.advancePercentage || 0) / 100;
+    const roomsWithTax = (this.amountAfterDiscount || 0) + (this.taxOnDiscountedAmount || 0);
+    return (roomsWithTax * advancePct) + this.getServicesTotal() + (this.convenienceFeeAmount || 0);
+  }
+
+  /** Balance at Check-in = remaining room portion (after advance %) */
+  getNewBalanceAtCheckIn(): number {
+    if (!this.selectedAdvanceDiscountSlab) { return 0; }
+    const advancePct = (this.selectedAdvanceDiscountSlab.advancePercentage || 0) / 100;
+    const roomsWithTax = (this.amountAfterDiscount || 0) + (this.taxOnDiscountedAmount || 0);
+    return roomsWithTax * (1 - advancePct);
+  }
+
 }
 
 

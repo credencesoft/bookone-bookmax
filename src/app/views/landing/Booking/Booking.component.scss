@@ -4953,6 +4953,21 @@ p-dialog .p-dialog-header .p-dialog-title {
 //     line-height: 15px;
 // }
 
+// ── Section number badge ────────────────────────────────────
+.section-number-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  background-color: #031eaa;
+  color: #ffffff;
+  border-radius: 50%;
+  font-size: 13px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
 // ── Mobile sticky Pay Now bar ──────────────────────────────
 .mob-sticky-pay-bar {
   display: none;
