@@ -89,7 +89,7 @@ background-color: #f5f5f5;
 .disabled-room {
   opacity: 0.5;
   pointer-events: none; /* Prevents clicks on the entire container */
-  filter: grayscale(1);
+  // filter: grayscale(1);
 }
 // /* Add this to your component's CSS file */
 // .input-group-text {
@@ -1684,6 +1684,22 @@ position: absolute;
   color: #000 !important;           /* white text */
   font-weight: bold;
 }
+
+.plan-warning-text {
+    padding: 4px 8px;
+    font-size: 12px;
+    font-weight: 700;
+    margin-top: 10px;
+    border-radius: 4px;
+    display: inline-block; 
+    color: var(--secondary);
+}
+
+.card-data {
+    display: flex;
+    flex-direction: column;
+}
+
 .loader-overlay {
   position: fixed;
   top: 0;
@@ -2022,6 +2038,11 @@ text-align: center;
 }
 
 @media (max-width: 600px) {
+.checkout-datepicker + ngb-datepicker.dropdown-menu,
+.checkout-datepicker ~ .dropdown-menu {
+    left: auto !important;
+    right: 0 !important;
+}
 .mobile-plan-header {
     flex-wrap: wrap;
     align-items: flex-start !important;

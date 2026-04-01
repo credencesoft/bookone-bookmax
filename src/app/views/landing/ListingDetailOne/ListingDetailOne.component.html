@@ -1367,7 +1367,7 @@
                       <div class="form-group" style="height: 0px">
                         <input
                           name="datepicker"
-                          class="form-control input-field-resize"
+                          class="form-control input-field-resize checkout-datepicker"
                           ngbDatepicker
                           #datepicker4="ngbDatepicker"
                           [autoClose]="true"
@@ -2903,20 +2903,20 @@
                           </div>
                         </div>
                       </div>
-                      <div class="card-data website-web-vision" [class.disabled-room]="booking?.noOfNights > 1 && plan?.onedayPlan">
-                        <div class="error-text">
-                          {{ guestSelectionErrors[plan.code] }}
-                        </div>
-                        <div
-                          class="d-flex justify-content-between align-items-start"
-                        >
+                       <div class="card-data website-web-vision">
+                          <div class="error-text">
+                            {{ guestSelectionErrors[plan.code] }}
+                          </div>
+
+                        <div class="d-flex justify-content-between align-items-start" [class.disabled-room]="booking?.noOfNights > 1 && plan?.onedayPlan">
                           <div class="d-flex room-number">
                             <div *ngIf="!plan?.nonRoomPlan">
                               <label
                                 class="input-group-text"
                                 for="inputGroupSelect01"
                                 [title]="getBookingUnitLabel(room)"
-                                >{{ getBookingUnitLabel(room) }}</label
+                                [title]="getBookingUnitLabel(room).length > 8 ? getBookingUnitLabel(room) : ''"
+                                >{{ getBookingUnitLabel(room) | slice:0:8 }}{{ getBookingUnitLabel(room).length > 8 ? '...' : '' }}</label
                               >
                             </div>
 
@@ -3068,9 +3068,9 @@
                             </div>
                           </div>
                         </div>
-                          <div *ngIf="booking?.noOfNights > 1 && plan?.onedayPlan" class="plan-warning-text">
-                              This plan is only available for 1-night stays. Please adjust your dates to select this {{ getBookingUnitLabel(room) }}s.
-                            </div>
+                        <div *ngIf="booking?.noOfNights > 1 && plan?.onedayPlan" class="plan-warning-text">
+                              This plan is only available for 1-night stay. Please adjust your dates to select these {{ getBookingUnitLabel(room) }}s.
+                        </div>
                       </div>
                       <!-- web view Plans Section -->
 
@@ -3127,19 +3127,19 @@
                           </div>
                         </div>
                       </div>
-                      <div class="card-data website-mob-vision" [class.disabled-room]="booking?.noOfNights > 1 && plan?.onedayPlan">
+                      <div class="card-data website-mob-vision">
                         <div class="error-text">
                           {{ guestSelectionErrors[plan.code] }}
                         </div>
                         <div
-                          class="d-flex justify-content-between align-items-end"
+                          class="d-flex justify-content-between align-items-end" [class.disabled-room]="booking?.noOfNights > 1 && plan?.onedayPlan"
                         >
                           <div class="d-flex room-number">
                             <div *ngIf="!plan?.nonRoomPlan">
                               <label
-                                class="input-group-text"
-                                for="inputGroupSelect01" [title]="getBookingUnitLabel(room)"
-                                >{{ getBookingUnitLabel(room) }}</label
+                                class="input-group-text truncate-text" [matTooltip]="fullText" matTooltipPosition="above" matTooltipShowDelay="300"
+                                for="inputGroupSelect01" [title]="getBookingUnitLabel(room)" [title]="getBookingUnitLabel(room).length > 8 ? getBookingUnitLabel(room) : ''"
+                                >{{ getBookingUnitLabel(room) | slice:0:8 }}{{ getBookingUnitLabel(room).length > 8 ? '...' : '' }}</label
                               >
                             </div>
                             
@@ -3287,7 +3287,7 @@
                           </div>
                         </div>
                         <div
-                          class="d-flex justify-content-center margin-top-20px"
+                          class="d-flex justify-content-center margin-top-20px" [class.disabled-room]="booking?.noOfNights > 1 && plan?.onedayPlan"
                         >
                           <div class="d-flex room-number">
                             <div
@@ -3302,7 +3302,7 @@
                           </div>
                         </div>
                         <div *ngIf="booking?.noOfNights > 1 && plan?.onedayPlan" class="plan-warning-text">
-                              This plan is only available for 1-night stays. Please adjust your dates to select this {{ getBookingUnitLabel(room) }}s.
+                              This plan is only available for 1-night stay. Please adjust your dates to select these {{ getBookingUnitLabel(room) }}s.
                             </div>
                       </div>
                       <!-- mob view Plans Section -->
