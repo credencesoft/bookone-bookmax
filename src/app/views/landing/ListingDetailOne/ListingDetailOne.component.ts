@@ -2035,13 +2035,22 @@ const totalMaxOccupancy = maxCapacityPerRoom * roomsAvailable;
 const currentAdults = this.selectedGuestsByPlan[planCode].adults ?? 0;
 const currentChildren = this.selectedGuestsByPlan[planCode].children ?? 0;
 
+const selectedRooms = Math.ceil(this.selectedGuestsByPlan[planCode].adults / maxCapacityPerRoom);
+
+  if (selectedRooms === 0 && !plan?.nonRoomPlan) {
+    this.showTemporaryError(planCode, 'Please add a room first.');
+    return;
+  }
+
+  this.selectedRoomsByPlan[planCode] = selectedRooms;
+
 if (type === 'adults') {
     const projectedAdults = currentAdults + 1;
     const projectedTotal = projectedAdults + currentChildren;
 
     if (projectedTotal <= totalMaxOccupancy) {
         this.selectedGuestsByPlan[planCode].adults++;
-        this.selectedRoomsByPlan[planCode] = projectedAdults; 
+        this.selectedRoomsByPlan[planCode] = selectedRooms; 
     } else {
         this.showTemporaryError(planCode, `Maximum occupancy of ${totalMaxOccupancy} exceeded.`);
     }
