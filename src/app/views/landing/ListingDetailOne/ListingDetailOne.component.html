@@ -1328,7 +1328,7 @@
                       <div class="form-group" style="height: 0px">
                         <input
                           name="datepicker"
-                          class="form-control input-field-resize"
+                          class="form-control input-field-resize checkout-datepicker"
                           ngbDatepicker
                           #datepicker4="ngbDatepicker"
                           [autoClose]="true"
@@ -2388,7 +2388,7 @@
               &nbsp;&nbsp; {{ businessUser?.name }} Gallery
             </h4>
             <button class="select-mannual" (click)="selectRoomsbtn()">
-              Select {{ getBookingUnitLabel(accommodationData)?.label }}s
+              Select {{ getBookingUnitLabel() }}s
             </button>
           </div>
           <div class="modal-body">
@@ -2501,12 +2501,16 @@
     <!-- Room Selection Section -->
     <div class="container-div margin-bottom-40px">
       <div class="website-web-vision">
-        <div class="margin-top-40px" id="accmdOne">
+        <!-- <div class="margin-top-40px" id="accmdOne">
           <h4 class="rooms-heading-starts">Select {{ getBookingUnitLabel(accommodationData)?.label }}s</h4>
-        </div>
+        </div> -->
 
-        <div class="image-container">
-          <div class="maiiin">
+    <div class="margin-top-40px" id="accmdOne">
+      <h4 class="rooms-heading-starts" >Select {{ getBookingUnitLabel() }}s</h4>
+    </div>
+
+    <div class="image-container">
+      <div class="maiiin">
         <div *ngFor="let room of availableRooms; let i = index">
           <div class="right-popup" [class.show]="isPanelOpen">
             <div class="popup-header">
@@ -2700,13 +2704,13 @@
                         getMinAvailableRooms(room.ratesAndAvailabilityDtos) <= 5
                       "
                       style="z-index: 1"
-                      class="position-absolute top-0 start-0 m-2 px-3 py-1 last-rooms rounded-pill small"
+                      class="position-absolute top-0 start-0 m-2 px-3 py-1 last-rooms rounded-pill small" [title]="getBookingUnitLabel(room)"
                     >
                       Last
                       {{
                         getMinAvailableRooms(room.ratesAndAvailabilityDtos)
                       }}
-                      {{ getBookingUnitLabel(accommodationData)?.label }}(s)
+                      {{ getBookingUnitLabel(room) }}(s)
                     </div>
                     <div
                       *ngIf="
@@ -2947,50 +2951,52 @@
                           </div>
                         </div>
                       </div>
-                      <div class="card-data website-web-vision" [class.disabled-room]="booking?.noOfNights > 1 && plan?.onedayPlan">
-                        <div class="error-text">
-                          {{ guestSelectionErrors[plan.code] }}
-                        </div>
-                        <div
-                          class="d-flex justify-content-between align-items-start"
-                        >
+                       <div class="card-data website-web-vision">
+                          <div class="error-text">
+                            {{ guestSelectionErrors[plan.code] }}
+                          </div>
+
+                        <div class="d-flex justify-content-between align-items-start" [class.disabled-room]="booking?.noOfNights > 1 && plan?.onedayPlan">
                           <div class="d-flex room-number">
-                            <div>
+                            <div *ngIf="!plan?.nonRoomPlan">
                               <label
                                 class="input-group-text"
                                 for="inputGroupSelect01"
-                                >{{ getBookingUnitLabel(accommodationData)?.label }}</label
+                                [title]="getBookingUnitLabel(room)"
+                                [title]="getBookingUnitLabel(room).length > 8 ? getBookingUnitLabel(room) : ''"
+                                >{{ getBookingUnitLabel(room) | slice:0:8 }}{{ getBookingUnitLabel(room).length > 8 ? '...' : '' }}</label
                               >
                             </div>
-                            <select
-                              class="select-icon"
-                              id="inputGroupSelect01"
-                              [(ngModel)]="selectedRoomsByPlan[plan.code]"
-                              (ngModelChange)="
-                                onRoomSelect(room.name, plan.code, $event)
-                              "
-                            >
-                              <!-- Ensure default is assigned -->
-                              <ng-container
-                                *ngIf="setDefaultRoomIfMissing(plan.code)"
-                              ></ng-container>
 
-                              <option
-                                *ngFor="
-                                  let count of getRoomOptions(
-                                    getMinAvailableRooms(
-                                      room.ratesAndAvailabilityDtos
-                                    ),
-                                    room.name,
-                                    plan.code
-                                  )
-                                "
-                                [ngValue]="count"
+                            <ng-container *ngIf="!plan?.nonRoomPlan">
+                              <select class="select-icon"
+                                id="inputGroupSelect01"
+                                [(ngModel)]="selectedRoomsByPlan[plan.code]"
+                                (ngModelChange)="onRoomSelect(room.name, plan.code, $event)"
                               >
-                                {{ count === 0 ? "0" : count }}
-                              </option>
-                            </select>
+                                <!-- Ensure default is assigned -->
+                                <ng-container
+                                  *ngIf="setDefaultRoomIfMissing(plan.code)"
+                                ></ng-container>
+  
+                                <option
+                                  *ngFor="
+                                    let count of getRoomOptions(
+                                      getMinAvailableRooms(
+                                        room.ratesAndAvailabilityDtos
+                                      ),
+                                      room.name,
+                                      plan.code
+                                    )
+                                  "
+                                  [ngValue]="count"
+                                >
+                                  {{ count === 0 ? "0" : count }}
+                                </option>
+                              </select>
+                            </ng-container>
                           </div>
+
                           <div class="d-flex room-numberOne">
                             <div>
                               <img
@@ -3021,9 +3027,7 @@
                                 </div>
                                 <div
                                   class="cursor-pointer plus-btn"
-                                  (click)="
-                                    onIncrement(plan.code, 'adults', plan)
-                                  "
+                                  (click)="onIncrement(plan?.code, 'adults', plan, room)"
                                 >
                                   <i class="fa-solid fa-plus"></i>
                                 </div>
@@ -3053,7 +3057,7 @@
                                 <div
                                   class="cursor-pointer plus-btn"
                                   (click)="
-                                    onIncrement(plan.code, 'children', plan)
+                                    onIncrement(plan.code, 'children', plan ,room)
                                   "
                                 >
                                   <i class="fa-solid fa-plus"></i>
@@ -3112,6 +3116,9 @@
                             </div>
                           </div>
                         </div>
+                        <div *ngIf="booking?.noOfNights > 1 && plan?.onedayPlan" class="plan-warning-text">
+                              This plan is only available for 1-night stay. Please adjust your dates to select these {{ getBookingUnitLabel(room) }}s.
+                        </div>
                       </div>
                       <!-- web view Plans Section -->
 
@@ -3168,22 +3175,24 @@
                           </div>
                         </div>
                       </div>
-                      <div class="card-data website-mob-vision" [class.disabled-room]="booking?.noOfNights > 1 && plan?.onedayPlan">
+                      <div class="card-data website-mob-vision">
                         <div class="error-text">
                           {{ guestSelectionErrors[plan.code] }}
                         </div>
                         <div
-                          class="d-flex justify-content-between align-items-end"
+                          class="d-flex justify-content-between align-items-end" [class.disabled-room]="booking?.noOfNights > 1 && plan?.onedayPlan"
                         >
                           <div class="d-flex room-number">
-                            <div>
+                            <div *ngIf="!plan?.nonRoomPlan">
                               <label
-                                class="input-group-text"
-                                for="inputGroupSelect01"
-                                >{{ getBookingUnitLabel(accommodationData)?.label }}</label
+                                class="input-group-text truncate-text" [matTooltip]="fullText" matTooltipPosition="above" matTooltipShowDelay="300"
+                                for="inputGroupSelect01" [title]="getBookingUnitLabel(room)" [title]="getBookingUnitLabel(room).length > 8 ? getBookingUnitLabel(room) : ''"
+                                >{{ getBookingUnitLabel(room) | slice:0:8 }}{{ getBookingUnitLabel(room).length > 8 ? '...' : '' }}</label
                               >
                             </div>
-                            <select
+                            
+                            <ng-container *ngIf="!plan?.nonRoomPlan">
+                              <select
                               class="select-icon"
                               id="inputGroupSelect01"
                               [(ngModel)]="selectedRoomsByPlan[plan.code]"
@@ -3211,6 +3220,7 @@
                                 {{ count === 0 ? "0" : count }}
                               </option>
                             </select>
+                            </ng-container>
                           </div>
                           <div class="d-flex room-numberOne">
                             <div>
@@ -3252,7 +3262,7 @@
                                 <div
                                   class="cursor-pointer plus-btn"
                                   (click)="
-                                    onIncrement(plan.code, 'adults', plan)
+                                    onIncrement(plan.code, 'adults', plan ,room)
                                   "
                                 >
                                   <i class="fa-solid fa-plus"></i>
@@ -3284,7 +3294,7 @@
                               <div
                                 class="cursor-pointer plus-btn"
                                 (click)="
-                                  onIncrement(plan.code, 'children', plan)
+                                  onIncrement(plan.code, 'children', plan ,room)
                                 "
                               >
                                 <i class="fa-solid fa-plus"></i>
@@ -3325,7 +3335,7 @@
                           </div>
                         </div>
                         <div
-                          class="d-flex justify-content-center margin-top-20px"
+                          class="d-flex justify-content-center margin-top-20px" [class.disabled-room]="booking?.noOfNights > 1 && plan?.onedayPlan"
                         >
                           <div class="d-flex room-number">
                             <div
@@ -3339,6 +3349,9 @@
                             </div>
                           </div>
                         </div>
+                        <div *ngIf="booking?.noOfNights > 1 && plan?.onedayPlan" class="plan-warning-text">
+                              This plan is only available for 1-night stay. Please adjust your dates to select these {{ getBookingUnitLabel(room) }}s.
+                            </div>
                       </div>
                       <!-- mob view Plans Section -->
                     </div>
@@ -3655,8 +3668,8 @@
                       [innerHTML]="room.description"
                     ></div>
                     <div class="margin-top-20px">
-                      <p class="sold-out-header">
-                        See similar {{ getBookingUnitLabel(accommodationData)?.label }}s or adjust your dates to find
+                      <p class="sold-out-header" [title]="getBookingUnitLabel(room)">
+                        See similar {{ getBookingUnitLabel(room) }}s or adjust your dates to find
                         availability.
                       </p>
                     </div>
@@ -3666,9 +3679,9 @@
                       </button>
                       <button
                         (click)="scrollToAccommodationDash()"
-                        class="dates-seemore"
+                        class="dates-seemore" [title]="getBookingUnitLabel(room)"
                       >
-                        See More {{ getBookingUnitLabel(accommodationData)?.label }}s
+                        See More {{ getBookingUnitLabel(room) }}s
                       </button>
                     </div>
                   </div>

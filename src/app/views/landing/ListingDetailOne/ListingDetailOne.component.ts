@@ -198,6 +198,7 @@ export class ListingDetailOneComponent implements OnInit {
   singleextraAdultChargeBookOne: any;
    singleextraChildChargeBookOne: any;
   roomRateOrderEnabled: boolean = false;
+  palnNonRoomPlan: boolean;
   toggleListingDetails() {
     this.showListingDetails = !this.showListingDetails;
   }
@@ -1879,7 +1880,6 @@ onRoomSelect(roomName: string, planCode: string, count: number | string) {
     this.selectedGuestsByPlan[planCode] = { adults: 0, children: 0 };
   }
   this.selectedGuestsByPlan[planCode].adults = selectedCount;
-
 }
 
 
@@ -1989,17 +1989,15 @@ onRoomSelect(roomName: string, planCode: string, count: number | string) {
   //   }
   // }
 
-onIncrement(planCode: string, type: 'adults' | 'children', plan: any) {
-
+onIncrement(planCode: string, type: 'adults' | 'children', plan: any, room: any) {
   this.guestSelectionErrors[planCode] = '';
 
-  const selectedRooms = this.selectedRoomsByPlan[planCode] || 0;
-
-  if (selectedRooms === 0) {
+    const selectedRooms = this.selectedRoomsByPlan[planCode] || 0;
+  
+  if (selectedRooms === 0 && !plan?.nonRoomPlan) {
     this.showTemporaryError(planCode, 'Please add a room first.');
     return;
   }
-
   if (!this.selectedGuestsByPlan[planCode]) {
     this.selectedGuestsByPlan[planCode] = { adults: 0, children: 0 };
   }
@@ -2007,10 +2005,107 @@ onIncrement(planCode: string, type: 'adults' | 'children', plan: any) {
   if (!this.childAgesByPlan[planCode]) {
     this.childAgesByPlan[planCode] = [];
   }
+ if (plan?.nonRoomPlan) {
+// const lastPlan = room?.ratesAndAvailabilityDtos?.at(-1);
+// const maxCapacityPerRoom = plan?.maximumOccupancy || 0;
+// const roomsAvailable = lastPlan?.noOfAvailable || 0;
 
-  const maxOccupancy = plan.maximumOccupancy * selectedRooms;
+// const totalMaxOccupancy = maxCapacityPerRoom * roomsAvailable;
 
-  const adults = this.selectedGuestsByPlan[planCode].adults;
+// const currentAdults = this.selectedGuestsByPlan[planCode].adults ?? 0;
+// const currentChildren = this.selectedGuestsByPlan[planCode].children ?? 0;
+
+
+// if (type === 'adults') {
+//     const projectedAdults = currentAdults + 1;
+//     const projectedTotal = projectedAdults + currentChildren;
+
+//     if (projectedTotal <= totalMaxOccupancy) {
+//         this.selectedGuestsByPlan[planCode].adults++;
+//         this.selectedRoomsByPlan[planCode] = projectedAdults;
+//     } else {
+//         this.showTemporaryError(planCode, `Maximum occupancy of ${totalMaxOccupancy} exceeded.`);
+//     }
+// } 
+// else if (type === 'children') {
+//     const projectedChildren = currentChildren + 1;
+//     const projectedTotal = currentAdults + projectedChildren;
+//     const ages = this.childAgesByPlan[planCode];
+
+//     // Validation: Check if existing children have ages assigned
+//     if (ages.some(a => a === null)) {
+//         this.showTemporaryError(planCode, 'Please select age for all existing children first.');
+//         return;
+//     }
+
+//     if (projectedTotal <= totalMaxOccupancy) {
+//         this.selectedGuestsByPlan[planCode].children++;
+//         this.childAgesByPlan[planCode].push(null);
+//     } else {
+//         this.showTemporaryError(planCode, `Maximum occupancy of ${totalMaxOccupancy} reached.`);
+//     }
+
+//     const selectedRooms = Math.ceil(this.selectedGuestsByPlan[planCode].adults / maxCapacityPerRoom);
+
+//   if (selectedRooms === 0 && !plan?.nonRoomPlan) {
+//     this.showTemporaryError(planCode, 'Please add a room first.');
+//     return;
+//   }
+
+//   this.selectedRoomsByPlan[planCode] = selectedRooms;
+// }
+const lastPlan = room?.ratesAndAvailabilityDtos?.at(-1);
+const maxCapacityPerRoom = plan?.maximumOccupancy || 1; // Avoid division by zero
+const roomsAvailable = lastPlan?.noOfAvailable || 0;
+
+const totalMaxOccupancy = maxCapacityPerRoom * roomsAvailable;
+
+const currentAdults = this.selectedGuestsByPlan[planCode].adults ?? 0;
+const currentChildren = this.selectedGuestsByPlan[planCode].children ?? 0;
+
+if (type === 'adults') {
+    const projectedAdults = currentAdults + 1;
+    const projectedTotal = projectedAdults + currentChildren;
+
+    if (projectedTotal <= totalMaxOccupancy) {
+        this.selectedGuestsByPlan[planCode].adults++;
+    } else {
+        this.showTemporaryError(planCode, `Maximum occupancy of ${totalMaxOccupancy} exceeded.`);
+        return; 
+    }
+} 
+else if (type === 'children') {
+    const projectedChildren = currentChildren + 1;
+    const projectedTotal = currentAdults + projectedChildren;
+    const ages = this.childAgesByPlan[planCode];
+
+    if (ages.some(a => a === null)) {
+        this.showTemporaryError(planCode, 'Please select age for all existing children first.');
+        return;
+    }
+
+    if (projectedTotal <= totalMaxOccupancy) {
+        this.selectedGuestsByPlan[planCode].children++;
+        this.childAgesByPlan[planCode].push(null);
+    } else {
+        this.showTemporaryError(planCode, `Maximum occupancy of ${totalMaxOccupancy} reached.`);
+        return; 
+    }
+}
+
+
+const totalGuests = this.selectedGuestsByPlan[planCode].adults + this.selectedGuestsByPlan[planCode].children;
+const selectedRooms = Math.ceil(totalGuests / maxCapacityPerRoom);
+
+if (selectedRooms === 0 && !plan?.nonRoomPlan) {
+    this.showTemporaryError(planCode, 'Please add a room first.');
+    return;
+}
+
+this.selectedRoomsByPlan[planCode] = selectedRooms;
+}else {
+    const maxOccupancy = plan.maximumOccupancy * selectedRooms;
+     const adults = this.selectedGuestsByPlan[planCode].adults;
 
   const ages = this.childAgesByPlan[planCode];
 
@@ -2021,7 +2116,7 @@ onIncrement(planCode: string, type: 'adults' | 'children', plan: any) {
 
   if (type === 'adults') {
 
-    if (totalPersons >= maxOccupancy) {
+    if (totalPersons >= maxOccupancy && !plan?.nonRoomPlan) {
       this.showTemporaryError(
         planCode,
         `Maximum occupancy of ${maxOccupancy} exceeded.`
@@ -2043,7 +2138,7 @@ onIncrement(planCode: string, type: 'adults' | 'children', plan: any) {
       return;
     }
 
-    if (totalPersons >= maxOccupancy) {
+    if (totalPersons >= maxOccupancy && !plan?.nonRoomPlan) {
       this.showTemporaryError(
         planCode,
         `Maximum occupancy of ${maxOccupancy} exceeded.`
@@ -2055,6 +2150,7 @@ onIncrement(planCode: string, type: 'adults' | 'children', plan: any) {
     this.childAgesByPlan[planCode].push(null);
 
     return;
+  }
   }
 }
 
@@ -2202,6 +2298,7 @@ resetLastChangedAge(planCode: string) {
 }
 
   onPlanSelect(planCode: string, rates: any) {
+    // localStorage.setItem('selectedplan',room.businessProductName);
     const selectedRooms = this.selectedRoomsByPlan[planCode];
     const selectedGuests = this.selectedGuestsByPlan[planCode];
     const roomId = rates.roomId;
@@ -2871,7 +2968,31 @@ onGhCPlanSelect(){
     // this.checkingAvailability();
 }
 
-
+  initializeDefaultSelections() {
+    try{
+      if (!this.availableRooms) return;
+      this.availableRooms.forEach(room => {
+        room.ratesAndAvailabilityDtos?.forEach(availabilityDto => {
+          availabilityDto.roomRatePlans?.forEach(plan => {
+            if (plan.nonRoomPlan) {
+              this.palnNonRoomPlan = true;
+              const maxAvailable = this.serviceDto.count || 0;
+              const lastCount = maxAvailable >= 0 ? maxAvailable : 0;
+    
+              this.selectedRoomsByPlan[plan.code] = lastCount;
+  
+              console.log(`Default selection for plan ${plan.code} set to ${lastCount} rooms based on availability.`);
+              this.onRoomSelect(availabilityDto.roomName, plan.code, lastCount);
+            }
+          });
+        });
+      });
+    }
+    catch(error){
+      console.error('Error in initializeDefaultSelections:', error);
+    }
+  }
+    
 onSelectPlanFromPopup(plan: any): void {
   const planCode = plan.code;
 
@@ -2982,6 +3103,7 @@ removePlan(index: number): void {
       this.childAgesByPlan[entry.planCode] = entry.childAges || [];
     });
   }
+  this.initializeDefaultSelections();
 }
   publishPage(event: any) {
     if (
@@ -3612,6 +3734,7 @@ if (roomKey) {
         (response) => {
           this.loaderHotelBooking = false;
           this.availableRooms = this.getFilteredDataBasedOnRoomRateOrder(response?.body?.roomList);
+           this.initializeDefaultSelections();
           this.availableRooms = this.availableRooms.filter(room =>
           room.ratesAndAvailabilityDtos?.length > 0 &&
           (room.ratesAndAvailabilityDtos[0]?.stopSellOBE === null || room.ratesAndAvailabilityDtos[0]?.stopSellOBE === false) &&
@@ -4490,27 +4613,23 @@ onCheckOutClosed(): void {
     }
   }
 
-  getBookingUnitLabel(accommodationData: BusinessServiceDtoList[] = []) {
-    try {
-      let bookingLabel = {
-        label: 'Room',
-      };
-      if(!accommodationData || accommodationData.length === 0) {
-        return bookingLabel;
+  getBookingUnitLabel(room?: Room | null) {
+    try{
+      const accmmodationService = this.accommodationData;
+      if(!room?.businessProductName?.trim()){
+        const accommodationService = accmmodationService?.find(service => service?.name === 'Accommodation');
+        if(accommodationService && accommodationService?.businessProductName?.trim()){
+          return accommodationService.businessProductName;
+        }
       }
-      const accommodation = accommodationData.find((entry) => entry?.name?.trim().toLowerCase() === 'accommodation');
-      if (accommodation?.businessProductName === 'Accomodation') {
-         bookingLabel.label = 'Room'; 
-      } else {
-         bookingLabel.label = accommodation?.businessProductName;
-     }
-
-      localStorage.setItem('savedBookingLabel', JSON.stringify(bookingLabel));
-      return bookingLabel;
-    } 
-    catch (error) {
-      console.error('Error parsing booking unit label:', error);    
-      return { label: 'Room' };
+      if(!room){
+        return 'Room';
+      }
+      const productName = room?.businessProductName;
+      return productName ? productName : 'Room';
+    }
+    catch(error){
+      console.error('Error in getBookingUnitLabel: ', error);
     }
   }
     
@@ -5905,6 +6024,7 @@ this.token.savePropertyUrl(currentUrl);
     sessionStorage.setItem('addOnServices', JSON.stringify(this.addOnServices));
   }
 
+  // this.router.navigate(['/booking']);
   this.router.navigate(['/booking']);
 }
 
@@ -6321,10 +6441,8 @@ this.token.savePropertyUrl(currentUrl);
       .subscribe(
         (response) => {
           this.loaderHotelBooking = false;
-
           const roomListOne = response?.body?.roomList || [];
           const sortedRoomsOne = this.getFilteredDataBasedOnRoomRateOrder(roomListOne);
-
           this.availableRooms = sortedRoomsOne.filter(room => {
                 const rates = room.ratesAndAvailabilityDtos;
 
@@ -6344,6 +6462,8 @@ this.token.savePropertyUrl(currentUrl);
                   !isStopSellOTA
                 );
               });
+
+            this.initializeDefaultSelections();
 
         //   this.availableRooms = this.availableRooms.filter(room =>
         //   room.ratesAndAvailabilityDtos?.length > 0 &&
@@ -7352,6 +7472,7 @@ isPlanVisible(filteredPlans: any[], roomName: string) {
         (response) => {
           this.loaderHotelBooking = false;
           this.availableRooms = this.getFilteredDataBasedOnRoomRateOrder(response?.body?.roomList);
+           this.initializeDefaultSelections();
                     this.availableRooms = this.availableRooms.filter(room =>
           room.ratesAndAvailabilityDtos?.length > 0 &&
           (room.ratesAndAvailabilityDtos[0]?.stopSellOBE === null || room.ratesAndAvailabilityDtos[0]?.stopSellOBE === false) &&

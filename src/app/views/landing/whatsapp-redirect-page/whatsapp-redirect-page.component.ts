@@ -123,6 +123,7 @@ totalServiceCost: number = 0;
 bookingroomPrice: string;
 taxPercentage: number;
   roomLabel: string = 'Room';
+  roomLabelValue: string;
 
   constructor(
     private http: HttpClient,
@@ -180,22 +181,28 @@ this.storedPromo = localStorage.getItem('selectPromo');
    }else{
      this.getOfferDetails();
    }
-    const savedLabel = localStorage.getItem('savedBookingLabel');
-    console.log('savedLabel data is',savedLabel);
-    if (savedLabel) {
-    try {
-      const parsedData = JSON.parse(savedLabel);
-      this.roomLabel = parsedData.label || 'Room'; 
-    } catch (e) {
-      console.error("Error parsing token", e);
-    }
-  }
+//      const savedLabel = localStorage.getItem('savedBookingLabel');
 
+// if (savedLabel) {
+//   try {
+//     const parsedData = JSON.parse(savedLabel);    
+//     this.roomLabel = parsedData.fullLabel || parsedData.label || 'Room';
+    
+//   } catch (e) {
+//     this.roomLabel = savedLabel || 'Room';
+//     console.error("Error parsing label, using raw value instead", e);
+//   }
+// } else {
+//   this.roomLabel = 'Room';
+// }
+
+this.roomLabelValue = localStorage.getItem('selectedplan is');
+console.log(' this.roomLabelValue is', this.roomLabelValue);
   }
 
   ngOnInit() {
-
-
+      this.roomLabelValue = localStorage?.getItem('selectedplan');
+ console.log('roomLabelValue is',this.roomLabelValue);
     this.acRoute.queryParams.subscribe((params) => {
       if (params["bookingId"] !== undefined) {
         this.bookingId = params["bookingId"];
