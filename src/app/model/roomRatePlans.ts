@@ -19,6 +19,6 @@ export class RoomRatePlans {
   otaPlanList:any[];
   noOfChildren: number;
   onedayPlan?: boolean;
-  nonRoomPlan?: boolean;
+
   constructor() {}
 }

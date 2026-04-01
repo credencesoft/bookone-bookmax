@@ -364,17 +364,18 @@ export class BookingComponent implements OnInit {
   advanceDiscountSlabs: AdvanceDiscountSlab[] = [];
   selectedAdvanceDiscountSlab: AdvanceDiscountSlab | null = null;
   
-  addOnServices: any[] = [];             
-  selectedAddOns: any[] = [];               
-  selectedAddOnNames: string[] = [];       
+  // ✅ Phase 4: Add-on Services Tracking
+  addOnServices: any[] = [];                    // Available add-ons to display
+  selectedAddOns: any[] = [];                   // User-selected add-ons
+  selectedAddOnNames: string[] = [];            // Track selected add-on names
   isAddOnServiceLoading: boolean = false;
   showAddOnServices: boolean = false;
-  addOnsTaxPercentage: number = 18;          
-  addOnsDiscountPercentage: number = 0;      
-  totalAddOnsAmount: number = 0;             
-  totalAddOnsTax: number = 0;      
-  totalAddOnsDiscount: number = 0; 
-  roomLabelValue: string;
+  addOnsTaxPercentage: number = 18;             // Service tax (can be configured)
+  addOnsDiscountPercentage: number = 0;         // Service-level discount (optional)
+  totalAddOnsAmount: number = 0;                // Subtotal before tax
+  totalAddOnsTax: number = 0;                   // Tax on add-ons
+  totalAddOnsDiscount: number = 0;              // Discount on add-ons
+  
   constructor(
     private token: TokenStorage,
     private ngZone: NgZone,
@@ -540,28 +541,19 @@ export class BookingComponent implements OnInit {
       isBookingEngine = true;
     }
     this.propertyData.shortName = this.token.getProperty().shortName;
-//       const savedLabel = localStorage.getItem('savedBookingLabel');
-// console.log('savedLabel data is', savedLabel);
-
-// if (savedLabel) {
-//   try {
-//     const parsedData = JSON.parse(savedLabel);    
-//     this.roomLabel = parsedData.fullLabel || parsedData.label || 'Room';
-    
-//   } catch (e) {
-//     this.roomLabel = savedLabel || 'Room';
-//     console.error("Error parsing label, using raw value instead", e);
-//   }
-// } else {
-//   this.roomLabel = 'Room';
-// }  
-  this.roomLabelValue = localStorage?.getItem('selectedplan');
- console.log('roomLabelValue is',this.roomLabelValue);
+    const savedLabel = localStorage.getItem('savedBookingLabel');
+    console.log('savedLabel data is',savedLabel);
+    if (savedLabel) {
+    try {
+      const parsedData = JSON.parse(savedLabel);
+      this.roomLabel = parsedData.label || 'Room'; 
+    } catch (e) {
+      console.error("Error parsing token", e);
+    }
+  }
   }
 
   ngOnInit() {
-   this.roomLabelValue = localStorage.getItem('selectedplan');
-    
     this.clearFormField(this.booking);
     this.initializeCountrySelection();
     const couponCodeValues = sessionStorage.getItem('selectedPromoData');
