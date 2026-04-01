@@ -3115,9 +3115,16 @@
                               Select
                             </div>
                           </div>
-                          <div *ngIf="booking?.noOfNights > 1 && plan?.onedayPlan" class="plan-warning-text">
-                              This plan is only available for 1-night stay. Please adjust your dates to select these {{ getBookingUnitLabel(room) }}s.
                         </div>
+                        <div
+                          *ngIf="booking?.noOfNights > 1 && plan?.onedayPlan"
+                          class="plan-warning-row"
+                        >
+                          <div class="plan-warning-text">
+                            This plan is only available for 1-night stay.
+                            Please adjust your dates to select these
+                            {{ getBookingUnitLabel(room) }}s.
+                          </div>
                         </div>
                       </div>
                       <!-- web view Plans Section -->
@@ -3350,10 +3357,16 @@
                             </div>
                           </div>
                         </div>
-                        
-                                                  <div *ngIf="booking?.noOfNights > 1 && plan?.onedayPlan" class="plan-warning-text">
-                                                      This plan is only available for 1-night stay. Please adjust your dates to select these {{ getBookingUnitLabel(room) }}s.
-                                                </div>
+                        <div
+                          *ngIf="booking?.noOfNights > 1 && plan?.onedayPlan"
+                          class="plan-warning-row plan-warning-row-mobile"
+                        >
+                          <div class="plan-warning-text">
+                            This plan is only available for 1-night stay.
+                            Please adjust your dates to select these
+                            {{ getBookingUnitLabel(room) }}s.
+                          </div>
+                        </div>
                       </div>
                       <!-- mob view Plans Section -->
                     </div>

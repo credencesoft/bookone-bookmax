@@ -782,11 +782,24 @@ padding: 16px 12px;
   height: 25px;
 }
 
+.plan-warning-row {
+  width: 100%;
+  padding: 8px 16px 0;
+}
+
+.plan-warning-row-mobile {
+  padding: 12px 0 0;
+}
+
 .plan-warning-text {
-    font-size: 12px;
-    font-weight: 500;
-    margin-bottom: 10px;
-    padding: 5px 10px;
+  width: 100%;
+  color: #d86161;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.45;
+  padding: 0;
+  margin: 0;
+  text-align: left;
 }
 
 .room-number {
@@ -1687,13 +1700,14 @@ position: absolute;
 }
 
 .plan-warning-text {
-    padding: 4px 8px;
-    font-size: 12px;
-    font-weight: 700;
-    margin-top: 10px;
-    border-radius: 4px;
-    display: inline-block; 
-    color: var(--secondary);
+  width: 100%;
+  color: #d86161;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.45;
+  padding: 0;
+  margin: 0;
+  text-align: left;
 }
 
 .card-data {
