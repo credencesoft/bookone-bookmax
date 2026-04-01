@@ -302,7 +302,7 @@
                   <div class="d-flex justify-content-between line-height-27px">
                     <div class="color-graying">{{ plan.planCodeName }} x {{ plan.selectedRoomnumber }}</div>
                     <div>
-                      <div style="text-align: end">₹ {{ plan.price | number : "1.2-2" }}</div>
+                      <div style="text-align: end">{{ plan.price | currency: currency : 'symbol' : '1.2-2' }}</div>
                       <div style="text-align: end; margin-top: -5px"
                         *ngIf="plan.extraPersonAdultCountAmount + plan.extraPersonChildCountAmount > 0">
                         Inclusive of Extra Pax
@@ -312,41 +312,41 @@
                   <div class="d-flex justify-content-between line-height-27px promo-discounts"
                     *ngIf="this.specialDiscountData?.discountPercentage">
                     <div class="color-graying">Coupon Discount ({{ this.specialDiscountData?.discountPercentage }})%</div>
-                    <div>- ₹{{ ((plan.price * this.specialDiscountData?.discountPercentage) / 100) | number : "1.2-2" }}</div>
+                    <div>-{{ ((plan.price * this.specialDiscountData?.discountPercentage) / 100) | currency: currency : 'symbol' : '1.2-2' }}</div>
                   </div>
                   <div class="d-flex justify-content-between line-height-27px advance-discounts"
                     *ngIf="this.selectedAdvanceDiscountSlab?.discountPercentage">
                     <div class="color-graying">Advance Discount ({{ this.selectedAdvanceDiscountSlab?.discountPercentage }})%</div>
-                    <div>- ₹{{
+                    <div>-{{
                       (((plan.price - ((plan.price * (this.specialDiscountData?.discountPercentage || 0)) / 100)) *
-                        this.selectedAdvanceDiscountSlab?.discountPercentage) / 100) | number : "1.2-2"
+                        this.selectedAdvanceDiscountSlab?.discountPercentage) / 100) | currency: currency : 'symbol' : '1.2-2'
                     }}</div>
                   </div>
                   <div class="d-flex justify-content-between line-height-27px"
                     *ngIf="this.specialDiscountData?.discountPercentage || this.selectedAdvanceDiscountSlab?.discountPercentage">
                     <div class="color-graying">Tax & Services</div>
-                    <div>₹{{
+                    <div>{{
                       (((plan.price -
                           ((plan.price * (this.specialDiscountData?.discountPercentage || 0)) / 100) -
                           (((plan.price - ((plan.price * (this.specialDiscountData?.discountPercentage || 0)) / 100)) *
                             (selectedAdvanceDiscountSlab?.discountPercentage || 0)) / 100)) *
-                        plan.taxpercentage) / 100) | number : "1.2-2"
+                        plan.taxpercentage) / 100) | currency: currency : 'symbol' : '1.2-2'
                     }}</div>
                   </div>
                   <div class="d-flex justify-content-between line-height-27px"
                     *ngIf="!this.specialDiscountData?.discountPercentage && !this.selectedAdvanceDiscountSlab?.discountPercentage">
                     <div class="color-graying">Tax & Services</div>
-                    <div>₹ {{ plan.taxPercentageperroom | number : "1.2-2" }}</div>
+                    <div>{{ plan.taxPercentageperroom | currency: currency : 'symbol' : '1.2-2' }}</div>
                   </div>
                   <div class="d-flex justify-content-between line-height-27px"
-                    *ngIf="!this.specialDiscountData?.discountPercentage && !activeGoogleCenter">
+                    *ngIf="!this.specialDiscountData?.discountPercentage && !activeGoogleCenter && !selectedAdvanceDiscountSlab?.discountPercentage">
                     <div class="color-graying font-weight-600">Room Total</div>
-                    <div class="font-weight-600">₹ {{ plan.price + plan.taxPercentageperroom | number : "1.2-2" }}</div>
+                    <div class="font-weight-600">{{ (plan.price + plan.taxPercentageperroom) | currency: currency : 'symbol' : '1.2-2' }}</div>
                   </div>
                   <div class="d-flex justify-content-between line-height-27px"
                     *ngIf="this.specialDiscountData?.discountPercentage || selectedAdvanceDiscountSlab?.discountPercentage">
                     <div class="color-graying font-weight-600">Room Total</div>
-                    <div class="font-weight-600">₹{{
+                    <div class="font-weight-600">{{
                       (plan.price -
                         ((plan.price * (this.specialDiscountData?.discountPercentage || 0)) / 100) -
                         (((plan.price - ((plan.price * (this.specialDiscountData?.discountPercentage || 0)) / 100)) *
@@ -355,7 +355,7 @@
                             ((plan.price * (this.specialDiscountData?.discountPercentage || 0)) / 100) -
                             (((plan.price - ((plan.price * (this.specialDiscountData?.discountPercentage || 0)) / 100)) *
                               (selectedAdvanceDiscountSlab?.discountPercentage || 0)) / 100)) *
-                          plan.taxpercentage) / 100) | number : "1.2-2"
+                          plan.taxpercentage) / 100) | currency: currency : 'symbol' : '1.2-2'
                     }}</div>
                   </div>
                   <hr *ngIf="!last" style="border: 1px solid #e5e7eb" />
@@ -430,9 +430,9 @@
                             </div>
                           </div>
                         </td>
-                        <td style="text-align: right; vertical-align: middle; padding: 10px 12px">₹{{ addon.servicePrice | number:'1.2-2' }}</td>
-                        <td style="text-align: right; vertical-align: middle; padding: 10px 12px; color: #6b7280">₹{{ addon.taxAmount | number:'1.2-2' }}</td>
-                        <td style="text-align: right; vertical-align: middle; padding: 10px 12px; font-weight: 600">₹{{ (addon.servicePrice + addon.taxAmount) | number:'1.2-2' }}</td>
+                        <td style="text-align: right; vertical-align: middle; padding: 10px 12px">{{ addon.servicePrice | currency: currency : 'symbol' : '1.2-2' }}</td>
+                        <td style="text-align: right; vertical-align: middle; padding: 10px 12px; color: #6b7280">{{ addon.taxAmount | currency: currency : 'symbol' : '1.2-2' }}</td>
+                        <td style="text-align: right; vertical-align: middle; padding: 10px 12px; font-weight: 600">{{ (addon.servicePrice + addon.taxAmount) | currency: currency : 'symbol' : '1.2-2' }}</td>
                       </tr>
                     </tbody>
                   </table>
@@ -442,15 +442,15 @@
                   style="background-color: #f9fafb; border-radius: 0 0 8px 8px; padding: 12px 14px; border-top: 2px solid #e5e7eb; margin-top: 4px">
                   <div class="d-flex justify-content-between" style="font-size: 13px; margin-bottom: 4px">
                     <span class="color-graying">Services Subtotal ({{ selectedAddOns.length }} selected)</span>
-                    <span>₹{{ getServicesSubtotal() | number:'1.2-2' }}</span>
+                    <span>{{ getServicesSubtotal() | currency: currency : 'symbol' : '1.2-2' }}</span>
                   </div>
                   <div class="d-flex justify-content-between" style="font-size: 13px; margin-bottom: 8px">
                     <span class="color-graying">Services Tax</span>
-                    <span>₹{{ getServicesTax() | number:'1.2-2' }}</span>
+                    <span>{{ getServicesTax() | currency: currency : 'symbol' : '1.2-2' }}</span>
                   </div>
                   <div class="d-flex justify-content-between" style="font-weight: 700; font-size: 14px">
                     <span>Services Total <small style="font-weight: 400; color: #6b7280; font-size: 11px">(paid in full now)</small></span>
-                    <span style="color: #0f172a">₹{{ getServicesTotal() | number:'1.2-2' }}</span>
+                    <span style="color: #0f172a">{{ getServicesTotal() | currency: currency : 'symbol' : '1.2-2' }}</span>
                   </div>
                 </div>
                 <div *ngIf="!selectedAddOns || selectedAddOns.length === 0"
@@ -732,22 +732,22 @@
                   <!-- Total Room Charges -->
                   <div class="d-flex justify-content-between line-height-27px">
                     <div class="color-graying">Total {{ roomLabel }} Charges</div>
-                    <div style="color: #3b82f6; font-weight: 500">₹{{ bookingSummaryDetails?.totalPlanPrice | number : "1.2-2" }}</div>
+                    <div style="color: #3b82f6; font-weight: 500">{{ bookingSummaryDetails?.totalPlanPrice | currency: currency : 'symbol' : '1.2-2' }}</div>
                   </div>
                   <!-- Coupon Discount -->
                   <div *ngIf="couponDiscountAmount > 0" class="d-flex justify-content-between line-height-27px">
                     <div class="color-graying">Coupon Discount ({{ this.specialDiscountData?.discountPercentage }}%)</div>
-                    <div style="color: #16a34a; font-weight: 500">-₹{{ couponDiscountAmount | number : "1.2-2" }}</div>
+                    <div style="color: #16a34a; font-weight: 500">-{{ couponDiscountAmount | currency: currency : 'symbol' : '1.2-2' }}</div>
                   </div>
                   <!-- Advance Discount -->
                   <div *ngIf="advanceDiscountAmount > 0" class="d-flex justify-content-between line-height-27px">
                     <div class="color-graying">Advance Discount ({{ getSelectedAdvanceDiscountPercentage() }}%)</div>
-                    <div style="color: #16a34a; font-weight: 500">-₹{{ advanceDiscountAmount | number : "1.2-2" }}</div>
+                    <div style="color: #16a34a; font-weight: 500">-{{ advanceDiscountAmount | currency: currency : 'symbol' : '1.2-2' }}</div>
                   </div>
                   <!-- Tax on Rooms -->
                   <div class="d-flex justify-content-between line-height-27px">
                     <div class="color-graying">Tax &amp; Services</div>
-                    <div style="font-weight: 500">₹{{ taxOnDiscountedAmount | number : "1.2-2" }}</div>
+                    <div style="font-weight: 500">{{ taxOnDiscountedAmount | currency: currency : 'symbol' : '1.2-2' }}</div>
                   </div>
                 </div>
 
@@ -756,7 +756,7 @@
                   style="margin: 0 10px 8px; padding: 10px 12px; background-color: #f0fdfa; border-radius: 8px; border: 1px solid #99f6e4">
                   <div class="d-flex justify-content-between">
                     <div class="color-graying">Add-On Services ({{ selectedAddOns.length }})</div>
-                    <div style="font-weight: 600">₹{{ getServicesTotal() | number : "1.2-2" }}</div>
+                    <div style="font-weight: 600">{{ getServicesTotal() | currency: currency : 'symbol' : '1.2-2' }}</div>
                   </div>
                   <div style="font-size: 11px; color: #6b7280; margin-top: 2px">Always paid in full</div>
                 </div>
@@ -766,14 +766,14 @@
                   style="padding: 0 10px"
                   class="d-flex justify-content-between line-height-27px">
                   <div class="color-graying">Convenience Fee</div>
-                  <div style="font-weight: 500">₹{{ convenienceFeeAmount | number : "1.2-2" }}</div>
+                  <div style="font-weight: 500">{{ convenienceFeeAmount | currency: currency : 'symbol' : '1.2-2' }}</div>
                 </div>
 
                 <!-- Grand Total -->
                 <div style="padding: 12px 10px; border-top: 2px solid #e5e7eb; margin-top: 8px"
                   class="d-flex justify-content-between">
                   <div class="font-weight-600" style="font-size: 1rem">Grand Total</div>
-                  <div class="font-weight-600" style="font-size: 1rem">₹{{ getNewGrandTotal() | number : "1.2-2" }}</div>
+                  <div class="font-weight-600" style="font-size: 1rem">{{ getNewGrandTotal() | currency: currency : 'symbol' : '1.2-2' }}</div>
                 </div>
 
                 <!-- Pay Now / Balance at Check-in (advance plan selected) -->
@@ -781,14 +781,14 @@
                   style="margin: 0 10px 14px; padding: 12px; background-color: #fef9c3; border-radius: 8px; border: 1px solid #fef08a">
                   <div class="d-flex justify-content-between" style="margin-bottom: 4px">
                     <div style="font-weight: 700; color: #0f172a">Pay Now</div>
-                    <div style="font-weight: 700; color: #dc2626; font-size: 1rem">₹{{ getNewPayNowAmount() | number : "1.2-2" }}</div>
+                    <div style="font-weight: 700; color: #dc2626; font-size: 1rem">{{ getNewPayNowAmount() | currency: currency : 'symbol' : '1.2-2' }}</div>
                   </div>
                   <div style="font-size: 11px; color: #6b7280; margin-bottom: 10px">
                     {{ getSelectedAdvancePaymentPercentage() }}% of rooms after discounts + all services + convenience fee
                   </div>
                   <div class="d-flex justify-content-between">
                     <div class="color-graying">Balance at Check-in</div>
-                    <div style="font-weight: 500">₹{{ getNewBalanceAtCheckIn() | number : "1.2-2" }}</div>
+                    <div style="font-weight: 500">{{ getNewBalanceAtCheckIn() | currency: currency : 'symbol' : '1.2-2' }}</div>
                   </div>
                 </div>
 
@@ -1088,8 +1088,7 @@
 
                     <div *ngIf="activeGoogleCenter">
                       <div style="text-align: end">
-                        ₹
-                        {{ plan.price | number : "1.2-2" }}
+                        {{ plan.price | currency: currency : 'symbol' : '1.2-2' }}
                       </div>
                       <div
                         style="text-align: end; margin-top: -5px"
@@ -1104,8 +1103,7 @@
                     </div>
                     <div *ngIf="!activeGoogleCenter">
                       <div style="text-align: end">
-                        ₹
-                        {{ plan.price | number : "1.2-2" }}
+                        {{ plan.price | currency: currency : 'symbol' : '1.2-2' }}
                       </div>
                       <div
                         style="text-align: end; margin-top: -5px"
@@ -1130,10 +1128,10 @@
                   <div class="color-graying">Extra Pax Charges</div>
 
                   <div>
-                    ₹
+                    
                     {{
                       ((plan.extraPersonAdultCountAmount +
-                        plan.extraPersonChildCountAmount))
+                        plan.extraPersonChildCountAmount)) | currency: currency : 'symbol' : '1.2-2'
                     }}
                   </div>
                 </div> -->
@@ -1148,12 +1146,11 @@
                     </div>
 
                     <div>
-                     - ₹
-                      {{
+                     -{{
                        ( (plan.price *
                           this.specialDiscountData?.discountPercentage) /
                           100
-                      ) | number : "1.2-2"
+                      ) | currency: currency : 'symbol' : '1.2-2'
                       }}
                     </div>
                   </div>
@@ -1167,12 +1164,11 @@
                     </div>
 
                     <div>
-                      - ₹
-                      {{
+                      -{{
                       ( (plan.price *
                       this.selectedAdvanceDiscountSlab?.discountPercentage) /
                       100
-                      ) | number : "1.2-2"
+                      ) | currency: currency : 'symbol' : '1.2-2'
                       }}
                     </div>
                   </div>
@@ -1184,19 +1180,18 @@
                     <div class="color-graying">Tax & Services</div>
 
                     <div>
-                      ₹
-                        {{
-                            (
-                              (plan.price -
-                                (plan.price *
-                                  (
-                                    (specialDiscountData?.discountPercentage || 0) +
-                                    (selectedAdvanceDiscountSlab?.discountPercentage || 0)
-                                  )) /
-                                  100) *
-                              plan.taxpercentage
-                            ) / 100 | number : "1.2-2"
-                        }}
+                      {{
+                          (
+                            (plan.price -
+                              (plan.price *
+                                (
+                                  (specialDiscountData?.discountPercentage || 0) +
+                                  (selectedAdvanceDiscountSlab?.discountPercentage || 0)
+                                )) /
+                                100) *
+                            plan.taxpercentage
+                          ) / 100 | currency: currency : 'symbol' : '1.2-2'
+                      }}
                     </div>
                   </div>
 
@@ -1207,7 +1202,7 @@
                     <div class="color-graying">Tax & Services</div>
 
                     <div>
-                      ₹ {{ plan.taxPercentageperroom | number : "1.2-2" }}
+                      {{ plan.taxPercentageperroom | currency: currency : 'symbol' : '1.2-2' }}
                     </div>
                   </div>
                   <div
@@ -1217,10 +1212,9 @@
                     <div class="color-graying font-weight-600">Total</div>
 
                     <div class="font-weight-600">
-                      ₹
                       {{
                         plan.price + plan.taxPercentageperroom
-                          | number : "1.2-2"
+                          | currency: currency : 'symbol' : '1.2-2'
                       }}
                     </div>
                   </div>
@@ -1234,7 +1228,6 @@
                     <div class="color-graying font-weight-600">Total</div>
 
                     <div class="font-weight-600">
-                      ₹
                       {{
                         plan.price -
                           (plan.price *
@@ -1245,7 +1238,7 @@
                               this.specialDiscountData?.discountPercentage) /
                               100) *
                             plan.taxpercentage) /
-                            100 | number : "1.2-2"
+                            100 | currency: currency : 'symbol' : '1.2-2'
                       }}
                     </div>
                   </div>
@@ -1301,9 +1294,9 @@
                           <div style="font-weight: 600; color: #111827">{{ addon.name }}</div>
                         </div>
                       </td>
-                      <td style="text-align: right; vertical-align: middle; padding: 8px 10px">₹{{ addon.servicePrice | number:'1.0-0' }}</td>
-                      <td style="text-align: right; vertical-align: middle; padding: 8px 10px; color: #6b7280">₹{{ addon.taxAmount | number:'1.0-0' }}</td>
-                      <td style="text-align: right; vertical-align: middle; padding: 8px 10px; font-weight: 600">₹{{ (addon.servicePrice + addon.taxAmount) | number:'1.0-0' }}</td>
+                      <td style="text-align: right; vertical-align: middle; padding: 8px 10px">{{ addon.servicePrice | currency: currency : 'symbol' : '1.0-0' }}</td>
+                      <td style="text-align: right; vertical-align: middle; padding: 8px 10px; color: #6b7280">{{ addon.taxAmount | currency: currency : 'symbol' : '1.0-0' }}</td>
+                      <td style="text-align: right; vertical-align: middle; padding: 8px 10px; font-weight: 600">{{ (addon.servicePrice + addon.taxAmount) | currency: currency : 'symbol' : '1.0-0' }}</td>
                     </tr>
                   </tbody>
                 </table>
@@ -1312,15 +1305,15 @@
                 style="background-color: #f9fafb; border-radius: 0 0 8px 8px; padding: 10px 12px; border-top: 2px solid #e5e7eb; margin-top: 4px">
                 <div class="d-flex justify-content-between" style="font-size: 12px; margin-bottom: 4px">
                   <span class="color-graying">Services Subtotal</span>
-                  <span>₹{{ getServicesSubtotal() | number:'1.0-0' }}</span>
+                  <span>{{ getServicesSubtotal() | currency: currency : 'symbol' : '1.0-0' }}</span>
                 </div>
                 <div class="d-flex justify-content-between" style="font-size: 12px; margin-bottom: 8px">
                   <span class="color-graying">Services Tax</span>
-                  <span>₹{{ getServicesTax() | number:'1.0-0' }}</span>
+                  <span>{{ getServicesTax() | currency: currency : 'symbol' : '1.0-0' }}</span>
                 </div>
                 <div class="d-flex justify-content-between" style="font-weight: 700; font-size: 13px">
                   <span>Services Total <small style="font-weight: 400; color: #6b7280; font-size: 10px">(full now)</small></span>
-                  <span style="color: #0f172a">₹{{ getServicesTotal() | number:'1.0-0' }}</span>
+                  <span style="color: #0f172a">{{ getServicesTotal() | currency: currency : 'symbol' : '1.0-0' }}</span>
                 </div>
               </div>
               <div *ngIf="!selectedAddOns || selectedAddOns.length === 0"
@@ -1374,49 +1367,49 @@
                 <div style="padding: 0 12px">
                   <div class="d-flex justify-content-between line-height-27px">
                     <div class="color-graying">Total {{ roomLabel }} Charges</div>
-                    <div style="color: #3b82f6; font-weight: 500">₹{{ bookingSummaryDetails?.totalPlanPrice | number:'1.2-2' }}</div>
+                    <div style="color: #3b82f6; font-weight: 500">{{ bookingSummaryDetails?.totalPlanPrice | currency: currency : 'symbol' : '1.2-2' }}</div>
                   </div>
                   <div *ngIf="couponDiscountAmount > 0" class="d-flex justify-content-between line-height-27px">
                     <div class="color-graying">Coupon Discount</div>
-                    <div style="color: #16a34a; font-weight: 500">-₹{{ couponDiscountAmount | number:'1.2-2' }}</div>
+                    <div style="color: #16a34a; font-weight: 500">-{{ couponDiscountAmount | currency: currency : 'symbol' : '1.2-2' }}</div>
                   </div>
                   <div *ngIf="advanceDiscountAmount > 0" class="d-flex justify-content-between line-height-27px">
                     <div class="color-graying">Advance Discount ({{ getSelectedAdvanceDiscountPercentage() }}%)</div>
-                    <div style="color: #16a34a; font-weight: 500">-₹{{ advanceDiscountAmount | number:'1.2-2' }}</div>
+                    <div style="color: #16a34a; font-weight: 500">-{{ advanceDiscountAmount | currency: currency : 'symbol' : '1.2-2' }}</div>
                   </div>
                   <div class="d-flex justify-content-between line-height-27px">
                     <div class="color-graying">Tax &amp; Services</div>
-                    <div style="font-weight: 500">₹{{ taxOnDiscountedAmount | number:'1.2-2' }}</div>
+                    <div style="font-weight: 500">{{ taxOnDiscountedAmount | currency: currency : 'symbol' : '1.2-2' }}</div>
                   </div>
                 </div>
                 <div *ngIf="selectedAddOns && selectedAddOns.length > 0"
                   style="margin: 6px 12px; padding: 10px 12px; background-color: #f0fdfa; border-radius: 8px; border: 1px solid #99f6e4">
                   <div class="d-flex justify-content-between">
                     <div class="color-graying">Add-On Services ({{ selectedAddOns.length }})</div>
-                    <div style="font-weight: 600">₹{{ getServicesTotal() | number:'1.2-2' }}</div>
+                    <div style="font-weight: 600">{{ getServicesTotal() | currency: currency : 'symbol' : '1.2-2' }}</div>
                   </div>
                   <div style="font-size: 11px; color: #6b7280; margin-top: 2px">Always paid in full</div>
                 </div>
                 <div *ngIf="convenienceFeeAmount > 0" style="padding: 0 12px" class="d-flex justify-content-between line-height-27px">
                   <div class="color-graying">Convenience Fee</div>
-                  <div style="font-weight: 500">₹{{ convenienceFeeAmount | number:'1.2-2' }}</div>
+                  <div style="font-weight: 500">{{ convenienceFeeAmount | currency: currency : 'symbol' : '1.2-2' }}</div>
                 </div>
                 <div style="padding: 12px; border-top: 2px solid #e5e7eb; margin-top: 8px" class="d-flex justify-content-between">
                   <div class="font-weight-600" style="font-size: 1rem">Grand Total</div>
-                  <div class="font-weight-600" style="font-size: 1rem">₹{{ getNewGrandTotal() | number:'1.2-2' }}</div>
+                  <div class="font-weight-600" style="font-size: 1rem">{{ getNewGrandTotal() | currency: currency : 'symbol' : '1.2-2' }}</div>
                 </div>
                 <div *ngIf="showPayNow() && hasSelectedAdvancePaymentPlan()"
                   style="margin: 0 12px 14px; padding: 12px; background-color: #fef9c3; border-radius: 8px; border: 1px solid #fef08a">
                   <div class="d-flex justify-content-between" style="margin-bottom: 4px">
                     <div style="font-weight: 700">Pay Now</div>
-                    <div style="font-weight: 700; color: #dc2626">₹{{ getNewPayNowAmount() | number:'1.2-2' }}</div>
+                    <div style="font-weight: 700; color: #dc2626">{{ getNewPayNowAmount() | currency: currency : 'symbol' : '1.2-2' }}</div>
                   </div>
                   <div style="font-size: 11px; color: #6b7280; margin-bottom: 8px">
                     {{ getSelectedAdvancePaymentPercentage() }}% of rooms + all services + fee
                   </div>
                   <div class="d-flex justify-content-between">
                     <div class="color-graying">Balance at Check-in</div>
-                    <div style="font-weight: 500">₹{{ getNewBalanceAtCheckIn() | number:'1.2-2' }}</div>
+                    <div style="font-weight: 500">{{ getNewBalanceAtCheckIn() | currency: currency : 'symbol' : '1.2-2' }}</div>
                   </div>
                 </div>
                 <div *ngIf="showPayNow() && hasAdvancePaymentPlans() && !hasSelectedAdvancePaymentPlan()"
@@ -1762,7 +1755,7 @@
           <div>
             <div style="font-size: 11px; color: #6b7280; line-height: 1.2">Grand Total</div>
             <div style="font-weight: 700; font-size: 15px; color: #0f172a">
-              ₹{{ getNewGrandTotal() | number: '1.2-2' }}
+              {{ getNewGrandTotal() | currency: currency : 'symbol' : '1.2-2' }}
             </div>
           </div>
           <button

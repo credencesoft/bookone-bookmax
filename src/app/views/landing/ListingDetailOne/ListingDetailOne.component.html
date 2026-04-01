@@ -166,7 +166,7 @@
     <div class="stciky-top">
       <div class="sum-section" *ngIf="!activeForGoogleHotelCenter">
         <span *ngIf="specialDiscountPercentage">
-          ₹{{
+          {{
             getTotalPlanPrice() +
               getTotalTaxPrice() -
               (getTotalPlanPrice() * specialDiscountPercentage) / 100 +
@@ -178,11 +178,11 @@
                         100,
                     serviceChargePercentage
                   )
-                : 0) | number: "1.2-2"
+                : 0) | currency : currency : "symbol" : "1.2-2"
           }}
         </span>
         <span *ngIf="!specialDiscountPercentage">
-          ₹{{
+          {{
             getTotalPlanPrice() +
               getTotalTaxPrice() +
               (serviceChargePercentage > 0
@@ -190,13 +190,13 @@
                     getTotalPlanPrice(),
                     serviceChargePercentage
                   )
-                : 0) | number: "1.2-2"
+                : 0) | currency : currency : "symbol" : "1.2-2"
           }}
         </span>
       </div>
       <div class="sum-section" *ngIf="activeForGoogleHotelCenter">
         <span *ngIf="specialDiscountPercentage">
-          ₹{{
+          {{
             getGrandSubtotal() -
               (getGrandSubtotal() * specialDiscountPercentage) / 100 +
               getGrandTaxTotal() +
@@ -208,18 +208,18 @@
                         100,
                     serviceChargePercentage
                   )
-                : 0) | number: "1.2-2"
+                : 0) | currency : currency : "symbol" : "1.2-2"
           }}
         </span>
         <span *ngIf="!specialDiscountPercentage">
-          ₹{{
+          {{
             getGrandTotal() +
               (serviceChargePercentage > 0
                 ? calculateConvenienceFee(
                     getTotalPlanPrice(),
                     serviceChargePercentage
                   )
-                : 0) | number: "1.2-2"
+                : 0) | currency : currency : "symbol" : "1.2-2"
           }}
         </span>
       </div>
@@ -314,10 +314,10 @@
                         !activeForGoogleHotelCenter
                       "
                       >Inclusive Adult Charge <br />
-                      ₹
+                      
                       {{
                         plan.SingleDayextraPersonAdultCountAmount
-                          | number: "1.2-2"
+                          | currency : currency : "symbol" : "1.2-2"
                       }}
                       per night</small
                     > <br *ngIf="
@@ -330,10 +330,10 @@
                         !activeForGoogleHotelCenter
                       "
                       >Inclusive Children Charge <br />
-                      ₹
+                      
                       {{
                         plan.SingleDayextraPersonChildCountAmount
-                          | number: "1.2-2"
+                          | currency : currency : "symbol" : "1.2-2"
                       }}
                       per night</small
                     > <br *ngIf="
@@ -345,17 +345,17 @@
                   <div class="d-flex align-items-start">
                     <div class="room-price">
                       <ng-container *ngIf="!activeForGoogleHotelCenter">
-                        ₹ {{ plan.price | number: "1.2-2" }}
+                         {{ plan.price | currency : currency : "symbol" : "1.2-2" }}
                       </ng-container>
 
                       <ng-container *ngIf="activeForGoogleHotelCenter">
                         <ng-container
                           *ngIf="plan.planName === 'GHC'; else nonGhcPrice"
                         >
-                          ₹ {{ getTotalGhCPrice(plan) | number: "1.2-2" }}
+                          {{ getTotalGhCPrice(plan) | currency : currency : "symbol" : "1.2-2" }}
                         </ng-container>
                         <ng-template #nonGhcPrice>
-                          ₹ {{ getTotalNonGhCPrice(plan) | number: "1.2-2" }}
+                          {{ getTotalNonGhCPrice(plan) | currency : currency : "symbol" : "1.2-2" }}
                         </ng-template>
                       </ng-container>
                     </div>
@@ -383,7 +383,7 @@
                     ></i>
                   </small>
                   <!-- <small class="text-muted" *ngIf="taxArray && taxArray.length">
-                Tax Fee: ₹{{ taxArray[i] | number : "1.2-2" }}
+                Tax Fee: {{ taxArray[i] | currency : currency : "symbol" : "1.2-2" }}
               </small> -->
                 </div>
 
@@ -627,14 +627,14 @@
               *ngIf="!activeForGoogleHotelCenter"
             >
               <span>Rooms Total</span>
-              <span>₹{{ getTotalPlanPrice() | number: "1.2-2" }}</span>
+              <span>{{ getTotalPlanPrice() | currency : currency : "symbol" : "1.2-2" }}</span>
             </div>
             <div
               class="d-flex justify-content-between"
               *ngIf="activeForGoogleHotelCenter"
             >
               <span>Rooms Total</span>
-              <span>₹{{ getGrandSubtotal() | number: "1.2-2" }}</span>
+              <span>{{ getGrandSubtotal() | currency : currency : "symbol" : "1.2-2" }}</span>
             </div>
 
             <div
@@ -651,9 +651,9 @@
                   &nbsp;
                 </small>
                 <b style="color: #16a34a; font-weight: 400"
-                  >-₹{{
+                  >-{{
                     (getTotalPlanPrice() * specialDiscountPercentage) / 100
-                      | number: "1.2-2"
+                      | currency : currency : "symbol" : "1.2-2"
                   }}</b
                 ></span
               >
@@ -673,9 +673,9 @@
                   &nbsp;
                 </small>
                 <b style="color: #16a34a; font-weight: 400"
-                  >-₹{{
+                  >-{{
                     (getGrandSubtotal() * specialDiscountPercentage) / 100
-                      | number: "1.2-2"
+                      | currency : currency : "symbol" : "1.2-2"
                   }}</b
                 ></span
               >
@@ -686,14 +686,14 @@
               *ngIf="!activeForGoogleHotelCenter"
             >
               <span>Tax & Services</span>
-              <span>₹{{ getTotalTaxPrice() | number: "1.2-2" }}</span>
+              <span>{{ getTotalTaxPrice() | currency : currency : "symbol" : "1.2-2" }}</span>
             </div>
             <div
               class="d-flex justify-content-between mb-2"
               *ngIf="activeForGoogleHotelCenter"
             >
               <span>Tax & Services</span>
-              <span>₹{{ getGrandTaxTotal() | number: "1.2-2" }}</span>
+              <span>{{ getGrandTaxTotal() | currency : currency : "symbol" : "1.2-2" }}</span>
             </div>
             <div
               class="d-flex justify-content-between"
@@ -701,22 +701,22 @@
             >
               <span>Convenience Fee:</span>
               <span *ngIf="specialDiscountPercentage">
-                ₹{{
+                {{
                   calculateConvenienceFee(
                     getTotalPlanPrice() -
                       (this.getTotalPlanPrice() *
                         this.specialDiscountPercentage) /
                         100,
                     serviceChargePercentage
-                  )
+                  ) | currency : currency : "symbol" : "1.2-2"
                 }}
               </span>
               <span *ngIf="!specialDiscountPercentage">
-                ₹{{
+                {{
                   calculateConvenienceFee(
                     getTotalPlanPrice(),
                     serviceChargePercentage
-                  )
+                  ) | currency : currency : "symbol" : "1.2-2"
                 }}
               </span>
             </div>
@@ -726,21 +726,21 @@
             >
               <span>Convenience Fee:</span>
               <span *ngIf="specialDiscountPercentage">
-                ₹{{
+                {{
                   calculateConvenienceFee(
                     getGrandSubtotal() -
                       (getGrandSubtotal() * this.specialDiscountPercentage) /
                         100,
                     serviceChargePercentage
-                  )
+                  ) | currency : currency : "symbol" : "1.2-2"
                 }}
               </span>
               <span *ngIf="!specialDiscountPercentage">
-                ₹{{
+                {{
                   calculateConvenienceFee(
                     getGrandSubtotal(),
                     serviceChargePercentage
-                  )
+                  ) | currency : currency : "symbol" : "1.2-2"
                 }}
               </span>
             </div>
@@ -750,7 +750,7 @@
             >
               <span>Total Amount</span>
               <span *ngIf="specialDiscountPercentage">
-                ₹{{
+                {{
                   getTotalPlanPrice() +
                     getTotalTaxPrice() -
                     (getTotalPlanPrice() * specialDiscountPercentage) / 100 +
@@ -762,11 +762,11 @@
                               100,
                           serviceChargePercentage
                         )
-                      : 0) | number: "1.2-2"
+                      : 0) | currency : currency : "symbol" : "1.2-2"
                 }}
               </span>
               <span *ngIf="!specialDiscountPercentage">
-                ₹{{
+                {{
                   getTotalPlanPrice() +
                     getTotalTaxPrice() +
                     (serviceChargePercentage > 0
@@ -774,7 +774,7 @@
                           getTotalPlanPrice(),
                           serviceChargePercentage
                         )
-                      : 0) | number: "1.2-2"
+                      : 0) | currency : currency : "symbol" : "1.2-2"
                 }}
               </span>
             </div>
@@ -785,7 +785,7 @@
               <span>Total Amount</span>
 
               <span *ngIf="specialDiscountPercentage">
-                ₹{{
+                {{
                   getGrandSubtotal() -
                     (getGrandSubtotal() * specialDiscountPercentage) / 100 +
                     getGrandTaxTotal() +
@@ -797,18 +797,18 @@
                               100,
                           serviceChargePercentage
                         )
-                      : 0) | number: "1.2-2"
+                      : 0) | currency : currency : "symbol" : "1.2-2"
                 }}
               </span>
               <span *ngIf="!specialDiscountPercentage">
-                ₹{{
+                {{
                   getGrandTotal() +
                     (serviceChargePercentage > 0
                       ? calculateConvenienceFee(
                           getTotalPlanPrice(),
                           serviceChargePercentage
                         )
-                      : 0) | number: "1.2-2"
+                      : 0) | currency : currency : "symbol" : "1.2-2"
                 }}
               </span>
             </div>
@@ -2023,7 +2023,7 @@
                             />&nbsp; Budget Combo
                           </h5>
                           <div class="line-height pricing-best-fit">
-                            ₹ {{ plan?.totalPrice | number: "1.2-2" }}
+                            {{ plan?.totalPrice | currency : currency : "symbol" : "1.2-2" }}
                           </div>
                           <div class="line-height">
                             Total for
@@ -2060,8 +2060,8 @@
                               <div class="room-title">{{ room?.roomName }}</div>
                               <ng-container>
                                 <div>
-                                  ₹{{
-                                    plan.pricePerNight | number: "1.2-2"
+                                  {{
+                                    plan.pricePerNight | currency : currency : "symbol" : "1.2-2"
                                   }}
                                   per night
                                 </div>
@@ -2294,7 +2294,7 @@
 
                     <!-- Price & details -->
                     <div class="line-height pricing-best-fit">
-                      &nbsp; &nbsp; ₹ {{ plan?.totalPrice | number: "1.2-2" }}
+                      &nbsp; &nbsp; {{ plan?.totalPrice | currency : currency : "symbol" : "1.2-2" }}
                     </div>
                     <div class="line-height">
                       &nbsp; &nbsp; &nbsp; &nbsp; Total for
@@ -2336,7 +2336,7 @@
                         <div class="room-title">{{ room?.roomName }}</div>
                         <ng-container>
                           <div>
-                            ₹{{ plan.pricePerNight | number: "1.2-2" }} per
+                            {{ plan.pricePerNight | currency : currency : "symbol" : "1.2-2" }} per
                             night
                           </div>
                         </ng-container>
@@ -3775,10 +3775,10 @@
                         !activeForGoogleHotelCenter
                       "
                       >Inclusive Adult Charge <br />
-                      ₹
+                      
                       {{
                         plan.SingleDayextraPersonAdultCountAmount
-                          | number: "1.2-2"
+                          | currency : currency : "symbol" : "1.2-2"
                       }}
                       per night</small
                     > <br *ngIf="
@@ -3791,10 +3791,10 @@
                         !activeForGoogleHotelCenter
                       "
                       >Inclusive Children Charge <br />
-                      ₹
+                      
                       {{
                         plan.SingleDayextraPersonChildCountAmount
-                          | number: "1.2-2"
+                          | currency : currency : "symbol" : "1.2-2"
                       }}
                       per night</small
                     > <br *ngIf="
@@ -3806,17 +3806,17 @@
                   <div class="d-flex align-items-start">
                     <div class="room-price">
                       <ng-container *ngIf="!activeForGoogleHotelCenter">
-                        ₹ {{ plan.price | number: "1.2-2" }}
+                        {{ plan.price | currency : currency : "symbol" : "1.2-2" }}
                       </ng-container>
 
                       <ng-container *ngIf="activeForGoogleHotelCenter">
                         <ng-container
                           *ngIf="plan.planName === 'GHC'; else nonGhcPrice"
                         >
-                          ₹ {{ getTotalGhCPrice(plan) | number: "1.2-2" }}
+                          {{ getTotalGhCPrice(plan) | currency : currency : "symbol" : "1.2-2" }}
                         </ng-container>
                         <ng-template #nonGhcPrice>
-                          ₹ {{ getTotalNonGhCPrice(plan) | number: "1.2-2" }}
+                          {{ getTotalNonGhCPrice(plan) | currency : currency : "symbol" : "1.2-2" }}
                         </ng-template>
                       </ng-container>
                     </div>
@@ -3844,7 +3844,7 @@
                     ></i>
                   </small>
                   <!-- <small class="text-muted" *ngIf="taxArray && taxArray.length">
-                Tax Fee: ₹{{ taxArray[i] | number : "1.2-2" }}
+                Tax Fee: {{ taxArray[i] | currency : currency : "symbol" : "1.2-2" }}
               </small> -->
                 </div>
 
@@ -4094,14 +4094,14 @@
               *ngIf="!activeForGoogleHotelCenter"
             >
               <span>Rooms Total</span>
-              <span>₹{{ getTotalPlanPrice() | number: "1.2-2" }}</span>
+              <span>{{ getTotalPlanPrice() | currency : currency : "symbol" : "1.2-2" }}</span>
             </div>
             <div
               class="d-flex justify-content-between"
               *ngIf="activeForGoogleHotelCenter"
             >
               <span>Rooms Total</span>
-              <span>₹{{ getGrandSubtotal() | number: "1.2-2" }}</span>
+              <span>{{ getGrandSubtotal() | currency : currency : "symbol" : "1.2-2" }}</span>
             </div>
 
             <div
@@ -4118,9 +4118,9 @@
                   &nbsp;
                 </small>
                 <b style="color: #16a34a; font-weight: 400"
-                  >-₹{{
+                  >-{{
                     (getTotalPlanPrice() * specialDiscountPercentage) / 100
-                      | number: "1.2-2"
+                      | currency : currency : "symbol" : "1.2-2"
                   }}</b
                 ></span
               >
@@ -4140,9 +4140,9 @@
                   &nbsp;
                 </small>
                 <b style="color: #16a34a; font-weight: 400"
-                  >-₹{{
+                  >-{{
                     (getGrandSubtotal() * specialDiscountPercentage) / 100
-                      | number: "1.2-2"
+                      | currency : currency : "symbol" : "1.2-2"
                   }}</b
                 ></span
               >
@@ -4153,14 +4153,14 @@
               *ngIf="!activeForGoogleHotelCenter"
             >
               <span>Tax & Services</span>
-              <span>₹{{ getTotalTaxPrice() | number: "1.2-2" }}</span>
+              <span>{{ getTotalTaxPrice() | currency : currency : "symbol" : "1.2-2" }}</span>
             </div>
             <div
               class="d-flex justify-content-between"
               *ngIf="activeForGoogleHotelCenter"
             >
               <span>Tax & Services</span>
-              <span>₹{{ getGrandTaxTotal() | number: "1.2-2" }}</span>
+              <span>{{ getGrandTaxTotal() | currency : currency : "symbol" : "1.2-2" }}</span>
             </div>
             <div
               class="d-flex justify-content-between"
@@ -4168,22 +4168,22 @@
             >
               <span>Convenience Fee:</span>
               <span *ngIf="specialDiscountPercentage">
-                ₹{{
+                {{
                   calculateConvenienceFee(
                     getTotalPlanPrice() -
                       (this.getTotalPlanPrice() *
                         this.specialDiscountPercentage) /
                         100,
                     serviceChargePercentage
-                  )
+                  ) | currency : currency : "symbol" : "1.2-2"
                 }}
               </span>
               <span *ngIf="!specialDiscountPercentage">
-                ₹{{
+                {{
                   calculateConvenienceFee(
                     getTotalPlanPrice(),
                     serviceChargePercentage
-                  )
+                  ) | currency : currency : "symbol" : "1.2-2"
                 }}
               </span>
             </div>
@@ -4193,21 +4193,21 @@
             >
               <span>Convenience Fee:</span>
               <span *ngIf="specialDiscountPercentage">
-                ₹{{
+                {{
                   calculateConvenienceFee(
                     getGrandSubtotal() -
                       (getGrandSubtotal() * this.specialDiscountPercentage) /
                         100,
                     serviceChargePercentage
-                  )
+                  ) | currency : currency : "symbol" : "1.2-2"
                 }}
               </span>
               <span *ngIf="!specialDiscountPercentage">
-                ₹{{
+                {{
                   calculateConvenienceFee(
                     getGrandSubtotal(),
                     serviceChargePercentage
-                  )
+                  ) | currency : currency : "symbol" : "1.2-2"
                 }}
               </span>
             </div>
@@ -4218,7 +4218,7 @@
             >
               <span>Total Amount</span>
               <span *ngIf="specialDiscountPercentage">
-                ₹{{
+                {{
                   getTotalPlanPrice() +
                     getTotalTaxPrice() -
                     (getTotalPlanPrice() * specialDiscountPercentage) / 100 +
@@ -4230,11 +4230,11 @@
                               100,
                           serviceChargePercentage
                         )
-                      : 0) | number: "1.2-2"
+                      : 0) | currency : currency : "symbol" : "1.2-2"
                 }}
               </span>
               <span *ngIf="!specialDiscountPercentage">
-                ₹{{
+                {{
                   getTotalPlanPrice() +
                     getTotalTaxPrice() +
                     (serviceChargePercentage > 0
@@ -4242,7 +4242,7 @@
                           getTotalPlanPrice(),
                           serviceChargePercentage
                         )
-                      : 0) | number: "1.2-2"
+                      : 0) | currency : currency : "symbol" : "1.2-2"
                 }}
               </span>
             </div>
@@ -4253,7 +4253,7 @@
               <span>Total Amount</span>
 
               <span *ngIf="specialDiscountPercentage">
-                ₹{{
+                {{
                   getGrandSubtotal() -
                     (getGrandSubtotal() * specialDiscountPercentage) / 100 +
                     getGrandTaxTotal() +
@@ -4265,18 +4265,18 @@
                               100,
                           serviceChargePercentage
                         )
-                      : 0) | number: "1.2-2"
+                      : 0) | currency : currency : "symbol" : "1.2-2"
                 }}
               </span>
               <span *ngIf="!specialDiscountPercentage">
-                ₹{{
+                {{
                   getGrandTotal() +
                     (serviceChargePercentage > 0
                       ? calculateConvenienceFee(
                           getTotalPlanPrice(),
                           serviceChargePercentage
                         )
-                      : 0) | number: "1.2-2"
+                      : 0) | currency : currency : "symbol" : "1.2-2"
                 }}
               </span>
             </div>
