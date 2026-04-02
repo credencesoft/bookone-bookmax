@@ -148,7 +148,6 @@ textToCopyOne: string = 'This is some text to copy';
   activeGoogleCenter: boolean = false;
   paymentRefNo: any;
   roomLabel: string = "Room";
-  roomLabelValue: string;
   constructor(
     private http: HttpClient,
     private token: TokenStorage,
@@ -336,21 +335,16 @@ textToCopyOne: string = 'This is some text to copy';
        this.serviceChargePercentage = element.serviceChargePercentage;
     });
 
-//      const savedLabel = localStorage.getItem('savedBookingLabel');
-
-// if (savedLabel) {
-//   try {
-//     const parsedData = JSON.parse(savedLabel);    
-//     this.roomLabel = parsedData.fullLabel || parsedData.label || 'Room';
-    
-//   } catch (e) {
-//     this.roomLabel = savedLabel || 'Room';
-//     console.error("Error parsing label, using raw value instead", e);
-//   }
-// } else {
-//   this.roomLabel = 'Room';
-// }
- this.roomLabelValue = localStorage.getItem('selectedplan');
+    const savedLabel = localStorage.getItem('savedBookingLabel');
+    console.log('savedLabel data is',savedLabel);
+    if (savedLabel) {
+    try {
+      const parsedData = JSON.parse(savedLabel);
+      this.roomLabel = parsedData.label || 'Room'; 
+    } catch (e) {
+      console.error("Error parsing token", e);
+    }
+  }
   }
 
 
@@ -363,8 +357,6 @@ calculateConvenienceFee(totalAmount: number, percentage: number): number {
 }
 
   ngOnInit() {
-      this.roomLabelValue = localStorage?.getItem('selectedplan');
- console.log('roomLabelValue is',this.roomLabelValue);
         const couponCodeValues = sessionStorage.getItem('selectedPromoData');
 
 if (couponCodeValues) {

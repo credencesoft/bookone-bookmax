@@ -41,7 +41,6 @@ export class BookingVoucherComponent {
     totalDiscount = 0;
       websiteUrlBookingEngine: boolean = false;
   roomLabel: string = 'Room';
-  roomLabelValue: string;
   constructor(
     private token: TokenStorage,
     private hotelBookingService: HotelBookingService,
@@ -97,13 +96,19 @@ export class BookingVoucherComponent {
     this.checkBookingEngineFlag();
   }, 10);
 
-    this.roomLabelValue = localStorage.getItem('selectedplan');
+   const savedLabel = localStorage.getItem('savedBookingLabel');
+    console.log('savedLabel data is',savedLabel);
+    if (savedLabel) {
+    try {
+      const parsedData = JSON.parse(savedLabel);
+      this.roomLabel = parsedData.label || 'Room'; 
+    } catch (e) {
+      console.error("Error parsing token", e);
+    }
+  }
   }
 
-  ngOnInIt() {
-     this.roomLabelValue = localStorage?.getItem('selectedplan');
- console.log('roomLabelValue is',this.roomLabelValue);
-  }
+  ngOnInIt() {}
 
   async getPropertyDetailsById(id: number) {
     // debugger

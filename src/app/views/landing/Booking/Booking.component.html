@@ -221,168 +221,271 @@
         <div class="booking-summary-container">
           <div class="row" style="margin: 0px !important">
             <div class="col-7 padding-left0px padding-right-0px">
-              <div
-                class="rooms-cards-pricing card"
-                style="padding: 30px; margin-bottom: 20px"
-              >
-                <h5 class="margin-botton-20px booking-d-heading">
-                  <img
-                    src="media-be/images/calemder-frame.svg"
-                    alt="icon"
-                    width="20"
-                    height="20"
-                    style="margin-right: 5px"
-                  />
-                  Your Booking
-                </h5>
+              <!-- ① ROOM CHARGES ─────────────────────────────────────── -->
+              <div class="rooms-cards-pricing card" style="padding: 30px; margin-bottom: 20px">
+                <div class="d-flex align-items-center" style="gap: 10px; margin-bottom: 16px">
+                  <span class="section-number-badge">1</span>
+                  <h5 class="booking-d-heading" style="margin: 0">Room Charges</h5>
+                </div>
 
                 <h5 class="booking-heading">{{ businessUser?.name }}</h5>
                 <p class="booking-subheading">
-                  <img
-                    src="media-be/images/maps-booking.svg"
-                    alt=""
-                    width="15"
-                    height="15"
-                  />
-                  {{ businessUser.address?.streetName }},
-                  {{ businessUser.address?.city }},
-                  {{ businessUser.address?.state }},
-                  {{ businessUser.address?.country }}
+                  <img src="media-be/images/maps-booking.svg" alt="" width="15" height="15" />
+                  {{ businessUser.address?.streetName }}, {{ businessUser.address?.city }},
+                  {{ businessUser.address?.state }}, {{ businessUser.address?.country }}
                 </p>
 
                 <div class="d-flex justify-content-between check-card">
                   <div class="d-flex spacing-gap">
                     <div>
-                      <img
-                        src="media-be/images/checkin-book-calender.svg"
-                        alt=""
-                        width="15"
-                        height="15"
-                      />
+                      <img src="media-be/images/checkin-book-calender.svg" alt="" width="15" height="15" />
                     </div>
                     <div class="d-block">
-                      <div class="text-center aminities-highlights-details">
-                        Check-in
-                      </div>
-                      <div class="text-center">
-                        {{
-                          bookingSummaryDetails?.fromDate | date : "dd-MM-yyyy"
-                        }}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="d-flex spacing-gap">
-                    <div>
-                      <img
-                        src="media-be/images/checkin-book-calender.svg"
-                        alt=""
-                        width="15"
-                        height="15"
-                      />
-                    </div>
-                    <div class="d-block">
-                      <div class="text-center aminities-highlights-details">
-                        Check-out
-                      </div>
-                      <div class="text-center">
-                        {{
-                          bookingSummaryDetails?.toDate | date : "dd-MM-yyyy"
-                        }}
-                      </div>
+                      <div class="text-center aminities-highlights-details">Check-in</div>
+                      <div class="text-center">{{ bookingSummaryDetails?.fromDate | date : "dd-MM-yyyy" }}</div>
                     </div>
                   </div>
                   <div class="d-flex spacing-gap">
                     <div>
-                      <img
-                        src="media-be/images/guest-booking.svg"
-                        alt=""
-                        width="20"
-                        height="20"
-                      />
+                      <img src="media-be/images/checkin-book-calender.svg" alt="" width="15" height="15" />
                     </div>
                     <div class="d-block">
-                      <div class="text-center aminities-highlights-details">
-                        Guests
-                      </div>
-                      <div class="text-center">
-                        {{ totalPlanAdults }} Adults,
-                        {{ totalPlanChildren }} Children
-                      </div>
+                      <div class="text-center aminities-highlights-details">Check-out</div>
+                      <div class="text-center">{{ bookingSummaryDetails?.toDate | date : "dd-MM-yyyy" }}</div>
                     </div>
                   </div>
-
                   <div class="d-flex spacing-gap">
-                    <div style="color: #031eaa">
-                      <i class="fa-solid fa-moon"></i>
+                    <div>
+                      <img src="media-be/images/guest-booking.svg" alt="" width="20" height="20" />
                     </div>
                     <div class="d-block">
-                      <div class="text-center aminities-highlights-details">
-                        No. Of Nights
-                      </div>
-                      <div class="text-center">
-                        {{ bookingSummaryDetails?.totalNights }}
+                      <div class="text-center aminities-highlights-details">Guests</div>
+                      <div class="text-center">{{ totalPlanAdults }} Adults, {{ totalPlanChildren }} Children</div>
+                    </div>
+                  </div>
+                  <div class="d-flex spacing-gap">
+                    <div style="color: #031eaa"><i class="fa-solid fa-moon"></i></div>
+                    <div class="d-block">
+                      <div class="text-center aminities-highlights-details">No. Of Nights</div>
+                      <div class="text-center">{{ bookingSummaryDetails?.totalNights }}</div>
+                    </div>
+                  </div>
+                </div>
+
+                <hr style="border: 1px solid #e5e7eb; margin: 18px 0" />
+
+                <!-- Sold-out banner -->
+                <div *ngIf="hasAnySoldOutRoom()" class="sold-out-info-box">
+                  <i class="fa-solid fa-circle-exclamation"></i>
+                  <div class="sold-out-info-text">
+                    <strong>Some rooms are no longer available.</strong>
+                    <div class="sold-out-info-sub">Please reset your booking and select available rooms to continue.</div>
+                  </div>
+                </div>
+
+                <!-- Per-room breakdown -->
+                <div class="booking-heading"
+                  *ngFor="let plan of bookingSummaryDetails.selectedPlansSummary; let last = last"
+                  [class.sold-out-card]="isRoomSoldOut(plan)">
+                  <div *ngIf="isRoomSoldOut(plan)" class="sold-out-title">
+                    <i class="fa-solid fa-circle-xmark sold-out-icon"></i> SOLD OUT
+                  </div>
+                  <div class="line-height-27px d-flex justify-content-between" style="gap: 15px">
+                    <div class="font-weight-600">
+                      {{ plan.roomName }} &nbsp;
+                      <span *ngIf="specialDiscountData" class="badge badge-success badge-successTwo px-2 py-1 mr-2">
+                        <img src=" media-be/images/coupon-image-change.svg" alt="" />&nbsp; Coupon Applied!
+                      </span>
+                    </div>
+                    <div class="nights">{{ plan.selectedRoomnumber }} Room(s)</div>
+                  </div>
+                  <div class="d-flex justify-content-between line-height-27px">
+                    <div class="color-graying">{{ plan.planCodeName }} x {{ plan.selectedRoomnumber }}</div>
+                    <div>
+                      <div style="text-align: end">{{ plan.price | currency: currency : 'symbol' : '1.2-2' }}</div>
+                      <div style="text-align: end; margin-top: -5px"
+                        *ngIf="plan.extraPersonAdultCountAmount + plan.extraPersonChildCountAmount > 0">
+                        Inclusive of Extra Pax
                       </div>
                     </div>
                   </div>
+                  <div class="d-flex justify-content-between line-height-27px promo-discounts"
+                    *ngIf="this.specialDiscountData?.discountPercentage">
+                    <div class="color-graying">Coupon Discount ({{ this.specialDiscountData?.discountPercentage }})%</div>
+                    <div>-{{ ((plan.price * this.specialDiscountData?.discountPercentage) / 100) | currency: currency : 'symbol' : '1.2-2' }}</div>
+                  </div>
+                  <div class="d-flex justify-content-between line-height-27px advance-discounts"
+                    *ngIf="this.selectedAdvanceDiscountSlab?.discountPercentage">
+                    <div class="color-graying">Advance Discount ({{ this.selectedAdvanceDiscountSlab?.discountPercentage }})%</div>
+                    <div>-{{
+                      (((plan.price - ((plan.price * (this.specialDiscountData?.discountPercentage || 0)) / 100)) *
+                        this.selectedAdvanceDiscountSlab?.discountPercentage) / 100) | currency: currency : 'symbol' : '1.2-2'
+                    }}</div>
+                  </div>
+                  <div class="d-flex justify-content-between line-height-27px"
+                    *ngIf="this.specialDiscountData?.discountPercentage || this.selectedAdvanceDiscountSlab?.discountPercentage">
+                    <div class="color-graying">Tax & Services</div>
+                    <div>{{
+                      (((plan.price -
+                          ((plan.price * (this.specialDiscountData?.discountPercentage || 0)) / 100) -
+                          (((plan.price - ((plan.price * (this.specialDiscountData?.discountPercentage || 0)) / 100)) *
+                            (selectedAdvanceDiscountSlab?.discountPercentage || 0)) / 100)) *
+                        plan.taxpercentage) / 100) | currency: currency : 'symbol' : '1.2-2'
+                    }}</div>
+                  </div>
+                  <div class="d-flex justify-content-between line-height-27px"
+                    *ngIf="!this.specialDiscountData?.discountPercentage && !this.selectedAdvanceDiscountSlab?.discountPercentage">
+                    <div class="color-graying">Tax & Services</div>
+                    <div>{{ plan.taxPercentageperroom | currency: currency : 'symbol' : '1.2-2' }}</div>
+                  </div>
+                  <div class="d-flex justify-content-between line-height-27px"
+                    *ngIf="!this.specialDiscountData?.discountPercentage && !activeGoogleCenter && !selectedAdvanceDiscountSlab?.discountPercentage">
+                    <div class="color-graying font-weight-600">Room Total</div>
+                    <div class="font-weight-600">{{ (plan.price + plan.taxPercentageperroom) | currency: currency : 'symbol' : '1.2-2' }}</div>
+                  </div>
+                  <div class="d-flex justify-content-between line-height-27px"
+                    *ngIf="this.specialDiscountData?.discountPercentage || selectedAdvanceDiscountSlab?.discountPercentage">
+                    <div class="color-graying font-weight-600">Room Total</div>
+                    <div class="font-weight-600">{{
+                      (plan.price -
+                        ((plan.price * (this.specialDiscountData?.discountPercentage || 0)) / 100) -
+                        (((plan.price - ((plan.price * (this.specialDiscountData?.discountPercentage || 0)) / 100)) *
+                          (selectedAdvanceDiscountSlab?.discountPercentage || 0)) / 100) +
+                        ((plan.price -
+                            ((plan.price * (this.specialDiscountData?.discountPercentage || 0)) / 100) -
+                            (((plan.price - ((plan.price * (this.specialDiscountData?.discountPercentage || 0)) / 100)) *
+                              (selectedAdvanceDiscountSlab?.discountPercentage || 0)) / 100)) *
+                          plan.taxpercentage) / 100) | currency: currency : 'symbol' : '1.2-2'
+                    }}</div>
+                  </div>
+                  <hr *ngIf="!last" style="border: 1px solid #e5e7eb" />
+                </div>
+
+                <!-- Start Over (sold out) -->
+                <div class="d-flex justify-content-center" *ngIf="hasAnySoldOutRoom()">
+                  <button type="button" class="btn btn-reset-one" (click)="onEditBooking()">Start Over</button>
                 </div>
               </div>
-              <div class="rooms-cards-pricing card" style="padding: 30px; margin-bottom: 20px"
-                *ngIf="showPayNow() && businessServiceDto">
-                <h5 class="margin-botton-20px booking-d-heading">
-                <i class="fa-solid fa-wallet" style="color: #031eaa;"></i>
-                  Select Advance Payment Plan
-                </h5>
-                <!-- <p
-                  style="font-size: 14px; color: #64748b; margin-bottom: 16px"
-                >
-                  Select a slab to calculate the payable advance and discount.
-                </p> -->
 
-                <div class="advance-payment-div">
-                  <div
-                    *ngFor="let slab of advanceDiscountSlabs"
-                    (click)="selectAdvancePaymentPlan(slab)"
-                    [ngClass]="{
-                        'advance-card': true,
-                        'selected': isAdvancePaymentPlanSelected(slab)
-                      }"
-                  >
-                    <div class="d-flex justify-content-between">
-                      <div  class="advance-text">
-                        <div class="advance-title">
-                          Pay {{ slab.advancePercentage }}% Advance
-                        </div>
-                        <div class="advance-discount">
-                          Get {{ slab.discountPercentage }} % Discount
-                        </div>
+              <!-- COUPON APPLIED ─────────────────────────────────────────── -->
+              <div *ngIf="showTheSelectedCoupon && !selectedPromotionCheck"
+                class="rooms-cards-pricing card"
+                style="padding: 14px 20px; margin-bottom: 20px; border-left: 4px solid #16a34a; background: #f0fdf4">
+                <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px">
+                  <div style="display: flex; align-items: center; gap: 10px">
+                    <i class="fa-solid fa-tag" style="color: #16a34a; font-size: 15px"></i>
+                    <div>
+                      <div style="font-weight: 700; color: #111827; font-size: 14px">
+                        Coupon Applied: {{ selectedCouponList.couponCode }}
+                        <span *ngIf="selectedCouponList.discountPercentage" style="color: #16a34a; margin-left: 4px">({{ selectedCouponList.discountPercentage }}% OFF)</span>
                       </div>
-                      <!-- <div style="text-align: right">
-                        <div style="font-weight: 600; color: #0f172a">
-                          ₹{{
-                            getAdvancePlanPayableAmountForSlab(
-                              slab,
-                              getCurrentBookingTotalForAdvancePlan()
-                            ) | number : "1.2-2"
-                          }}
-                        </div>
-                        <div style="font-size: 12px; color: #16a34a">
-                          Save ₹{{
-                            getAdvancePlanDiscountAmountForSlab(
-                              slab,
-                              getCurrentBookingTotalForAdvancePlan()
-                            ) | number : "1.2-2"
-                          }}
-                        </div>
-                      </div> -->
+                      <div style="font-size: 12px; color: #6b7280; margin-top: 2px" *ngIf="selectedCouponList.endDate">
+                        Valid until: {{ selectedCouponList.endDate | date : 'd MMM y' }}
+                      </div>
+                    </div>
+                  </div>
+                  <span style="cursor: pointer; color: #dc2626; font-size: 12px; white-space: nowrap; flex-shrink: 0" (click)="clearSelectedCoupons()">
+                    <i class="bi bi-trash"></i> Remove
+                  </span>
+                </div>
+              </div>
+
+              <!-- ② ADVANCE PAYMENT PLAN ──────────────────────────────────── -->
+              <div *ngIf="showPayNow() && businessServiceDto"
+                class="rooms-cards-pricing card"
+                style="padding: 24px 30px; margin-bottom: 20px">
+                <div class="d-flex align-items-center" style="gap: 10px; margin-bottom: 12px">
+                  <span class="section-number-badge">2</span>
+                  <h5 class="booking-d-heading" style="margin: 0">
+                    <i class="fa-solid fa-wallet" style="color: #031eaa; margin-right: 6px"></i>
+                    Select Advance Payment Plan
+                  </h5>
+                </div>
+                <div class="advance-payment-div">
+                  <div *ngFor="let slab of advanceDiscountSlabs"
+                    (click)="selectAdvancePaymentPlan(slab)"
+                    [ngClass]="{'advance-card': true, 'selected': isAdvancePaymentPlanSelected(slab)}">
+                    <div class="d-flex justify-content-between">
+                      <div class="advance-text">
+                        <div class="advance-title">Pay {{ slab.advancePercentage }}% Advance</div>
+                        <div class="advance-discount">Get {{ slab.discountPercentage }}% Discount</div>
+                      </div>
                     </div>
                   </div>
                 </div>
-
                 <div *ngIf="isAdvancePaymentPlanRequired()" class="advance-payment-info">
                   Select an advance payment plan to continue with Pay Now.
                 </div>
               </div>
+
+              <!-- ③ ADD-ON SERVICES ──────────────────────────────────────── -->
+              <div *ngIf="addOnServices && addOnServices.length > 0"
+                class="rooms-cards-pricing card"
+                style="padding: 30px; margin-bottom: 20px">
+                <div class="d-flex align-items-center" style="gap: 10px; margin-bottom: 8px">
+                  <span class="section-number-badge">3</span>
+                  <h5 class="booking-d-heading" style="margin: 0">Add-On Services</h5>
+                </div>
+                <p style="font-size: 13px; color: #6b7280; margin-bottom: 16px">
+                  Add-ons are always charged in full — not split by your advance payment plan.
+                </p>
+                <div class="table-responsive">
+                  <table class="table table-sm mb-0" style="font-size: 13px">
+                    <thead style="background-color: #f9fafb">
+                      <tr>
+                        <th style="font-weight: 600; padding: 8px 12px; color: #6b7280">Service</th>
+                        <th style="font-weight: 600; text-align: right; padding: 8px 12px; color: #6b7280">Price</th>
+                        <th style="font-weight: 600; text-align: right; padding: 8px 12px; color: #6b7280">Tax</th>
+                        <th style="font-weight: 600; text-align: right; padding: 8px 12px; color: #6b7280">Total</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let addon of addOnServices"
+                        (click)="toggleAddOnSelection(addon)"
+                        [style.background-color]="isAddOnSelected(addon) ? '#f0fdfa' : 'transparent'"
+                        [style.border-left]="isAddOnSelected(addon) ? '3px solid #0d9488' : '3px solid transparent'"
+                        style="cursor: pointer; transition: background 0.15s">
+                        <td style="padding: 10px 12px; vertical-align: middle">
+                          <div class="d-flex align-items-center" style="gap: 10px">
+                            <div style="width: 22px; height: 22px; border-radius: 50%; border: 2px solid; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; transition: all 0.15s"
+                              [style.border-color]="isAddOnSelected(addon) ? '#0d9488' : '#d1d5db'"
+                              [style.background-color]="isAddOnSelected(addon) ? '#0d9488' : 'transparent'"
+                              [style.color]="isAddOnSelected(addon) ? '#ffffff' : 'transparent'">✓</div>
+                            <div>
+                              <div style="font-weight: 600; color: #111827">{{ addon.name }}</div>
+                              <div *ngIf="addon.description" style="font-size: 11px; color: #6b7280">{{ addon.description }}</div>
+                            </div>
+                          </div>
+                        </td>
+                        <td style="text-align: right; vertical-align: middle; padding: 10px 12px">{{ addon.servicePrice | currency: currency : 'symbol' : '1.2-2' }}</td>
+                        <td style="text-align: right; vertical-align: middle; padding: 10px 12px; color: #6b7280">{{ addon.taxAmount | currency: currency : 'symbol' : '1.2-2' }}</td>
+                        <td style="text-align: right; vertical-align: middle; padding: 10px 12px; font-weight: 600">{{ (addon.servicePrice + addon.taxAmount) | currency: currency : 'symbol' : '1.2-2' }}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <!-- Footer totals: visible only when something is selected -->
+                <div *ngIf="selectedAddOns && selectedAddOns.length > 0"
+                  style="background-color: #f9fafb; border-radius: 0 0 8px 8px; padding: 12px 14px; border-top: 2px solid #e5e7eb; margin-top: 4px">
+                  <div class="d-flex justify-content-between" style="font-size: 13px; margin-bottom: 4px">
+                    <span class="color-graying">Services Subtotal ({{ selectedAddOns.length }} selected)</span>
+                    <span>{{ getServicesSubtotal() | currency: currency : 'symbol' : '1.2-2' }}</span>
+                  </div>
+                  <div class="d-flex justify-content-between" style="font-size: 13px; margin-bottom: 8px">
+                    <span class="color-graying">Services Tax</span>
+                    <span>{{ getServicesTax() | currency: currency : 'symbol' : '1.2-2' }}</span>
+                  </div>
+                  <div class="d-flex justify-content-between" style="font-weight: 700; font-size: 14px">
+                    <span>Services Total <small style="font-weight: 400; color: #6b7280; font-size: 11px">(paid in full now)</small></span>
+                    <span style="color: #0f172a">{{ getServicesTotal() | currency: currency : 'symbol' : '1.2-2' }}</span>
+                  </div>
+                </div>
+                <div *ngIf="!selectedAddOns || selectedAddOns.length === 0"
+                  style="font-size: 12px; color: #9ca3af; margin-top: 10px; text-align: center; padding: 8px">
+                  <i class="fa-solid fa-hand-pointer" style="margin-right: 5px"></i> Click a row to add a service to your booking.
+                </div>
+              </div>
+
               <!-- Fill Your Details Section -->
               <form
                 (ngSubmit)="orderForm?.form.valid && onSubmit(orderForm)"
@@ -549,466 +652,102 @@
                       >{{ booking.notes }}</textarea
                     >
                   </div>
-
-                  <!-- View Coupon section -->
-                  <!-- <div
-                  class="coupons-giftcards"
-                  (click)="openPromoListData()"
-                  *ngIf="!selectedPromotionCheck"
-                >
-                  <span>
-                    <i class="fas fa-gift"></i>
-                    View Coupons & Gift Cards
-                  </span>
-                </div> -->
-
-                  <div
-                    style="
-                      width: 100%;
-                      text-align: left;
-                      font-size: 14px;
-                      color: #333;
-                      margin-top: 10px;
-                    "
-                    *ngIf="showTheSelectedCoupon && !selectedPromotionCheck"
-                  >
-                    <div
-                      style="
-                        background-color: #ffffff;
-                        border-radius: 10px;
-                        padding: 10px;
-                        margin-bottom: 10px;
-                        box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
-                      "
-                    >
-                      <div style="display: flex; column-gap: 340px">
-                        <strong *ngIf="selectedCouponList.couponCode"
-                          >Coupon Code:
-                          {{ selectedCouponList.couponCode }} (<span
-                            *ngIf="selectedCouponList.discountPercentage"
-                            style="color: red"
-                            >{{ selectedCouponList.discountPercentage }}%
-                            OFF)</span
-                          ></strong
-                        >
-                        <span
-                          *ngIf="showTheSelectedCoupon"
-                          style="height: 0px"
-                          (click)="clearSelectedCoupons()"
-                          ><i class="bi bi-trash"></i
-                        ></span>
-                      </div>
-                      <div style="display: flex; column-gap: 330px">
-                        <div>
-                          <span *ngIf="selectedCouponList.minimumOrderAmount"
-                            >Minimum Order:
-                            {{
-                              selectedCouponList.minimumOrderAmount
-                                | currency : currency : "symbol" : "1.2-2"
-                            }}</span
-                          ><br />
-                          <span *ngIf="selectedCouponList.endDate"
-                            >Valid until:
-                            {{
-                              selectedCouponList.endDate | date : "d MMMMy"
-                            }}</span
-                          >
-                        </div>
-                        <!-- Image on the right side -->
-                        <img
-                          *ngIf="selectedCouponList.imageList?.[0]?.url"
-                          [src]="selectedCouponList.imageList[0].url"
-                          alt="image"
-                          style="
-                            width: 40px;
-                            height: 40px;
-                            object-fit: cover;
-                            border-radius: 5px;
-                            position: relative;
-                          "
-                        />
-                      </div>
-                    </div>
-                  </div>
                 </div>
               </form>
             </div>
             <div class="col-5 padding-right-0px">
-              <div class="rooms-cards-pricing card" style="margin-bottom: 20px">
+              <!-- ③ ORDER SUMMARY ─────────────────────────────────────────── -->
+              <div class="rooms-cards-pricing card" style="margin-bottom: 20px; position: sticky; top: 20px">
+                <div style="padding: 20px 20px 0; display: flex; align-items: center; gap: 10px; margin-bottom: 12px">
+                  <span class="section-number-badge">4</span>
+                  <h5 class="headimg-color" style="margin: 0">
+                    <img src="media-be/images/payment-sum.svg" alt="" width="20" height="20" style="margin-right: 5px" />
+                    Order Summary
+                  </h5>
+                </div>
 
-                <h5 class="headimg-color">
-                  <img
-                    src="media-be/images/payment-sum.svg"
-                    alt=""
-                    width="20"
-                    height="20"
-                    style="margin-right: 5px"
-                  />
-                  Payment Summary
-                </h5>
-                <div
-                id="soldOutSectionOne"
-                  *ngIf="hasAnySoldOutRoom()"
-                  class="sold-out-info-box"
-                >
+                <div id="soldOutSectionOne" *ngIf="hasAnySoldOutRoom()" class="sold-out-info-box">
                   <i class="fa-solid fa-circle-exclamation"></i>
-
-                    <div class="sold-out-info-text">
-                      <strong>Some rooms are no longer available.</strong>
-                      <div class="sold-out-info-sub">
-                        Please reset your booking and select available rooms to continue.
-                      </div>
-                    </div>
+                  <div class="sold-out-info-text">
+                    <strong>Some rooms are no longer available.</strong>
+                    <div class="sold-out-info-sub">Please reset your booking and select available rooms to continue.</div>
                   </div>
-                <div
-                  class="booking-heading"
-                  style="padding: 10px"
-                  *ngFor="
-                    let plan of bookingSummaryDetails.selectedPlansSummary;
-                    let last = last
-                  "
-                  [class.sold-out-card]="isRoomSoldOut(plan)"
-                >
-                 <div
-                  *ngIf="isRoomSoldOut(plan)"
-                  class="sold-out-title"
-                >
-                  <i class="fa-solid fa-circle-xmark sold-out-icon"></i>
-                  SOLD OUT
                 </div>
-                  <div class="line-height-27px d-flex justify-content-between" style="gap: 15px">
-                    <div class="font-weight-600">
-                      {{ plan.roomName }} &nbsp;&nbsp;
-                      <span
-                        *ngIf="specialDiscountData"
-                        class="badge badge-success badge-successTwo px-2 py-1 mr-2"
-                      >
-                        <img
-                          src=" media-be/images/coupon-image-change.svg"
-                          alt=""
-                        />
-                        &nbsp; Coupon Applied!</span
-                      >
-                    </div>
-                    <div class="nights">
-                      {{ plan.selectedRoomnumber }} Room(s)
-                    </div>
-                  </div>
+
+                <div style="padding: 0 10px 6px">
+                  <!-- Total Room Charges -->
                   <div class="d-flex justify-content-between line-height-27px">
-                    <div class="color-graying">
-                      {{ plan.planCodeName }} x {{ plan.selectedRoomnumber }}
-                    </div>
-
-                    <div *ngIf="activeGoogleCenter">
-                      <div style="text-align: end">
-                        ₹
-                        {{ plan.price | number : "1.2-2" }}
-                      </div>
-                      <div
-                        style="text-align: end; margin-top: -5px"
-                        *ngIf="
-                          plan.extraPersonAdultCountAmount +
-                            plan.extraPersonChildCountAmount >
-                          0
-                        "
-                      >
-                        Inclusive of Extra Pax
-                      </div>
-                    </div>
-                    <div *ngIf="!activeGoogleCenter" style="display: block">
-                      <div style="text-align: end">
-                        ₹
-                        {{ plan.price | number : "1.2-2" }}
-                      </div>
-                      <div
-                        style="text-align: end; margin-top: -5px"
-                        *ngIf="
-                          plan.extraPersonAdultCountAmount +
-                            plan.extraPersonChildCountAmount >
-                          0
-                        "
-                      >
-                        Inclusive of Extra Pax
-                      </div>
-                    </div>
+                    <div class="color-graying">Total {{ roomLabel }} Charges</div>
+                    <div style="color: #3b82f6; font-weight: 500">{{ bookingSummaryDetails?.totalPlanPrice | currency: currency : 'symbol' : '1.2-2' }}</div>
                   </div>
-                  <!-- <div
-                  class="d-flex justify-content-between line-height-27px"
-                  *ngIf="
-                    plan.extraPersonAdultCountAmount +
-                      plan.extraPersonChildCountAmount >
-                    0
-                  "
-                >
-                  <div class="color-graying">Extra Pax Charges</div>
-
-                  <div>
-                    ₹
-                    {{
-                      ((plan.extraPersonAdultCountAmount +
-                        plan.extraPersonChildCountAmount))
-                    }}
+                  <!-- Coupon Discount -->
+                  <div *ngIf="couponDiscountAmount > 0" class="d-flex justify-content-between line-height-27px">
+                    <div class="color-graying">Coupon Discount ({{ this.specialDiscountData?.discountPercentage }}%)</div>
+                    <div style="color: #16a34a; font-weight: 500">-{{ couponDiscountAmount | currency: currency : 'symbol' : '1.2-2' }}</div>
                   </div>
-                </div> -->
-                  <div
-                    class="d-flex justify-content-between line-height-27px"
-                    *ngIf="this.specialDiscountData?.discountPercentage"
-                  >
-                    <div class="color-graying">
-                      Discount ({{
-                        this.specialDiscountData?.discountPercentage
-                      }})%
-                    </div>
-
-                    <div>
-                      - ₹
-                      {{
-                       ( (plan.price *
-                          this.specialDiscountData?.discountPercentage) /
-                          100
-                      ) | number : "1.2-2"
-                      }}
-                    </div>
+                  <!-- Advance Discount -->
+                  <div *ngIf="advanceDiscountAmount > 0" class="d-flex justify-content-between line-height-27px">
+                    <div class="color-graying">Advance Discount ({{ getSelectedAdvanceDiscountPercentage() }}%)</div>
+                    <div style="color: #16a34a; font-weight: 500">-{{ advanceDiscountAmount | currency: currency : 'symbol' : '1.2-2' }}</div>
                   </div>
-                  <div
-                    *ngIf="this.specialDiscountData?.discountPercentage"
-                    class="d-flex justify-content-between line-height-27px"
-                  >
-                    <div class="color-graying">Tax & Services</div>
-
-                    <div>
-                      ₹
-                      {{
-                        ((plan.price -
-                          (plan.price *
-                            this.specialDiscountData?.discountPercentage) /
-                            100) *
-                          plan.taxpercentage) /
-                          100 | number : "1.2-2"
-                      }}
-                    </div>
-                  </div>
-                  <div
-                    *ngIf="!this.specialDiscountData?.discountPercentage"
-                    class="d-flex justify-content-between line-height-27px"
-                  >
-                    <div class="color-graying">Tax & Services</div>
-
-                    <div>
-                      ₹ {{ plan.taxPercentageperroom | number : "1.2-2" }}
-                    </div>
-                  </div>
-                  <div
-                    *ngIf="
-                      !this.specialDiscountData?.discountPercentage &&
-                      !activeGoogleCenter
-                    "
-                    class="d-flex justify-content-between line-height-27px"
-                  >
-                    <div class="color-graying font-weight-600">Total</div>
-
-                    <div class="font-weight-600">
-                      ₹
-                      {{
-                        plan.price + plan.taxPercentageperroom
-                          | number : "1.2-2"
-                      }}
-                    </div>
-                  </div>
-                  <div
-                    *ngIf="this.specialDiscountData?.discountPercentage"
-                    class="d-flex justify-content-between line-height-27px"
-                  >
-                    <div class="color-graying font-weight-600">Total</div>
-
-                    <div class="font-weight-600">
-                      ₹
-                      {{
-                        plan.price -
-                          (plan.price *
-                            this.specialDiscountData?.discountPercentage) /
-                            100 +
-                          ((plan.price -
-                            (plan.price *
-                              this.specialDiscountData?.discountPercentage) /
-                              100) *
-                            plan.taxpercentage) /
-                            100 | number : "1.2-2"
-                      }}
-                    </div>
-                  </div>
-                  <hr *ngIf="!last" style="border: 1px solid #e5e7eb" />
-                </div>
-                <div class="d-flex justify-content-center" *ngIf="hasAnySoldOutRoom()">
-                  <button
-
-                    type="button"
-                    class="btn btn-reset-one"
-                    (click)="onEditBooking()"
-                  >
-                    Start Over
-                  </button>
-                </div>
-                <div
-                  style="
-                    padding: 10px;
-                    background-color: #f9fafb;
-                    border-radius: 10px;
-                  "
-                >
+                  <!-- Tax on Rooms -->
                   <div class="d-flex justify-content-between line-height-27px">
-                    <div class="color-graying tooltip-text">Total Room Price</div>
-
-                    <div style="color: #3b82f6; font-weight: 500">
-                      ₹
-                      {{
-                        bookingSummaryDetails?.totalPlanPrice | number : "1.2-2"
-                      }}
-                    </div>
-                  </div>
-                  <div class="d-flex justify-content-between line-height-27px" *ngIf="specialDiscountData?.discountPercentage">
-                    <div class="color-graying" style="color: #16A34A !important;">Discount Amount</div>
-
-                    <div style="color: #16A34A !important; font-weight: 500">
-                     -₹
-                      {{
-                        (bookingSummaryDetails?.totalPlanPrice *
-                              specialDiscountData?.discountPercentage) /
-                              100 | number : "1.2-2"
-                      }}
-                    </div>
-                  </div>
-
-                  <div class="d-flex justify-content-between line-height-27px">
-                    <div class="color-graying">Total Tax on Room Price</div>
-
-                    <div style="font-weight: 500">
-                      ₹ {{ bookingSummaryDetails?.totalTax | number : "1.2-2" }}
-                    </div>
-                  </div>
-
-                  <div
-                    class="d-flex justify-content-between line-height-27px"
-                    *ngIf="
-                      bookingSummaryDetails?.totalAddOnsPrice -
-                        bookingSummaryDetails?.totaltaxfacilityAmount >
-                      0
-                    "
-                  >
-                    <div class="color-graying">Total Add-on Services Price</div>
-
-                    <div style="font-weight: 500">
-                      ₹
-                      {{
-                        bookingSummaryDetails?.totalAddOnsPrice -
-                          bookingSummaryDetails?.totaltaxfacilityAmount
-                          | number : "1.2-2"
-                      }}
-                    </div>
-                  </div>
-
-                  <div
-                    class="d-flex justify-content-between line-height-27px"
-                    *ngIf="bookingSummaryDetails?.totaltaxfacilityAmount > 0"
-                  >
-                    <div class="color-graying">Total Tax on Services</div>
-
-                    <div style="font-weight: 500">
-                      ₹
-                      {{
-                        bookingSummaryDetails?.totaltaxfacilityAmount
-                          | number : "1.2-2"
-                      }}
-                    </div>
-                  </div>
-                  <div
-                  class="d-flex justify-content-between line-height-27px"
-                  *ngIf="serviceChargePercentage > 0"
-                >
-                  <div class="color-graying">Convenience Fee:</div>
-
-                  <div style="font-weight: 500">
-                    <span *ngIf="specialDiscountData?.discountPercentage">₹{{ calculateConvenienceFee(bookingSummaryDetails?.totalPlanPrice - ((bookingSummaryDetails?.totalPlanPrice *
-                              specialDiscountData?.discountPercentage) / 100), serviceChargePercentage) }}</span>
-                    <span *ngIf="!specialDiscountData?.discountPercentage">₹{{ calculateConvenienceFee(bookingSummaryDetails?.totalPlanPrice, serviceChargePercentage) }}</span>
-
+                    <div class="color-graying">Tax &amp; Services</div>
+                    <div style="font-weight: 500">{{ taxOnDiscountedAmount | currency: currency : 'symbol' : '1.2-2' }}</div>
                   </div>
                 </div>
 
+                <!-- Add-On Services total (if any selected) -->
+                <div *ngIf="selectedAddOns && selectedAddOns.length > 0"
+                  style="margin: 0 10px 8px; padding: 10px 12px; background-color: #f0fdfa; border-radius: 8px; border: 1px solid #99f6e4">
+                  <div class="d-flex justify-content-between">
+                    <div class="color-graying">Add-On Services ({{ selectedAddOns.length }})</div>
+                    <div style="font-weight: 600">{{ getServicesTotal() | currency: currency : 'symbol' : '1.2-2' }}</div>
+                  </div>
+                  <div style="font-size: 11px; color: #6b7280; margin-top: 2px">Always paid in full</div>
                 </div>
 
+                <!-- Convenience Fee -->
+                <div *ngIf="convenienceFeeAmount > 0"
+                  style="padding: 0 10px"
+                  class="d-flex justify-content-between line-height-27px">
+                  <div class="color-graying">Convenience Fee</div>
+                  <div style="font-weight: 500">{{ convenienceFeeAmount | currency: currency : 'symbol' : '1.2-2' }}</div>
+                </div>
 
-                <div class="d-flex justify-content-between line-height-27px">
-                  <div class="font-weight-600" style="font-size: 1rem">
-                    Total Amount
+                <!-- Grand Total -->
+                <div style="padding: 12px 10px; border-top: 2px solid #e5e7eb; margin-top: 8px"
+                  class="d-flex justify-content-between">
+                  <div class="font-weight-600" style="font-size: 1rem">Grand Total</div>
+                  <div class="font-weight-600" style="font-size: 1rem">{{ getNewGrandTotal() | currency: currency : 'symbol' : '1.2-2' }}</div>
+                </div>
+
+                <!-- Pay Now / Balance at Check-in (advance plan selected) -->
+                <div *ngIf="showPayNow() && hasSelectedAdvancePaymentPlan()"
+                  style="margin: 0 10px 14px; padding: 12px; background-color: #fef9c3; border-radius: 8px; border: 1px solid #fef08a">
+                  <div class="d-flex justify-content-between" style="margin-bottom: 4px">
+                    <div style="font-weight: 700; color: #0f172a">Pay Now</div>
+                    <div style="font-weight: 700; color: #dc2626; font-size: 1rem">{{ getNewPayNowAmount() | currency: currency : 'symbol' : '1.2-2' }}</div>
                   </div>
-
-                  <div class="font-weight-600" style="font-size: 1rem">
-                    <span *ngIf="serviceChargePercentage > 0">
-                      <span *ngIf="specialDiscountData?.discountPercentage">₹{{( bookingSummaryDetails?.totalAmount) + calculateConvenienceFee(bookingSummaryDetails?.totalPlanPrice - ((bookingSummaryDetails?.totalPlanPrice *
-                              specialDiscountData?.discountPercentage) / 100), serviceChargePercentage) | number : "1.2-2"}}</span>
-                    <span *ngIf="!specialDiscountData?.discountPercentage">₹{{( bookingSummaryDetails?.totalAmount) +  calculateConvenienceFee(bookingSummaryDetails?.totalPlanPrice, serviceChargePercentage) | number : "1.2-2" }}</span>
-                    </span>
-                    <span *ngIf="!serviceChargePercentage">
-                      ₹{{ bookingSummaryDetails?.totalAmount | number : "1.2-2" }}
-                    </span>
-
+                  <div style="font-size: 11px; color: #6b7280; margin-bottom: 10px">
+                    {{ getSelectedAdvancePaymentPercentage() }}% of rooms after discounts + all services + convenience fee
+                  </div>
+                  <div class="d-flex justify-content-between">
+                    <div class="color-graying">Balance at Check-in</div>
+                    <div style="font-weight: 500">{{ getNewBalanceAtCheckIn() | currency: currency : 'symbol' : '1.2-2' }}</div>
                   </div>
                 </div>
-                <div
-                  *ngIf="showPayNow() && hasSelectedAdvancePaymentPlan()"
-                  style="
-                    margin-top: 14px;
-                    padding-top: 14px;
-                    border-top: 1px solid #e5e7eb;
-                  "
-                >
-                  <!-- <div class="d-flex justify-content-between line-height-27px">
-                    <div class="color-graying">Selected Advance Plan</div>
-                    <div style="font-weight: 500">
-                      {{ getSelectedAdvancePercentage() }}% advance
-                    </div>
-                  </div> -->
-                  <div class="d-flex justify-content-between line-height-27px">
-                    <div class="color-graying">
-                      Advance Discount ({{ getSelectedAdvanceDiscountPercentage() }}%)
-                    </div>
-                    <div style="font-weight: 500">
-                      -₹{{ getAdvancePlanDiscountAmount() | number : "1.2-2" }}
-                    </div>
-                  </div>
-                  <div class="d-flex justify-content-between line-height-27px">
-                    <div class="color-graying">Total After Advance Discount</div>
-                    <div style="font-weight: 500">
-                      ₹{{ getAdvancePlanTotalAfterDiscount() | number : "1.2-2" }}
-                    </div>
-                  </div>
-                  <div class="d-flex justify-content-between line-height-27px">
-                    <div class="font-weight-600" style="font-size: 1rem">
-                      Advance Payable ({{ getSelectedAdvancePercentage() }}%)
-                    </div>
-                    <div class="font-weight-600" style="font-size: 1rem">
-                      ₹{{ getAdvancePlanPayableAmount() | number : "1.2-2" }}
-                    </div>
-                  </div>
-                </div>
-                <div
-                  *ngIf="
-                    showPayNow() &&
-                    hasAdvancePaymentPlans() &&
-                    !hasSelectedAdvancePaymentPlan()
-                  "
-                  style="
-                    margin-top: 14px;
-                    padding-top: 14px;
-                    border-top: 1px solid #e5e7eb;
-                    color: #b45309;
-                    font-size: 14px;
-                  "
-                >
+
+                <!-- Prompt to select advance plan -->
+                <div *ngIf="showPayNow() && hasAdvancePaymentPlans() && !hasSelectedAdvancePaymentPlan()"
+                  style="padding: 0 10px 14px; color: #b45309; font-size: 14px">
                   Select an advance plan above to see the Pay Now calculation.
                 </div>
 
+                <!-- Start Over (sold out) -->
+                <div class="d-flex justify-content-center" *ngIf="hasAnySoldOutRoom()" style="padding-bottom: 14px">
+                  <button type="button" class="btn btn-reset-one" (click)="onEditBooking()">Start Over</button>
+                </div>
               </div>
             </div>
           </div>
@@ -1106,17 +845,40 @@
 
             <div class="col-12 padding-left0px padding-right-0px">
               <div class="card" style="padding: 10px">
-                <h5 class="margin-botton-20px booking-d-heading">
-                  <img
-                    src="media-be/images/calemder-frame.svg"
-                    alt="icon"
-                    width="20"
-                    height="20"
-                    style="margin-right: 5px"
-                  />
-                  Your Booking
-                </h5>
+                <div class="d-flex justify-content-between align-items-center margin-botton-20px"
+                  (click)="showMobileBookingDetails = !showMobileBookingDetails"
+                  style="cursor: pointer">
+                  <h5 class="booking-d-heading" style="margin: 0">
+                    <img
+                      src="media-be/images/calemder-frame.svg"
+                      alt="icon"
+                      width="20"
+                      height="20"
+                      style="margin-right: 5px"
+                    />
+                    Your Booking
+                  </h5>
+                  <span style="font-size: 12px; color: #0d9488; font-weight: 600">
+                    {{ showMobileBookingDetails ? 'Hide details' : 'View details' }}
+                    <i [class]="showMobileBookingDetails ? 'fa-solid fa-angle-up' : 'fa-solid fa-angle-down'" style="margin-left: 4px"></i>
+                  </span>
+                </div>
 
+                <!-- Compact summary — always visible -->
+                <div class="d-flex justify-content-between align-items-center" style="font-size: 13px; color: #374151; padding: 4px 0 8px 0">
+                  <span style="font-weight: 600; color: #0f172a">
+                    <i class="fa-solid fa-hotel" style="color:#031eaa; margin-right:5px; font-size:11px"></i>
+                    {{ businessUser?.name }}
+                  </span>
+                  <span style="color: #6b7280; font-size: 12px">
+                    {{ bookingSummaryDetails?.fromDate | date:'dd MMM' }} &ndash;
+                    {{ bookingSummaryDetails?.toDate | date:'dd MMM' }} &middot;
+                    {{ bookingSummaryDetails?.totalNights }} nights
+                  </span>
+                </div>
+
+                <!-- Expandable details -->
+                <div *ngIf="showMobileBookingDetails">
                 <h5 class="booking-heading">{{ businessUser?.name }}</h5>
                 <p class="booking-subheading">
                   <img
@@ -1272,8 +1034,7 @@
 
                     <div *ngIf="activeGoogleCenter">
                       <div style="text-align: end">
-                        ₹
-                        {{ plan.price | number : "1.2-2" }}
+                        {{ plan.price | currency: currency : 'symbol' : '1.2-2' }}
                       </div>
                       <div
                         style="text-align: end; margin-top: -5px"
@@ -1288,8 +1049,7 @@
                     </div>
                     <div *ngIf="!activeGoogleCenter">
                       <div style="text-align: end">
-                        ₹
-                        {{ plan.price | number : "1.2-2" }}
+                        {{ plan.price | currency: currency : 'symbol' : '1.2-2' }}
                       </div>
                       <div
                         style="text-align: end; margin-top: -5px"
@@ -1314,10 +1074,10 @@
                   <div class="color-graying">Extra Pax Charges</div>
 
                   <div>
-                    ₹
+                    
                     {{
                       ((plan.extraPersonAdultCountAmount +
-                        plan.extraPersonChildCountAmount))
+                        plan.extraPersonChildCountAmount)) | currency: currency : 'symbol' : '1.2-2'
                     }}
                   </div>
                 </div> -->
@@ -1332,41 +1092,63 @@
                     </div>
 
                     <div>
-                     - ₹
-                      {{
+                     -{{
                        ( (plan.price *
                           this.specialDiscountData?.discountPercentage) /
                           100
-                      ) | number : "1.2-2"
+                      ) | currency: currency : 'symbol' : '1.2-2'
                       }}
                     </div>
                   </div>
+                  
+                  <div class="d-flex justify-content-between line-height-27px advance-discounts"
+                    *ngIf="this.selectedAdvanceDiscountSlab?.discountPercentage">
+                    <div class="color-graying">
+                      Advance Discount ({{
+                      this.selectedAdvanceDiscountSlab?.discountPercentage
+                      }})%
+                    </div>
+
+                    <div>
+                      -{{
+                      ( (plan.price *
+                      this.selectedAdvanceDiscountSlab?.discountPercentage) /
+                      100
+                      ) | currency: currency : 'symbol' : '1.2-2'
+                      }}
+                    </div>
+                  </div>
+
                   <div
-                    *ngIf="this.specialDiscountData?.discountPercentage"
+                    *ngIf="this.specialDiscountData?.discountPercentage || this.selectedAdvanceDiscountSlab?.discountPercentage"
                     class="d-flex justify-content-between line-height-27px"
                   >
                     <div class="color-graying">Tax & Services</div>
 
                     <div>
-                      ₹
                       {{
-                        ((plan.price -
-                          (plan.price *
-                            this.specialDiscountData?.discountPercentage) /
-                            100) *
-                          plan.taxpercentage) /
-                          100 | number : "1.2-2"
+                          (
+                            (plan.price -
+                              (plan.price *
+                                (
+                                  (specialDiscountData?.discountPercentage || 0) +
+                                  (selectedAdvanceDiscountSlab?.discountPercentage || 0)
+                                )) /
+                                100) *
+                            plan.taxpercentage
+                          ) / 100 | currency: currency : 'symbol' : '1.2-2'
                       }}
                     </div>
                   </div>
+
                   <div
-                    *ngIf="!this.specialDiscountData?.discountPercentage"
+                    *ngIf="!this.specialDiscountData?.discountPercentage && !this.selectedAdvanceDiscountSlab?.discountPercentage"
                     class="d-flex justify-content-between line-height-27px"
                   >
                     <div class="color-graying">Tax & Services</div>
 
                     <div>
-                      ₹ {{ plan.taxPercentageperroom | number : "1.2-2" }}
+                      {{ plan.taxPercentageperroom | currency: currency : 'symbol' : '1.2-2' }}
                     </div>
                   </div>
                   <div
@@ -1376,10 +1158,9 @@
                     <div class="color-graying font-weight-600">Total</div>
 
                     <div class="font-weight-600">
-                      ₹
                       {{
                         plan.price + plan.taxPercentageperroom
-                          | number : "1.2-2"
+                          | currency: currency : 'symbol' : '1.2-2'
                       }}
                     </div>
                   </div>
@@ -1393,7 +1174,6 @@
                     <div class="color-graying font-weight-600">Total</div>
 
                     <div class="font-weight-600">
-                      ₹
                       {{
                         plan.price -
                           (plan.price *
@@ -1404,7 +1184,7 @@
                               this.specialDiscountData?.discountPercentage) /
                               100) *
                             plan.taxpercentage) /
-                            100 | number : "1.2-2"
+                            100 | currency: currency : 'symbol' : '1.2-2'
                       }}
                     </div>
                   </div>
@@ -1420,23 +1200,23 @@
                     Start Over
                   </button>
                 </div>
+                </div><!-- end expanded details -->
               </div>
             </div>
 
-            
-
-              <div class="card p-4 mx-auto booking-heading" style="
+              <!-- Advance Payment Plan (mobile, inside Section 1) -->
+              <div class="card p-3 mx-auto booking-heading" style="
                                                                 border-radius: 10px;
                                                                 box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-                                                                margin-bottom: 20px;
+                                                                margin-bottom: 16px;
                                                               " *ngIf="showPayNow() && businessServiceDto">
-                <h5 class="margin-botton-20px booking-d-heading">
-                  <i class="fa-solid fa-wallet" style="color: #031eaa;"></i>
-                  Select Advance Payment Plan
-                </h5>
-                <!-- <p style="font-size: 14px; color: #64748b; margin-bottom: 16px">
-                                  Select a slab to calculate the payable advance and discount.
-                                </p> -->
+                <div class="d-flex align-items-center" style="gap: 10px; margin-bottom: 12px">
+                  <span class="section-number-badge">2</span>
+                  <h5 class="booking-d-heading" style="margin: 0">
+                    <i class="fa-solid fa-wallet" style="color: #031eaa; margin-right: 6px"></i>
+                    Select Advance Payment Plan
+                  </h5>
+                </div>
 
                 <div class="advance-payment-mob-div">
                   <div class="advance-card-mob" *ngFor="let slab of advanceDiscountSlabs" (click)="selectAdvancePaymentPlan(slab)"
@@ -1450,24 +1230,6 @@
                           Get {{ slab.discountPercentage }}% Discount
                         </div>
                       </div>
-                      <!-- <div style="text-align: right">
-                                        <div style="font-weight: 600; color: #0f172a">
-                                          ₹{{
-                                          getAdvancePlanPayableAmountForSlab(
-                                          slab,
-                                          getCurrentBookingTotalForAdvancePlan()
-                                          ) | number : "1.2-2"
-                                          }}
-                                        </div>
-                                        <div style="font-size: 12px; color: #16a34a">
-                                          Save ₹{{
-                                          getAdvancePlanDiscountAmountForSlab(
-                                          slab,
-                                          getCurrentBookingTotalForAdvancePlan()
-                                          ) | number : "1.2-2"
-                                          }}
-                                        </div>
-                                      </div> -->
                     </div>
                   </div>
                 </div>
@@ -1477,172 +1239,155 @@
                 </div>
               </div>
 
-            <div
-              class="col-12 padding-right-0px padding-left0px margin-top-20px"
-            >
+            <!-- COUPON APPLIED (mobile) ──────────────────────────── -->
+            <div *ngIf="showTheSelectedCoupon && !selectedPromotionCheck"
+              class="rooms-cards-pricing card"
+              style="padding: 12px 16px; margin-bottom: 16px; border-left: 4px solid #16a34a; background: #f0fdf4">
+              <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px">
+                <div style="display: flex; align-items: center; gap: 8px">
+                  <i class="fa-solid fa-tag" style="color: #16a34a; font-size: 13px"></i>
+                  <div>
+                    <div style="font-weight: 700; color: #111827; font-size: 13px">
+                      Coupon: {{ selectedCouponList.couponCode }}
+                      <span *ngIf="selectedCouponList.discountPercentage" style="color: #16a34a">&nbsp;({{ selectedCouponList.discountPercentage }}% OFF)</span>
+                    </div>
+                    <div style="font-size: 11px; color: #6b7280" *ngIf="selectedCouponList.endDate">
+                      Valid until: {{ selectedCouponList.endDate | date : 'd MMM y' }}
+                    </div>
+                  </div>
+                </div>
+                <span style="cursor: pointer; color: #dc2626; font-size: 11px; white-space: nowrap; flex-shrink: 0" (click)="clearSelectedCoupons()">
+                  <i class="bi bi-trash"></i>
+                </span>
+              </div>
+            </div>
+
+            <!-- ② ADD-ON SERVICES (mobile) ──────────────────────────── -->
+            <div *ngIf="addOnServices && addOnServices.length > 0"
+              class="rooms-cards-pricing card"
+              style="padding: 20px; margin-bottom: 20px">
+              <div class="d-flex align-items-center" style="gap: 10px; margin-bottom: 8px">
+                <span class="section-number-badge">3</span>
+                <h5 class="booking-d-heading" style="margin: 0">Add-On Services</h5>
+              </div>
+              <p style="font-size: 12px; color: #6b7280; margin-bottom: 12px">
+                Add-ons are always charged in full — not split by your advance payment plan.
+              </p>
+              <div style="overflow-x: auto">
+                <table class="table table-sm mb-0" style="font-size: 12px; min-width: 360px">
+                  <thead style="background-color: #f9fafb">
+                    <tr>
+                      <th style="font-weight: 600; padding: 6px 10px; color: #6b7280">Service</th>
+                      <th style="font-weight: 600; text-align: right; padding: 6px 10px; color: #6b7280">Price</th>
+                      <th style="font-weight: 600; text-align: right; padding: 6px 10px; color: #6b7280">Tax</th>
+                      <th style="font-weight: 600; text-align: right; padding: 6px 10px; color: #6b7280">Total</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let addon of addOnServices"
+                      (click)="toggleAddOnSelection(addon)"
+                      [style.background-color]="isAddOnSelected(addon) ? '#f0fdfa' : 'transparent'"
+                      [style.border-left]="isAddOnSelected(addon) ? '3px solid #0d9488' : '3px solid transparent'"
+                      style="cursor: pointer">
+                      <td style="padding: 8px 10px; vertical-align: middle">
+                        <div class="d-flex align-items-center" style="gap: 8px">
+                          <div style="width: 20px; height: 20px; border-radius: 50%; border: 2px solid; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700"
+                            [style.border-color]="isAddOnSelected(addon) ? '#0d9488' : '#d1d5db'"
+                            [style.background-color]="isAddOnSelected(addon) ? '#0d9488' : 'transparent'"
+                            [style.color]="isAddOnSelected(addon) ? '#ffffff' : 'transparent'">✓</div>
+                          <div style="font-weight: 600; color: #111827">{{ addon.name }}</div>
+                        </div>
+                      </td>
+                      <td style="text-align: right; vertical-align: middle; padding: 8px 10px">{{ addon.servicePrice | currency: currency : 'symbol' : '1.0-0' }}</td>
+                      <td style="text-align: right; vertical-align: middle; padding: 8px 10px; color: #6b7280">{{ addon.taxAmount | currency: currency : 'symbol' : '1.0-0' }}</td>
+                      <td style="text-align: right; vertical-align: middle; padding: 8px 10px; font-weight: 600">{{ (addon.servicePrice + addon.taxAmount) | currency: currency : 'symbol' : '1.0-0' }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div *ngIf="selectedAddOns && selectedAddOns.length > 0"
+                style="background-color: #f9fafb; border-radius: 0 0 8px 8px; padding: 10px 12px; border-top: 2px solid #e5e7eb; margin-top: 4px">
+                <div class="d-flex justify-content-between" style="font-size: 12px; margin-bottom: 4px">
+                  <span class="color-graying">Services Subtotal</span>
+                  <span>{{ getServicesSubtotal() | currency: currency : 'symbol' : '1.0-0' }}</span>
+                </div>
+                <div class="d-flex justify-content-between" style="font-size: 12px; margin-bottom: 8px">
+                  <span class="color-graying">Services Tax</span>
+                  <span>{{ getServicesTax() | currency: currency : 'symbol' : '1.0-0' }}</span>
+                </div>
+                <div class="d-flex justify-content-between" style="font-weight: 700; font-size: 13px">
+                  <span>Services Total <small style="font-weight: 400; color: #6b7280; font-size: 10px">(full now)</small></span>
+                  <span style="color: #0f172a">{{ getServicesTotal() | currency: currency : 'symbol' : '1.0-0' }}</span>
+                </div>
+              </div>
+              <div *ngIf="!selectedAddOns || selectedAddOns.length === 0"
+                style="font-size: 11px; color: #9ca3af; margin-top: 8px; text-align: center">
+                Tap a row to add a service.
+              </div>
+            </div>
+
+            <!-- ③ ORDER SUMMARY (mobile) ────────────────────────────── -->
+            <div class="col-12 padding-right-0px padding-left0px margin-top-20px">
               <div class="rooms-cards-pricing card" style="margin-bottom: 20px">
-                <h5 class="headimg-color">
-                  <img
-                    src="media-be/images/payment-sum.svg"
-                    alt=""
-                    width="20"
-                    height="20"
-                    style="margin-right: 5px"
-                  />
-                  Payment Summary
-                </h5>
-
-                <div class="d-flex justify-content-between line-height-27px">
-                  <div class="color-graying">Total Room Price</div>
-
-                  <div style="color: #3b82f6; font-weight: 500">
-                    ₹
-                    {{
-                      bookingSummaryDetails?.totalPlanPrice | number : "1.2-2"
-                    }}
-                  </div>
+                <div style="padding: 16px 12px 0; display: flex; align-items: center; gap: 10px; margin-bottom: 12px">
+                  <span class="section-number-badge">4</span>
+                  <h5 class="headimg-color" style="margin: 0">
+                    <img src="media-be/images/payment-sum.svg" alt="" width="18" height="18" style="margin-right: 4px" />
+                    Order Summary
+                  </h5>
                 </div>
-
-                <div class="d-flex justify-content-between line-height-27px" *ngIf="specialDiscountData?.discountPercentage">
-                    <div class="color-graying" style="color: #16A34A !important;">Discount Amount</div>
-
-                    <div style="color: #16A34A !important; font-weight: 500">
-                     -₹
-                      {{
-                        (bookingSummaryDetails?.totalPlanPrice *
-                              specialDiscountData?.discountPercentage) /
-                              100 | number : "1.2-2"
-                      }}
-                    </div>
-                  </div>
-
-                <div class="d-flex justify-content-between line-height-27px">
-                  <div class="color-graying">Total Tax on Room Price</div>
-
-                  <div style="font-weight: 500">
-                    ₹ {{ bookingSummaryDetails?.totalTax | number : "1.2-2" }}
-                  </div>
-                </div>
-
-                <div
-                  class="d-flex justify-content-between line-height-27px"
-                  *ngIf="
-                    bookingSummaryDetails?.totalAddOnsPrice -
-                      bookingSummaryDetails?.totaltaxfacilityAmount >
-                    0
-                  "
-                >
-                  <div class="color-graying">Total Add-on Services Price</div>
-
-                  <div style="font-weight: 500">
-                    ₹
-                    {{
-                      bookingSummaryDetails?.totalAddOnsPrice -
-                        bookingSummaryDetails?.totaltaxfacilityAmount
-                        | number : "1.2-2"
-                    }}
-                  </div>
-                </div>
-
-                <div
-                  class="d-flex justify-content-between line-height-27px"
-                  *ngIf="bookingSummaryDetails?.totaltaxfacilityAmount > 0"
-                >
-                  <div class="color-graying">Total Tax on Services</div>
-
-                  <div style="font-weight: 500">
-                    ₹
-                    {{
-                      bookingSummaryDetails?.totaltaxfacilityAmount
-                        | number : "1.2-2"
-                    }}
-                  </div>
-                </div>
-                 <div
-                  class="d-flex justify-content-between line-height-27px"
-                  *ngIf="serviceChargePercentage > 0"
-                >
-                  <div class="color-graying">Convenience Fee:</div>
-
-                  <div style="font-weight: 500">
-                    <span *ngIf="specialDiscountData?.discountPercentage">₹{{ calculateConvenienceFee(bookingSummaryDetails?.totalPlanPrice - ((bookingSummaryDetails?.totalPlanPrice *
-                              specialDiscountData?.discountPercentage) / 100), serviceChargePercentage) }}</span>
-                    <span *ngIf="!specialDiscountData?.discountPercentage">₹{{ calculateConvenienceFee(bookingSummaryDetails?.totalPlanPrice, serviceChargePercentage) }}</span>
-
-                  </div>
-                </div>
-                <div class="d-flex justify-content-between line-height-27px">
-                  <div class="font-weight-600" style="font-size: 1rem">
-                    Total Amount
-                  </div>
-
-                  <div class="font-weight-600" style="font-size: 1rem">
-                     <span *ngIf="serviceChargePercentage > 0">
-                      <span *ngIf="specialDiscountData?.discountPercentage">₹{{( bookingSummaryDetails?.totalAmount) + calculateConvenienceFee(bookingSummaryDetails?.totalPlanPrice - ((bookingSummaryDetails?.totalPlanPrice *
-                              specialDiscountData?.discountPercentage) / 100), serviceChargePercentage) | number : "1.2-2"}}</span>
-                    <span *ngIf="!specialDiscountData?.discountPercentage">₹{{( bookingSummaryDetails?.totalAmount) +  calculateConvenienceFee(bookingSummaryDetails?.totalPlanPrice, serviceChargePercentage) | number : "1.2-2" }}</span>
-                    </span>
-                    <span *ngIf="!serviceChargePercentage">
-                      ₹{{ bookingSummaryDetails?.totalAmount | number : "1.2-2" }}
-                    </span>
-
-                  </div>
-                </div>
-
-                <div
-                  *ngIf="showPayNow() && hasSelectedAdvancePaymentPlan()"
-                  style="
-                    margin-top: 14px;
-                    padding-top: 14px;
-                    border-top: 1px solid #e5e7eb;
-                  "
-                >
-                  <!-- <div class="d-flex justify-content-between line-height-27px">
-                    <div class="color-graying">Selected Advance Plan</div>
-                    <div style="font-weight: 500">
-                      {{ getSelectedAdvancePercentage() }}% advance
-                    </div>
-                  </div> -->
+                <div style="padding: 0 12px">
                   <div class="d-flex justify-content-between line-height-27px">
-                    <div class="color-graying">
-                      Advance Discount ({{ getSelectedAdvanceDiscountPercentage() }}%)
-                    </div>
-                    <div style="font-weight: 500">
-                      -₹{{ getAdvancePlanDiscountAmount() | number : "1.2-2" }}
-                    </div>
+                    <div class="color-graying">Total {{ roomLabel }} Charges</div>
+                    <div style="color: #3b82f6; font-weight: 500">{{ bookingSummaryDetails?.totalPlanPrice | currency: currency : 'symbol' : '1.2-2' }}</div>
+                  </div>
+                  <div *ngIf="couponDiscountAmount > 0" class="d-flex justify-content-between line-height-27px">
+                    <div class="color-graying">Coupon Discount</div>
+                    <div style="color: #16a34a; font-weight: 500">-{{ couponDiscountAmount | currency: currency : 'symbol' : '1.2-2' }}</div>
+                  </div>
+                  <div *ngIf="advanceDiscountAmount > 0" class="d-flex justify-content-between line-height-27px">
+                    <div class="color-graying">Advance Discount ({{ getSelectedAdvanceDiscountPercentage() }}%)</div>
+                    <div style="color: #16a34a; font-weight: 500">-{{ advanceDiscountAmount | currency: currency : 'symbol' : '1.2-2' }}</div>
                   </div>
                   <div class="d-flex justify-content-between line-height-27px">
-                    <div class="color-graying">Total After Advance Discount</div>
-                    <div style="font-weight: 500">
-                      ₹{{ getAdvancePlanTotalAfterDiscount() | number : "1.2-2" }}
-                    </div>
-                  </div>
-                  <div class="d-flex justify-content-between line-height-27px">
-                    <div class="font-weight-600" style="font-size: 1rem">
-                      Advance Payable ({{ getSelectedAdvancePercentage() }}%)
-                    </div>
-                    <div class="font-weight-600" style="font-size: 1rem">
-                      ₹{{ getAdvancePlanPayableAmount() | number : "1.2-2" }}
-                    </div>
+                    <div class="color-graying">Tax &amp; Services</div>
+                    <div style="font-weight: 500">{{ taxOnDiscountedAmount | currency: currency : 'symbol' : '1.2-2' }}</div>
                   </div>
                 </div>
-                <div
-                  *ngIf="
-                    showPayNow() &&
-                    hasAdvancePaymentPlans() &&
-                    !hasSelectedAdvancePaymentPlan()
-                  "
-                  style="
-                    margin-top: 14px;
-                    padding-top: 14px;
-                    border-top: 1px solid #e5e7eb;
-                    color: #b45309;
-                    font-size: 14px;
-                  "
-                >
-                  Select an advance plan above to see the Pay Now calculation.
+                <div *ngIf="selectedAddOns && selectedAddOns.length > 0"
+                  style="margin: 6px 12px; padding: 10px 12px; background-color: #f0fdfa; border-radius: 8px; border: 1px solid #99f6e4">
+                  <div class="d-flex justify-content-between">
+                    <div class="color-graying">Add-On Services ({{ selectedAddOns.length }})</div>
+                    <div style="font-weight: 600">{{ getServicesTotal() | currency: currency : 'symbol' : '1.2-2' }}</div>
+                  </div>
+                  <div style="font-size: 11px; color: #6b7280; margin-top: 2px">Always paid in full</div>
                 </div>
-                
+                <div *ngIf="convenienceFeeAmount > 0" style="padding: 0 12px" class="d-flex justify-content-between line-height-27px">
+                  <div class="color-graying">Convenience Fee</div>
+                  <div style="font-weight: 500">{{ convenienceFeeAmount | currency: currency : 'symbol' : '1.2-2' }}</div>
+                </div>
+                <div style="padding: 12px; border-top: 2px solid #e5e7eb; margin-top: 8px" class="d-flex justify-content-between">
+                  <div class="font-weight-600" style="font-size: 1rem">Grand Total</div>
+                  <div class="font-weight-600" style="font-size: 1rem">{{ getNewGrandTotal() | currency: currency : 'symbol' : '1.2-2' }}</div>
+                </div>
+                <div *ngIf="showPayNow() && hasSelectedAdvancePaymentPlan()"
+                  style="margin: 0 12px 14px; padding: 12px; background-color: #fef9c3; border-radius: 8px; border: 1px solid #fef08a">
+                  <div class="d-flex justify-content-between" style="margin-bottom: 4px">
+                    <div style="font-weight: 700">Pay Now</div>
+                    <div style="font-weight: 700; color: #dc2626">{{ getNewPayNowAmount() | currency: currency : 'symbol' : '1.2-2' }}</div>
+                  </div>
+                  <div style="font-size: 11px; color: #6b7280; margin-bottom: 8px">
+                    {{ getSelectedAdvancePaymentPercentage() }}% of rooms + all services + fee
+                  </div>
+                  <div class="d-flex justify-content-between">
+                    <div class="color-graying">Balance at Check-in</div>
+                    <div style="font-weight: 500">{{ getNewBalanceAtCheckIn() | currency: currency : 'symbol' : '1.2-2' }}</div>
+                  </div>
+                </div>
+                <div *ngIf="showPayNow() && hasAdvancePaymentPlans() && !hasSelectedAdvancePaymentPlan()"
+                  style="padding: 0 12px 14px; color: #b45309; font-size: 13px">
+                  Select an advance plan (in Room Charges above) to see Pay Now calculation.
+                </div>
               </div>
 
               <!-- Fill Your Details Section -->
@@ -1840,91 +1585,11 @@
                       >Privacy Policy</span
                     >of this booking.
                   </label>
-                  <!-- View Coupon section -->
-                  <!-- <div
-                  class="coupons-giftcards"
-                  (click)="openPromoListData()"
-                  *ngIf="!selectedPromotionCheck"
-                >
-                  <span>
-                    <i class="fas fa-gift"></i>
-                    View Coupons & Gift Cards
-                  </span>
-                </div> -->
-
-                  <div
-                    style="
-                      width: 100%;
-                      text-align: left;
-                      font-size: 14px;
-                      color: #333;
-                      margin-top: 10px;
-                    "
-                    *ngIf="showTheSelectedCoupon && !selectedPromotionCheck"
-                  >
-                    <div
-                      style="
-                        background-color: #ffffff;
-                        border-radius: 10px;
-                        padding: 10px;
-                        margin-bottom: 10px;
-                        box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
-                      "
-                    >
-                      <div style="display: flex; column-gap: 340px">
-                        <strong *ngIf="selectedCouponList.couponCode"
-                          >Coupon Code:
-                          {{ selectedCouponList.couponCode }} (<span
-                            *ngIf="selectedCouponList.discountPercentage"
-                            style="color: red"
-                            >{{ selectedCouponList.discountPercentage }}%
-                            OFF)</span
-                          ></strong
-                        >
-                        <span
-                          *ngIf="showTheSelectedCoupon"
-                          style="height: 0px"
-                          (click)="clearSelectedCoupons()"
-                          ><i class="bi bi-trash"></i
-                        ></span>
-                      </div>
-                      <div style="display: flex; column-gap: 330px">
-                        <div>
-                          <span *ngIf="selectedCouponList.minimumOrderAmount"
-                            >Minimum Order:
-                            {{
-                              selectedCouponList.minimumOrderAmount
-                                | currency : currency : "symbol" : "1.2-2"
-                            }}</span
-                          ><br />
-                          <span *ngIf="selectedCouponList.endDate"
-                            >Valid until:
-                            {{
-                              selectedCouponList.endDate | date : "d MMMMy"
-                            }}</span
-                          >
-                        </div>
-                        <!-- Image on the right side -->
-                        <img
-                          *ngIf="selectedCouponList.imageList?.[0]?.url"
-                          [src]="selectedCouponList.imageList[0].url"
-                          alt="image"
-                          style="
-                            width: 40px;
-                            height: 40px;
-                            object-fit: cover;
-                            border-radius: 5px;
-                            position: relative;
-                          "
-                        />
-                      </div>
-                    </div>
-                  </div>
                 </div>
               </form>
             </div>
           </div>
-          <div style="margin: auto; padding: 20px">
+          <div class="mob-inline-cta" style="margin: auto; padding: 20px">
             <button
               class="Fillpaybtn"
               type="button"
@@ -1973,6 +1638,39 @@
               Pay Now
             </button>
           </div>
+        </div>
+      </div>
+
+      <!-- Mobile sticky Pay Now bar -->
+      <div class="mob-sticky-pay-bar">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <div style="font-size: 11px; color: #6b7280; line-height: 1.2">Grand Total</div>
+            <div style="font-weight: 700; font-size: 15px; color: #0f172a">
+              {{ getNewGrandTotal() | currency: currency : 'symbol' : '1.2-2' }}
+            </div>
+          </div>
+          <button
+            class="Fillpaybtn mob-pay-btn"
+            type="button"
+            [disabled]="isPayNowDisabled || isPayDisabled || isAdvancePaymentPlanRequired() || ((!paymentLoader || !submitButtonDisable) && !validateFrom()) || !termsAccepted"
+            *ngIf="showPayNow()"
+            (click)="payAndCheckout()"
+          >Pay Now</button>
+          <button
+            class="Fillpaybtn mob-pay-btn"
+            type="button"
+            [disabled]="isCashPayDisabled || ((!paymentLoader || !submitButtonDisable) && !validateFrom()) || !termsAccepted"
+            *ngIf="showPayLater()"
+            (click)="onCashPaymentSubmit()"
+          >Pay Later</button>
+          <button
+            class="Fillpaybtn mob-pay-btn"
+            type="button"
+            [disabled]="isEnquiryDisabled || ((!paymentLoader || !submitButtonDisable) && !validateFrom()) || !termsAccepted"
+            *ngIf="showPayNow() === false && showPayLater() === false"
+            (click)="createAllEnquiries()"
+          >Enquiry Now</button>
         </div>
       </div>
     </div>
