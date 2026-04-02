@@ -493,15 +493,20 @@ width: auto;
 
 .spin-wheel-modal {
   position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  inset: 0;
   z-index: 1051;
-  width: min(92vw, 520px);
+  width: 100vw;
+  height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  pointer-events: none;
 }
 
 .spin-wheel-shell {
   position: relative;
+  width: min(92vw, 520px);
   border-radius: 26px;
   padding: 28px 24px;
   text-align: center;
@@ -510,6 +515,11 @@ width: auto;
   box-shadow: 0 30px 70px rgba(2, 6, 23, 0.55);
   color: #fff;
   overflow: hidden;
+  pointer-events: auto;
+}
+
+.mobile-property-highlights {
+  margin-bottom: 8px;
 }
 
 .spin-atmosphere {
