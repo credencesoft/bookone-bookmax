@@ -7993,7 +7993,6 @@ onYesClick() {
   private getPrimaryRoomRateAmount(room: any): number {
     try{
       const amount = this.sortedRooms.sort((a: any, b: any)=> a.roomOnlyPrice - b.roomOnlyPrice);
-      console.log('amount issss',amount);
       const parsedAmount = Number(amount);
       if (!Number.isNaN(parsedAmount) && parsedAmount > 0) {
         return parsedAmount;
