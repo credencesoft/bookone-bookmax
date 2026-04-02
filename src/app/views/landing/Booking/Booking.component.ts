@@ -375,6 +375,7 @@ export class BookingComponent implements OnInit {
   totalAddOnsAmount: number = 0;                // Subtotal before tax
   totalAddOnsTax: number = 0;                   // Tax on add-ons
   totalAddOnsDiscount: number = 0;              // Discount on add-ons
+  private readonly enableCalculationDebug = false;
   
   constructor(
     private token: TokenStorage,
@@ -1487,15 +1488,37 @@ export class BookingComponent implements OnInit {
         this.calculateMultiDiscountAndTax();
       } else {
         // No discounts applied
-        this.booking.totalAmount =
-          this.booking.netAmount +
-          (this.booking.netAmount * this.booking.taxPercentage) / 100;
+        const netAmount = this.toSafeAmount(this.booking.netAmount);
+        const taxPct = this.toSafePercent(this.booking.taxPercentage);
+        this.taxOnDiscountedAmount = this.toSafeAmount(
+          (netAmount * taxPct) / 100,
+        );
+        this.amountAfterDiscount = netAmount;
+        this.convenienceFeeAmount = this.toSafeAmount(
+          this.calculateConvenienceFee(netAmount, this.serviceChargePercentage),
+        );
+        const grandTotal = this.toSafeAmount(
+          netAmount +
+            this.taxOnDiscountedAmount +
+            this.toSafeAmount(this.getServicesTotal()) +
+            this.convenienceFeeAmount,
+        );
+        this.booking.totalAmount = grandTotal;
+        this.booking.payableAmount = grandTotal;
         this.totalDiscountAmount = 0;
         this.advanceDiscountAmount = 0;
-        this.amountAfterDiscount = this.booking.netAmount;
-        this.taxOnDiscountedAmount = (this.booking.netAmount * this.booking.taxPercentage) / 100;
         this.advancePaymentAmount = 0;
-        this.remainingPaymentAmount = this.booking.totalAmount;
+        this.remainingPaymentAmount = grandTotal;
+        this.logCalculationSnapshot('clearSelectedCoupons-no-discount', {
+          netAmount,
+          taxPct,
+          taxOnDiscountedAmount: this.taxOnDiscountedAmount,
+          convenienceFeeAmount: this.convenienceFeeAmount,
+          servicesTotal: this.toSafeAmount(this.getServicesTotal()),
+          grandTotal,
+          payNowAmount: this.advancePaymentAmount,
+          balanceAtCheckIn: this.remainingPaymentAmount,
+        });
       }
       
       this.visiblePromotion = false;
@@ -7141,7 +7164,8 @@ export class BookingComponent implements OnInit {
     }
   }
   processPaymentRazorpay(payment: Payment) {
-    //this.applyAdvancePlanToPayment(payment);
+    // Keep gateway charge in sync with unified checkout summary values.
+    this.applyAuthoritativeGatewayAmounts(payment, 'razorpay');
     this.paymentLoader = true;
     this.changeDetectorRefs.detectChanges();
 
@@ -7222,7 +7246,8 @@ export class BookingComponent implements OnInit {
   }
 
   processPaymentPayU(payment: Payment) {
-    //this.applyAdvancePlanToPayment(payment);
+    // Keep gateway charge in sync with unified checkout summary values.
+    this.applyAuthoritativeGatewayAmounts(payment, 'payu');
     this.paymentLoader = true;
     this.changeDetectorRefs.detectChanges();
 
@@ -11463,6 +11488,45 @@ sendWhatsappMessageToPropertyOwner() {
     return Number((Number(value) || 0).toFixed(2));
   }
 
+  private shouldLogCalculationDebug(): boolean {
+    if (this.enableCalculationDebug) {
+      return true;
+    }
+    if (typeof window === 'undefined' || !window?.localStorage) {
+      return false;
+    }
+    return window.localStorage.getItem('debugBookingCalc') === 'true';
+  }
+
+  private logCalculationSnapshot(
+    context: string,
+    snapshot: Record<string, any>,
+  ): void {
+    if (!this.shouldLogCalculationDebug()) {
+      return;
+    }
+    console.log('[BOOKING_CALC]', context, {
+      ...snapshot,
+      timestamp: new Date().toISOString(),
+    });
+  }
+
+  private toSafeAmount(value: any): number {
+    const num = Number(value);
+    if (!Number.isFinite(num)) {
+      return 0;
+    }
+    return Math.max(0, this.roundToTwo(num));
+  }
+
+  private toSafePercent(value: any): number {
+    const num = Number(value);
+    if (!Number.isFinite(num)) {
+      return 0;
+    }
+    return Math.min(100, Math.max(0, num));
+  }
+
   private getAccommodationService(): BusinessServiceDtoList | undefined {
     return this.businessUser?.businessServiceDtoList?.find(
       (item) => item.name === 'Accommodation',
@@ -11522,64 +11586,137 @@ sendWhatsappMessageToPropertyOwner() {
    */
   calculateMultiDiscountAndTax(): void {
     try {
-      const baseAmount = this.storedActualNetAmount;
+      const baseAmount = this.toSafeAmount(
+        this.storedActualNetAmount ||
+          this.bookingSummaryDetails?.totalPlanPrice ||
+          this.booking?.netAmount,
+      );
+
+      if (!baseAmount) {
+        this.couponDiscountAmount = 0;
+        this.advanceDiscountAmount = 0;
+        this.totalDiscountAmount = 0;
+        this.amountAfterDiscount = 0;
+        this.taxOnDiscountedAmount = 0;
+        this.convenienceFeeAmount = 0;
+        this.advancePaymentAmount = 0;
+        this.remainingPaymentAmount = 0;
+        this.booking.netAmount = 0;
+        this.booking.discountAmount = 0;
+        this.booking.taxAmount = 0;
+        this.booking.totalAmount = 0;
+        this.booking.advanceAmount = 0;
+        this.booking.payableAmount = 0;
+        this.logCalculationSnapshot('empty-base-amount', {
+          baseAmount,
+          couponDiscountAmount: this.couponDiscountAmount,
+          advanceDiscountAmount: this.advanceDiscountAmount,
+          totalDiscountAmount: this.totalDiscountAmount,
+          amountAfterDiscount: this.amountAfterDiscount,
+          taxOnDiscountedAmount: this.taxOnDiscountedAmount,
+          convenienceFeeAmount: this.convenienceFeeAmount,
+          servicesTotal: 0,
+          grandTotal: this.booking.totalAmount,
+          payNowAmount: this.advancePaymentAmount,
+          balanceAtCheckIn: this.remainingPaymentAmount,
+        });
+        this.changeDetectorRefs.markForCheck();
+        return;
+      }
+
       console.log('[CALC] baseAmount:', baseAmount, 'selectedCouponList:', this.selectedCouponList, 'advanceSlab:', this.selectedAdvanceDiscountSlab);
       let currentAmount = baseAmount;
+      const couponPct = this.toSafePercent(this.selectedCouponList?.discountPercentage);
+      const advanceDiscountPct = this.toSafePercent(this.selectedAdvanceDiscountSlab?.discountPercentage);
+      const advancePayPct = this.toSafePercent(this.selectedAdvanceDiscountSlab?.advancePercentage);
+      const roomTaxPct = this.toSafePercent(this.booking?.taxPercentage);
+      const servicesTotal = this.toSafeAmount(this.getServicesTotal());
 
       // Step 1: Apply Coupon Discount
       this.couponDiscountAmount = 0;
-      if (this.selectedCouponList?.discountPercentage) {
+      if (couponPct > 0) {
         this.couponDiscountAmount =
-          (baseAmount * this.selectedCouponList.discountPercentage) / 100;
-        currentAmount = baseAmount - this.couponDiscountAmount;
-        console.log('[CALC] Coupon applied: discountPercentage=', this.selectedCouponList.discountPercentage, 'couponDiscountAmount=', this.couponDiscountAmount, 'currentAmount=', currentAmount);
+          (baseAmount * couponPct) / 100;
+        currentAmount = Math.max(0, baseAmount - this.couponDiscountAmount);
+        console.log('[CALC] Coupon applied: discountPercentage=', couponPct, 'couponDiscountAmount=', this.couponDiscountAmount, 'currentAmount=', currentAmount);
       }
 
       // Step 2: Apply Advance Discount (percentage-based on already discounted amount)
       this.advanceDiscountAmount = 0;
-      if (this.selectedAdvanceDiscountSlab?.discountPercentage) {
+      if (advanceDiscountPct > 0) {
         this.advanceDiscountAmount =
-          (currentAmount * this.selectedAdvanceDiscountSlab.discountPercentage) /
+          (currentAmount * advanceDiscountPct) /
           100;
-        currentAmount = currentAmount - this.advanceDiscountAmount;
+        currentAmount = Math.max(0, currentAmount - this.advanceDiscountAmount);
       }
 
       // Step 3: Calculate Total Discount Amount
-      this.totalDiscountAmount =
-        this.couponDiscountAmount + this.advanceDiscountAmount;
-      this.amountAfterDiscount = currentAmount;
+      this.totalDiscountAmount = this.toSafeAmount(
+        this.couponDiscountAmount + this.advanceDiscountAmount,
+      );
+      this.amountAfterDiscount = this.toSafeAmount(currentAmount);
 
       // Step 4: Apply Tax on Final Discounted Amount
       this.getApplicableTaxPercentage();
       this.taxOnDiscountedAmount =
-        (this.amountAfterDiscount * this.booking.taxPercentage) / 100;
+        (this.amountAfterDiscount * roomTaxPct) / 100;
+      this.taxOnDiscountedAmount = this.toSafeAmount(this.taxOnDiscountedAmount);
 
       // Step 5: Calculate Convenience Fee (on original price, NOT discounted amount)
-      this.convenienceFeeAmount = this.calculateConvenienceFee(baseAmount, this.serviceChargePercentage);
+      this.convenienceFeeAmount = this.toSafeAmount(
+        this.calculateConvenienceFee(baseAmount, this.serviceChargePercentage),
+      );
 
-      // Step 6: Calculate Advance and Remaining Payment Amounts (including convenience fee)
-      const totalPaymentAmount =
-        this.amountAfterDiscount + this.taxOnDiscountedAmount + this.convenienceFeeAmount;
-      const advancePercentage = this.selectedAdvanceDiscountSlab?.advancePercentage || 0;
-      this.advancePaymentAmount = (totalPaymentAmount * advancePercentage) / 100;
-      this.remainingPaymentAmount =
-        totalPaymentAmount - this.advancePaymentAmount;
+      // Step 6: Calculate final totals with add-ons + advance split
+      const roomsWithTax = this.toSafeAmount(
+        this.amountAfterDiscount + this.taxOnDiscountedAmount,
+      );
+      const grandTotalAmount = this.toSafeAmount(
+        roomsWithTax + servicesTotal + this.convenienceFeeAmount,
+      );
+
+      if (this.selectedAdvanceDiscountSlab) {
+        const roomAdvancePortion = this.toSafeAmount(
+          (roomsWithTax * advancePayPct) / 100,
+        );
+        this.advancePaymentAmount = this.toSafeAmount(
+          roomAdvancePortion + servicesTotal + this.convenienceFeeAmount,
+        );
+        this.remainingPaymentAmount = this.toSafeAmount(
+          roomsWithTax - roomAdvancePortion,
+        );
+      } else {
+        this.advancePaymentAmount = 0;
+        this.remainingPaymentAmount = grandTotalAmount;
+      }
       
       console.log('[CALC] Convenience Fee (on original price):', this.convenienceFeeAmount);
-      console.log('[CALC] Total Payment with Convenience Fee:', totalPaymentAmount);
+      console.log('[CALC] Total Payment with Convenience Fee:', grandTotalAmount);
 
       // Update booking object with calculated values
       this.booking.netAmount = this.amountAfterDiscount;
       this.booking.discountAmount = this.totalDiscountAmount;
       this.booking.taxAmount = this.taxOnDiscountedAmount;
-      this.booking.totalAmount = totalPaymentAmount;
+      this.booking.totalAmount = grandTotalAmount;
       this.booking.advanceAmount = this.advancePaymentAmount;
-
-      // Include service charges in total
-      this.booking.totalAmount =
-        this.amountAfterDiscount +
-        this.taxOnDiscountedAmount +
-        this.totalServiceCost;
+      this.booking.payableAmount = grandTotalAmount;
+      this.logCalculationSnapshot('calculateMultiDiscountAndTax', {
+        baseAmount,
+        couponPct,
+        advanceDiscountPct,
+        advancePayPct,
+        roomTaxPct,
+        couponDiscountAmount: this.couponDiscountAmount,
+        advanceDiscountAmount: this.advanceDiscountAmount,
+        totalDiscountAmount: this.totalDiscountAmount,
+        amountAfterDiscount: this.amountAfterDiscount,
+        taxOnDiscountedAmount: this.taxOnDiscountedAmount,
+        convenienceFeeAmount: this.convenienceFeeAmount,
+        servicesTotal,
+        grandTotal: grandTotalAmount,
+        payNowAmount: this.advancePaymentAmount,
+        balanceAtCheckIn: this.remainingPaymentAmount,
+      });
       
       // Trigger change detection to update UI
       this.changeDetectorRefs.markForCheck();
@@ -12219,17 +12356,17 @@ sendWhatsappMessageToPropertyOwner() {
 
   /** Sum of servicePrice for all selected add-ons (before tax) */
   getServicesSubtotal(): number {
-    return this.selectedAddOns.reduce((sum, addon) => sum + (Number(addon.servicePrice) || 0), 0);
+    return (this.selectedAddOns || []).reduce((sum, addon) => sum + (Number(addon.servicePrice) || 0), 0);
   }
 
   /** Sum of taxAmount for all selected add-ons */
   getServicesTax(): number {
-    return this.selectedAddOns.reduce((sum, addon) => sum + (Number(addon.taxAmount) || 0), 0);
+    return (this.selectedAddOns || []).reduce((sum, addon) => sum + (Number(addon.taxAmount) || 0), 0);
   }
 
   /** Grand total for selected add-ons (servicePrice + taxAmount per addon) */
   getServicesTotal(): number {
-    return this.selectedAddOns.reduce(
+    return (this.selectedAddOns || []).reduce(
       (sum, addon) => sum + (Number(addon.servicePrice) || 0) + (Number(addon.taxAmount) || 0), 0
     );
   }
@@ -12251,7 +12388,7 @@ sendWhatsappMessageToPropertyOwner() {
    */
   getNewPayNowAmount(): number {
     if (!this.selectedAdvanceDiscountSlab) { return this.getNewGrandTotal(); }
-    const advancePct = (this.selectedAdvanceDiscountSlab.advancePercentage || 0) / 100;
+    const advancePct = this.toSafePercent(this.selectedAdvanceDiscountSlab.advancePercentage) / 100;
     const roomsWithTax = (this.amountAfterDiscount || 0) + (this.taxOnDiscountedAmount || 0);
     return (roomsWithTax * advancePct) + this.getServicesTotal() + (this.convenienceFeeAmount || 0);
   }
@@ -12259,9 +12396,37 @@ sendWhatsappMessageToPropertyOwner() {
   /** Balance at Check-in = remaining room portion (after advance %) */
   getNewBalanceAtCheckIn(): number {
     if (!this.selectedAdvanceDiscountSlab) { return 0; }
-    const advancePct = (this.selectedAdvanceDiscountSlab.advancePercentage || 0) / 100;
+    const advancePct = this.toSafePercent(this.selectedAdvanceDiscountSlab.advancePercentage) / 100;
     const roomsWithTax = (this.amountAfterDiscount || 0) + (this.taxOnDiscountedAmount || 0);
     return roomsWithTax * (1 - advancePct);
+  }
+
+  private applyAuthoritativeGatewayAmounts(
+    payment: Payment,
+    source: string,
+  ): void {
+    const grandTotal = this.toSafeAmount(this.getNewGrandTotal());
+    const payNowAmount = this.toSafeAmount(this.getNewPayNowAmount());
+    const balanceAtCheckIn = this.toSafeAmount(
+      Math.max(0, grandTotal - payNowAmount),
+    );
+
+    payment.netReceivableAmount = payNowAmount;
+    payment.transactionAmount = payNowAmount;
+    payment.amount = payNowAmount;
+    payment.transactionChargeAmount = payNowAmount;
+
+    this.booking.totalAmount = grandTotal;
+    this.booking.payableAmount = grandTotal;
+    this.booking.advanceAmount = payNowAmount;
+    this.booking.outstandingAmount = balanceAtCheckIn;
+
+    this.logCalculationSnapshot('gateway-amount-sync', {
+      source,
+      grandTotal,
+      payNowAmount,
+      balanceAtCheckIn,
+    });
   }
 
 }
