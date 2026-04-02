@@ -365,38 +365,65 @@
                 <div class="d-flex justify-content-center" *ngIf="hasAnySoldOutRoom()">
                   <button type="button" class="btn btn-reset-one" (click)="onEditBooking()">Start Over</button>
                 </div>
+              </div>
 
-                <!-- Advance Payment Plan selector (integrated here) -->
-                <div *ngIf="showPayNow() && businessServiceDto">
-                  <hr style="border: 1px solid #e5e7eb; margin: 18px 0" />
-                  <h6 style="font-weight: 600; color: #031eaa; margin-bottom: 12px">
-                    <i class="fa-solid fa-wallet" style="margin-right: 6px"></i>
-                    Select Advance Payment Plan
-                  </h6>
-                  <div class="advance-payment-div">
-                    <div *ngFor="let slab of advanceDiscountSlabs"
-                      (click)="selectAdvancePaymentPlan(slab)"
-                      [ngClass]="{'advance-card': true, 'selected': isAdvancePaymentPlanSelected(slab)}">
-                      <div class="d-flex justify-content-between">
-                        <div class="advance-text">
-                          <div class="advance-title">Pay {{ slab.advancePercentage }}% Advance</div>
-                          <div class="advance-discount">Get {{ slab.discountPercentage }}% Discount</div>
-                        </div>
+              <!-- COUPON APPLIED ─────────────────────────────────────────── -->
+              <div *ngIf="showTheSelectedCoupon && !selectedPromotionCheck"
+                class="rooms-cards-pricing card"
+                style="padding: 14px 20px; margin-bottom: 20px; border-left: 4px solid #16a34a; background: #f0fdf4">
+                <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px">
+                  <div style="display: flex; align-items: center; gap: 10px">
+                    <i class="fa-solid fa-tag" style="color: #16a34a; font-size: 15px"></i>
+                    <div>
+                      <div style="font-weight: 700; color: #111827; font-size: 14px">
+                        Coupon Applied: {{ selectedCouponList.couponCode }}
+                        <span *ngIf="selectedCouponList.discountPercentage" style="color: #16a34a; margin-left: 4px">({{ selectedCouponList.discountPercentage }}% OFF)</span>
+                      </div>
+                      <div style="font-size: 12px; color: #6b7280; margin-top: 2px" *ngIf="selectedCouponList.endDate">
+                        Valid until: {{ selectedCouponList.endDate | date : 'd MMM y' }}
                       </div>
                     </div>
                   </div>
-                  <div *ngIf="isAdvancePaymentPlanRequired()" class="advance-payment-info">
-                    Select an advance payment plan to continue with Pay Now.
-                  </div>
+                  <span style="cursor: pointer; color: #dc2626; font-size: 12px; white-space: nowrap; flex-shrink: 0" (click)="clearSelectedCoupons()">
+                    <i class="bi bi-trash"></i> Remove
+                  </span>
                 </div>
               </div>
 
-              <!-- ② ADD-ON SERVICES ──────────────────────────────────────── -->
+              <!-- ② ADVANCE PAYMENT PLAN ──────────────────────────────────── -->
+              <div *ngIf="showPayNow() && businessServiceDto"
+                class="rooms-cards-pricing card"
+                style="padding: 24px 30px; margin-bottom: 20px">
+                <div class="d-flex align-items-center" style="gap: 10px; margin-bottom: 12px">
+                  <span class="section-number-badge">2</span>
+                  <h5 class="booking-d-heading" style="margin: 0">
+                    <i class="fa-solid fa-wallet" style="color: #031eaa; margin-right: 6px"></i>
+                    Select Advance Payment Plan
+                  </h5>
+                </div>
+                <div class="advance-payment-div">
+                  <div *ngFor="let slab of advanceDiscountSlabs"
+                    (click)="selectAdvancePaymentPlan(slab)"
+                    [ngClass]="{'advance-card': true, 'selected': isAdvancePaymentPlanSelected(slab)}">
+                    <div class="d-flex justify-content-between">
+                      <div class="advance-text">
+                        <div class="advance-title">Pay {{ slab.advancePercentage }}% Advance</div>
+                        <div class="advance-discount">Get {{ slab.discountPercentage }}% Discount</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div *ngIf="isAdvancePaymentPlanRequired()" class="advance-payment-info">
+                  Select an advance payment plan to continue with Pay Now.
+                </div>
+              </div>
+
+              <!-- ③ ADD-ON SERVICES ──────────────────────────────────────── -->
               <div *ngIf="addOnServices && addOnServices.length > 0"
                 class="rooms-cards-pricing card"
                 style="padding: 30px; margin-bottom: 20px">
                 <div class="d-flex align-items-center" style="gap: 10px; margin-bottom: 8px">
-                  <span class="section-number-badge">2</span>
+                  <span class="section-number-badge">3</span>
                   <h5 class="booking-d-heading" style="margin: 0">Add-On Services</h5>
                 </div>
                 <p style="font-size: 13px; color: #6b7280; margin-bottom: 16px">
@@ -625,87 +652,6 @@
                       >{{ booking.notes }}</textarea
                     >
                   </div>
-
-                  <!-- View Coupon section -->
-                  <!-- <div
-                  class="coupons-giftcards"
-                  (click)="openPromoListData()"
-                  *ngIf="!selectedPromotionCheck"
-                >
-                  <span>
-                    <i class="fas fa-gift"></i>
-                    View Coupons & Gift Cards
-                  </span>
-                </div> -->
-
-                  <div
-                    style="
-                      width: 100%;
-                      text-align: left;
-                      font-size: 14px;
-                      color: #333;
-                      margin-top: 10px;
-                    "
-                    *ngIf="showTheSelectedCoupon && !selectedPromotionCheck"
-                  >
-                    <div
-                      style="
-                        background-color: #ffffff;
-                        border-radius: 10px;
-                        padding: 10px;
-                        margin-bottom: 10px;
-                        box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
-                      "
-                    >
-                      <div style="display: flex; column-gap: 340px">
-                        <strong *ngIf="selectedCouponList.couponCode"
-                          >Coupon Code:
-                          {{ selectedCouponList.couponCode }} (<span
-                            *ngIf="selectedCouponList.discountPercentage"
-                            style="color: red"
-                            >{{ selectedCouponList.discountPercentage }}%
-                            OFF)</span
-                          ></strong
-                        >
-                        <span
-                          *ngIf="showTheSelectedCoupon"
-                          style="height: 0px"
-                          (click)="clearSelectedCoupons()"
-                          ><i class="bi bi-trash"></i
-                        ></span>
-                      </div>
-                      <div style="display: flex; column-gap: 330px">
-                        <div>
-                          <span *ngIf="selectedCouponList.minimumOrderAmount"
-                            >Minimum Order:
-                            {{
-                              selectedCouponList.minimumOrderAmount
-                                | currency : currency : "symbol" : "1.2-2"
-                            }}</span
-                          ><br />
-                          <span *ngIf="selectedCouponList.endDate"
-                            >Valid until:
-                            {{
-                              selectedCouponList.endDate | date : "d MMMMy"
-                            }}</span
-                          >
-                        </div>
-                        <!-- Image on the right side -->
-                        <img
-                          *ngIf="selectedCouponList.imageList?.[0]?.url"
-                          [src]="selectedCouponList.imageList[0].url"
-                          alt="image"
-                          style="
-                            width: 40px;
-                            height: 40px;
-                            object-fit: cover;
-                            border-radius: 5px;
-                            position: relative;
-                          "
-                        />
-                      </div>
-                    </div>
-                  </div>
                 </div>
               </form>
             </div>
@@ -713,7 +659,7 @@
               <!-- ③ ORDER SUMMARY ─────────────────────────────────────────── -->
               <div class="rooms-cards-pricing card" style="margin-bottom: 20px; position: sticky; top: 20px">
                 <div style="padding: 20px 20px 0; display: flex; align-items: center; gap: 10px; margin-bottom: 12px">
-                  <span class="section-number-badge">3</span>
+                  <span class="section-number-badge">4</span>
                   <h5 class="headimg-color" style="margin: 0">
                     <img src="media-be/images/payment-sum.svg" alt="" width="20" height="20" style="margin-right: 5px" />
                     Order Summary
@@ -1258,19 +1204,77 @@
               </div>
             </div>
 
+              <!-- Advance Payment Plan (mobile, inside Section 1) -->
+              <div class="card p-3 mx-auto booking-heading" style="
+                                                                border-radius: 10px;
+                                                                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                                                                margin-bottom: 16px;
+                                                              " *ngIf="showPayNow() && businessServiceDto">
+                <div class="d-flex align-items-center" style="gap: 10px; margin-bottom: 12px">
+                  <span class="section-number-badge">2</span>
+                  <h5 class="booking-d-heading" style="margin: 0">
+                    <i class="fa-solid fa-wallet" style="color: #031eaa; margin-right: 6px"></i>
+                    Select Advance Payment Plan
+                  </h5>
+                </div>
+
+                <div class="advance-payment-mob-div">
+                  <div class="advance-card-mob" *ngFor="let slab of advanceDiscountSlabs" (click)="selectAdvancePaymentPlan(slab)"
+                    [ngClass]="{ selected: isAdvancePaymentPlanSelected(slab) }">
+                    <div class="d-flex justify-content-between">
+                      <div class="advance-text">
+                        <div class="advance-title">
+                          Pay {{ slab.advancePercentage }}% Advance
+                        </div>
+                        <div class="advance-subtitle">
+                          Get {{ slab.discountPercentage }}% Discount
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div *ngIf="isAdvancePaymentPlanRequired()" class="advance-payment-info">
+                  Select an advance payment plan to continue with Pay Now.
+                </div>
+              </div>
+
+            <!-- COUPON APPLIED (mobile) ──────────────────────────── -->
+            <div *ngIf="showTheSelectedCoupon && !selectedPromotionCheck"
+              class="rooms-cards-pricing card"
+              style="padding: 12px 16px; margin-bottom: 16px; border-left: 4px solid #16a34a; background: #f0fdf4">
+              <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px">
+                <div style="display: flex; align-items: center; gap: 8px">
+                  <i class="fa-solid fa-tag" style="color: #16a34a; font-size: 13px"></i>
+                  <div>
+                    <div style="font-weight: 700; color: #111827; font-size: 13px">
+                      Coupon: {{ selectedCouponList.couponCode }}
+                      <span *ngIf="selectedCouponList.discountPercentage" style="color: #16a34a">&nbsp;({{ selectedCouponList.discountPercentage }}% OFF)</span>
+                    </div>
+                    <div style="font-size: 11px; color: #6b7280" *ngIf="selectedCouponList.endDate">
+                      Valid until: {{ selectedCouponList.endDate | date : 'd MMM y' }}
+                    </div>
+                  </div>
+                </div>
+                <span style="cursor: pointer; color: #dc2626; font-size: 11px; white-space: nowrap; flex-shrink: 0" (click)="clearSelectedCoupons()">
+                  <i class="bi bi-trash"></i>
+                </span>
+              </div>
+            </div>
+
             <!-- ② ADD-ON SERVICES (mobile) ──────────────────────────── -->
             <div *ngIf="addOnServices && addOnServices.length > 0"
               class="rooms-cards-pricing card"
               style="padding: 20px; margin-bottom: 20px">
               <div class="d-flex align-items-center" style="gap: 10px; margin-bottom: 8px">
-                <span class="section-number-badge">2</span>
+                <span class="section-number-badge">3</span>
                 <h5 class="booking-d-heading" style="margin: 0">Add-On Services</h5>
               </div>
               <p style="font-size: 12px; color: #6b7280; margin-bottom: 12px">
                 Add-ons are always charged in full — not split by your advance payment plan.
               </p>
               <div style="overflow-x: auto">
-                <table class="table table-sm mb-0" style="font-size: 12px; min-width: 420px">
+                <table class="table table-sm mb-0" style="font-size: 12px; min-width: 360px">
                   <thead style="background-color: #f9fafb">
                     <tr>
                       <th style="font-weight: 600; padding: 6px 10px; color: #6b7280">Service</th>
@@ -1322,43 +1326,11 @@
               </div>
             </div>
 
-              <!-- Advance Payment Plan (mobile, inside Section 1) -->
-              <div class="card p-4 mx-auto booking-heading" style="
-                                                                border-radius: 10px;
-                                                                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-                                                                margin-bottom: 20px;
-                                                              " *ngIf="showPayNow() && businessServiceDto">
-                <h5 class="margin-botton-20px booking-d-heading">
-                  <i class="fa-solid fa-wallet" style="color: #031eaa;"></i>
-                  Select Advance Payment Plan
-                </h5>
-
-                <div class="advance-payment-mob-div">
-                  <div class="advance-card-mob" *ngFor="let slab of advanceDiscountSlabs" (click)="selectAdvancePaymentPlan(slab)"
-                    [ngClass]="{ selected: isAdvancePaymentPlanSelected(slab) }">
-                    <div class="d-flex justify-content-between">
-                      <div class="advance-text">
-                        <div class="advance-title">
-                          Pay {{ slab.advancePercentage }}% Advance
-                        </div>
-                        <div class="advance-subtitle">
-                          Get {{ slab.discountPercentage }}% Discount
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div *ngIf="isAdvancePaymentPlanRequired()" class="advance-payment-info">
-                  Select an advance payment plan to continue with Pay Now.
-                </div>
-              </div>
-
             <!-- ③ ORDER SUMMARY (mobile) ────────────────────────────── -->
             <div class="col-12 padding-right-0px padding-left0px margin-top-20px">
               <div class="rooms-cards-pricing card" style="margin-bottom: 20px">
                 <div style="padding: 16px 12px 0; display: flex; align-items: center; gap: 10px; margin-bottom: 12px">
-                  <span class="section-number-badge">3</span>
+                  <span class="section-number-badge">4</span>
                   <h5 class="headimg-color" style="margin: 0">
                     <img src="media-be/images/payment-sum.svg" alt="" width="18" height="18" style="margin-right: 4px" />
                     Order Summary
@@ -1613,91 +1585,11 @@
                       >Privacy Policy</span
                     >of this booking.
                   </label>
-                  <!-- View Coupon section -->
-                  <!-- <div
-                  class="coupons-giftcards"
-                  (click)="openPromoListData()"
-                  *ngIf="!selectedPromotionCheck"
-                >
-                  <span>
-                    <i class="fas fa-gift"></i>
-                    View Coupons & Gift Cards
-                  </span>
-                </div> -->
-
-                  <div
-                    style="
-                      width: 100%;
-                      text-align: left;
-                      font-size: 14px;
-                      color: #333;
-                      margin-top: 10px;
-                    "
-                    *ngIf="showTheSelectedCoupon && !selectedPromotionCheck"
-                  >
-                    <div
-                      style="
-                        background-color: #ffffff;
-                        border-radius: 10px;
-                        padding: 10px;
-                        margin-bottom: 10px;
-                        box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
-                      "
-                    >
-                      <div style="display: flex; column-gap: 340px">
-                        <strong *ngIf="selectedCouponList.couponCode"
-                          >Coupon Code:
-                          {{ selectedCouponList.couponCode }} (<span
-                            *ngIf="selectedCouponList.discountPercentage"
-                            style="color: red"
-                            >{{ selectedCouponList.discountPercentage }}%
-                            OFF)</span
-                          ></strong
-                        >
-                        <span
-                          *ngIf="showTheSelectedCoupon"
-                          style="height: 0px"
-                          (click)="clearSelectedCoupons()"
-                          ><i class="bi bi-trash"></i
-                        ></span>
-                      </div>
-                      <div style="display: flex; column-gap: 330px">
-                        <div>
-                          <span *ngIf="selectedCouponList.minimumOrderAmount"
-                            >Minimum Order:
-                            {{
-                              selectedCouponList.minimumOrderAmount
-                                | currency : currency : "symbol" : "1.2-2"
-                            }}</span
-                          ><br />
-                          <span *ngIf="selectedCouponList.endDate"
-                            >Valid until:
-                            {{
-                              selectedCouponList.endDate | date : "d MMMMy"
-                            }}</span
-                          >
-                        </div>
-                        <!-- Image on the right side -->
-                        <img
-                          *ngIf="selectedCouponList.imageList?.[0]?.url"
-                          [src]="selectedCouponList.imageList[0].url"
-                          alt="image"
-                          style="
-                            width: 40px;
-                            height: 40px;
-                            object-fit: cover;
-                            border-radius: 5px;
-                            position: relative;
-                          "
-                        />
-                      </div>
-                    </div>
-                  </div>
                 </div>
               </form>
             </div>
           </div>
-          <div style="margin: auto; padding: 20px">
+          <div class="mob-inline-cta" style="margin: auto; padding: 20px">
             <button
               class="Fillpaybtn"
               type="button"

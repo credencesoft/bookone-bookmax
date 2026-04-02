@@ -826,6 +826,13 @@ selectedAddonNames: string[] = [];
   };
   selectedPromotion: boolean = false;
   selectedPromotionCouponData: any;
+  spinWheelOpen = false;
+  spinWheelSpinning = false;
+  spinWheelRotation = 0;
+  spinWheelSegments: any[] = [];
+  spinWheelResult: any = null;
+  spinWheelCouponSection: HTMLElement | null = null;
+  spinWheelConfetti: number[] = [];
   roomOccupancy: number;
   showError: boolean = false;
   errorMessage: string;
@@ -7806,6 +7813,112 @@ onCouponInputChange(event: string) {
   sessionStorage.removeItem('selectPromo');
   this.enteredCoupon = '';
 }
+
+  openSpinWheel(product: any, couponSection: HTMLElement) {
+    const validOfferList = this.checkValidCouponOrNot(this.showAllTheOfferList?.length ? this.showAllTheOfferList : this.offersList) || [];
+    const offersWithCode = validOfferList.filter((offer: any) => offer?.couponCode && Number(offer?.discountPercentage) > 0);
+
+    if (!offersWithCode.length) {
+      return;
+    }
+
+    const selectedCode = product?.couponCode?.trim()?.toUpperCase();
+    const primaryOffer = offersWithCode.find(
+      (offer: any) => offer?.couponCode?.trim()?.toUpperCase() === selectedCode
+    ) || offersWithCode[0];
+
+    const uniqueOffers: any[] = [];
+    const seen = new Set<string>();
+
+    [primaryOffer, ...offersWithCode].forEach((offer: any) => {
+      const key = offer?.couponCode?.trim()?.toUpperCase();
+      if (key && !seen.has(key)) {
+        seen.add(key);
+        uniqueOffers.push(offer);
+      }
+    });
+
+    const colors = ['#f59e0b', '#ef4444', '#3b82f6', '#10b981', '#8b5cf6', '#ec4899', '#eab308'];
+    const selectedOffers = uniqueOffers.slice(0, 7);
+    this.spinWheelSegments = selectedOffers.map((offer: any, index: number) => ({
+      type: 'offer',
+      offer,
+      label: `${offer.discountPercentage}%`,
+      color: colors[index % colors.length],
+    }));
+
+    this.spinWheelSegments.push({
+      type: 'retry',
+      label: 'Try Again',
+      color: '#6b7280',
+    });
+
+    this.spinWheelCouponSection = couponSection;
+    this.spinWheelResult = null;
+    this.spinWheelOpen = true;
+  }
+
+  closeSpinWheel() {
+    if (this.spinWheelSpinning) {
+      return;
+    }
+    this.spinWheelOpen = false;
+    this.spinWheelResult = null;
+  }
+
+  getWheelSegmentRotate(index: number): string {
+    if (!this.spinWheelSegments?.length) {
+      return 'rotate(0deg)';
+    }
+    const angle = (360 / this.spinWheelSegments.length) * index;
+    return `rotate(${angle}deg)`;
+  }
+
+  startSpinWheel() {
+    if (this.spinWheelSpinning || !this.spinWheelSegments?.length) {
+      return;
+    }
+
+    this.spinWheelSpinning = true;
+    this.spinWheelResult = null;
+
+    const winningIndex = Math.floor(Math.random() * this.spinWheelSegments.length);
+    const segmentAngle = 360 / this.spinWheelSegments.length;
+    const targetRotation =
+      this.spinWheelRotation + 5 * 360 + (360 - winningIndex * segmentAngle);
+
+    this.spinWheelRotation = targetRotation;
+
+    setTimeout(() => {
+      this.spinWheelSpinning = false;
+      this.spinWheelResult = this.spinWheelSegments[winningIndex];
+      if (this.spinWheelResult?.type === 'offer') {
+        this.triggerSpinConfetti();
+      }
+    }, 4000);
+  }
+
+  resetSpinResult() {
+    this.spinWheelResult = null;
+  }
+
+  claimSpinCoupon() {
+    if (!this.spinWheelResult || this.spinWheelResult.type !== 'offer') {
+      return;
+    }
+
+    this.applyCoupon(this.spinWheelResult.offer, this.spinWheelCouponSection as HTMLElement);
+    this.spinWheelOpen = false;
+    this.spinWheelResult = null;
+  }
+
+  private triggerSpinConfetti() {
+    this.spinWheelConfetti = Array.from({ length: 30 }, (_, i) => i);
+    setTimeout(() => {
+      this.spinWheelConfetti = [];
+    }, 2200);
+  }
+
   applyCoupon(product: any, couponSection: HTMLElement) {
 
   sessionStorage.removeItem('selectedPromoData');
