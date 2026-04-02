@@ -578,6 +578,7 @@ width: auto;
   font-family: "Poppins";
   font-weight: 800;
   letter-spacing: 0.3px;
+  color: #ffffff;
 }
 
 .spin-title span {
@@ -700,6 +701,7 @@ width: auto;
   margin: 0;
   font-size: 34px;
   font-weight: 800;
+  color: #ffffff;
 }
 
 .spin-result-card {
@@ -775,6 +777,7 @@ width: auto;
 
   .spin-title {
     font-size: 28px;
+    color: #ffffff;
   }
 }
 .hero-heading {
@@ -2834,4 +2837,19 @@ text-align: center;
   .special-offer {
     margin-left: 26px;
   }
+}
+
+.show-all-amen {
+  border: 2px solid var(--secondary, #0b01cc);
+  color: var(--secondary, #0b01cc);
+  border-radius: 8px;
+  padding: 10px 24px;
+  font-weight: 600;
+  transition: all 0.7s ease;
+}
+
+.show-all-amen:hover {
+  border: 2px solid var(--secondary, #0b01cc);
+  background: var(--secondary, #3b82f6);
+  color: var(--tertiary, #fff);
 }

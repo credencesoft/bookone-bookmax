@@ -1893,9 +1893,8 @@
               <!-- Show All / Show Less Toggle -->
               <div class="d-flex justify-content-center mt-4">
                 <button
-                  class="btn btn-outline-primary"
-                  (click)="showAll = !showAll"
-                  style="border: 2px solid #3b82f6; color: #3b82f6; border-radius: 8px; padding: 10px 24px; font-weight: 600"
+                  class="btn show-all-amen"
+                  (click)="showAll = !showAll" type="button"
                 >
                   {{ showAll ? 'Show Less' : 'Show All Amenities' }}
                 </button>
@@ -2211,240 +2210,242 @@
     <!-- mob view -->
 
     <div class="website-mob-vision">
-      <h2 class="hero-heading">{{ businessUser?.name }}</h2>
-      <p class="hero-subheading font-weight-bold">
-        <img src="media-be/images/location-icons.svg" alt="" width="17px" />
-        {{ businessUser.address?.streetName }},
-        {{ businessUser.address?.city }}, {{ businessUser.address?.state }},
-        {{ businessUser.address?.country }}
-      </p>
-      <div class="d-flex flex-lg-row gap-3 mt-3">
-        <!-- Large Left Image -->
-        <div class="flex-grow-1">
-          <img
-            *ngIf="businessUser?.imageList?.length > 0"
-            [src]="businessUser?.imageList[0]?.url"
-            class="img-fluid rounded main-img"
-            alt="Main Image"
-          />
-        </div>
+      <div class="col-12">
+        <h2 class="hero-heading">{{ businessUser?.name }}</h2>
+        <p class="hero-subheading font-weight-bold">
+          <img src="media-be/images/location-icons.svg" alt="" width="17px" />
+          {{ businessUser.address?.streetName }},
+          {{ businessUser.address?.city }}, {{ businessUser.address?.state }},
+          {{ businessUser.address?.country }}
+        </p>
+        <div class="d-flex flex-lg-row gap-3 mt-3">
+          <!-- Large Left Image -->
+          <div class="flex-grow-1">
+            <img
+              *ngIf="businessUser?.imageList?.length > 0"
+              [src]="businessUser?.imageList[0]?.url"
+              class="img-fluid rounded main-img"
+              alt="Main Image"
+            />
+          </div>
 
-        <!-- Stacked Thumbnails -->
-        <div class="d-flex flex-lg-column gap-2 gallery-thumbs">
+          <!-- Stacked Thumbnails -->
+          <div class="d-flex flex-lg-column gap-2 gallery-thumbs">
+            <div
+              class="d-flex flex-lg-column gap-2 gallery-thumbs position-relative"
+            >
+              <ng-container
+                *ngFor="
+                  let img of businessUser?.imageList?.slice(1, 4);
+                  let i = index
+                "
+              >
+                <img [src]="img.url" class="img-fluid rounded small-img" />
+              </ng-container>
+
+              <!-- See More Button -->
+              <button
+                *ngIf="businessUser?.imageList?.length > 1"
+                class="btn position-absolute see-more"
+                style="bottom: 4px; right: 3px"
+                (click)="showSliderPopup()"
+              >
+                See More Photos
+              </button>
+            </div>
+          </div>
+        </div>
+        <p-dialog
+          header="Photo Gallery"
+          [(visible)]="sliderPopupVisible"
+          [modal]="true"
+          [style]="{ width: '100%' }"
+          [baseZIndex]="10000"
+        >
+          <p-carousel
+            *ngIf="businessUser?.imageList?.length > 0"
+            [value]="businessUser?.imageList"
+            [numVisible]="1"
+            [numScroll]="1"
+            [circular]="true"
+            [autoplayInterval]="5000"
+            [responsiveOptions]="[
+              { breakpoint: '1024px', numVisible: 1, numScroll: 1 },
+              { breakpoint: '768px', numVisible: 1, numScroll: 1 },
+            ]"
+          >
+            <ng-template let-image pTemplate="item">
+              <div class="flex justify-content-center">
+                <img
+                  [src]="image.url"
+                  alt="Room Photo"
+                  style="width: 100%; height: auto; border-radius: 8px"
+                />
+              </div>
+            </ng-template>
+          </p-carousel>
+        </p-dialog>
+
+        <div class="col-12">
           <div
-            class="d-flex flex-lg-column gap-2 gallery-thumbs position-relative"
+            *ngIf="smartRecommendationsBoolean"
+            class="d-flex align-items-start"
+            style="gap: 8px; margin-top: 15px"
+          >
+            <div style="width: 16%" class="smart-cion">
+              <div class="smart-card">
+                <img
+                  src=" media-be/images/smart-chat.svg"
+                  class="smart-card-img"
+                  alt=""
+                />
+              </div>
+            </div>
+            <div>
+              <div class="smart-recommend">Smart Recommendations</div>
+              <div class="smart-recommend-1">
+                Not sure what to book? These room options are the best fit for
+                your stay – selected just for you.
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="d-flex scroll-container" *ngIf="smartRecommendationsBoolean">
+          <ng-container *ngIf="smartLoading && smartRecommendationsBoolean">
+            <div
+              class="card smart-recommend-card skeleton-card"
+              style="width: 100%"
+              *ngFor="let skeleton of [1, 2]"
+            >
+              <div style="gap: 8px">
+                <div class="width-49 left-shift">
+                  <div class="skeleton skeleton-title"></div>
+                  <div class="skeleton skeleton-text"></div>
+                </div>
+                <div style="border-right: 1px solid #d9d9d9"></div>
+                <div class="width-49 left-shift">
+                  <div class="skeleton skeleton-text"></div>
+                  <div class="skeleton skeleton-price"></div>
+                  <div class="skeleton skeleton-text"></div>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+          <div
+            *ngFor="let cat of categories"
+            class="card smart-recommend-card"
+            [ngClass]="'smart-recommend-card-' + cat.key.replace('Options', '')"
           >
             <ng-container
-              *ngFor="
-                let img of businessUser?.imageList?.slice(1, 4);
-                let i = index
-              "
+              *ngFor="let room of smartRecommendations[cat.key]; let last = last"
             >
-              <img [src]="img.url" class="img-fluid rounded small-img" />
-            </ng-container>
-
-            <!-- See More Button -->
-            <button
-              *ngIf="businessUser?.imageList?.length > 1"
-              class="btn position-absolute see-more"
-              style="bottom: 4px; right: 3px"
-              (click)="showSliderPopup()"
-            >
-              See More Photos
-            </button>
-          </div>
-        </div>
-      </div>
-      <p-dialog
-        header="Photo Gallery"
-        [(visible)]="sliderPopupVisible"
-        [modal]="true"
-        [style]="{ width: '100%' }"
-        [baseZIndex]="10000"
-      >
-        <p-carousel
-          *ngIf="businessUser?.imageList?.length > 0"
-          [value]="businessUser?.imageList"
-          [numVisible]="1"
-          [numScroll]="1"
-          [circular]="true"
-          [autoplayInterval]="5000"
-          [responsiveOptions]="[
-            { breakpoint: '1024px', numVisible: 1, numScroll: 1 },
-            { breakpoint: '768px', numVisible: 1, numScroll: 1 },
-          ]"
-        >
-          <ng-template let-image pTemplate="item">
-            <div class="flex justify-content-center">
-              <img
-                [src]="image.url"
-                alt="Room Photo"
-                style="width: 100%; height: auto; border-radius: 8px"
-              />
-            </div>
-          </ng-template>
-        </p-carousel>
-      </p-dialog>
-
-      <div class="col-12">
-        <div
-          *ngIf="smartRecommendationsBoolean"
-          class="d-flex align-items-start"
-          style="gap: 8px; margin-top: 15px"
-        >
-          <div style="width: 16%" class="smart-cion">
-            <div class="smart-card">
-              <img
-                src=" media-be/images/smart-chat.svg"
-                class="smart-card-img"
-                alt=""
-              />
-            </div>
-          </div>
-          <div>
-            <div class="smart-recommend">Smart Recommendations</div>
-            <div class="smart-recommend-1">
-              Not sure what to book? These room options are the best fit for
-              your stay – selected just for you.
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="d-flex scroll-container" *ngIf="smartRecommendationsBoolean">
-        <ng-container *ngIf="smartLoading && smartRecommendationsBoolean">
-          <div
-            class="card smart-recommend-card skeleton-card"
-            style="width: 100%"
-            *ngFor="let skeleton of [1, 2]"
-          >
-            <div style="gap: 8px">
-              <div class="width-49 left-shift">
-                <div class="skeleton skeleton-title"></div>
-                <div class="skeleton skeleton-text"></div>
-              </div>
-              <div style="border-right: 1px solid #d9d9d9"></div>
-              <div class="width-49 left-shift">
-                <div class="skeleton skeleton-text"></div>
-                <div class="skeleton skeleton-price"></div>
-                <div class="skeleton skeleton-text"></div>
-              </div>
-            </div>
-          </div>
-        </ng-container>
-        <div
-          *ngFor="let cat of categories"
-          class="card smart-recommend-card"
-          [ngClass]="'smart-recommend-card-' + cat.key.replace('Options', '')"
-        >
-          <ng-container
-            *ngFor="let room of smartRecommendations[cat.key]; let last = last"
-          >
-            <ng-container *ngIf="last">
-              <ng-container *ngFor="let plan of room.plans">
-                <div class="d-flex justify-content-center" style="gap: 8px">
-                  <div class="width-49 left-shift">
-                    <!-- Category headings with icons -->
-                    <h5
-                      class="recommend-font"
-                      *ngIf="cat.key === 'bestFitOptions'"
-                    >
-                      <img src="media-be/images/best-fit.svg" alt="" />&nbsp;
-                      Best Fit Options
-                    </h5>
-                    <h5
-                      class="recommend-font"
-                      *ngIf="cat.key === 'luxuryOptions'"
-                    >
-                      <img
-                        src="media-be/images/luxury-crown.svg"
-                        alt=""
-                      />&nbsp; Luxury Combo
-                    </h5>
-                    <h5
-                      class="recommend-font"
-                      *ngIf="cat.key === 'comfortOptions'"
-                    >
-                      <img src="media-be/images/sofa.svg" alt="" />&nbsp;
-                      Comfort Combo
-                    </h5>
-                    <h5
-                      class="recommend-font"
-                      *ngIf="cat.key === 'budgetOptions'"
-                    >
-                      <img src="media-be/images/budget.svg" alt="" />&nbsp;
-                      Budget Combo
-                    </h5>
-
-                    <!-- Price & details -->
-                    <div class="line-height pricing-best-fit">
-                      &nbsp; &nbsp; {{ plan?.totalPrice | currency : currency : "symbol" : "1.2-2" }}
-                    </div>
-                    <div class="line-height">
-                      &nbsp; &nbsp; &nbsp; &nbsp; Total for
-                      {{ DiffDate }} nights
-                    </div>
-                    <div class="line-height">
-                      &nbsp; &nbsp; &nbsp; &nbsp;
-                      <img
-                        src="media-be/images/combo-star-one.svg"
-                        alt=""
-                      />&nbsp;
-                      <small>Ideal for {{ plan.idealFor.join(", ") }}</small>
-                    </div>
-                  </div>
-
-                  <div style="border-right: 1px solid #d9d9d9"></div>
-
-                  <!-- Room Details -->
-                  <div class="width-49 left-shift">
-                    <div class="margin-bottom-10px">
-                      &nbsp; &nbsp; &nbsp;<img
-                        src="media-be/images/combo-ded-one.svg"
-                        alt=""
-                      />&nbsp;
-                      <small *ngIf="room.availableCount > 5"
-                        >Fast-selling</small
+              <ng-container *ngIf="last">
+                <ng-container *ngFor="let plan of room.plans">
+                  <div class="d-flex justify-content-center" style="gap: 8px">
+                    <div class="width-49 left-shift">
+                      <!-- Category headings with icons -->
+                      <h5
+                        class="recommend-font"
+                        *ngIf="cat.key === 'bestFitOptions'"
                       >
-                      <small *ngIf="room.availableCount <= 5"
-                        >{{ room?.availableCount }} room(s) left</small
+                        <img src="media-be/images/best-fit.svg" alt="" />&nbsp;
+                        Best Fit Options
+                      </h5>
+                      <h5
+                        class="recommend-font"
+                        *ngIf="cat.key === 'luxuryOptions'"
                       >
-                    </div>
-                    <div
-                      class="room-box d-block justify-content-between mb-4"
-                      [ngClass]="
-                        'room-box-best-fit-' + cat.key.replace('Options', '')
-                      "
-                    >
-                      <div class="room-details">
-                        <div class="room-title">{{ room?.roomName }}</div>
-                        <ng-container>
-                          <div>
-                            {{ plan.pricePerNight | currency : currency : "symbol" : "1.2-2" }} per
-                            night
-                          </div>
-                        </ng-container>
+                        <img
+                          src="media-be/images/luxury-crown.svg"
+                          alt=""
+                        />&nbsp; Luxury Combo
+                      </h5>
+                      <h5
+                        class="recommend-font"
+                        *ngIf="cat.key === 'comfortOptions'"
+                      >
+                        <img src="media-be/images/sofa.svg" alt="" />&nbsp;
+                        Comfort Combo
+                      </h5>
+                      <h5
+                        class="recommend-font"
+                        *ngIf="cat.key === 'budgetOptions'"
+                      >
+                        <img src="media-be/images/budget.svg" alt="" />&nbsp;
+                        Budget Combo
+                      </h5>
+
+                      <!-- Price & details -->
+                      <div class="line-height pricing-best-fit">
+                        &nbsp; &nbsp; {{ plan?.totalPrice | currency : currency : "symbol" : "1.2-2" }}
+                      </div>
+                      <div class="line-height">
+                        &nbsp; &nbsp; &nbsp; &nbsp; Total for
+                        {{ DiffDate }} nights
+                      </div>
+                      <div class="line-height">
+                        &nbsp; &nbsp; &nbsp; &nbsp;
+                        <img
+                          src="media-be/images/combo-star-one.svg"
+                          alt=""
+                        />&nbsp;
+                        <small>Ideal for {{ plan.idealFor.join(", ") }}</small>
                       </div>
                     </div>
-                    <div
-                      style="
-                        display: flex;
-                        justify-content: end;
-                        margin-top: 10px;
-                        margin-bottom: 10px;
-                      "
-                    >
-                      <button
-                        (click)="onSelectPlanFromSmartCard(plan)"
-                        class="select-mannual"
+
+                    <div style="border-right: 1px solid #d9d9d9"></div>
+
+                    <!-- Room Details -->
+                    <div class="width-49 left-shift">
+                      <div class="margin-bottom-10px">
+                        &nbsp; &nbsp; &nbsp;<img
+                          src="media-be/images/combo-ded-one.svg"
+                          alt=""
+                        />&nbsp;
+                        <small *ngIf="room.availableCount > 5"
+                          >Fast-selling</small
+                        >
+                        <small *ngIf="room.availableCount <= 5"
+                          >{{ room?.availableCount }} room(s) left</small
+                        >
+                      </div>
+                      <div
+                        class="room-box d-block justify-content-between mb-4"
+                        [ngClass]="
+                          'room-box-best-fit-' + cat.key.replace('Options', '')
+                        "
                       >
-                        Choose <i class="fa-solid fa-arrow-right"></i>
-                      </button>
+                        <div class="room-details">
+                          <div class="room-title">{{ room?.roomName }}</div>
+                          <ng-container>
+                            <div>
+                              {{ plan.pricePerNight | currency : currency : "symbol" : "1.2-2" }} per
+                              night
+                            </div>
+                          </ng-container>
+                        </div>
+                      </div>
+                      <div
+                        style="
+                          display: flex;
+                          justify-content: end;
+                          margin-top: 10px;
+                          margin-bottom: 10px;
+                        "
+                      >
+                        <button
+                          (click)="onSelectPlanFromSmartCard(plan)"
+                          class="select-mannual"
+                        >
+                          Choose <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                      </div>
                     </div>
                   </div>
-                </div>
+                </ng-container>
               </ng-container>
             </ng-container>
-          </ng-container>
+          </div>
         </div>
       </div>
 
