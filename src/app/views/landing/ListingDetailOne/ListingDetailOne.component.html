@@ -1786,7 +1786,7 @@
     </div>
 
     <!-- Property Highlights Section - 3 Column Grid -->
-    <div class="margin-top-40px display-flex">
+    <div class="margin-top-40px display-flex website-web-vision">
       <div class="col-12">
         <div *ngIf="amenitiesHighlights.length > 0 || propertyServiceListData.length > 0">
           <h4 class="aminities-highlights">Property Highlights</h4>
@@ -1907,7 +1907,7 @@
     </div>
 
     <!-- AI-Powered Suggestion Section - Teal Box -->
-    <div class="margin-top-40px">
+    <div class="margin-top-40px website-web-vision">
       <div class="row">
         <div class="col-12">
           <div
@@ -2025,7 +2025,7 @@
     </div>
 
     <!-- Smart Recommendations Cards Section (Shows below AI box if toggled) -->
-    <div class="margin-top-40px" *ngIf="showSmartRecommendations && smartRecommendationsBoolean">
+    <div class="margin-top-40px website-web-vision" *ngIf="showSmartRecommendations && smartRecommendationsBoolean">
       <div class="row">
         <div class="col-12">
           <h4 class="rooms-heading-starts">Recommended For You</h4>
@@ -2445,6 +2445,58 @@
               </ng-container>
             </ng-container>
           </ng-container>
+        </div>
+      </div>
+
+      <div
+        class="margin-top-40px mobile-property-highlights"
+        *ngIf="amenitiesHighlights.length > 0 || propertyServiceListData.length > 0"
+      >
+        <h4 class="aminities-highlights">Property Highlights</h4>
+        <div
+          class="card margin-top-20px"
+          style="box-shadow: 0px 4px 40px 0px #d9d9d9; background-color: #f5f5f5; border-radius: 12px"
+        >
+          <div class="padding-20px">
+            <div class="row" style="gap: 20px">
+              <div
+                class="col-lg-4 col-md-6 col-12"
+                *ngFor="let fac of (amenitiesHighlights.length > 0 ? amenitiesHighlights : propertyServiceListData) | slice: 0 : 6"
+              >
+                <div
+                  class="d-flex align-items-center gap-15px p-3 bg-white rounded"
+                  style="border: 1px solid #e0e0e0; min-height: 80px"
+                  *ngIf="
+                    fac.name !== null &&
+                    fac.name !== undefined &&
+                    fac.serviceType !== 'Distance' &&
+                    fac.serviceType !== 'RestaurantHotel' &&
+                    fac.serviceType !== 'DistanceRailway'
+                  "
+                >
+                  <div style="flex-shrink: 0">
+                    <img
+                      class="icon-amenities"
+                      *ngIf="fac.imageUrl == null || fac.imageUrl == undefined"
+                      src="https://static.thenounproject.com/png/3421816-200.png"
+                      alt="icon"
+                      style="width: 40px; height: 40px; object-fit: contain"
+                    />
+                    <img
+                      class="icon-amenities"
+                      *ngIf="fac.imageUrl != null && fac.imageUrl != undefined"
+                      [src]="fac.imageUrl"
+                      alt="icon"
+                      style="width: 40px; height: 40px; object-fit: contain"
+                    />
+                  </div>
+                  <div style="flex: 1">
+                    <p class="aminities-names" style="margin: 0; font-weight: 600; color: #0f172a">{{ fac.name }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

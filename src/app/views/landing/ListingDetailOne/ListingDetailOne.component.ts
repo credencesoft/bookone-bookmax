@@ -7850,8 +7850,10 @@ onCouponInputChange(event: string) {
 
     const winningIndex = Math.floor(Math.random() * this.spinWheelSegments.length);
     const segmentAngle = 360 / this.spinWheelSegments.length;
-    const targetRotation =
-      this.spinWheelRotation + 5 * 360 + (360 - winningIndex * segmentAngle);
+    const currentNormalizedRotation = ((this.spinWheelRotation % 360) + 360) % 360;
+    const desiredRotation = (360 - winningIndex * segmentAngle) % 360;
+    const deltaRotation = (desiredRotation - currentNormalizedRotation + 360) % 360;
+    const targetRotation = this.spinWheelRotation + 5 * 360 + deltaRotation;
 
     this.spinWheelRotation = targetRotation;
 
