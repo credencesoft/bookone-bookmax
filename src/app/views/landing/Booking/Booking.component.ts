@@ -991,9 +991,34 @@ export class BookingComponent implements OnInit {
   }
 
   private storeBookedEnquiries() {
+    // ✅ Enhance with calculation and payment plan state for voucher confirmation page
+    const enhancedEnquiries = this.bookedEnquiries.map((enquiry) => ({
+      ...enquiry,
+      // Discount info
+      couponDiscountPercentage: this.selectedCouponList?.discountPercentage || 0,
+      couponDiscountAmount: this.couponDiscountAmount,
+      advanceDiscountPercentage: this.selectedAdvanceDiscountSlab?.discountPercentage || 0,
+      advanceDiscountAmount: this.advanceDiscountAmount,
+      totalDiscountAmount: this.totalDiscountAmount,
+      // Payment plan info
+      advancePaymentPercentage: this.selectedAdvanceDiscountSlab?.advancePercentage || 0,
+      advancePaymentLabel: this.selectedAdvanceDiscountSlab ? `Pay ${this.selectedAdvanceDiscountSlab.advancePercentage}% Advance` : null,
+      // Calculation state
+      amountAfterDiscount: this.amountAfterDiscount,
+      taxOnDiscountedAmount: this.taxOnDiscountedAmount,
+      serviceChargePercentage: this.serviceChargePercentage,
+      convenienceFeeAmount: this.convenienceFeeAmount,
+      // Summary amounts
+      grandTotal: this.getNewGrandTotal(),
+      payNowAmount: this.getNewPayNowAmount(),
+      balanceAtCheckIn: this.getNewBalanceAtCheckIn(),
+      // Add-ons
+      selectedAddOns: this.selectedAddOns,
+    }));
+
     sessionStorage.setItem(
       'BookedEnquiryList',
-      JSON.stringify(this.bookedEnquiries),
+      JSON.stringify(enhancedEnquiries),
     );
   }
 
