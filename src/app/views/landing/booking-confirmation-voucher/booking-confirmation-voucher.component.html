@@ -396,12 +396,7 @@
                     <th>Extra Pax</th>
                     <th>Extra Child</th>
                     <th *ngIf="specialDiscountData || advanceDiscountPercentage > 0">
-                      <ng-container *ngIf="specialDiscountData">
-                        Discount ({{ specialDiscountData.discountPercentage }}%)
-                      </ng-container>
-                      <ng-container *ngIf="!specialDiscountData && advanceDiscountPercentage > 0">
-                        Discount ({{ advanceDiscountPercentage }}%)
-                      </ng-container>
+                      {{ getDiscountColumnLabel() }}
                     </th>
                     <th>Sub Total</th>
                     <th>Tax</th>
@@ -453,30 +448,33 @@
               <div class="booking-summary-footer">
                 <div class="footer-borders">
                   <div class="d-flex justify-content-between">
-                    <div>Final {{this.roomLabel}} Tariff:</div>
+                      <div>{{ getAccommodationSubtotalLabel() }}:</div>
                     <div>
-                      ₹{{
-                        bookingSummaryDetails?.totalPlanPrice - totalDiscount
-                          | number: "1.2-2"
-                      }}
+                      ₹{{ getDisplayedRoomSubtotal() | number: "1.2-2" }}
                     </div>
                   </div>
-                  <!-- ✅ NEW: Show coupon discount if applied -->
-                  <div *ngIf="couponDiscountPercentage > 0" class="d-flex justify-content-between" style="margin-top: 5px; color: #16a34a">
-                    <div>Coupon Discount ({{ couponDiscountPercentage }}%)</div>
-                    <div>-₹{{ couponDiscountAmount | number: "1.2-2" }}</div>
+                  <div *ngIf="specialDiscountData?.discountPercentage || advanceDiscountPercentage > 0" class="d-flex justify-content-between" style="margin-top: 5px; color: #16a34a">
+                    <div>Discounts Applied:</div>
+                    <div style="text-align: right">
+                      <span *ngIf="specialDiscountData?.discountPercentage">Coupon {{ specialDiscountData.discountPercentage }}%</span>
+                      <span *ngIf="specialDiscountData?.discountPercentage && advanceDiscountPercentage > 0">, </span>
+                      <span *ngIf="advanceDiscountPercentage > 0">Advance {{ advanceDiscountPercentage }}%</span>
+                    </div>
                   </div>
-                  <!-- ✅ NEW: Show advance discount if applied -->
-                  <div *ngIf="advanceDiscountPercentage > 0" class="d-flex justify-content-between" style="margin-top: 5px; color: #16a34a">
+                  <div *ngIf="getDisplayedAdvanceDiscountAmount() > 0" class="d-flex justify-content-between" style="margin-top: 5px; color: #16a34a">
                     <div>Advance Discount ({{ advanceDiscountPercentage }}%)</div>
-                    <div>-₹{{ advanceDiscountAmount | number: "1.2-2" }}</div>
+                    <div>-₹{{ getDisplayedAdvanceDiscountAmount() | number: "1.2-2" }}</div>
+                  </div>
+                  <div *ngIf="getDisplayedAdvanceDiscountAmount() > 0" class="d-flex justify-content-between" style="margin-top: 5px; font-weight: 600">
+                    <div>Accommodation Total (After All Discounts)</div>
+                    <div>₹{{ getDisplayedAccommodationAfterDiscounts() | number: "1.2-2" }}</div>
                   </div>
                 </div>
                 <div class="footer-borders">
                   <div class="d-flex justify-content-between">
                     <div>Total GST:</div>
                     <div>
-                      ₹{{ bookingSummaryDetails?.totalTax | number: "1.2-2" }}
+                      ₹{{ getDisplayedRoomTax() | number: "1.2-2" }}
                     </div>
                   </div>
                   <div
@@ -486,12 +484,7 @@
                   >
                     <div>Convenience Fee:</div>
                     <div>
-                      ₹{{
-                        calculateConvenienceFee(
-                          bookingSummaryDetails?.totalPlanPrice - totalDiscount,
-                          serviceChargePercentage
-                        ) | number: "1.2-2"
-                      }}
+                      ₹{{ getDisplayedConvenienceFee() | number: "1.2-2" }}
                     </div>
                   </div>
                 </div>
@@ -540,7 +533,7 @@
                 <!-- ✅ NEW: Advance plan indicator and payment breakdown -->
                 <div *ngIf="advancePaymentPercentage > 0" class="booking-summary-total total-borders" style="background-color: #fef9c3; border: 1px solid #fef08a">
                   <div class="d-flex justify-content-between"><div style="font-weight: 700; color: #b45309">{{ advancePaymentLabel }}</div><div style="font-weight: 700; color: #dc2626">₹{{ getNewPayNowAmount() | number: "1.2-2" }}</div></div>
-                  <div style="font-size: 0.85rem; color: #b45309; margin-top: 4px">{{ advancePaymentPercentage }}% of accommodation + all add-ons + fees</div>
+                  <div style="font-size: 0.85rem; color: #b45309; margin-top: 4px">{{ advancePaymentPercentage }}% of discounted accommodation + GST, plus all add-ons and fees</div>
                   <div class="d-flex justify-content-between" style="margin-top: 8px; border-top: 1px solid #fef08a; padding-top: 8px">
                     <div style="color: #6b7280">Balance at Check-in:</div>
                     <div style="font-weight: 600">₹{{ getNewBalanceAtCheckIn() | number: "1.2-2" }}</div>
@@ -1051,29 +1044,31 @@
           >
             <div class="booking-summary-footer">
               <div class="d-flex justify-content-between">
-                <div>Final {{this.roomLabel}} Tariff:</div>
+                <div>{{ getAccommodationSubtotalLabel() }}:</div>
                 <div>
-                  ₹
-                  {{
-                    bookingSummaryDetails?.totalPlanPrice - totalDiscount
-                      | number: "1.2-2"
-                  }}
+                  ₹{{ getDisplayedRoomSubtotal() | number: "1.2-2" }}
                 </div>
               </div>
-              <!-- ✅ NEW: Show coupon discount if applied -->
-              <div *ngIf="couponDiscountPercentage > 0" class="d-flex justify-content-between" style="margin-top: 5px; color: #16a34a">
-                <div>Coupon Discount ({{ couponDiscountPercentage }}%)</div>
-                <div>-₹{{ couponDiscountAmount | number: "1.2-2" }}</div>
+              <div *ngIf="specialDiscountData?.discountPercentage || advanceDiscountPercentage > 0" class="d-flex justify-content-between" style="margin-top: 5px; color: #16a34a">
+                <div>Discounts Applied:</div>
+                <div style="text-align: right">
+                  <span *ngIf="specialDiscountData?.discountPercentage">Coupon {{ specialDiscountData.discountPercentage }}%</span>
+                  <span *ngIf="specialDiscountData?.discountPercentage && advanceDiscountPercentage > 0">, </span>
+                  <span *ngIf="advanceDiscountPercentage > 0">Advance {{ advanceDiscountPercentage }}%</span>
+                </div>
               </div>
-              <!-- ✅ NEW: Show advance discount if applied -->
-              <div *ngIf="advanceDiscountPercentage > 0" class="d-flex justify-content-between" style="margin-top: 5px; color: #16a34a">
+              <div *ngIf="getDisplayedAdvanceDiscountAmount() > 0" class="d-flex justify-content-between" style="margin-top: 5px; color: #16a34a">
                 <div>Advance Discount ({{ advanceDiscountPercentage }}%)</div>
-                <div>-₹{{ advanceDiscountAmount | number: "1.2-2" }}</div>
+                <div>-₹{{ getDisplayedAdvanceDiscountAmount() | number: "1.2-2" }}</div>
+              </div>
+              <div *ngIf="getDisplayedAdvanceDiscountAmount() > 0" class="d-flex justify-content-between" style="margin-top: 5px; font-weight: 600">
+                <div>Accommodation Total (After All Discounts)</div>
+                <div>₹{{ getDisplayedAccommodationAfterDiscounts() | number: "1.2-2" }}</div>
               </div>
               <div class="d-flex justify-content-between">
                 <div>Total GST:</div>
                 <div>
-                  ₹ {{ bookingSummaryDetails?.totalTax | number: "1.2-2" }}
+                  ₹ {{ getDisplayedRoomTax() | number: "1.2-2" }}
                 </div>
               </div>
               <div
@@ -1082,12 +1077,7 @@
               >
                 <div>Convenience Fee:</div>
                 <div>
-                  ₹{{
-                    calculateConvenienceFee(
-                      bookingSummaryDetails?.totalPlanPrice - totalDiscount,
-                      serviceChargePercentage
-                    ) | number: "1.2-2"
-                  }}
+                  ₹{{ getDisplayedConvenienceFee() | number: "1.2-2" }}
                 </div>
               </div>
               <!-- Add-ons itemised table for mobile/webview -->
@@ -1136,7 +1126,7 @@
                   <div style="font-size: 0.9rem">{{ advancePaymentLabel }}</div>
                   <div style="color: #dc2626">₹{{ getNewPayNowAmount() | number: "1.2-2" }}</div>
                 </div>
-                <div style="font-size: 0.75rem; color: #b45309; margin-top: 4px">{{ advancePaymentPercentage }}% of rooms + add-ons + fees</div>
+                <div style="font-size: 0.75rem; color: #b45309; margin-top: 4px">{{ advancePaymentPercentage }}% of discounted accommodation + GST, plus all add-ons and fees</div>
                 <div class="d-flex justify-content-between" style="margin-top: 6px; padding-top: 6px; border-top: 1px solid #fef08a; font-weight: 600">
                   <div style="font-size: 0.9rem; color: #6b7280">Balance at Check-in:</div>
                   <div style="color: #dc2626">₹{{ getNewBalanceAtCheckIn() | number: "1.2-2" }}</div>

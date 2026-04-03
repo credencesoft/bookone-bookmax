@@ -461,28 +461,94 @@ export class BookingConfirmationVoucherComponent {
     return isFinite(num) && num >= 0 && num <= 100 ? num : 0;
   }
 
-  // ✅ NEW: Unified calculation helpers (match Booking.component)
+  getDiscountColumnLabel(): string {
+    if (this.specialDiscountData?.discountPercentage) {
+      return `Coupon Discount (${this.specialDiscountData.discountPercentage}%)`;
+    }
+    if (this.advanceDiscountPercentage > 0) {
+      return `Advance Discount (${this.advanceDiscountPercentage}%)`;
+    }
+    return 'Discount';
+  }
+
+  getAccommodationSubtotalLabel(): string {
+    if (this.getDisplayedAdvanceDiscountAmount() > 0) {
+      return `Accommodation Subtotal (Before Advance Discount)`;
+    }
+    return `Accommodation Subtotal`;
+  }
+
+  getDisplayedRoomSubtotal(): number {
+    if (!this.bookingsResponseList || this.bookingsResponseList.length === 0) return 0;
+    return this.toSafeAmount(
+      this.bookingsResponseList.reduce(
+        (sum, booking) => sum + (Number(booking?.beforeTaxAmount) || 0),
+        0,
+      ),
+    );
+  }
+
+  getDisplayedRoomTax(): number {
+    if (!this.bookingsResponseList || this.bookingsResponseList.length === 0) {
+      return this.toSafeAmount(this.taxOnDiscountedAmount || this.bookingSummaryDetails?.totalTax || 0);
+    }
+    return this.toSafeAmount(
+      this.bookingsResponseList.reduce(
+        (sum, booking) => sum + (Number(booking?.taxAmount) || 0),
+        0,
+      ),
+    );
+  }
+
+  getDisplayedAdvanceDiscountAmount(): number {
+    if (this.advanceDiscountAmount > 0) {
+      return this.toSafeAmount(this.advanceDiscountAmount);
+    }
+    if (this.advanceDiscountPercentage > 0) {
+      return this.toSafeAmount(
+        (this.getDisplayedRoomSubtotal() * this.advanceDiscountPercentage) / 100,
+      );
+    }
+    return 0;
+  }
+
+  getDisplayedAccommodationAfterDiscounts(): number {
+    return this.toSafeAmount(
+      Math.max(0, this.getDisplayedRoomSubtotal() - this.getDisplayedAdvanceDiscountAmount()),
+    );
+  }
+
+  getDisplayedConvenienceFee(): number {
+    return this.calculateConvenienceFee(
+      this.getDisplayedRoomSubtotal(),
+      this.toSafePercent(this.serviceChargePercentage),
+    );
+  }
+
+  // Unified calculation helpers based on displayed voucher values
   getNewGrandTotal(): number {
     return this.toSafeAmount(
-      (this.amountAfterDiscount || 0) +
-        (this.taxOnDiscountedAmount || 0) +
+      this.getDisplayedAccommodationAfterDiscounts() +
+        this.getDisplayedRoomTax() +
         this.getServicesTotal() +
-        (this.convenienceFeeAmount || 0)
+        this.getDisplayedConvenienceFee()
     );
   }
 
   getNewPayNowAmount(): number {
-    // If advance plan was selected, use the advance payment amount from booking
     if (this.advancePaymentPercentage > 0) {
-      return this.payNowAmount || 0;
+      const advancePct = this.toSafePercent(this.advancePaymentPercentage) / 100;
+      const roomsWithTax = this.getDisplayedAccommodationAfterDiscounts() + this.getDisplayedRoomTax();
+      return this.toSafeAmount(
+        (roomsWithTax * advancePct) + this.getServicesTotal() + this.getDisplayedConvenienceFee(),
+      );
     }
-    // Otherwise, full amount is due now
     return this.getNewGrandTotal();
   }
 
   getNewBalanceAtCheckIn(): number {
     if (this.advancePaymentPercentage > 0) {
-      return this.balanceAtCheckIn || 0;
+      return this.toSafeAmount(Math.max(0, this.getNewGrandTotal() - this.getNewPayNowAmount()));
     }
     return 0;
   }
