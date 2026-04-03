@@ -151,7 +151,7 @@ describe('BookingConfirmationVoucherComponent – 14 booking scenarios', () => {
   it('S5: Room only — coupon 50%, no fee', () => {
     setup({ beforeTaxAmount: 50, perRowTax: 2.5, couponPct: 50 });
     // room=50, tax=2.5(per-row), convFee=0
-    expect(component.getDiscountColumnLabel()).toBe('Coupon Discount (50%)');
+    expect(component.getDiscountColumnLabel()).toBe('Coupon / Promo');
     expect(component.getDisplayedRoomSubtotal()).toBe(50);
     expect(component.getDisplayedRoomTax()).toBe(2.5);
     expect(component.getNewGrandTotal()).toBeCloseTo(52.5, 2);
@@ -198,7 +198,7 @@ describe('BookingConfirmationVoucherComponent – 14 booking scenarios', () => {
     // Grand = 40+2+0+2 = 44
     // PayNow = 50%*(40+2)+0+2 = 21+2 = 23
     // Balance = 44-23 = 21
-    expect(component.getDiscountColumnLabel()).toBe('Coupon Discount (50%)');
+    expect(component.getDiscountColumnLabel()).toBe('Coupon / Promo');
     expect(component.getDisplayedRoomSubtotal()).toBe(50);
     expect(component.getDisplayedAdvanceDiscountAmount()).toBe(10);
     expect(component.getDisplayedAccommodationAfterDiscounts()).toBe(40);
@@ -237,7 +237,7 @@ describe('BookingConfirmationVoucherComponent – 14 booking scenarios', () => {
     // Grand = 80+4+0+2 = 86
     // PayNow = 50%*(80+4)+0+2 = 42+2 = 44
     // Balance = 86-44 = 42
-    expect(component.getDiscountColumnLabel()).toBe('Advance Discount (20%)');
+    expect(component.getDiscountColumnLabel()).toBe('Discount');
     expect(component.getDisplayedAccommodationAfterDiscounts()).toBe(80);
     expect(component.getDisplayedRoomTax()).toBe(4);
     expect(component.getNewGrandTotal()).toBeCloseTo(86, 2);
@@ -286,5 +286,31 @@ describe('BookingConfirmationVoucherComponent – 14 booking scenarios', () => {
     expect(component.getNewGrandTotal()).toBeCloseTo(105, 2);
     expect(component.getNewPayNowAmount()).toBeCloseTo(63, 2);
     expect(component.getNewBalanceAtCheckIn()).toBeCloseTo(42, 2);
+  });
+
+  it('regression: advance-only + service + fee keeps row Tax/Total aligned with footer totals', () => {
+    setup({
+      // Mirrors the screenshot numbers
+      beforeTaxAmount: 2,
+      perRowTax: 0.10, // pre-advance row tax from API
+      advancePct: 50,
+      advanceDiscount: 1,
+      payAdvancePct: 100,
+      taxOnDiscounted: 0.05, // authoritative post-all-discounts tax
+      convFeeAmount: 0.04,
+      withAddOn: true, // fixed add-on = 20 + 1 in helper
+    });
+
+    // Override add-on to screenshot scale
+    component.selectedAddOns = [
+      { serviceName: 'Service', quantity: 1, servicePrice: 1, taxAmount: 0 },
+    ];
+
+    const row = component.bookingsResponseList[0];
+    expect(component.getDisplayedRowTax(row)).toBeCloseTo(0.05, 2);
+    expect(component.getDisplayedRowTotal(row)).toBeCloseTo(1.05, 2);
+    expect(component.getNewGrandTotal()).toBeCloseTo(2.09, 2);
+    expect(component.getNewPayNowAmount()).toBeCloseTo(2.09, 2);
+    expect(component.getNewBalanceAtCheckIn()).toBeCloseTo(0, 2);
   });
 });

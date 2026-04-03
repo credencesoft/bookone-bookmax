@@ -390,12 +390,12 @@
                     "
                   >
                     <th>Selection</th>
-                    <th>Price</th>
+                    <th>Base Price</th>
                     <th>Nights</th>
                     <th>Count</th>
                     <th>Extra Pax</th>
                     <th>Extra Child</th>
-                    <th *ngIf="specialDiscountData || advanceDiscountPercentage > 0">
+                    <th *ngIf="specialDiscountData?.discountPercentage">
                       {{ getDiscountColumnLabel() }}
                     </th>
                     <th>Sub Total</th>
@@ -426,21 +426,14 @@
                     <td>{{ booking?.noOfRooms }}</td>
                     <td>₹{{ booking?.extraPersonCharge | number: "1.2-2" }}</td>
                     <td>₹{{ booking?.extraChildCharge | number: "1.2-2" }}</td>
-                    <td *ngIf="specialDiscountData || advanceDiscountPercentage > 0">
-                      <ng-container *ngIf="booking?.discountAmount">
-                        -₹{{ booking?.discountAmount | number: "1.2-2" }}
+                    <td *ngIf="specialDiscountData?.discountPercentage">
+                      <ng-container *ngIf="getDisplayedRowTotalDiscount(booking) > 0">
+                        -₹{{ getDisplayedRowTotalDiscount(booking) | number: "1.2-2" }}
                       </ng-container>
                     </td>
                     <td>₹{{ booking?.beforeTaxAmount | number: "1.2-2" }}</td>
-                    <td>₹{{ booking?.taxAmount | number: "1.2-2" }}</td>
-                    <td>
-                      ₹{{
-                        (serviceChargePercentage
-                          ? booking?.totalAmount - booking?.convenienceFee
-                          : booking?.totalAmount
-                        ) | number: "1.2-2"
-                      }}
-                    </td>
+                    <td>₹{{ getDisplayedRowTax(booking) | number: "1.2-2" }}</td>
+                    <td>₹{{ getDisplayedRowTotal(booking) | number: "1.2-2" }}</td>
                   </tr>
                 </tbody>
               </table>
@@ -991,17 +984,10 @@
                 </div>
                 <div
                   class="d-flex justify-content-between"
-                  *ngIf="booking?.discountAmount"
+                  *ngIf="getDisplayedRowTotalDiscount(booking) > 0"
                 >
-                  <div>
-                    <ng-container *ngIf="specialDiscountData">
-                      Discount ({{ specialDiscountData?.discountPercentage }}%)
-                    </ng-container>
-                    <ng-container *ngIf="!specialDiscountData && advanceDiscountPercentage > 0">
-                      Discount ({{ advanceDiscountPercentage }}%)
-                    </ng-container>
-                  </div>
-                  <div>-₹{{ booking?.discountAmount | number: "1.2-2" }}</div>
+                  <div>{{ getDiscountColumnLabel() }}</div>
+                  <div>-₹{{ getDisplayedRowTotalDiscount(booking) | number: "1.2-2" }}</div>
                 </div>
                 <div class="d-flex justify-content-between">
                   <div>Sub Total</div>
@@ -1010,7 +996,7 @@
 
                 <div class="d-flex justify-content-between">
                   <div>Tax</div>
-                  <div>₹{{ booking?.taxAmount | number: "1.2-2" }}</div>
+                  <div>₹{{ getDisplayedRowTax(booking) | number: "1.2-2" }}</div>
                 </div>
                 <hr
                   style="
@@ -1024,14 +1010,7 @@
                   style="font-weight: bold"
                 >
                   <div>Total Amount</div>
-                  <div>
-                    ₹{{
-                      (serviceChargePercentage
-                        ? booking?.totalAmount - booking?.convenienceFee
-                        : booking?.totalAmount
-                      ) | number: "1.2-2"
-                    }}
-                  </div>
+                  <div>₹{{ getDisplayedRowTotal(booking) | number: "1.2-2" }}</div>
                 </div>
               </ng-container>
             </div>
