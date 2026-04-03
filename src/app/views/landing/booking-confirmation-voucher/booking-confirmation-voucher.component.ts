@@ -34,6 +34,22 @@ export class BookingConfirmationVoucherComponent {
   accommodationService: any;
   roomLabel: string = 'Room';
 
+  // ✅ NEW: Calculation and payment plan tracking properties
+  couponDiscountPercentage: number = 0;
+  couponDiscountAmount: number = 0;
+  advanceDiscountPercentage: number = 0;
+  advanceDiscountAmount: number = 0;
+  advancePaymentPercentage: number = 0;
+  advancePaymentLabel: string = '';
+  amountAfterDiscount: number = 0;
+  taxOnDiscountedAmount: number = 0;
+  convenienceFeeAmount: number = 0;
+  grandTotal: number = 0;
+  payNowAmount: number = 0;
+  balanceAtCheckIn: number = 0;
+  selectedAddOns: any[] = [];
+  selectedAdvanceDiscountSlab: any = null;
+
   constructor(
     private http: HttpClient,
     private token: TokenStorage,
@@ -89,6 +105,8 @@ export class BookingConfirmationVoucherComponent {
       ) {
         this.booking = this.token.getBookingData();
       }
+      // ✅ NEW: Load calculation state from stored enquiries
+      this.loadCalculationStateFromEnquiries();
     }, 10);
   }
   private sequenceBookingConfirmation() {
@@ -399,6 +417,102 @@ export class BookingConfirmationVoucherComponent {
         (sum, plan) => sum + (plan.children || 0),
         0,
       );
+  }
+
+  // ✅ NEW: Load calculation state from stored enquiries
+  private loadCalculationStateFromEnquiries() {
+    const bookedStr = sessionStorage.getItem('BookedEnquiryList');
+    if (!bookedStr) return;
+
+    try {
+      const bookedEnquiries = JSON.parse(bookedStr);
+      if (!Array.isArray(bookedEnquiries) || bookedEnquiries.length === 0) return;
+
+      // Use the first enquiry's calculation state for now (can be enhanced for multiple bookings)
+      const firstEnquiry = bookedEnquiries[0];
+
+      this.couponDiscountPercentage = firstEnquiry.couponDiscountPercentage || 0;
+      this.couponDiscountAmount = firstEnquiry.couponDiscountAmount || 0;
+      this.advanceDiscountPercentage = firstEnquiry.advanceDiscountPercentage || 0;
+      this.advanceDiscountAmount = firstEnquiry.advanceDiscountAmount || 0;
+      this.advancePaymentPercentage = firstEnquiry.advancePaymentPercentage || 0;
+      this.advancePaymentLabel = firstEnquiry.advancePaymentLabel || '';
+      this.amountAfterDiscount = firstEnquiry.amountAfterDiscount || 0;
+      this.taxOnDiscountedAmount = firstEnquiry.taxOnDiscountedAmount || 0;
+      this.serviceChargePercentage = firstEnquiry.serviceChargePercentage || this.serviceChargePercentage;
+      this.convenienceFeeAmount = firstEnquiry.convenienceFeeAmount || 0;
+      this.grandTotal = firstEnquiry.grandTotal || this.getNewGrandTotal();
+      this.payNowAmount = firstEnquiry.payNowAmount || 0;
+      this.balanceAtCheckIn = firstEnquiry.balanceAtCheckIn || 0;
+      this.selectedAddOns = firstEnquiry.selectedAddOns || [];
+    } catch (error) {
+      console.warn('Error loading calculation state from enquiries:', error);
+    }
+  }
+
+  // ✅ NEW: Guard functions
+  private toSafeAmount(value: any): number {
+    const num = Number(value);
+    return isFinite(num) ? num : 0;
+  }
+
+  private toSafePercent(value: any): number {
+    const num = Number(value);
+    return isFinite(num) && num >= 0 && num <= 100 ? num : 0;
+  }
+
+  // ✅ NEW: Unified calculation helpers (match Booking.component)
+  getNewGrandTotal(): number {
+    return this.toSafeAmount(
+      (this.amountAfterDiscount || 0) +
+        (this.taxOnDiscountedAmount || 0) +
+        this.getServicesTotal() +
+        (this.convenienceFeeAmount || 0)
+    );
+  }
+
+  getNewPayNowAmount(): number {
+    // If advance plan was selected, use the advance payment amount from booking
+    if (this.advancePaymentPercentage > 0) {
+      return this.payNowAmount || 0;
+    }
+    // Otherwise, full amount is due now
+    return this.getNewGrandTotal();
+  }
+
+  getNewBalanceAtCheckIn(): number {
+    if (this.advancePaymentPercentage > 0) {
+      return this.balanceAtCheckIn || 0;
+    }
+    return 0;
+  }
+
+  hasSelectedAdvancePaymentPlan(): boolean {
+    return this.advancePaymentPercentage > 0;
+  }
+
+  getServicesTotal(): number {
+    if (!this.selectedAddOns || this.selectedAddOns.length === 0) return 0;
+    return this.toSafeAmount(
+      this.selectedAddOns.reduce(
+        (sum, addon) => sum + ((addon.servicePrice || 0) + (addon.taxAmount || 0)),
+        0
+      )
+    );
+  }
+
+  getServicesSubtotal(): number {
+    if (!this.selectedAddOns || this.selectedAddOns.length === 0) return 0;
+    return this.toSafeAmount(
+      this.selectedAddOns.reduce((sum, addon) => sum + (addon.servicePrice || 0), 0)
+    );
+  }
+
+  getServicesTax(): number {
+    if (!this.selectedAddOns || this.selectedAddOns.length === 0) return 0;
+    return this.toSafeAmount(
+      this.selectedAddOns.reduce((sum, addon) => sum + (addon.taxAmount || 0), 0)
+    );
   }
   private onAllBookingsLoaded() {
     sessionStorage.setItem(
