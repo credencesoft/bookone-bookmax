@@ -489,8 +489,13 @@ export class BookingConfirmationVoucherComponent {
   }
 
   getDisplayedRoomTax(): number {
+    // Prefer taxOnDiscountedAmount (computed post-all-discounts in checkout flow) over
+    // booking.taxAmount rows which are post-coupon only and would mismatch the checkout total.
+    if (this.taxOnDiscountedAmount > 0) {
+      return this.toSafeAmount(this.taxOnDiscountedAmount);
+    }
     if (!this.bookingsResponseList || this.bookingsResponseList.length === 0) {
-      return this.toSafeAmount(this.taxOnDiscountedAmount || this.bookingSummaryDetails?.totalTax || 0);
+      return this.toSafeAmount(this.bookingSummaryDetails?.totalTax || 0);
     }
     return this.toSafeAmount(
       this.bookingsResponseList.reduce(
@@ -519,6 +524,11 @@ export class BookingConfirmationVoucherComponent {
   }
 
   getDisplayedConvenienceFee(): number {
+    // Prefer convenienceFeeAmount (stored from checkout flow) over recomputing from
+    // post-coupon subtotal, which would mismatch the checkout convenience fee.
+    if (this.convenienceFeeAmount > 0) {
+      return this.toSafeAmount(this.convenienceFeeAmount);
+    }
     return this.calculateConvenienceFee(
       this.getDisplayedRoomSubtotal(),
       this.toSafePercent(this.serviceChargePercentage),

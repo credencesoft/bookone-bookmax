@@ -13,7 +13,21 @@ class TestBookingConfirmationVoucherComponent extends BookingConfirmationVoucher
   }
 }
 
-describe('BookingConfirmationVoucherComponent', () => {
+/**
+ * Voucher Math – 14 Booking Scenarios
+ *
+ * Base room:  ₹100 net, 5% tax, add-on ₹20 + ₹1 tax = ₹21
+ * Convenience fee: 2% of ORIGINAL base price (before any discount)
+ *
+ * Key state fields:
+ *   bookingsResponseList[0].beforeTaxAmount  = room price after coupon (API value, pre-advance)
+ *   bookingsResponseList[0].taxAmount        = per-row tax from API   (post-coupon, pre-advance)
+ *   taxOnDiscountedAmount                    = authoritative tax (post-ALL discounts, stored from checkout)
+ *                                              When > 0, getDisplayedRoomTax() uses this instead of per-row sum
+ *   convenienceFeeAmount                     = stored from checkout (on ORIGINAL base price)
+ *                                              When > 0, getDisplayedConvenienceFee() uses this directly
+ */
+describe('BookingConfirmationVoucherComponent – 14 booking scenarios', () => {
   let component: BookingConfirmationVoucherComponent;
 
   const propertyData = {
@@ -22,7 +36,6 @@ describe('BookingConfirmationVoucherComponent', () => {
     localCurrency: 'inr',
     businessServiceDtoList: [
       { name: 'Accommodation', serviceChargePercentage: 2 },
-      { name: 'Hotel' },
     ],
     socialMediaLinks: [],
   };
@@ -47,94 +60,231 @@ describe('BookingConfirmationVoucherComponent', () => {
     );
   });
 
-  function configureVoucherState(options: {
-    couponPercent?: number;
-    advanceDiscountPercent?: number;
-    advancePaymentPercent?: number;
-    addOnPrice?: number;
-    addOnTax?: number;
-  } = {}): void {
-    component.bookingsResponseList = [
-      {
-        beforeTaxAmount: 10.5,
-        taxAmount: 0.53,
-        discountAmount: options.couponPercent ? 4.5 : options.advanceDiscountPercent ? 2.1 : 0,
-        roomPrice: 15,
-        noOfNights: 1,
-        noOfRooms: 1,
-        extraPersonCharge: 0,
-        extraChildCharge: 0,
-        totalAmount: 11.03,
-      },
-    ];
-    component.specialDiscountData = options.couponPercent
-      ? { discountPercentage: options.couponPercent }
-      : null;
-    component.advanceDiscountPercentage = options.advanceDiscountPercent || 0;
-    component.advanceDiscountAmount = options.advanceDiscountPercent ? 2.1 : 0;
-    component.advancePaymentPercentage = options.advancePaymentPercent || 0;
-    component.advancePaymentLabel = options.advancePaymentPercent ? `Pay ${options.advancePaymentPercent}% Advance` : '';
-    component.serviceChargePercentage = 2;
-    component.selectedAddOns = options.addOnPrice || options.addOnTax
-      ? [
-          {
-            serviceName: 'Airport Pickup',
-            quantity: 1,
-            servicePrice: options.addOnPrice || 0,
-            taxAmount: options.addOnTax || 0,
-          },
-        ]
+  /**
+   * Configures component state exactly as the checkout flow would have stored it.
+   *
+   * @param beforeTaxAmount  Room price after coupon (from API) – what getDisplayedRoomSubtotal() sums
+   * @param perRowTax        Tax from API row (post-coupon, pre-advance) – fallback when taxOnDiscountedAmount=0
+   * @param taxOnDiscounted  Post-all-discounts tax stored in sessionStorage (0 when no advance discount)
+   * @param advanceDiscount  Advance discount amount
+   * @param advancePct       Advance discount percentage label
+   * @param payAdvancePct    Advance payment percentage (0 = pay-full)
+   * @param convFeeAmount    Convenience fee stored from checkout (0 = no fee)
+   * @param withAddOn        Include add-on service: ₹20 + ₹1 tax = ₹21
+   * @param couponPct        Coupon percentage for label display
+   */
+  function setup(cfg: {
+    beforeTaxAmount: number;
+    perRowTax: number;
+    taxOnDiscounted?: number;
+    advanceDiscount?: number;
+    advancePct?: number;
+    payAdvancePct?: number;
+    convFeeAmount?: number;
+    withAddOn?: boolean;
+    couponPct?: number;
+  }): void {
+    component.bookingsResponseList = [{
+      beforeTaxAmount: cfg.beforeTaxAmount,
+      taxAmount: cfg.perRowTax,
+      discountAmount: 0,
+      noOfNights: 1,
+      noOfRooms: 1,
+      extraPersonCharge: 0,
+      extraChildCharge: 0,
+    }];
+    component.specialDiscountData = cfg.couponPct ? { discountPercentage: cfg.couponPct } : null;
+    component.advanceDiscountPercentage = cfg.advancePct || 0;
+    component.advanceDiscountAmount     = cfg.advanceDiscount || 0;
+    component.advancePaymentPercentage  = cfg.payAdvancePct || 0;
+    component.taxOnDiscountedAmount     = cfg.taxOnDiscounted || 0;
+    component.convenienceFeeAmount      = cfg.convFeeAmount || 0;
+    component.serviceChargePercentage   = 0;   // always rely on convenienceFeeAmount stored value
+    component.selectedAddOns = cfg.withAddOn
+      ? [{ serviceName: 'Airport Pickup', quantity: 1, servicePrice: 20, taxAmount: 1 }]
       : [];
   }
 
-  it('computes voucher totals for no coupon and no advance', () => {
-    configureVoucherState();
+  // ─── No-discount scenarios ────────────────────────────────────────────────
 
+  it('S1: Room only — no discount, no fee', () => {
+    setup({ beforeTaxAmount: 100, perRowTax: 5 });
+    // room=100, tax=5(per-row fallback), convFee=0, services=0
     expect(component.getDiscountColumnLabel()).toBe('Discount');
-    expect(component.getDisplayedRoomSubtotal()).toBe(10.5);
-    expect(component.getDisplayedAdvanceDiscountAmount()).toBe(0);
-    expect(component.getDisplayedConvenienceFee()).toBe(0.21);
-    expect(component.getNewGrandTotal()).toBeCloseTo(11.24, 2);
-    expect(component.getNewPayNowAmount()).toBeCloseTo(11.24, 2);
+    expect(component.getDisplayedRoomSubtotal()).toBe(100);
+    expect(component.getDisplayedRoomTax()).toBe(5);
+    expect(component.getDisplayedConvenienceFee()).toBe(0);
+    expect(component.getNewGrandTotal()).toBeCloseTo(105, 2);
+    expect(component.getNewPayNowAmount()).toBeCloseTo(105, 2);
     expect(component.getNewBalanceAtCheckIn()).toBe(0);
   });
 
-  it('computes voucher totals for coupon-only case', () => {
-    configureVoucherState({ couponPercent: 30 });
-
-    expect(component.getDiscountColumnLabel()).toBe('Coupon Discount (30%)');
-    expect(component.getDisplayedRoomSubtotal()).toBe(10.5);
-    expect(component.getDisplayedAdvanceDiscountAmount()).toBe(0);
-    expect(component.getNewGrandTotal()).toBeCloseTo(11.24, 2);
-    expect(component.getNewPayNowAmount()).toBeCloseTo(11.24, 2);
+  it('S2: Room + Service — no discount, no fee', () => {
+    setup({ beforeTaxAmount: 100, perRowTax: 5, withAddOn: true });
+    // room=100, tax=5, services=21, convFee=0
+    expect(component.getServicesTotal()).toBe(21);
+    expect(component.getNewGrandTotal()).toBeCloseTo(126, 2);
+    expect(component.getNewPayNowAmount()).toBeCloseTo(126, 2);
     expect(component.getNewBalanceAtCheckIn()).toBe(0);
   });
 
-  it('computes voucher totals for advance-only case', () => {
-    configureVoucherState({ advanceDiscountPercent: 20, advancePaymentPercent: 50 });
-
-    expect(component.getDiscountColumnLabel()).toBe('Advance Discount (20%)');
-    expect(component.getDisplayedAdvanceDiscountAmount()).toBeCloseTo(2.1, 2);
-    expect(component.getDisplayedAccommodationAfterDiscounts()).toBeCloseTo(8.4, 2);
-    expect(component.getNewGrandTotal()).toBeCloseTo(9.14, 2);
-    expect(component.getNewPayNowAmount()).toBeCloseTo(4.68, 2);
-    expect(component.getNewBalanceAtCheckIn()).toBeCloseTo(4.46, 2);
+  it('S3: Room only — no discount, with convenience fee (2% of ₹100)', () => {
+    setup({ beforeTaxAmount: 100, perRowTax: 5, convFeeAmount: 2 });
+    // room=100, tax=5, convFee=2
+    expect(component.getDisplayedConvenienceFee()).toBe(2);
+    expect(component.getNewGrandTotal()).toBeCloseTo(107, 2);
+    expect(component.getNewPayNowAmount()).toBeCloseTo(107, 2);
+    expect(component.getNewBalanceAtCheckIn()).toBe(0);
   });
 
-  it('computes voucher totals for coupon and advance case with add-ons', () => {
-    configureVoucherState({
-      couponPercent: 30,
-      advanceDiscountPercent: 20,
-      advancePaymentPercent: 50,
-      addOnPrice: 1,
-      addOnTax: 0,
+  it('S4: Room + Service — no discount, with convenience fee', () => {
+    setup({ beforeTaxAmount: 100, perRowTax: 5, convFeeAmount: 2, withAddOn: true });
+    // room=100, tax=5, services=21, convFee=2
+    expect(component.getNewGrandTotal()).toBeCloseTo(128, 2);
+    expect(component.getNewPayNowAmount()).toBeCloseTo(128, 2);
+    expect(component.getNewBalanceAtCheckIn()).toBe(0);
+  });
+
+  // ─── Coupon-only scenarios ────────────────────────────────────────────────
+  // Coupon 50%: afterCoupon=50, perRowTax=2.5, coupon does not trigger taxOnDiscountedAmount override
+
+  it('S5: Room only — coupon 50%, no fee', () => {
+    setup({ beforeTaxAmount: 50, perRowTax: 2.5, couponPct: 50 });
+    // room=50, tax=2.5(per-row), convFee=0
+    expect(component.getDiscountColumnLabel()).toBe('Coupon Discount (50%)');
+    expect(component.getDisplayedRoomSubtotal()).toBe(50);
+    expect(component.getDisplayedRoomTax()).toBe(2.5);
+    expect(component.getNewGrandTotal()).toBeCloseTo(52.5, 2);
+    expect(component.getNewPayNowAmount()).toBeCloseTo(52.5, 2);
+    expect(component.getNewBalanceAtCheckIn()).toBe(0);
+  });
+
+  it('S6: Room + Service — coupon 50%, no fee', () => {
+    setup({ beforeTaxAmount: 50, perRowTax: 2.5, couponPct: 50, withAddOn: true });
+    // room=50, tax=2.5, services=21, convFee=0
+    expect(component.getNewGrandTotal()).toBeCloseTo(73.5, 2);
+    expect(component.getNewPayNowAmount()).toBeCloseTo(73.5, 2);
+    expect(component.getNewBalanceAtCheckIn()).toBe(0);
+  });
+
+  it('S7: Room only — coupon 50%, with convenience fee (2% of original ₹100)', () => {
+    setup({ beforeTaxAmount: 50, perRowTax: 2.5, couponPct: 50, convFeeAmount: 2 });
+    // room=50, tax=2.5, convFee=2(on original 100)
+    expect(component.getDisplayedConvenienceFee()).toBe(2);
+    expect(component.getNewGrandTotal()).toBeCloseTo(54.5, 2);
+    expect(component.getNewPayNowAmount()).toBeCloseTo(54.5, 2);
+    expect(component.getNewBalanceAtCheckIn()).toBe(0);
+  });
+
+  it('S8: Room + Service — coupon 50%, with convenience fee', () => {
+    setup({ beforeTaxAmount: 50, perRowTax: 2.5, couponPct: 50, convFeeAmount: 2, withAddOn: true });
+    // room=50, tax=2.5, services=21, convFee=2
+    expect(component.getNewGrandTotal()).toBeCloseTo(75.5, 2);
+    expect(component.getNewPayNowAmount()).toBeCloseTo(75.5, 2);
+    expect(component.getNewBalanceAtCheckIn()).toBe(0);
+  });
+
+  // ─── Coupon + Advance discount scenarios ─────────────────────────────────
+  // Coupon 50%: afterCoupon=50 | Advance 20% of 50=10 | afterAll=40
+  // taxOnDiscounted = 40×5% = 2  |  convFee = 2% of original 100 = 2
+
+  it('S9: Room only — coupon 50% + advance discount 20%, 50% advance payment, with fee', () => {
+    setup({
+      beforeTaxAmount: 50, perRowTax: 2.5, couponPct: 50,
+      advancePct: 20, advanceDiscount: 10, payAdvancePct: 50,
+      taxOnDiscounted: 2, convFeeAmount: 2,
     });
+    // accAfterDisc=40, tax=2, convFee=2
+    // Grand = 40+2+0+2 = 44
+    // PayNow = 50%*(40+2)+0+2 = 21+2 = 23
+    // Balance = 44-23 = 21
+    expect(component.getDiscountColumnLabel()).toBe('Coupon Discount (50%)');
+    expect(component.getDisplayedRoomSubtotal()).toBe(50);
+    expect(component.getDisplayedAdvanceDiscountAmount()).toBe(10);
+    expect(component.getDisplayedAccommodationAfterDiscounts()).toBe(40);
+    expect(component.getDisplayedRoomTax()).toBe(2);
+    expect(component.getDisplayedConvenienceFee()).toBe(2);
+    expect(component.getNewGrandTotal()).toBeCloseTo(44, 2);
+    expect(component.getNewPayNowAmount()).toBeCloseTo(23, 2);
+    expect(component.getNewBalanceAtCheckIn()).toBeCloseTo(21, 2);
+  });
 
-    expect(component.getDiscountColumnLabel()).toBe('Coupon Discount (30%)');
-    expect(component.getDisplayedAdvanceDiscountAmount()).toBeCloseTo(2.1, 2);
-    expect(component.getServicesTotal()).toBe(1);
-    expect(component.getNewGrandTotal()).toBeCloseTo(10.14, 2);
-    expect(component.getNewPayNowAmount()).toBeCloseTo(5.68, 2);
-    expect(component.getNewBalanceAtCheckIn()).toBeCloseTo(4.46, 2);
+  it('S10: Room + Service — coupon 50% + advance 20%, 50% advance payment, with fee', () => {
+    setup({
+      beforeTaxAmount: 50, perRowTax: 2.5, couponPct: 50,
+      advancePct: 20, advanceDiscount: 10, payAdvancePct: 50,
+      taxOnDiscounted: 2, convFeeAmount: 2, withAddOn: true,
+    });
+    // Grand = 40+2+21+2 = 65
+    // PayNow = 50%*(40+2)+21+2 = 21+23 = 44
+    // Balance = 65-44 = 21
+    expect(component.getServicesTotal()).toBe(21);
+    expect(component.getNewGrandTotal()).toBeCloseTo(65, 2);
+    expect(component.getNewPayNowAmount()).toBeCloseTo(44, 2);
+    expect(component.getNewBalanceAtCheckIn()).toBeCloseTo(21, 2);
+  });
+
+  // ─── Advance-only scenarios ───────────────────────────────────────────────
+  // No coupon, base=100 | Advance 20% of 100=20 | afterAll=80
+  // taxOnDiscounted = 80×5% = 4  |  convFee = 2% of 100 = 2
+
+  it('S11: Room only — advance 20%, 50% advance payment, with fee', () => {
+    setup({
+      beforeTaxAmount: 100, perRowTax: 5,
+      advancePct: 20, advanceDiscount: 20, payAdvancePct: 50,
+      taxOnDiscounted: 4, convFeeAmount: 2,
+    });
+    // Grand = 80+4+0+2 = 86
+    // PayNow = 50%*(80+4)+0+2 = 42+2 = 44
+    // Balance = 86-44 = 42
+    expect(component.getDiscountColumnLabel()).toBe('Advance Discount (20%)');
+    expect(component.getDisplayedAccommodationAfterDiscounts()).toBe(80);
+    expect(component.getDisplayedRoomTax()).toBe(4);
+    expect(component.getNewGrandTotal()).toBeCloseTo(86, 2);
+    expect(component.getNewPayNowAmount()).toBeCloseTo(44, 2);
+    expect(component.getNewBalanceAtCheckIn()).toBeCloseTo(42, 2);
+  });
+
+  it('S12: Room + Service — advance 20%, 50% advance payment, with fee', () => {
+    setup({
+      beforeTaxAmount: 100, perRowTax: 5,
+      advancePct: 20, advanceDiscount: 20, payAdvancePct: 50,
+      taxOnDiscounted: 4, convFeeAmount: 2, withAddOn: true,
+    });
+    // Grand = 80+4+21+2 = 107
+    // PayNow = 50%*(80+4)+21+2 = 42+23 = 65
+    // Balance = 107-65 = 42
+    expect(component.getNewGrandTotal()).toBeCloseTo(107, 2);
+    expect(component.getNewPayNowAmount()).toBeCloseTo(65, 2);
+    expect(component.getNewBalanceAtCheckIn()).toBeCloseTo(42, 2);
+  });
+
+  it('S13: Room only — advance 20%, 50% advance payment, WITHOUT fee', () => {
+    setup({
+      beforeTaxAmount: 100, perRowTax: 5,
+      advancePct: 20, advanceDiscount: 20, payAdvancePct: 50,
+      taxOnDiscounted: 4, convFeeAmount: 0,
+    });
+    // Grand = 80+4+0+0 = 84
+    // PayNow = 50%*(80+4) = 42
+    // Balance = 84-42 = 42
+    expect(component.getDisplayedConvenienceFee()).toBe(0);
+    expect(component.getNewGrandTotal()).toBeCloseTo(84, 2);
+    expect(component.getNewPayNowAmount()).toBeCloseTo(42, 2);
+    expect(component.getNewBalanceAtCheckIn()).toBeCloseTo(42, 2);
+  });
+
+  it('S14: Room + Service — advance 20%, 50% advance payment, WITHOUT fee', () => {
+    setup({
+      beforeTaxAmount: 100, perRowTax: 5,
+      advancePct: 20, advanceDiscount: 20, payAdvancePct: 50,
+      taxOnDiscounted: 4, convFeeAmount: 0, withAddOn: true,
+    });
+    // Grand = 80+4+21+0 = 105
+    // PayNow = 50%*(80+4)+21+0 = 42+21 = 63
+    // Balance = 105-63 = 42
+    expect(component.getNewGrandTotal()).toBeCloseTo(105, 2);
+    expect(component.getNewPayNowAmount()).toBeCloseTo(63, 2);
+    expect(component.getNewBalanceAtCheckIn()).toBeCloseTo(42, 2);
   });
 });
