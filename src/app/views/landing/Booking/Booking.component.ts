@@ -638,9 +638,9 @@ export class BookingComponent implements OnInit {
     this.totalDiscountAmount = 0;
     this.amountAfterDiscount = this.storedActualNetAmount || this.booking.netAmount;
     this.taxOnDiscountedAmount = bookingSummary?.totalTax || this.booking.taxAmount || 0;
-    this.convenienceFeeAmount = this.calculateConvenienceFee(this.storedActualNetAmount || this.booking.netAmount, this.serviceChargePercentage);
+    this.convenienceFeeAmount = this.calculateConvenienceFee(this.amountAfterDiscount, this.serviceChargePercentage);
     this.advancePaymentAmount = 0;
-    this.remainingPaymentAmount = (this.storedActualNetAmount || this.booking.netAmount) + (this.taxOnDiscountedAmount) + this.convenienceFeeAmount;
+    this.remainingPaymentAmount = this.amountAfterDiscount + (this.taxOnDiscountedAmount) + this.convenienceFeeAmount;
 
     // If coupon was loaded from sessionStorage, initialize selectedCouponList and recalculate
     if (this.specialDiscountData && this.specialDiscountData.discountPercentage) {
@@ -11688,9 +11688,9 @@ sendWhatsappMessageToPropertyOwner() {
         (this.amountAfterDiscount * roomTaxPct) / 100;
       this.taxOnDiscountedAmount = this.toSafeAmount(this.taxOnDiscountedAmount);
 
-      // Step 5: Calculate Convenience Fee (on original price, NOT discounted amount)
+      // Step 5: Calculate Convenience Fee on final discounted room amount
       this.convenienceFeeAmount = this.toSafeAmount(
-        this.calculateConvenienceFee(baseAmount, this.serviceChargePercentage),
+        this.calculateConvenienceFee(this.amountAfterDiscount, this.serviceChargePercentage),
       );
 
       // Step 6: Calculate final totals with add-ons + advance split
@@ -11716,7 +11716,7 @@ sendWhatsappMessageToPropertyOwner() {
         this.remainingPaymentAmount = grandTotalAmount;
       }
       
-      console.log('[CALC] Convenience Fee (on original price):', this.convenienceFeeAmount);
+      console.log('[CALC] Convenience Fee (on post-discount amount):', this.convenienceFeeAmount);
       console.log('[CALC] Total Payment with Convenience Fee:', grandTotalAmount);
 
       // Update booking object with calculated values
@@ -11865,10 +11865,13 @@ sendWhatsappMessageToPropertyOwner() {
     );
     const discountedPlanPrice =
       totalPlanPrice - (totalPlanPrice * couponDiscountPercentage) / 100;
+    const feeBase = this.toSafeAmount(
+      this.amountAfterDiscount || (couponDiscountPercentage > 0 ? discountedPlanPrice : totalPlanPrice),
+    );
     const convenienceFee =
       this.serviceChargePercentage && Number(this.serviceChargePercentage) > 0
         ? this.calculateConvenienceFee(
-          couponDiscountPercentage > 0 ? discountedPlanPrice : totalPlanPrice,
+          feeBase,
           this.serviceChargePercentage,
         )
         : 0;
@@ -12397,6 +12400,19 @@ sendWhatsappMessageToPropertyOwner() {
     );
   }
 
+  getDisplayedConvenienceFeeAmount(): number {
+    const discountedAmount = this.toSafeAmount(this.amountAfterDiscount);
+    const feePercent = this.toSafePercent(this.serviceChargePercentage);
+
+    if (discountedAmount > 0 && feePercent > 0) {
+      return this.toSafeAmount(
+        this.calculateConvenienceFee(discountedAmount, feePercent),
+      );
+    }
+
+    return this.toSafeAmount(this.convenienceFeeAmount || 0);
+  }
+
   // ── Section 3: Order Summary helpers ─────────────────────────────────────
 
   /** Grand Total = rooms after discounts + room tax + services (full) + convenience fee */
@@ -12404,7 +12420,7 @@ sendWhatsappMessageToPropertyOwner() {
     return (this.amountAfterDiscount || 0)
       + (this.taxOnDiscountedAmount || 0)
       + this.getServicesTotal()
-      + (this.convenienceFeeAmount || 0);
+      + this.getDisplayedConvenienceFeeAmount();
   }
 
   /**
@@ -12416,7 +12432,7 @@ sendWhatsappMessageToPropertyOwner() {
     if (!this.selectedAdvanceDiscountSlab) { return this.getNewGrandTotal(); }
     const advancePct = this.toSafePercent(this.selectedAdvanceDiscountSlab.advancePercentage) / 100;
     const roomsWithTax = (this.amountAfterDiscount || 0) + (this.taxOnDiscountedAmount || 0);
-    return (roomsWithTax * advancePct) + this.getServicesTotal() + (this.convenienceFeeAmount || 0);
+    return (roomsWithTax * advancePct) + this.getServicesTotal() + this.getDisplayedConvenienceFeeAmount();
   }
 
   /** Balance at Check-in = remaining room portion (after advance %) */

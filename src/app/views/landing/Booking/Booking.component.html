@@ -708,11 +708,11 @@
                 </div>
 
                 <!-- Convenience Fee -->
-                <div *ngIf="convenienceFeeAmount > 0"
+                <div *ngIf="getDisplayedConvenienceFeeAmount() > 0"
                   style="padding: 0 10px"
                   class="d-flex justify-content-between line-height-27px">
                   <div class="color-graying">Convenience Fee</div>
-                  <div style="font-weight: 500">{{ convenienceFeeAmount | currency: currency : 'symbol' : '1.2-2' }}</div>
+                  <div style="font-weight: 500">{{ getDisplayedConvenienceFeeAmount() | currency: currency : 'symbol' : '1.2-2' }}</div>
                 </div>
 
                 <!-- Grand Total -->
@@ -1359,9 +1359,9 @@
                   </div>
                   <div style="font-size: 11px; color: #6b7280; margin-top: 2px">Always paid in full</div>
                 </div>
-                <div *ngIf="convenienceFeeAmount > 0" style="padding: 0 12px" class="d-flex justify-content-between line-height-27px">
+                <div *ngIf="getDisplayedConvenienceFeeAmount() > 0" style="padding: 0 12px" class="d-flex justify-content-between line-height-27px">
                   <div class="color-graying">Convenience Fee</div>
-                  <div style="font-weight: 500">{{ convenienceFeeAmount | currency: currency : 'symbol' : '1.2-2' }}</div>
+                  <div style="font-weight: 500">{{ getDisplayedConvenienceFeeAmount() | currency: currency : 'symbol' : '1.2-2' }}</div>
                 </div>
                 <div style="padding: 12px; border-top: 2px solid #e5e7eb; margin-top: 8px" class="d-flex justify-content-between">
                   <div class="font-weight-600" style="font-size: 1rem">Grand Total</div>
