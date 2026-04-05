@@ -1795,15 +1795,68 @@
             style="box-shadow: 0px 4px 40px 0px #d9d9d9; background-color: #f5f5f5; border-radius: 12px"
           >
             <div class="padding-20px">
+               <div style="display: flex; flex-wrap: wrap; gap: 20px;">
+
+                <!-- First 6 items -->
+                <ng-container
+                  *ngFor="let fac of (amenitiesHighlights.length > 0 ? amenitiesHighlights : propertyServiceListData); let i = index"
+                >
+                  <ng-container *ngIf="i < 4 || showAll">
+
+                    <div
+                      style="flex: 0 0 265px;"
+                      *ngIf="
+                        fac.name !== null &&
+                        fac.name !== undefined &&
+                        fac.serviceType !== 'Distance' &&
+                        fac.serviceType !== 'RestaurantHotel' &&
+                        fac.serviceType !== 'DistanceRailway'
+                      "
+                    >
+                      <div class="d-flex align-items-center gap-10px">
+
+                        <!-- Icon -->
+                        <div style="flex-shrink: 0">
+                          <img
+                            *ngIf="!fac.imageUrl"
+                            src="https://static.thenounproject.com/png/3421816-200.png"
+                            alt="icon"
+                            style="width: 40px; height: 40px; object-fit: contain; background: #eef2f6; padding: 6px; border-radius: 10px;"
+                          />
+                          <img
+                            *ngIf="fac.imageUrl"
+                            [src]="fac.imageUrl"
+                            alt="icon"
+                            style="width: 40px; height: 40px; object-fit: contain; background: #eef2f6; padding: 6px; border-radius: 10px;"
+                          />
+                        </div>
+
+                        <!-- Text -->
+                        <div>
+                          <p
+                            class="aminities-names"
+                            style="margin: 0; font-weight: 600; color: #334155; font-size: 15px;"
+                          >
+                            {{ fac.name }}
+                          </p>
+                        </div>
+
+                      </div>
+                    </div>
+
+                  </ng-container>
+                </ng-container>
+
+              </div>
               <!-- First 6 items in 3-column grid -->
-              <div class="row" style="gap: 20px">
+              <!-- <div style="display: flex; flex-wrap: wrap; gap: 16px;">
                 <div
-                  class="col-lg-4 col-md-6 col-12"
+                  style="flex: 0 0 220px;"
                   *ngFor="let fac of (amenitiesHighlights.length > 0 ? amenitiesHighlights : propertyServiceListData) | slice: 0 : 6"
                 >
                   <div
-                    class="d-flex align-items-center gap-15px p-3 bg-white rounded"
-                    style="border: 1px solid #e0e0e0; min-height: 80px"
+                    class="d-flex align-items-center gap-10px"
+                    style="min-height: auto;"
                     *ngIf="
                       fac.name !== null &&
                       fac.name !== undefined &&
@@ -1820,7 +1873,7 @@
                         "
                         src="https://static.thenounproject.com/png/3421816-200.png"
                         alt="icon"
-                        style="width: 40px; height: 40px; object-fit: contain"
+                        style="width: 45px; height: 45px; object-fit: contain; background: #eef2f6; padding: 6px; border-radius: 10px;"
                       />
                       <img
                         class="icon-amenities"
@@ -1829,7 +1882,7 @@
                         "
                         [src]="fac.imageUrl"
                         alt="icon"
-                        style="width: 40px; height: 40px; object-fit: contain"
+                        style="width: 45px; height: 45px; object-fit: contain; background: #eef2f6; padding: 6px; border-radius: 10px;"
                       />
                     </div>
                     <div style="flex: 1">
@@ -1839,17 +1892,17 @@
                 </div>
               </div>
 
-              <!-- Show more items if expanded -->
+              Show more items if expanded
               <ng-container *ngIf="showAll">
-                <div class="row" style="gap: 20px; margin-top: 20px">
+                <div style="display: flex; flex-wrap: wrap; gap: 16px;">
                   <ng-container
                     *ngFor="let fac of (amenitiesHighlights.length > 0 ? amenitiesHighlights : propertyServiceListData); let i = index"
                   >
                     <ng-container *ngIf="i >= 6">
-                      <div class="col-lg-4 col-md-6 col-12">
+                      <div style="flex: 0 0 220px;">
                         <div
-                          class="d-flex align-items-center gap-15px p-3 bg-white rounded"
-                          style="border: 1px solid #e0e0e0; min-height: 80px"
+                          class="d-flex align-items-center gap-10px"
+                          style="min-height: auto;"
                           *ngIf="
                             fac.name !== null &&
                             fac.name !== undefined &&
@@ -1867,7 +1920,7 @@
                               "
                               src="https://static.thenounproject.com/png/3421816-200.png"
                               alt="icon"
-                              style="width: 40px; height: 40px; object-fit: contain"
+                              style="width: 36px; height: 36px; object-fit: contain; background: #eef2f6; padding: 6px; border-radius: 10px;"
                             />
                             <img
                               class="icon-amenities"
@@ -1877,7 +1930,7 @@
                               "
                               [src]="fac.imageUrl"
                               alt="icon"
-                              style="width: 40px; height: 40px; object-fit: contain"
+                              style="width: 36px; height: 36px; object-fit: contain; background: #eef2f6; padding: 6px; border-radius: 10px;"
                             />
                           </div>
                           <div style="flex: 1">
@@ -1888,7 +1941,7 @@
                     </ng-container>
                   </ng-container>
                 </div>
-              </ng-container>
+              </ng-container> -->
 
               <!-- Show All / Show Less Toggle -->
               <div class="d-flex justify-content-center mt-4">
@@ -2459,14 +2512,14 @@
           style="box-shadow: 0px 4px 40px 0px #d9d9d9; background-color: #f5f5f5; border-radius: 12px"
         >
           <div class="padding-20px">
-            <div class="row" style="gap: 20px">
-              <div
-                class="col-lg-4 col-md-6 col-12"
+            <div style="display: flex; flex-wrap: wrap; gap: 16px;">
+
+              <ng-container
                 *ngFor="let fac of (amenitiesHighlights.length > 0 ? amenitiesHighlights : propertyServiceListData) | slice: 0 : 6"
               >
+
                 <div
-                  class="d-flex align-items-center gap-15px p-3 bg-white rounded"
-                  style="border: 1px solid #e0e0e0; min-height: 80px"
+                  style="flex: 0 0 220px;"
                   *ngIf="
                     fac.name !== null &&
                     fac.name !== undefined &&
@@ -2475,27 +2528,39 @@
                     fac.serviceType !== 'DistanceRailway'
                   "
                 >
-                  <div style="flex-shrink: 0">
-                    <img
-                      class="icon-amenities"
-                      *ngIf="fac.imageUrl == null || fac.imageUrl == undefined"
-                      src="https://static.thenounproject.com/png/3421816-200.png"
-                      alt="icon"
-                      style="width: 40px; height: 40px; object-fit: contain"
-                    />
-                    <img
-                      class="icon-amenities"
-                      *ngIf="fac.imageUrl != null && fac.imageUrl != undefined"
-                      [src]="fac.imageUrl"
-                      alt="icon"
-                      style="width: 40px; height: 40px; object-fit: contain"
-                    />
-                  </div>
-                  <div style="flex: 1">
-                    <p class="aminities-names" style="margin: 0; font-weight: 600; color: #0f172a">{{ fac.name }}</p>
+                  <div class="d-flex align-items-center gap-10px">
+
+                    <!-- Icon -->
+                    <div style="flex-shrink: 0">
+                      <img
+                        *ngIf="!fac.imageUrl"
+                        src="https://static.thenounproject.com/png/3421816-200.png"
+                        alt="icon"
+                        style="width: 36px; height: 36px; object-fit: contain; background: #eef2f6; padding: 6px; border-radius: 10px;"
+                      />
+                      <img
+                        *ngIf="fac.imageUrl"
+                        [src]="fac.imageUrl"
+                        alt="icon"
+                        style="width: 36px; height: 36px; object-fit: contain; background: #eef2f6; padding: 6px; border-radius: 10px;"
+                      />
+                    </div>
+
+                    <!-- Text -->
+                    <div>
+                      <p
+                        class="aminities-names"
+                        style="margin: 0; font-weight: 600; color: #334155; font-size: 16px;"
+                      >
+                        {{ fac.name }}
+                      </p>
+                    </div>
+
                   </div>
                 </div>
-              </div>
+
+              </ng-container>
+
             </div>
           </div>
         </div>
@@ -2523,8 +2588,9 @@
               ></i>
               &nbsp;&nbsp; {{ businessUser?.name }} Gallery
             </h4>
-            <button class="select-mannual" (click)="selectRoomsbtn()">
-              Select {{ getBookingUnitLabel() }}s
+            <button class="select-mannual" (click)="selectRoomsbtn()"> 
+              <i class="fa-solid fa-xmark"></i>
+              <!-- Select {{ getBookingUnitLabel() }}s -->
             </button>
           </div>
           <div class="modal-body">

@@ -589,13 +589,13 @@ export class BookingConfirmationVoucherComponent {
   getDisplayedRowTotalDiscount(booking: any): number {
     // Table discount column intentionally shows coupon/promo only.
     // Advance discount remains in footer summary lines.
-    return this.toSafeAmount(booking?.discountAmount || 0);
+    return this.toSafeAmount(booking?.couponDiscountAmount || 0);
   }
 
   getDisplayedRowAfterDiscounts(booking: any): number {
     const rowBeforeTax = this.toSafeAmount(booking?.beforeTaxAmount || 0);
-    const rowAdvanceDiscount = this.getDisplayedRowAdvanceDiscount(booking);
-    return this.toSafeAmount(Math.max(0, rowBeforeTax - rowAdvanceDiscount));
+    const rowCouponDiscount = this.getDisplayedRowTotalDiscount(booking);
+    return this.toSafeAmount(Math.max(0, rowBeforeTax - rowCouponDiscount));
   }
 
   getDisplayedRowTax(booking: any): number {

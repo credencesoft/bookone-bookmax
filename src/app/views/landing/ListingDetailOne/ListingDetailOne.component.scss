@@ -912,13 +912,17 @@ padding: 16px 12px;
   margin-top: 20px;
 }
 .select-mannual {
-    background-color: var(--secondary, #0b01cc);
-    color: var(--tertiary) !important;
-    font-family: "Poppins";
+    // background-color: var(--secondary, #0b01cc);
+    // color: var(--tertiary) !important;
+    // font-family: "Poppins";
+    // border: none;
+    // padding: 6px 20px;
+    // border-radius: 8px;
+    background: transparent;
     border: none;
-    padding: 6px 20px;
-    border-radius: 8px;
-
+    font-size: 20px;
+    cursor: pointer;
+    line-height: 1;
 }
 .gap-20px {
   gap: 10px;

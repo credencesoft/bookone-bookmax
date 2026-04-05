@@ -4015,10 +4015,10 @@ onCheckOutClosed(): void {
       if (data.status === 200) {
         this.businessUser = data.body;
         this.propertyData = this.businessUser;
-                   this.accommodationData =
-          this.propertyData.businessServiceDtoList?.filter(
+        this.accommodationData =
+        this.propertyData.businessServiceDtoList?.filter(
             (entry) => entry.name === 'Accommodation'
-          );
+        );
         this.accommodationData?.forEach((element) => {
           this.smartRecommendationsBoolean = element.smartRecommendation;
         });
@@ -4030,6 +4030,11 @@ onCheckOutClosed(): void {
         this.policies = this.businessUser.businessServiceDtoList.filter(
           (ele) => ele.name === 'Accommodation'
         );
+
+        this.amenitiesHighlights = [];
+        this.propertyServiceListData = [];
+        this.addOnServices = [];
+        this.propertyServiceListDataOne = [];
 
         this.businessUser.propertyServicesList.forEach((ele) => {
           if (ele.id != null && ele.id != undefined) {
@@ -4656,7 +4661,12 @@ onCheckOutClosed(): void {
           if (this.token?.getRoomsData() != null) {
             this.checkingAvailability();
           }
-          
+
+          this.amenitiesHighlights = [];
+          this.propertyServiceListData = [];
+          this.addOnServices = [];
+          this.propertyServiceListDataOne = [];
+
           // ✅ Separate non-paid and paid services
           this.businessUser.propertyServicesList.forEach((ele) => {
             if (ele.id != null && ele.id != undefined) {
