@@ -1743,37 +1743,42 @@
             {{ businessUser.address?.country }}
           </p>
           <!-- web view - Full Width Gallery -->
-          <div class="d-flex flex-column flex-lg-row gap-3 mt-3">
+          <div class="d-flex flex-column flex-lg-row gap-3 mt-3 listing-hero-gallery">
             <!-- Large Left Image - Takes Full Width on Gallery Section -->
-            <div class="flex-grow-1" style="max-width: 100%">
+            <div class="flex-grow-1 listing-hero-gallery__main">
               <img
                 *ngIf="businessUser?.imageList?.length > 0"
                 [src]="businessUser?.imageList[0]?.url"
                 class="img-fluid rounded main-img"
                 alt="Main Image"
-                style="width: 100%; height: 400px; object-fit: cover; border-radius: 12px"
               />
             </div>
 
             <!-- Stacked Thumbnails -->
-            <div class="d-flex flex-lg-column gap-2 gallery-thumbs" style="min-width: 150px">
+            <div class="d-flex flex-lg-column gap-2 gallery-thumbs listing-hero-gallery__thumbs">
               <div
-                class="d-flex flex-lg-column gap-2 gallery-thumbs position-relative"
+                class="d-flex flex-lg-column gap-2 gallery-thumbs position-relative listing-hero-gallery__thumb-stack"
+                [style.--thumb-count]="
+                  businessUser?.imageList?.length > 4
+                    ? 4
+                    : businessUser?.imageList?.length > 1
+                    ? businessUser?.imageList?.length - 1
+                    : 1
+                "
               >
                 <ng-container
                   *ngFor="
-                    let img of businessUser?.imageList?.slice(1, 4);
+                    let img of businessUser?.imageList?.slice(1, 5);
                     let i = index
                   "
                 >
-                  <img [src]="img.url" class="img-fluid rounded small-img" style="width: 140px; height: 100px; object-fit: cover; border-radius: 8px; cursor: pointer" />
+                  <img [src]="img.url" class="img-fluid rounded small-img" />
                 </ng-container>
 
                 <!-- See More Button -->
                 <button
                   *ngIf="businessUser?.imageList?.length > 1"
-                  class="btn position-absolute see-more"
-                  style="bottom: 4px; right: 3px; background-color: rgba(0,0,0,0.6); color: #000; border: none; padding: 8px 12px; border-radius: 6px; font-size: 12px"
+                  class="btn position-absolute see-more listing-hero-gallery__button"
                   (click)="openGalleryModal()"
                 >
                   See All {{ businessUser?.imageList?.length }} Photos
