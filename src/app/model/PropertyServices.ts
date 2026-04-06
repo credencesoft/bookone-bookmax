@@ -18,6 +18,48 @@ export class PropertyServiceDTO {
   servicePrice: number;
   date: string;
   paymentId: string;
+  chargeBasis?: string;
+  quantityMode?: string;
+  capacityModel?: string;
+  capacityPerUnit?: number;
+  minQuantity?: number;
+  maxQuantity?: number;
+  maxUnitsPerBooking?: number;
+  minAdults?: number;
+  minChildren?: number;
+  minNights?: number;
+  bookingStage?: string;
+  paymentCollectionMode?: string;
+  isMandatory?: boolean;
+  isAutoAdd?: boolean;
+  discountEnabled?: boolean;
+  discountStage?: string;
+  discountType?: string;
+  discountValue?: number;
+  maxDiscountAmount?: number;
+  isCombinableWithCoupon?: boolean;
+  isCombinableWithAdvanceDiscount?: boolean;
+  discountPriority?: number;
+  productId?: number;
+  productVariationId?: number;
+  displayLabel?: string;
+  shortLabel?: string;
+  sortOrder?: number;
+  quantityApplied?: number;
+  capacityPerUnitApplied?: number;
+  unitPrice?: number;
+  grossAmount?: number;
+  discountAmountApplied?: number;
+  taxBaseAmount?: number;
+  netAmount?: number;
+  discountTypeApplied?: string;
+  discountValueApplied?: number;
+  discountCodeApplied?: string;
+  paymentStatus?: string;
+  paidAmount?: number;
+  balanceAmount?: number;
+  paymentReference?: string;
+  sourceChannel?: string;
 
   constructor() {}
 }
