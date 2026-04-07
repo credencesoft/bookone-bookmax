@@ -219,6 +219,7 @@ export class ListingDetailOneComponent implements OnInit {
   // ✅ Renamed: Non-paid services for Property Highlights
   amenitiesHighlights: any[] = [];
   propertyServiceListData: any[] = [];  // Backward compatibility alias
+  propertyServicesNoId: any[] = [];
   // ✅ Renamed: Paid services for Add-on Services (Checkout)
   addOnServices: any[] = [];
   propertyServiceListDataOne: any[] = [];  // Backward compatibility alias
@@ -4035,8 +4036,13 @@ onCheckOutClosed(): void {
         this.propertyServiceListData = [];
         this.addOnServices = [];
         this.propertyServiceListDataOne = [];
+        this.propertyServicesNoId = [];
 
         this.businessUser.propertyServicesList.forEach((ele) => {
+          if (ele.id == null || ele.id == undefined) {
+            this.propertyServicesNoId.push(ele);
+            console.log("IDDD", this.propertyServicesNoId);
+          }
           if (ele.id != null && ele.id != undefined) {
             // ✅ Separate non-paid and paid services
             if (Number(ele.servicePrice) === 0 || ele.servicePrice == null) {
@@ -4666,9 +4672,13 @@ onCheckOutClosed(): void {
           this.propertyServiceListData = [];
           this.addOnServices = [];
           this.propertyServiceListDataOne = [];
+          this.propertyServicesNoId = [];
 
           // ✅ Separate non-paid and paid services
           this.businessUser.propertyServicesList.forEach((ele) => {
+            if (ele.id == null || ele.id == undefined) {
+              this.propertyServicesNoId.push(ele);
+            }
             if (ele.id != null && ele.id != undefined) {
               if (Number(ele.servicePrice) === 0 || ele.servicePrice == null) {
                 this.amenitiesHighlights.push(ele);

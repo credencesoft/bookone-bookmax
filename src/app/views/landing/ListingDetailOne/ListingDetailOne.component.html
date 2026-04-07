@@ -1745,18 +1745,18 @@
           <!-- web view - Full Width Gallery -->
           <div class="d-flex flex-column flex-lg-row gap-3 mt-3">
             <!-- Large Left Image - Takes Full Width on Gallery Section -->
-            <div class="flex-grow-1" style="max-width: 100%">
+            <div class="flex-grow-1">
               <img
                 *ngIf="businessUser?.imageList?.length > 0"
                 [src]="businessUser?.imageList[0]?.url"
                 class="img-fluid rounded main-img"
                 alt="Main Image"
-                style="width: 100%; height: 400px; object-fit: cover; border-radius: 12px"
+                style="width: 100%; flex: 1; object-fit: cover; border-radius: 12px"
               />
             </div>
 
             <!-- Stacked Thumbnails -->
-            <div class="d-flex flex-lg-column gap-2 gallery-thumbs" style="min-width: 150px">
+            <!-- <div class="d-flex flex-lg-column gap-2 gallery-thumbs" style="min-width: 150px"> -->
               <div
                 class="d-flex flex-lg-column gap-2 gallery-thumbs position-relative"
               >
@@ -1766,7 +1766,7 @@
                     let i = index
                   "
                 >
-                  <img [src]="img.url" class="img-fluid rounded small-img" style="width: 140px; height: 100px; object-fit: cover; border-radius: 8px; cursor: pointer" />
+                  <img [src]="img.url" class="img-fluid rounded small-img" style="flex: 1; width: 100%; object-fit: cover; border-radius: 8px; cursor: pointer" />
                 </ng-container>
 
                 <!-- See More Button -->
@@ -1779,7 +1779,7 @@
                   See All {{ businessUser?.imageList?.length }} Photos
                 </button>
               </div>
-            </div>
+            <!-- </div> -->
           </div>
         </div>
       </div>
@@ -4498,25 +4498,57 @@
 
     <!-- Property description section starts -->
     <div class="margin-top-30px">
-      <div class="row mr-0 ml-0">
-        <div class="col-lg-12 pl-0 pr-0">
-          <div
-            style="margin-top: 20px"
-            *ngIf="businessUser.businessDescription"
-          >
-            <div style="display: inline-block; padding: 4px 8px">
-              <h3 class="aboutHeading">About {{ businessUser?.name }}</h3>
-            </div>
+      <div class="row">
+
+        <!-- ABOUT SECTION -->
+        <div
+          [ngClass]="propertyServicesNoId?.length > 0 ? 'col-lg-7 col-md-12' : 'col-12'"
+        >
+          <div *ngIf="businessUser?.businessDescription" style="margin-top: 20px">
+
+            <h3 class="aboutHeading">
+              About {{ businessUser?.name }}
+            </h3>
 
             <div class="about-content">
-              <div *ngIf="businessUser.businessDescription">
-                <p [innerHTML]="businessUser.businessDescription">
-                  {{ businessUser.businessDescription }}
-                </p>
-              </div>
+              <p [innerHTML]="businessUser?.businessDescription"></p>
             </div>
+
           </div>
         </div>
+
+        <!-- HIGHLIGHTS -->
+        <div
+          class="col-lg-5 col-md-12"
+          *ngIf="propertyServicesNoId?.length > 0" style="margin-top: 20px"
+        >
+
+          <h3 class="aboutHeading">About Property</h3>
+
+          <div class="card highlights-card">
+            <div class="p-3">
+
+              <div class="highlight-list">
+
+                <div *ngFor="let fac of propertyServicesNoId">
+                  <div class="d-flex align-items-center gap-4">
+
+                    <i class="fa-solid fa-forward highlight-icon"></i>
+
+                    <span class="highlight-text">
+                      {{ fac.name }}
+                    </span>
+
+                  </div>
+                </div>
+
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+
       </div>
     </div>
     <!-- Property description section ends -->
@@ -4677,14 +4709,14 @@
       </div>
     </div>
   </div> -->
-    </div>
+      </div>
     </div>
     <!-- property review ends-->
 
     <!-- nearby section starts -->
 
     <div class="explore-nearby margin-top-30px">
-      <div>
+      <div class="container-div">
         <div class="col-lg-12">
           <div *ngIf="blogPosts$ | async as blogPosts" style="margin-top: 10px">
             <div *ngFor="let blogPost of blogPosts.items">
@@ -4729,6 +4761,7 @@
       class="margin-top-30px margin-bottom-30px"
       *ngIf="policies?.length > 0"
     >
+    <div class="container-div">
       <div class="row mr-0 ml-0">
         <div class="col-lg-12 pl-0 pr-0">
           <div
@@ -4773,6 +4806,7 @@
             </div>
           </div>
         </div>
+      </div>
       </div>
     </div>
     <!-- Add terms and conditions end here -->
