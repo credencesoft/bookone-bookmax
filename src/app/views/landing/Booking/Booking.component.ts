@@ -12213,6 +12213,39 @@ sendWhatsappMessageToPropertyOwner() {
     return discountedPrice + tax;
   }
 
+  getTotalTax(): number {
+    let totalTax = 0;
+
+    this.bookingSummaryDetails?.selectedPlansSummary?.forEach(plan => {
+
+      let price = plan.price || 0;
+
+      // Coupon discount
+      let couponDiscount = this.specialDiscountData?.discountPercentage
+        ? (price * this.specialDiscountData.discountPercentage) / 100
+        : 0;
+
+      // After coupon
+      let afterCoupon = price - couponDiscount;
+
+      // Advance discount
+      let advanceDiscount = this.selectedAdvanceDiscountSlab?.discountPercentage
+        ? (afterCoupon * this.selectedAdvanceDiscountSlab.discountPercentage) / 100
+        : 0;
+
+      // Final before tax
+      let finalAmount = afterCoupon - advanceDiscount;
+
+      // Tax
+      let tax = (finalAmount * (plan.taxpercentage || 0)) / 100;
+
+      totalTax += tax;
+
+    });
+
+    return totalTax;
+  }
+
   /**
    * Calculate what the add-ons tax would be at the same effective rate as room tax.
    * This ensures add-ons are taxed at the same % as the room (e.g. 5%),
@@ -12417,7 +12450,7 @@ sendWhatsappMessageToPropertyOwner() {
   /** Grand Total = rooms after discounts + room tax + services (full) + convenience fee */
   getNewGrandTotal(): number {
     return (this.amountAfterDiscount || 0)
-      + (this.taxOnDiscountedAmount || 0)
+      + this.getTotalTax()
       + this.getServicesTotal()
       + this.getDisplayedConvenienceFeeAmount();
   }

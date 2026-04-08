@@ -693,7 +693,7 @@
                   <!-- Tax on Rooms -->
                   <div class="d-flex justify-content-between line-height-27px">
                     <div class="color-graying">Tax &amp; Services</div>
-                    <div style="font-weight: 500">{{ taxOnDiscountedAmount | currency: currency : 'symbol' : '1.2-2' }}</div>
+                    <div style="font-weight: 500">{{ getTotalTax() | currency: currency : 'symbol' : '1.2-2' }}</div>
                   </div>
                 </div>
 
@@ -724,7 +724,7 @@
 
                 <!-- Pay Now / Balance at Check-in (advance plan selected) -->
                 <div *ngIf="showPayNow() && hasSelectedAdvancePaymentPlan()"
-                  style="margin: 0 10px 14px; padding: 12px; background-color: #fef9c3; border-radius: 8px; border: 1px solid #fef08a">
+                  style="margin: 0 10px 14px; padding: 12px; background-color: #fffcdf; border-radius: 8px; border: 1px solid #fef08a">
                   <div class="d-flex justify-content-between" style="margin-bottom: 4px">
                     <div style="font-weight: 700; color: #0f172a">Pay Now</div>
                     <div style="font-weight: 700; color: #dc2626; font-size: 1rem">{{ getNewPayNowAmount() | currency: currency : 'symbol' : '1.2-2' }}</div>
@@ -1253,9 +1253,9 @@
                     </div>
                   </div>
                 </div>
-                <span style="cursor: pointer; color: #dc2626; font-size: 11px; white-space: nowrap; flex-shrink: 0" (click)="clearSelectedCoupons()">
+                <!-- <span style="cursor: pointer; color: #dc2626; font-size: 11px; white-space: nowrap; flex-shrink: 0" (click)="clearSelectedCoupons()">
                   <i class="bi bi-trash"></i>
-                </span>
+                </span> -->
               </div>
             </div>
 
@@ -1368,7 +1368,7 @@
                   <div class="font-weight-600" style="font-size: 1rem">{{ getNewGrandTotal() | currency: currency : 'symbol' : '1.2-2' }}</div>
                 </div>
                 <div *ngIf="showPayNow() && hasSelectedAdvancePaymentPlan()"
-                  style="margin: 0 12px 14px; padding: 12px; background-color: #fef9c3; border-radius: 8px; border: 1px solid #fef08a">
+                  style="margin: 0 12px 14px; padding: 12px; background-color: #fffcdf; border-radius: 8px; border: 1px solid #fef08a">
                   <div class="d-flex justify-content-between" style="margin-bottom: 4px">
                     <div style="font-weight: 700">Pay Now</div>
                     <div style="font-weight: 700; color: #dc2626">{{ getNewPayNowAmount() | currency: currency : 'symbol' : '1.2-2' }}</div>
