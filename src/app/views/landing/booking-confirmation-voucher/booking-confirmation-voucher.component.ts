@@ -646,6 +646,10 @@ export class BookingConfirmationVoucherComponent {
     return 0;
   }
 
+  isPaid(): boolean {
+    return this.getNewBalanceAtCheckIn() === 0;
+  }
+
   hasSelectedAdvancePaymentPlan(): boolean {
     return this.advancePaymentPercentage > 0;
   }

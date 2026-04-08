@@ -87,10 +87,14 @@
                 </div>
                 <div class="mb-0">
                   <span
-                    class="status-badge status-paid"
+                    class="status-badge"
+                    [ngClass]="{
+                      'status-paid': isPaid(),
+                      'status-partial': !isPaid()
+                    }"
                     style="font-size: 13px"
                   >
-                    Paid</span
+                    {{ isPaid() ? 'Paid' : 'Partially Paid' }}</span
                   >
                 </div>
               </div>
@@ -417,23 +421,23 @@
                       </div>
                     </td>
                     <td>
-                      ₹{{
+                      {{
                         booking?.roomPrice * booking?.noOfNights
-                          | number: "1.2-2"
+                          | currency: currency : 'symbol' : '1.2-2'
                       }}
                     </td>
                     <td>{{ booking?.noOfNights }}</td>
                     <td>{{ booking?.noOfRooms }}</td>
-                    <td>₹{{ booking?.extraPersonCharge | number: "1.2-2" }}</td>
-                    <td>₹{{ booking?.extraChildCharge | number: "1.2-2" }}</td>
+                    <td>{{ booking?.extraPersonCharge | currency: currency : 'symbol' : '1.2-2' }}</td>
+                    <td>{{ booking?.extraChildCharge | currency: currency : 'symbol' : '1.2-2' }}</td>
                     <td *ngIf="specialDiscountData?.discountPercentage">
                       <ng-container *ngIf="getDisplayedRowTotalDiscount(booking) > 0">
-                        -₹{{ getDisplayedRowTotalDiscount(booking) | number: "1.2-2" }}
+                        -{{ getDisplayedRowTotalDiscount(booking) | currency: currency : 'symbol' : '1.2-2' }}
                       </ng-container>
                     </td>
-                    <td>₹{{ booking?.beforeTaxAmount | number: "1.2-2" }}</td>
-                    <td>₹{{ getDisplayedRowTax(booking) | number: "1.2-2" }}</td>
-                    <td>₹{{ getDisplayedRowTotal(booking) | number: "1.2-2" }}</td>
+                    <td>{{ booking?.beforeTaxAmount | currency: currency : 'symbol' : '1.2-2' }}</td>
+                    <td>{{ getDisplayedRowTax(booking) | currency: currency : 'symbol' : '1.2-2' }}</td>
+                    <td>{{ getDisplayedRowTotal(booking) | currency: currency : 'symbol' : '1.2-2' }}</td>
                   </tr>
                 </tbody>
               </table>
@@ -443,7 +447,7 @@
                   <div class="d-flex justify-content-between">
                       <div>{{ getAccommodationSubtotalLabel() }}:</div>
                     <div>
-                      ₹{{ getDisplayedRoomSubtotal() | number: "1.2-2" }}
+                      {{ getDisplayedRoomSubtotal() | currency: currency : 'symbol' : '1.2-2' }}
                     </div>
                   </div>
                   <div *ngIf="specialDiscountData?.discountPercentage || advanceDiscountPercentage > 0" class="d-flex justify-content-between" style="margin-top: 5px; color: #16a34a">
@@ -456,18 +460,18 @@
                   </div>
                   <div *ngIf="getDisplayedAdvanceDiscountAmount() > 0" class="d-flex justify-content-between" style="margin-top: 5px; color: #16a34a">
                     <div>Advance Discount ({{ advanceDiscountPercentage }}%)</div>
-                    <div>-₹{{ getDisplayedAdvanceDiscountAmount() | number: "1.2-2" }}</div>
+                    <div>-{{ getDisplayedAdvanceDiscountAmount() | currency: currency : 'symbol' : '1.2-2' }}</div>
                   </div>
                   <div *ngIf="getDisplayedAdvanceDiscountAmount() > 0" class="d-flex justify-content-between" style="margin-top: 5px; font-weight: 600">
                     <div>Accommodation Total (After All Discounts)</div>
-                    <div>₹{{ getDisplayedAccommodationAfterDiscounts() | number: "1.2-2" }}</div>
+                    <div>{{ getDisplayedAccommodationAfterDiscounts() | currency: currency : 'symbol' : '1.2-2' }}</div>
                   </div>
                 </div>
                 <div class="footer-borders">
                   <div class="d-flex justify-content-between">
                     <div>Total GST:</div>
                     <div>
-                      ₹{{ getDisplayedRoomTax() | number: "1.2-2" }}
+                      {{ getDisplayedRoomTax() | currency: currency : 'symbol' : '1.2-2' }}
                     </div>
                   </div>
                   <div
@@ -477,7 +481,7 @@
                   >
                     <div>Convenience Fee:</div>
                     <div>
-                      ₹{{ getDisplayedConvenienceFee() | number: "1.2-2" }}
+                      {{ getDisplayedConvenienceFee() | currency: currency : 'symbol' : '1.2-2' }}
                     </div>
                   </div>
                 </div>
@@ -500,15 +504,15 @@
                         <tr *ngFor="let addon of selectedAddOns" style="border-bottom: 1px solid #f1f5f9">
                           <td style="padding: 6px; text-align: left">{{ addon.name || 'Service' }}</td>
                           <td style="padding: 6px; text-align: center">{{ addon.quantity || 1 }}</td>
-                          <td style="padding: 6px; text-align: right">₹{{ (addon.servicePrice || 0) | number: "1.2-2" }}</td>
-                          <td style="padding: 6px; text-align: right">₹{{ (addon.taxAmount || 0) | number: "1.2-2" }}</td>
-                          <td style="padding: 6px; text-align: right">₹{{ ((addon.servicePrice || 0) + (addon.taxAmount || 0)) | number: "1.2-2" }}</td>
+                          <td style="padding: 6px; text-align: right">{{ (addon.servicePrice || 0) | currency: currency : 'symbol' : '1.2-2' }}</td>
+                          <td style="padding: 6px; text-align: right">{{ (addon.taxAmount || 0) | currency: currency : 'symbol' : '1.2-2' }}</td>
+                          <td style="padding: 6px; text-align: right">{{ ((addon.servicePrice || 0) + (addon.taxAmount || 0)) | currency: currency : 'symbol' : '1.2-2' }}</td>
                         </tr>
                       </tbody>
                       <tfoot>
                         <tr style="border-top: 1px solid #cbd5e1; background-color: #eff6ff; color: #1465cf">
                           <td colspan="4" style="padding: 8px; text-align: right; font-weight: 700">Services Total</td>
-                          <td style="padding: 8px; text-align: right; font-weight: 700">₹{{ getServicesTotal() | number: "1.2-2" }}</td>
+                          <td style="padding: 8px; text-align: right; font-weight: 700">{{ getServicesTotal() | currency: currency : 'symbol' : '1.2-2' }}</td>
                         </tr>
                       </tfoot>
                     </table>
@@ -519,17 +523,17 @@
                 <div class="booking-summary-total total-borders" style="background-color: #eff6ff">
                   <div class="d-flex justify-content-between" style="font-weight: 700; font-size: 1.1rem">
                     <div>Grand Total:</div>
-                    <div style="color: #1465cf">₹{{ getNewGrandTotal() | number: "1.2-2" }}</div>
+                    <div style="color: #1465cf">{{ getNewGrandTotal() | currency: currency : 'symbol' : '1.2-2' }}</div>
                   </div>
                 </div>
 
                 <!-- ✅ NEW: Advance plan indicator and payment breakdown -->
                 <div *ngIf="advancePaymentPercentage > 0" class="booking-summary-total total-borders" style="background-color: #fffcdf; border: 1px solid #fef08a">
-                  <div class="d-flex justify-content-between"><div style="font-weight: 700; color: #b45309">{{ advancePaymentLabel }}</div><div style="font-weight: 700; color: #dc2626">₹{{ getNewPayNowAmount() | number: "1.2-2" }}</div></div>
+                  <div class="d-flex justify-content-between"><div style="font-weight: 700; color: #b45309">{{ advancePaymentLabel }}</div><div style="font-weight: 700; color: #dc2626">{{ getNewPayNowAmount() | currency: currency : 'symbol' : '1.2-2' }}</div></div>
                   <div style="font-size: 0.85rem; color: #b45309; margin-top: 4px">{{ advancePaymentPercentage }}% of discounted accommodation + GST, plus all add-ons and fees</div>
                   <div class="d-flex justify-content-between" style="margin-top: 8px; border-top: 1px solid #fef08a; padding-top: 8px">
                     <div style="color: #6b7280">Balance at Check-in:</div>
-                    <div style="font-weight: 600">₹{{ getNewBalanceAtCheckIn() | number: "1.2-2" }}</div>
+                    <div style="font-weight: 600">{{ getNewBalanceAtCheckIn() | currency: currency : 'symbol' : '1.2-2' }}</div>
                   </div>
                 </div>
 
@@ -537,18 +541,18 @@
                 <!-- <div *ngIf="advancePaymentPercentage > 0" class="booking-summary-total total-borders due-borders">
                   <div class="d-flex justify-content-between">
                     <div style="font-weight: 700">Amount Paid (Pay Now):</div>
-                    <div style="font-weight: 700; color: #16a34a">₹{{ getNewPayNowAmount() | number: "1.2-2" }}</div>
+                    <div style="font-weight: 700; color: #16a34a">{{ getNewPayNowAmount() | currency: currency : 'symbol' : '1.2-2' }}</div>
                   </div>
                   <div class="d-flex justify-content-between" style="margin-top: 8px; color: #dc2626">
                     <div style="font-weight: 700">Outstanding Amount:</div>
-                    <div style="font-weight: 700">₹{{ getNewBalanceAtCheckIn() | number: "1.2-2" }}</div>
+                    <div style="font-weight: 700">{{ getNewBalanceAtCheckIn() | currency: currency : 'symbol' : '1.2-2' }}</div>
                   </div>
                 </div> -->
 
                 <div *ngIf="advancePaymentPercentage === 0" class="booking-summary-total total-borders">
                   <div class="d-flex justify-content-between" style="font-weight: 700">
                     <div>Total Amount (Due Now):</div>
-                    <div style="color: #dc2626">₹{{ getNewGrandTotal() | number: "1.2-2" }}</div>
+                    <div style="color: #dc2626">{{ getNewGrandTotal() | currency: currency : 'symbol' : '1.2-2' }}</div>
                   </div>
                 </div>
               </div>
@@ -965,8 +969,8 @@
                     {{ booking?.roomRatePlanName }}
                   </div>
                   <div>
-                    ₹{{
-                      booking?.roomPrice * booking?.noOfNights | number: "1.2-2"
+                    {{
+                      booking?.roomPrice * booking?.noOfNights | currency: currency : 'symbol' : '1.2-2'
                     }}
                   </div>
                 </div>
@@ -976,27 +980,27 @@
                 </div>
                 <div class="d-flex justify-content-between">
                   <div>Extra Pax</div>
-                  <div>₹{{ booking?.extraPersonCharge | number: "1.2-2" }}</div>
+                  <div>{{ booking?.extraPersonCharge | currency: currency : 'symbol' : '1.2-2' }}</div>
                 </div>
                 <div class="d-flex justify-content-between">
                   <div>Extra Child</div>
-                  <div>₹{{ booking?.extraChildCharge | number: "1.2-2" }}</div>
+                  <div>{{ booking?.extraChildCharge | currency: currency : 'symbol' : '1.2-2' }}</div>
                 </div>
                 <div
                   class="d-flex justify-content-between"
                   *ngIf="getDisplayedRowTotalDiscount(booking) > 0"
                 >
                   <div>{{ getDiscountColumnLabel() }}</div>
-                  <div>-₹{{ getDisplayedRowTotalDiscount(booking) | number: "1.2-2" }}</div>
+                  <div>-{{ getDisplayedRowTotalDiscount(booking) | currency: currency : 'symbol' : '1.2-2' }}</div>
                 </div>
                 <div class="d-flex justify-content-between">
                   <div>Sub Total</div>
-                  <div>₹{{ booking?.beforeTaxAmount | number: "1.2-2" }}</div>
+                  <div>{{ booking?.beforeTaxAmount | currency: currency : 'symbol' : '1.2-2' }}</div>
                 </div>
 
                 <div class="d-flex justify-content-between">
                   <div>Tax</div>
-                  <div>₹{{ getDisplayedRowTax(booking) | number: "1.2-2" }}</div>
+                  <div>{{ getDisplayedRowTax(booking) | currency: currency : 'symbol' : '1.2-2' }}</div>
                 </div>
                 <hr
                   style="
@@ -1010,7 +1014,7 @@
                   style="font-weight: bold"
                 >
                   <div>Total Amount</div>
-                  <div>₹{{ getDisplayedRowTotal(booking) | number: "1.2-2" }}</div>
+                  <div>{{ getDisplayedRowTotal(booking) | currency: currency : 'symbol' : '1.2-2' }}</div>
                 </div>
               </ng-container>
             </div>
@@ -1025,7 +1029,7 @@
               <div class="d-flex justify-content-between">
                 <div>{{ getAccommodationSubtotalLabel() }}:</div>
                 <div>
-                  ₹{{ getDisplayedRoomSubtotal() | number: "1.2-2" }}
+                  {{ getDisplayedRoomSubtotal() | currency: currency : 'symbol' : '1.2-2' }}
                 </div>
               </div>
               <div *ngIf="specialDiscountData?.discountPercentage || advanceDiscountPercentage > 0" class="d-flex justify-content-between" style="margin-top: 5px; color: #16a34a">
@@ -1038,16 +1042,16 @@
               </div>
               <div *ngIf="getDisplayedAdvanceDiscountAmount() > 0" class="d-flex justify-content-between" style="margin-top: 5px; color: #16a34a">
                 <div>Advance Discount ({{ advanceDiscountPercentage }}%)</div>
-                <div>-₹{{ getDisplayedAdvanceDiscountAmount() | number: "1.2-2" }}</div>
+                <div>-{{ getDisplayedAdvanceDiscountAmount() | currency: currency : 'symbol' : '1.2-2' }}</div>
               </div>
               <div *ngIf="getDisplayedAdvanceDiscountAmount() > 0" class="d-flex justify-content-between" style="margin-top: 5px; font-weight: 600">
                 <div>Accommodation Total (After All Discounts)</div>
-                <div>₹{{ getDisplayedAccommodationAfterDiscounts() | number: "1.2-2" }}</div>
+                <div>{{ getDisplayedAccommodationAfterDiscounts() | currency: currency : 'symbol' : '1.2-2' }}</div>
               </div>
               <div class="d-flex justify-content-between">
                 <div>Total GST:</div>
                 <div>
-                  ₹ {{ getDisplayedRoomTax() | number: "1.2-2" }}
+                   {{ getDisplayedRoomTax() | currency: currency : 'symbol' : '1.2-2' }}
                 </div>
               </div>
               <div
@@ -1056,7 +1060,7 @@
               >
                 <div>Convenience Fee:</div>
                 <div>
-                  ₹{{ getDisplayedConvenienceFee() | number: "1.2-2" }}
+                  {{ getDisplayedConvenienceFee() | currency: currency : 'symbol' : '1.2-2' }}
                 </div>
               </div>
               <!-- Add-ons itemised table for mobile/webview -->
@@ -1075,17 +1079,17 @@
                     </thead>
                     <tbody>
                       <tr *ngFor="let addon of selectedAddOns" style="border-bottom: 1px solid #f1f5f9">
-                        <td style="padding: 5px">{{ addon.serviceName || 'Service' }}</td>
+                        <td style="padding: 6px; text-align: left">{{ addon.name || 'Service' }}</td>
                         <td style="padding: 5px; text-align: center">{{ addon.quantity || 1 }}</td>
-                        <td style="padding: 5px; text-align: right">₹{{ (addon.servicePrice || 0) | number: "1.2-2" }}</td>
-                        <td style="padding: 5px; text-align: right">₹{{ (addon.taxAmount || 0) | number: "1.2-2" }}</td>
-                        <td style="padding: 5px; text-align: right">₹{{ ((addon.servicePrice || 0) + (addon.taxAmount || 0)) | number: "1.2-2" }}</td>
+                        <td style="padding: 5px; text-align: right">{{ (addon.servicePrice || 0) | currency: currency : 'symbol' : '1.2-2' }}</td>
+                        <td style="padding: 5px; text-align: right">{{ (addon.taxAmount || 0) | currency: currency : 'symbol' : '1.2-2' }}</td>
+                        <td style="padding: 5px; text-align: right">{{ ((addon.servicePrice || 0) + (addon.taxAmount || 0)) | currency: currency : 'symbol' : '1.2-2' }}</td>
                       </tr>
                     </tbody>
                     <tfoot>
                       <tr style="border-top: 1px solid #cbd5e1; background-color: #eff6ff; color: #1465cf">
                         <td colspan="4" style="padding: 7px; text-align: right; font-weight: 700">Services Total</td>
-                        <td style="padding: 7px; text-align: right; font-weight: 700">₹{{ getServicesTotal() | number: "1.2-2" }}</td>
+                        <td style="padding: 7px; text-align: right; font-weight: 700">{{ getServicesTotal() | currency: currency : 'symbol' : '1.2-2' }}</td>
                       </tr>
                     </tfoot>
                   </table>
@@ -1097,35 +1101,35 @@
                 style="font-weight: 700; margin-top: 8px; padding-top: 8px; border-top: 1px solid #e5e7eb; color: #1465cf"
               >
                 <div>Grand Total:</div>
-                <div>₹{{ getNewGrandTotal() | number: "1.2-2" }}</div>
+                <div>{{ getNewGrandTotal() | currency: currency : 'symbol' : '1.2-2' }}</div>
               </div>
               <!-- ✅ NEW: Advance plan indicator -->
               <div *ngIf="advancePaymentPercentage > 0" style="margin-top: 8px; padding: 8px; background-color: #fffcdf; border: 1px solid #fef08a; border-radius: 4px">
                 <div class="d-flex justify-content-between" style="font-weight: 700; color: #b45309">
                   <div style="font-size: 0.9rem">{{ advancePaymentLabel }}</div>
-                  <div style="color: #dc2626">₹{{ getNewPayNowAmount() | number: "1.2-2" }}</div>
+                  <div style="color: #dc2626">{{ getNewPayNowAmount() | currency: currency : 'symbol' : '1.2-2' }}</div>
                 </div>
                 <div style="font-size: 0.75rem; color: #b45309; margin-top: 4px">{{ advancePaymentPercentage }}% of discounted accommodation + GST, plus all add-ons and fees</div>
                 <div class="d-flex justify-content-between" style="margin-top: 6px; padding-top: 6px; border-top: 1px solid #fef08a; font-weight: 600">
                   <div style="font-size: 0.9rem; color: #6b7280">Balance at Check-in:</div>
-                  <div style="color: #dc2626">₹{{ getNewBalanceAtCheckIn() | number: "1.2-2" }}</div>
+                  <div style="color: #dc2626">{{ getNewBalanceAtCheckIn() | currency: currency : 'symbol' : '1.2-2' }}</div>
                 </div>
               </div>
               <!-- ✅ NEW: Payment status summary -->
               <!-- <div *ngIf="advancePaymentPercentage > 0" style="margin-top: 8px; padding: 8px; background-color: #f0fdf4; border: 1px solid #dcfce7">
                 <div class="d-flex justify-content-between" style="font-weight: 600">
                   <div style="font-size: 0.9rem">Amount Paid (Now):</div>
-                  <div style="color: #16a34a">₹{{ getNewPayNowAmount() | number: "1.2-2" }}</div>
+                  <div style="color: #16a34a">{{ getNewPayNowAmount() | currency: currency : 'symbol' : '1.2-2' }}</div>
                 </div>
                 <div class="d-flex justify-content-between" style="margin-top: 6px; font-weight: 600; color: #dc2626">
                   <div style="font-size: 0.9rem">Outstanding:</div>
-                  <div>₹{{ getNewBalanceAtCheckIn() | number: "1.2-2" }}</div>
+                  <div>{{ getNewBalanceAtCheckIn() | currency: currency : 'symbol' : '1.2-2' }}</div>
                 </div>
               </div> -->
               <!-- ✅ FALLBACK: Full payment due -->
               <div *ngIf="advancePaymentPercentage === 0" class="d-flex justify-content-between" style="font-weight: 600; color: #dc2626; margin-top: 8px; padding-top: 8px; border-top: 1px solid #e5e7eb">
                 <div>Total Due (Now):</div>
-                <div>₹{{ getNewGrandTotal() | number: "1.2-2" }}</div>
+                <div>{{ getNewGrandTotal() | currency: currency : 'symbol' : '1.2-2' }}</div>
               </div>
               <div></div>
             </div>
