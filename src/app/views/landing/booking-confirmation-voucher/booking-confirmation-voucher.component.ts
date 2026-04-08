@@ -107,7 +107,7 @@ export class BookingConfirmationVoucherComponent {
       }
       // ✅ NEW: Load calculation state from stored enquiries
       this.loadCalculationStateFromEnquiries();
-    }, 10);
+    }, 2000);
   }
   private sequenceBookingConfirmation() {
     this.loadingData = true;

@@ -498,7 +498,7 @@
                       </thead>
                       <tbody>
                         <tr *ngFor="let addon of selectedAddOns" style="border-bottom: 1px solid #f1f5f9">
-                          <td style="padding: 6px">{{ addon.serviceName || 'Service' }}</td>
+                          <td style="padding: 6px; text-align: left">{{ addon.name || 'Service' }}</td>
                           <td style="padding: 6px; text-align: center">{{ addon.quantity || 1 }}</td>
                           <td style="padding: 6px; text-align: right">₹{{ (addon.servicePrice || 0) | number: "1.2-2" }}</td>
                           <td style="padding: 6px; text-align: right">₹{{ (addon.taxAmount || 0) | number: "1.2-2" }}</td>
@@ -524,7 +524,7 @@
                 </div>
 
                 <!-- ✅ NEW: Advance plan indicator and payment breakdown -->
-                <div *ngIf="advancePaymentPercentage > 0" class="booking-summary-total total-borders" style="background-color: #fef9c3; border: 1px solid #fef08a">
+                <div *ngIf="advancePaymentPercentage > 0" class="booking-summary-total total-borders" style="background-color: #fffcdf; border: 1px solid #fef08a">
                   <div class="d-flex justify-content-between"><div style="font-weight: 700; color: #b45309">{{ advancePaymentLabel }}</div><div style="font-weight: 700; color: #dc2626">₹{{ getNewPayNowAmount() | number: "1.2-2" }}</div></div>
                   <div style="font-size: 0.85rem; color: #b45309; margin-top: 4px">{{ advancePaymentPercentage }}% of discounted accommodation + GST, plus all add-ons and fees</div>
                   <div class="d-flex justify-content-between" style="margin-top: 8px; border-top: 1px solid #fef08a; padding-top: 8px">
@@ -534,7 +534,7 @@
                 </div>
 
                 <!-- ✅ UPDATED: Payment status summary -->
-                <div *ngIf="advancePaymentPercentage > 0" class="booking-summary-total total-borders due-borders">
+                <!-- <div *ngIf="advancePaymentPercentage > 0" class="booking-summary-total total-borders due-borders">
                   <div class="d-flex justify-content-between">
                     <div style="font-weight: 700">Amount Paid (Pay Now):</div>
                     <div style="font-weight: 700; color: #16a34a">₹{{ getNewPayNowAmount() | number: "1.2-2" }}</div>
@@ -543,7 +543,7 @@
                     <div style="font-weight: 700">Outstanding Amount:</div>
                     <div style="font-weight: 700">₹{{ getNewBalanceAtCheckIn() | number: "1.2-2" }}</div>
                   </div>
-                </div>
+                </div> -->
 
                 <div *ngIf="advancePaymentPercentage === 0" class="booking-summary-total total-borders">
                   <div class="d-flex justify-content-between" style="font-weight: 700">
@@ -1019,7 +1019,7 @@
         <div class="col-12" style="margin-top: 30px">
           <div
             class="card enquiry-details-card"
-            style="background-color: #16a34a1a; padding-top: 0px"
+            style="background-color: #68d7911a; padding-top: 0px"
           >
             <div class="booking-summary-footer">
               <div class="d-flex justify-content-between">
@@ -1100,7 +1100,7 @@
                 <div>₹{{ getNewGrandTotal() | number: "1.2-2" }}</div>
               </div>
               <!-- ✅ NEW: Advance plan indicator -->
-              <div *ngIf="advancePaymentPercentage > 0" style="margin-top: 8px; padding: 8px; background-color: #fef9c3; border: 1px solid #fef08a; border-radius: 4px">
+              <div *ngIf="advancePaymentPercentage > 0" style="margin-top: 8px; padding: 8px; background-color: #fffcdf; border: 1px solid #fef08a; border-radius: 4px">
                 <div class="d-flex justify-content-between" style="font-weight: 700; color: #b45309">
                   <div style="font-size: 0.9rem">{{ advancePaymentLabel }}</div>
                   <div style="color: #dc2626">₹{{ getNewPayNowAmount() | number: "1.2-2" }}</div>
@@ -1112,7 +1112,7 @@
                 </div>
               </div>
               <!-- ✅ NEW: Payment status summary -->
-              <div *ngIf="advancePaymentPercentage > 0" style="margin-top: 8px; padding: 8px; background-color: #f0fdf4; border: 1px solid #dcfce7">
+              <!-- <div *ngIf="advancePaymentPercentage > 0" style="margin-top: 8px; padding: 8px; background-color: #f0fdf4; border: 1px solid #dcfce7">
                 <div class="d-flex justify-content-between" style="font-weight: 600">
                   <div style="font-size: 0.9rem">Amount Paid (Now):</div>
                   <div style="color: #16a34a">₹{{ getNewPayNowAmount() | number: "1.2-2" }}</div>
@@ -1121,7 +1121,7 @@
                   <div style="font-size: 0.9rem">Outstanding:</div>
                   <div>₹{{ getNewBalanceAtCheckIn() | number: "1.2-2" }}</div>
                 </div>
-              </div>
+              </div> -->
               <!-- ✅ FALLBACK: Full payment due -->
               <div *ngIf="advancePaymentPercentage === 0" class="d-flex justify-content-between" style="font-weight: 600; color: #dc2626; margin-top: 8px; padding-top: 8px; border-top: 1px solid #e5e7eb">
                 <div>Total Due (Now):</div>
