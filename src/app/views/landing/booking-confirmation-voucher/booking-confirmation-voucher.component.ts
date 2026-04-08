@@ -49,6 +49,7 @@ export class BookingConfirmationVoucherComponent {
   balanceAtCheckIn: number = 0;
   selectedAddOns: any[] = [];
   selectedAdvanceDiscountSlab: any = null;
+  isPaid: boolean = false;
 
   constructor(
     private http: HttpClient,
@@ -486,6 +487,9 @@ export class BookingConfirmationVoucherComponent {
       this.payNowAmount = firstEnquiry.payNowAmount || 0;
       this.balanceAtCheckIn = firstEnquiry.balanceAtCheckIn || 0;
       this.selectedAddOns = firstEnquiry.selectedAddOns || [];
+
+      this.isPaid = this.advancePaymentPercentage === 100 || this.balanceAtCheckIn === 0;
+
     } catch (error) {
       console.warn('Error loading calculation state from enquiries:', error);
     }
@@ -646,9 +650,9 @@ export class BookingConfirmationVoucherComponent {
     return 0;
   }
 
-  isPaid(): boolean {
-    return this.getNewBalanceAtCheckIn() === 0;
-  }
+  // isPaid(): boolean {
+  //   return this.getNewBalanceAtCheckIn() === 0;
+  // }
 
   hasSelectedAdvancePaymentPlan(): boolean {
     return this.advancePaymentPercentage > 0;
