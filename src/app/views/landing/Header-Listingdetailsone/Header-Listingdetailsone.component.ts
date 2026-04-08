@@ -173,7 +173,7 @@ formatUrl(url: string): string {
     : 'https://' + url;
 }
       getWhatsappShareUrlOne(): string {
-        if (this.businessUser.id !== 3469 && this.businessUser.id !== 701 && this.businessUser.id !== 1909 && this.businessUser.id !== 3468) {
+        if (this.businessUser.id !== 3469 && this.businessUser.id !== 701 && this.businessUser.id !== 1909 && this.businessUser.id !== 3468 && this.businessUser?.id !== 2614) {
               const baseUrl = 'https://api.whatsapp.com/send';
     const phoneNumber = '919004126958';
     this.dynamicText = this.businessUser.name;
