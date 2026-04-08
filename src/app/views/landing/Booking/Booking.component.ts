@@ -12243,6 +12243,8 @@ sendWhatsappMessageToPropertyOwner() {
 
     });
 
+    this.taxOnDiscountedAmount = totalTax;
+    
     return totalTax;
   }
 

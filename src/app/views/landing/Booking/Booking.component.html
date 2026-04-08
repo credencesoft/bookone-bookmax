@@ -1348,7 +1348,7 @@
                   </div>
                   <div class="d-flex justify-content-between line-height-27px">
                     <div class="color-graying">Tax &amp; Services</div>
-                    <div style="font-weight: 500">{{ taxOnDiscountedAmount | currency: currency : 'symbol' : '1.2-2' }}</div>
+                    <div style="font-weight: 500">{{ getTotalTax() | currency: currency : 'symbol' : '1.2-2' }}</div>
                   </div>
                 </div>
                 <div *ngIf="selectedAddOns && selectedAddOns.length > 0"
