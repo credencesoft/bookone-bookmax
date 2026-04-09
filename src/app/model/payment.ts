@@ -34,6 +34,9 @@ export class Payment {
     transactionAmount: number;
     transactionChargeAmount: number;
     netReceivableAmount: number;
+    paymentGateway: string;
+    externalSite: string;
+    sourceChannel: string;
     otherChargesAmount: number;
     taxAmount: number;
     bankName: string;

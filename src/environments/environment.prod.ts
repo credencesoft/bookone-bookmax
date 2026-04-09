@@ -26,6 +26,7 @@ export const environment = {
   apiUrl: "https://api.thehotelmate.co",
   apiUrlOne: "https://api.bookonelocal.in/api-bookone",
   recommendedUrl: "https://contentai.thehotelmate.co",
+  phonepeUrl: 'https://phonepe.bookonepms.com',
   appUrl: 'https://thehotelmate.co',
   androidAppUrl: 'https://play.google.com/store/apps/details?id=nz.co.bookonelocal.customer',
   iosAppUrl: 'https://apps.apple.com/us/app/bookone-local/id1528910778',

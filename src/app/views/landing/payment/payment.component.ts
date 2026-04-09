@@ -68,7 +68,6 @@ export class PaymentComponent implements OnInit {
   showAlert: boolean;
   prvpaymentref: string;
   advPanyment: any;
-  anotherpaymentBackup: any;
   services: any;
   totalServiceCost: number =0;
   calculatedServices: any;
@@ -90,7 +89,6 @@ export class PaymentComponent implements OnInit {
   ) {
     this.businessServiceDto = new BusinessServiceDtoList();
     this.businessUser = new BusinessUser();
-    this.anotherpaymentBackup = new Payment()
     this.booking = new Booking();
     this.payment = new Payment();
     this.acRoute.queryParams.subscribe((params) => {
@@ -105,18 +103,6 @@ export class PaymentComponent implements OnInit {
       }
       this.getBookingDetails(this.bookingNumber, this.bookingEmail);
     });
-    if( this.token.getPayment2Data() != null && this.token.getPayment2Data() != undefined){
-      this.anotherpaymentBackup = this.token.getPayment2Data()
-    }
-
-    // console.log("this.anotherpaymentBackup ", this.anotherpaymentBackup )
-
-    // if ((this.payment == null || this.payment === undefined) &&  this.token.savePayment2Data != null && this.token.savePayment2Data != undefined ) {
-      this.hotelBookingService.savePayment(this.anotherpaymentBackup).subscribe(
-        (res1) => {
-
-        })
-      // }
     }
 
 
@@ -200,11 +186,6 @@ export class PaymentComponent implements OnInit {
           this.getAllServicesById()
           this.getPropertyDetails(this.booking.propertyId);
           this.payment = data.body.paymentDetails[0];
-          // console.log("this.anotherpaymentBackup", this.anotherpaymentBackup);
-          if( this.anotherpaymentBackup === null ||  this.anotherpaymentBackup === undefined) {
-            this.anotherpaymentBackup = data.body.paymentDetails[0];
-            this.token.savePayment2Data(this.anotherpaymentBackup);
-          }
 
           // this.room = data.body.roomDetails;
 

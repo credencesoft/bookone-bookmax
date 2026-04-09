@@ -61,7 +61,6 @@ export class BookingConfirmComponent {
   children3to5: number;
   noOfrooms: number;
   currency: string;
-  payment2: Payment;
   totalExtraAmount: number = 0;
   totalTaxAmount: number = 0;
   totalBeforeTaxAmount: number = 0;
@@ -260,12 +259,6 @@ textToCopyOne: string = 'This is some text to copy';
       // console.log("this.payment"+JSON.stringify(this.payment))
     }
 
-    if (this.token.getPayment2Data() != null && this.token.getPayment2Data() != undefined)
-    {
-      this.payment2 = this.token.getPayment2Data();
-
-    }
-
     this.storedPromo = localStorage.getItem('selectPromo');
     if(this.storedPromo == 'true'){
      const selectedPromoData = JSON.parse( localStorage.getItem('selectedPromoData'));
@@ -384,13 +377,9 @@ if (couponCodeValues) {
         this.payment = JSON.parse(params["payment"]);
       }
 
-      if (params["payment2"] !== undefined) {
-        this.payment2 = JSON.parse(params["payment2"]);
-      }
-
       if (params["addServiceList"] !== undefined) {
         this.addServiceList = [];
-        this.payment2 = JSON.parse(params["addServiceList"]);
+        this.addServiceList = JSON.parse(params["addServiceList"]);
       }
 
       if (params["booking"] !== undefined) {

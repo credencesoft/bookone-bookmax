@@ -7,7 +7,7 @@ import { BusinessUser } from 'src/app/model/user';
 // import { Logger } from 'src/app/services/logger.service';
 // import { HotelBookingService } from 'src/app/services/hotel-booking.service';/
 import { NgbDate } from '@ng-bootstrap/ng-bootstrap';
-import { Location, DatePipe, formatDate } from '@angular/common';
+import { Location, DatePipe } from '@angular/common';
 import { environment } from 'src/environments/environment';
 import { Logger } from 'src/services/logger.service';
 // import { EnquiryForm } from '../Enquiry/Enquiry.component';
@@ -57,7 +57,6 @@ export class BookingCompleteComponent implements OnInit {
   children3to5: number;
   noOfrooms: number;
   currency: string;
-  payment2: Payment;
   totalExtraAmount: number = 0;
   totalTaxAmount: number = 0;
   totalBeforeTaxAmount: number = 0;
@@ -169,12 +168,6 @@ export class BookingCompleteComponent implements OnInit {
       this.payment = this.token.getPaymentData();
     }
 
-    if (this.token.getPayment2Data() != null && this.token.getPayment2Data() != undefined)
-    {
-      this.payment2 = this.token.getPayment2Data();
-    }
-
-
     this.addServiceList = [];
     if (this.token.getServiceData() !== null) {
       this.addServiceList = this.token.getServiceData();
@@ -223,13 +216,9 @@ export class BookingCompleteComponent implements OnInit {
         this.payment = JSON.parse(params["payment"]);
       }
 
-      if (params["payment2"] !== undefined) {
-        this.payment2 = JSON.parse(params["payment2"]);
-      }
-
       if (params["addServiceList"] !== undefined) {
         this.addServiceList = [];
-        this.payment2 = JSON.parse(params["addServiceList"]);
+        this.addServiceList = JSON.parse(params["addServiceList"]);
       }
 
       if (params["booking"] !== undefined) {
@@ -311,39 +300,6 @@ export class BookingCompleteComponent implements OnInit {
     const month = dsd.getMonth() + 1;
     return { year: year, month: month, day: day };
   }
-  addServiceToBooking(booking) {
-    if (this.addServiceList.length > 0) {
-      this.hotelBookingService
-        .addServicesToBooking(this.addServiceList, booking.id)
-        .subscribe((serviceRes) => {
-          // //Logger.log('before Payment: ', JSON.stringify(this.payment));
-
-          // //Logger.log('addServiceList ', JSON.stringify(serviceRes.body));
-          this.payment2 = this.payment;
-          this.payment2.id = undefined;
-          this.payment2.paymentMode = 'UPI';
-          this.payment2.status = 'NotPaid';
-          this.payment2.propertyId = this.bookingData.propertyId;
-          this.payment2.email = this.booking.email;
-          this.payment2.businessEmail = this.businessUser.email;
-          this.payment2.currency = this.businessUser.localCurrency;
-          this.payment2.transactionAmount = Number((this.totalExtraAmount ).toFixed(2));
-          this.payment2.netReceivableAmount = Number((this.totalBeforeTaxAmount ).toFixed(2));
-          this.payment2.transactionAmount = Number((this.totalExtraAmount ).toFixed(2));
-          this.payment2.amount = Number((this.totalExtraAmount ).toFixed(2));
-          this.payment2.transactionChargeAmount = Number((this.totalExtraAmount ).toFixed(2));
-          this.payment2.deliveryChargeAmount = 0;
-          this.payment2.date = formatDate(new Date(), 'yyyy-MM-dd', 'en');
-          this.payment2.taxAmount = this.totalTaxAmount ;
-          this.payment2.businessServiceName = 'Restaurants';
-          this.hotelBookingService
-            .processPayment(this.payment2)
-            .subscribe((res) => {
-              // //Logger.log('Extra Payment: ', JSON.stringify(res.body));
-            });
-        });
-    }
-  }
   createBookingPayTM() {
 
     this.booking.modeOfPayment = this.payment.paymentMode;
@@ -414,7 +370,6 @@ export class BookingCompleteComponent implements OnInit {
               this.savedServices
             );
           }
-          this.addServiceToBooking(this.booking);
           this.externalReservation(this.booking);
           this.bookingConfirmed = true;
           this.paymentLoader = true;
