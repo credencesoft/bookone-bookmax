@@ -85,6 +85,9 @@ interface Step {
   providers: [DatePipe],
 })
 export class BookingComponent implements OnInit {
+  bookingContextMissing = false;
+  bookingContextMessage =
+    'Your booking session has expired. Please reselect your room to continue.';
   PropertyUrl: string;
   currency: string;
   message: MessageDto;
@@ -431,6 +434,10 @@ export class BookingComponent implements OnInit {
     this.parameterss3 = [];
     this.parameterss4 = [];
     this.parameterss1 = [];
+    if (!this.hasRequiredBookingContext()) {
+      this.handleMissingBookingContext();
+      return;
+    }
     if (this.token.getServiceData() !== null) {
       this.addServiceList = this.token.getServiceData();
     }
@@ -542,7 +549,9 @@ export class BookingComponent implements OnInit {
     if (this.PropertyUrl && this.PropertyUrl.includes('bookingEngine')) {
       isBookingEngine = true;
     }
-    this.propertyData.shortName = this.token.getProperty().shortName;
+    if (this.propertyData && this.token.getProperty()) {
+      this.propertyData.shortName = this.token.getProperty().shortName;
+    }
     const savedLabel = localStorage.getItem('savedBookingLabel');
     console.log('savedLabel data is',savedLabel);
     if (savedLabel) {
@@ -556,6 +565,9 @@ export class BookingComponent implements OnInit {
   }
 
   ngOnInit() {
+    if (this.bookingContextMissing) {
+      return;
+    }
     this.clearFormField(this.booking);
     this.initializeCountrySelection();
     const couponCodeValues = sessionStorage.getItem('selectedPromoData');
@@ -574,6 +586,10 @@ export class BookingComponent implements OnInit {
     const bookingSummary = bookingSummaryStr
       ? JSON.parse(bookingSummaryStr)
       : null;
+    if (!bookingSummary?.selectedPlansSummary?.length) {
+      this.handleMissingBookingContext();
+      return;
+    }
     const plans = bookingSummary.selectedPlansSummary;
     if (plans.length >= 2) {
       this.groupBookingId = Math.floor(10000000 + Math.random() * 90000000);
@@ -668,6 +684,51 @@ export class BookingComponent implements OnInit {
     this.initializeAddOnServices();
 
     this.token.clearBookingDataObj();
+  }
+
+  private hasRequiredBookingContext(): boolean {
+    const bookingSummaryDetails = sessionStorage.getItem('bookingSummaryDetails');
+    const bookingData = this.token.getBookingData();
+
+    return !!bookingSummaryDetails && !!bookingData;
+  }
+
+  private handleMissingBookingContext(): void {
+    if (this.bookingContextMissing) {
+      return;
+    }
+
+    this.bookingContextMissing = true;
+    this.showAlert = true;
+    this.alertType = 'danger';
+    this.headerTitle = 'Session expired';
+    this.bodyMessage = this.bookingContextMessage;
+
+    setTimeout(() => {
+      this.redirectToPropertyPage();
+    }, 1500);
+  }
+
+  private redirectToPropertyPage(): void {
+    const propertyUrl = this.token.getPropertyUrl();
+    const property = this.token.getProperty();
+
+    if (propertyUrl) {
+      if (/^https?:\/\//i.test(propertyUrl)) {
+        window.location.href = propertyUrl;
+        return;
+      }
+
+      this.router.navigateByUrl(propertyUrl);
+      return;
+    }
+
+    if (property?.seoFriendlyName) {
+      this.router.navigate(['/', property.seoFriendlyName]);
+      return;
+    }
+
+    this.router.navigate(['/']);
   }
   getFirstWords(text: string, count: number): string {
     return text.split(' ').slice(0, count).join(' ');
