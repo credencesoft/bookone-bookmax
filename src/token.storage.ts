@@ -45,7 +45,6 @@ const businessTypeListDATA = 'businessTypeList';
 const PROPERTY_SERVICE_DATA = 'PROPERTY_SERVICE_DATA';
 const SELECTED_SERVICE_DATA = 'SELECTED_SERVICE_DATA';
 const PAYMENT = 'payment';
-const PAYMENT2 = 'payment2';
 const ROLES = "Roles";
 
 
@@ -95,9 +94,6 @@ export class TokenStorage {
     } catch (e) {
       return null;
     }
-  }
-  public getPayment2Data(): Payment {
-    return JSON.parse(localStorage.getItem(PAYMENT2) as string);
   }
   public saveUserName(token: string) {
     window.sessionStorage.removeItem(TOKEN_KEY);
@@ -789,19 +785,10 @@ export class TokenStorage {
   // public getPaymentData(): Payment {
   //   return JSON.parse(localStorage.getItem(PAYMENT) as string);
   // }
-  // Payment2
-  public savePayment2Data(payment2:any) {
-  localStorage.removeItem(PAYMENT2);
-    if (payment2 !== null || payment2 !== undefined) {
-    localStorage.setItem(PAYMENT2, JSON.stringify(payment2));
-    } else {
-    localStorage.setItem(PAYMENT2,  '{}');
-    }
+  public clearLegacyPayment2Data() {
+    localStorage.removeItem('payment2');
   }
 
-  // public getPayment2Data(): Payment {
-  //   return JSON.parse(localStorage.getItem(PAYMENT2) as string);
-  // }
   // Property
   public savePropertyData(property:any) {
   localStorage.removeItem(PROPERTY);

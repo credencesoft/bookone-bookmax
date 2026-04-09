@@ -61,7 +61,6 @@ export class WhatsappRedirectPageComponent implements OnInit {
   children3to5: number;
   noOfrooms: number;
   currency: string;
-  payment2: Payment;
   totalExtraAmount: number = 0;
   totalTaxAmount: number = 0;
   totalBeforeTaxAmount: number = 0;

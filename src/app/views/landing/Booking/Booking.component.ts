@@ -935,6 +935,9 @@ export class BookingComponent implements OnInit {
         paymentStatus: 'Paid',
         paymentReceived: true,
         paymentReference: this.payment.referenceNumber,
+        paymentGateway:
+          this.payment.paymentGateway || this.businessUser?.paymentGateway || null,
+        paymentMode: this.payment.paymentMode || null,
         updatedDate: new Date().toISOString(),
       };
 
@@ -5991,9 +5994,12 @@ export class BookingComponent implements OnInit {
 
           this.payment.email = this.booking.email;
           this.payment.businessEmail = this.businessUser.email;
-          this.payment.currency = 'INR';
+          this.payment.currency = this.businessUser.localCurrency || 'INR';
           this.payment.propertyId = this.businessUser.id;
           this.payment.orderId = this.equitycreatedData.enquiryId;
+          this.payment.externalSite =
+            this.equitycreatedData?.externalSite || this.booking.externalSite;
+          this.payment.sourceChannel = this.equitycreatedData?.source || null;
           this.booking.taxAmount = firstPlan?.taxPercentageperroom;
           if (this.businessServiceDto.advanceAmountPercentage === 100) {
             if (
@@ -7303,6 +7309,7 @@ export class BookingComponent implements OnInit {
   }
   paymentIntentRayzorpay(payment: Payment) {
     this.paymentLoader = true;
+    payment.paymentGateway = 'Razorpay';
 
     this.hotelBookingService
       .paymentIntentRayzorpay(payment)
@@ -7335,6 +7342,7 @@ export class BookingComponent implements OnInit {
   processPaymentPayU(payment: Payment) {
     // Keep gateway charge in sync with unified checkout summary values.
     this.applyAuthoritativeGatewayAmounts(payment, 'payu');
+    payment.paymentGateway = 'PayU';
     this.paymentLoader = true;
     this.changeDetectorRefs.detectChanges();
 
@@ -7401,7 +7409,7 @@ export class BookingComponent implements OnInit {
       .set('callbackUrl', environment.callbackUrl)
       .set('failureCode', environment.failureCode);
 
-    const url = `https://payu.payment.uat.bookone.io/api/payu/paymentIntent/THM?${params.toString()}`;
+    const url = `${environment.payuUrl}/api/payu/paymentIntent/THM?${params.toString()}`;
 
     const paymentWindow = window.open(url, '_blank');
 
