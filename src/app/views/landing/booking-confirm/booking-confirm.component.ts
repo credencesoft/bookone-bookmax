@@ -147,6 +147,9 @@ textToCopyOne: string = 'This is some text to copy';
   activeGoogleCenter: boolean = false;
   paymentRefNo: any;
   roomLabel: string = "Room";
+  private bookingPoller: any;
+  private bookingPollStartTime = 0;
+  private readonly BOOKING_POLL_TIMEOUT = 50 * 1000;
   constructor(
     private http: HttpClient,
     private token: TokenStorage,
@@ -443,6 +446,10 @@ if (couponCodeValues) {
 }
 
     ngOnDestroy() {
+    if (this.bookingPoller) {
+      clearInterval(this.bookingPoller);
+      this.bookingPoller = null;
+    }
     sessionStorage.removeItem('bookingsResponseList');
     sessionStorage.removeItem('bookingSummaryDetails');
     sessionStorage.removeItem('booking');
@@ -567,6 +574,9 @@ checkValidCouponOrNot(couponList?){
     this.hotelBookingService.getPaymentByReffId(referenceNumber).subscribe((res) => {
       this.payment = res.body[0];
       if ( this.payment.status == 'Paid') {
+        if (this.isBackendFinalizedGateway() && this.continueBackendBookingFinalization()) {
+          return;
+        }
         this.createAllBookings();
       }
       else{
@@ -589,6 +599,10 @@ checkValidCouponOrNot(couponList?){
     return { year: year, month: month, day: day };
   }
   addServiceToBooking(bookingId, savedServices: any[]) {
+    if (this.isBackendFinalizedGateway()) {
+      return;
+    }
+
     this.savedServices?.forEach((element) => {
       element.count = element.quantity;
       element.afterTaxAmount = element.quantity * element.servicePrice;
@@ -604,7 +618,129 @@ checkValidCouponOrNot(couponList?){
         (error) => {}
       );
   }
+  private isBackendFinalizedGateway(): boolean {
+    const gateway = (
+      this.businessUser?.paymentGateway ||
+      this.token.getPropertyData()?.paymentGateway ||
+      this.token.getProperty()?.paymentGateway ||
+      ''
+    )
+      .toString()
+      .trim()
+      .toLowerCase();
+
+    return gateway === 'payu' || gateway === 'razorpay';
+  }
+
+  private continueBackendBookingFinalization(): boolean {
+    const enquiryResponseListStr = sessionStorage.getItem('EnquiryResponseList');
+    if (!enquiryResponseListStr) {
+      return false;
+    }
+
+    const enquiryResponseList: EnquiryDto[] = JSON.parse(enquiryResponseListStr);
+    if (!Array.isArray(enquiryResponseList) || enquiryResponseList.length === 0) {
+      return false;
+    }
+
+    sessionStorage.removeItem('bookingsResponseList');
+    this.bookingsResponseList = [];
+    this.loadingData = true;
+    this.paymentLoader = true;
+    this.startBackendBookingPolling(enquiryResponseList);
+    return true;
+  }
+
+  private startBackendBookingPolling(enquiryResponseList: EnquiryDto[]) {
+    this.clearBookingPoller();
+    this.bookingPollStartTime = Date.now();
+
+    this.bookingPoller = setInterval(() => {
+      if (Date.now() - this.bookingPollStartTime > this.BOOKING_POLL_TIMEOUT) {
+        this.clearBookingPoller();
+        this.loadingData = false;
+        this.paymentLoader = false;
+        return;
+      }
+
+      enquiryResponseList.forEach((enquiry) => {
+        this.pollBackendCreatedBooking(enquiry, enquiryResponseList.length);
+      });
+    }, 5000);
+  }
+
+  private pollBackendCreatedBooking(enquiry: any, expectedCount: number) {
+    this.hotelBookingService.checkBookingStatus(enquiry.enquiryId).subscribe({
+      next: (response) => {
+        if (!response?.bookingId) {
+          return;
+        }
+
+        const existingBookings = this.getStoredBookings();
+        if (existingBookings.some((booking: any) => booking.id === response.bookingId)) {
+          this.finishBackendFinalizationIfReady(expectedCount);
+          return;
+        }
+
+        this.hotelBookingService.fetchBookingById(response.bookingId).subscribe({
+          next: (booking) => {
+            if (!booking?.id) {
+              return;
+            }
+
+            const nextBookings = this.getStoredBookings();
+            if (!nextBookings.some((item: any) => item.id === booking.id)) {
+              nextBookings.push(booking);
+              sessionStorage.setItem('bookingsResponseList', JSON.stringify(nextBookings));
+              this.bookingsResponseList = nextBookings;
+            }
+
+            this.finishBackendFinalizationIfReady(expectedCount);
+          },
+          error: () => {},
+        });
+      },
+      error: () => {},
+    });
+  }
+
+  private finishBackendFinalizationIfReady(expectedCount: number) {
+    const bookings = this.getStoredBookings();
+    if (bookings.length < expectedCount) {
+      return;
+    }
+
+    this.clearBookingPoller();
+    this.bookingsResponseList = bookings;
+    this.calculateTotalGuestsFromPlans();
+
+    const lastBooking = bookings[bookings.length - 1];
+    if (lastBooking?.id) {
+      this.hotelBookingService.sendBookingEmailToCustomer(lastBooking.id).subscribe({
+        next: () => {},
+        error: () => {},
+      });
+    }
+
+    this.updateEnquiryStatusToBooked();
+  }
+
+  private getStoredBookings(): any[] {
+    const bookingsResponseList = sessionStorage.getItem('bookingsResponseList');
+    return bookingsResponseList ? JSON.parse(bookingsResponseList) : [];
+  }
+
+  private clearBookingPoller() {
+    if (this.bookingPoller) {
+      clearInterval(this.bookingPoller);
+      this.bookingPoller = null;
+    }
+  }
     createAllBookings() {
+    if (this.isBackendFinalizedGateway() && this.continueBackendBookingFinalization()) {
+      return;
+    }
+
     const bookingSummaryStr = sessionStorage.getItem('bookingSummaryDetails');
     const bookingSummary = bookingSummaryStr
       ? JSON.parse(bookingSummaryStr)
@@ -664,6 +800,11 @@ checkValidCouponOrNot(couponList?){
 }
 
   createBooking(plan: any, bookingSummary: any, callback?: () => void) {
+    if (this.isBackendFinalizedGateway()) {
+      if (callback) callback();
+      return;
+    }
+
     const booking: any = {};
 
     booking.roomRatePlanName = plan.planCodeName;

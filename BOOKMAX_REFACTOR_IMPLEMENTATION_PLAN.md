@@ -1,5 +1,33 @@
 # Bookmax Refactor-First Implementation Plan
 
+Last updated: 2026-04-09
+
+## Current Status
+
+This file started as a forward-looking refactor plan. It now serves two purposes:
+
+- record which refactor goals are completed or materially in progress
+- preserve the remaining cleanup and follow-up work
+
+### Completed or materially delivered
+
+- THM is now the captured-payment booking orchestrator.
+- Razorpay no longer owns booking creation; it validates webhook input and delegates normalized captured-payment facts to THM.
+- PayU now follows the same THM captured-payment delegation pattern for THM-source success callbacks.
+- THM finalization is idempotent and reuses existing LMS-linked bookings on callback replay.
+- LMS enquiry snapshot fields are used to reconstruct selected services and quoted totals during backend finalization.
+- `paymentGateway` and `paymentMode` are now separated across THM, Razorpay, PayU, and Bookmax.
+- Bookmax hardened checkout flows now suppress browser-side booking creation and add-on creation for `Razorpay` and `PayU`.
+- `booking-confirm.component.ts` now polls LMS for backend-created booking linkage instead of creating bookings in the browser for backend-finalized gateways.
+- Razorpay webhook signature validation is implemented.
+
+### Still pending or intentionally deferred
+
+- delete obsolete legacy frontend callback and direct-booking paths after compatibility review
+- add focused frontend regression coverage for backend-finalized pay-now behavior
+- continue configuration cleanup and environment normalization where still inconsistent
+- centralize all authoritative pricing logic fully in backend if frontend-calculated fallbacks remain
+
 ## Goal
 
 Introduce two new booking concepts safely:
@@ -14,7 +42,7 @@ while fixing the current architectural issues:
 - duplicated pricing logic
 - non-maintainable cross-service coupling
 
-This plan recommends a focused refactor first, followed by feature delivery on top of the corrected seams.
+This plan recommended a focused refactor first, followed by feature delivery on top of the corrected seams. That refactor-first decision has now been validated by the implemented backend finalization changes.
 
 ## Executive Recommendation
 
@@ -28,7 +56,7 @@ Do a **targeted refactor first** in three areas only:
 
 Then implement add-ons and percentage discounts on top of that narrower refactor.
 
-This avoids baking the new features into the current incorrect ownership model where `java-razorpay` orchestrates booking creation.
+This avoided baking new features into the previous incorrect ownership model where `java-razorpay` orchestrated booking creation.
 
 ## Target Architecture
 
@@ -62,6 +90,8 @@ Payment gateway services should not own booking-domain orchestration.
 
 Booking-domain logic belongs with the booking service.
 
+That principle is now the implemented direction for the hardened `Razorpay` and `PayU` booking finalization paths.
+
 ## Delivery Strategy
 
 ### Why refactor first
@@ -85,7 +115,15 @@ The right approach is a narrow refactor that creates stable seams, then feature 
 
 ## Phases
 
+Status legend:
+
+- completed = implemented and validated in current refactor work
+- partial = direction implemented, but cleanup remains
+- pending = still future work
+
 ## Phase 0 - Baseline and Decision Lock
+
+Status: completed
 
 ### Objective
 
@@ -118,6 +156,8 @@ Freeze the current flow and agree on target ownership before code changes.
 
 ## Phase 1 - Configuration and Integration Cleanup
 
+Status: partial
+
 ### Objective
 
 Remove hard-coded URLs and create maintainable service integration boundaries.
@@ -147,6 +187,8 @@ Remove hard-coded URLs and create maintainable service integration boundaries.
 - do not combine this phase with orchestration changes in one deploy if avoidable
 
 ## Phase 2 - Introduce Booking Command Contract
+
+Status: partial
 
 ### Objective
 
@@ -196,6 +238,8 @@ The booking service should become the pricing authority.
 
 ## Phase 3 - Move Orchestration to java-the-hotel-mate
 
+Status: materially completed for hardened PayU and Razorpay captured-payment flows
+
 ### Objective
 
 Shift booking conversion orchestration out of `java-razorpay` and into `java-the-hotel-mate`.
@@ -204,10 +248,10 @@ Shift booking conversion orchestration out of `java-razorpay` and into `java-the
 
 Current state:
 
-- `java-razorpay` fetches LMS enquiry
-- `java-razorpay` builds booking DTO
-- `java-razorpay` calls THM booking
-- `java-razorpay` updates LMS and downstream systems
+- gateway adapters terminate raw callbacks and normalize payment facts
+- THM reads LMS enquiry snapshot
+- THM creates or reuses booking idempotently
+- THM updates LMS booking linkage and downstream systems
 
 Target state:
 
@@ -234,7 +278,7 @@ Target state:
 
 Use Option A first.
 
-It is simpler, faster, and lower-risk than introducing a new eventing model during the same feature delivery cycle.
+It proved simpler, faster, and lower-risk than introducing a new eventing model during the same feature delivery cycle.
 
 ### Risks
 
@@ -248,6 +292,8 @@ It is simpler, faster, and lower-risk than introducing a new eventing model duri
 - keep old path available behind fallback until cutover is proven
 
 ## Phase 4 - Centralize Pricing Logic
+
+Status: partial
 
 ### Objective
 
@@ -282,6 +328,8 @@ Frontend should send intent and selected options, but not be the source of truth
 - store pricing breakdown snapshot on enquiry and booking
 
 ## Phase 5 - Feature Delivery: Add-ons and Percentage Discounts
+
+Status: partial
 
 ### Objective
 
@@ -321,6 +369,8 @@ Required capabilities:
 
 ## Phase 6 - Legacy Flow Consolidation
 
+Status: pending
+
 ### Objective
 
 Reduce duplicate paths after the new architecture is stable.
@@ -329,6 +379,7 @@ Reduce duplicate paths after the new architecture is stable.
 
 - older frontend direct-booking flow in `Confirm-Booking.component.ts`
 - older `booking-complete` direct update path
+- older `confirm-payment` callback path
 - duplicated pricing or payment save logic in frontend
 - duplicate enquiry update logic across services
 
@@ -369,6 +420,7 @@ Reduce duplicate paths after the new architecture is stable.
 ### Later cleanup
 
 - retire duplicate legacy booking paths if confirmed unused
+- remove now-guarded browser-side booking creation branches for backend-finalized gateways once compatibility review is complete
 
 ## java-the-hotel-mate
 
@@ -423,6 +475,10 @@ Reduce duplicate paths after the new architecture is stable.
 
 - accept booking linkage updates from THM orchestrator
 - clarify whether both `bookingId` and `bookingReservationId` must be written
+
+Current answer:
+
+- both `bookingId` and `bookingReservationId` are written in the finalized captured-payment flow
 
 ### Phase 5
 
@@ -488,6 +544,10 @@ Reduce duplicate paths after the new architecture is stable.
 - `booking.addons.enabled`
 - `booking.percentage.discount.enabled`
 
+Note:
+
+- the current delivered work was implemented directly rather than through visible application-level feature flags in this frontend repo
+
 ## Test Strategy
 
 ### Must-cover cases
@@ -495,6 +555,7 @@ Reduce duplicate paths after the new architecture is stable.
 - payment captured with full payment
 - payment captured with partial payment
 - booking conversion retry or duplicate webhook
+- duplicate successful PayU callback after payment is already persisted as paid
 - add-ons with no discount
 - add-ons with percentage discount
 - promotion with percentage discount conflict
@@ -508,6 +569,7 @@ Reduce duplicate paths after the new architecture is stable.
 - booking amount equals payment amount according to business rule
 - enquiry and booking linkage are written consistently
 - no duplicate booking on webhook retries
+- frontend waits for LMS `bookingId` instead of creating bookings in-browser for hardened PayU and Razorpay paths
 
 ## Major Risks
 
@@ -522,6 +584,10 @@ Mitigation:
 - idempotency keys
 - unique booking conversion guard
 - webhook replay protection
+
+Current status:
+
+- materially mitigated in THM for captured-payment finalization
 
 ### Risk: pricing mismatch across systems
 
@@ -546,6 +612,10 @@ Mitigation:
 - endpoint usage audit
 - deprecation logs
 - staged removal only
+
+Current status:
+
+- still relevant for `booking-complete`, `confirm-payment`, and older `payment.component` flows
 
 ### Risk: downstream systems cannot represent add-ons or discount granularity
 
@@ -585,6 +655,8 @@ Then implement:
 - percentage-based discounts
 
 Only after that should the team clean up duplicate legacy flows.
+
+That ordering remains correct. The orchestration move has already paid off by enabling backend-finalized PayU and Razorpay flows without depending on browser completion.
 
 That sequence reduces long-term maintenance cost without turning the initiative into an open-ended rewrite.
 
@@ -914,6 +986,10 @@ Do not do these in Phase 1:
 - introduce percentage-discount feature logic
 - change payment or booking behavior
 - remove legacy flows without traffic validation
+
+Historical note:
+
+- orchestration has now moved to THM for the hardened captured-payment paths; the remaining warning is about not removing legacy flows without usage validation
 
 ## Phase 1 Output Checklist
 
