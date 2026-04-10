@@ -313,4 +313,26 @@ describe('BookingConfirmationVoucherComponent – 14 booking scenarios', () => {
     expect(component.getNewPayNowAmount()).toBeCloseTo(2.09, 2);
     expect(component.getNewBalanceAtCheckIn()).toBeCloseTo(0, 2);
   });
+
+  it('falls back to backend booking services when enquiry add-ons are unavailable', () => {
+    component.bookingsResponseList = [{
+      beforeTaxAmount: 100,
+      taxAmount: 5,
+      services: [
+        { name: 'Airport Pickup', quantityApplied: 2, servicePrice: 20, taxAmount: 2 },
+        { serviceType: 'Breakfast', count: 1, servicePrice: 10, taxAmount: 1 },
+      ],
+    }];
+    sessionStorage.setItem('BookedEnquiryList', JSON.stringify([{}]));
+
+    (component as any).loadCalculationStateFromEnquiries();
+
+    expect(component.selectedAddOns).toEqual([
+      { name: 'Airport Pickup', quantity: 2, servicePrice: 20, taxAmount: 2 },
+      { name: 'Breakfast', quantity: 1, servicePrice: 10, taxAmount: 1 },
+    ]);
+    expect(component.getServicesSubtotal()).toBe(30);
+    expect(component.getServicesTax()).toBe(3);
+    expect(component.getServicesTotal()).toBe(33);
+  });
 });

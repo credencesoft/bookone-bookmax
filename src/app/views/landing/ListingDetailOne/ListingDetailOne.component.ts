@@ -5538,6 +5538,7 @@ onBookNow() {
 this.token.savePropertyUrl(currentUrl);
   const selectedAddOns = this.propertyServiceListDataOne
     .filter(item => this.selectedFacilityNames.includes(item.name));
+  this.syncSelectedAddOnsToCheckoutState(selectedAddOns);
 
   if (this.activeForGoogleHotelCenter && !this.specialDiscountData ) {
   let bookingSummary = JSON.parse(sessionStorage.getItem('bookingSummaryDetails') || '{}');
@@ -5645,8 +5646,8 @@ this.token.savePropertyUrl(currentUrl);
     };
     sessionStorage.setItem('bookingSummaryDetails', JSON.stringify(bookingData));
     
-    // Phase 4: Store add-on services in sessionStorage for Booking component
-    sessionStorage.setItem('addOnServices', JSON.stringify(this.addOnServices));
+    // Phase 4: Store selected add-ons for Booking component and LMS enquiry snapshot
+    sessionStorage.setItem('addOnServices', JSON.stringify(selectedAddOns));
   } else if(this.specialDiscountData && !this.activeForGoogleHotelCenter){
     if (this.specialDiscountData) {
   this.selectedPlansSummary = this.selectedPlansSummary.map(plan => {
@@ -8130,6 +8131,7 @@ onYesClick() {
       this.selectedAddOns.push(service);
       this.selectedAddOnNames.push(service.name);
     }
+    this.syncSelectedAddOnsToCheckoutState(this.selectedAddOns);
     this.cd.detectChanges();
   }
 
@@ -8163,6 +8165,26 @@ onYesClick() {
   clearAddOnSelections() {
     this.selectedAddOns = [];
     this.selectedAddOnNames = [];
+    this.syncSelectedAddOnsToCheckoutState([]);
     this.cd.detectChanges();
+  }
+
+  private syncSelectedAddOnsToCheckoutState(selectedAddOns: any[]) {
+    const normalizedAddOns = (selectedAddOns || []).map((service) => ({
+      ...service,
+      quantity: service?.quantity ?? service?.count ?? 1,
+      count: service?.count ?? service?.quantity ?? 1,
+      afterTaxAmount:
+        service?.afterTaxAmount ?? service?.netAmount ?? service?.servicePrice ?? 0,
+      netAmount:
+        service?.netAmount ?? service?.afterTaxAmount ?? service?.servicePrice ?? 0,
+      servicePrice:
+        service?.servicePrice ?? service?.afterTaxAmount ?? service?.netAmount ?? 0,
+      sourceChannel: service?.sourceChannel ?? 'WebSite',
+    }));
+
+    this.token.saveSelectedServices(normalizedAddOns);
+    this.token.saveServiceData(normalizedAddOns);
+    sessionStorage.setItem('addOnServices', JSON.stringify(normalizedAddOns));
   }
 }

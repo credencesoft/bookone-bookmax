@@ -12455,16 +12455,28 @@ sendWhatsappMessageToPropertyOwner() {
       const addOnsData = sessionStorage.getItem('addOnServices');
       if (addOnsData) {
         this.addOnServices = JSON.parse(addOnsData);
+        const persistedSelectedAddOns = this.token.getSelectedServices();
+        this.selectedAddOns = Array.isArray(persistedSelectedAddOns)
+          ? persistedSelectedAddOns
+          : [];
+        this.selectedAddOnNames = this.selectedAddOns
+          .map((service) => service?.name)
+          .filter((name) => !!name);
+        this.calculateAddOnsTotals();
         console.log('[DEBUG] Add-ons initialized from sessionStorage:', this.addOnServices);
         this.showAddOnServices = this.addOnServices.length > 0;
       } else {
         console.log('[DEBUG] No add-ons found in sessionStorage');
         this.addOnServices = [];
+        this.selectedAddOns = [];
+        this.selectedAddOnNames = [];
         this.showAddOnServices = false;
       }
     } catch (error) {
       console.error('[ERROR] Failed to parse add-ons from sessionStorage:', error);
       this.addOnServices = [];
+      this.selectedAddOns = [];
+      this.selectedAddOnNames = [];
       this.showAddOnServices = false;
     }
   }
@@ -12496,6 +12508,7 @@ sendWhatsappMessageToPropertyOwner() {
     }
     // Recalculate totals on selection change
     this.calculateAddOnsTotals();
+    this.syncSelectedAddOnsToCheckoutState();
   }
 
   /**
@@ -12594,6 +12607,24 @@ sendWhatsappMessageToPropertyOwner() {
     this.selectedAddOns = [];
     this.selectedAddOnNames = [];
     this.calculateAddOnsTotals();
+    this.syncSelectedAddOnsToCheckoutState();
+  }
+
+  private syncSelectedAddOnsToCheckoutState(): void {
+    const normalizedAddOns = (this.selectedAddOns || []).map((service) => ({
+      ...service,
+      quantity: service?.quantity ?? service?.count ?? 1,
+      count: service?.count ?? service?.quantity ?? 1,
+      afterTaxAmount:
+        service?.afterTaxAmount ??
+        ((Number(service?.servicePrice) || 0) + (Number(service?.taxAmount) || 0)),
+      netAmount: service?.netAmount ?? service?.servicePrice ?? 0,
+      servicePrice: service?.servicePrice ?? service?.beforeTaxAmount ?? 0,
+      sourceChannel: service?.sourceChannel ?? this.booking?.externalSite ?? 'BookMax',
+    }));
+
+    this.token.saveSelectedServices(normalizedAddOns);
+    sessionStorage.setItem('addOnServices', JSON.stringify(normalizedAddOns));
   }
 
   /**

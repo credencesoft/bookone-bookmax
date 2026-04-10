@@ -406,7 +406,7 @@ fetchBookingById(bookingId: number) {
   }
 
   private enrichEnquiryWithServiceSnapshot(enquiry: EnquiryDto): EnquiryDto {
-    const selectedServices = this.token.getSelectedServices() || this.token.getServiceData() || [];
+    const selectedServices = this.getPersistedSelectedServices();
     if (!selectedServices || selectedServices.length === 0) {
       enquiry.selectedServiceCount = 0;
       enquiry.selectedServiceTotal = 0;
@@ -427,12 +427,41 @@ fetchBookingById(bookingId: number) {
     enquiry.serviceQuoteSummary = JSON.stringify(
       selectedServices.map((service) => ({
         id: service?.id ?? null,
+        organisationId: service?.organisationId ?? null,
+        productId: service?.productId ?? null,
+        productVariationId: service?.productVariationId ?? null,
         name: service?.name ?? null,
+        description: service?.description ?? null,
         serviceType: service?.serviceType ?? null,
         quantity: service?.quantity ?? service?.count ?? 1,
+        count: service?.count ?? service?.quantity ?? 1,
+        quantityApplied: service?.quantityApplied ?? service?.quantity ?? service?.count ?? 1,
+        capacityPerUnitApplied: service?.capacityPerUnitApplied ?? null,
+        chargeBasis: service?.chargeBasis ?? null,
+        bookingStage: service?.bookingStage ?? null,
+        servicePrice: service?.servicePrice ?? null,
+        unitPrice: service?.unitPrice ?? service?.servicePrice ?? null,
+        grossAmount: service?.grossAmount ?? null,
+        beforeTaxAmount: service?.beforeTaxAmount ?? null,
+        taxBaseAmount: service?.taxBaseAmount ?? null,
+        taxAmount: service?.taxAmount ?? null,
+        taxPercentage: service?.taxPercentage ?? null,
+        discountAmount: service?.discountAmountApplied ?? service?.discountValueApplied ?? null,
+        discountType: service?.discountTypeApplied ?? null,
+        discountValue: service?.discountValueApplied ?? null,
+        discountCode: service?.discountCodeApplied ?? null,
+        netAmount: service?.netAmount ?? null,
         amount:
           service?.afterTaxAmount ?? service?.netAmount ?? service?.servicePrice ?? 0,
+        afterTaxAmount: service?.afterTaxAmount ?? null,
         paymentCollectionMode: service?.paymentCollectionMode ?? null,
+        paymentStatus: service?.paymentStatus ?? null,
+        paymentReference: service?.paymentReference ?? null,
+        paidAmount: service?.paidAmount ?? null,
+        balanceAmount: service?.balanceAmount ?? null,
+        date: service?.date ?? null,
+        imageUrl: service?.imageUrl ?? null,
+        logoUrl: service?.logoUrl ?? null,
         sourceChannel: service?.sourceChannel ?? enquiry.externalSite ?? null,
       }))
     );
@@ -445,6 +474,39 @@ fetchBookingById(bookingId: number) {
     );
 
     return enquiry;
+  }
+
+  private getPersistedSelectedServices(): PropertyServiceDTO[] {
+    const selectedServices = this.token.getSelectedServices();
+    if (Array.isArray(selectedServices) && selectedServices.length > 0) {
+      return selectedServices;
+    }
+
+    const sessionAddOns = this.getSessionAddOnServices();
+    if (sessionAddOns.length > 0) {
+      return sessionAddOns;
+    }
+
+    const serviceData = this.token.getServiceData();
+    if (Array.isArray(serviceData) && serviceData.length > 0) {
+      return serviceData;
+    }
+
+    return [];
+  }
+
+  private getSessionAddOnServices(): PropertyServiceDTO[] {
+    try {
+      const storedAddOns = sessionStorage.getItem('addOnServices');
+      if (!storedAddOns) {
+        return [];
+      }
+
+      const parsedAddOns = JSON.parse(storedAddOns);
+      return Array.isArray(parsedAddOns) ? parsedAddOns : [];
+    } catch (error) {
+      return [];
+    }
   }
 
   emailEnquire(enquiry: EnquiryDto) {

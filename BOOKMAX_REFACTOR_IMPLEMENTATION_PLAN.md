@@ -1,6 +1,6 @@
 # Bookmax Refactor-First Implementation Plan
 
-Last updated: 2026-04-09
+Last updated: 2026-04-10
 
 ## Current Status
 
@@ -16,9 +16,13 @@ This file started as a forward-looking refactor plan. It now serves two purposes
 - PayU now follows the same THM captured-payment delegation pattern for THM-source success callbacks.
 - THM finalization is idempotent and reuses existing LMS-linked bookings on callback replay.
 - LMS enquiry snapshot fields are used to reconstruct selected services and quoted totals during backend finalization.
+- LMS now persists richer `serviceQuoteSummary` data for backend recovery of selected add-ons and quoted service pricing.
 - `paymentGateway` and `paymentMode` are now separated across THM, Razorpay, PayU, and Bookmax.
 - Bookmax hardened checkout flows now suppress browser-side booking creation and add-on creation for `Razorpay` and `PayU`.
 - `booking-confirm.component.ts` now polls LMS for backend-created booking linkage instead of creating bookings in the browser for backend-finalized gateways.
+- Bookmax voucher confirmation now falls back to backend booking service lines when enquiry-side add-on state is unavailable.
+- THM downstream voucher and booking-email read models now include coupon, promotion, advance, due, and richer service details.
+- THM voucher generation aggregates services across grouped bookings instead of only reading the primary booking's services.
 - Razorpay webhook signature validation is implemented.
 
 ### Still pending or intentionally deferred

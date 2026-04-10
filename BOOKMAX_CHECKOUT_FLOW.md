@@ -1,6 +1,6 @@
 # Bookmax Checkout Flow
 
-Last updated: 2026-04-09
+Last updated: 2026-04-10
 
 ## Purpose
 
@@ -11,6 +11,8 @@ This document captures the Bookmax checkout and booking orchestration flow acros
 - which service updates LMS after payment
 - which downstream services are called after booking creation
 - which repositories are required to understand and maintain the flow
+
+For field-level ownership and cross-project naming alignment, use `BOOKONE_CROSS_PROJECT_FIELD_MAPPING.md` alongside this flow document.
 
 ## Related Repositories
 
@@ -34,6 +36,9 @@ The current refactor direction is now established and partially enforced in code
 - Razorpay and PayU terminate their own raw gateway callbacks and normalize successful captured-payment facts into THM.
 - Bookmax no longer creates bookings or add-on services in the browser for backend-finalized gateways (`Razorpay`, `PayU`) in the hardened checkout paths.
 - THM finalization is idempotent and reuses an existing LMS-linked booking when callbacks are replayed.
+- LMS persists richer `serviceQuoteSummary` snapshot data so backend finalization can rebuild selected add-ons without relying on browser token storage.
+- Bookmax voucher confirmation can now fall back to backend `booking.services` when enquiry add-on session data is absent.
+- THM downstream guest-facing outputs now use enriched email/voucher models for coupon, promotion, advance, due, and service details.
 - `paymentGateway` and `paymentMode` are intentionally separate:
     - `paymentGateway` = `Razorpay`, `PayU`
     - `paymentMode` = `UPI`, `Card`, `NetBanking`, etc.
@@ -77,6 +82,7 @@ Primary responsibility:
 
 - store and return `AccommodationEnquiry`
 - store selected-service and quoted pricing snapshot fields used for backend finalization
+- persist `serviceQuoteSummary`, `couponCode`, `promotionName`, and booking-linkage fields required for backend recovery and post-payment UI hydration
 - persist `bookingId` and `bookingReservationId` after THM booking creation
 
 Important endpoint:
@@ -94,6 +100,7 @@ Primary responsibility:
 - orchestrate captured-payment booking conversion for the webhook booking flow
 - reconstruct selected add-ons and quoted totals from LMS enquiry snapshot
 - update LMS booking linkage idempotently
+- enrich guest-facing downstream read models used by booking email and voucher generation
 
 Important endpoint:
 
@@ -106,6 +113,7 @@ Important note:
 - `java-the-hotel-mate` is the actual booking creator
 - the captured-payment conversion path now lives in THM instead of in gateway adapters
 - THM short-circuits duplicate callback replays when LMS enquiry already has `bookingId`
+- THM now carries richer coupon, promotion, advance, due, and service detail fields into `BookingEmailDto` and voucher templates
 
 ### Payment Orchestrator
 
@@ -172,6 +180,7 @@ Important implementation detail:
 - `Booking.component.ts` and `booking-confirm.component.ts` now guard `createAllBookings()` and `addServiceToBooking()` for `Razorpay` and `PayU`
 - those components continue by polling LMS for booking readiness instead of creating bookings in the browser
 - stale `bookingsResponseList` session data is cleared before backend booking polling starts
+- the booking confirmation voucher flow can derive displayed add-on services from backend booking data when enquiry/session add-ons are missing
 
 ### 2. Razorpay captured-payment callback flow
 
@@ -201,6 +210,7 @@ Important implementation detail:
 - currency is derived from property `localCurrency` rather than a hard-coded `INR` fallback
 - gateway identity is now carried separately from payment method: THM prefers `paymentGateway` for stored/displayed payment label, while `paymentMode` can carry the actual instrument such as `upi`
 - Razorpay now forwards `paymentGateway=Razorpay`, `paymentMode=<razorpay method>`, `externalSite`, and `sourceChannel` to THM
+- THM later reuses the reconstructed booking/service state for voucher PDF generation and booking email payload generation
 
 ### 3. PayU captured-payment callback flow
 
