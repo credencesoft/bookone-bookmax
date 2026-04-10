@@ -73,6 +73,7 @@ The table below reflects the latest implemented changes across UI, LMS, and THM 
 - Bookmax voucher confirmation now falls back to backend booking services when enquiry-side selected add-on data is unavailable.
 - LMS is now the durable store for selected service snapshot data through `serviceQuoteSummary`.
 - THM reconstructs booking services from LMS snapshot data during captured-payment finalization.
+- THM now preserves service `date` from the LMS snapshot instead of silently replacing it during reconstruction.
 - THM email and voucher models now include coupon, promotion, advance, due, and richer service line details.
 - THM voucher rendering aggregates services across grouped bookings and shows them in a dedicated additional-services section.
 
@@ -90,6 +91,7 @@ Use this section during implementation review. It shows where a field is written
 | `advanceAmount` | Bookmax confirmation UI reads and forwards `booking.advanceAmount` in booking/pricing/enquiry state | may be mirrored in enquiry data for display or recovery | THM owns booking-level amount and maps it into `BookingDto` and `BookingEmailDto`; `buildBookingEmailDto(...)` aggregates it across grouped bookings | `EmailServiceImpl.preparePersonalization(...)`, `PdfServiceImpl.generateBookingVoucher(...)`, `voucher.html`, and `package-voucher.html` render it as guest-facing advance payable/paid value | Use zero-safe guest display |
 | `dueAmount` | UI should read from backend booking/email response rather than rederive locally when possible | not primary LMS pricing field | THM computes outstanding amount and places it into `BookingEmailDto.dueAmount`; grouped totals are assembled in email/voucher flows | `EmailServiceImpl.preparePersonalization(...)`, `PdfServiceImpl.generateBookingVoucher(...)`, and voucher templates render balance due conditionally | THM remains authoritative |
 | `services` | `bookone-bookmax/src/app/views/landing/booking-confirmation-voucher/booking-confirmation-voucher.component.ts` now falls back to backend booking services through `resolveSelectedAddOns(...)` and `getSelectedAddOnsFromBookings()` | LMS stores pre-booking snapshot only, not final service truth | THM persists final service rows; `buildBookingEmailDto(...)` maps them into `BookingEmailDto.ServiceDetails`; `PdfServiceImpl.generateBookingVoucher(...)` aggregates them across grouped bookings | `EmailServiceImpl.preparePersonalization(...)`, `voucher.html`, and `package-voucher.html` render additional service details | Backend `booking.services` is the guest-facing fallback when enquiry/session state is missing |
+| `date` | UI can include service execution date inside the selected service snapshot | embedded inside `serviceQuoteSummary` snapshot JSON | THM now restores the service date during captured-payment reconstruction instead of defaulting immediately to current time | available to downstream service persistence and future dated-service rendering | No LMS schema change was needed because the field was already present in the snapshot payload |
 | `quantityApplied` | UI may originate requested quantity before payment | embedded inside `serviceQuoteSummary` snapshot JSON when enquiry is saved | THM maps final service quantity into `BookingEmailDto.ServiceDetails.quantityApplied` | `voucher.html` and `package-voucher.html` render quantity in the additional-services table | Prefer backend-finalized quantity over browser cache |
 | `paymentMode` | Bookmax writes `payment.paymentMode` and reads mode in confirmation views | optional enquiry metadata only | THM normalizes and stores payment instrument on booking/payment models and `BookingEmailDto.paymentMode` | `EmailServiceImpl.preparePersonalization(...)` and voucher/email outputs render payment mode | Must not be used as gateway identity |
 | `paymentGateway` | Bookmax sets gateway context during checkout initiation | optional enquiry metadata or status context | THM owns normalized gateway meaning after adapter callback | may be rendered or logged downstream where needed | Keep separate from `paymentMode` in all mappings |
@@ -192,6 +194,144 @@ Use these rules when deciding where a field should be defined and reviewed.
 - `channel-integration` only owns downstream transport mapping, not booking business semantics.
 - `api-java-notify-service` owns delivery-channel rendering fields, not booking truth.
 - `booking-java-api` should be treated as alternate or legacy unless a specific active flow still depends on it.
+
+## Approved Downstream Boundary
+
+The current architectural decision is:
+
+- do not implement hotel add-on or service ingestion inside `channel-integration`
+- keep `channel-integration` limited to room-booking-compatible downstream reservation fields
+- downstream reservation mapping may include room-booking offer fields such as `couponCode` and booking-level discount values only where the target PMS/channel payload supports them
+- service ingestion should instead use the existing or aligned service model in `bookone-core` after booking confirmation through dedicated API calls
+
+This is intentional because `channel-integration` is shared by multiple OTA adapters and should not absorb hotel-service-specific booking semantics.
+
+## Post-Confirmation Service Sync Direction
+
+For PMS-connected properties, the preferred service-ingestion model is:
+
+1. THM finalizes payment-backed booking creation
+2. THM confirms booking success and booking linkage
+3. THM maps booked services into the `bookone-core`-aligned service model
+4. THM calls the dedicated downstream service APIs after booking confirmation
+
+Do not treat pre-booking LMS service snapshots as the downstream PMS contract. They are recovery input for THM, not the final external service payload.
+
+### Proposed Service Sync Contract
+
+`bookone-core` is not present in this workspace, so this section defines the intended contract boundary rather than a repo-specific DTO.
+
+The service sync payload should be sent only after THM confirms booking success.
+
+Recommended header-level fields:
+
+- `bookingId`
+- `bookingReservationId`
+- `propertyId`
+- `organisationId`
+- `customerId` when available
+- `sourceChannel`
+- `paymentGateway`
+- `paymentMode`
+- `syncTriggeredAt`
+- `syncReason` with value such as `BOOKING_CONFIRMED`
+
+Recommended booking-level pricing fields:
+
+- `couponCode`
+- `promotionName`
+- `discountPercentage`
+- `discountAmount`
+- `advanceAmount`
+- `dueAmount`
+- `currency`
+
+Recommended service-line fields:
+
+- `productId`
+- `productVariationId`
+- `name`
+- `description`
+- `serviceType`
+- `date`
+- `quantityApplied`
+- `capacityPerUnitApplied`
+- `chargeBasis`
+- `bookingStage`
+- `unitPrice`
+- `grossAmount`
+- `discountAmount`
+- `taxBaseAmount`
+- `taxAmount`
+- `taxPercentage`
+- `netAmount`
+- `afterTaxAmount`
+- `paymentCollectionMode`
+- `paymentStatus`
+- `paymentReference`
+- `paidAmount`
+- `balanceAmount`
+- `sourceChannel`
+
+Recommended contract rules:
+
+- THM sends only confirmed booked services, never quoted-only enquiry services.
+- THM should include an idempotency key built from booking identity plus service identity plus service date.
+- THM should support retryable API delivery without duplicating service creation downstream.
+- service sync failure must not roll back the confirmed room booking; it should move to retry or manual intervention state.
+- service sync should be enabled only for PMS-connected properties that opt into the downstream integration.
+
+## Planned Auto-Refund Orchestration
+
+Planned direction for PMS-connected properties:
+
+- build the timeout and refund orchestration in the THM post-payment orchestrator
+- if payment is captured but booking is not confirmed within the configured orchestration window, treat the flow as stranded
+- if the flow falls back to enquiry state or encounters a technical failure and does not complete within 2 minutes, THM should evaluate auto-refund eligibility
+- auto-refund should only trigger when the property configuration explicitly opts into auto refund
+
+This refund decision belongs in THM orchestration, not in UI polling logic and not in `channel-integration`.
+
+### Proposed Auto-Refund Decision Rules
+
+Recommended eligibility checks:
+
+1. payment is confirmed as captured or paid
+2. property is PMS-connected
+3. property has explicit `autoRefundEnabled` style configuration turned on
+4. THM has not confirmed booking creation within the orchestration timeout window
+5. no successful downstream recovery has completed during the timeout window
+6. refund has not already been initiated for the same payment
+
+Recommended timeout handling:
+
+- start the post-payment orchestration timer when THM receives normalized captured-payment input
+- mark the orchestration state as `PENDING_CONFIRMATION`
+- if booking confirmation succeeds within 2 minutes, close the orchestration as `CONFIRMED`
+- if booking creation fails technically or remains stranded past 2 minutes, move to `REFUND_EVALUATION`
+
+Recommended outcome states:
+
+- `CONFIRMED`
+- `FAILED_RETRYABLE`
+- `FAILED_MANUAL_REVIEW`
+- `REFUND_PENDING`
+- `REFUND_INITIATED`
+- `REFUND_CONFIRMED`
+- `REFUND_FAILED`
+
+Recommended guardrails:
+
+- do not auto-refund when booking confirmation is still in progress and retryable work is ongoing within the timeout window
+- do not auto-refund when payment state is ambiguous or unverified
+- do not auto-refund partial-capture or split-payment cases until explicitly supported
+- persist orchestration status so duplicate callbacks do not trigger duplicate refunds
+- notify operations when refund initiation fails or lands in manual review
+
+Current implementation note:
+
+- THM already has refund-related booking and payment fields, and customer refund email capability exists.
+- active refund execution wiring for this booking flow is not yet implemented in the current workspace.
 
 ## Priority Business Fields To Track
 

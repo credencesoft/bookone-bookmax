@@ -39,6 +39,8 @@ The current refactor direction is now established and partially enforced in code
 - LMS persists richer `serviceQuoteSummary` snapshot data so backend finalization can rebuild selected add-ons without relying on browser token storage.
 - Bookmax voucher confirmation can now fall back to backend `booking.services` when enquiry add-on session data is absent.
 - THM downstream guest-facing outputs now use enriched email/voucher models for coupon, promotion, advance, due, and service details.
+- `channel-integration` remains limited to room-booking-compatible downstream reservation transport and should not ingest hotel add-on service lines.
+- booked service ingestion for PMS-connected properties should happen through a separate post-confirmation API path aligned to the existing `bookone-core` service model.
 - `paymentGateway` and `paymentMode` are intentionally separate:
     - `paymentGateway` = `Razorpay`, `PayU`
     - `paymentMode` = `UPI`, `Card`, `NetBanking`, etc.
@@ -101,6 +103,7 @@ Primary responsibility:
 - reconstruct selected add-ons and quoted totals from LMS enquiry snapshot
 - update LMS booking linkage idempotently
 - enrich guest-facing downstream read models used by booking email and voucher generation
+- own post-payment timeout handling and any future property-configured auto-refund orchestration for PMS-connected properties
 
 Important endpoint:
 
@@ -114,6 +117,22 @@ Important note:
 - the captured-payment conversion path now lives in THM instead of in gateway adapters
 - THM short-circuits duplicate callback replays when LMS enquiry already has `bookingId`
 - THM now carries richer coupon, promotion, advance, due, and service detail fields into `BookingEmailDto` and voucher templates
+- future stranded-payment recovery and property-configured auto refund should also live in THM orchestration
+
+### Downstream Reservation Push
+
+Repository: `channel-integration`
+
+Primary responsibility:
+
+- receive normalized external reservation payloads for room-booking-compatible PMS/channel transport
+- remain isolated from hotel add-on service ingestion semantics used by other systems
+
+Important note:
+
+- do not extend `channel-integration` to ingest hotel service lines for this booking flow
+- room-booking fields such as booking identity, stay dates, guest counts, and supported booking-level offer fields can still be mapped where the downstream contract supports them
+- hotel service ingestion should be a separate post-confirmation API flow, not part of the shared external reservation push
 
 ### Payment Orchestrator
 
@@ -200,6 +219,7 @@ High-level steps:
 9. THM updates LMS enquiry
 10. THM updates WhatsApp enquiry tracking
 11. THM pushes external reservation downstream
+12. for PMS-connected properties, THM can later trigger separate post-confirmation service sync without overloading the shared external reservation payload
 
 Important implementation detail:
 
@@ -211,6 +231,7 @@ Important implementation detail:
 - gateway identity is now carried separately from payment method: THM prefers `paymentGateway` for stored/displayed payment label, while `paymentMode` can carry the actual instrument such as `upi`
 - Razorpay now forwards `paymentGateway=Razorpay`, `paymentMode=<razorpay method>`, `externalSite`, and `sourceChannel` to THM
 - THM later reuses the reconstructed booking/service state for voucher PDF generation and booking email payload generation
+- service reconstruction here is for THM-owned booking persistence and downstream guest communication, not for direct `channel-integration` service ingestion
 
 ### 3. PayU captured-payment callback flow
 

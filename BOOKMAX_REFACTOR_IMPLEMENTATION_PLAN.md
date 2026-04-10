@@ -25,6 +25,20 @@ This file started as a forward-looking refactor plan. It now serves two purposes
 - THM voucher generation aggregates services across grouped bookings instead of only reading the primary booking's services.
 - Razorpay webhook signature validation is implemented.
 
+### Approved architecture constraints
+
+- `channel-integration` should remain a room-booking-compatible external reservation transport and should not ingest hotel service lines for this flow.
+- booking-level offer fields such as `couponCode` and booking-level discount values may be mapped downstream only where the shared reservation contract supports them.
+- hotel service ingestion for PMS-connected properties should use a separate post-confirmation API flow aligned to the existing `bookone-core` service model.
+- stranded post-payment flows and property-configured auto refunds should be owned by THM orchestration, not by UI polling and not by `channel-integration`.
+
+### Pending design definition
+
+- define the THM-to-`bookone-core` post-confirmation service sync contract before implementation
+- define the orchestration state model for `PENDING_CONFIRMATION`, refund evaluation, retry, and manual review
+- define the property-level configuration flag and rollout rules for auto refund on PMS-connected properties
+- define idempotency rules for both service sync and refund initiation
+
 ### Still pending or intentionally deferred
 
 - delete obsolete legacy frontend callback and direct-booking paths after compatibility review
@@ -84,7 +98,8 @@ This avoided baking new features into the previous incorrect ownership model whe
   - store enquiry state and booking linkage
   - stay as enquiry persistence service
 - `channel-integration`
-  - receive normalized external reservation payload only
+  - receive normalized room-booking-compatible external reservation payload only
+  - do not absorb hotel add-on service semantics
 - `api-java-notify-service`
   - keep WhatsApp-specific tracking and notifications only
 
@@ -233,12 +248,40 @@ The booking service should become the pricing authority.
 
 - schema drift across LMS, THM, and frontend DTOs
 - existing flows depend on current loose DTO shape
+- shared downstream reservation adapters may be destabilized if hotel service semantics are forced into `channel-integration`
 
 ### Mitigation
 
 - add new fields in backward-compatible form first
 - keep existing fields for transition period
 - version behavior internally if needed without changing public endpoint shape immediately
+- keep hotel service synchronization separate from the shared external reservation payload path
+- introduce orchestration state persistence before enabling any automated refund path
+
+## Proposed THM Post-Payment Orchestrator Extension
+
+This section captures the intended next architecture slice.
+
+### Responsibilities
+
+- receive normalized captured-payment input from gateway adapters
+- finalize room booking in THM
+- update LMS booking linkage
+- push room-booking-compatible downstream reservation payload to `channel-integration`
+- trigger separate post-confirmation service sync for PMS-connected properties where enabled
+- monitor orchestration completion within a 2-minute window
+- evaluate and initiate auto refund where property settings allow it and booking confirmation does not complete
+
+### Non-goals
+
+- do not move hotel service ingestion into `channel-integration`
+- do not make UI polling responsible for refund decisions
+- do not auto-refund ambiguous payment states without verified capture information
+
+### Implementation note
+
+- `bookone-core` is not present in this workspace, so the actual service-sync DTO and API endpoint need to be finalized against that codebase before implementation starts.
+- THM contains refund-related data fields and refund notification capability, but the active refund execution path for this booking flow still needs to be designed and wired.
 
 ## Phase 3 - Move Orchestration to java-the-hotel-mate
 
