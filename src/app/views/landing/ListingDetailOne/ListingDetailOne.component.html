@@ -379,16 +379,16 @@
               <div class="room-details">
                 <div class="d-flex justify-content-between" style="gap: 2px">
                   <div>
-                    <div class="room-title">{{ plan.roomName }}</div>
+                    <div class="room-title">{{ plan.selectedRoomnumber }} x {{ plan.roomName }} •
+                      {{ plan.nights }} {{ plan.nights === 1 ? 'Night' : 'Nights' }}</div>
 
                     <small class="text-muted">
-                      {{ plan.planCodeName }} · {{ plan.adults }} Adults,
-                      {{ plan.children }} Children </small
+                      {{ plan.planCodeName }} <br/> <span class="description-text">{{ plan.planDescription}}</span>
+                    </small
                     ><br />
-                    <small class="text-muted"
-                      >{{ plan.nights }} Nights .
-                      {{ plan.selectedRoomnumber }} room(s)</small
-                    ><br />
+                    <small class="text-muted">{{ plan.adults }} Adults,
+                      {{ plan.children }} Children</small>
+                    <br/>
                     <small
                       *ngIf="
                         plan.SingleDayextraPersonAdultCountAmount &&
@@ -3960,16 +3960,37 @@
               <div class="room-details">
                 <div class="d-flex justify-content-between" style="gap: 2px">
                   <div>
-                    <div class="room-title">{{ plan.roomName }}</div>
-
+                    <div class="room-title">{{ plan.selectedRoomnumber }} x {{ plan.roomName }} •
+                      {{ plan.nights }} {{ plan.nights === 1 ? 'Night' : 'Nights' }}</div>
+                  
                     <small class="text-muted">
-                      {{ plan.planCodeName }} · {{ plan.adults }} Adults,
-                      {{ plan.children }} Children </small
-                    ><br />
-                    <small class="text-muted"
-                      >{{ plan.nights }} Nights .
-                      {{ plan.selectedRoomnumber }} room(s)</small
-                    >
+                      {{ plan.planCodeName }}
+                    </small>
+                    <br/>
+                    <div class="description-wrapper">
+                      <span
+                        class="description-text"
+                        [class.expanded]="expandedPlans[plan.planCode]"
+                      >
+                        {{ plan.planDescription }}
+                      </span>
+
+                      <span
+                        *ngIf="!expandedPlans[plan.planCode]"
+                        class="fade-overlay"
+                      ></span>
+
+                      <span
+                        *ngIf="plan.planDescription?.length > 80"
+                        class="see-more"
+                        (click)="expandedPlans[plan.planCode] = !expandedPlans[plan.planCode]"
+                      >
+                        {{ expandedPlans[plan.planCode] ? 'See less' : 'See more' }}
+                      </span>
+                    </div>
+
+                    <small class="text-muted">{{ plan.adults }} Adults,
+                      {{ plan.children }} Children</small>
                     <br />
                     <small
                       *ngIf="
