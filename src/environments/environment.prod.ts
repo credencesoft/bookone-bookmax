@@ -32,7 +32,7 @@ export const environment = {
   country: 'in',
   googleKey: '',
   // callbackUrl: 'http://localhost:4200/#/details?ReferenceNumber='
-    payuUrl: 'https://payu.payment.uat.bookone.io',
+    payuUrl: 'https://payu.bookonepms.com',
   callbackUrl: 'https://bookone.io/payment-confirmation',
   failureCode:'https://bookone.io/payment-failure',
   callbackUrlPayment:'https://bookone.io/confirm-payment',

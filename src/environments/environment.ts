@@ -30,7 +30,7 @@ export const environment = {
   appUrl: 'https://thehotelmate.co',
   androidAppUrl: 'https://play.google.com/store/apps/details?id=nz.co.bookonelocal.customer',
   iosAppUrl: 'https://apps.apple.com/us/app/bookone-local/id1528910778',
-  payuUrl: 'https://payu.payment.uat.bookone.io',
+  payuUrl: 'https://payu.bookonepms.com',
   country: 'in',
   googleKey: '',
   // callbackUrl: 'http://localhost:4200/#/details?ReferenceNumber='

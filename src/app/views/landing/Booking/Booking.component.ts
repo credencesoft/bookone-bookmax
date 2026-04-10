@@ -6913,7 +6913,7 @@ export class BookingComponent implements OnInit {
       .set('callbackUrl', environment.callbackUrl)
       .set('failureCode', environment.failureCode);
 
-    const url = `https://payu.payment.uat.bookone.io/api/payu/paymentIntent/THM?${params.toString()}`;
+    const url = `${environment.payuUrl}/api/payu/paymentIntent/THM?${params.toString()}`;
 
     const paymentWindow = window.open(url, '_blank');
 
