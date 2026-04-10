@@ -304,9 +304,31 @@
                       {{ plan.nights }} {{ plan.nights === 1 ? 'Night' : 'Nights' }}</div>
 
                     <small class="text-muted">
-                      {{ plan.planCodeName }} <br/> <span class="description-text">{{ plan.planDescription}}</span>
-                    </small
-                    ><br />
+                      {{ plan.planCodeName }}
+                    </small>
+
+                    <div class="description-wrapper">
+                      <span
+                        class="description-text"
+                        [class.expanded]="expandedPlans[plan.planCode]"
+                      >
+                        {{ plan.planDescription }}
+                      </span>
+
+                      <span
+                        *ngIf="!expandedPlans[plan.planCode]"
+                        class="fade-overlay"
+                      ></span>
+
+                      <span
+                        *ngIf="plan.planDescription?.length > 80"
+                        class="see-more"
+                        (click)="expandedPlans[plan.planCode] = !expandedPlans[plan.planCode]"
+                      >
+                        {{ expandedPlans[plan.planCode] ? 'See less' : 'See more' }}
+                      </span>
+                    </div>
+
                     <small class="text-muted">{{ plan.adults }} Adults,
                       {{ plan.children }} Children</small>
                     <br/>
