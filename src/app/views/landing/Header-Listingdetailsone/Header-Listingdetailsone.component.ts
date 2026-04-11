@@ -112,8 +112,7 @@ checkBookingEngineFlag(): void {
   getFormattedNumber(): string {
     const rawNumber = this.websiteUrlBookingEngine
       ? this.businessUser?.mobile
-      : '7326079861';
-
+      : (this.businessUser?.id === 2614 ? '7205469540' : (this.businessUser?.id === 3526 ? '8972391727' : (this.businessUser?.id === 3530 ? '9202322643 ' :(this.businessUser?.id === 3531 ? '9728128788' : '7326079861'))));
     if (!rawNumber) return '';
 
     // Remove non-digits
@@ -174,7 +173,7 @@ formatUrl(url: string): string {
     : 'https://' + url;
 }
       getWhatsappShareUrlOne(): string {
-        if (this.businessUser.id !== 3469 && this.businessUser.id !== 701 && this.businessUser.id !== 1909 && this.businessUser.id !== 3468) {
+        if (this.businessUser.id !== 3469 && this.businessUser.id !== 701 && this.businessUser.id !== 1909 && this.businessUser.id !== 3468 && this.businessUser?.id !== 2614 && this.businessUser?.id !== 3526 && this.businessUser?.id !== 3530 && this.businessUser?.id !== 3531 ) {
               const baseUrl = 'https://api.whatsapp.com/send';
     const phoneNumber = '919004126958';
     this.dynamicText = this.businessUser.name;
