@@ -2893,14 +2893,53 @@ text-align: center;
   }
 }
 
-.plan-text {
-  font-size: 0.8rem;
+.show-all-amen {
+  border: 2px solid var(--secondary, #0b01cc);
+  color: var(--secondary, #0b01cc);
+  border-radius: 8px;
+  padding: 10px 24px;
+  font-weight: 600;
+  transition: all 0.7s ease;
 }
 
-.link-btn {
-  color: blue;
-  cursor: pointer;
-  margin-left: 4px;
-  display: inline;
-  pointer-events: auto;
+.show-all-amen:hover {
+  border: 2px solid var(--secondary, #0b01cc);
+  background: var(--secondary, #3b82f6);
+  color: var(--tertiary, #fff);
 }
+
+
+.aboutHeading {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 12px;
+   margin-bottom: 12px;
+}
+
+.highlights-card {
+  background: #fdfbfb;
+  border-radius: 12px;
+}
+
+.highlight-item {
+  flex: 0 0 45%;
+}
+
+.highlight-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.highlight-icon {
+  font-size: 16px; 
+  object-fit: contain;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.highlight-text {
+  font-family: "Poppins";
+  text-align: justify;
+}
+

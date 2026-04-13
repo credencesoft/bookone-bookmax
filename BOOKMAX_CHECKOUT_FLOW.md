@@ -1,5 +1,7 @@
 # Bookmax Checkout Flow
 
+Last updated: 2026-04-10
+
 ## Purpose
 
 This document captures the Bookmax checkout and booking orchestration flow across the frontend and backend services in this workspace. It is intended to be the maintained reference for:
@@ -10,6 +12,8 @@ This document captures the Bookmax checkout and booking orchestration flow acros
 - which downstream services are called after booking creation
 - which repositories are required to understand and maintain the flow
 
+For field-level ownership and cross-project naming alignment, use `BOOKONE_CROSS_PROJECT_FIELD_MAPPING.md` alongside this flow document.
+
 ## Related Repositories
 
 The full checkout flow spans these repositories:
@@ -18,10 +22,34 @@ The full checkout flow spans these repositories:
 - `java-lms` - enquiry storage and enquiry status lookup
 - `java-the-hotel-mate` - booking creation and captured-payment orchestration
 - `java-razorpay` - Razorpay order creation and webhook validation/delegation
-- `java-api-payu` - PayU hosted-checkout callbacks, payment verification, and enquiry-to-booking conversion
+- `java-api-payu` - PayU hosted-checkout callbacks, payment verification, and captured-payment delegation
 - `api-java-notify-service` - WhatsApp enquiry tracking and message workflows
 - `channel-integration` - external reservation push to downstream PMS/channel manager
 - `booking-java-api` - email and separate website booking stack used by older/alternate flows
+
+## Finalized Architecture
+
+The current refactor direction is now established and partially enforced in code:
+
+- LMS is the durable enquiry and booking-linkage store.
+- THM is the booking-domain owner and the authoritative captured-payment finalizer.
+- Razorpay and PayU terminate their own raw gateway callbacks and normalize successful captured-payment facts into THM.
+- Bookmax no longer creates bookings or add-on services in the browser for backend-finalized gateways (`Razorpay`, `PayU`) in the hardened checkout paths.
+- THM finalization is idempotent and reuses an existing LMS-linked booking when callbacks are replayed.
+- LMS persists richer `serviceQuoteSummary` snapshot data so backend finalization can rebuild selected add-ons without relying on browser token storage.
+- Bookmax voucher confirmation can now fall back to backend `booking.services` when enquiry add-on session data is absent.
+- THM downstream guest-facing outputs now use enriched email/voucher models for coupon, promotion, advance, due, and service details.
+- `channel-integration` remains limited to room-booking-compatible downstream reservation transport and should not ingest hotel add-on service lines.
+- booked service ingestion for PMS-connected properties should happen through a separate post-confirmation API path aligned to the existing `bookone-core` service model.
+- `paymentGateway` and `paymentMode` are intentionally separate:
+    - `paymentGateway` = `Razorpay`, `PayU`
+    - `paymentMode` = `UPI`, `Card`, `NetBanking`, etc.
+
+What remains legacy:
+
+- older frontend routes such as `booking-complete` and `confirm-payment`
+- older generic payment component flows that still rely on callback-style redirects
+- some browser-side booking code paths for non-hardened legacy gateways
 
 ## Service Ownership
 
@@ -35,14 +63,17 @@ Primary responsibilities:
 - request payment initiation
 - send explicit payment gateway metadata from the checkout flow
 - open payment window for Razorpay
-- poll payment status in the current web flow
-- poll LMS for booking completion in the current web flow
+- poll payment status for hosted or popup flows
+- poll LMS for booking completion for backend-finalized gateways
+- avoid browser-side booking and add-on creation for `Razorpay` and `PayU` in the hardened checkout flows
 
 Important files:
 
 - `src/app/views/landing/Booking/Booking.component.ts`
+- `src/app/views/landing/booking-confirm/booking-confirm.component.ts`
 - `src/app/views/landing/checkout-razorpay/checkout-razorpay.component.ts`
-- `src/app/views/landing/booking-confirmation/booking-confirmation.component.ts`
+- `src/app/views/landing/confirm-payment/confirm-payment.component.ts`
+- `src/app/views/landing/booking-complete/booking-complete.component.ts`
 - `src/services/hotel-booking.service.ts`
 
 ### Enquiry Store
@@ -52,6 +83,9 @@ Repository: `java-lms`
 Primary responsibility:
 
 - store and return `AccommodationEnquiry`
+- store selected-service and quoted pricing snapshot fields used for backend finalization
+- persist `serviceQuoteSummary`, `couponCode`, `promotionName`, and booking-linkage fields required for backend recovery and post-payment UI hydration
+- persist `bookingId` and `bookingReservationId` after THM booking creation
 
 Important endpoint:
 
@@ -66,6 +100,10 @@ Primary responsibility:
 
 - create the actual booking record in THM
 - orchestrate captured-payment booking conversion for the webhook booking flow
+- reconstruct selected add-ons and quoted totals from LMS enquiry snapshot
+- update LMS booking linkage idempotently
+- enrich guest-facing downstream read models used by booking email and voucher generation
+- own post-payment timeout handling and any future property-configured auto-refund orchestration for PMS-connected properties
 
 Important endpoint:
 
@@ -76,7 +114,25 @@ Important endpoint:
 Important note:
 
 - `java-the-hotel-mate` is the actual booking creator
-- the new captured-payment conversion path now lives in THM instead of `java-razorpay`
+- the captured-payment conversion path now lives in THM instead of in gateway adapters
+- THM short-circuits duplicate callback replays when LMS enquiry already has `bookingId`
+- THM now carries richer coupon, promotion, advance, due, and service detail fields into `BookingEmailDto` and voucher templates
+- future stranded-payment recovery and property-configured auto refund should also live in THM orchestration
+
+### Downstream Reservation Push
+
+Repository: `channel-integration`
+
+Primary responsibility:
+
+- receive normalized external reservation payloads for room-booking-compatible PMS/channel transport
+- remain isolated from hotel add-on service ingestion semantics used by other systems
+
+Important note:
+
+- do not extend `channel-integration` to ingest hotel service lines for this booking flow
+- room-booking fields such as booking identity, stay dates, guest counts, and supported booking-level offer fields can still be mapped where the downstream contract supports them
+- hotel service ingestion should be a separate post-confirmation API flow, not part of the shared external reservation push
 
 ### Payment Orchestrator
 
@@ -89,11 +145,12 @@ Primary responsibilities:
 - branch logic based on `notes.booking_id` versus `notes.enquiryId`
 - delegate booking conversion to THM for the `notes.booking_id` path
 - preserve source metadata in Razorpay order notes and forward exact gateway identity to THM
+- validate webhook HMAC signature before captured-payment delegation
 
 Important note:
 
 - `notes.booking_id` path is now webhook validation plus THM delegation
-- `notes.enquiryId` path only updates LMS payment status in the traced code
+- `notes.enquiryId` remains a status-update path in older flow handling, but the hardened Bookmax checkout now relies on backend finalization and LMS booking polling
 
 ### PayU Payment Converter
 
@@ -103,16 +160,15 @@ Primary responsibilities:
 
 - render hosted-checkout form via `/api/payu/paymentIntent/{source}`
 - verify PayU success and failure callbacks
-- update THM payment records after PayU verification
-- convert LMS enquiry into THM booking for the legacy PayU flow
-- push external reservation after THM booking/payment save
+- normalize successful THM-source callbacks into THM captured-payment finalization
+- preserve gateway identity separately from payment mode
+- tolerate duplicate successful callbacks without resaving payment
 
 Important endpoints:
 
 - `GET /api/payu/paymentIntent/{source}`
 - `POST /api/payu/successCallBack/{source}/{propertyId}`
 - `GET /api/payu/checkPaymentStatus/{source}`
-- `POST /api/payu/convert-to-pms`
 
 Important note:
 
@@ -121,59 +177,65 @@ Important note:
 
 ## Flow Summary
 
-There are three important flows to distinguish.
+There are four important flows to distinguish.
 
-### 1. Current Bookmax web Razorpay flow
+### 1. Current Bookmax web Pay Now flow for backend-finalized gateways
 
-This is the current in-page polling flow used by the newer `Booking.component.ts` experience.
+This is the current hardened checkout behavior for `Razorpay` and `PayU` in `Booking.component.ts`.
 
 High-level steps:
 
 1. frontend creates LMS enquiry
-2. frontend calls THM payment preparation endpoint
-3. frontend sets `paymentGateway=Razorpay` and calls Razorpay payment intent endpoint with `notes.enquiryId`, `externalSite`, and `sourceChannel`
-4. frontend opens Razorpay checkout popup
-5. popup reports success back to parent window
-6. frontend polls Razorpay payment status
-7. `java-razorpay` updates LMS payment status for the enquiry
-8. frontend polls LMS until booking information appears
+2. frontend starts the selected gateway checkout (`Razorpay` popup or `PayU` hosted checkout)
+3. gateway adapter verifies successful payment callback or webhook
+4. gateway adapter delegates normalized captured-payment facts to THM `POST /api/thm/booking/captured-payment`
+5. THM fetches enquiry snapshot from LMS and creates booking plus add-ons
+6. THM updates LMS with `bookingId` and `bookingReservationId`
+7. frontend polls LMS until booking information appears
+8. frontend hydrates booking state from backend-created booking and completes the UI flow
 
 Important implementation detail:
 
-- in the traced code, the `notes.enquiryId` path in `java-razorpay` updates enquiry payment status only
-- no backend writer of LMS `bookingId` was found for this path in the inspected repositories
-- `handlePaymentSuccess()` currently jumps straight to booking polling and the older `convertEnquiriesToPMS()` call remains commented out in `Booking.component.ts`
+- `Booking.component.ts` and `booking-confirm.component.ts` now guard `createAllBookings()` and `addServiceToBooking()` for `Razorpay` and `PayU`
+- those components continue by polling LMS for booking readiness instead of creating bookings in the browser
+- stale `bookingsResponseList` session data is cleared before backend booking polling starts
+- the booking confirmation voucher flow can derive displayed add-on services from backend booking data when enquiry/session add-ons are missing
 
-### 2. Razorpay `booking_id` webhook flow
+### 2. Razorpay captured-payment callback flow
 
-This flow is used when Razorpay webhook payload contains `notes.booking_id`. In practice this value is treated as the LMS enquiry id.
+This is the normalized backend finalization path used when Razorpay webhook payload contains `notes.booking_id`. In practice this value is treated as the LMS enquiry id.
 
 High-level steps:
 
 1. Razorpay sends `payment.captured`
-2. `RazorpayPaymentController` detects `notes.booking_id`
+2. `RazorpayPaymentController` validates webhook HMAC and detects `notes.booking_id`
 3. `BookingPaymentServiceImpl.createBookingFromCapturedPayment(...)` is called
 4. `java-razorpay` delegates to THM `/api/thm/booking/captured-payment`
 5. THM fetches enquiry from LMS
-6. THM fetches property details for tax slabs and currency
-7. THM builds `BookingDto`
-8. THM creates booking and returns booking details
+6. THM reconstructs selected add-ons and quoted totals from enquiry snapshot
+7. THM fetches property details for tax slabs and currency
+8. THM builds `BookingCommandDto` / `BookingDto`
+9. THM creates booking and returns booking details
 9. THM updates LMS enquiry
 10. THM updates WhatsApp enquiry tracking
 11. THM pushes external reservation downstream
+12. for PMS-connected properties, THM can later trigger separate post-confirmation service sync without overloading the shared external reservation payload
 
 Important implementation detail:
 
 - this flow updates LMS `bookingReservationId`
 - THM now also sets LMS `bookingId` after booking creation
+- THM returns the existing booking instead of creating a duplicate if LMS enquiry is already linked
 - tax is derived from THM property tax slabs rather than hard-coded GST thresholds
 - currency is derived from property `localCurrency` rather than a hard-coded `INR` fallback
 - gateway identity is now carried separately from payment method: THM prefers `paymentGateway` for stored/displayed payment label, while `paymentMode` can carry the actual instrument such as `upi`
 - Razorpay now forwards `paymentGateway=Razorpay`, `paymentMode=<razorpay method>`, `externalSite`, and `sourceChannel` to THM
+- THM later reuses the reconstructed booking/service state for voucher PDF generation and booking email payload generation
+- service reconstruction here is for THM-owned booking persistence and downstream guest communication, not for direct `channel-integration` service ingestion
 
-### 3. Legacy Bookmax web PayU flow
+### 3. PayU captured-payment callback flow
 
-This is the older hosted-checkout flow that still routes through `java-api-payu`.
+This starts from the older hosted-checkout UI, but successful THM-source payment callbacks are now normalized into the same THM captured-payment finalization path.
 
 High-level steps:
 
@@ -181,17 +243,30 @@ High-level steps:
 2. frontend stamps `paymentGateway=PayU`
 3. frontend opens PayU hosted checkout via `/api/payu/paymentIntent/THM`
 4. PayU posts success callback into `java-api-payu`
-5. `java-api-payu` verifies callback hash and updates THM payment
-6. for THM source, `java-api-payu` updates LMS enquiry payment status and payment reference
-7. `java-api-payu` converts LMS enquiry into THM booking
-8. `java-api-payu` updates LMS with `bookingId` and `bookingReservationId`
-9. `java-api-payu` pushes external reservation downstream
+5. `java-api-payu` verifies callback hash and resolves payment status
+6. duplicate successful callbacks reuse existing paid state without resaving payment
+7. for THM source, `java-api-payu` delegates to THM `POST /api/thm/booking/captured-payment`
+8. THM finalizes booking idempotently and updates LMS booking linkage
+9. frontend polls LMS until booking information appears
 
 Important implementation detail:
 
 - PayU now preserves gateway identity separately from payment mode in its own backend flow
-- `ReservationServiceImpl` uses `paymentGateway` preferentially when creating THM booking labels and external reservation payment labels
-- `createPaymentForCRMEnquiryToConfirmed(...)` now uses booking/enquiry currency instead of hard-coded `INR`
+- the dedicated PayU-side booking payment service posts the same normalized captured-payment contract shape used by Razorpay
+- duplicate paid callbacks still trigger finalization for THM source so backend retries do not strand paid enquiries
+
+### 4. Legacy frontend callback and direct-booking flows
+
+These routes still exist and should be treated as compatibility paths until removed:
+
+- `confirm-payment.component`
+- `booking-complete.component`
+- older `payment.component` callback flow
+
+Important implementation detail:
+
+- these components still reflect older browser-driven or callback-reconciliation patterns
+- they are not the primary current flow for hardened `Razorpay` and `PayU` checkout in `Booking.component.ts`
 
 ## Sequence Diagram: Razorpay `booking_id` Webhook Flow
 
@@ -240,7 +315,7 @@ sequenceDiagram
     BPS-->>RPC: success
 ```
 
-## Sequence Diagram: Current Bookmax Web Razorpay Flow
+## Sequence Diagram: Current Bookmax Web Backend-Finalized Flow
 
 ```mermaid
 sequenceDiagram
@@ -249,35 +324,35 @@ sequenceDiagram
     participant FE as bookone-bookmax\nBooking.component
     participant LMS as java-lms
     participant THM as java-the-hotel-mate
-    participant RP as java-razorpay
-    participant POP as checkout-razorpay popup
+    participant GW as Gateway adapter\njava-razorpay or java-api-payu
+    participant UI as Razorpay popup / PayU hosted checkout
 
     U->>FE: Submit booking details
     FE->>LMS: POST /api/v1/accommodationEnquiry
     LMS-->>FE: enquiryId
 
-    FE->>THM: POST /api/thm/processPayment
-    THM-->>FE: payment payload
-
-    FE->>RP: POST /api/razorpay/paymentIntentHotelmate\npaymentGateway=Razorpay\nnotes.enquiryId + externalSite + sourceChannel
-    RP-->>FE: razorpayOrderId
-
-    FE->>POP: Open /checkout-rayzorpay
-    POP->>RP: Complete Razorpay payment
-    POP-->>FE: PAYMENT_SUCCESS_REDIRECT
-
-    FE->>RP: Poll payment status
-    RP->>LMS: Update enquiry paymentStatus only
+    FE->>GW: Start payment intent / hosted checkout
+    GW-->>FE: gateway checkout payload
+    FE->>UI: Open gateway experience
+    U->>UI: Complete payment
+    UI->>GW: Callback / webhook
+    GW->>GW: Validate signature or callback hash
+    GW->>THM: POST /api/thm/booking/captured-payment
+    THM->>LMS: GET enquiry snapshot
+    THM->>THM: Build booking from enquiry + add-ons + gateway metadata
+    THM->>THM: Create booking
+    THM->>LMS: Update enquiry with bookingId + bookingReservationId
 
     FE->>LMS: Poll GET /api/v1/accommodationEnquiry/{enquiryId}
     LMS-->>FE: bookingId when available
+    FE->>THM: GET booking details when needed
+    THM-->>FE: backend-created booking
 
-    Note over THM,LMS: Booking creator for this live polling path is not directly visible in the traced code.
-    Note over LMS: No backend writer of LMS bookingId was found for this path in the inspected repos.
-    Note over FE: `handlePaymentSuccess()` currently skips the older\n`convertEnquiriesToPMS()` client call and moves straight to booking polling.
+    Note over THM,LMS: THM is the backend finalizer and booking creator for the hardened PayU/Razorpay flow.
+    Note over FE: Browser-side booking creation is suppressed for backend-finalized gateways.
 ```
 
-## Sequence Diagram: Legacy Bookmax Web PayU Flow
+## Sequence Diagram: PayU THM-Source Callback Flow
 
 ```mermaid
 sequenceDiagram
@@ -287,9 +362,8 @@ sequenceDiagram
     participant LMS as java-lms
     participant PAYU as java-api-payu\nPayUController
     participant PUS as java-api-payu\nPayUServiceImpl
-    participant RES as java-api-payu\nReservationServiceImpl
+    participant BPS as java-api-payu\nBookingPaymentServiceImpl
     participant THM as java-the-hotel-mate
-    participant CI as channel-integration
 
     U->>FE: Submit booking details
     FE->>LMS: POST /api/v1/accommodationEnquiry
@@ -303,25 +377,20 @@ sequenceDiagram
 
     U->>PAYU: Complete hosted PayU payment
     PAYU->>PUS: verifyResponse(callbackPayload)
-    PUS->>THM: POST /api/thm/savePayment
-    PUS->>RES: updateAccommodationEnquiry(enquiryId, Paid, paymentReference)
+    PUS->>PUS: Detect duplicate paid callback safely
+    PUS->>BPS: createBookingFromCapturedPayment(payment)
+    BPS->>THM: POST /api/thm/booking/captured-payment\nenquiryId + capturedAmount + paymentGateway=PayU
+    THM->>LMS: GET accommodation enquiry
+    LMS-->>THM: enquiry snapshot
+    THM->>THM: Create or reuse booking idempotently
+    THM->>LMS: POST enquiry update\nstatus=Booked\nbookingId + bookingReservationId
 
-    RES->>LMS: GET enquiry or enquiry group
-    LMS-->>RES: AccommodationEnquiryDto
-    RES->>RES: Convert enquiry to booking\npreserve paymentGateway separately from paymentMode
-    RES->>THM: POST /api/thm/booking
-    THM-->>RES: Booking + reservation number
-    RES->>THM: POST /api/thm/savePayment
-    RES->>LMS: POST /api/v1/accommodationEnquiry\nstatus=Booked\nbookingId + bookingReservationId
-    RES->>CI: POST /api/external/reservation/
-    CI-->>RES: Reservation sync response
-
-    Note over PAYU,RES: PayU remains the gateway label even when\nthe actual instrument is UPI/Card/etc.
+    Note over PAYU,THM: PayU remains the gateway label even when\nthe actual instrument is UPI/Card/etc.
 ```
 
 ## Final Cross-Repo Sequence Diagram
 
-This is the consolidated cross-repo reference diagram. It shows the shared enquiry origin, the active Razorpay and PayU branches, the downstream booking side effects, and where `booking-java-api` still sits as an alternate legacy website stack.
+This is the consolidated cross-repo reference diagram. It shows the shared enquiry origin, the current backend-finalized PayU and Razorpay branches, the downstream booking side effects, and where `booking-java-api` still sits as an alternate legacy website stack.
 
 ### Presentation Version
 
@@ -344,34 +413,27 @@ sequenceDiagram
     FE->>LMS: Create accommodation enquiry
     LMS-->>FE: enquiryId + enquiry snapshot
 
-    alt Modern Razorpay web journey
-        FE->>RP: Start Razorpay payment
-        RP-->>FE: order details
-        FE->>RP: Check payment status
-        RP->>LMS: Mark enquiry payment as paid
-        FE->>LMS: Poll for booking readiness
-    else Razorpay webhook booking journey
+    alt Hardened Bookmax Pay Now journey
+        FE->>RP: Start Razorpay payment or hosted PayU payment
         U->>RP: Complete payment
-        RP->>THM: Send captured-payment booking request
+        RP->>THM: Send normalized captured-payment booking request
         THM->>LMS: Read enquiry snapshot
-        THM->>THM: Create booking from enquiry + property data
+        THM->>THM: Create booking from enquiry + property data + add-on snapshot
         THM->>LMS: Update enquiry with booking linkage
         THM->>WA: Update WhatsApp enquiry state
         THM->>CI: Push external reservation
-    else Legacy PayU journey
-        FE->>PAYU: Start PayU hosted checkout
-        U->>PAYU: Complete payment
-        PAYU->>THM: Save payment / create booking
-        PAYU->>LMS: Update enquiry and booking linkage
-        PAYU->>CI: Push external reservation
+        FE->>LMS: Poll for booking readiness
+    else Legacy callback-based frontend path
+        U->>FE: Return via confirm-payment or booking-complete
+        FE->>FE: Reconcile payment and booking state in browser
     else Older legacy website stack
         U->>BJA: Book through old BookOne website flow
         BJA->>BJA: Handle legacy booking/payment flow
     end
 
     Note over FE,LMS: LMS is the common enquiry origin across the traced flows.
-    Note over RP,THM: Razorpay is the modern gateway adapter; THM owns modern booking orchestration.
-    Note over PAYU,THM: PayU still supports a legacy hosted-checkout conversion path.
+    Note over RP,THM: Gateway adapters terminate callbacks; THM owns booking orchestration.
+    Note over FE,THM: Bookmax no longer creates bookings in-browser for hardened PayU/Razorpay paths.
     Note over BJA: booking-java-api remains a separate older booking stack.
 ```
 
@@ -394,19 +456,13 @@ sequenceDiagram
     FE->>LMS: POST /api/v1/accommodationEnquiry
     LMS-->>FE: enquiryId + enquiry snapshot
 
-    alt Active Razorpay web flow
-        FE->>THM: POST /api/thm/processPayment
+    alt Active hardened Pay Now flow
+        FE->>THM: POST /api/thm/processPayment or gateway preparation
         THM-->>FE: payment payload
-        FE->>RP: POST /api/razorpay/paymentIntentHotelmate\npaymentGateway=Razorpay\nnotes.enquiryId + externalSite + sourceChannel
-        RP-->>FE: razorpayOrderId
-        FE->>RP: Poll order/payment status
-        RP->>LMS: Update enquiry paymentStatus only
-        FE->>LMS: Poll enquiry until bookingId appears
-        LMS-->>FE: enquiry with booking linkage when available
-    else Razorpay webhook booking conversion flow
-        U->>RP: Complete Razorpay payment
-        RP->>RP: Validate webhook\nextract booking_id/enquiryId\nresolve method + notes metadata
-        RP->>THM: POST /api/thm/booking/captured-payment\nenquiryId + capturedAmount\npaymentGateway=Razorpay\npaymentMode=upi/card/etc.
+        FE->>RP: Start gateway intent\npaymentGateway preserved\nsource metadata preserved
+        U->>RP: Complete payment
+        RP->>RP: Validate webhook or callback\nresolve method + metadata
+        RP->>THM: POST /api/thm/booking/captured-payment\nenquiryId + capturedAmount\npaymentGateway + paymentMode
         THM->>LMS: GET accommodation enquiry
         LMS-->>THM: enquiry snapshot
         THM->>THM: Rebuild booking from LMS + property\napply tax slabs, currency, gateway label
@@ -416,19 +472,18 @@ sequenceDiagram
         THM->>CI: POST /api/external/reservation/
         WA-->>THM: notify status updated
         CI-->>THM: reservation sync response
-    else Legacy PayU hosted-checkout flow
+        FE->>LMS: Poll enquiry until bookingId appears
+        LMS-->>FE: enquiry with booking linkage when available
+    else Legacy callback-driven frontend path
+        FE->>FE: Use confirm-payment / booking-complete reconciliation logic
+    else Older hosted checkout component path
         FE->>FE: Set paymentGateway=PayU
         FE->>PAYU: GET /api/payu/paymentIntent/THM
         PAYU-->>FE: Hosted checkout HTML form
         U->>PAYU: Complete PayU hosted payment
         PAYU->>PAYU: Verify callback hash\nresolve gateway vs mode
-        PAYU->>THM: POST /api/thm/savePayment
-        PAYU->>LMS: GET/POST enquiry payment update
-        PAYU->>THM: POST /api/thm/booking\n(convert enquiry to booking)
-        THM-->>PAYU: bookingId + propertyReservationNumber
-        PAYU->>LMS: POST enquiry update\nbookingId + bookingReservationId
-        PAYU->>CI: POST /api/external/reservation/
-        CI-->>PAYU: reservation sync response
+        PAYU->>THM: POST /api/thm/booking/captured-payment
+        THM-->>PAYU: booking finalized idempotently
     else Older BookOne website stack
         U->>BJA: Book through legacy BookOne website/email flow
         BJA->>BJA: Create/manage legacy booking + payment flow
@@ -436,46 +491,47 @@ sequenceDiagram
     end
 
     Note over FE,LMS: All traced booking journeys begin from the LMS enquiry snapshot.
-    Note over THM,RP: Active modern booking ownership is moving toward THM with Razorpay as gateway adapter.
-    Note over PAYU,THM: PayU legacy conversion now preserves paymentGateway separately from paymentMode.
+    Note over THM,RP: Active modern booking ownership now sits in THM with gateway adapters delegating captured-payment events.
+    Note over PAYU,THM: PayU now also uses the normalized captured-payment delegation pattern for THM source.
     Note over BJA: booking-java-api remains a separate legacy website/email stack and is not part of the modern THM captured-payment orchestration path.
 ```
 
-## Legacy PayU Status
+## Frontend Status
 
-The older PayU path is now updated in both the frontend and the PayU backend in this workspace.
+The hardened frontend path now behaves differently depending on gateway type.
 
-What is updated here:
+For `Razorpay` and `PayU`:
 
-- `Booking.component.ts` now stamps `paymentGateway=PayU` before the legacy PayU flow continues
-- the legacy `convertEnquiriesToPMS()` payload now includes both `paymentGateway` and `paymentMode`
-- `java-api-payu` now accepts `paymentGateway` on the enquiry payload
-- `java-api-payu` now preserves `paymentGateway=PayU` separately from the actual payment mode when saving THM payment and external reservation data
-- `java-api-payu` now uses enquiry/booking currency instead of hard-coded `INR` during THM payment save
+- `Booking.component.ts` prevents browser-side booking creation and add-on creation
+- `booking-confirm.component.ts` now follows the same rule
+- both components clear stale booking session state before polling LMS for backend-created bookings
+- both components hydrate booking state from backend once LMS `bookingId` becomes available
 
-What is still pending:
+For older gateways and callback components:
 
-- full compile validation of `java-api-payu` requires Maven to run with Java 17 in the local environment
+- older callback-style routes still exist
+- some generic payment component flows still reflect pre-refactor browser-driven patterns
 
 Important note:
 
-- in the current `Booking.component.ts`, `handlePaymentSuccess()` calls `handlePmsSuccess()` directly and leaves `convertEnquiriesToPMS()` commented out, so the legacy payload enhancement is prepared but not part of the active success path shown in the current UI flow
+- `booking-complete.component.ts` and `confirm-payment.component.ts` remain mounted as compatibility routes, but they are not the primary hardened checkout path
 
-## Older Direct Booking Flow Still Present in Frontend
+## Known Legacy Paths Still Present
 
-Older frontend components still contain a direct-booking pattern where the frontend itself calls THM booking creation and then posts booking linkage back to LMS.
+Older frontend components still contain direct-booking or callback-reconciliation patterns.
 
 Important files:
 
 - `src/app/views/landing/Confirm-Booking/Confirm-Booking.component.ts`
 - `src/app/views/landing/booking-complete/booking-complete.component.ts`
+- `src/app/views/landing/confirm-payment/confirm-payment.component.ts`
+- `src/app/views/landing/payment/payment.component.ts`
 
-In that older flow:
+In those older flows:
 
-1. frontend calls `POST /api/thm/booking`
-2. THM returns booking id and reservation number
-3. frontend posts enquiry update to LMS with `bookingId` and `bookingReservationId`
-4. frontend pushes external reservation
+- frontend may still call THM booking APIs directly
+- frontend may still post payment reconciliation after redirect callbacks
+- frontend may still update LMS booking linkage from the browser
 
 This is different from the newer polling-based flow and should not be mixed into the current web Razorpay sequence unless you are documenting the older path explicitly.
 
@@ -483,24 +539,24 @@ This is different from the newer polling-based flow and should not be mixed into
 
 - `java-the-hotel-mate` is the actual THM booking creator
 - `java-the-hotel-mate` is now the booking orchestrator for the `notes.booking_id` captured-payment path
-- `java-razorpay` is now the payment gateway adapter for that webhook path
+- `java-razorpay` and `java-api-payu` are payment gateway adapters that terminate raw callbacks and delegate normalized captured-payment data to THM
 - exact gateway identity is now preserved separately from the payment instrument in the Razorpay to THM contract
-- `java-api-payu` now applies the same gateway-versus-mode separation for the legacy PayU conversion path
-- `java-razorpay` `EnquiryPaymentServiceImpl` only updates payment status for the `notes.enquiryId` path in the traced code
-- older frontend paths explicitly write LMS `bookingId` and `bookingReservationId`
-- the current web Razorpay polling path expects LMS booking information to appear later, but the backend writer of LMS `bookingId` was not found in the inspected repositories
-- local compile verification of `java-api-payu` is currently blocked by the active shell using a JDK lower than 17
+- `java-api-payu` now applies the same gateway-versus-mode separation and normalized captured-payment delegation for THM-source success callbacks
+- THM finalization is idempotent and now guards against duplicate callback replays
+- older frontend paths still exist, but hardened `Razorpay` and `PayU` checkout paths now expect backend-created booking linkage to appear in LMS
+- local compile verification of `java-api-payu` succeeds when Maven runs with Java 17
 
 ## Maintenance Notes
 
 Update this document whenever any of the following changes:
 
 - `Booking.component.ts` payment flow logic
+- `booking-confirm.component.ts` backend polling logic
 - `checkout-razorpay.component.ts` success handling
 - `RazorpayPaymentController` webhook branching
 - `BookingPaymentServiceImpl` delegation logic
-- `PayUController` callback and convert-to-pms logic
-- `ReservationServiceImpl` enquiry-to-booking conversion logic
+- `PayUController` and `PayUServiceImpl` callback verification logic
+- PayU `BookingPaymentServiceImpl` THM delegation logic
 - THM captured-payment orchestration logic
 - `EnquiryPaymentServiceImpl` payment-status-only logic
 - THM `/api/thm/booking` ownership or response shape
@@ -509,5 +565,5 @@ Update this document whenever any of the following changes:
 When updating the diagrams, preserve the distinction between:
 
 - `booking_id` webhook orchestration flow
-- `enquiryId` payment-status flow
+- backend-finalized pay-now polling flow
 - older direct-booking frontend flow

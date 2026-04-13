@@ -486,7 +486,7 @@ export class BookingConfirmationVoucherComponent {
       this.grandTotal = firstEnquiry.grandTotal || this.getNewGrandTotal();
       this.payNowAmount = firstEnquiry.payNowAmount || 0;
       this.balanceAtCheckIn = firstEnquiry.balanceAtCheckIn || 0;
-      this.selectedAddOns = firstEnquiry.selectedAddOns || [];
+      this.selectedAddOns = this.resolveSelectedAddOns(firstEnquiry);
 
       this.isPaid = this.advancePaymentPercentage === 100 || this.balanceAtCheckIn === 0;
 
@@ -495,10 +495,41 @@ export class BookingConfirmationVoucherComponent {
     }
   }
 
+  private resolveSelectedAddOns(firstEnquiry: any): any[] {
+    if (Array.isArray(firstEnquiry?.selectedAddOns) && firstEnquiry.selectedAddOns.length > 0) {
+      return firstEnquiry.selectedAddOns;
+    }
+    return this.getSelectedAddOnsFromBookings();
+  }
+
+  private getSelectedAddOnsFromBookings(): any[] {
+    if (!Array.isArray(this.bookingsResponseList) || this.bookingsResponseList.length === 0) {
+      return [];
+    }
+
+    return this.bookingsResponseList.flatMap((booking: any) => {
+      if (!Array.isArray(booking?.services)) {
+        return [];
+      }
+
+      return booking.services.map((service: any) => ({
+        name: service?.name || service?.serviceType || 'Service',
+        quantity: this.toSafeQuantity(service?.quantityApplied ?? service?.count ?? 1),
+        servicePrice: this.toSafeAmount(service?.servicePrice ?? service?.beforeTaxAmount ?? 0),
+        taxAmount: this.toSafeAmount(service?.taxAmount ?? 0),
+      }));
+    });
+  }
+
   // ✅ NEW: Guard functions
   private toSafeAmount(value: any): number {
     const num = Number(value);
     return isFinite(num) ? num : 0;
+  }
+
+  private toSafeQuantity(value: any): number {
+    const num = Number(value);
+    return Number.isFinite(num) && num > 0 ? num : 1;
   }
 
   private toSafePercent(value: any): number {
@@ -523,10 +554,17 @@ export class BookingConfirmationVoucherComponent {
   getDisplayedRoomSubtotal(): number {
     if (!this.bookingsResponseList || this.bookingsResponseList.length === 0) return 0;
     return this.toSafeAmount(
-      this.bookingsResponseList.reduce(
-        (sum, booking) => sum + (Number(booking?.beforeTaxAmount) || 0),
-        0,
-      ),
+      this.bookingsResponseList.reduce((sum, booking) => {
+        return sum + this.getDisplayedRowSubtotal(booking);
+      }, 0)
+    );
+  }
+
+  getDisplayedRowSubtotal(booking: any): number {
+    return this.toSafeAmount(
+      (Number(booking?.beforeTaxAmount) || 0) +
+        (Number(booking?.extraPersonCharge) || 0) +
+        (Number(booking?.extraChildCharge) || 0),
     );
   }
 
@@ -577,7 +615,7 @@ export class BookingConfirmationVoucherComponent {
   }
 
   getDisplayedRowAdvanceDiscount(booking: any): number {
-    const rowBeforeTax = this.toSafeAmount(booking?.beforeTaxAmount || 0);
+    const rowBeforeTax = this.getDisplayedRowSubtotal(booking);
     const totalBeforeAdvance = this.getDisplayedRoomSubtotal();
     const totalAdvanceDiscount = this.getDisplayedAdvanceDiscountAmount();
 
@@ -597,7 +635,7 @@ export class BookingConfirmationVoucherComponent {
   }
 
   getDisplayedRowAfterDiscounts(booking: any): number {
-    const rowBeforeTax = this.toSafeAmount(booking?.beforeTaxAmount || 0);
+    const rowBeforeTax = this.getDisplayedRowSubtotal(booking);
     const rowCouponDiscount = this.getDisplayedRowTotalDiscount(booking);
     return this.toSafeAmount(Math.max(0, rowBeforeTax - rowCouponDiscount));
   }

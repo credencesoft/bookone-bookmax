@@ -885,9 +885,15 @@ export class BookingComponent implements OnInit {
   private animateProgressTo(target: number) {
     this.targetProgress = target;
 
-    const i = setInterval(() => {
+    if (this.progressTimer) {
+      clearInterval(this.progressTimer);
+      this.progressTimer = null;
+    }
+
+    this.progressTimer = setInterval(() => {
       if (this.progressPercent >= this.targetProgress) {
-        clearInterval(i);
+        clearInterval(this.progressTimer);
+        this.progressTimer = null;
         return;
       }
       this.progressPercent += 1;
@@ -895,8 +901,7 @@ export class BookingComponent implements OnInit {
   }
 
   private handlePaymentFailure() {
-    this.clearPaymentPoller();
-    this.clearBookingPoller();
+    this.stopAllTimers();
 
     this.failed = true;
     this.steps[this.activeStep].status = 'failed';
@@ -910,6 +915,7 @@ export class BookingComponent implements OnInit {
   }
   private handlePaymentSuccess() {
     this.clearPaymentPoller();
+    this.clearCountdownTimer();
 
     this.steps[1].status = 'completed';
     this.aiMessage = 'Payment confirmed. Syncing with PMS...';
@@ -965,16 +971,56 @@ export class BookingComponent implements OnInit {
   }
 
   private handlePmsSuccess() {
-    this.aiMessage = 'Payment synced. Creating booking...';
+    this.activeStep = 2;
+    this.steps[2].status = 'processing';
+    this.aiMessage = this.STEP_MESSAGES.bookingProcessing;
     this.animateProgressTo(85);
     this.startBookingPolling();
   }
+
+  private isBackendFinalizedGateway(): boolean {
+    const gateway = (
+      this.businessUser?.paymentGateway ||
+      this.token.getProperty()?.paymentGateway ||
+      ''
+    )
+      .toString()
+      .trim()
+      .toLowerCase();
+
+    return gateway === 'payu' || gateway === 'razorpay';
+  }
+
+  private continueBackendBookingFinalization(): boolean {
+    const enquiryStr = sessionStorage.getItem('EnquiryResponseList');
+    if (!enquiryStr) {
+      return false;
+    }
+
+    sessionStorage.removeItem('bookingsResponseList');
+    this.bookedEnquiries = [];
+    this.bookingsResponseList = [];
+    this.showModal = true;
+    this.steps[0].status = 'completed';
+    this.steps[1].status = 'completed';
+    this.steps[2].status = 'processing';
+    this.activeStep = 2;
+    this.completed = false;
+    this.failed = false;
+    this.paidEnquiry = false;
+    this.aiMessage = this.STEP_MESSAGES.bookingProcessing;
+    this.animateProgressTo(85);
+    this.startBookingPolling();
+    return true;
+  }
+
   private startBookingPolling() {
     const enquiryStr = sessionStorage.getItem('EnquiryResponseList');
     if (!enquiryStr) return;
 
     const enquiryList = JSON.parse(enquiryStr);
 
+    this.clearBookingPoller();
     this.bookingStartTime = Date.now();
 
     this.bookingPoller = setInterval(() => {
@@ -998,9 +1044,12 @@ export class BookingComponent implements OnInit {
     }, 5000);
   }
   private handlePaidEnquiryState() {
+    this.clearCountdownTimer();
     this.paidEnquiry = true;
     this.completed = false;
     this.failed = false;
+    this.activeStep = 2;
+    this.steps[2].status = 'processing';
 
     this.aiMessage = 'Payment received. Awaiting booking confirmation...';
 
@@ -1045,14 +1094,57 @@ export class BookingComponent implements OnInit {
     if (this.bookedEnquiries.length === originalList.length) {
       this.clearBookingPoller();
       this.storeBookedEnquiries();
+      this.cacheFinalizedBookings();
       this.completeBookingFlow();
     }
   }
   private completeBookingFlow() {
+    this.stopAllTimers();
+    this.activeStep = 2;
     this.steps[2].status = 'completed';
     this.completed = true;
-    this.aiMessage = 'Booking confirmed successfully!';
+    this.paidEnquiry = false;
+    this.aiMessage = this.STEP_MESSAGES.bookingSuccess;
     this.animateProgressTo(100);
+  }
+
+  private cacheFinalizedBookings() {
+    const uniqueBookingIds = Array.from(
+      new Set(
+        this.bookedEnquiries
+          .map((enquiry) =>
+            Number(enquiry?.bookingId || enquiry?.bookingReservationId || 0),
+          )
+          .filter((bookingId) => bookingId > 0),
+      ),
+    );
+
+    if (uniqueBookingIds.length === 0) {
+      return;
+    }
+
+    const resolvedBookings: any[] = [];
+
+    uniqueBookingIds.forEach((bookingId) => {
+      this.hotelBookingService.fetchBookingById(bookingId).subscribe({
+        next: (booking) => {
+          if (booking) {
+            resolvedBookings.push(booking);
+          }
+        },
+        error: (error) => {
+          console.warn('Unable to preload booking for confirmation view', bookingId, error);
+        },
+        complete: () => {
+          if (resolvedBookings.length === uniqueBookingIds.length) {
+            sessionStorage.setItem(
+              'bookingsResponseList',
+              JSON.stringify(resolvedBookings),
+            );
+          }
+        },
+      });
+    });
   }
 
   private storeBookedEnquiries() {
@@ -1109,6 +1201,13 @@ export class BookingComponent implements OnInit {
     }
   }
 
+  private clearCountdownTimer() {
+    if (this.countdownTimer) {
+      clearInterval(this.countdownTimer);
+      this.countdownTimer = null;
+    }
+  }
+
   private clearBookingPoller() {
     if (this.bookingPoller) {
       clearInterval(this.bookingPoller);
@@ -1119,16 +1218,22 @@ export class BookingComponent implements OnInit {
   private stopAllTimers() {
     this.clearPaymentPoller();
     this.clearBookingPoller();
-    if (this.paymentPoller) {
-      clearInterval(this.paymentPoller);
-      this.paymentPoller = null;
+    this.clearCountdownTimer();
+
+    if (this.paymentDelayTimer) {
+      clearTimeout(this.paymentDelayTimer);
+      this.paymentDelayTimer = null;
     }
 
-    if (this.countdownTimer) {
-      clearInterval(this.countdownTimer);
-      this.countdownTimer = null;
+    if (this.paymentStartDelayTimer) {
+      clearTimeout(this.paymentStartDelayTimer);
+      this.paymentStartDelayTimer = null;
     }
-    if (this.progressTimer) clearInterval(this.progressTimer);
+
+    if (this.progressTimer) {
+      clearInterval(this.progressTimer);
+      this.progressTimer = null;
+    }
   }
 
   private updateStatusText(stepName: string) {
@@ -1137,18 +1242,15 @@ export class BookingComponent implements OnInit {
   }
 
   private resetState() {
-    this.clearPaymentPoller();
-    this.clearBookingPoller();
-
-    if (this.paymentDelayTimer) {
-      clearTimeout(this.paymentDelayTimer);
-      this.paymentDelayTimer = null;
-    }
+    this.stopAllTimers();
 
     this.progressPercent = 0;
     this.activeStep = 0;
     this.completed = false;
     this.failed = false;
+    this.paidEnquiry = false;
+    this.errorData = null;
+    this.bookedEnquiries = [];
 
     this.steps = [
       { label: 'Enquiry', status: 'pending' },
@@ -1171,8 +1273,9 @@ export class BookingComponent implements OnInit {
   }
 
   goToConfirmation() {
-    this.router.navigate(['/booking-confirmation']);
-    this.closeModal();
+    this.router.navigate(['/booking-confirmation']).then(() => {
+      this.closeModal();
+    });
   }
 
   calculateConvenienceFee(totalAmount: number, percentage: number): number {
@@ -8084,6 +8187,10 @@ export class BookingComponent implements OnInit {
   // }
 
   addServiceToBooking(bookingId, savedServices: any[]) {
+    if (this.isBackendFinalizedGateway()) {
+      return;
+    }
+
     this.savedServices?.forEach((element) => {
       element.count = element.quantity;
       element.afterTaxAmount = element.quantity * element.servicePrice;
@@ -8283,6 +8390,10 @@ export class BookingComponent implements OnInit {
   // }
 
   createAllBookings() {
+    if (this.isBackendFinalizedGateway() && this.continueBackendBookingFinalization()) {
+      return;
+    }
+
     const bookingSummaryStr = sessionStorage.getItem('bookingSummaryDetails');
     const bookingSummary = bookingSummaryStr
       ? JSON.parse(bookingSummaryStr)
@@ -8334,6 +8445,11 @@ export class BookingComponent implements OnInit {
   }
 
   createBooking(plan: any, bookingSummary: any, callback?: () => void) {
+    if (this.isBackendFinalizedGateway()) {
+      if (callback) callback();
+      return;
+    }
+
     const booking: any = {};
     this.businessUser = this.token.getProperty();
     const zone = 'Asia/Kolkata'; // India
@@ -12340,16 +12456,28 @@ sendWhatsappMessageToPropertyOwner() {
       const addOnsData = sessionStorage.getItem('addOnServices');
       if (addOnsData) {
         this.addOnServices = JSON.parse(addOnsData);
+        const persistedSelectedAddOns = this.token.getSelectedServices();
+        this.selectedAddOns = Array.isArray(persistedSelectedAddOns)
+          ? persistedSelectedAddOns
+          : [];
+        this.selectedAddOnNames = this.selectedAddOns
+          .map((service) => service?.name)
+          .filter((name) => !!name);
+        this.calculateAddOnsTotals();
         console.log('[DEBUG] Add-ons initialized from sessionStorage:', this.addOnServices);
         this.showAddOnServices = this.addOnServices.length > 0;
       } else {
         console.log('[DEBUG] No add-ons found in sessionStorage');
         this.addOnServices = [];
+        this.selectedAddOns = [];
+        this.selectedAddOnNames = [];
         this.showAddOnServices = false;
       }
     } catch (error) {
       console.error('[ERROR] Failed to parse add-ons from sessionStorage:', error);
       this.addOnServices = [];
+      this.selectedAddOns = [];
+      this.selectedAddOnNames = [];
       this.showAddOnServices = false;
     }
   }
@@ -12381,6 +12509,7 @@ sendWhatsappMessageToPropertyOwner() {
     }
     // Recalculate totals on selection change
     this.calculateAddOnsTotals();
+    this.syncSelectedAddOnsToCheckoutState();
   }
 
   /**
@@ -12479,6 +12608,24 @@ sendWhatsappMessageToPropertyOwner() {
     this.selectedAddOns = [];
     this.selectedAddOnNames = [];
     this.calculateAddOnsTotals();
+    this.syncSelectedAddOnsToCheckoutState();
+  }
+
+  private syncSelectedAddOnsToCheckoutState(): void {
+    const normalizedAddOns = (this.selectedAddOns || []).map((service) => ({
+      ...service,
+      quantity: service?.quantity ?? service?.count ?? 1,
+      count: service?.count ?? service?.quantity ?? 1,
+      afterTaxAmount:
+        service?.afterTaxAmount ??
+        ((Number(service?.servicePrice) || 0) + (Number(service?.taxAmount) || 0)),
+      netAmount: service?.netAmount ?? service?.servicePrice ?? 0,
+      servicePrice: service?.servicePrice ?? service?.beforeTaxAmount ?? 0,
+      sourceChannel: service?.sourceChannel ?? this.booking?.externalSite ?? 'BookMax',
+    }));
+
+    this.token.saveSelectedServices(normalizedAddOns);
+    sessionStorage.setItem('addOnServices', JSON.stringify(normalizedAddOns));
   }
 
   /**

@@ -312,7 +312,7 @@
                     </td>
                     <td>
                       {{
-                      booking?.roomPrice * booking?.noOfNights
+                      booking?.roomPrice
                       | currency: currency : 'symbol' : '1.2-2'
                       }}
                     </td>
@@ -325,7 +325,7 @@
                         -{{ getDisplayedRowTotalDiscount(booking) | currency: currency : 'symbol' : '1.2-2' }}
                       </ng-container>
                     </td>
-                    <td>{{ booking?.beforeTaxAmount | currency: currency : 'symbol' : '1.2-2' }}</td>
+                    <td>{{ getDisplayedRowSubtotal(booking) | currency: currency : 'symbol' : '1.2-2' }}</td>
                     <td>{{ getDisplayedRowTax(booking) | currency: currency : 'symbol' : '1.2-2' }}</td>
                     <td>{{ getDisplayedRowTotal(booking) | currency: currency : 'symbol' : '1.2-2' }}</td>
                   </tr>
@@ -792,7 +792,7 @@
                 </div>
                 <div class="d-flex justify-content-between">
                   <div>Sub Total</div>
-                  <div>{{ booking?.beforeTaxAmount | currency: currency : 'symbol' : '1.2-2' }}</div>
+                  <div>{{ getDisplayedRowSubtotal(booking) | currency: currency : 'symbol' : '1.2-2' }}</div>
                 </div>
 
                 <div class="d-flex justify-content-between">
