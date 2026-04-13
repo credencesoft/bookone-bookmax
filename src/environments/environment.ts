@@ -6,7 +6,6 @@ export const environment = {
   spaceId:'99i7n5tw4eq0',
   accessToken:'q0iVR3edz6GByDVpTdYxTwOsL2yhXA2aApPWKw_7mYk',
   nzAPIUrl: 'https://api.uat.thehotelmate.co',
-  // homeAddress: "https://bookonepms.com",
   inAPIUrl: 'https://api.uat.thehotelmate.co',
   hdfcAPIUrl:'https://payment.bookone.io',
   apiScheduler: 'https://scheduler.api.bookone.io',
@@ -15,12 +14,6 @@ export const environment = {
   apiLms: 'https://api.uat.bookone.io/lms',
   channelIntegration:'https://channel-integration.uat.bookone.io',
   apiUrlBookone: 'https://api.bookonelocal.in/api-bookone',
-  // nzAPIUrl: 'https://testconnect.bookone.io/hotelmate',
-  // inAPIUrl: 'https://testconnect.bookone.io/hotelmate',
-  // apiScheduler: 'https://testapi.bookonelocal.co.nz/api-scheduler',
-  // apiUrlAddress: 'https://testapi.bookonelocal.co.nz/api-address',
-  // apiUrlPromotion: 'https://testapi.bookonelocal.co.nz/promotion-api',
-  // apiLms: 'https://testapi.bookonelocal.co.nz/api-lms',
   parentOrganisationId: 1,
   dashboardUrl: 'https://app.bookonelocal.in',
   apiUrl: "https://api.uat.thehotelmate.co",
@@ -34,7 +27,6 @@ export const environment = {
   payuUrl: 'https://payu.payment.uat.bookone.io',
   country: 'in',
   googleKey: '',
-  // callbackUrl: 'http://localhost:4200/#/details?ReferenceNumber='
   callbackUrl: 'https://uat.bookone.io/payment-confirmation',
   failureCode:'https://uat.bookone.io/payment-failure',
   callbackUrlPayment:'https://uat.bookone.io/confirm-payment'
