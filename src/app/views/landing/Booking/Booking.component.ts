@@ -361,7 +361,7 @@ export class BookingComponent implements OnInit {
   paidEnquiry = false;
   private bookingStartTime: number;
   private BOOKING_TIMEOUT = 50 * 1000; // 50 seconds
-  remainingSeconds = 120;
+  remainingSeconds = 150;
   private countdownTimer: any;
   roomLabel: string = 'Room';
   advanceDiscountSlabs: AdvanceDiscountSlab[] = [];
@@ -787,8 +787,8 @@ export class BookingComponent implements OnInit {
     this.aiMessage = this.STEP_MESSAGES.paymentProcessing;
     this.paymentStartTime = Date.now();
 
-    const TWO_MINUTES = 2 * 60 * 1000;
-    this.remainingSeconds = 120;
+    const TWO_MINUTES = 2.5 * 60 * 1000;
+    this.remainingSeconds = 150;
     this.startCountdown();
     this.paymentPoller = setInterval(() => {
       const elapsedTime = Date.now() - this.paymentStartTime;
@@ -823,7 +823,7 @@ export class BookingComponent implements OnInit {
   }
 
   startCountdown() {
-    this.remainingSeconds = 120;
+    this.remainingSeconds = 150;
     this.countdownTimer = setInterval(() => {
       if (this.remainingSeconds > 0) {
         this.remainingSeconds--;
@@ -7429,7 +7429,7 @@ export class BookingComponent implements OnInit {
           const url = `${window.location.origin}/checkout-rayzorpay`;
           const paymentWindow = window.open(url, '_blank');
 
-          const TWO_MINUTES = 2.3 * 60 * 1000;
+          const TWO_MINUTES = 3.3 * 60 * 1000;
 
           setTimeout(() => {
             if (paymentWindow && !paymentWindow.closed) {
@@ -7515,7 +7515,7 @@ export class BookingComponent implements OnInit {
 
     const paymentWindow = window.open(url, '_blank');
 
-    const TWO_MINUTES = 2.3 * 60 * 1000;
+    const TWO_MINUTES = 3.3 * 60 * 1000;
 
     setTimeout(() => {
       if (paymentWindow && !paymentWindow.closed) {
