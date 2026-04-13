@@ -554,17 +554,10 @@ export class BookingConfirmationVoucherComponent {
   getDisplayedRoomSubtotal(): number {
     if (!this.bookingsResponseList || this.bookingsResponseList.length === 0) return 0;
     return this.toSafeAmount(
-      this.bookingsResponseList.reduce((sum, booking) => {
-        return sum + this.getDisplayedRowSubtotal(booking);
-      }, 0)
-    );
-  }
-
-  getDisplayedRowSubtotal(booking: any): number {
-    return this.toSafeAmount(
-      (Number(booking?.beforeTaxAmount) || 0) +
-        (Number(booking?.extraPersonCharge) || 0) +
-        (Number(booking?.extraChildCharge) || 0),
+      this.bookingsResponseList.reduce(
+        (sum, booking) => sum + (Number(booking?.beforeTaxAmount) || 0),
+        0,
+      ),
     );
   }
 
@@ -615,7 +608,7 @@ export class BookingConfirmationVoucherComponent {
   }
 
   getDisplayedRowAdvanceDiscount(booking: any): number {
-    const rowBeforeTax = this.getDisplayedRowSubtotal(booking);
+    const rowBeforeTax = this.toSafeAmount(booking?.beforeTaxAmount || 0);
     const totalBeforeAdvance = this.getDisplayedRoomSubtotal();
     const totalAdvanceDiscount = this.getDisplayedAdvanceDiscountAmount();
 
@@ -635,7 +628,7 @@ export class BookingConfirmationVoucherComponent {
   }
 
   getDisplayedRowAfterDiscounts(booking: any): number {
-    const rowBeforeTax = this.getDisplayedRowSubtotal(booking);
+    const rowBeforeTax = this.toSafeAmount(booking?.beforeTaxAmount || 0);
     const rowCouponDiscount = this.getDisplayedRowTotalDiscount(booking);
     return this.toSafeAmount(Math.max(0, rowBeforeTax - rowCouponDiscount));
   }
