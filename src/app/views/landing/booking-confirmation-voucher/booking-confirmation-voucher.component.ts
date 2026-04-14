@@ -551,28 +551,49 @@ export class BookingConfirmationVoucherComponent {
     return `Accommodation Subtotal`;
   }
 
+  getDisplayedBookingSubtotal(booking: any): number {
+    const roomTariff = this.toSafeAmount(booking?.roomTariffBeforeDiscount);
+    const noOfRooms = this.toSafeAmount(booking?.noOfRooms);
+    const noOfNights = this.toSafeAmount(booking?.noOfNights);
+    const extraPerson = this.toSafeAmount(booking?.extraPersonCharge);
+    const extraChild = this.toSafeAmount(booking?.extraChildCharge);
+
+    const roomTotal = roomTariff * noOfRooms * noOfNights;
+    const displayedSubtotal = roomTotal + extraPerson + extraChild;
+
+    return this.toSafeAmount(
+      displayedSubtotal > 0 ? displayedSubtotal : booking?.beforeTaxAmount,
+    );
+  }
+
+  getDisplayedBookingTax(booking: any): number {
+    return this.toSafeAmount(booking?.taxAmount);
+  }
+
+  getDisplayedBookingTotal(booking: any): number {
+    return this.toSafeAmount(
+      this.getDisplayedBookingSubtotal(booking) + this.getDisplayedBookingTax(booking),
+    );
+  }
+
   getDisplayedRoomSubtotal(): number {
     if (!this.bookingsResponseList || this.bookingsResponseList.length === 0) return 0;
+
     return this.toSafeAmount(
       this.bookingsResponseList.reduce(
-        (sum, booking) => sum + (Number(booking?.beforeTaxAmount) || 0),
+        (sum, booking) => sum + this.getDisplayedBookingSubtotal(booking),
         0,
       ),
     );
   }
 
   getDisplayedRoomTax(): number {
-    // Prefer taxOnDiscountedAmount (computed post-all-discounts in checkout flow) over
-    // booking.taxAmount rows which are post-coupon only and would mismatch the checkout total.
-    if (this.taxOnDiscountedAmount > 0) {
-      return this.toSafeAmount(this.taxOnDiscountedAmount);
-    }
     if (!this.bookingsResponseList || this.bookingsResponseList.length === 0) {
       return this.toSafeAmount(this.bookingSummaryDetails?.totalTax || 0);
     }
     return this.toSafeAmount(
       this.bookingsResponseList.reduce(
-        (sum, booking) => sum + (Number(booking?.taxAmount) || 0),
+        (sum, booking) => sum + this.getDisplayedBookingTax(booking),
         0,
       ),
     );
@@ -608,7 +629,7 @@ export class BookingConfirmationVoucherComponent {
   }
 
   getDisplayedRowAdvanceDiscount(booking: any): number {
-    const rowBeforeTax = this.toSafeAmount(booking?.beforeTaxAmount || 0);
+    const rowBeforeTax = this.getDisplayedBookingSubtotal(booking);
     const totalBeforeAdvance = this.getDisplayedRoomSubtotal();
     const totalAdvanceDiscount = this.getDisplayedAdvanceDiscountAmount();
 
@@ -628,7 +649,7 @@ export class BookingConfirmationVoucherComponent {
   }
 
   getDisplayedRowAfterDiscounts(booking: any): number {
-    const rowBeforeTax = this.toSafeAmount(booking?.beforeTaxAmount || 0);
+    const rowBeforeTax = this.getDisplayedBookingSubtotal(booking);
     const rowCouponDiscount = this.getDisplayedRowTotalDiscount(booking);
     return this.toSafeAmount(Math.max(0, rowBeforeTax - rowCouponDiscount));
   }
