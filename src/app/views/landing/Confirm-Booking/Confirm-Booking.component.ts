@@ -232,10 +232,15 @@ export class ConfirmBookingComponent implements OnInit {
     ) {
       setTimeout(() => {
         this.booking = this.token.getBookingDataObj();
-        this.dueAmount =
-          this.booking.totalAmount +
-          this.booking.totalServiceAmount -
-          this.booking.advanceAmount;
+        // THM's totalAmount is pre-discount (THM does not apply discounts).
+        // Use: (beforeTaxAmount + extras − discountAmount) + taxAmount + services − advance
+        // This is correct for no-discount, coupon-only, advance-discount-only, and both.
+        const extraCharges = (this.booking.extraPersonCharge || 0) + (this.booking.extraChildCharge || 0);
+        const trueTotal =
+          (this.booking.beforeTaxAmount + extraCharges - (this.booking.discountAmount || 0)) +
+          (this.booking.taxAmount || 0) +
+          (this.booking.totalServiceAmount || 0);
+        this.dueAmount = trueTotal - (this.booking.advanceAmount || 0);
       }, 500);
     }
   }

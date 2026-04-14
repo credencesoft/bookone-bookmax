@@ -2590,15 +2590,10 @@ export class BookingComponent implements OnInit {
     this.enquiryForm.organisationId = environment.parentOrganisationId;
     this.enquiryForm.bookingCommissionAmount = 0;
     this.paymentLoader = true;
-    if (this.booking.planCode === 'GHC') {
-      this.enquiryForm.roomPrice =
-        this.booking.netAmount -
-        (this.booking.extraPersonCharge + this.booking.extraChildCharge);
-    } else {
-      this.enquiryForm.roomPrice =
-        this.booking.netAmount -
-        (this.booking.extraPersonCharge + this.booking.extraChildCharge);
-    }
+    // roomPrice sent to LMS must be the per-room-per-night tariff BEFORE any discount.
+    // LMS (BookingPaymentOrchestrationServiceImpl) multiplies: roomPrice × noOfRooms × noOfNights.
+    // Previously this used netAmount (post-discount total for all nights) causing double-multiplication of nights.
+    this.enquiryForm.roomPrice = this.booking.roomTariffBeforeDiscount;
     this.enquiryForm.couponCode = this.booking.couponCode;
     this.enquiryForm.promotionName = this.booking.promotionName;
     this.enquiryForm.discountAmount = this.booking.discountAmount;
@@ -2722,12 +2717,9 @@ export class BookingComponent implements OnInit {
       enquiryForm.utmMedium = 'unknown';
     }
 
-    enquiryForm.roomPrice =
-      booking.planCode === 'GHC'
-        ? booking.totalAmount -
-          (plan.extraPersonCharge + plan.extraPersonChildCountAmount)
-        : plan.price -
-          (enquiryForm.extraPersonCharge + plan.extraPersonChildCountAmount);
+    // roomPrice must be per-room-per-night tariff so LMS can multiply: roomPrice × noOfRooms × noOfNights.
+    // plan.actualRoomPrice is the per-room-per-night rate; do NOT subtract extra charges (different units).
+    enquiryForm.roomPrice = plan.actualRoomPrice;
 
     enquiryForm.externalSite = 'WebSite';
     enquiryForm.source = 'Bookone Connect';
@@ -8717,12 +8709,8 @@ export class BookingComponent implements OnInit {
       enquiryForm.utmMedium = 'unknown';
     }
 
-    enquiryForm.roomPrice =
-      booking.planCode === 'GHC'
-        ? booking.totalAmount -
-          (plan.extraPersonCharge + plan.extraPersonChildCountAmount)
-        : plan.price -
-          (enquiryForm.extraPersonCharge + enquiryForm.extraChildCharge);
+    // roomPrice must be per-room-per-night tariff so LMS can multiply: roomPrice × noOfRooms × noOfNights.
+    enquiryForm.roomPrice = plan.actualRoomPrice;
 
     enquiryForm.externalSite = 'WebSite';
     enquiryForm.source = 'Bookone Connect';
@@ -10731,7 +10719,18 @@ export class BookingComponent implements OnInit {
     this.enquiryForm.specialNotes = this.booking.notes;
     this.enquiryForm.propertyId = 107;
 
-    this.enquiryForm.totalAmount = this.booking.totalAmount;
+    // totalAmount must include add-on services so LMS/PMS/THM show the correct grand total.
+    // booking.totalAmount = rooms + tax + convenienceFee (post-discount).
+    // booking.totalServiceAmount = add-ons subtotal (always paid in full).
+    const servicesTotalForEnquiry = this.toSafeAmount(this.booking.totalServiceAmount);
+    this.enquiryForm.totalAmount = Number(
+      (this.booking.totalAmount + servicesTotalForEnquiry).toFixed(2),
+    );
+    this.enquiryForm.selectedServiceTotal = servicesTotalForEnquiry; // LMS field: selectedServiceTotal (not totalServiceAmount)
+    // Serialize selected services so BookingPaymentOrchestrationServiceImpl can recreate ServiceDto rows.
+    if (this.savedServices && this.savedServices.length > 0) {
+      this.enquiryForm.serviceQuoteSummary = JSON.stringify(this.savedServices);
+    }
     // this.enquiryForm.taxDetails = this.booking.taxDetails;
     // this.enquiryForm.currency = this.token.getProperty().localCurrency;
     let taxarray = this.token.getProperty().taxDetails;
@@ -10797,15 +10796,11 @@ export class BookingComponent implements OnInit {
     this.enquiryForm.noOfExtraChild = Number(this.token.getExtraChildCharge());
     this.enquiryForm.bookingCommissionAmount = 0;
     this.paymentLoader = true;
-    if (this.booking.planCode === 'GHC') {
-      this.enquiryForm.roomPrice =
-        this.booking.roomPrice -
-        (this.booking.extraPersonCharge + this.booking.extraChildCharge);
-    } else {
-      this.enquiryForm.roomPrice =
-        this.booking.roomPrice -
-        (this.booking.extraPersonCharge + this.booking.extraChildCharge);
-    }
+    // roomPrice sent to LMS must be the per-room-per-night tariff BEFORE any discount.
+    // booking.roomPrice is already per-room-per-night; do NOT subtract extraPersonCharge
+    // (which is a total-for-stay amount) — mixing dimensions produces a wrong value.
+    // LMS (BookingPaymentOrchestrationServiceImpl) multiplies: roomPrice × noOfRooms × noOfNights.
+    this.enquiryForm.roomPrice = this.booking.roomTariffBeforeDiscount;
     this.hotelBookingService
       .accommodationEnquiry(this.enquiryForm)
       .subscribe((response) => {
@@ -11109,12 +11104,8 @@ export class BookingComponent implements OnInit {
       enquiryForm.utmMedium = 'unknown';
     }
 
-    enquiryForm.roomPrice =
-      booking.planCode === 'GHC'
-        ? booking.totalAmount -
-          (plan.extraPersonCharge + plan.extraPersonChildCountAmount)
-        : plan.price -
-          (enquiryForm.extraPersonCharge + enquiryForm.extraChildCharge);
+    // roomPrice must be per-room-per-night tariff so LMS can multiply: roomPrice × noOfRooms × noOfNights.
+    enquiryForm.roomPrice = plan.actualRoomPrice;
 
     enquiryForm.externalSite = 'WebSite';
     enquiryForm.source = 'Bookone Connect';
@@ -11907,6 +11898,21 @@ sendWhatsappMessageToPropertyOwner() {
       // Update booking object with calculated values
       this.booking.netAmount = this.amountAfterDiscount;
       this.booking.discountAmount = this.totalDiscountAmount;
+      // Effective combined discount percentage — the single % that produced discountAmount from baseAmount.
+      // This keeps discountPercentage and discountAmount mathematically consistent for LMS, PMS, THM and templates.
+      this.booking.discountPercentage = baseAmount > 0
+        ? Math.round((this.totalDiscountAmount / baseAmount) * 10000) / 100
+        : 0;
+      // Human-readable breakdown sent via promotionName so hotel can see what composed the discount.
+      const promotionParts: string[] = [];
+      if (couponPct > 0) {
+        promotionParts.push(`Coupon ${couponPct}%`);
+      }
+      if (advanceDiscountPct > 0) {
+        promotionParts.push(`Advance ${advanceDiscountPct}%`);
+      }
+      // Always write — joins to '' when no discounts, clearing any stale value from a previous selection.
+      this.booking.promotionName = promotionParts.join(' + ');
       this.booking.taxAmount = this.taxOnDiscountedAmount;
       this.booking.totalAmount = grandTotalAmount;
       this.booking.advanceAmount = this.advancePaymentAmount;

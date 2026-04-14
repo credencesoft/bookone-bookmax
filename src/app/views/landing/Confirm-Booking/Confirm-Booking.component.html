@@ -132,7 +132,7 @@
               </td>
               <td style="color: black !important; text-align: right;">
                 {{
-                booking.beforeTaxAmount
+                (booking.beforeTaxAmount + (booking.extraPersonCharge || 0) + (booking.extraChildCharge || 0))
                 | currency: currency:"symbol":"1.2-2"
                 }}
               </td>
@@ -148,9 +148,12 @@
               </td>
             </tr>
 
-            <tr *ngIf="booking.discountPercentage > 0">
+            <tr *ngIf="booking.discountAmount > 0">
               <td style="color: black !important;">
-                Coupon Applied: ({{booking.discountPercentage}}%)
+                Discounts Applied ({{booking.discountPercentage}}%)
+                <span *ngIf="booking.promotionName" style="font-weight:normal; font-size:0.85em;">
+                  &mdash; {{booking.promotionName}}
+                </span>
               </td>
               <td style="color: black !important; text-align: right;">
                 -{{
@@ -158,22 +161,6 @@
                 }}
               </td>
             </tr>
-            
-            <!-- <tr>
-          <td style="color: black !important;">
-            Total Room Amount
-          </td>
-          <td style="color: black !important; text-align: right;">
-            {{
-              (booking.netAmount + ((this.booking.netAmount *
-              this.booking.taxPercentage) /
-              100))+totalExtraAmount
-              | currency: currency:"symbol":"1.2-2"
-              }}
-          </td>
-        </tr> -->
-
-
 
           </table>
         </div>
@@ -223,60 +210,62 @@
         <div class="col-12 "
           style="background-color: #fff; font-weight: bold; padding-top: 10px; padding-bottom: 10px; margin-top: 15px;">
           <table style=" border: none; width:100%">
-            <tr *ngIf="booking.discountPercentage == 0">
+
+            <!-- When discounts exist, show taxable breakdown before total -->
+            <tr *ngIf="booking.discountAmount > 0">
+              <td style="color: black !important;">Taxable Amount</td>
+              <td style="color: black !important; text-align: right;">
+                {{ (booking.beforeTaxAmount + (booking.extraPersonCharge || 0) + (booking.extraChildCharge || 0)) - booking.discountAmount | currency : currency : "symbol" : "1.2-2" }}
+              </td>
+            </tr>
+
+            <tr *ngIf="booking.discountAmount > 0">
+              <td style="color: black !important;">Tax</td>
+              <td style="color: black !important; text-align: right;">
+                {{ booking.taxAmount | currency : currency : "symbol" : "1.2-2" }}
+              </td>
+            </tr>
+
+            <!-- Services sub-total row — only when services are present -->
+            <tr *ngIf="booking.totalServiceAmount > 0">
+              <td style="color: black !important;">Add-on Services Total</td>
+              <td style="color: black !important; text-align: right;">
+                {{ booking.totalServiceAmount | currency : currency : "symbol" : "1.2-2" }}
+              </td>
+            </tr>
+
+            <!-- Total Payable grand formula (all scenarios):
+                   (beforeTaxAmount + extraPax + extraChild − discount) + tax + services
+                 • THM totalAmount is intentionally NOT used — THM does not apply discounts to it.
+                 • Works for: no discount, coupon-only, advance-discount-only, both, with/without services. -->
+            <tr>
               <td style="color: black !important;">Total Payable Amount</td>
-              <td style="color: black !important; text-align: right;">{{(booking.totalAmount) | currency : currency : "symbol" : "1.2-2"}}</td>
-            </tr>
-
-            <tr *ngIf="getDetailsData !== 100 && booking.discountPercentage == 0">
-              <td style="color: black !important;">Due Amount </td>
-              <td style="color: black !important; text-align: right;">{{this.dueAmount| currency : currency : "symbol" :
-                "1.2-2"}}</td>
-            </tr>
-
-            <tr *ngIf="getDetailsData == 100 && booking.discountPercentage == 0">
-              <td style="color: black !important;">Due Amount </td>
-              <td style="color: black !important; text-align: right;">{{0 | currency : currency : "symbol" : "1.2-2"}}
+              <td style="color: black !important; text-align: right;">
+                {{ ((booking.beforeTaxAmount + (booking.extraPersonCharge || 0) + (booking.extraChildCharge || 0) - (booking.discountAmount || 0)) + (booking.taxAmount || 0) + (booking.totalServiceAmount || 0)) | currency : currency : "symbol" : "1.2-2" }}
               </td>
             </tr>
 
-            <tr *ngIf="booking.discountPercentage > 0">
-              <td style="color: black !important;">Taxable Amount </td>
-              <td style="color: black !important; text-align: right;">{{ booking.beforeTaxAmount - booking.discountAmount | currency : currency : "symbol" : "1.2-2"}}
+            <!-- Advance & Due rows — shown whenever an advance applies -->
+            <tr *ngIf="booking.advanceAmount > 0">
+              <td style="color: black !important;">Advance Paid ({{getDetailsData}}%)</td>
+              <td style="color: black !important; text-align: right;">
+                {{ booking.advanceAmount | currency : currency : "symbol" : "1.2-2" }}
               </td>
             </tr>
 
-            <tr *ngIf="booking.discountPercentage > 0">
-              <td style="color: black !important;">Tax </td>
-              <td style="color: black !important; text-align: right;">{{ booking.taxAmount  | currency : currency : "symbol" : "1.2-2"}}
+            <tr *ngIf="booking.advanceAmount > 0 && getDetailsData !== 100">
+              <td style="color: black !important;">Balance at Check-in</td>
+              <td style="color: black !important; text-align: right;">
+                {{ dueAmount | currency : currency : "symbol" : "1.2-2" }}
               </td>
             </tr>
 
-            <tr *ngIf="booking.discountPercentage > 0">
-              <td style="color: black !important;">Total Payable Amount  </td>
-              <td style="color: black !important; text-align: right;">{{ booking.totalAmount  | currency : currency : "symbol" : "1.2-2"}}
+            <tr *ngIf="booking.advanceAmount > 0 && getDetailsData == 100">
+              <td style="color: black !important;">Balance at Check-in</td>
+              <td style="color: black !important; text-align: right;">
+                {{ 0 | currency : currency : "symbol" : "1.2-2" }}
               </td>
             </tr>
-
-            <!-- <tr>
-          <td style="color: black !important;">Advance Amount ({{getDetailsData}}%)</td>
-          <td style="color: black !important; text-align: right;">{{booking.advanceAmount | currency : currency : "symbol" : "1.2-2"}}</td>
-        </tr> -->
-
-            <!-- <tr *ngIf="getDetailsData !== 100">
-          <td style="color: black !important;">Due Amount </td>
-          <td style="color: black !important; text-align: right;">{{this.dueAmount| currency : currency : "symbol" : "1.2-2"}}</td>
-        </tr>
-
-        <tr *ngIf="getDetailsData == 100">
-          <td style="color: black !important;">Due Amount </td>
-          <td style="color: black !important; text-align: right;">{{0 | currency : currency : "symbol" : "1.2-2"}}</td>
-        </tr> -->
-
-            <!-- <tr>
-          <td>Due Amount </td>
-          <td>{{booking.advanceAmount | currency : currency : "symbol" : "1.2-2"}}</td>
-        </tr> -->
 
           </table>
         </div>
@@ -394,7 +383,7 @@
               </td>
               <td style="color: black !important; text-align: right;">
                 {{
-                booking.beforeTaxAmount
+                (booking.beforeTaxAmount + (booking.extraPersonCharge || 0) + (booking.extraChildCharge || 0))
                 | currency: currency:"symbol":"1.2-2"
                 }}
               </td>
@@ -409,9 +398,12 @@
                 }}
               </td>
             </tr>
-            <tr *ngIf="booking.discountPercentage > 0">
+            <tr *ngIf="booking.discountAmount > 0">
               <td style="color: black !important;">
-                Coupon Applied: ({{booking.discountPercentage}}%)
+                Discounts Applied ({{booking.discountPercentage}}%)
+                <span *ngIf="booking.promotionName" style="font-weight:normal; font-size:0.85em;">
+                  &mdash; {{booking.promotionName}}
+                </span>
               </td>
               <td style="color: black !important; text-align: right;">
                 -{{
@@ -419,19 +411,6 @@
                 }}
               </td>
             </tr>
-            <!-- <tr>
-              <td style="color: black !important;">
-                Total Room Amount
-              </td>
-              <td style="color: black !important; text-align: right;">
-                {{
-                  booking.
-                  | currency: currency:"symbol":"1.2-2"
-                  }}
-              </td>
-            </tr> -->
-
-
 
           </table>
         </div>
@@ -478,52 +457,61 @@
           </table>
         </div>
 
-        <div class="col-12" style="background-color: #fff; font-weight: bold; padding-top: 10px; padding-bottom: 10px; margin-top: 15px;    border: 2px solid;
-border-radius: 10px;">
+        <div class="col-12" style="background-color: #fff; font-weight: bold; padding-top: 10px; padding-bottom: 10px; margin-top: 15px; border: 2px solid; border-radius: 10px;">
           <table style=" border: none; width:100%">
-            <tr *ngIf="booking.discountPercentage == 0">
+
+            <tr *ngIf="booking.discountAmount > 0">
+              <td style="color: black !important;">Taxable Amount</td>
+              <td style="color: black !important; text-align: right;">
+                {{ (booking.beforeTaxAmount + (booking.extraPersonCharge || 0) + (booking.extraChildCharge || 0)) - booking.discountAmount | currency : currency : "symbol" : "1.2-2" }}
+              </td>
+            </tr>
+
+            <tr *ngIf="booking.discountAmount > 0">
+              <td style="color: black !important;">Tax</td>
+              <td style="color: black !important; text-align: right;">
+                {{ booking.taxAmount | currency : currency : "symbol" : "1.2-2" }}
+              </td>
+            </tr>
+
+            <!-- Services sub-total row — only when services are present -->
+            <tr *ngIf="booking.totalServiceAmount > 0">
+              <td style="color: black !important;">Add-on Services Total</td>
+              <td style="color: black !important; text-align: right;">
+                {{ booking.totalServiceAmount | currency : currency : "symbol" : "1.2-2" }}
+              </td>
+            </tr>
+
+            <!-- Total Payable grand formula (all scenarios):
+                   (beforeTaxAmount + extraPax + extraChild − discount) + tax + services
+                 • THM totalAmount not used — THM does not apply discounts to it. -->
+            <tr>
               <td style="color: black !important;">Total Payable Amount</td>
-              <td style="color: black !important; text-align: right;">{{(booking.totalAmount) | currency : currency : "symbol" : "1.2-2"}}</td>
-            </tr>
-            <!-- <tr>
-              <td style="color: black !important;">Advance Amount ({{getDetailsData}}%)</td>
-              <td style="color: black !important; text-align: right;">{{booking.advanceAmount | currency : currency : "symbol" : "1.2-2"}}</td>
-            </tr> -->
-
-            <tr *ngIf="getDetailsData !== 100 && booking.discountPercentage == 0">
-              <td style="color: black !important;">Due Amount </td>
-              <td style="color: black !important; text-align: right;">{{this.dueAmount| currency : currency : "symbol" :
-                "1.2-2"}}</td>
-            </tr>
-
-            <tr *ngIf="getDetailsData == 100 && booking.discountPercentage == 0">
-              <td style="color: black !important;">Due Amount </td>
-              <td style="color: black !important; text-align: right;">{{0 | currency : currency : "symbol" : "1.2-2"}}
+              <td style="color: black !important; text-align: right;">
+                {{ ((booking.beforeTaxAmount + (booking.extraPersonCharge || 0) + (booking.extraChildCharge || 0) - (booking.discountAmount || 0)) + (booking.taxAmount || 0) + (booking.totalServiceAmount || 0)) | currency : currency : "symbol" : "1.2-2" }}
               </td>
             </tr>
 
-            <tr *ngIf="booking.discountPercentage > 0">
-              <td style="color: black !important;">Taxable Amount </td>
-              <td style="color: black !important; text-align: right;">{{ booking.beforeTaxAmount - booking.discountAmount | currency : currency : "symbol" : "1.2-2"}}
+            <tr *ngIf="booking.advanceAmount > 0">
+              <td style="color: black !important;">Advance Paid ({{getDetailsData}}%)</td>
+              <td style="color: black !important; text-align: right;">
+                {{ booking.advanceAmount | currency : currency : "symbol" : "1.2-2" }}
               </td>
             </tr>
 
-            <tr *ngIf="booking.discountPercentage > 0">
-              <td style="color: black !important;">Tax </td>
-              <td style="color: black !important; text-align: right;">{{ booking.taxAmount  | currency : currency : "symbol" : "1.2-2"}}
+            <tr *ngIf="booking.advanceAmount > 0 && getDetailsData !== 100">
+              <td style="color: black !important;">Balance at Check-in</td>
+              <td style="color: black !important; text-align: right;">
+                {{ dueAmount | currency : currency : "symbol" : "1.2-2" }}
               </td>
             </tr>
 
-            <tr *ngIf="booking.discountPercentage > 0">
-              <td style="color: black !important;">Total Payable Amount  </td>
-              <td style="color: black !important; text-align: right;">{{ booking.totalAmount  | currency : currency : "symbol" : "1.2-2"}}
+            <tr *ngIf="booking.advanceAmount > 0 && getDetailsData == 100">
+              <td style="color: black !important;">Balance at Check-in</td>
+              <td style="color: black !important; text-align: right;">
+                {{ 0 | currency : currency : "symbol" : "1.2-2" }}
               </td>
             </tr>
-
-            <!-- <tr>
-              <td>Due Amount </td>
-              <td>{{booking.advanceAmount | currency : currency : "symbol" : "1.2-2"}}</td>
-            </tr> -->
 
           </table>
         </div>
