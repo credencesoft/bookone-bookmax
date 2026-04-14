@@ -85,6 +85,7 @@ import { TaxDetails } from "./TaxDetails";
     totalRoomTariffBeforeDiscount: number;
     selectedServiceCount: number;
     selectedServiceTotal: number;
+    selectedServices: any[];
     serviceQuoteSummary: string;
     quotedGrandTotal: number;
     quotedPayableAmount: number;
