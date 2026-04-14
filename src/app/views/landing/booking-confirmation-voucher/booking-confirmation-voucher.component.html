@@ -312,7 +312,7 @@
                     </td>
                     <td>
                       {{
-                      booking?.roomPrice
+                      booking?.roomTariffBeforeDiscount
                       | currency: currency : 'symbol' : '1.2-2'
                       }}
                     </td>
@@ -325,9 +325,9 @@
                         -{{ getDisplayedRowTotalDiscount(booking) | currency: currency : 'symbol' : '1.2-2' }}
                       </ng-container>
                     </td>
-                    <td>{{ booking?.beforeTaxAmount | currency: currency : 'symbol' : '1.2-2' }}</td>
-                    <td>{{ getDisplayedRowTax(booking) | currency: currency : 'symbol' : '1.2-2' }}</td>
-                    <td>{{ getDisplayedRowTotal(booking) | currency: currency : 'symbol' : '1.2-2' }}</td>
+                    <td>{{ getDisplayedBookingSubtotal(booking) | currency: currency : 'symbol' : '1.2-2' }}</td>
+                    <td>{{ getDisplayedBookingTax(booking) | currency: currency : 'symbol' : '1.2-2' }}</td>
+                    <td>{{ getDisplayedBookingTotal(booking) | currency: currency : 'symbol' : '1.2-2' }}</td>
                   </tr>
                 </tbody>
               </table>
@@ -770,7 +770,7 @@
                   </div>
                   <div>
                     {{
-                    booking?.roomPrice * booking?.noOfNights | currency: currency : 'symbol' : '1.2-2'
+                    booking?.roomTariffBeforeDiscount | currency: currency : 'symbol' : '1.2-2'
                     }}
                   </div>
                 </div>
@@ -792,12 +792,12 @@
                 </div>
                 <div class="d-flex justify-content-between">
                   <div>Sub Total</div>
-                  <div>{{ booking?.beforeTaxAmount | currency: currency : 'symbol' : '1.2-2' }}</div>
+                  <div>{{ getDisplayedBookingSubtotal(booking) | currency: currency : 'symbol' : '1.2-2' }}</div>
                 </div>
 
                 <div class="d-flex justify-content-between">
                   <div>Tax</div>
-                  <div>{{ getDisplayedRowTax(booking) | currency: currency : 'symbol' : '1.2-2' }}</div>
+                  <div>{{ getDisplayedBookingTax(booking) | currency: currency : 'symbol' : '1.2-2' }}</div>
                 </div>
                 <hr style="
                     border: 1px solid #e5e7eb;
@@ -806,7 +806,7 @@
                   " />
                 <div class="d-flex justify-content-between" style="font-weight: bold">
                   <div>Total Amount</div>
-                  <div>{{ getDisplayedRowTotal(booking) | currency: currency : 'symbol' : '1.2-2' }}</div>
+                  <div>{{ getDisplayedBookingTotal(booking) | currency: currency : 'symbol' : '1.2-2' }}</div>
                 </div>
               </ng-container>
             </div>
