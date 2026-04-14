@@ -655,6 +655,22 @@
             *ngIf="selectedPlansSummary.length > 0"
           />
 
+          <div class="spin-win-card" *ngIf="!activeForGoogleHotelCenter">
+            <div class="spin-left">
+              <div class="icon-circle">
+                <i class="fa-solid fa-trophy"></i>
+              </div>
+              <div class="text-section">
+                <div class="title">Spin & Win Discount</div>
+                <div class="subtitle">Try your luck today!</div>
+              </div>
+            </div>
+
+            <button class="spin-btn" (click)="openSpinWheel(product, couponSection)">
+              Spin Now
+            </button>
+          </div>
+
           <div *ngIf="!activeForGoogleHotelCenter">
             <small class="special-code"
               >Have a coupon code?
@@ -4264,6 +4280,21 @@
             *ngIf="selectedPlansSummary.length > 0"
           />
 
+          <div class="spin-win-card" *ngIf="!activeForGoogleHotelCenter">
+            <div class="spin-left">
+              <div class="icon-circle">
+                <i class="fa-solid fa-trophy"></i>
+              </div>
+              <div class="text-section">
+                <div class="title">Spin & Win Discount</div>
+                <div class="subtitle">Try your luck today!</div>
+              </div>
+            </div>
+
+            <button class="spin-btn" (click)="openSpinWheel(product, couponSection)">
+              Spin Now
+            </button>
+          </div>
           <div>
             <small class="special-code"
               >Have a coupon code?

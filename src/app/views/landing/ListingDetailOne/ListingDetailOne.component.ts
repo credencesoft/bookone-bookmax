@@ -7835,6 +7835,7 @@ onCouponInputChange(event: string) {
 }
 
   openSpinWheel(product: any, couponSection: HTMLElement) {
+    this.showBookingSummary = false
     const validOfferList = this.checkValidCouponOrNot(this.showAllTheOfferList?.length ? this.showAllTheOfferList : this.offersList) || [];
     const offersWithCode = validOfferList.filter((offer: any) => offer?.couponCode && Number(offer?.discountPercentage) > 0);
 
@@ -7928,6 +7929,7 @@ onCouponInputChange(event: string) {
     if (!this.spinWheelResult || this.spinWheelResult.type !== 'offer') {
       return;
     }
+    this.showBookingSummary = true;
 
     this.applyCoupon(this.spinWheelResult.offer, this.spinWheelCouponSection as HTMLElement);
     this.spinWheelOpen = false;

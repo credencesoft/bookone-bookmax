@@ -366,6 +366,7 @@ export class BookingComponent implements OnInit {
   roomLabel: string = 'Room';
   advanceDiscountSlabs: AdvanceDiscountSlab[] = [];
   selectedAdvanceDiscountSlab: AdvanceDiscountSlab | null = null;
+  selectedPlansSummary: any[] = [];
   
   // ✅ Phase 4: Add-on Services Tracking
   addOnServices: any[] = [];                    // Available add-ons to display
@@ -589,8 +590,8 @@ export class BookingComponent implements OnInit {
       this.handleMissingBookingContext();
       return;
     }
-    const plans = bookingSummary.selectedPlansSummary;
-    if (plans.length >= 2) {
+    this.selectedPlansSummary = bookingSummary.selectedPlansSummary;
+    if (this.selectedPlansSummary.length >= 2) {
       this.groupBookingId = Math.floor(10000000 + Math.random() * 90000000);
     }
     this.otaPlanPrice = this.token.getLandingPrice();
@@ -683,6 +684,13 @@ export class BookingComponent implements OnInit {
     this.initializeAddOnServices();
 
     this.token.clearBookingDataObj();
+  }
+
+  getTotalRooms(): number {
+    return this.selectedPlansSummary?.reduce(
+      (total, plan) => total + (plan.selectedRoomnumber || 0),
+      0
+    ) || 0;
   }
 
   private hasRequiredBookingContext(): boolean {

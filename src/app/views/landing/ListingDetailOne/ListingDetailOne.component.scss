@@ -2943,3 +2943,61 @@ text-align: center;
   text-align: justify;
 }
 
+
+.spin-win-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(135deg, #fde6ac 0%, #ffefc8 60%, #fef4da 100%);
+  padding: 14px 18px;
+  border-radius: 14px;
+  margin-bottom: 12px;
+  border: 2px solid #facc15;
+}
+
+.spin-left {
+  display: flex;
+  align-items: center;
+}
+
+.icon-circle {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #fff3d6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 12px;
+}
+
+.icon-circle i {
+  color: #d4a017;
+  font-size: 18px;
+}
+
+.text-section .title {
+  font-weight: 600;
+  font-size: 15px;
+  color: #1f2937;
+}
+
+.text-section .subtitle {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.spin-btn {
+  background: #0f4c5c;
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 22px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.spin-btn:hover {
+  background: #0c3a46;
+}
