@@ -10728,7 +10728,7 @@ export class BookingComponent implements OnInit {
     this.enquiryForm.selectedServiceTotal = servicesTotalForEnquiry; // LMS field: selectedServiceTotal (not totalServiceAmount)
     // Serialize selected services so BookingPaymentOrchestrationServiceImpl can recreate ServiceDto rows.
     if (this.savedServices && this.savedServices.length > 0) {
-      this.enquiryForm.serviceQuoteSummary = JSON.stringify(this.savedServices);
+      this.enquiryForm.selectedServices = this.savedServices;
     }
     // this.enquiryForm.taxDetails = this.booking.taxDetails;
     // this.enquiryForm.currency = this.token.getProperty().localCurrency;
