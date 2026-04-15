@@ -2610,16 +2610,18 @@ export class BookingComponent implements OnInit {
     }
 
     const bookingList = bookingSummary.selectedPlansSummary;
+    this.equitycreatedData = null;
 
     for (let i = 0; i < bookingList.length; i++) {
       const _booking = bookingList[i];
 
-      await this.submitFormBooking(_booking, bookingList);
+      await this.submitFormBooking(_booking, bookingList, i);
     }
   }
 
-  async submitFormBooking(plan: any, bookingSummary: any) {
+  async submitFormBooking(plan: any, bookingSummary: any, index: number = 0) {
     const booking: any = this.booking;
+    const isFirstEnquiryPayload = index === 0;
 
     // booking discount/advance fields are set authoritatively by calculateMultiDiscountAndTax() — do NOT overwrite.
 
@@ -2632,9 +2634,28 @@ export class BookingComponent implements OnInit {
       enquiryForm.alternativeLocation = this.token.getProperty().address.city;
     }
 
-    this.payment.netReceivableAmount = plan.price + plan.taxPercentageperroom;
-    enquiryForm.min = Number(this.payment.netReceivableAmount.toFixed(2));
-    enquiryForm.max = Number(this.payment.netReceivableAmount.toFixed(2));
+    const planBeforeTaxAmount = this.toSafeAmount(
+      this.getPlanAmountAfterDiscount(plan),
+    );
+    const planTaxAmount = this.toSafeAmount(this.getPlanTaxAfterDiscount(plan));
+    const planRoomTotalAmount = this.toSafeAmount(
+      planBeforeTaxAmount + planTaxAmount,
+    );
+    const selectedServiceTotal = isFirstEnquiryPayload
+      ? this.toSafeAmount(this.getServicesTotal())
+      : 0;
+    const convenienceFee = isFirstEnquiryPayload
+      ? this.toSafeAmount(this.getDisplayedConvenienceFeeAmount())
+      : 0;
+    const planTotalAmount = this.toSafeAmount(
+      planBeforeTaxAmount +
+        planTaxAmount +
+        selectedServiceTotal +
+        convenienceFee,
+    );
+    this.payment.netReceivableAmount = planRoomTotalAmount;
+    enquiryForm.min = planRoomTotalAmount;
+    enquiryForm.max = planRoomTotalAmount;
     if (this.groupBookingId) {
       enquiryForm.groupEnquiryId = this.groupBookingId;
       sessionStorage.setItem('groupbookingId', enquiryForm.groupEnquiryId);
@@ -2652,7 +2673,7 @@ export class BookingComponent implements OnInit {
     if (this.token?.getProperty()?.paymentGateway === 'PayU') {
       enquiryForm.modeOfPayment = 'PayU';
     }
-    enquiryForm.payableAmount = this.toSafeAmount(this.getNewGrandTotal());
+    enquiryForm.payableAmount = planTotalAmount;
     enquiryForm.roomName = plan.roomName;
     enquiryForm.extraPersonCharge = plan.extraPersonAdultCountAmount;
     enquiryForm.extraChildCharge = plan?.extraPersonChildCountAmount;
@@ -2685,9 +2706,11 @@ export class BookingComponent implements OnInit {
     enquiryForm.source = 'Bookone Connect';
     enquiryForm.couponCode = booking.couponCode;
     enquiryForm.promotionName = booking.promotionName;
-    enquiryForm.discountAmount = this.toSafeAmount(booking.discountAmount);
-    // beforeTaxAmount = rooms after ALL discounts (coupon + advance) — amountAfterDiscount
-    enquiryForm.beforeTaxAmount = this.toSafeAmount(this.amountAfterDiscount);
+    enquiryForm.discountAmount = this.toSafeAmount(
+      this.getPlanDiscountAmount(plan),
+    );
+    // beforeTaxAmount = this room type after ALL discounts (coupon + advance).
+    enquiryForm.beforeTaxAmount = planBeforeTaxAmount;
 
     enquiryForm.mobile =
       this.token.getProperty().whatsApp || this.token.getProperty().mobile;
@@ -2748,7 +2771,7 @@ export class BookingComponent implements OnInit {
     enquiryForm.taxDetails = this.token
       .getProperty()
       .taxDetails.filter((item) => ['CGST', 'SGST', 'GST'].includes(item.name));
-    enquiryForm.taxAmount = this.toSafeAmount(this.getPlanTaxAfterDiscount(plan));
+    enquiryForm.taxAmount = planTaxAmount;
 
     const TO_EMAIL = 'reservation@thehotelmate.co';
     const TO_NAME = 'Support - The Hotel Mate';
@@ -2772,16 +2795,21 @@ export class BookingComponent implements OnInit {
       enquiryForm.roomTariffBeforeDiscount *
       plan.nights *
       plan.selectedRoomnumber;
-    // All financial totals come from the authoritative live calculation methods.
-    // getNewGrandTotal() = rooms after all discounts + tax + services + convenience.
-    const grandTotal = this.toSafeAmount(this.getNewGrandTotal());
-    enquiryForm.totalAmount = grandTotal;
-    enquiryForm.payableAmount = grandTotal;
-    enquiryForm.advanceAmount = this.toSafeAmount(this.getNewPayNowAmount());
-    enquiryForm.convenienceFee = this.toSafeAmount(this.getDisplayedConvenienceFeeAmount());
+    // Room payload values stay room-specific. Pay Now amount, add-ons and convenience
+    // fee are attached only to the first enquiry in a multi-room group.
+    enquiryForm.totalAmount = planTotalAmount;
+    enquiryForm.payableAmount = planTotalAmount;
+    enquiryForm.advanceAmount = isFirstEnquiryPayload
+      ? this.toSafeAmount(this.getNewPayNowAmount())
+      : 0;
+    enquiryForm.convenienceFee = convenienceFee;
     enquiryForm.discountAmountPercentage = booking.discountPercentage;
-    enquiryForm.selectedServiceTotal = this.toSafeAmount(this.getServicesTotal());
-    if (this.savedServices && this.savedServices.length > 0) {
+    enquiryForm.selectedServiceTotal = selectedServiceTotal;
+    if (
+      isFirstEnquiryPayload &&
+      this.savedServices &&
+      this.savedServices.length > 0
+    ) {
       enquiryForm.selectedServices = this.savedServices;
     }
     enquiryForm.noOfNights = plan.nights;
@@ -2789,9 +2817,7 @@ export class BookingComponent implements OnInit {
     enquiryForm.organisationId = environment.parentOrganisationId;
     enquiryForm.bookingCommissionAmount = 0;
     enquiryForm.taxPercentage = plan.taxpercentage;
-    // Financial totals are already set authoritatively above via getNewGrandTotal(),
-    // getNewPayNowAmount(), getServicesTotal(), getDisplayedConvenienceFeeAmount().
-    // Do NOT overwrite them here with stale plan-based or coupon-only values.
+    // Do NOT overwrite room-specific totals here with booking-level totals.
 
     this.paymentLoader = true;
     try {
@@ -2800,25 +2826,28 @@ export class BookingComponent implements OnInit {
         .toPromise();
       if (response) {
         this.paymentLoader = false;
-        this.equitycreatedData = response.body;
+        const createdEnquiry = response.body;
+        if (isFirstEnquiryPayload || !this.equitycreatedData) {
+          this.equitycreatedData = createdEnquiry;
+          this.token.saveEnquiryData(this.equitycreatedData);
+          this.enquiryNo = 'THM-' + createdEnquiry.enquiryId;
+        }
         const existingEnquirysStr = sessionStorage.getItem(
           'EnquiryResponseList',
         );
         const existingEnquiries = existingEnquirysStr
           ? JSON.parse(existingEnquirysStr)
           : [];
-        existingEnquiries.push(this.equitycreatedData);
+        existingEnquiries.push(createdEnquiry);
         sessionStorage.setItem(
           'EnquiryResponseList',
           JSON.stringify(existingEnquiries),
         );
-        this.token.saveEnquiryData(this.equitycreatedData);
         this.isEnquiry = true;
         this.paymentLoader = false;
         this.paymentLoader = false;
         this.isSuccess = true;
         this.submitButtonDisable = true;
-        this.enquiryNo = 'THM-' + response.body.enquiryId;
       }
     } catch (e) {
       console.error('Submit failed', e);
@@ -12045,9 +12074,8 @@ sendWhatsappMessageToPropertyOwner() {
     return discountedPrice + tax;
   }
 
-  getPlanTaxAfterDiscount(plan: any): number {
+  getPlanAmountAfterDiscount(plan: any): number {
     const price = this.toSafeAmount(plan?.price);
-    const taxPercentage = this.toSafePercent(plan?.taxpercentage);
     const couponPercentage = this.toSafePercent(
       this.specialDiscountData?.discountPercentage ??
         this.selectedCouponList?.discountPercentage,
@@ -12062,7 +12090,20 @@ sendWhatsappMessageToPropertyOwner() {
       afterCoupon - (afterCoupon * advanceDiscountPercentage) / 100,
     );
 
-    return this.toSafeAmount((afterAdvanceDiscount * taxPercentage) / 100);
+    return this.toSafeAmount(afterAdvanceDiscount);
+  }
+
+  getPlanDiscountAmount(plan: any): number {
+    const price = this.toSafeAmount(plan?.price);
+
+    return this.toSafeAmount(price - this.getPlanAmountAfterDiscount(plan));
+  }
+
+  getPlanTaxAfterDiscount(plan: any): number {
+    const taxPercentage = this.toSafePercent(plan?.taxpercentage);
+    const amountAfterDiscount = this.getPlanAmountAfterDiscount(plan);
+
+    return this.toSafeAmount((amountAfterDiscount * taxPercentage) / 100);
   }
 
   getTotalTax(): number {

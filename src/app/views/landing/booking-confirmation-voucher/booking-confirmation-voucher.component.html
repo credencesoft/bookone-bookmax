@@ -294,6 +294,9 @@
                     <th *ngIf="specialDiscountData?.discountPercentage">
                       {{ getDiscountColumnLabel() }}
                     </th>
+                    <th *ngIf="getDisplayedAdvanceDiscountAmount() > 0">
+                      Advance Discount
+                    </th>
                     <th>Sub Total</th>
                     <th>Tax</th>
                     <th>Total</th>
@@ -321,8 +324,13 @@
                     <td>{{ booking?.extraPersonCharge | currency: currency : 'symbol' : '1.2-2' }}</td>
                     <td>{{ booking?.extraChildCharge | currency: currency : 'symbol' : '1.2-2' }}</td>
                     <td *ngIf="specialDiscountData?.discountPercentage">
-                      <ng-container *ngIf="getDisplayedRowTotalDiscount(booking) > 0">
-                        -{{ getDisplayedRowTotalDiscount(booking) | currency: currency : 'symbol' : '1.2-2' }}
+                      <ng-container *ngIf="getDisplayedRowCouponDiscount(booking) > 0">
+                        -{{ getDisplayedRowCouponDiscount(booking) | currency: currency : 'symbol' : '1.2-2' }}
+                      </ng-container>
+                    </td>
+                    <td *ngIf="getDisplayedAdvanceDiscountAmount() > 0">
+                      <ng-container *ngIf="getDisplayedRowAdvanceDiscount(booking) > 0">
+                        -{{ getDisplayedRowAdvanceDiscount(booking) | currency: currency : 'symbol' : '1.2-2' }}
                       </ng-container>
                     </td>
                     <td>{{ getDisplayedBookingSubtotal(booking) | currency: currency : 'symbol' : '1.2-2' }}</td>
@@ -784,9 +792,13 @@
                   <div>Extra Child</div>
                   <div>{{ booking?.extraChildCharge | currency: currency : 'symbol' : '1.2-2' }}</div>
                 </div>
-                <div class="d-flex justify-content-between" *ngIf="getDisplayedRowTotalDiscount(booking) > 0">
+                <div class="d-flex justify-content-between" *ngIf="getDisplayedRowCouponDiscount(booking) > 0">
                   <div>{{ getDiscountColumnLabel() }}</div>
-                  <div>-{{ getDisplayedRowTotalDiscount(booking) | currency: currency : 'symbol' : '1.2-2' }}</div>
+                  <div>-{{ getDisplayedRowCouponDiscount(booking) | currency: currency : 'symbol' : '1.2-2' }}</div>
+                </div>
+                <div class="d-flex justify-content-between" *ngIf="getDisplayedRowAdvanceDiscount(booking) > 0">
+                  <div>Advance Discount</div>
+                  <div>-{{ getDisplayedRowAdvanceDiscount(booking) | currency: currency : 'symbol' : '1.2-2' }}</div>
                 </div>
                 <div class="d-flex justify-content-between">
                   <div>Sub Total</div>
