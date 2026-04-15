@@ -21,6 +21,7 @@ class TestBookingConfirmationVoucherComponent extends BookingConfirmationVoucher
  *
  * Key state fields:
  *   bookingsResponseList[0].beforeTaxAmount  = room price after coupon (API value, pre-advance)
+ *   bookingsResponseList[0].roomTariffBeforeDiscount = original room price before coupon
  *   bookingsResponseList[0].taxAmount        = per-row tax from API   (post-coupon, pre-advance)
  *   taxOnDiscountedAmount                    = authoritative tax (post-ALL discounts, stored from checkout)
  *                                              When > 0, getDisplayedRoomTax() uses this instead of per-row sum
@@ -63,7 +64,7 @@ describe('BookingConfirmationVoucherComponent – 14 booking scenarios', () => {
   /**
    * Configures component state exactly as the checkout flow would have stored it.
    *
-   * @param beforeTaxAmount  Room price after coupon (from API) – what getDisplayedRoomSubtotal() sums
+   * @param beforeTaxAmount  Room price after coupon (from API); setup derives the original subtotal from it
    * @param perRowTax        Tax from API row (post-coupon, pre-advance) – fallback when taxOnDiscountedAmount=0
    * @param taxOnDiscounted  Post-all-discounts tax stored in sessionStorage (0 when no advance discount)
    * @param advanceDiscount  Advance discount amount
@@ -84,10 +85,16 @@ describe('BookingConfirmationVoucherComponent – 14 booking scenarios', () => {
     withAddOn?: boolean;
     couponPct?: number;
   }): void {
+    const couponMultiplier = cfg.couponPct ? (100 - cfg.couponPct) / 100 : 1;
+    const roomTariffBeforeDiscount = couponMultiplier > 0
+      ? cfg.beforeTaxAmount / couponMultiplier
+      : cfg.beforeTaxAmount;
+
     component.bookingsResponseList = [{
       beforeTaxAmount: cfg.beforeTaxAmount,
+      roomTariffBeforeDiscount,
       taxAmount: cfg.perRowTax,
-      discountAmount: 0,
+      discountAmount: roomTariffBeforeDiscount - cfg.beforeTaxAmount,
       noOfNights: 1,
       noOfRooms: 1,
       extraPersonCharge: 0,
@@ -152,7 +159,8 @@ describe('BookingConfirmationVoucherComponent – 14 booking scenarios', () => {
     setup({ beforeTaxAmount: 50, perRowTax: 2.5, couponPct: 50 });
     // room=50, tax=2.5(per-row), convFee=0
     expect(component.getDiscountColumnLabel()).toBe('Coupon / Promo');
-    expect(component.getDisplayedRoomSubtotal()).toBe(50);
+    expect(component.getDisplayedRoomSubtotal()).toBe(100);
+    expect(component.getDisplayedCouponDiscountAmount()).toBe(50);
     expect(component.getDisplayedRoomTax()).toBe(2.5);
     expect(component.getNewGrandTotal()).toBeCloseTo(52.5, 2);
     expect(component.getNewPayNowAmount()).toBeCloseTo(52.5, 2);
@@ -199,7 +207,8 @@ describe('BookingConfirmationVoucherComponent – 14 booking scenarios', () => {
     // PayNow = 50%*(40+2)+0+2 = 21+2 = 23
     // Balance = 44-23 = 21
     expect(component.getDiscountColumnLabel()).toBe('Coupon / Promo');
-    expect(component.getDisplayedRoomSubtotal()).toBe(50);
+    expect(component.getDisplayedRoomSubtotal()).toBe(100);
+    expect(component.getDisplayedCouponDiscountAmount()).toBe(50);
     expect(component.getDisplayedAdvanceDiscountAmount()).toBe(10);
     expect(component.getDisplayedAccommodationAfterDiscounts()).toBe(40);
     expect(component.getDisplayedRoomTax()).toBe(2);

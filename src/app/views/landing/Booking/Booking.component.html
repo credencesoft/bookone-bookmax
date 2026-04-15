@@ -344,13 +344,7 @@
                   <div class="d-flex justify-content-between line-height-27px"
                     *ngIf="this.specialDiscountData?.discountPercentage || this.selectedAdvanceDiscountSlab?.discountPercentage">
                     <div class="color-graying">Tax & Services</div>
-                    <div>{{
-                      (((plan.price -
-                          ((plan.price * (this.specialDiscountData?.discountPercentage || 0)) / 100) -
-                          (((plan.price - ((plan.price * (this.specialDiscountData?.discountPercentage || 0)) / 100)) *
-                            (selectedAdvanceDiscountSlab?.discountPercentage || 0)) / 100)) *
-                        plan.taxpercentage) / 100) | currency: currency : 'symbol' : '1.2-2'
-                    }}</div>
+                    <div>{{ getPlanTaxAfterDiscount(plan) | currency: currency : 'symbol' : '1.2-2' }}</div>
                   </div>
                   <div class="d-flex justify-content-between line-height-27px"
                     *ngIf="!this.specialDiscountData?.discountPercentage && !this.selectedAdvanceDiscountSlab?.discountPercentage">
@@ -1158,13 +1152,7 @@
                     <div class="color-graying">Tax & Services</div>
                     <div>
                       <!-- Tax on cascaded-discounted amount: (price - coupon%) × (1 - advance%) × taxPct% -->
-                      {{
-                        (
-                          (plan.price - ((plan.price * (this.specialDiscountData?.discountPercentage || 0)) / 100)) *
-                          (1 - (this.selectedAdvanceDiscountSlab?.discountPercentage || 0) / 100) *
-                          plan.taxpercentage / 100
-                        ) | currency: currency : 'symbol' : '1.2-2'
-                      }}
+                      {{ getPlanTaxAfterDiscount(plan) | currency: currency : 'symbol' : '1.2-2' }}
                     </div>
                   </div>
 
