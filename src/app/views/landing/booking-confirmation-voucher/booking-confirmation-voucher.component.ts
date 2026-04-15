@@ -551,35 +551,33 @@ export class BookingConfirmationVoucherComponent {
     return `Accommodation Subtotal`;
   }
 
-  getDisplayedBookingSubtotal(booking: any): number {
+  private getDisplayedBookingBaseAmount(booking: any): number {
     const roomTariff = this.toSafeAmount(booking?.roomTariffBeforeDiscount);
     const noOfRooms = this.toSafeAmount(booking?.noOfRooms);
     const noOfNights = this.toSafeAmount(booking?.noOfNights);
     const extraPerson = this.toSafeAmount(booking?.extraPersonCharge);
     const extraChild = this.toSafeAmount(booking?.extraChildCharge);
-    const discountAmount = this.toSafeAmount(booking?.discountAmount);
 
     const roomTotal = roomTariff * noOfRooms * noOfNights;
-    const displayedSubtotal = (roomTotal + extraPerson + extraChild) - discountAmount;
+    const displayedSubtotal = roomTotal + extraPerson + extraChild;
 
     return this.toSafeAmount(
       displayedSubtotal > 0 ? displayedSubtotal : booking?.beforeTaxAmount,
     );
   }
 
-  getDisplayedBookingSubtotalWithoutDiscount(booking: any): number {
-    const roomTariff = this.toSafeAmount(booking?.roomTariffBeforeDiscount);
-    const noOfRooms = this.toSafeAmount(booking?.noOfRooms);
-    const noOfNights = this.toSafeAmount(booking?.noOfNights);
-    const extraPerson = this.toSafeAmount(booking?.extraPersonCharge);
-    const extraChild = this.toSafeAmount(booking?.extraChildCharge);
-
-    const roomTotal = roomTariff * noOfRooms * noOfNights;
-    const displayedSubtotal = (roomTotal + extraPerson + extraChild);
-
+  getDisplayedBookingSubtotal(booking: any): number {
     return this.toSafeAmount(
-      displayedSubtotal > 0 ? displayedSubtotal : booking?.beforeTaxAmount,
+      Math.max(
+        0,
+        this.getDisplayedBookingBaseAmount(booking) -
+          this.getDisplayedRowTotalDiscount(booking),
+      ),
     );
+  }
+
+  getDisplayedBookingSubtotalWithoutDiscount(booking: any): number {
+    return this.getDisplayedBookingBaseAmount(booking);
   }
 
   getDisplayedBookingTax(booking: any): number {
@@ -620,8 +618,11 @@ export class BookingConfirmationVoucherComponent {
       return this.toSafeAmount(this.advanceDiscountAmount);
     }
     if (this.advanceDiscountPercentage > 0) {
+      const accommodationAfterCoupon =
+        this.getDisplayedRoomSubtotal() - this.getDisplayedCouponDiscountAmount();
+
       return this.toSafeAmount(
-        (this.getDisplayedRoomSubtotal() * this.advanceDiscountPercentage) / 100,
+        (Math.max(0, accommodationAfterCoupon) * this.advanceDiscountPercentage) / 100,
       );
     }
     return 0;
@@ -660,29 +661,45 @@ export class BookingConfirmationVoucherComponent {
   }
 
   getDisplayedRowAdvanceDiscount(booking: any): number {
-    const rowBeforeTax = this.getDisplayedBookingSubtotal(booking);
-    const totalBeforeAdvance = this.getDisplayedRoomSubtotal();
+    const rowBeforeTax = this.getDisplayedBookingBaseAmount(booking);
+    const rowCouponDiscount = this.getDisplayedRowCouponDiscount(booking);
+    const rowAfterCoupon = Math.max(0, rowBeforeTax - rowCouponDiscount);
+    const totalBeforeAdvance =
+      this.getDisplayedRoomSubtotal() - this.getDisplayedCouponDiscountAmount();
     const totalAdvanceDiscount = this.getDisplayedAdvanceDiscountAmount();
 
-    if (rowBeforeTax <= 0 || totalBeforeAdvance <= 0 || totalAdvanceDiscount <= 0) {
+    if (rowAfterCoupon <= 0 || totalBeforeAdvance <= 0 || totalAdvanceDiscount <= 0) {
       return 0;
     }
 
     return this.toSafeAmount(
-      (totalAdvanceDiscount * rowBeforeTax) / totalBeforeAdvance,
+      (totalAdvanceDiscount * rowAfterCoupon) / totalBeforeAdvance,
+    );
+  }
+
+  getDisplayedRowCouponDiscount(booking: any): number {
+    const rowBeforeDiscounts = this.getDisplayedBookingBaseAmount(booking);
+    const totalBeforeDiscounts = this.getDisplayedRoomSubtotal();
+    const totalCouponDiscount = this.getDisplayedCouponDiscountAmount();
+
+    if (rowBeforeDiscounts <= 0 || totalBeforeDiscounts <= 0 || totalCouponDiscount <= 0) {
+      return 0;
+    }
+
+    return this.toSafeAmount(
+      (totalCouponDiscount * rowBeforeDiscounts) / totalBeforeDiscounts,
     );
   }
 
   getDisplayedRowTotalDiscount(booking: any): number {
-    // Table discount column intentionally shows coupon/promo only.
-    // Advance discount remains in footer summary lines.
-    return this.toSafeAmount(booking?.discountAmount || 0);
+    return this.toSafeAmount(
+      this.getDisplayedRowCouponDiscount(booking) +
+        this.getDisplayedRowAdvanceDiscount(booking),
+    );
   }
 
   getDisplayedRowAfterDiscounts(booking: any): number {
-    const rowBeforeTax = this.getDisplayedBookingSubtotal(booking);
-    const rowCouponDiscount = this.getDisplayedRowTotalDiscount(booking);
-    return this.toSafeAmount(Math.max(0, rowBeforeTax - rowCouponDiscount));
+    return this.getDisplayedBookingSubtotal(booking);
   }
 
   getDisplayedRowTax(booking: any): number {
