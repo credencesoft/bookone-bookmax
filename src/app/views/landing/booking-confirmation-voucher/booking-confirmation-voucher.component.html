@@ -340,14 +340,12 @@
                       {{ getDisplayedRoomSubtotal() | currency: currency : 'symbol' : '1.2-2' }}
                     </div>
                   </div>
-                  <div *ngIf="specialDiscountData?.discountPercentage || advanceDiscountPercentage > 0"
+                  <div *ngIf="specialDiscountData?.discountPercentage"
                     class="d-flex justify-content-between" style="margin-top: 5px; color: #16a34a">
-                    <div>Discounts Applied:</div>
+                    <div>Discounts Applied:<span *ngIf="specialDiscountData?.discountPercentage">(Coupon {{ specialDiscountData.discountPercentage
+                    }})%</span></div>
                     <div style="text-align: right">
-                      <span *ngIf="specialDiscountData?.discountPercentage">Coupon {{
-                        specialDiscountData.discountPercentage }}%</span>
-                      <span *ngIf="specialDiscountData?.discountPercentage && advanceDiscountPercentage > 0">, </span>
-                      <span *ngIf="advanceDiscountPercentage > 0">Advance {{ advanceDiscountPercentage }}%</span>
+                      <span>-{{ getDisplayedCouponDiscountAmount() | currency: currency : 'symbol' : '1.2-2' }}</span>
                     </div>
                   </div>
                   <div *ngIf="getDisplayedAdvanceDiscountAmount() > 0" class="d-flex justify-content-between"
@@ -355,7 +353,7 @@
                     <div>Advance Discount ({{ advanceDiscountPercentage }}%)</div>
                     <div>-{{ getDisplayedAdvanceDiscountAmount() | currency: currency : 'symbol' : '1.2-2' }}</div>
                   </div>
-                  <div *ngIf="getDisplayedAdvanceDiscountAmount() > 0" class="d-flex justify-content-between"
+                  <div *ngIf="getDisplayedCouponDiscountAmount() > 0 || getDisplayedAdvanceDiscountAmount() > 0" class="d-flex justify-content-between"
                     style="margin-top: 5px; font-weight: 600">
                     <div>Accommodation Total (After All Discounts)</div>
                     <div>{{ getDisplayedAccommodationAfterDiscounts() | currency: currency : 'symbol' : '1.2-2' }}</div>
@@ -821,14 +819,12 @@
                   {{ getDisplayedRoomSubtotal() | currency: currency : 'symbol' : '1.2-2' }}
                 </div>
               </div>
-              <div *ngIf="specialDiscountData?.discountPercentage || advanceDiscountPercentage > 0"
+              <div *ngIf="specialDiscountData?.discountPercentage"
                 class="d-flex justify-content-between" style="margin-top: 5px; color: #16a34a">
-                <div>Discounts Applied:</div>
+                <div>Discounts Applied:<span *ngIf="specialDiscountData?.discountPercentage">Coupon {{ specialDiscountData.discountPercentage
+                    }}%</span></div>
                 <div style="text-align: right">
-                  <span *ngIf="specialDiscountData?.discountPercentage">Coupon {{ specialDiscountData.discountPercentage
-                    }}%</span>
-                  <span *ngIf="specialDiscountData?.discountPercentage && advanceDiscountPercentage > 0">, </span>
-                  <span *ngIf="advanceDiscountPercentage > 0">Advance {{ advanceDiscountPercentage }}%</span>
+                  <span>-{{ getDisplayedCouponDiscountAmount() | currency: currency : 'symbol' : '1.2-2' }}</span>
                 </div>
               </div>
               <div *ngIf="getDisplayedAdvanceDiscountAmount() > 0" class="d-flex justify-content-between"
@@ -836,7 +832,7 @@
                 <div>Advance Discount ({{ advanceDiscountPercentage }}%)</div>
                 <div>-{{ getDisplayedAdvanceDiscountAmount() | currency: currency : 'symbol' : '1.2-2' }}</div>
               </div>
-              <div *ngIf="getDisplayedAdvanceDiscountAmount() > 0" class="d-flex justify-content-between"
+              <div *ngIf="getDisplayedCouponDiscountAmount() > 0 || getDisplayedAdvanceDiscountAmount() > 0" class="d-flex justify-content-between"
                 style="margin-top: 5px; font-weight: 600">
                 <div>Accommodation Total (After All Discounts)</div>
                 <div>{{ getDisplayedAccommodationAfterDiscounts() | currency: currency : 'symbol' : '1.2-2' }}</div>
