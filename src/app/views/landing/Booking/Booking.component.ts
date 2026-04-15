@@ -2747,7 +2747,7 @@ export class BookingComponent implements OnInit {
     enquiryForm.taxDetails = this.token
       .getProperty()
       .taxDetails.filter((item) => ['CGST', 'SGST', 'GST'].includes(item.name));
-    enquiryForm.taxAmount = plan.taxPercentageperroom;
+    enquiryForm.taxAmount = this.toSafeAmount(this.getPlanTaxAfterDiscount(plan));
 
     const TO_EMAIL = 'reservation@thehotelmate.co';
     const TO_NAME = 'Support - The Hotel Mate';
@@ -2984,6 +2984,11 @@ export class BookingComponent implements OnInit {
         const firstPlan = this.bookingSummaryDetails.selectedPlansSummary[0];
         // booking.discountAmount, discountPercentage, promotionName, netAmount, advanceAmount
         // are set authoritatively by calculateMultiDiscountAndTax() — do NOT overwrite them here.
+        this.calculateMultiDiscountAndTax();
+        const checkoutTaxAmount = this.toSafeAmount(this.getTotalTax());
+        this.booking.taxAmount = checkoutTaxAmount;
+        this.booking.gstAmount = checkoutTaxAmount;
+        this.bookingSummaryDetails.totalTax = checkoutTaxAmount;
         this.bookingroomPrice = firstPlan?.actualRoomPrice;
         await this.createAllEnquiriesBooking();
         this.payment.callbackUrl =
@@ -7144,6 +7149,7 @@ export class BookingComponent implements OnInit {
 
   processPaymentPayTM(payment: Payment) {
     //this.applyAdvancePlanToPayment(payment);
+    this.applyAuthoritativeGatewayAmounts(payment, 'paytm');
     this.paymentLoader = true;
     this.changeDetectorRefs.detectChanges();
 
@@ -7193,6 +7199,7 @@ export class BookingComponent implements OnInit {
   }
   processPaymentAtom(payment: Payment) {
     //this.applyAdvancePlanToPayment(payment);
+    this.applyAuthoritativeGatewayAmounts(payment, 'atom');
     this.paymentLoader = true;
     this.changeDetectorRefs.detectChanges();
 
@@ -7243,6 +7250,7 @@ export class BookingComponent implements OnInit {
   }
   processPaymentHDFC(payment: Payment) {
     //this.applyAdvancePlanToPayment(payment);
+    this.applyAuthoritativeGatewayAmounts(payment, 'hdfc');
     this.paymentLoader = true;
     this.changeDetectorRefs.detectChanges();
 
@@ -7292,6 +7300,7 @@ export class BookingComponent implements OnInit {
     );
   }
   processPaymentPhonepe(payment: Payment) {
+    this.applyAuthoritativeGatewayAmounts(payment, 'phonepe');
     this.paymentLoader = true;
     this.changeDetectorRefs.detectChanges();
 
@@ -11416,6 +11425,7 @@ sendWhatsappMessageToPropertyOwner() {
    * 4. Calculate advance and remaining payment amounts
    */
   calculateMultiDiscountAndTax(): void {
+    console.log('booking data is',this.booking);
     try {
       const baseAmount = this.toSafeAmount(
         this.storedActualNetAmount ||
@@ -12034,39 +12044,37 @@ sendWhatsappMessageToPropertyOwner() {
     return discountedPrice + tax;
   }
 
+  getPlanTaxAfterDiscount(plan: any): number {
+    const price = this.toSafeAmount(plan?.price);
+    const taxPercentage = this.toSafePercent(plan?.taxpercentage);
+    const couponPercentage = this.toSafePercent(
+      this.specialDiscountData?.discountPercentage ??
+        this.selectedCouponList?.discountPercentage,
+    );
+    const advanceDiscountPercentage = this.toSafePercent(
+      this.selectedAdvanceDiscountSlab?.discountPercentage,
+    );
+
+    const afterCoupon = Math.max(0, price - (price * couponPercentage) / 100);
+    const afterAdvanceDiscount = Math.max(
+      0,
+      afterCoupon - (afterCoupon * advanceDiscountPercentage) / 100,
+    );
+
+    return this.toSafeAmount((afterAdvanceDiscount * taxPercentage) / 100);
+  }
+
   getTotalTax(): number {
     let totalTax = 0;
 
     this.bookingSummaryDetails?.selectedPlansSummary?.forEach(plan => {
-
-      let price = plan.price || 0;
-
-      // Coupon discount
-      let couponDiscount = this.specialDiscountData?.discountPercentage
-        ? (price * this.specialDiscountData.discountPercentage) / 100
-        : 0;
-
-      // After coupon
-      let afterCoupon = price - couponDiscount;
-
-      // Advance discount
-      let advanceDiscount = this.selectedAdvanceDiscountSlab?.discountPercentage
-        ? (afterCoupon * this.selectedAdvanceDiscountSlab.discountPercentage) / 100
-        : 0;
-
-      // Final before tax
-      let finalAmount = afterCoupon - advanceDiscount;
-
-      // Tax
-      let tax = (finalAmount * (plan.taxpercentage || 0)) / 100;
-
-      totalTax += tax;
+      totalTax += this.getPlanTaxAfterDiscount(plan);
 
     });
 
-    this.taxOnDiscountedAmount = totalTax;
+    this.taxOnDiscountedAmount = this.toSafeAmount(totalTax);
     
-    return totalTax;
+    return this.taxOnDiscountedAmount;
   }
 
   /**
@@ -12335,15 +12343,23 @@ sendWhatsappMessageToPropertyOwner() {
   ): void {
     const grandTotal = this.toSafeAmount(this.getNewGrandTotal());
     const payNowAmount = this.toSafeAmount(this.getNewPayNowAmount());
+    const roomTaxTotal = this.toSafeAmount(this.getTotalTax());
+    const advancePct = this.selectedAdvanceDiscountSlab
+      ? this.toSafePercent(this.selectedAdvanceDiscountSlab.advancePercentage) / 100
+      : 1;
+    const payableRoomTax = this.toSafeAmount(roomTaxTotal * advancePct);
     const balanceAtCheckIn = this.toSafeAmount(
       Math.max(0, grandTotal - payNowAmount),
     );
 
+    payment.taxAmount = payableRoomTax;
     payment.netReceivableAmount = payNowAmount;
     payment.transactionAmount = payNowAmount;
     payment.amount = payNowAmount;
     payment.transactionChargeAmount = payNowAmount;
 
+    this.booking.taxAmount = roomTaxTotal;
+    this.booking.gstAmount = roomTaxTotal;
     this.booking.totalAmount = grandTotal;
     this.booking.payableAmount = grandTotal;
     this.booking.advanceAmount = payNowAmount;
@@ -12351,6 +12367,8 @@ sendWhatsappMessageToPropertyOwner() {
 
     this.logCalculationSnapshot('gateway-amount-sync', {
       source,
+      roomTaxTotal,
+      payableRoomTax,
       grandTotal,
       payNowAmount,
       balanceAtCheckIn,
