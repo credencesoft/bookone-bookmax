@@ -4594,6 +4594,9 @@ onCheckOutClosed(): void {
 
  getBookingUnitLabel(room?: Room | null) {
     try{
+      if(room?.businessProductName?.trim() === 'Accommodation'){
+        return 'Room';
+      }
       const accmmodationService = this.accommodationData;
       if(!room?.businessProductName?.trim()){
         const accommodationService = accmmodationService?.find(service => service?.name === 'Accommodation');
@@ -4609,6 +4612,7 @@ onCheckOutClosed(): void {
     }
     catch(error){
       console.error('Error in getBookingUnitLabel: ', error);
+      return 'Room';
     }
   }
     
