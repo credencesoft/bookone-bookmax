@@ -51,12 +51,12 @@
                       >
                     </div>
                   </div>
-                  <div class="applycoupon">
+                  <div class="applycoupon spin-trigger-wrap">
                     <button
-                      class="apply-coupon-btn"
-                      (click)="applyCoupon(product, couponSection)"
+                      class="apply-coupon-btn spin-now-btn"
+                      (click)="openSpinWheel(product, couponSection)"
                     >
-                      Get Coupon
+                      Spin Now
                     </button>
                   </div>
                 </div>
@@ -66,6 +66,86 @@
         </div>
       </ng-template>
     </p-carousel>
+  </div>
+
+  <div class="spin-wheel-overlay" *ngIf="spinWheelOpen" (click)="closeSpinWheel()"></div>
+  <div class="spin-wheel-modal" *ngIf="spinWheelOpen">
+    <div class="spin-wheel-shell">
+      <div class="spin-atmosphere spin-atmosphere-left"></div>
+      <div class="spin-atmosphere spin-atmosphere-right"></div>
+      <div class="spin-confetti-layer" *ngIf="spinWheelConfetti.length">
+        <span
+          class="spin-confetti-piece"
+          *ngFor="let confetti of spinWheelConfetti"
+          [style.left.%]="(confetti * 13) % 100"
+          [style.animationDelay.ms]="confetti * 40"
+          [style.background]="confetti % 3 === 0 ? '#fbbf24' : confetti % 3 === 1 ? '#f97316' : '#38bdf8'"
+        ></span>
+      </div>
+      <button class="spin-close-btn" type="button" (click)="closeSpinWheel()">x</button>
+
+      <ng-container *ngIf="!spinWheelResult">
+        <h2 class="spin-title">Spin to <span>Win</span></h2>
+        <p class="spin-subtitle">Test your luck for a massive discount!</p>
+
+        <div class="wheel-wrap">
+          <div class="wheel-pointer"></div>
+          <div
+            class="wheel-body"
+            [style.transform]="'rotate(' + spinWheelRotation + 'deg)'"
+            [class.wheel-spinning]="spinWheelSpinning"
+          >
+            <div
+              class="wheel-segment"
+              *ngFor="let segment of spinWheelSegments; let i = index"
+              [style.transform]="getWheelSegmentRotate(i)"
+            >
+              <div class="wheel-slice" [style.borderTopColor]="segment.color"></div>
+              <span class="wheel-label">{{ segment.label }}</span>
+            </div>
+          </div>
+          <div class="wheel-hub"></div>
+        </div>
+
+        <button
+          class="spin-action-btn"
+          type="button"
+          (click)="startSpinWheel()"
+          [disabled]="spinWheelSpinning"
+        >
+          {{ spinWheelSpinning ? 'SPINNING...' : 'SPIN NOW' }}
+        </button>
+      </ng-container>
+
+      <ng-container *ngIf="spinWheelResult">
+        <div class="spin-result-icon">🏆</div>
+        <h3 class="spin-result-title" *ngIf="spinWheelResult.type === 'offer'">JACKPOT!</h3>
+        <h3 class="spin-result-title" *ngIf="spinWheelResult.type === 'retry'">Try Again</h3>
+
+        <div class="spin-result-card" *ngIf="spinWheelResult.type === 'offer'">
+          <div class="spin-result-discount">{{ spinWheelResult.offer.discountPercentage }}% OFF</div>
+          <div class="spin-result-code">{{ spinWheelResult.offer.couponCode }}</div>
+        </div>
+
+        <button
+          class="spin-action-btn"
+          type="button"
+          *ngIf="spinWheelResult.type === 'offer'"
+          (click)="claimSpinCoupon()"
+        >
+          Apply {{ spinWheelResult.offer.discountPercentage }}% Discount
+        </button>
+
+        <button
+          class="spin-action-btn"
+          type="button"
+          *ngIf="spinWheelResult.type === 'retry'"
+          (click)="resetSpinResult()"
+        >
+          TRY AGAIN
+        </button>
+      </ng-container>
+    </div>
   </div>
 
   <div class="popup-overlay" *ngIf="isPanelOpen"></div>
@@ -166,9 +246,8 @@
     <div class="stciky-top">
       <div class="sum-section" *ngIf="!activeForGoogleHotelCenter">
         <span *ngIf="specialDiscountPercentage">
-          ₹{{
+          {{
             getTotalPlanPrice() +
-              getTotalAfterTaxAmountFacility() +
               getTotalTaxPrice() -
               (getTotalPlanPrice() * specialDiscountPercentage) / 100 +
               (serviceChargePercentage > 0
@@ -179,26 +258,25 @@
                         100,
                     serviceChargePercentage
                   )
-                : 0) | number: "1.2-2"
+                : 0) | currency : currency : "symbol" : "1.2-2"
           }}
         </span>
         <span *ngIf="!specialDiscountPercentage">
-          ₹{{
+          {{
             getTotalPlanPrice() +
-              getTotalAfterTaxAmountFacility() +
               getTotalTaxPrice() +
               (serviceChargePercentage > 0
                 ? calculateConvenienceFee(
                     getTotalPlanPrice(),
                     serviceChargePercentage
                   )
-                : 0) | number: "1.2-2"
+                : 0) | currency : currency : "symbol" : "1.2-2"
           }}
         </span>
       </div>
       <div class="sum-section" *ngIf="activeForGoogleHotelCenter">
         <span *ngIf="specialDiscountPercentage">
-          ₹{{
+          {{
             getGrandSubtotal() -
               (getGrandSubtotal() * specialDiscountPercentage) / 100 +
               getGrandTaxTotal() +
@@ -210,18 +288,18 @@
                         100,
                     serviceChargePercentage
                   )
-                : 0) | number: "1.2-2"
+                : 0) | currency : currency : "symbol" : "1.2-2"
           }}
         </span>
         <span *ngIf="!specialDiscountPercentage">
-          ₹{{
+          {{
             getGrandTotal() +
               (serviceChargePercentage > 0
                 ? calculateConvenienceFee(
                     getTotalPlanPrice(),
                     serviceChargePercentage
                   )
-                : 0) | number: "1.2-2"
+                : 0) | currency : currency : "symbol" : "1.2-2"
           }}
         </span>
       </div>
@@ -252,7 +330,8 @@
             (click)="showBookingSummary = false"
           ></i>
         </div>
-        <div class="container-div">
+        <div class="mobile-dialog-content">
+          <div class="container-div">
           <!-- Dates & Guests -->
           <small *ngIf="!isBookingAllowed()" class="text-danger">
             Please select minimum {{ rooms }} room(s) to proceed.
@@ -338,10 +417,10 @@
                         !activeForGoogleHotelCenter
                       "
                       >Inclusive Adult Charge <br />
-                      ₹
+                      
                       {{
                         plan.SingleDayextraPersonAdultCountAmount
-                          | number: "1.2-2"
+                          | currency : currency : "symbol" : "1.2-2"
                       }}
                       per night</small
                     > <br *ngIf="
@@ -354,10 +433,10 @@
                         !activeForGoogleHotelCenter
                       "
                       >Inclusive Children Charge <br />
-                      ₹
+                      
                       {{
                         plan.SingleDayextraPersonChildCountAmount
-                          | number: "1.2-2"
+                          | currency : currency : "symbol" : "1.2-2"
                       }}
                       per night</small
                     > <br *ngIf="
@@ -369,17 +448,17 @@
                   <div class="d-flex align-items-start">
                     <div class="room-price">
                       <ng-container *ngIf="!activeForGoogleHotelCenter">
-                        ₹ {{ plan.price | number: "1.2-2" }}
+                         {{ plan.price | currency : currency : "symbol" : "1.2-2" }}
                       </ng-container>
 
                       <ng-container *ngIf="activeForGoogleHotelCenter">
                         <ng-container
                           *ngIf="plan.planName === 'GHC'; else nonGhcPrice"
                         >
-                          ₹ {{ getTotalGhCPrice(plan) | number: "1.2-2" }}
+                          {{ getTotalGhCPrice(plan) | currency : currency : "symbol" : "1.2-2" }}
                         </ng-container>
                         <ng-template #nonGhcPrice>
-                          ₹ {{ getTotalNonGhCPrice(plan) | number: "1.2-2" }}
+                          {{ getTotalNonGhCPrice(plan) | currency : currency : "symbol" : "1.2-2" }}
                         </ng-template>
                       </ng-container>
                     </div>
@@ -407,7 +486,7 @@
                     ></i>
                   </small>
                   <!-- <small class="text-muted" *ngIf="taxArray && taxArray.length">
-                Tax Fee: ₹{{ taxArray[i] | number : "1.2-2" }}
+                Tax Fee: {{ taxArray[i] | currency : currency : "symbol" : "1.2-2" }}
               </small> -->
                 </div>
 
@@ -576,32 +655,22 @@
             *ngIf="selectedPlansSummary.length > 0"
           />
 
-          <!-- Add-ons -->
-          <div
-            class="mb-3"
-            *ngIf="
-              propertyServiceListDataOne.length > 0 &&
-              !activeForGoogleHotelCenter
-            "
-          >
-            <div class="font-weight-semibold mb-2">Add-ons</div>
-
-            <ng-container
-              *ngFor="let fac of propertyServiceListDataOne; let i = index"
-            >
-              <div class="custom-checkbox mb-2">
-                <label>
-                  <input
-                    type="checkbox"
-                    [checked]="selectedFacilityNames.includes(fac.name)"
-                    (change)="onFacilityToggle(fac.name, $event.target.checked)"
-                  />
-                  <span class="checkmark"></span>
-                  {{ fac.name }}
-                </label>
+          <div class="spin-win-card" *ngIf="!activeForGoogleHotelCenter">
+            <div class="spin-left">
+              <div class="icon-circle">
+                <i class="fa-solid fa-trophy"></i>
               </div>
-            </ng-container>
+              <div class="text-section">
+                <div class="title">Spin & Win Discount</div>
+                <div class="subtitle">Try your luck today!</div>
+              </div>
+            </div>
+
+            <button class="spin-btn" (click)="openSpinWheel(product, couponSection)">
+              Spin Now
+            </button>
           </div>
+
           <div *ngIf="!activeForGoogleHotelCenter">
             <small class="special-code"
               >Have a coupon code?
@@ -677,14 +746,14 @@
               *ngIf="!activeForGoogleHotelCenter"
             >
               <span>Rooms Total</span>
-              <span>₹{{ getTotalPlanPrice() | number: "1.2-2" }}</span>
+              <span>{{ getTotalPlanPrice() | currency : currency : "symbol" : "1.2-2" }}</span>
             </div>
             <div
               class="d-flex justify-content-between"
               *ngIf="activeForGoogleHotelCenter"
             >
               <span>Rooms Total</span>
-              <span>₹{{ getGrandSubtotal() | number: "1.2-2" }}</span>
+              <span>{{ getGrandSubtotal() | currency : currency : "symbol" : "1.2-2" }}</span>
             </div>
 
             <div
@@ -701,9 +770,9 @@
                   &nbsp;
                 </small>
                 <b style="color: #16a34a; font-weight: 400"
-                  >-₹{{
+                  >-{{
                     (getTotalPlanPrice() * specialDiscountPercentage) / 100
-                      | number: "1.2-2"
+                      | currency : currency : "symbol" : "1.2-2"
                   }}</b
                 ></span
               >
@@ -723,36 +792,27 @@
                   &nbsp;
                 </small>
                 <b style="color: #16a34a; font-weight: 400"
-                  >-₹{{
+                  >-{{
                     (getGrandSubtotal() * specialDiscountPercentage) / 100
-                      | number: "1.2-2"
+                      | currency : currency : "symbol" : "1.2-2"
                   }}</b
                 ></span
               >
             </div>
 
             <div
-              class="d-flex justify-content-between"
-              *ngIf="getTotalAfterTaxAmountFacility() > 0"
-            >
-              <span>Add-ons Total</span>
-              <span
-                >₹{{ getTotalAfterTaxAmountFacility() | number: "1.2-2" }}</span
-              >
-            </div>
-            <div
               class="d-flex justify-content-between mb-2"
               *ngIf="!activeForGoogleHotelCenter"
             >
               <span>Tax & Services</span>
-              <span>₹{{ getTotalTaxPrice() | number: "1.2-2" }}</span>
+              <span>{{ getTotalTaxPrice() | currency : currency : "symbol" : "1.2-2" }}</span>
             </div>
             <div
               class="d-flex justify-content-between mb-2"
               *ngIf="activeForGoogleHotelCenter"
             >
               <span>Tax & Services</span>
-              <span>₹{{ getGrandTaxTotal() | number: "1.2-2" }}</span>
+              <span>{{ getGrandTaxTotal() | currency : currency : "symbol" : "1.2-2" }}</span>
             </div>
             <div
               class="d-flex justify-content-between"
@@ -760,22 +820,22 @@
             >
               <span>Convenience Fee:</span>
               <span *ngIf="specialDiscountPercentage">
-                ₹{{
+                {{
                   calculateConvenienceFee(
                     getTotalPlanPrice() -
                       (this.getTotalPlanPrice() *
                         this.specialDiscountPercentage) /
                         100,
                     serviceChargePercentage
-                  )
+                  ) | currency : currency : "symbol" : "1.2-2"
                 }}
               </span>
               <span *ngIf="!specialDiscountPercentage">
-                ₹{{
+                {{
                   calculateConvenienceFee(
                     getTotalPlanPrice(),
                     serviceChargePercentage
-                  )
+                  ) | currency : currency : "symbol" : "1.2-2"
                 }}
               </span>
             </div>
@@ -785,21 +845,21 @@
             >
               <span>Convenience Fee:</span>
               <span *ngIf="specialDiscountPercentage">
-                ₹{{
+                {{
                   calculateConvenienceFee(
                     getGrandSubtotal() -
                       (getGrandSubtotal() * this.specialDiscountPercentage) /
                         100,
                     serviceChargePercentage
-                  )
+                  ) | currency : currency : "symbol" : "1.2-2"
                 }}
               </span>
               <span *ngIf="!specialDiscountPercentage">
-                ₹{{
+                {{
                   calculateConvenienceFee(
                     getGrandSubtotal(),
                     serviceChargePercentage
-                  )
+                  ) | currency : currency : "symbol" : "1.2-2"
                 }}
               </span>
             </div>
@@ -809,9 +869,8 @@
             >
               <span>Total Amount</span>
               <span *ngIf="specialDiscountPercentage">
-                ₹{{
+                {{
                   getTotalPlanPrice() +
-                    getTotalAfterTaxAmountFacility() +
                     getTotalTaxPrice() -
                     (getTotalPlanPrice() * specialDiscountPercentage) / 100 +
                     (serviceChargePercentage > 0
@@ -822,20 +881,19 @@
                               100,
                           serviceChargePercentage
                         )
-                      : 0) | number: "1.2-2"
+                      : 0) | currency : currency : "symbol" : "1.2-2"
                 }}
               </span>
               <span *ngIf="!specialDiscountPercentage">
-                ₹{{
+                {{
                   getTotalPlanPrice() +
-                    getTotalAfterTaxAmountFacility() +
                     getTotalTaxPrice() +
                     (serviceChargePercentage > 0
                       ? calculateConvenienceFee(
                           getTotalPlanPrice(),
                           serviceChargePercentage
                         )
-                      : 0) | number: "1.2-2"
+                      : 0) | currency : currency : "symbol" : "1.2-2"
                 }}
               </span>
             </div>
@@ -846,7 +904,7 @@
               <span>Total Amount</span>
 
               <span *ngIf="specialDiscountPercentage">
-                ₹{{
+                {{
                   getGrandSubtotal() -
                     (getGrandSubtotal() * specialDiscountPercentage) / 100 +
                     getGrandTaxTotal() +
@@ -858,30 +916,33 @@
                               100,
                           serviceChargePercentage
                         )
-                      : 0) | number: "1.2-2"
+                      : 0) | currency : currency : "symbol" : "1.2-2"
                 }}
               </span>
               <span *ngIf="!specialDiscountPercentage">
-                ₹{{
+                {{
                   getGrandTotal() +
                     (serviceChargePercentage > 0
                       ? calculateConvenienceFee(
                           getTotalPlanPrice(),
                           serviceChargePercentage
                         )
-                      : 0) | number: "1.2-2"
+                      : 0) | currency : currency : "symbol" : "1.2-2"
                 }}
               </span>
             </div>
           </div>
+          </div>
+        </div>
+        <div class="mobile-dialog-footer">
           <button
-            style="margin-bottom: 50px"
-            class="btn btn-book-now btn-block"
+            class="btn btn-book-now btn-block mobile-dialog-book-btn"
             [disabled]="!isBookingAllowed()"
             (click)="onBookNow()"
           >
             Book Now
           </button>
+        </div>
         </div>
       </div>
     </div>
@@ -1389,7 +1450,7 @@
                       <div class="form-group" style="height: 0px">
                         <input
                           name="datepicker"
-                          class="form-control input-field-resize checkout-datepicker"
+                          class="form-control input-field-resize"
                           ngbDatepicker
                           #datepicker4="ngbDatepicker"
                           [autoClose]="true"
@@ -1709,8 +1770,9 @@
 
   <div class="container-div margin-bottom-40px">
     <div class="website-web-vision">
+      <!-- Full Width Photo Gallery Section -->
       <div class="row margin-top-40px">
-        <div class="col-12 col-lg-7">
+        <div class="col-12">
           <h2 class="hero-heading">{{ businessUser?.name }}</h2>
           <p class="hero-subheading font-weight-bold">
             <img src="media-be/images/location-icons.svg" alt="" width="17px" />
@@ -1718,20 +1780,21 @@
             {{ businessUser.address?.city }}, {{ businessUser.address?.state }},
             {{ businessUser.address?.country }}
           </p>
-          <!-- web view -->
+          <!-- web view - Full Width Gallery -->
           <div class="d-flex flex-column flex-lg-row gap-3 mt-3">
-            <!-- Large Left Image -->
+            <!-- Large Left Image - Takes Full Width on Gallery Section -->
             <div class="flex-grow-1">
               <img
                 *ngIf="businessUser?.imageList?.length > 0"
                 [src]="businessUser?.imageList[0]?.url"
                 class="img-fluid rounded main-img"
                 alt="Main Image"
+                style="width: 100%; flex: 1; object-fit: cover; border-radius: 12px"
               />
             </div>
 
             <!-- Stacked Thumbnails -->
-            <div class="d-flex flex-lg-column gap-2 gallery-thumbs">
+            <!-- <div class="d-flex flex-lg-column gap-2 gallery-thumbs" style="min-width: 150px"> -->
               <div
                 class="d-flex flex-lg-column gap-2 gallery-thumbs position-relative"
               >
@@ -1741,85 +1804,361 @@
                     let i = index
                   "
                 >
-                  <img [src]="img.url" class="img-fluid rounded small-img" />
+                  <img [src]="img.url" class="img-fluid rounded small-img" style="flex: 1; width: 100%; object-fit: cover; border-radius: 8px; cursor: pointer" />
                 </ng-container>
 
                 <!-- See More Button -->
                 <button
                   *ngIf="businessUser?.imageList?.length > 1"
                   class="btn position-absolute see-more"
-                  style="bottom: 4px; right: 3px"
+                  style="bottom: 4px; right: 3px; background-color: rgba(0,0,0,0.6); color: #000; border: none; padding: 8px 12px; border-radius: 6px; font-size: 12px"
                   (click)="openGalleryModal()"
                 >
-                  See More Photos
+                  See All {{ businessUser?.imageList?.length }} Photos
+                </button>
+              </div>
+            <!-- </div> -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Property Highlights Section - 3 Column Grid -->
+    <div class="margin-top-40px display-flex website-web-vision">
+      <div class="col-12">
+        <div *ngIf="amenitiesHighlights.length > 0 || propertyServiceListData.length > 0">
+          <h4 class="aminities-highlights">Property Highlights</h4>
+          <div
+            class="card margin-top-20px"
+            style="box-shadow: 0px 4px 40px 0px #d9d9d9; background-color: #f5f5f5; border-radius: 12px"
+          >
+            <div class="padding-20px">
+               <div style="display: flex; flex-wrap: wrap; gap: 20px;">
+
+                <!-- First 6 items -->
+                <ng-container
+                  *ngFor="let fac of (amenitiesHighlights.length > 0 ? amenitiesHighlights : propertyServiceListData); let i = index"
+                >
+                  <ng-container *ngIf="i < 4 || showAll">
+
+                    <div
+                      style="flex: 0 0 260px;"
+                      *ngIf="
+                        fac.name !== null &&
+                        fac.name !== undefined &&
+                        fac.serviceType !== 'Distance' &&
+                        fac.serviceType !== 'RestaurantHotel' &&
+                        fac.serviceType !== 'DistanceRailway'
+                      "
+                    >
+                      <div class="d-flex align-items-center gap-10px">
+
+                        <!-- Icon -->
+                        <div style="flex-shrink: 0">
+                          <img
+                            *ngIf="!fac.imageUrl"
+                            src="https://static.thenounproject.com/png/3421816-200.png"
+                            alt="icon"
+                            style="width: 40px; height: 40px; object-fit: contain; background: #eef2f6; padding: 6px; border-radius: 10px;"
+                          />
+                          <img
+                            *ngIf="fac.imageUrl"
+                            [src]="fac.imageUrl"
+                            alt="icon"
+                            style="width: 40px; height: 40px; object-fit: contain; background: #eef2f6; padding: 6px; border-radius: 10px;"
+                          />
+                        </div>
+
+                        <!-- Text -->
+                        <div>
+                          <p
+                            class="aminities-names"
+                            style="margin: 0; font-weight: 600; color: #334155; font-family: Poppins;"
+                          >
+                            {{ fac.name }}
+                          </p>
+                        </div>
+
+                      </div>
+                    </div>
+
+                  </ng-container>
+                </ng-container>
+
+              </div>
+              <!-- First 6 items in 3-column grid -->
+              <!-- <div style="display: flex; flex-wrap: wrap; gap: 16px;">
+                <div
+                  style="flex: 0 0 220px;"
+                  *ngFor="let fac of (amenitiesHighlights.length > 0 ? amenitiesHighlights : propertyServiceListData) | slice: 0 : 6"
+                >
+                  <div
+                    class="d-flex align-items-center gap-10px"
+                    style="min-height: auto;"
+                    *ngIf="
+                      fac.name !== null &&
+                      fac.name !== undefined &&
+                      fac.serviceType !== 'Distance' &&
+                      fac.serviceType !== 'RestaurantHotel' &&
+                      fac.serviceType !== 'DistanceRailway'
+                    "
+                  >
+                    <div style="flex-shrink: 0">
+                      <img
+                        class="icon-amenities"
+                        *ngIf="
+                          fac.imageUrl == null || fac.imageUrl == undefined
+                        "
+                        src="https://static.thenounproject.com/png/3421816-200.png"
+                        alt="icon"
+                        style="width: 45px; height: 45px; object-fit: contain; background: #eef2f6; padding: 6px; border-radius: 10px;"
+                      />
+                      <img
+                        class="icon-amenities"
+                        *ngIf="
+                          fac.imageUrl != null && fac.imageUrl != undefined
+                        "
+                        [src]="fac.imageUrl"
+                        alt="icon"
+                        style="width: 45px; height: 45px; object-fit: contain; background: #eef2f6; padding: 6px; border-radius: 10px;"
+                      />
+                    </div>
+                    <div style="flex: 1">
+                      <p class="aminities-names" style="margin: 0; font-weight: 600; color: #0f172a">{{ fac.name }}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              Show more items if expanded
+              <ng-container *ngIf="showAll">
+                <div style="display: flex; flex-wrap: wrap; gap: 16px;">
+                  <ng-container
+                    *ngFor="let fac of (amenitiesHighlights.length > 0 ? amenitiesHighlights : propertyServiceListData); let i = index"
+                  >
+                    <ng-container *ngIf="i >= 6">
+                      <div style="flex: 0 0 220px;">
+                        <div
+                          class="d-flex align-items-center gap-10px"
+                          style="min-height: auto;"
+                          *ngIf="
+                            fac.name !== null &&
+                            fac.name !== undefined &&
+                            fac.serviceType !== 'Distance' &&
+                            fac.serviceType !== 'RestaurantHotel' &&
+                            fac.serviceType !== 'DistanceRailway'
+                          "
+                        >
+                          <div style="flex-shrink: 0">
+                            <img
+                              class="icon-amenities"
+                              *ngIf="
+                                fac.imageUrl == null ||
+                                fac.imageUrl == undefined
+                              "
+                              src="https://static.thenounproject.com/png/3421816-200.png"
+                              alt="icon"
+                              style="width: 36px; height: 36px; object-fit: contain; background: #eef2f6; padding: 6px; border-radius: 10px;"
+                            />
+                            <img
+                              class="icon-amenities"
+                              *ngIf="
+                                fac.imageUrl != null &&
+                                fac.imageUrl != undefined
+                              "
+                              [src]="fac.imageUrl"
+                              alt="icon"
+                              style="width: 36px; height: 36px; object-fit: contain; background: #eef2f6; padding: 6px; border-radius: 10px;"
+                            />
+                          </div>
+                          <div style="flex: 1">
+                            <p class="aminities-names" style="margin: 0; font-weight: 600; color: #0f172a">{{ fac.name }}</p>
+                          </div>
+                        </div>
+                      </div>
+                    </ng-container>
+                  </ng-container>
+                </div>
+              </ng-container> -->
+
+              <!-- Show All / Show Less Toggle -->
+              <div class="d-flex justify-content-center mt-4">
+                <button
+                  class="btn show-all-amen"
+                  (click)="showAll = !showAll" type="button"
+                >
+                  {{ showAll ? 'Show Less' : 'Show All Amenities' }}
                 </button>
               </div>
             </div>
           </div>
         </div>
-        <div class="col-5">
+      </div>
+    </div>
+
+    <!-- AI-Powered Suggestion Section - Teal Box -->
+    <div class="margin-top-40px website-web-vision">
+      <div class="row">
+        <div class="col-12">
           <div
-            class="d-flex align-items-start"
-            style="gap: 8px"
-            *ngIf="smartRecommendationsBoolean"
+            style="
+              background: linear-gradient(135deg, #0f766e 0%, #14b8a6 100%);
+              border-radius: 16px;
+              padding: 40px;
+              color: white;
+              position: relative;
+              overflow: hidden
+            "
           >
-            <div>
-              <div class="smart-card">
-                <img
-                  src=" media-be/images/smart-chat.svg"
-                  class="smart-card-img"
-                  alt=""
-                />
+            <!-- Decorative background element -->
+            <div
+              style="
+                position: absolute;
+                right: -50px;
+                top: -50px;
+                width: 300px;
+                height: 300px;
+                background: rgba(255, 255, 255, 0.1);
+                border-radius: 50%
+              "
+            ></div>
+
+            <div class="row align-items-center position-relative" style="z-index: 2">
+              <!-- Left Content -->
+              <div class="col-lg-7 col-12">
+                <!-- Badge -->
+                <div
+                  style="
+                    display: inline-block;
+                    background-color: rgba(255, 255, 255, 0.2);
+                    padding: 8px 16px;
+                    border-radius: 20px;
+                    margin-bottom: 16px;
+                    font-size: 12px;
+                    font-weight: 700;
+                    letter-spacing: 1px;
+                    text-transform: uppercase
+                  "
+                >
+                  🤖 AI-POWERED SUGGESTION
+                </div>
+
+                <!-- Title -->
+                <h2 style="font-size: 32px; font-weight: 700; margin-bottom: 16px; line-height: 1.2">
+                  Unsure which room suits you best?
+                </h2>
+
+                <!-- Description -->
+                <p
+                  style="
+                    font-size: 16px;
+                    font-weight: 400;
+                    line-height: 1.6;
+                    margin-bottom: 24px;
+                    opacity: 0.95
+                  "
+                >
+                  Let our smart assistant analyze your preferences to find the
+                  perfect match for your stay at the best rate.
+                </p>
+
+                <!-- Button -->
+                <button
+                  class="btn"
+                  style="
+                    background-color: white;
+                    color: #0f766e;
+                    border: none;
+                    padding: 12px 32px;
+                    border-radius: 8px;
+                    font-weight: 700;
+                    font-size: 16px;
+                    cursor: pointer;
+                    transition: all 0.3s ease
+                  "
+                  (click)="showSmartRecommendations = !showSmartRecommendations"
+                  onmouseover="this.style.transform='scale(1.05)'"
+                  onmouseout="this.style.transform='scale(1)'"
+                >
+                  Get Smart Recommendations →
+                </button>
               </div>
-            </div>
-            <div *ngIf="smartRecommendationsBoolean">
-              <div class="smart-recommend">Smart Recommendations</div>
-              <div class="smart-recommend-1" *ngIf="smartLoading">
-                Please wait we are fetching the best options for you!
-              </div>
-              <div class="smart-recommend-1" *ngIf="!smartLoading">
-                {{ smartRecommendations.urgencyMessage }}
+
+              <!-- Right Illustration -->
+              <div
+                class="col-lg-5 col-12 d-flex justify-content-center"
+                style="margin-top: 24px; margin-top: 0 on-lg"
+              >
+                <div
+                  style="
+                    background-color: rgba(255, 255, 255, 0.1);
+                    border-radius: 12px;
+                    padding: 24px;
+                    text-align: center;
+                    backdrop-filter: blur(10px)
+                  "
+                >
+                  <img
+                    src="media-be/images/smart-chat.svg"
+                    alt="Smart Assistant"
+                    style="width: 120px; height: 120px; margin-bottom: 16px"
+                  />
+                  <p style="font-size: 14px; opacity: 0.9">
+                    Our AI-powered recommendation engine helps you find your perfect room
+                  </p>
+                </div>
               </div>
             </div>
           </div>
-          <ng-container *ngIf="smartLoading && smartRecommendationsBoolean">
-            <div
-              class="card smart-recommend-card skeleton-card"
-              *ngFor="let skeleton of [1, 2]"
-            >
-              <div class="d-flex justify-content-center" style="gap: 8px">
-                <div class="width-49 left-shift">
-                  <div class="skeleton skeleton-title"></div>
-                  <div class="skeleton skeleton-text"></div>
-                </div>
-                <div style="border-right: 1px solid #d9d9d9"></div>
-                <div class="width-49 left-shift">
-                  <div class="skeleton skeleton-text"></div>
-                  <div class="skeleton skeleton-price"></div>
-                  <div class="skeleton skeleton-text"></div>
-                </div>
-              </div>
-            </div>
-          </ng-container>
+        </div>
+      </div>
+    </div>
 
-          <ng-container *ngIf="!smartLoading && smartRecommendationsBoolean">
-            <div *ngFor="let cat of currentCategories">
-              <div
-                class="card smart-recommend-card"
-                [ngClass]="
-                  'smart-recommend-card-' + cat.key.replace('Options', '')
-                "
-              >
-                <ng-container
-                  *ngFor="
-                    let room of smartRecommendations[cat.key];
-                    let last = last
-                  "
-                >
-                  <ng-container *ngIf="last">
-                    <ng-container *ngIf="getCheapestPlan(cat.key) as plan">
-                      <div
-                        class="d-flex justify-content-center"
+    <!-- Smart Recommendations Cards Section (Shows below AI box if toggled) -->
+    <div class="margin-top-40px website-web-vision" *ngIf="showSmartRecommendations && smartRecommendationsBoolean">
+      <div class="row">
+        <div class="col-12">
+          <h4 class="rooms-heading-starts">Recommended For You</h4>
+        </div>
+      </div>
+      <ng-container *ngIf="smartLoading && smartRecommendationsBoolean">
+        <div
+          class="card smart-recommend-card skeleton-card"
+          *ngFor="let skeleton of [1, 2]"
+        >
+          <div class="d-flex justify-content-center" style="gap: 8px">
+            <div class="width-49 left-shift">
+              <div class="skeleton skeleton-title"></div>
+              <div class="skeleton skeleton-text"></div>
+            </div>
+            <div style="border-right: 1px solid #d9d9d9"></div>
+            <div class="width-49 left-shift">
+              <div class="skeleton skeleton-text"></div>
+              <div class="skeleton skeleton-price"></div>
+              <div class="skeleton skeleton-text"></div>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+
+      <ng-container *ngIf="!smartLoading && smartRecommendationsBoolean">
+        <div *ngFor="let cat of currentCategories">
+          <div
+            class="card smart-recommend-card"
+            [ngClass]="
+              'smart-recommend-card-' + cat.key.replace('Options', '')
+            "
+          >
+            <ng-container
+              *ngFor="
+                let room of smartRecommendations[cat.key];
+                let last = last
+              "
+            >
+              <ng-container *ngIf="last">
+                <ng-container *ngIf="getCheapestPlan(cat.key) as plan">
+                  <div
+                    class="d-flex justify-content-center"
                         style="gap: 8px"
                       >
                         <div class="width-49 left-shift">
@@ -1858,7 +2197,7 @@
                             />&nbsp; Budget Combo
                           </h5>
                           <div class="line-height pricing-best-fit">
-                            ₹ {{ plan?.totalPrice | number: "1.2-2" }}
+                            {{ plan?.totalPrice | currency : currency : "symbol" : "1.2-2" }}
                           </div>
                           <div class="line-height">
                             Total for
@@ -1895,8 +2234,8 @@
                               <div class="room-title">{{ room?.roomName }}</div>
                               <ng-container>
                                 <div>
-                                  ₹{{
-                                    plan.pricePerNight | number: "1.2-2"
+                                  {{
+                                    plan.pricePerNight | currency : currency : "symbol" : "1.2-2"
                                   }}
                                   per night
                                 </div>
@@ -1957,246 +2296,311 @@
           </div>
         </div>
       </div>
-    </div>
 
     <!-- web view -->
     <!-- mob view -->
 
     <div class="website-mob-vision">
-      <h2 class="hero-heading">{{ businessUser?.name }}</h2>
-      <p class="hero-subheading font-weight-bold">
-        <img src="media-be/images/location-icons.svg" alt="" width="17px" />
-        {{ businessUser.address?.streetName }},
-        {{ businessUser.address?.city }}, {{ businessUser.address?.state }},
-        {{ businessUser.address?.country }}
-      </p>
-      <div class="d-flex flex-lg-row gap-3 mt-3">
-        <!-- Large Left Image -->
-        <div class="flex-grow-1">
-          <img
-            *ngIf="businessUser?.imageList?.length > 0"
-            [src]="businessUser?.imageList[0]?.url"
-            class="img-fluid rounded main-img"
-            alt="Main Image"
-          />
-        </div>
+      <div class="col-12">
+        <h2 class="hero-heading">{{ businessUser?.name }}</h2>
+        <p class="hero-subheading font-weight-bold">
+          <img src="media-be/images/location-icons.svg" alt="" width="17px" />
+          {{ businessUser.address?.streetName }},
+          {{ businessUser.address?.city }}, {{ businessUser.address?.state }},
+          {{ businessUser.address?.country }}
+        </p>
+        <div class="d-flex flex-lg-row gap-3 mt-3">
+          <!-- Large Left Image -->
+          <div class="flex-grow-1">
+            <img
+              *ngIf="businessUser?.imageList?.length > 0"
+              [src]="businessUser?.imageList[0]?.url"
+              class="img-fluid rounded main-img"
+              alt="Main Image"
+            />
+          </div>
 
-        <!-- Stacked Thumbnails -->
-        <div class="d-flex flex-lg-column gap-2 gallery-thumbs">
+          <!-- Stacked Thumbnails -->
+          <div class="d-flex flex-lg-column gap-2 gallery-thumbs">
+            <div
+              class="d-flex flex-lg-column gap-2 gallery-thumbs position-relative"
+            >
+              <ng-container
+                *ngFor="
+                  let img of businessUser?.imageList?.slice(1, 4);
+                  let i = index
+                "
+              >
+                <img [src]="img.url" class="img-fluid rounded small-img" />
+              </ng-container>
+
+              <!-- See More Button -->
+              <button
+                *ngIf="businessUser?.imageList?.length > 1"
+                class="btn position-absolute see-more"
+                style="bottom: 4px; right: 3px"
+                (click)="showSliderPopup()"
+              >
+                See More Photos
+              </button>
+            </div>
+          </div>
+        </div>
+        <p-dialog
+          header="Photo Gallery"
+          [(visible)]="sliderPopupVisible"
+          [modal]="true"
+          [style]="{ width: '100%' }"
+          [baseZIndex]="10000"
+        >
+          <p-carousel
+            *ngIf="businessUser?.imageList?.length > 0"
+            [value]="businessUser?.imageList"
+            [numVisible]="1"
+            [numScroll]="1"
+            [circular]="true"
+            [autoplayInterval]="5000"
+            [responsiveOptions]="[
+              { breakpoint: '1024px', numVisible: 1, numScroll: 1 },
+              { breakpoint: '768px', numVisible: 1, numScroll: 1 },
+            ]"
+          >
+            <ng-template let-image pTemplate="item">
+              <div class="flex justify-content-center">
+                <img
+                  [src]="image.url"
+                  alt="Room Photo"
+                  style="width: 100%; height: auto; border-radius: 8px"
+                />
+              </div>
+            </ng-template>
+          </p-carousel>
+        </p-dialog>
+
+        <div class="col-12">
           <div
-            class="d-flex flex-lg-column gap-2 gallery-thumbs position-relative"
+            *ngIf="smartRecommendationsBoolean"
+            class="d-flex align-items-start"
+            style="gap: 8px; margin-top: 15px"
+          >
+            <div style="width: 16%" class="smart-cion">
+              <div class="smart-card">
+                <img
+                  src=" media-be/images/smart-chat.svg"
+                  class="smart-card-img"
+                  alt=""
+                />
+              </div>
+            </div>
+            <div>
+              <div class="smart-recommend">Smart Recommendations</div>
+              <div class="smart-recommend-1">
+                Not sure what to book? These room options are the best fit for
+                your stay – selected just for you.
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="d-flex scroll-container" *ngIf="smartRecommendationsBoolean">
+          <ng-container *ngIf="smartLoading && smartRecommendationsBoolean">
+            <div
+              class="card smart-recommend-card skeleton-card"
+              style="width: 100%"
+              *ngFor="let skeleton of [1, 2]"
+            >
+              <div style="gap: 8px">
+                <div class="width-49 left-shift">
+                  <div class="skeleton skeleton-title"></div>
+                  <div class="skeleton skeleton-text"></div>
+                </div>
+                <div style="border-right: 1px solid #d9d9d9"></div>
+                <div class="width-49 left-shift">
+                  <div class="skeleton skeleton-text"></div>
+                  <div class="skeleton skeleton-price"></div>
+                  <div class="skeleton skeleton-text"></div>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+          <div
+            *ngFor="let cat of categories"
+            class="card smart-recommend-card"
+            [ngClass]="'smart-recommend-card-' + cat.key.replace('Options', '')"
           >
             <ng-container
-              *ngFor="
-                let img of businessUser?.imageList?.slice(1, 4);
-                let i = index
-              "
+              *ngFor="let room of smartRecommendations[cat.key]; let last = last"
             >
-              <img [src]="img.url" class="img-fluid rounded small-img" />
-            </ng-container>
-
-            <!-- See More Button -->
-            <button
-              *ngIf="businessUser?.imageList?.length > 1"
-              class="btn position-absolute see-more"
-              style="bottom: 4px; right: 3px"
-              (click)="showSliderPopup()"
-            >
-              See More Photos
-            </button>
-          </div>
-        </div>
-      </div>
-      <p-dialog
-        header="Photo Gallery"
-        [(visible)]="sliderPopupVisible"
-        [modal]="true"
-        [style]="{ width: '100%' }"
-        [baseZIndex]="10000"
-      >
-        <p-carousel
-          *ngIf="businessUser?.imageList?.length > 0"
-          [value]="businessUser?.imageList"
-          [numVisible]="1"
-          [numScroll]="1"
-          [circular]="true"
-          [autoplayInterval]="5000"
-          [responsiveOptions]="[
-            { breakpoint: '1024px', numVisible: 1, numScroll: 1 },
-            { breakpoint: '768px', numVisible: 1, numScroll: 1 },
-          ]"
-        >
-          <ng-template let-image pTemplate="item">
-            <div class="flex justify-content-center">
-              <img
-                [src]="image.url"
-                alt="Room Photo"
-                style="width: 100%; height: auto; border-radius: 8px"
-              />
-            </div>
-          </ng-template>
-        </p-carousel>
-      </p-dialog>
-
-      <div class="col-12">
-        <div
-          *ngIf="smartRecommendationsBoolean"
-          class="d-flex align-items-start"
-          style="gap: 8px; margin-top: 15px"
-        >
-          <div style="width: 16%" class="smart-cion">
-            <div class="smart-card">
-              <img
-                src=" media-be/images/smart-chat.svg"
-                class="smart-card-img"
-                alt=""
-              />
-            </div>
-          </div>
-          <div>
-            <div class="smart-recommend">Smart Recommendations</div>
-            <div class="smart-recommend-1">
-              Not sure what to book? These room options are the best fit for
-              your stay – selected just for you.
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="d-flex scroll-container" *ngIf="smartRecommendationsBoolean">
-        <ng-container *ngIf="smartLoading && smartRecommendationsBoolean">
-          <div
-            class="card smart-recommend-card skeleton-card"
-            style="width: 100%"
-            *ngFor="let skeleton of [1, 2]"
-          >
-            <div style="gap: 8px">
-              <div class="width-49 left-shift">
-                <div class="skeleton skeleton-title"></div>
-                <div class="skeleton skeleton-text"></div>
-              </div>
-              <div style="border-right: 1px solid #d9d9d9"></div>
-              <div class="width-49 left-shift">
-                <div class="skeleton skeleton-text"></div>
-                <div class="skeleton skeleton-price"></div>
-                <div class="skeleton skeleton-text"></div>
-              </div>
-            </div>
-          </div>
-        </ng-container>
-        <div
-          *ngFor="let cat of categories"
-          class="card smart-recommend-card"
-          [ngClass]="'smart-recommend-card-' + cat.key.replace('Options', '')"
-        >
-          <ng-container
-            *ngFor="let room of smartRecommendations[cat.key]; let last = last"
-          >
-            <ng-container *ngIf="last">
-              <ng-container *ngFor="let plan of room.plans">
-                <div class="d-flex justify-content-center" style="gap: 8px">
-                  <div class="width-49 left-shift">
-                    <!-- Category headings with icons -->
-                    <h5
-                      class="recommend-font"
-                      *ngIf="cat.key === 'bestFitOptions'"
-                    >
-                      <img src="media-be/images/best-fit.svg" alt="" />&nbsp;
-                      Best Fit Options
-                    </h5>
-                    <h5
-                      class="recommend-font"
-                      *ngIf="cat.key === 'luxuryOptions'"
-                    >
-                      <img
-                        src="media-be/images/luxury-crown.svg"
-                        alt=""
-                      />&nbsp; Luxury Combo
-                    </h5>
-                    <h5
-                      class="recommend-font"
-                      *ngIf="cat.key === 'comfortOptions'"
-                    >
-                      <img src="media-be/images/sofa.svg" alt="" />&nbsp;
-                      Comfort Combo
-                    </h5>
-                    <h5
-                      class="recommend-font"
-                      *ngIf="cat.key === 'budgetOptions'"
-                    >
-                      <img src="media-be/images/budget.svg" alt="" />&nbsp;
-                      Budget Combo
-                    </h5>
-
-                    <!-- Price & details -->
-                    <div class="line-height pricing-best-fit">
-                      &nbsp; &nbsp; ₹ {{ plan?.totalPrice | number: "1.2-2" }}
-                    </div>
-                    <div class="line-height">
-                      &nbsp; &nbsp; &nbsp; &nbsp; Total for
-                      {{ DiffDate }} nights
-                    </div>
-                    <div class="line-height">
-                      &nbsp; &nbsp; &nbsp; &nbsp;
-                      <img
-                        src="media-be/images/combo-star-one.svg"
-                        alt=""
-                      />&nbsp;
-                      <small>Ideal for {{ plan.idealFor.join(", ") }}</small>
-                    </div>
-                  </div>
-
-                  <div style="border-right: 1px solid #d9d9d9"></div>
-
-                  <!-- Room Details -->
-                  <div class="width-49 left-shift">
-                    <div class="margin-bottom-10px">
-                      &nbsp; &nbsp; &nbsp;<img
-                        src="media-be/images/combo-ded-one.svg"
-                        alt=""
-                      />&nbsp;
-                      <small *ngIf="room.availableCount > 5"
-                        >Fast-selling</small
+              <ng-container *ngIf="last">
+                <ng-container *ngFor="let plan of room.plans">
+                  <div class="d-flex justify-content-center" style="gap: 8px">
+                    <div class="width-49 left-shift">
+                      <!-- Category headings with icons -->
+                      <h5
+                        class="recommend-font"
+                        *ngIf="cat.key === 'bestFitOptions'"
                       >
-                      <small *ngIf="room.availableCount <= 5"
-                        >{{ room?.availableCount }} room(s) left</small
+                        <img src="media-be/images/best-fit.svg" alt="" />&nbsp;
+                        Best Fit Options
+                      </h5>
+                      <h5
+                        class="recommend-font"
+                        *ngIf="cat.key === 'luxuryOptions'"
                       >
-                    </div>
-                    <div
-                      class="room-box d-block justify-content-between mb-4"
-                      [ngClass]="
-                        'room-box-best-fit-' + cat.key.replace('Options', '')
-                      "
-                    >
-                      <div class="room-details">
-                        <div class="room-title">{{ room?.roomName }}</div>
-                        <ng-container>
-                          <div>
-                            ₹{{ plan.pricePerNight | number: "1.2-2" }} per
-                            night
-                          </div>
-                        </ng-container>
+                        <img
+                          src="media-be/images/luxury-crown.svg"
+                          alt=""
+                        />&nbsp; Luxury Combo
+                      </h5>
+                      <h5
+                        class="recommend-font"
+                        *ngIf="cat.key === 'comfortOptions'"
+                      >
+                        <img src="media-be/images/sofa.svg" alt="" />&nbsp;
+                        Comfort Combo
+                      </h5>
+                      <h5
+                        class="recommend-font"
+                        *ngIf="cat.key === 'budgetOptions'"
+                      >
+                        <img src="media-be/images/budget.svg" alt="" />&nbsp;
+                        Budget Combo
+                      </h5>
+
+                      <!-- Price & details -->
+                      <div class="line-height pricing-best-fit">
+                        &nbsp; &nbsp; {{ plan?.totalPrice | currency : currency : "symbol" : "1.2-2" }}
+                      </div>
+                      <div class="line-height">
+                        &nbsp; &nbsp; &nbsp; &nbsp; Total for
+                        {{ DiffDate }} nights
+                      </div>
+                      <div class="line-height">
+                        &nbsp; &nbsp; &nbsp; &nbsp;
+                        <img
+                          src="media-be/images/combo-star-one.svg"
+                          alt=""
+                        />&nbsp;
+                        <small>Ideal for {{ plan.idealFor.join(", ") }}</small>
                       </div>
                     </div>
-                    <div
-                      style="
-                        display: flex;
-                        justify-content: end;
-                        margin-top: 10px;
-                        margin-bottom: 10px;
-                      "
-                    >
-                      <button
-                        (click)="onSelectPlanFromSmartCard(plan)"
-                        class="select-mannual"
+
+                    <div style="border-right: 1px solid #d9d9d9"></div>
+
+                    <!-- Room Details -->
+                    <div class="width-49 left-shift">
+                      <div class="margin-bottom-10px">
+                        &nbsp; &nbsp; &nbsp;<img
+                          src="media-be/images/combo-ded-one.svg"
+                          alt=""
+                        />&nbsp;
+                        <small *ngIf="room.availableCount > 5"
+                          >Fast-selling</small
+                        >
+                        <small *ngIf="room.availableCount <= 5"
+                          >{{ room?.availableCount }} room(s) left</small
+                        >
+                      </div>
+                      <div
+                        class="room-box d-block justify-content-between mb-4"
+                        [ngClass]="
+                          'room-box-best-fit-' + cat.key.replace('Options', '')
+                        "
                       >
-                        Choose <i class="fa-solid fa-arrow-right"></i>
-                      </button>
+                        <div class="room-details">
+                          <div class="room-title">{{ room?.roomName }}</div>
+                          <ng-container>
+                            <div>
+                              {{ plan.pricePerNight | currency : currency : "symbol" : "1.2-2" }} per
+                              night
+                            </div>
+                          </ng-container>
+                        </div>
+                      </div>
+                      <div
+                        style="
+                          display: flex;
+                          justify-content: end;
+                          margin-top: 10px;
+                          margin-bottom: 10px;
+                        "
+                      >
+                        <button
+                          (click)="onSelectPlanFromSmartCard(plan)"
+                          class="select-mannual"
+                        >
+                          Choose <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                      </div>
                     </div>
                   </div>
-                </div>
+                </ng-container>
               </ng-container>
             </ng-container>
-          </ng-container>
+          </div>
+        </div>
+      </div>
+
+      <div
+        class="margin-top-40px mobile-property-highlights"
+        *ngIf="amenitiesHighlights.length > 0 || propertyServiceListData.length > 0"
+      >
+        <h4 class="aminities-highlights">Property Highlights</h4>
+        <div
+          class="card margin-top-20px"
+          style="box-shadow: 0px 4px 40px 0px #d9d9d9; background-color: #f5f5f5; border-radius: 12px"
+        >
+          <div class="padding-20px">
+            <div style="display: flex; flex-wrap: wrap; gap: 16px;">
+
+              <ng-container
+                *ngFor="let fac of (amenitiesHighlights.length > 0 ? amenitiesHighlights : propertyServiceListData) | slice: 0 : 6"
+              >
+
+                <div
+                  style="flex: 0 0 220px;"
+                  *ngIf="
+                    fac.name !== null &&
+                    fac.name !== undefined &&
+                    fac.serviceType !== 'Distance' &&
+                    fac.serviceType !== 'RestaurantHotel' &&
+                    fac.serviceType !== 'DistanceRailway'
+                  "
+                >
+                  <div class="d-flex align-items-center gap-10px">
+
+                    <!-- Icon -->
+                    <div style="flex-shrink: 0">
+                      <img
+                        *ngIf="!fac.imageUrl"
+                        src="https://static.thenounproject.com/png/3421816-200.png"
+                        alt="icon"
+                        style="width: 36px; height: 36px; object-fit: contain; background: #eef2f6; padding: 6px; border-radius: 10px;"
+                      />
+                      <img
+                        *ngIf="fac.imageUrl"
+                        [src]="fac.imageUrl"
+                        alt="icon"
+                        style="width: 36px; height: 36px; object-fit: contain; background: #eef2f6; padding: 6px; border-radius: 10px;"
+                      />
+                    </div>
+
+                    <!-- Text -->
+                    <div>
+                      <p
+                        class="aminities-names"
+                        style="margin: 0; font-weight: 600; color: #334155; font-size: 16px;"
+                      >
+                        {{ fac.name }}
+                      </p>
+                    </div>
+
+                  </div>
+                </div>
+
+              </ng-container>
+
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -2222,8 +2626,9 @@
               ></i>
               &nbsp;&nbsp; {{ businessUser?.name }} Gallery
             </h4>
-            <button class="select-mannual" (click)="selectRoomsbtn()">
-              Select {{ getBookingUnitLabel() }}s
+            <button class="select-mannual" (click)="selectRoomsbtn()"> 
+              <i class="fa-solid fa-xmark"></i>
+              <!-- Select {{ getBookingUnitLabel() }}s -->
             </button>
           </div>
           <div class="modal-body">
@@ -2332,159 +2737,16 @@
         </div>
       </div>
     </div>
-    <div class="container my-4"></div>
 
-    <div class="margin-top-40px display-flex">
-      <div class="col-12 col-lg-7">
-        <div *ngIf="propertyServiceListData">
-          <h4 class="aminities-highlights">Property Highlights</h4>
-          <div
-            class="card margin-top-20px"
-            style="box-shadow: 0px 4px 40px 0px #d9d9d966"
-          >
-            <div class="padding-20px">
-              <div class="row facrow1" [ngClass]="{ 'expanded-row': showAll }">
-                <div
-                  class="col-lg-6 col-6 p-2"
-                  *ngFor="let fac of propertyServiceListData | slice: 0 : 6"
-                >
-                  <div
-                    class="d-flex align-item-center gap-20px"
-                    id="facilitysm"
-                    *ngIf="
-                      fac.name !== null &&
-                      fac.name !== undefined &&
-                      fac.serviceType !== 'Distance' &&
-                      fac.serviceType !== 'RestaurantHotel' &&
-                      fac.serviceType !== 'DistanceRailway'
-                    "
-                  >
-                    <div>
-                      <img
-                        class="icon-amenities"
-                        *ngIf="
-                          fac.imageUrl == null || fac.imageUrl == undefined
-                        "
-                        src="https://static.thenounproject.com/png/3421816-200.png"
-                        alt="icon"
-                      />
-                      <img
-                        class="icon-amenities"
-                        *ngIf="
-                          fac.imageUrl != null && fac.imageUrl != undefined
-                        "
-                        src="{{ fac.imageUrl }}"
-                        alt="icon"
-                      />
-                    </div>
-                    <div>
-                      <p class="aminities-names">{{ fac.name }}</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <ng-container *ngIf="showAll">
-                <div class="row facrow1 ammmmi" style="flex-wrap: wrap">
-                  <ng-container
-                    *ngFor="let fac of propertyServiceListData; let i = index"
-                  >
-                    <ng-container *ngIf="i >= 6">
-                      <div class="col-lg-6 col-6 p-2">
-                        <div
-                          class="d-flex align-item-center gap-20px"
-                          id="facilitysm"
-                          *ngIf="
-                            fac.name !== null &&
-                            fac.name !== undefined &&
-                            fac.serviceType !== 'Distance' &&
-                            fac.serviceType !== 'RestaurantHotel' &&
-                            fac.serviceType !== 'DistanceRailway'
-                          "
-                        >
-                          <div>
-                            <img
-                              class="icon-amenities"
-                              *ngIf="
-                                fac.imageUrl == null ||
-                                fac.imageUrl == undefined
-                              "
-                              src="https://static.thenounproject.com/png/3421816-200.png"
-                              alt="icon"
-                            />
-                            <img
-                              class="icon-amenities"
-                              *ngIf="
-                                fac.imageUrl != null &&
-                                fac.imageUrl != undefined
-                              "
-                              src="{{ fac.imageUrl }}"
-                              alt="icon"
-                            />
-                          </div>
-                          <div>
-                            <p class="aminities-names">{{ fac.name }}</p>
-                          </div>
-                        </div>
-                      </div>
-                    </ng-container>
-                  </ng-container>
-                </div>
-              </ng-container>
-              <p
-                style="text-align: end"
-                *ngIf="propertyServiceListData?.length > 6"
-              >
-                <a
-                  (click)="showAll = !showAll"
-                  style="
-                    color: #221950;
-                    font-weight: bold;
-                    font-size: 15px;
-                    cursor: pointer;
-                  "
-                  >View {{ showAll ? "Less" : "More" }}</a
-                >
-              </p>
-            </div>
-          </div>
+    <!-- Room Selection Section -->
+    <div class="container-div margin-bottom-40px">
+      <div class="room-selection-wrapper">
+        <div class="margin-top-40px" id="accmdOne">
+          <h4 class="rooms-heading-starts">Select {{ getBookingUnitLabel() }}s</h4>
         </div>
-      </div>
-      <div class="col-12 col-lg-5">
-        <div *ngIf="isRestaurant || distance || DistanceRailway">
-          <h4 class="aminities-highlights">About Property</h4>
-          <div
-            class="card margin-top-20px"
-            style="box-shadow: 0px 4px 40px 0px #d9d9d966"
-          >
-            <div class="padding-20px">
-              <div *ngIf="isRestaurant || distance || DistanceRailway">
-                <dl>
-                  <dt style="margin-bottom: 18px" *ngIf="DistanceRailway">
-                    <i class="fa-solid fa-forward"></i> &nbsp;
-                    {{ DistanceRailway.name }}
-                  </dt>
-                  <dt style="margin-bottom: 18px" *ngIf="distance">
-                    <i class="fa-solid fa-forward"></i> &nbsp;
-                    {{ distance.name }}
-                  </dt>
-                  <dt style="margin-bottom: 18px" *ngIf="isRestaurant">
-                    <i class="fa-solid fa-forward"></i> &nbsp;
-                    {{ isRestaurant.name }}
-                  </dt>
-                </dl>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
 
-    <div class="margin-top-40px" id="accmdOne">
-      <h4 class="rooms-heading-starts" >Select {{ getBookingUnitLabel() }}s</h4>
-    </div>
-
-    <div class="image-container">
-      <div class="maiiin">
+        <div class="image-container">
+          <div class="maiiin">
         <div *ngFor="let room of availableRooms; let i = index">
           <div class="right-popup" [class.show]="isPanelOpen">
             <div class="popup-header">
@@ -2678,7 +2940,7 @@
                         getMinAvailableRooms(room.ratesAndAvailabilityDtos) <= 5
                       "
                       style="z-index: 1"
-                      class="position-absolute top-0 start-0 m-2 px-3 py-1 last-rooms rounded-pill small" [title]="getBookingUnitLabel(room)"
+                      class="position-absolute top-0 start-0 m-2 px-3 py-1 last-rooms rounded-pill small"
                     >
                       Last
                       {{
@@ -2925,12 +3187,13 @@
                           </div>
                         </div>
                       </div>
-                       <div class="card-data website-web-vision">
-                          <div class="error-text">
-                            {{ guestSelectionErrors[plan.code] }}
-                          </div>
-
-                        <div class="d-flex justify-content-between align-items-start" [class.disabled-room]="booking?.noOfNights > 1 && plan?.onedayPlan">
+                      <div class="card-data website-web-vision">
+                        <div class="error-text">
+                          {{ guestSelectionErrors[plan.code] }}
+                        </div>
+                        <div
+                          class="d-flex justify-content-between align-items-start" [class.disabled-room]="booking?.noOfNights > 1 && plan?.onedayPlan"
+                        >
                           <div class="d-flex room-number">
                             <div *ngIf="!plan?.nonRoomPlan">
                               <label
@@ -2941,36 +3204,37 @@
                                 >{{ getBookingUnitLabel(room) | slice:0:8 }}{{ getBookingUnitLabel(room).length > 8 ? '...' : '' }}</label
                               >
                             </div>
+                           <ng-container *ngIf="!plan?.nonRoomPlan">
+                             <select
+                              class="select-icon"
+                              id="inputGroupSelect01"
+                              [(ngModel)]="selectedRoomsByPlan[plan.code]"
+                              (ngModelChange)="
+                                onRoomSelect(room.name, plan.code, $event)
+                              "
+                            >
+                              <!-- Ensure default is assigned -->
+                              <ng-container
+                                *ngIf="setDefaultRoomIfMissing(plan.code)"
+                              ></ng-container>
 
-                            <ng-container *ngIf="!plan?.nonRoomPlan">
-                              <select class="select-icon"
-                                id="inputGroupSelect01"
-                                [(ngModel)]="selectedRoomsByPlan[plan.code]"
-                                (ngModelChange)="onRoomSelect(room.name, plan.code, $event)"
+                              <option
+                                *ngFor="
+                                  let count of getRoomOptions(
+                                    getMinAvailableRooms(
+                                      room.ratesAndAvailabilityDtos
+                                    ),
+                                    room.name,
+                                    plan.code
+                                  )
+                                "
+                                [ngValue]="count"
                               >
-                                <!-- Ensure default is assigned -->
-                                <ng-container
-                                  *ngIf="setDefaultRoomIfMissing(plan.code)"
-                                ></ng-container>
-  
-                                <option
-                                  *ngFor="
-                                    let count of getRoomOptions(
-                                      getMinAvailableRooms(
-                                        room.ratesAndAvailabilityDtos
-                                      ),
-                                      room.name,
-                                      plan.code
-                                    )
-                                  "
-                                  [ngValue]="count"
-                                >
-                                  {{ count === 0 ? "0" : count }}
-                                </option>
-                              </select>
-                            </ng-container>
+                                {{ count === 0 ? "0" : count }}
+                              </option>
+                            </select>
+                           </ng-container>
                           </div>
-
                           <div class="d-flex room-numberOne">
                             <div>
                               <img
@@ -3001,7 +3265,9 @@
                                 </div>
                                 <div
                                   class="cursor-pointer plus-btn"
-                                  (click)="onIncrement(plan?.code, 'adults', plan, room)"
+                                  (click)="
+                                    onIncrement(plan.code, 'adults', plan, room)
+                                  "
                                 >
                                   <i class="fa-solid fa-plus"></i>
                                 </div>
@@ -3031,7 +3297,7 @@
                                 <div
                                   class="cursor-pointer plus-btn"
                                   (click)="
-                                    onIncrement(plan.code, 'children', plan ,room)
+                                    onIncrement(plan.code, 'children', plan, room)
                                   "
                                 >
                                   <i class="fa-solid fa-plus"></i>
@@ -3090,8 +3356,15 @@
                             </div>
                           </div>
                         </div>
-                        <div *ngIf="booking?.noOfNights > 1 && plan?.onedayPlan" class="plan-warning-text">
-                              This plan is only available for 1-night stay. Please adjust your dates to select these {{ getBookingUnitLabel(room) }}s.
+                        <div
+                          *ngIf="booking?.noOfNights > 1 && plan?.onedayPlan"
+                          class="plan-warning-row"
+                        >
+                          <div class="plan-warning-text">
+                            This plan is only available for 1-night stay.
+                            Please adjust your dates to select these
+                            {{ getBookingUnitLabel(room) }}s.
+                          </div>
                         </div>
                       </div>
                       <!-- web view Plans Section -->
@@ -3159,14 +3432,15 @@
                           <div class="d-flex room-number">
                             <div *ngIf="!plan?.nonRoomPlan">
                               <label
-                                class="input-group-text truncate-text" [matTooltip]="fullText" matTooltipPosition="above" matTooltipShowDelay="300"
-                                for="inputGroupSelect01" [title]="getBookingUnitLabel(room)" [title]="getBookingUnitLabel(room).length > 8 ? getBookingUnitLabel(room) : ''"
+                                class="input-group-text"
+                                [matTooltip]="fullText" matTooltipPosition="above" matTooltipShowDelay="300"
+                                for="inputGroupSelect01"
+                                [title]="getBookingUnitLabel(room)" [title]="getBookingUnitLabel(room).length > 8 ? getBookingUnitLabel(room) : ''"
                                 >{{ getBookingUnitLabel(room) | slice:0:8 }}{{ getBookingUnitLabel(room).length > 8 ? '...' : '' }}</label
                               >
                             </div>
-                            
-                            <ng-container *ngIf="!plan?.nonRoomPlan">
-                              <select
+                           <ng-container *ngIf="!plan?.nonRoomPlan">
+                             <select
                               class="select-icon"
                               id="inputGroupSelect01"
                               [(ngModel)]="selectedRoomsByPlan[plan.code]"
@@ -3194,7 +3468,7 @@
                                 {{ count === 0 ? "0" : count }}
                               </option>
                             </select>
-                            </ng-container>
+                           </ng-container>
                           </div>
                           <div class="d-flex room-numberOne">
                             <div>
@@ -3236,7 +3510,7 @@
                                 <div
                                   class="cursor-pointer plus-btn"
                                   (click)="
-                                    onIncrement(plan.code, 'adults', plan ,room)
+                                    onIncrement(plan.code, 'adults', plan , room)
                                   "
                                 >
                                   <i class="fa-solid fa-plus"></i>
@@ -3323,9 +3597,16 @@
                             </div>
                           </div>
                         </div>
-                        <div *ngIf="booking?.noOfNights > 1 && plan?.onedayPlan" class="plan-warning-text">
-                              This plan is only available for 1-night stay. Please adjust your dates to select these {{ getBookingUnitLabel(room) }}s.
-                            </div>
+                        <div
+                          *ngIf="booking?.noOfNights > 1 && plan?.onedayPlan"
+                          class="plan-warning-row plan-warning-row-mobile"
+                        >
+                          <div class="plan-warning-text">
+                            This plan is only available for 1-night stay.
+                            Please adjust your dates to select these
+                            {{ getBookingUnitLabel(room) }}s.
+                          </div>
+                        </div>
                       </div>
                       <!-- mob view Plans Section -->
                     </div>
@@ -3642,7 +3923,7 @@
                       [innerHTML]="room.description"
                     ></div>
                     <div class="margin-top-20px">
-                      <p class="sold-out-header" [title]="getBookingUnitLabel(room)">
+                      <p class="sold-out-header">
                         See similar {{ getBookingUnitLabel(room) }}s or adjust your dates to find
                         availability.
                       </p>
@@ -3653,7 +3934,7 @@
                       </button>
                       <button
                         (click)="scrollToAccommodationDash()"
-                        class="dates-seemore" [title]="getBookingUnitLabel(room)"
+                        class="dates-seemore"
                       >
                         See More {{ getBookingUnitLabel(room) }}s
                       </button>
@@ -3755,10 +4036,10 @@
                         !activeForGoogleHotelCenter
                       "
                       >Inclusive Adult Charge <br />
-                      ₹
+                      
                       {{
                         plan.SingleDayextraPersonAdultCountAmount
-                          | number: "1.2-2"
+                          | currency : currency : "symbol" : "1.2-2"
                       }}
                       per night</small
                     > <br *ngIf="
@@ -3771,10 +4052,10 @@
                         !activeForGoogleHotelCenter
                       "
                       >Inclusive Children Charge <br />
-                      ₹
+                      
                       {{
                         plan.SingleDayextraPersonChildCountAmount
-                          | number: "1.2-2"
+                          | currency : currency : "symbol" : "1.2-2"
                       }}
                       per night</small
                     > <br *ngIf="
@@ -3786,17 +4067,17 @@
                   <div class="d-flex align-items-start">
                     <div class="room-price">
                       <ng-container *ngIf="!activeForGoogleHotelCenter">
-                        ₹ {{ plan.price | number: "1.2-2" }}
+                        {{ plan.price | currency : currency : "symbol" : "1.2-2" }}
                       </ng-container>
 
                       <ng-container *ngIf="activeForGoogleHotelCenter">
                         <ng-container
                           *ngIf="plan.planName === 'GHC'; else nonGhcPrice"
                         >
-                          ₹ {{ getTotalGhCPrice(plan) | number: "1.2-2" }}
+                          {{ getTotalGhCPrice(plan) | currency : currency : "symbol" : "1.2-2" }}
                         </ng-container>
                         <ng-template #nonGhcPrice>
-                          ₹ {{ getTotalNonGhCPrice(plan) | number: "1.2-2" }}
+                          {{ getTotalNonGhCPrice(plan) | currency : currency : "symbol" : "1.2-2" }}
                         </ng-template>
                       </ng-container>
                     </div>
@@ -3824,7 +4105,7 @@
                     ></i>
                   </small>
                   <!-- <small class="text-muted" *ngIf="taxArray && taxArray.length">
-                Tax Fee: ₹{{ taxArray[i] | number : "1.2-2" }}
+                Tax Fee: {{ taxArray[i] | currency : currency : "symbol" : "1.2-2" }}
               </small> -->
                 </div>
 
@@ -3999,31 +4280,20 @@
             *ngIf="selectedPlansSummary.length > 0"
           />
 
-          <!-- Add-ons -->
-          <div
-            class="mb-3"
-            *ngIf="
-              propertyServiceListDataOne.length > 0 &&
-              !activeForGoogleHotelCenter
-            "
-          >
-            <div class="font-weight-semibold mb-2">Add-ons</div>
-
-            <ng-container
-              *ngFor="let fac of propertyServiceListDataOne; let i = index"
-            >
-              <div class="custom-checkbox mb-2">
-                <label>
-                  <input
-                    type="checkbox"
-                    [checked]="selectedFacilityNames.includes(fac.name)"
-                    (change)="onFacilityToggle(fac.name, $event.target.checked)"
-                  />
-                  <span class="checkmark"></span>
-                  {{ fac.name }}
-                </label>
+          <div class="spin-win-card" *ngIf="!activeForGoogleHotelCenter">
+            <div class="spin-left">
+              <div class="icon-circle">
+                <i class="fa-solid fa-trophy"></i>
               </div>
-            </ng-container>
+              <div class="text-section">
+                <div class="title">Spin & Win Discount</div>
+                <div class="subtitle">Try your luck today!</div>
+              </div>
+            </div>
+
+            <button class="spin-btn" (click)="openSpinWheel(product, couponSection)">
+              Spin Now
+            </button>
           </div>
           <div>
             <small class="special-code"
@@ -4100,14 +4370,14 @@
               *ngIf="!activeForGoogleHotelCenter"
             >
               <span>Rooms Total</span>
-              <span>₹{{ getTotalPlanPrice() | number: "1.2-2" }}</span>
+              <span>{{ getTotalPlanPrice() | currency : currency : "symbol" : "1.2-2" }}</span>
             </div>
             <div
               class="d-flex justify-content-between"
               *ngIf="activeForGoogleHotelCenter"
             >
               <span>Rooms Total</span>
-              <span>₹{{ getGrandSubtotal() | number: "1.2-2" }}</span>
+              <span>{{ getGrandSubtotal() | currency : currency : "symbol" : "1.2-2" }}</span>
             </div>
 
             <div
@@ -4124,9 +4394,9 @@
                   &nbsp;
                 </small>
                 <b style="color: #16a34a; font-weight: 400"
-                  >-₹{{
+                  >-{{
                     (getTotalPlanPrice() * specialDiscountPercentage) / 100
-                      | number: "1.2-2"
+                      | currency : currency : "symbol" : "1.2-2"
                   }}</b
                 ></span
               >
@@ -4146,9 +4416,9 @@
                   &nbsp;
                 </small>
                 <b style="color: #16a34a; font-weight: 400"
-                  >-₹{{
+                  >-{{
                     (getGrandSubtotal() * specialDiscountPercentage) / 100
-                      | number: "1.2-2"
+                      | currency : currency : "symbol" : "1.2-2"
                   }}</b
                 ></span
               >
@@ -4156,26 +4426,17 @@
 
             <div
               class="d-flex justify-content-between"
-              *ngIf="getTotalAfterTaxAmountFacility() > 0"
-            >
-              <span>Add-ons Total</span>
-              <span
-                >₹{{ getTotalAfterTaxAmountFacility() | number: "1.2-2" }}</span
-              >
-            </div>
-            <div
-              class="d-flex justify-content-between"
               *ngIf="!activeForGoogleHotelCenter"
             >
               <span>Tax & Services</span>
-              <span>₹{{ getTotalTaxPrice() | number: "1.2-2" }}</span>
+              <span>{{ getTotalTaxPrice() | currency : currency : "symbol" : "1.2-2" }}</span>
             </div>
             <div
               class="d-flex justify-content-between"
               *ngIf="activeForGoogleHotelCenter"
             >
               <span>Tax & Services</span>
-              <span>₹{{ getGrandTaxTotal() | number: "1.2-2" }}</span>
+              <span>{{ getGrandTaxTotal() | currency : currency : "symbol" : "1.2-2" }}</span>
             </div>
             <div
               class="d-flex justify-content-between"
@@ -4183,22 +4444,22 @@
             >
               <span>Convenience Fee:</span>
               <span *ngIf="specialDiscountPercentage">
-                ₹{{
+                {{
                   calculateConvenienceFee(
                     getTotalPlanPrice() -
                       (this.getTotalPlanPrice() *
                         this.specialDiscountPercentage) /
                         100,
                     serviceChargePercentage
-                  )
+                  ) | currency : currency : "symbol" : "1.2-2"
                 }}
               </span>
               <span *ngIf="!specialDiscountPercentage">
-                ₹{{
+                {{
                   calculateConvenienceFee(
                     getTotalPlanPrice(),
                     serviceChargePercentage
-                  )
+                  ) | currency : currency : "symbol" : "1.2-2"
                 }}
               </span>
             </div>
@@ -4208,21 +4469,21 @@
             >
               <span>Convenience Fee:</span>
               <span *ngIf="specialDiscountPercentage">
-                ₹{{
+                {{
                   calculateConvenienceFee(
                     getGrandSubtotal() -
                       (getGrandSubtotal() * this.specialDiscountPercentage) /
                         100,
                     serviceChargePercentage
-                  )
+                  ) | currency : currency : "symbol" : "1.2-2"
                 }}
               </span>
               <span *ngIf="!specialDiscountPercentage">
-                ₹{{
+                {{
                   calculateConvenienceFee(
                     getGrandSubtotal(),
                     serviceChargePercentage
-                  )
+                  ) | currency : currency : "symbol" : "1.2-2"
                 }}
               </span>
             </div>
@@ -4233,9 +4494,8 @@
             >
               <span>Total Amount</span>
               <span *ngIf="specialDiscountPercentage">
-                ₹{{
+                {{
                   getTotalPlanPrice() +
-                    getTotalAfterTaxAmountFacility() +
                     getTotalTaxPrice() -
                     (getTotalPlanPrice() * specialDiscountPercentage) / 100 +
                     (serviceChargePercentage > 0
@@ -4246,20 +4506,19 @@
                               100,
                           serviceChargePercentage
                         )
-                      : 0) | number: "1.2-2"
+                      : 0) | currency : currency : "symbol" : "1.2-2"
                 }}
               </span>
               <span *ngIf="!specialDiscountPercentage">
-                ₹{{
+                {{
                   getTotalPlanPrice() +
-                    getTotalAfterTaxAmountFacility() +
                     getTotalTaxPrice() +
                     (serviceChargePercentage > 0
                       ? calculateConvenienceFee(
                           getTotalPlanPrice(),
                           serviceChargePercentage
                         )
-                      : 0) | number: "1.2-2"
+                      : 0) | currency : currency : "symbol" : "1.2-2"
                 }}
               </span>
             </div>
@@ -4270,7 +4529,7 @@
               <span>Total Amount</span>
 
               <span *ngIf="specialDiscountPercentage">
-                ₹{{
+                {{
                   getGrandSubtotal() -
                     (getGrandSubtotal() * specialDiscountPercentage) / 100 +
                     getGrandTaxTotal() +
@@ -4282,18 +4541,18 @@
                               100,
                           serviceChargePercentage
                         )
-                      : 0) | number: "1.2-2"
+                      : 0) | currency : currency : "symbol" : "1.2-2"
                 }}
               </span>
               <span *ngIf="!specialDiscountPercentage">
-                ₹{{
+                {{
                   getGrandTotal() +
                     (serviceChargePercentage > 0
                       ? calculateConvenienceFee(
                           getTotalPlanPrice(),
                           serviceChargePercentage
                         )
-                      : 0) | number: "1.2-2"
+                      : 0) | currency : currency : "symbol" : "1.2-2"
                 }}
               </span>
             </div>
@@ -4313,25 +4572,57 @@
 
     <!-- Property description section starts -->
     <div class="margin-top-30px">
-      <div class="row mr-0 ml-0">
-        <div class="col-lg-12 pl-0 pr-0">
-          <div
-            style="margin-top: 20px"
-            *ngIf="businessUser.businessDescription"
-          >
-            <div style="display: inline-block; padding: 4px 8px">
-              <h3 class="aboutHeading">About {{ businessUser?.name }}</h3>
-            </div>
+      <div class="row">
+
+        <!-- ABOUT SECTION -->
+        <div
+          [ngClass]="propertyServicesNoId?.length > 0 ? 'col-lg-7 col-md-12' : 'col-12'"
+        >
+          <div *ngIf="businessUser?.businessDescription" style="margin-top: 20px">
+
+            <h3 class="aboutHeading">
+              About {{ businessUser?.name }}
+            </h3>
 
             <div class="about-content">
-              <div *ngIf="businessUser.businessDescription">
-                <p [innerHTML]="businessUser.businessDescription">
-                  {{ businessUser.businessDescription }}
-                </p>
-              </div>
+              <p [innerHTML]="businessUser?.businessDescription"></p>
             </div>
+
           </div>
         </div>
+
+        <!-- HIGHLIGHTS -->
+        <div
+          class="col-lg-5 col-md-12"
+          *ngIf="propertyServicesNoId?.length > 0" style="margin-top: 20px"
+        >
+
+          <h3 class="aboutHeading">About Property</h3>
+
+          <div class="card highlights-card">
+            <div class="p-3">
+
+              <div class="highlight-list">
+
+                <div *ngFor="let fac of propertyServicesNoId">
+                  <div class="d-flex align-items-center gap-4">
+
+                    <i class="fa-solid fa-forward highlight-icon"></i>
+
+                    <span class="highlight-text">
+                      {{ fac.name }}
+                    </span>
+
+                  </div>
+                </div>
+
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+
       </div>
     </div>
     <!-- Property description section ends -->
@@ -4492,12 +4783,14 @@
       </div>
     </div>
   </div> -->
+      </div>
+    </div>
     <!-- property review ends-->
 
     <!-- nearby section starts -->
 
     <div class="explore-nearby margin-top-30px">
-      <div>
+      <div class="container-div">
         <div class="col-lg-12">
           <div *ngIf="blogPosts$ | async as blogPosts" style="margin-top: 10px">
             <div *ngFor="let blogPost of blogPosts.items">
@@ -4542,6 +4835,7 @@
       class="margin-top-30px margin-bottom-30px"
       *ngIf="policies?.length > 0"
     >
+    <div class="container-div">
       <div class="row mr-0 ml-0">
         <div class="col-lg-12 pl-0 pr-0">
           <div
@@ -4587,9 +4881,9 @@
           </div>
         </div>
       </div>
+      </div>
     </div>
     <!-- Add terms and conditions end here -->
-  </div>
 
   <script
     async
@@ -4605,7 +4899,6 @@
 
     gtag("config", "AW-10904222935");
   </script>
-</div>
-<div class="loader-overlay" *ngIf="isLoadingProperty">
+  <div class="loader-overlay" *ngIf="isLoadingProperty">
   <span class="loader-booking"></span>
 </div>

@@ -189,6 +189,7 @@ export class ListingDetailOneComponent implements OnInit {
   errorMessagewhatsapp: string;
   errorMessagePrivate: string;
   smartRecommendationsBoolean: any;
+  showSmartRecommendations: boolean = false;
   taxTotalSingle: number;
   utmMedium: any;
   utmSource: any;
@@ -197,7 +198,6 @@ export class ListingDetailOneComponent implements OnInit {
   singleextraAdultChargeBookOne: any;
    singleextraChildChargeBookOne: any;
   roomRateOrderEnabled: boolean = false;
-  palnNonRoomPlan: boolean;
   toggleListingDetails() {
     this.showListingDetails = !this.showListingDetails;
   }
@@ -216,8 +216,16 @@ export class ListingDetailOneComponent implements OnInit {
   dynamicCity: string;
   dynamicStreetName: string;
   dynamicLocality: string;
-  propertyServiceListData: any[] = [];
-  propertyServiceListDataOne: any[] = [];
+  // ✅ Renamed: Non-paid services for Property Highlights
+  amenitiesHighlights: any[] = [];
+  propertyServiceListData: any[] = [];  // Backward compatibility alias
+  propertyServicesNoId: any[] = [];
+  // ✅ Renamed: Paid services for Add-on Services (Checkout)
+  addOnServices: any[] = [];
+  propertyServiceListDataOne: any[] = [];  // Backward compatibility alias
+  // ✅ New: Track selected add-ons in checkout
+  selectedAddOns: any[] = [];
+  selectedAddOnNames: string[] = [];
   savedServices: any[] = [];
   otaNames: string[] = [];
   dynamicCountryName: string;
@@ -819,6 +827,13 @@ selectedAddonNames: string[] = [];
   };
   selectedPromotion: boolean = false;
   selectedPromotionCouponData: any;
+  spinWheelOpen = false;
+  spinWheelSpinning = false;
+  spinWheelRotation = 0;
+  spinWheelSegments: any[] = [];
+  spinWheelResult: any = null;
+  spinWheelCouponSection: HTMLElement | null = null;
+  spinWheelConfetti: number[] = [];
   roomOccupancy: number;
   showError: boolean = false;
   errorMessage: string;
@@ -1872,6 +1887,7 @@ onRoomSelect(roomName: string, planCode: string, count: number | string) {
     this.selectedGuestsByPlan[planCode] = { adults: 0, children: 0 };
   }
   this.selectedGuestsByPlan[planCode].adults = selectedCount;
+
 }
 
 
@@ -1932,6 +1948,15 @@ onRoomSelect(roomName: string, planCode: string, count: number | string) {
     }, 200);
   }
 
+  // Open Smart Recommendations section
+  openSmartRecommendations() {
+    // Scroll to room selection area which contains smart recommendations
+    const element = document.getElementById('accmdOne');
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
+
   nextImage() {
     if (this.activeImageIndex < this.businessUser.imageList.length - 1) {
       this.activeImageIndex++;
@@ -1989,54 +2014,6 @@ onIncrement(planCode: string, type: 'adults' | 'children', plan: any, room: any)
     this.childAgesByPlan[planCode] = [];
   }
  if (plan?.nonRoomPlan) {
-// const lastPlan = room?.ratesAndAvailabilityDtos?.at(-1);
-// const maxCapacityPerRoom = plan?.maximumOccupancy || 0;
-// const roomsAvailable = lastPlan?.noOfAvailable || 0;
-
-// const totalMaxOccupancy = maxCapacityPerRoom * roomsAvailable;
-
-// const currentAdults = this.selectedGuestsByPlan[planCode].adults ?? 0;
-// const currentChildren = this.selectedGuestsByPlan[planCode].children ?? 0;
-
-
-// if (type === 'adults') {
-//     const projectedAdults = currentAdults + 1;
-//     const projectedTotal = projectedAdults + currentChildren;
-
-//     if (projectedTotal <= totalMaxOccupancy) {
-//         this.selectedGuestsByPlan[planCode].adults++;
-//         this.selectedRoomsByPlan[planCode] = projectedAdults;
-//     } else {
-//         this.showTemporaryError(planCode, `Maximum occupancy of ${totalMaxOccupancy} exceeded.`);
-//     }
-// } 
-// else if (type === 'children') {
-//     const projectedChildren = currentChildren + 1;
-//     const projectedTotal = currentAdults + projectedChildren;
-//     const ages = this.childAgesByPlan[planCode];
-
-//     // Validation: Check if existing children have ages assigned
-//     if (ages.some(a => a === null)) {
-//         this.showTemporaryError(planCode, 'Please select age for all existing children first.');
-//         return;
-//     }
-
-//     if (projectedTotal <= totalMaxOccupancy) {
-//         this.selectedGuestsByPlan[planCode].children++;
-//         this.childAgesByPlan[planCode].push(null);
-//     } else {
-//         this.showTemporaryError(planCode, `Maximum occupancy of ${totalMaxOccupancy} reached.`);
-//     }
-
-//     const selectedRooms = Math.ceil(this.selectedGuestsByPlan[planCode].adults / maxCapacityPerRoom);
-
-//   if (selectedRooms === 0 && !plan?.nonRoomPlan) {
-//     this.showTemporaryError(planCode, 'Please add a room first.');
-//     return;
-//   }
-
-//   this.selectedRoomsByPlan[planCode] = selectedRooms;
-// }
 const lastPlan = room?.ratesAndAvailabilityDtos?.at(-1);
 const maxAdult = plan?.maximumOccupancy || 0;
 const maxChild = plan?.noOfChildren || 0;
@@ -2163,6 +2140,9 @@ this.selectedRoomsByPlan[planCode] = selectedRooms;
   }
   }
 }
+
+
+
 
 
 private showTemporaryError(planCode: string, message: string) {
@@ -2312,7 +2292,6 @@ resetLastChangedAge(planCode: string) {
 }
 
   onPlanSelect(planCode: string, rates: any) {
-    // localStorage.setItem('selectedplan',room.businessProductName);
     const selectedRooms = this.selectedRoomsByPlan[planCode];
     const selectedGuests = this.selectedGuestsByPlan[planCode];
     const roomId = rates.roomId;
@@ -2984,31 +2963,7 @@ onGhCPlanSelect(){
     // this.checkingAvailability();
 }
 
-  initializeDefaultSelections() {
-    try{
-      if (!this.availableRooms) return;
-      this.availableRooms.forEach(room => {
-        room.ratesAndAvailabilityDtos?.forEach(availabilityDto => {
-          availabilityDto.roomRatePlans?.forEach(plan => {
-            if (plan.nonRoomPlan) {
-              this.palnNonRoomPlan = true;
-              const maxAvailable = this.serviceDto.count || 0;
-              const lastCount = maxAvailable >= 0 ? maxAvailable : 0;
-    
-              this.selectedRoomsByPlan[plan.code] = lastCount;
-  
-              console.log(`Default selection for plan ${plan.code} set to ${lastCount} rooms based on availability.`);
-              this.onRoomSelect(availabilityDto.roomName, plan.code, lastCount);
-            }
-          });
-        });
-      });
-    }
-    catch(error){
-      console.error('Error in initializeDefaultSelections:', error);
-    }
-  }
-    
+
 onSelectPlanFromPopup(plan: any): void {
   const planCode = plan.code;
 
@@ -3119,7 +3074,6 @@ removePlan(index: number): void {
       this.childAgesByPlan[entry.planCode] = entry.childAges || [];
     });
   }
-  this.initializeDefaultSelections();
 }
   publishPage(event: any) {
     if (
@@ -3750,7 +3704,6 @@ if (roomKey) {
         (response) => {
           this.loaderHotelBooking = false;
           this.availableRooms = this.getFilteredDataBasedOnRoomRateOrder(response?.body?.roomList);
-           this.initializeDefaultSelections();
           this.availableRooms = this.availableRooms.filter(room =>
           room.ratesAndAvailabilityDtos?.length > 0 &&
           (room.ratesAndAvailabilityDtos[0]?.stopSellOBE === null || room.ratesAndAvailabilityDtos[0]?.stopSellOBE === false) &&
@@ -4096,10 +4049,10 @@ onCheckOutClosed(): void {
       if (data.status === 200) {
         this.businessUser = data.body;
         this.propertyData = this.businessUser;
-                   this.accommodationData =
-          this.propertyData.businessServiceDtoList?.filter(
+        this.accommodationData =
+        this.propertyData.businessServiceDtoList?.filter(
             (entry) => entry.name === 'Accommodation'
-          );
+        );
         this.accommodationData?.forEach((element) => {
           this.smartRecommendationsBoolean = element.smartRecommendation;
         });
@@ -4112,9 +4065,28 @@ onCheckOutClosed(): void {
           (ele) => ele.name === 'Accommodation'
         );
 
+        this.amenitiesHighlights = [];
+        this.propertyServiceListData = [];
+        this.addOnServices = [];
+        this.propertyServiceListDataOne = [];
+        this.propertyServicesNoId = [];
+
         this.businessUser.propertyServicesList.forEach((ele) => {
+          if (ele.id == null || ele.id == undefined) {
+            this.propertyServicesNoId.push(ele);
+            console.log("IDDD", this.propertyServicesNoId);
+          }
           if (ele.id != null && ele.id != undefined) {
-            this.propertyServiceListData.push(ele);
+            // ✅ Separate non-paid and paid services
+            if (Number(ele.servicePrice) === 0 || ele.servicePrice == null) {
+              // Non-paid → Property Highlights
+              this.amenitiesHighlights.push(ele);
+              this.propertyServiceListData.push(ele);  // Backward compatibility
+            } else {
+              // Paid → Add-on Services
+              this.addOnServices.push(ele);
+              this.propertyServiceListDataOne.push(ele);  // Backward compatibility
+            }
           }
         });
 
@@ -4620,8 +4592,11 @@ onCheckOutClosed(): void {
     }
   }
 
-  getBookingUnitLabel(room?: Room | null) {
+ getBookingUnitLabel(room?: Room | null) {
     try{
+      if(room?.businessProductName?.trim() === 'Accommodation'){
+        return 'Room';
+      }
       const accmmodationService = this.accommodationData;
       if(!room?.businessProductName?.trim()){
         const accommodationService = accmmodationService?.find(service => service?.name === 'Accommodation');
@@ -4637,6 +4612,7 @@ onCheckOutClosed(): void {
     }
     catch(error){
       console.error('Error in getBookingUnitLabel: ', error);
+      return 'Room';
     }
   }
     
@@ -4728,10 +4704,29 @@ onCheckOutClosed(): void {
           if (this.token?.getRoomsData() != null) {
             this.checkingAvailability();
           }
-          this.propertyServiceListDataOne =
-            this.businessUser.propertyServicesList.filter(
-              (ele) => Number(ele.servicePrice) > 0
-            );
+
+          this.amenitiesHighlights = [];
+          this.propertyServiceListData = [];
+          this.addOnServices = [];
+          this.propertyServiceListDataOne = [];
+          this.propertyServicesNoId = [];
+
+          // ✅ Separate non-paid and paid services
+          this.businessUser.propertyServicesList.forEach((ele) => {
+            if (ele.id == null || ele.id == undefined) {
+              this.propertyServicesNoId.push(ele);
+            }
+            if (ele.id != null && ele.id != undefined) {
+              if (Number(ele.servicePrice) === 0 || ele.servicePrice == null) {
+                this.amenitiesHighlights.push(ele);
+                this.propertyServiceListData.push(ele);
+              } else {
+                this.addOnServices.push(ele);
+                this.propertyServiceListDataOne.push(ele);
+              }
+            }
+          });
+          
           if (
             this.selectedServices != null &&
             this.selectedServices != undefined
@@ -4739,7 +4734,7 @@ onCheckOutClosed(): void {
             this.savedServices = this.token
               ?.getSelectedServices()
               ?.forEach((ele) => {
-                this.propertyServiceListDataOne?.forEach((val) => {
+                this.addOnServices?.forEach((val) => {
                   if (ele.name === val.name) {
                     this.valSelected = true;
                     this.viewAddon = true;
@@ -5580,6 +5575,7 @@ onBookNow() {
 this.token.savePropertyUrl(currentUrl);
   const selectedAddOns = this.propertyServiceListDataOne
     .filter(item => this.selectedFacilityNames.includes(item.name));
+  this.syncSelectedAddOnsToCheckoutState(selectedAddOns);
 
   if (this.activeForGoogleHotelCenter && !this.specialDiscountData ) {
   let bookingSummary = JSON.parse(sessionStorage.getItem('bookingSummaryDetails') || '{}');
@@ -5686,6 +5682,9 @@ this.token.savePropertyUrl(currentUrl);
           this.getTotalTaxFacility()).toFixed(2)),
     };
     sessionStorage.setItem('bookingSummaryDetails', JSON.stringify(bookingData));
+    
+    // Phase 4: Store selected add-ons for Booking component and LMS enquiry snapshot
+    sessionStorage.setItem('addOnServices', JSON.stringify(selectedAddOns));
   } else if(this.specialDiscountData && !this.activeForGoogleHotelCenter){
     if (this.specialDiscountData) {
   this.selectedPlansSummary = this.selectedPlansSummary.map(plan => {
@@ -5838,6 +5837,8 @@ this.token.savePropertyUrl(currentUrl);
       this.getTotalAfterTaxAmountFacility()) - ((this.getTotalPlanPrice() * this.specialDiscountPercentage)/100)) + this.getTotalTaxPrice()).toFixed(2)),
   };
       sessionStorage.setItem('bookingSummaryDetails', JSON.stringify(bookingData));
+      // Phase 4: Store add-on services in sessionStorage for Booking component
+      sessionStorage.setItem('addOnServices', JSON.stringify(this.addOnServices));
     } else if(this.specialDiscountData && this.activeForGoogleHotelCenter){
     if (this.specialDiscountData) {
   this.selectedPlansSummary = this.selectedPlansSummary.map(plan => {
@@ -5986,6 +5987,8 @@ this.token.savePropertyUrl(currentUrl);
                     + this.getGrandTaxTotal()).toFixed(2)),
   };
       sessionStorage.setItem('bookingSummaryDetails', JSON.stringify(bookingData));
+      // Phase 4: Store add-on services in sessionStorage for Booking component
+      sessionStorage.setItem('addOnServices', JSON.stringify(this.addOnServices));
     }else {
 
    const bookingData = {
@@ -6010,9 +6013,10 @@ this.token.savePropertyUrl(currentUrl);
           this.getTotalTaxPrice()).toFixed(2)),
     };
     sessionStorage.setItem('bookingSummaryDetails', JSON.stringify(bookingData));
+    // Phase 4: Store add-on services in sessionStorage for Booking component
+    sessionStorage.setItem('addOnServices', JSON.stringify(this.addOnServices));
   }
 
-  // this.router.navigate(['/booking']);
   this.router.navigate(['/booking']);
 }
 
@@ -6429,8 +6433,10 @@ this.token.savePropertyUrl(currentUrl);
       .subscribe(
         (response) => {
           this.loaderHotelBooking = false;
+
           const roomListOne = response?.body?.roomList || [];
           const sortedRoomsOne = this.getFilteredDataBasedOnRoomRateOrder(roomListOne);
+
           this.availableRooms = sortedRoomsOne.filter(room => {
                 const rates = room.ratesAndAvailabilityDtos;
 
@@ -6450,8 +6456,6 @@ this.token.savePropertyUrl(currentUrl);
                   !isStopSellOTA
                 );
               });
-
-            this.initializeDefaultSelections();
 
         //   this.availableRooms = this.availableRooms.filter(room =>
         //   room.ratesAndAvailabilityDtos?.length > 0 &&
@@ -7460,7 +7464,6 @@ isPlanVisible(filteredPlans: any[], roomName: string) {
         (response) => {
           this.loaderHotelBooking = false;
           this.availableRooms = this.getFilteredDataBasedOnRoomRateOrder(response?.body?.roomList);
-           this.initializeDefaultSelections();
                     this.availableRooms = this.availableRooms.filter(room =>
           room.ratesAndAvailabilityDtos?.length > 0 &&
           (room.ratesAndAvailabilityDtos[0]?.stopSellOBE === null || room.ratesAndAvailabilityDtos[0]?.stopSellOBE === false) &&
@@ -7834,6 +7837,116 @@ onCouponInputChange(event: string) {
   sessionStorage.removeItem('selectPromo');
   this.enteredCoupon = '';
 }
+
+  openSpinWheel(product: any, couponSection: HTMLElement) {
+    this.showBookingSummary = false
+    const validOfferList = this.checkValidCouponOrNot(this.showAllTheOfferList?.length ? this.showAllTheOfferList : this.offersList) || [];
+    const offersWithCode = validOfferList.filter((offer: any) => offer?.couponCode && Number(offer?.discountPercentage) > 0);
+
+    if (!offersWithCode.length) {
+      return;
+    }
+
+    const selectedCode = product?.couponCode?.trim()?.toUpperCase();
+    const primaryOffer = offersWithCode.find(
+      (offer: any) => offer?.couponCode?.trim()?.toUpperCase() === selectedCode
+    ) || offersWithCode[0];
+
+    const uniqueOffers: any[] = [];
+    const seen = new Set<string>();
+
+    [primaryOffer, ...offersWithCode].forEach((offer: any) => {
+      const key = offer?.couponCode?.trim()?.toUpperCase();
+      if (key && !seen.has(key)) {
+        seen.add(key);
+        uniqueOffers.push(offer);
+      }
+    });
+
+    const colors = ['#f59e0b', '#ef4444', '#3b82f6', '#10b981', '#8b5cf6', '#ec4899', '#eab308'];
+    const selectedOffers = uniqueOffers.slice(0, 7);
+    this.spinWheelSegments = selectedOffers.map((offer: any, index: number) => ({
+      type: 'offer',
+      offer,
+      label: `${offer.discountPercentage}%`,
+      color: colors[index % colors.length],
+    }));
+
+    this.spinWheelSegments.push({
+      type: 'retry',
+      label: 'Try Again',
+      color: '#6b7280',
+    });
+
+    this.spinWheelCouponSection = couponSection;
+    this.spinWheelResult = null;
+    this.spinWheelOpen = true;
+  }
+
+  closeSpinWheel() {
+    if (this.spinWheelSpinning) {
+      return;
+    }
+    this.spinWheelOpen = false;
+    this.spinWheelResult = null;
+  }
+
+  getWheelSegmentRotate(index: number): string {
+    if (!this.spinWheelSegments?.length) {
+      return 'rotate(0deg)';
+    }
+    const angle = (360 / this.spinWheelSegments.length) * index;
+    return `rotate(${angle}deg)`;
+  }
+
+  startSpinWheel() {
+    if (this.spinWheelSpinning || !this.spinWheelSegments?.length) {
+      return;
+    }
+
+    this.spinWheelSpinning = true;
+    this.spinWheelResult = null;
+
+    const winningIndex = Math.floor(Math.random() * this.spinWheelSegments.length);
+    const segmentAngle = 360 / this.spinWheelSegments.length;
+    const currentNormalizedRotation = ((this.spinWheelRotation % 360) + 360) % 360;
+    const desiredRotation = (360 - winningIndex * segmentAngle) % 360;
+    const deltaRotation = (desiredRotation - currentNormalizedRotation + 360) % 360;
+    const targetRotation = this.spinWheelRotation + 5 * 360 + deltaRotation;
+
+    this.spinWheelRotation = targetRotation;
+
+    setTimeout(() => {
+      this.spinWheelSpinning = false;
+      this.spinWheelResult = this.spinWheelSegments[winningIndex];
+      if (this.spinWheelResult?.type === 'offer') {
+        this.triggerSpinConfetti();
+      }
+    }, 4000);
+  }
+
+  resetSpinResult() {
+    this.spinWheelResult = null;
+  }
+
+  claimSpinCoupon() {
+    if (!this.spinWheelResult || this.spinWheelResult.type !== 'offer') {
+      return;
+    }
+    this.showBookingSummary = true;
+
+    this.applyCoupon(this.spinWheelResult.offer, this.spinWheelCouponSection as HTMLElement);
+    this.spinWheelOpen = false;
+    this.spinWheelResult = null;
+  }
+
+  private triggerSpinConfetti() {
+    this.spinWheelConfetti = Array.from({ length: 30 }, (_, i) => i);
+    setTimeout(() => {
+      this.spinWheelConfetti = [];
+    }, 2200);
+  }
+
   applyCoupon(product: any, couponSection: HTMLElement) {
 
   sessionStorage.removeItem('selectedPromoData');
@@ -8036,5 +8149,81 @@ onYesClick() {
       console.error('Error in getPrimaryRoomRateAmount: ', error);
       return 0;
     }
+  }
+
+  // ✅ Add-on Service Methods (Phase 2-3)
+  /**
+   * Toggle add-on service selection
+   * @param service - The service to toggle
+   */
+  toggleAddOnSelection(service: any) {
+    const index = this.selectedAddOns.findIndex(s => s.id === service.id);
+    if (index > -1) {
+      // Remove if already selected
+      this.selectedAddOns.splice(index, 1);
+      const nameIndex = this.selectedAddOnNames.indexOf(service.name);
+      if (nameIndex > -1) {
+        this.selectedAddOnNames.splice(nameIndex, 1);
+      }
+    } else {
+      // Add if not selected
+      this.selectedAddOns.push(service);
+      this.selectedAddOnNames.push(service.name);
+    }
+    this.syncSelectedAddOnsToCheckoutState(this.selectedAddOns);
+    this.cd.detectChanges();
+  }
+
+  /**
+   * Check if a service is already selected
+   * @param service - The service to check
+   */
+  isAddOnSelected(service: any): boolean {
+    return this.selectedAddOns.some(s => s.id === service.id);
+  }
+
+  /**
+   * Get selected add-ons for checkout
+   */
+  getSelectedAddOns(): any[] {
+    return this.selectedAddOns;
+  }
+
+  /**
+   * Get total add-ons amount (before tax)
+   */
+  getTotalAddOnsAmount(): number {
+    return this.selectedAddOns.reduce((total, addon) => {
+      return total + (Number(addon.servicePrice) || 0);
+    }, 0);
+  }
+
+  /**
+   * Clear all selected add-ons
+   */
+  clearAddOnSelections() {
+    this.selectedAddOns = [];
+    this.selectedAddOnNames = [];
+    this.syncSelectedAddOnsToCheckoutState([]);
+    this.cd.detectChanges();
+  }
+
+  private syncSelectedAddOnsToCheckoutState(selectedAddOns: any[]) {
+    const normalizedAddOns = (selectedAddOns || []).map((service) => ({
+      ...service,
+      quantity: service?.quantity ?? service?.count ?? 1,
+      count: service?.count ?? service?.quantity ?? 1,
+      afterTaxAmount:
+        service?.afterTaxAmount ?? service?.netAmount ?? service?.servicePrice ?? 0,
+      netAmount:
+        service?.netAmount ?? service?.afterTaxAmount ?? service?.servicePrice ?? 0,
+      servicePrice:
+        service?.servicePrice ?? service?.afterTaxAmount ?? service?.netAmount ?? 0,
+      sourceChannel: service?.sourceChannel ?? 'WebSite',
+    }));
+
+    this.token.saveSelectedServices(normalizedAddOns);
+    this.token.saveServiceData(normalizedAddOns);
+    sessionStorage.setItem('addOnServices', JSON.stringify(normalizedAddOns));
   }
 }

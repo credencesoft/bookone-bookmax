@@ -83,6 +83,12 @@ import { TaxDetails } from "./TaxDetails";
     paymentReference: any;
     roomTariffBeforeDiscount: any;
     totalRoomTariffBeforeDiscount: number;
+    selectedServiceCount: number;
+    selectedServiceTotal: number;
+    selectedServices: any[];
+    serviceQuoteSummary: string;
+    quotedGrandTotal: number;
+    quotedPayableAmount: number;
     // noOfNights:number;
     // counterName:string;
   }

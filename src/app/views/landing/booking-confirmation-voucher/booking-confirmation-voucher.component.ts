@@ -33,7 +33,23 @@ export class BookingConfirmationVoucherComponent {
   isReadMore: any;
   accommodationService: any;
   roomLabel: string = 'Room';
-  roomLabelValue: string;
+
+  // ✅ NEW: Calculation and payment plan tracking properties
+  couponDiscountPercentage: number = 0;
+  couponDiscountAmount: number = 0;
+  advanceDiscountPercentage: number = 0;
+  advanceDiscountAmount: number = 0;
+  advancePaymentPercentage: number = 0;
+  advancePaymentLabel: string = '';
+  amountAfterDiscount: number = 0;
+  taxOnDiscountedAmount: number = 0;
+  convenienceFeeAmount: number = 0;
+  grandTotal: number = 0;
+  payNowAmount: number = 0;
+  balanceAtCheckIn: number = 0;
+  selectedAddOns: any[] = [];
+  selectedAdvanceDiscountSlab: any = null;
+  isPaid: boolean = false;
 
   constructor(
     private http: HttpClient,
@@ -46,26 +62,18 @@ export class BookingConfirmationVoucherComponent {
     this.businessUser = this.token.getPropertyData();
     this.getPropertyDetailsById(this.businessUser.id);
 
-//      const savedLabel = localStorage.getItem('savedBookingLabel');
-     
-// if (savedLabel) {
-//   try {
-//     const parsedData = JSON.parse(savedLabel);    
-//     this.roomLabel = parsedData.fullLabel || parsedData.label || 'Room';
-    
-//   } catch (e) {
-//     this.roomLabel = savedLabel || 'Room';
-//     console.error("Error parsing label, using raw value instead", e);
-//   }
-// } else {
-//   this.roomLabel = 'Room';
-// }
- this.roomLabelValue = localStorage?.getItem('selectedplan');
- console.log('roomLabelValue is',this.roomLabelValue);
+    const savedLabel = localStorage.getItem('savedBookingLabel');
+    console.log('savedLabel data is',savedLabel);
+    if (savedLabel) {
+    try {
+      const parsedData = JSON.parse(savedLabel);
+      this.roomLabel = parsedData.label || 'Room'; 
+    } catch (e) {
+      console.error("Error parsing token", e);
+    }
+  }
   }
   ngOnInit() {
-    this.roomLabelValue = localStorage?.getItem('selectedplan');
- console.log('roomLabelValue is',this.roomLabelValue);
     this.sequenceBookingConfirmation();
 
     const bookingDataDetails = sessionStorage.getItem('bookingSummaryDetails');
@@ -98,16 +106,13 @@ export class BookingConfirmationVoucherComponent {
       ) {
         this.booking = this.token.getBookingData();
       }
-    }, 10);
+      // ✅ NEW: Load calculation state from stored enquiries
+      this.loadCalculationStateFromEnquiries();
+    }, 2000);
   }
   private sequenceBookingConfirmation() {
     this.loadingData = true;
     const cachedBookings = sessionStorage.getItem('bookingsResponseList');
-    if (cachedBookings) {
-      this.bookingsResponseList = JSON.parse(cachedBookings);
-      this.loadingData = false;
-      return;
-    }
     const bookedStr = sessionStorage.getItem('BookedEnquiryList');
     if (!bookedStr) {
       console.error('BookedEnquiryList missing');
@@ -122,14 +127,60 @@ export class BookingConfirmationVoucherComponent {
       return;
     }
 
+    if (cachedBookings) {
+      try {
+        const parsedCachedBookings = JSON.parse(cachedBookings);
+        if (this.isCachedBookingsAlignedWithEnquiries(parsedCachedBookings, bookedEnquiries)) {
+          this.bookingsResponseList = parsedCachedBookings;
+          this.loadingData = false;
+          return;
+        }
+      } catch (error) {
+        console.warn('Invalid cached bookingsResponseList. Refetching from API.', error);
+      }
+    }
+
     this.fetchBookingsSequentially(bookedEnquiries);
   }
+
+  private isCachedBookingsAlignedWithEnquiries(cachedBookings: any[], bookedEnquiries: any[]): boolean {
+    if (!Array.isArray(cachedBookings) || cachedBookings.length === 0) {
+      return false;
+    }
+
+    const enquiryBookingIds = Array.from(
+      new Set(
+        bookedEnquiries
+          .map((enquiry) => Number(enquiry?.bookingId || enquiry?.bookingReservationId || 0))
+          .filter((id) => id > 0),
+      ),
+    );
+
+    if (enquiryBookingIds.length === 0) {
+      return false;
+    }
+
+    const cachedBookingIds = Array.from(
+      new Set(
+        cachedBookings
+          .map((booking) => Number(booking?.id || booking?.bookingId || booking?.bookingReservationId || 0))
+          .filter((id) => id > 0),
+      ),
+    );
+
+    if (cachedBookingIds.length !== enquiryBookingIds.length) {
+      return false;
+    }
+
+    return enquiryBookingIds.every((id) => cachedBookingIds.includes(id));
+  }
+
   private fetchBookingsSequentially(bookedEnquiries: any[]) {
     this.bookingsResponseList = [];
     this.loadingData = true;
 
     let index = 0;
-    let fetchedBookingId: number | null = null;
+    const fetchedBookingIds = new Set<number>();
 
     const next = () => {
       // ✅ Finished processing all enquiries
@@ -150,13 +201,13 @@ export class BookingConfirmationVoucherComponent {
       }
 
       // 🛑 GROUP BOOKING PROTECTION
-      // If booking already fetched once, don't fetch again
-      if (fetchedBookingId === bookingId) {
+      // If booking already fetched once, don't fetch again.
+      if (fetchedBookingIds.has(Number(bookingId))) {
         next();
         return;
       }
 
-      fetchedBookingId = bookingId;
+      fetchedBookingIds.add(Number(bookingId));
 
       this.hotelBookingService.fetchBookingById(bookingId).subscribe({
         next: (booking) => {
@@ -408,6 +459,327 @@ export class BookingConfirmationVoucherComponent {
         (sum, plan) => sum + (plan.children || 0),
         0,
       );
+  }
+
+  // ✅ NEW: Load calculation state from stored enquiries
+  private loadCalculationStateFromEnquiries() {
+    const bookedStr = sessionStorage.getItem('BookedEnquiryList');
+    if (!bookedStr) return;
+
+    try {
+      const bookedEnquiries = JSON.parse(bookedStr);
+      if (!Array.isArray(bookedEnquiries) || bookedEnquiries.length === 0) return;
+
+      // Use the first enquiry's calculation state for now (can be enhanced for multiple bookings)
+      const firstEnquiry = bookedEnquiries[0];
+
+      this.couponDiscountPercentage = firstEnquiry.couponDiscountPercentage || 0;
+      this.couponDiscountAmount = firstEnquiry.couponDiscountAmount || 0;
+      this.advanceDiscountPercentage = firstEnquiry.advanceDiscountPercentage || 0;
+      this.advanceDiscountAmount = firstEnquiry.advanceDiscountAmount || 0;
+      this.advancePaymentPercentage = firstEnquiry.advancePaymentPercentage || 0;
+      this.advancePaymentLabel = firstEnquiry.advancePaymentLabel || '';
+      this.amountAfterDiscount = firstEnquiry.amountAfterDiscount || 0;
+      this.taxOnDiscountedAmount = firstEnquiry.taxOnDiscountedAmount || 0;
+      this.serviceChargePercentage = firstEnquiry.serviceChargePercentage || this.serviceChargePercentage;
+      this.convenienceFeeAmount = firstEnquiry.convenienceFeeAmount || 0;
+      this.grandTotal = firstEnquiry.grandTotal || this.getNewGrandTotal();
+      this.payNowAmount = firstEnquiry.payNowAmount || 0;
+      this.balanceAtCheckIn = firstEnquiry.balanceAtCheckIn || 0;
+      this.selectedAddOns = this.resolveSelectedAddOns(firstEnquiry);
+
+      this.isPaid = this.advancePaymentPercentage === 100 || this.balanceAtCheckIn === 0;
+
+    } catch (error) {
+      console.warn('Error loading calculation state from enquiries:', error);
+    }
+  }
+
+  private resolveSelectedAddOns(firstEnquiry: any): any[] {
+    if (Array.isArray(firstEnquiry?.selectedAddOns) && firstEnquiry.selectedAddOns.length > 0) {
+      return firstEnquiry.selectedAddOns;
+    }
+    return this.getSelectedAddOnsFromBookings();
+  }
+
+  private getSelectedAddOnsFromBookings(): any[] {
+    if (!Array.isArray(this.bookingsResponseList) || this.bookingsResponseList.length === 0) {
+      return [];
+    }
+
+    return this.bookingsResponseList.flatMap((booking: any) => {
+      if (!Array.isArray(booking?.services)) {
+        return [];
+      }
+
+      return booking.services.map((service: any) => ({
+        name: service?.name || service?.serviceType || 'Service',
+        quantity: this.toSafeQuantity(service?.quantityApplied ?? service?.count ?? 1),
+        servicePrice: this.toSafeAmount(service?.servicePrice ?? service?.beforeTaxAmount ?? 0),
+        taxAmount: this.toSafeAmount(service?.taxAmount ?? 0),
+      }));
+    });
+  }
+
+  // ✅ NEW: Guard functions
+  private toSafeAmount(value: any): number {
+    const num = Number(value);
+    return isFinite(num) ? num : 0;
+  }
+
+  private toSafeQuantity(value: any): number {
+    const num = Number(value);
+    return Number.isFinite(num) && num > 0 ? num : 1;
+  }
+
+  private toSafePercent(value: any): number {
+    const num = Number(value);
+    return isFinite(num) && num >= 0 && num <= 100 ? num : 0;
+  }
+
+  getDiscountColumnLabel(): string {
+    if (this.specialDiscountData?.discountPercentage) {
+      return 'Coupon / Promo';
+    }
+    return 'Discount';
+  }
+
+  getAccommodationSubtotalLabel(): string {
+    if (this.getDisplayedCouponDiscountAmount() > 0 || this.getDisplayedAdvanceDiscountAmount() > 0) {
+      return `Accommodation Subtotal (Before Discounts)`;
+    }
+    return `Accommodation Subtotal`;
+  }
+
+  private getDisplayedBookingBaseAmount(booking: any): number {
+    const roomTariff = this.toSafeAmount(booking?.roomTariffBeforeDiscount);
+    const noOfRooms = this.toSafeAmount(booking?.noOfRooms);
+    const noOfNights = this.toSafeAmount(booking?.noOfNights);
+    const extraPerson = this.toSafeAmount(booking?.extraPersonCharge);
+    const extraChild = this.toSafeAmount(booking?.extraChildCharge);
+
+    const roomTotal = roomTariff * noOfRooms * noOfNights;
+    const displayedSubtotal = roomTotal + extraPerson + extraChild;
+
+    return this.toSafeAmount(
+      displayedSubtotal > 0 ? displayedSubtotal : booking?.beforeTaxAmount,
+    );
+  }
+
+  getDisplayedBookingSubtotal(booking: any): number {
+    return this.toSafeAmount(
+      Math.max(
+        0,
+        this.getDisplayedBookingBaseAmount(booking) -
+          this.getDisplayedRowTotalDiscount(booking),
+      ),
+    );
+  }
+
+  getDisplayedBookingSubtotalWithoutDiscount(booking: any): number {
+    return this.getDisplayedBookingBaseAmount(booking);
+  }
+
+  getDisplayedBookingTax(booking: any): number {
+    return this.toSafeAmount(booking?.taxAmount);
+  }
+
+  getDisplayedBookingTotal(booking: any): number {
+    return this.toSafeAmount(
+      this.getDisplayedBookingSubtotal(booking) + this.getDisplayedBookingTax(booking),
+    );
+  }
+
+  getDisplayedRoomSubtotal(): number {
+    if (!this.bookingsResponseList || this.bookingsResponseList.length === 0) return 0;
+
+    return this.toSafeAmount(
+      this.bookingsResponseList.reduce(
+        (sum, booking) => sum + this.getDisplayedBookingSubtotalWithoutDiscount(booking),
+        0,
+      ),
+    );
+  }
+
+  getDisplayedRoomTax(): number {
+    if (!this.bookingsResponseList || this.bookingsResponseList.length === 0) {
+      return this.toSafeAmount(this.bookingSummaryDetails?.totalTax || 0);
+    }
+    return this.toSafeAmount(
+      this.bookingsResponseList.reduce(
+        (sum, booking) => sum + this.getDisplayedBookingTax(booking),
+        0,
+      ),
+    );
+  }
+
+  getDisplayedAdvanceDiscountAmount(): number {
+    if (this.advanceDiscountAmount > 0) {
+      return this.toSafeAmount(this.advanceDiscountAmount);
+    }
+    if (this.advanceDiscountPercentage > 0) {
+      const accommodationAfterCoupon =
+        this.getDisplayedRoomSubtotal() - this.getDisplayedCouponDiscountAmount();
+
+      return this.toSafeAmount(
+        (Math.max(0, accommodationAfterCoupon) * this.advanceDiscountPercentage) / 100,
+      );
+    }
+    return 0;
+  }
+
+  getDisplayedCouponDiscountAmount(): number {
+    const discountPercentage = this.toSafePercent(this.specialDiscountData?.discountPercentage);
+    if (discountPercentage > 0) {
+      return this.toSafeAmount(
+        (this.getDisplayedRoomSubtotal() * discountPercentage) / 100,
+      );
+    }
+    return 0;
+  }
+
+  getDisplayedAccommodationAfterDiscounts(): number {
+    return this.toSafeAmount(
+      Math.max(
+        0,
+        this.getDisplayedRoomSubtotal() -
+          this.getDisplayedCouponDiscountAmount() -
+          this.getDisplayedAdvanceDiscountAmount(),
+      ),
+    );
+  }
+
+  getDisplayedConvenienceFee(): number {
+    // Prefer convenienceFeeAmount (stored from checkout flow) over recomputing.
+    if (this.convenienceFeeAmount > 0) {
+      return this.toSafeAmount(this.convenienceFeeAmount);
+    }
+    return this.calculateConvenienceFee(
+      this.getDisplayedAccommodationAfterDiscounts(),
+      this.toSafePercent(this.serviceChargePercentage),
+    );
+  }
+
+  getDisplayedRowAdvanceDiscount(booking: any): number {
+    const rowBeforeTax = this.getDisplayedBookingBaseAmount(booking);
+    const rowCouponDiscount = this.getDisplayedRowCouponDiscount(booking);
+    const rowAfterCoupon = Math.max(0, rowBeforeTax - rowCouponDiscount);
+    const totalBeforeAdvance =
+      this.getDisplayedRoomSubtotal() - this.getDisplayedCouponDiscountAmount();
+    const totalAdvanceDiscount = this.getDisplayedAdvanceDiscountAmount();
+
+    if (rowAfterCoupon <= 0 || totalBeforeAdvance <= 0 || totalAdvanceDiscount <= 0) {
+      return 0;
+    }
+
+    return this.toSafeAmount(
+      (totalAdvanceDiscount * rowAfterCoupon) / totalBeforeAdvance,
+    );
+  }
+
+  getDisplayedRowCouponDiscount(booking: any): number {
+    const rowBeforeDiscounts = this.getDisplayedBookingBaseAmount(booking);
+    const totalBeforeDiscounts = this.getDisplayedRoomSubtotal();
+    const totalCouponDiscount = this.getDisplayedCouponDiscountAmount();
+
+    if (rowBeforeDiscounts <= 0 || totalBeforeDiscounts <= 0 || totalCouponDiscount <= 0) {
+      return 0;
+    }
+
+    return this.toSafeAmount(
+      (totalCouponDiscount * rowBeforeDiscounts) / totalBeforeDiscounts,
+    );
+  }
+
+  getDisplayedRowTotalDiscount(booking: any): number {
+    return this.toSafeAmount(
+      this.getDisplayedRowCouponDiscount(booking) +
+        this.getDisplayedRowAdvanceDiscount(booking),
+    );
+  }
+
+  getDisplayedRowAfterDiscounts(booking: any): number {
+    return this.getDisplayedBookingSubtotal(booking);
+  }
+
+  getDisplayedRowTax(booking: any): number {
+    const authoritativeRoomTax = this.getDisplayedRoomTax();
+    const totalAfterDiscounts = this.getDisplayedAccommodationAfterDiscounts();
+    const rowAfterDiscounts = this.getDisplayedRowAfterDiscounts(booking);
+
+    if (authoritativeRoomTax <= 0 || totalAfterDiscounts <= 0 || rowAfterDiscounts <= 0) {
+      return 0;
+    }
+
+    return this.toSafeAmount(
+      (authoritativeRoomTax * rowAfterDiscounts) / totalAfterDiscounts,
+    );
+  }
+
+  getDisplayedRowTotal(booking: any): number {
+    return this.toSafeAmount(
+      this.getDisplayedRowAfterDiscounts(booking) + this.getDisplayedRowTax(booking),
+    );
+  }
+
+  // Unified calculation helpers based on displayed voucher values
+  getNewGrandTotal(): number {
+    return this.toSafeAmount(
+      this.getDisplayedAccommodationAfterDiscounts() +
+        this.getDisplayedRoomTax() +
+        this.getServicesTotal() +
+        this.getDisplayedConvenienceFee()
+    );
+  }
+
+  getNewPayNowAmount(): number {
+    if (this.advancePaymentPercentage > 0) {
+      const advancePct = this.toSafePercent(this.advancePaymentPercentage) / 100;
+      const roomsWithTax = this.getDisplayedAccommodationAfterDiscounts() + this.getDisplayedRoomTax();
+      return this.toSafeAmount(
+        (roomsWithTax * advancePct) + this.getServicesTotal() + this.getDisplayedConvenienceFee(),
+      );
+    }
+    return this.getNewGrandTotal();
+  }
+
+  getNewBalanceAtCheckIn(): number {
+    if (this.advancePaymentPercentage > 0) {
+      return this.toSafeAmount(Math.max(0, this.getNewGrandTotal() - this.getNewPayNowAmount()));
+    }
+    return 0;
+  }
+
+  // isPaid(): boolean {
+  //   return this.getNewBalanceAtCheckIn() === 0;
+  // }
+
+  hasSelectedAdvancePaymentPlan(): boolean {
+    return this.advancePaymentPercentage > 0;
+  }
+
+  getServicesTotal(): number {
+    if (!this.selectedAddOns || this.selectedAddOns.length === 0) return 0;
+    return this.toSafeAmount(
+      this.selectedAddOns.reduce(
+        (sum, addon) => sum + ((addon.servicePrice || 0) + (addon.taxAmount || 0)),
+        0
+      )
+    );
+  }
+
+  getServicesSubtotal(): number {
+    if (!this.selectedAddOns || this.selectedAddOns.length === 0) return 0;
+    return this.toSafeAmount(
+      this.selectedAddOns.reduce((sum, addon) => sum + (addon.servicePrice || 0), 0)
+    );
+  }
+
+  getServicesTax(): number {
+    if (!this.selectedAddOns || this.selectedAddOns.length === 0) return 0;
+    return this.toSafeAmount(
+      this.selectedAddOns.reduce((sum, addon) => sum + (addon.taxAmount || 0), 0)
+    );
   }
   private onAllBookingsLoaded() {
     sessionStorage.setItem(

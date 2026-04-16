@@ -2,6 +2,14 @@
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 15.2.6.
 
+## Architecture Docs
+
+- [Bookmax Checkout Flow](./BOOKMAX_CHECKOUT_FLOW.md)
+- [Bookmax Refactor Plan](./BOOKMAX_REFACTOR_IMPLEMENTATION_PLAN.md)
+- [Cross-Project Field Mapping](./BOOKONE_CROSS_PROJECT_FIELD_MAPPING.md)
+
+This repository contains multiple active and legacy booking/payment paths. Use the checkout flow document above as the maintained reference for cross-project ownership, API call order, and sequence diagrams.
+
 ## Development server
 
 Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.

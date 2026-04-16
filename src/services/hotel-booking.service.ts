@@ -3,6 +3,7 @@ import {  Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { API_URL_BOOKONE, API_URL_IN, API_URL_IO, API_URL_NZ, API_URL_PROMOTION, APP_ID,API_URL_RECOMMEND, PAYU_URL } from "src/app/app.component";
 import { MessageDto } from "src/app/model/MessageDto";
+import { BookingCommand } from "src/app/model/booking-command";
 import { PropertyServiceDTO } from "src/app/model/PropertyServices";
 import { Booking } from "src/app/model/booking";
 import { Customer } from "src/app/model/customer";
@@ -103,7 +104,7 @@ downloadVoucher(fileUrl: string) {
   return this.http.get(apiUrl, { responseType: 'blob' });
 }
 fetchBookingById(bookingId: number) {
-    const url = `https://api.thehotelmate.co/api/booking/findById?BookingId=${bookingId}`;
+  const url = `${environment.apiUrl}/api/booking/findById?BookingId=${bookingId}`;
     return this.http.get<any>(url);
   }
   verifyAuthorisationToken(message: MessageDto) {
@@ -167,6 +168,15 @@ fetchBookingById(bookingId: number) {
     return this.http.post<Booking>(
       environment.apiUrl + '/api/thm/booking',
       booking,
+      { observe: 'response' }
+    );
+  }
+
+  createBookingCommand(command: BookingCommand) {
+    this.setApi();
+    return this.http.post<Booking>(
+      environment.apiUrl + '/api/thm/booking/command',
+      command,
       { observe: 'response' }
     );
   }
@@ -290,7 +300,7 @@ fetchBookingById(bookingId: number) {
   }
   paymentIntent(paymentDetails: Payment) {
     return this.http.post<Payment>(
-      "https://api.thehotelmate.co" + '/api/thm/paymentIntent',
+      environment.apiUrl + '/api/thm/paymentIntent',
       paymentDetails,
       { observe: 'response' }
     );
@@ -304,14 +314,14 @@ fetchBookingById(bookingId: number) {
   }
   paymentIntentPhonepe(paymentDetails: Payment) {
     return this.http.post<Payment>(
-      'https://phonepe.bookonepms.com/api/phonepe/paymentIntent',
+      environment.phonepeUrl + '/api/phonepe/paymentIntent',
       paymentDetails,
       { observe: 'response' }
     );
   }
   paymentIntentRayzorpay(paymentDetails: Payment) {
     return this.http.post<Payment>(
-      'https://razorpay.bookonepms.com/api/razorpay/paymentIntentHotelmate',
+      environment.razorPay + '/api/razorpay/paymentIntentHotelmate',
       paymentDetails,
       { observe: 'response' }
     );
@@ -319,7 +329,7 @@ fetchBookingById(bookingId: number) {
   processPayment(paymentDetails: Payment) {
     this.setApi();
     return this.http.post<Payment>(
-      "https://api.thehotelmate.co" + '/api/thm/processPayment',
+      environment.apiUrl + '/api/thm/processPayment',
       paymentDetails,
       { observe: 'response' }
     );
@@ -387,11 +397,116 @@ fetchBookingById(bookingId: number) {
 
   accommodationEnquiry(enquiry: EnquiryDto) {
     this.setApi();
+    const enrichedEnquiry = this.enrichEnquiryWithServiceSnapshot(enquiry);
     return this.http.post<EnquiryDto>(
       environment.apiLms + '/api/v1/accommodationEnquiry',
-      enquiry,
+      enrichedEnquiry,
       { observe: 'response' }
     );
+  }
+
+  private enrichEnquiryWithServiceSnapshot(enquiry: EnquiryDto): EnquiryDto {
+    const selectedServices = this.getPersistedSelectedServices();
+    if (!selectedServices || selectedServices.length === 0) {
+      enquiry.selectedServiceCount = 0;
+      enquiry.selectedServiceTotal = 0;
+      enquiry.serviceQuoteSummary = '[]';
+      enquiry.quotedGrandTotal = enquiry.totalAmount || 0;
+      enquiry.quotedPayableAmount = enquiry.payableAmount || enquiry.totalAmount || 0;
+      return enquiry;
+    }
+
+    const selectedServiceTotal = selectedServices.reduce((total, service) => {
+      const serviceAmount =
+        service?.afterTaxAmount ?? service?.netAmount ?? service?.servicePrice ?? 0;
+      return total + Number(serviceAmount || 0);
+    }, 0);
+
+    enquiry.selectedServiceCount = selectedServices.length;
+    enquiry.selectedServiceTotal = Number(selectedServiceTotal.toFixed(2));
+    enquiry.serviceQuoteSummary = JSON.stringify(
+      selectedServices.map((service) => ({
+        id: service?.id ?? null,
+        organisationId: service?.organisationId ?? null,
+        productId: service?.productId ?? null,
+        productVariationId: service?.productVariationId ?? null,
+        name: service?.name ?? null,
+        description: service?.description ?? null,
+        serviceType: service?.serviceType ?? null,
+        quantity: service?.quantity ?? service?.count ?? 1,
+        count: service?.count ?? service?.quantity ?? 1,
+        quantityApplied: service?.quantityApplied ?? service?.quantity ?? service?.count ?? 1,
+        capacityPerUnitApplied: service?.capacityPerUnitApplied ?? null,
+        chargeBasis: service?.chargeBasis ?? null,
+        bookingStage: service?.bookingStage ?? null,
+        servicePrice: service?.servicePrice ?? null,
+        unitPrice: service?.unitPrice ?? service?.servicePrice ?? null,
+        grossAmount: service?.grossAmount ?? null,
+        beforeTaxAmount: service?.beforeTaxAmount ?? null,
+        taxBaseAmount: service?.taxBaseAmount ?? null,
+        taxAmount: service?.taxAmount ?? null,
+        taxPercentage: service?.taxPercentage ?? null,
+        discountAmount: service?.discountAmountApplied ?? service?.discountValueApplied ?? null,
+        discountType: service?.discountTypeApplied ?? null,
+        discountValue: service?.discountValueApplied ?? null,
+        discountCode: service?.discountCodeApplied ?? null,
+        netAmount: service?.netAmount ?? null,
+        amount:
+          service?.afterTaxAmount ?? service?.netAmount ?? service?.servicePrice ?? 0,
+        afterTaxAmount: service?.afterTaxAmount ?? null,
+        paymentCollectionMode: service?.paymentCollectionMode ?? null,
+        paymentStatus: service?.paymentStatus ?? null,
+        paymentReference: service?.paymentReference ?? null,
+        paidAmount: service?.paidAmount ?? null,
+        balanceAmount: service?.balanceAmount ?? null,
+        date: service?.date ?? null,
+        imageUrl: service?.imageUrl ?? null,
+        logoUrl: service?.logoUrl ?? null,
+        sourceChannel: service?.sourceChannel ?? enquiry.externalSite ?? null,
+      }))
+    );
+
+    enquiry.quotedGrandTotal = Number(
+      ((enquiry.totalAmount || 0) + enquiry.selectedServiceTotal).toFixed(2)
+    );
+    enquiry.quotedPayableAmount = Number(
+      ((enquiry.payableAmount || enquiry.totalAmount || 0) + enquiry.selectedServiceTotal).toFixed(2)
+    );
+
+    return enquiry;
+  }
+
+  private getPersistedSelectedServices(): PropertyServiceDTO[] {
+    const selectedServices = this.token.getSelectedServices();
+    if (Array.isArray(selectedServices) && selectedServices.length > 0) {
+      return selectedServices;
+    }
+
+    const sessionAddOns = this.getSessionAddOnServices();
+    if (sessionAddOns.length > 0) {
+      return sessionAddOns;
+    }
+
+    const serviceData = this.token.getServiceData();
+    if (Array.isArray(serviceData) && serviceData.length > 0) {
+      return serviceData;
+    }
+
+    return [];
+  }
+
+  private getSessionAddOnServices(): PropertyServiceDTO[] {
+    try {
+      const storedAddOns = sessionStorage.getItem('addOnServices');
+      if (!storedAddOns) {
+        return [];
+      }
+
+      const parsedAddOns = JSON.parse(storedAddOns);
+      return Array.isArray(parsedAddOns) ? parsedAddOns : [];
+    } catch (error) {
+      return [];
+    }
   }
 
   emailEnquire(enquiry: EnquiryDto) {

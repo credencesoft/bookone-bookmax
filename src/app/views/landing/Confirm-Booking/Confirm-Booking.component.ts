@@ -7,12 +7,14 @@ import { BusinessUser } from 'src/app/model/user';
 // import { Logger } from 'src/app/services/logger.service';
 // import { HotelBookingService } from 'src/app/services/hotel-booking.service';/
 import { NgbDate } from '@ng-bootstrap/ng-bootstrap';
-import { Location, DatePipe, formatDate } from '@angular/common';
+import { Location, DatePipe } from '@angular/common';
 import { environment } from 'src/environments/environment';
 import { Logger } from 'src/services/logger.service';
 // import { EnquiryForm } from '../Enquiry/Enquiry.component';
 import { API_URL_NZ, API_URL_IN } from 'src/app/app.component';
 import { ActivatedRoute, Router } from '@angular/router';
+import { BookingCommand } from 'src/app/model/booking-command';
+import { BookingPricing } from 'src/app/model/booking-pricing';
 import { EnquiryForm } from '../onboarding-roomdetails-form/onboarding-roomdetails-form.component';
 import { TokenStorage } from 'src/token.storage';
 import { HotelBookingService } from 'src/services/hotel-booking.service';
@@ -51,7 +53,6 @@ export class ConfirmBookingComponent implements OnInit {
   children3to5: number;
   noOfrooms: number;
   currency: string;
-  payment2: Payment;
   totalExtraAmount: number = 0;
   totalTaxAmount: number = 0;
   totalBeforeTaxAmount: number = 0;
@@ -130,13 +131,6 @@ export class ConfirmBookingComponent implements OnInit {
       this.payment = this.token.getPaymentData();
     }
 
-    if (
-      this.token?.getPayment2Data() != null &&
-      this.token?.getPayment2Data() != undefined
-    ) {
-      this.payment2 = this.token?.getPayment2Data();
-    }
-
     this.addServiceList = [];
     if (this.token.getServiceData() !== null) {
       this.addServiceList = this.token.getServiceData();
@@ -188,13 +182,9 @@ export class ConfirmBookingComponent implements OnInit {
         this.payment = JSON.parse(params['payment']);
       }
 
-      if (params['payment2'] !== undefined) {
-        this.payment2 = JSON.parse(params['payment2']);
-      }
-
       if (params['addServiceList'] !== undefined) {
         this.addServiceList = [];
-        this.payment2 = JSON.parse(params['addServiceList']);
+        this.addServiceList = JSON.parse(params['addServiceList']);
       }
 
       if (params['booking'] !== undefined) {
@@ -242,10 +232,15 @@ export class ConfirmBookingComponent implements OnInit {
     ) {
       setTimeout(() => {
         this.booking = this.token.getBookingDataObj();
-        this.dueAmount =
-          this.booking.totalAmount +
-          this.booking.totalServiceAmount -
-          this.booking.advanceAmount;
+        // THM's totalAmount is pre-discount (THM does not apply discounts).
+        // Use: (beforeTaxAmount + extras − discountAmount) + taxAmount + services − advance
+        // This is correct for no-discount, coupon-only, advance-discount-only, and both.
+        const extraCharges = (this.booking.extraPersonCharge || 0) + (this.booking.extraChildCharge || 0);
+        const trueTotal =
+          (this.booking.beforeTaxAmount + extraCharges - (this.booking.discountAmount || 0)) +
+          (this.booking.taxAmount || 0) +
+          (this.booking.totalServiceAmount || 0);
+        this.dueAmount = trueTotal - (this.booking.advanceAmount || 0);
       }, 500);
     }
   }
@@ -279,47 +274,11 @@ export class ConfirmBookingComponent implements OnInit {
     const month = dsd.getMonth() + 1;
     return { year: year, month: month, day: day };
   }
-  addServiceToBooking(booking) {
-    if (this.addServiceList.length > 0) {
-      this.hotelBookingService
-        .addServicesToBooking(this.addServiceList, booking.id)
-        .subscribe((serviceRes) => {
-          // //Logger.log('before Payment: ', JSON.stringify(this.payment));
 
-          // //Logger.log('addServiceList ', JSON.stringify(serviceRes.body));
-          this.payment2 = this.payment;
-          this.payment2.id = undefined;
-          this.payment2.paymentMode = 'UPI';
-          this.payment2.status = 'NotPaid';
-          this.payment2.propertyId = this.bookingData.propertyId;
-          this.payment2.email = this.booking.email;
-          this.payment2.businessEmail = this.businessUser.email;
-          this.payment2.currency = this.businessUser.localCurrency;
-          this.payment2.transactionAmount = Number(
-            this.totalExtraAmount.toFixed(2)
-          );
-          this.payment2.netReceivableAmount = Number(
-            this.totalBeforeTaxAmount.toFixed(2)
-          );
-          this.payment2.transactionAmount = Number(
-            this.totalExtraAmount.toFixed(2)
-          );
-          this.payment2.amount = Number(this.totalExtraAmount.toFixed(2));
-          this.payment2.transactionChargeAmount = Number(
-            this.totalExtraAmount.toFixed(2)
-          );
-          this.payment2.deliveryChargeAmount = 0;
-          this.payment2.date = formatDate(new Date(), 'yyyy-MM-dd', 'en');
-          this.payment2.taxAmount = this.totalTaxAmount;
-          this.payment2.businessServiceName = 'Restaurants';
-          this.hotelBookingService
-            .processPayment(this.payment2)
-            .subscribe((res) => {
-              // //Logger.log('Extra Payment: ', JSON.stringify(res.body));
-            });
-        });
-    }
+  clearLegacyServicePaymentState() {
+    this.token.clearLegacyPayment2Data();
   }
+
   createBookingPayTM() {
     this.booking.modeOfPayment = this.payment.paymentMode;
     this.booking.externalSite = 'The Hotel Mate';
@@ -368,8 +327,9 @@ export class ConfirmBookingComponent implements OnInit {
     //Logger.log('createBooking ', JSON.stringify(this.booking));
 
     this.paymentLoader = true;
+    const bookingCommand = this.buildBookingCommand();
     this.hotelBookingService
-      .createBooking(this.booking)
+      .createBookingCommand(bookingCommand)
       .subscribe((response) => {
         //  //Logger.log('createBooking ', JSON.stringify(response.body));
         if (response.status === 200) {
@@ -377,17 +337,10 @@ export class ConfirmBookingComponent implements OnInit {
           this.booking = response.body;
           this.booking.fromDate = this.bookingData.fromDate;
           this.booking.toDate = this.bookingData.toDate;
+          this.clearLegacyServicePaymentState();
 
           this.payment.referenceNumber = this.booking.propertyReservationNumber;
           this.payment.externalReference = this.booking.externalBookingID;
-          if (
-            this.savedServices != null &&
-            this.savedServices != undefined &&
-            this.savedServices.length > 0
-          ) {
-            this.addSeviceTopBooking(response.body.id, this.savedServices);
-          }
-          this.addServiceToBooking(this.booking);
           this.externalReservation(this.booking);
           this.bookingConfirmed = true;
           this.paymentLoader = true;
@@ -450,7 +403,6 @@ export class ConfirmBookingComponent implements OnInit {
                       }
                     });
                 }
-
                 // setTimeout(() => {
                 //   this.isSuccess = true;
                 //   this.headerTitle = "Success!";
@@ -487,6 +439,34 @@ export class ConfirmBookingComponent implements OnInit {
     setTimeout(() => {
       this.accommodationEnquiryBookingData();
     }, 3000);
+  }
+
+  private buildBookingCommand(): BookingCommand {
+    const command = new BookingCommand();
+    const pricing = new BookingPricing();
+
+    pricing.roomPrice = this.booking.roomPrice;
+    pricing.beforeTaxAmount = this.booking.beforeTaxAmount;
+    pricing.taxAmount = this.booking.taxAmount;
+    pricing.totalAmount = this.booking.totalAmount;
+    pricing.payableAmount = this.booking.payableAmount;
+    pricing.advanceAmount = this.booking.advanceAmount;
+    pricing.discountAmount = this.booking.discountAmount;
+    pricing.discountPercentage = this.booking.discountPercentage;
+    pricing.totalServiceAmount = this.booking.totalServiceAmount;
+    pricing.roomTariffBeforeDiscount = this.booking.roomTariffBeforeDiscount;
+    pricing.totalRoomTariffBeforeDiscount = this.booking.totalRoomTariffBeforeDiscount;
+    pricing.couponCode = this.booking.couponCode;
+    pricing.promotionName = this.booking.promotionName;
+    pricing.currency = this.booking.currency;
+
+    command.booking = this.booking;
+    command.pricing = pricing;
+    command.selectedServices = (this.savedServices || []) as PropertyServiceDTO[];
+    command.sourceChannel = this.booking?.externalSite || 'WebSite';
+    command.pricingVerified = true;
+
+    return command;
   }
 
   addSeviceTopBooking(bookingId, savedServices: any[]) {
@@ -561,53 +541,64 @@ export class ConfirmBookingComponent implements OnInit {
     );
   }
 
-  externalReservation(booking) {
-    this.reservationRoomDetails = [];
-    let roomdetailss = new RoomDetail();
+  public externalReservation(booking: Booking): void {
+    const currentBooking = booking || this.booking;
+    if (!currentBooking) {
+      return;
+    }
 
-    let externalreservation = new externalReservationDtoList();
-    externalreservation.checkinDate = this.booking.fromDate;
-    externalreservation.checkoutDate = this.booking.toDate;
-    externalreservation.currency = this.booking.currency;
-    externalreservation.email = this.booking.email;
+    const bookingService = this.hotelBookingService;
+    const externalReservationList = this.externalReservationDtoList || [];
+    const propertyServices = ((this.savedServices || []) as PropertyServiceDTO[]).map((service) => ({
+      ...service,
+    }));
+    this.externalReservationDtoList = externalReservationList;
+
+    this.reservationRoomDetails = [];
+    const roomdetailss = new RoomDetail();
+    const externalreservation = new externalReservationDtoList();
+
+    externalreservation.checkinDate = currentBooking.fromDate;
+    externalreservation.checkoutDate = currentBooking.toDate;
+    externalreservation.currency = currentBooking.currency;
+    externalreservation.email = currentBooking.email;
     externalreservation.totalAmount =
-      this.booking.totalAmount + this.booking.totalServiceAmount;
-    externalreservation.amountBeforeTax = this.booking.beforeTaxAmount;
+      currentBooking.totalAmount + currentBooking.totalServiceAmount;
+    externalreservation.amountBeforeTax = currentBooking.beforeTaxAmount;
     externalreservation.channelId = '24';
     externalreservation.lastModifiedBy = 'hotelmate';
-    externalreservation.couponCode = this.booking.couponCode;
-externalreservation.promotionName = this.booking.promotionName;
+    externalreservation.couponCode = currentBooking.couponCode;
+    externalreservation.promotionName = currentBooking.promotionName;
     externalreservation.modeOfPayment = 'Cash';
-    externalreservation.externalTransactionId = 'THM-' + this.booking.id;
-    externalreservation.otaReservationId = 'THM-' + this.booking.id;
-    externalreservation.propertyId = this.booking.propertyId.toString();
-    externalreservation.propertyName = this.booking.businessName;
-    externalreservation.firstName = this.booking.firstName;
-    externalreservation.lastName = this.booking.lastName;
-    externalreservation.bookoneReservationId =
-      this.booking.propertyReservationNumber;
-    externalreservation.contactNumber = this.booking.mobile;
-    externalreservation.propertyBusinessEmail = this.booking.businessEmail;
-    externalreservation.paidAmount = this.booking.advanceAmount;
-    // externalreservation.externalTransactionId = this.booking.paymentId.toString();
+    externalreservation.externalTransactionId = 'THM-' + currentBooking.id;
+    externalreservation.otaReservationId = 'THM-' + currentBooking.id;
+    externalreservation.propertyId = currentBooking.propertyId.toString();
+    externalreservation.propertyName = currentBooking.businessName;
+    externalreservation.firstName = currentBooking.firstName;
+    externalreservation.lastName = currentBooking.lastName;
+    externalreservation.bookoneReservationId = currentBooking.propertyReservationNumber;
+    externalreservation.contactNumber = currentBooking.mobile;
+    externalreservation.propertyBusinessEmail = currentBooking.businessEmail;
+    externalreservation.paidAmount = currentBooking.advanceAmount;
     externalreservation.createdBy = 'hotelmate';
-    roomdetailss.checkinDate = this.booking.fromDate;
-    roomdetailss.checkoutDate = this.booking.toDate;
-    roomdetailss.noOfRooms = this.booking.noOfRooms;
-    roomdetailss.noOfadult = this.booking.noOfPersons;
-    roomdetailss.noOfchild = this.booking.noOfChildren;
-    roomdetailss.plan = this.booking.roomRatePlanName;
+
+    roomdetailss.checkinDate = currentBooking.fromDate;
+    roomdetailss.checkoutDate = currentBooking.toDate;
+    roomdetailss.noOfRooms = currentBooking.noOfRooms;
+    roomdetailss.noOfadult = currentBooking.noOfPersons;
+    roomdetailss.noOfchild = currentBooking.noOfChildren;
+    roomdetailss.plan = currentBooking.roomRatePlanName;
     roomdetailss.roomRate =
-      this.booking.roomTariffBeforeDiscount +
-      this.booking.extraChildCharge +
-      this.booking.extraPersonCharge;
-    roomdetailss.roomTypeId = this.booking.roomId.toString();
-    roomdetailss.roomTypeName = this.booking.roomName;
+      currentBooking.roomTariffBeforeDiscount +
+      currentBooking.extraChildCharge +
+      currentBooking.extraPersonCharge;
+    roomdetailss.roomTypeId = currentBooking.roomId.toString();
+    roomdetailss.roomTypeName = currentBooking.roomName;
     this.reservationRoomDetails.push(roomdetailss);
     externalreservation.roomDetails = this.reservationRoomDetails;
 
-    this.propertyServices = this.savedServices;
-    this.propertyServices?.forEach((ele) => {
+    this.propertyServices = propertyServices;
+    propertyServices.forEach((ele) => {
       ele.count = ele.quantity;
       ele.id = null;
       ele.date = new Date().toISOString().split('T')[0];
@@ -616,17 +607,18 @@ externalreservation.promotionName = this.booking.promotionName;
       ele.description = null;
       ele.organisationId = null;
     });
-    externalreservation.services = this.propertyServices;
-    externalreservation.taxAmount = this.booking.taxAmount;
-    // externalreservation.lastModifiedDate = new Date().toString();
-    externalreservation.noOfPerson = this.booking.noOfPersons.toString();
+
+    externalreservation.services = propertyServices;
+    externalreservation.taxAmount = currentBooking.taxAmount;
+    externalreservation.noOfPerson = String(currentBooking.noOfPersons);
     externalreservation.resType = '';
     externalreservation.otaName = 'Thehotelmate.com';
     externalreservation.bookingStatus = 'Confirmed';
     externalreservation.payloadType = 'json';
-    this.externalReservationDtoList.push(externalreservation);
-    this.hotelBookingService
-      .externalReservation(this.externalReservationDtoList)
+
+    externalReservationList.push(externalreservation);
+    bookingService
+      .externalReservation(externalReservationList)
       .subscribe((res) => {
         if (res.status === 200) {
           this.externalReservationdto = res.body;
@@ -634,7 +626,7 @@ externalreservation.promotionName = this.booking.promotionName;
       });
   }
 
-  addSeviceTopBookingPMS(bookingId, savedServices: any[]) {
+  public addSeviceTopBookingPMS(bookingId: number, savedServices: any[]): void {
     this.hotelBookingService
       .saveBookingServicePMS(bookingId, savedServices)
       .subscribe(
@@ -645,75 +637,77 @@ externalreservation.promotionName = this.booking.promotionName;
         (error) => {}
       );
   }
-  accommodationEnquiryBookingData() {
-    this.enquiryForm = new EnquiryDto();
+  public accommodationEnquiryBookingData(): void {
+    const booking = this.booking;
+    const payment = this.payment;
+    const property = this.token.getProperty();
+    if (!booking || !payment || !property) {
+      return;
+    }
+
+    const enquiryForm = new EnquiryDto();
+    this.enquiryForm = enquiryForm;
 
     if (
-      this.token.getProperty().address != null &&
-      this.token.getProperty().address != undefined &&
-      this.token.getProperty().address.city != null &&
-      this.token.getProperty().address.city != undefined
+      property.address != null &&
+      property.address != undefined &&
+      property.address.city != null &&
+      property.address.city != undefined
     ) {
-      this.enquiryForm.address = this.token.getProperty().address;
-      this.enquiryForm.country = this.token.getProperty().address.country;
-      this.enquiryForm.location = this.token.getProperty().address.city;
-
-      this.enquiryForm.alternativeLocation =
-        this.token.getProperty().address.city;
+      enquiryForm.address = property.address;
+      enquiryForm.country = property.address.country;
+      enquiryForm.location = property.address.city;
+      enquiryForm.alternativeLocation = property.address.city;
     }
-    this.payment.netReceivableAmount = this.booking.netAmount;
-    this.enquiryForm.min = this.booking.totalAmount;
-    this.enquiryForm.max = this.booking.totalAmount;
-    this.enquiryForm.totalAmount = this.booking.totalAmount;
-    this.enquiryForm.couponCode = this.booking.couponCode;
-    this.enquiryForm.promotionName = this.booking.promotionName;
-    this.enquiryForm.advanceAmount = this.booking.advanceAmount;
 
-    this.enquiryForm.firstName = this.booking.firstName;
-    this.enquiryForm.lastName = this.booking.lastName;
-    this.enquiryForm.email = this.booking.email;
-    this.enquiryForm.phone = this.booking.mobile;
-    this.enquiryForm.checkOutDate = this.booking.toDate;
-    this.enquiryForm.checkInDate = this.booking.fromDate;
-    this.enquiryForm.noOfPerson = this.booking.noOfPersons;
-    this.enquiryForm.noOfExtraPerson = this.booking.noOfExtraPerson;
-    this.enquiryForm.roomId = this.booking.roomId;
-    this.enquiryForm.payableAmount = this.booking.netAmount;
-    this.enquiryForm.roomName = this.booking.roomName;
-    this.enquiryForm.extraPersonCharge = this.booking.extraPersonCharge;
-    this.enquiryForm.extraChildCharge = this.booking.extraChildCharge;
-    this.enquiryForm.noOfExtraChild = this.booking.noOfExtraChild;
-    this.enquiryForm.externalSite = 'Website';
-    this.enquiryForm.source = 'Bookone Connect';
-    this.enquiryForm.beforeTaxAmount = this.booking.beforeTaxAmount;
-    this.enquiryForm.mobile = this.booking.mobile;
-    this.enquiryForm.roomType = this.booking.roomType;
-    this.enquiryForm.roomRatePlanName = this.booking.roomRatePlanName;
-    this.enquiryForm.roomPrice = this.booking.roomTariffBeforeDiscount;
-    this.enquiryForm.createdDate = new Date();
-    this.enquiryForm.fromTime = Number(this.token.getFromTime());
-    this.enquiryForm.toTime = Number(this.token.getToTime());
-
-    this.enquiryForm.accountManager = 'TheHotelMate Team';
-    this.enquiryForm.consultantPerson = '';
-    this.enquiryForm.noOfRooms = this.booking.noOfRooms;
-    this.enquiryForm.noOfChildren = this.booking.noOfChildren;
-    this.enquiryForm.accommodationType = this.token.getProperty().businessType;
-    this.enquiryForm.status = 'Booked';
-    this.enquiryForm.specialNotes = this.booking.notes;
-    this.enquiryForm.propertyId = 107;
-    this.enquiryForm.currency = this.token.getProperty().localCurrency;
-    this.enquiryForm.taxDetails = this.token.getProperty().taxDetails;
-    this.enquiryForm.planCode = this.booking.planCode;
-    this.enquiryForm.bookingReservationId =
-      this.booking.propertyReservationNumber;
-    this.enquiryForm.bookingId = this.booking.id;
-    this.enquiryForm.advanceAmount = this.booking.advanceAmount;
-    this.enquiryForm.taxAmount =
-      (this.booking.netAmount * this.booking.taxPercentage) / 100;
-
-    this.enquiryForm.bookingPropertyId = this.token.getProperty().id;
-    this.enquiryForm.propertyName = this.token.getProperty().name;
+    payment.netReceivableAmount = booking.netAmount;
+    enquiryForm.min = booking.totalAmount;
+    enquiryForm.max = booking.totalAmount;
+    enquiryForm.totalAmount = booking.totalAmount;
+    enquiryForm.couponCode = booking.couponCode;
+    enquiryForm.promotionName = booking.promotionName;
+    enquiryForm.advanceAmount = booking.advanceAmount;
+    enquiryForm.firstName = booking.firstName;
+    enquiryForm.lastName = booking.lastName;
+    enquiryForm.email = booking.email;
+    enquiryForm.phone = booking.mobile;
+    enquiryForm.checkOutDate = booking.toDate;
+    enquiryForm.checkInDate = booking.fromDate;
+    enquiryForm.noOfPerson = booking.noOfPersons;
+    enquiryForm.noOfExtraPerson = booking.noOfExtraPerson;
+    enquiryForm.roomId = booking.roomId;
+    enquiryForm.payableAmount = booking.netAmount;
+    enquiryForm.roomName = booking.roomName;
+    enquiryForm.extraPersonCharge = booking.extraPersonCharge;
+    enquiryForm.extraChildCharge = booking.extraChildCharge;
+    enquiryForm.noOfExtraChild = booking.noOfExtraChild;
+    enquiryForm.externalSite = 'Website';
+    enquiryForm.source = 'Bookone Connect';
+    enquiryForm.beforeTaxAmount = booking.beforeTaxAmount;
+    enquiryForm.mobile = booking.mobile;
+    enquiryForm.roomType = booking.roomType;
+    enquiryForm.roomRatePlanName = booking.roomRatePlanName;
+    enquiryForm.roomPrice = booking.roomTariffBeforeDiscount;
+    enquiryForm.createdDate = new Date();
+    enquiryForm.fromTime = Number(this.token.getFromTime());
+    enquiryForm.toTime = Number(this.token.getToTime());
+    enquiryForm.accountManager = 'TheHotelMate Team';
+    enquiryForm.consultantPerson = '';
+    enquiryForm.noOfRooms = booking.noOfRooms;
+    enquiryForm.noOfChildren = booking.noOfChildren;
+    enquiryForm.accommodationType = property.businessType;
+    enquiryForm.status = 'Booked';
+    enquiryForm.specialNotes = booking.notes;
+    enquiryForm.propertyId = 107;
+    enquiryForm.currency = property.localCurrency;
+    enquiryForm.taxDetails = property.taxDetails;
+    enquiryForm.planCode = booking.planCode;
+    enquiryForm.bookingReservationId = booking.propertyReservationNumber;
+    enquiryForm.bookingId = booking.id;
+    enquiryForm.advanceAmount = booking.advanceAmount;
+    enquiryForm.taxAmount = (booking.netAmount * booking.taxPercentage) / 100;
+    enquiryForm.bookingPropertyId = property.id;
+    enquiryForm.propertyName = property.name;
 
     const TO_EMAIL = 'reservation@thehotelmate.co';
     const TO_NAME = 'Support - The Hotel Mate';
@@ -721,48 +715,46 @@ externalreservation.promotionName = this.booking.promotionName;
     const bccEmail2 = 'info@bookonepms.com';
     const bccName = 'Samaya';
 
-    this.enquiryForm.fromName =
-      this.enquiryForm.firstName + ' ' + this.enquiryForm.lastName;
-    this.enquiryForm.toName = TO_NAME;
-    this.enquiryForm.fromEmail = this.enquiryForm.email;
-    this.enquiryForm.toEmail = TO_EMAIL;
-    this.enquiryForm.bccEmail = bccEmail;
-    this.enquiryForm.bccName = bccEmail;
-    this.enquiryForm.bccEmailTo = bccEmail2;
+    enquiryForm.fromName = enquiryForm.firstName + ' ' + enquiryForm.lastName;
+    enquiryForm.toName = TO_NAME;
+    enquiryForm.fromEmail = enquiryForm.email;
+    enquiryForm.toEmail = TO_EMAIL;
+    enquiryForm.bccEmail = bccEmail;
+    enquiryForm.bccName = bccEmail;
+    enquiryForm.bccEmailTo = bccEmail2;
 
     if (
-      this.enquiryForm.dietaryRequirement === null ||
-      this.enquiryForm.dietaryRequirement === undefined
+      enquiryForm.dietaryRequirement === null ||
+      enquiryForm.dietaryRequirement === undefined
     ) {
-      this.enquiryForm.dietaryRequirement = '';
+      enquiryForm.dietaryRequirement = '';
     }
     if (
-      this.enquiryForm.accommodationType === null ||
-      this.enquiryForm.accommodationType === undefined
+      enquiryForm.accommodationType === null ||
+      enquiryForm.accommodationType === undefined
     ) {
-      this.enquiryForm.accommodationType = '';
+      enquiryForm.accommodationType = '';
     }
     if (
-      this.enquiryForm.specialNotes === null ||
-      this.enquiryForm.specialNotes === undefined
+      enquiryForm.specialNotes === null ||
+      enquiryForm.specialNotes === undefined
     ) {
-      this.enquiryForm.specialNotes = '';
+      enquiryForm.specialNotes = '';
     }
     if (
-      this.enquiryForm.alternativeLocation === null ||
-      this.enquiryForm.alternativeLocation === undefined
+      enquiryForm.alternativeLocation === null ||
+      enquiryForm.alternativeLocation === undefined
     ) {
-      this.enquiryForm.alternativeLocation = '';
+      enquiryForm.alternativeLocation = '';
     }
-    this.enquiryForm.foodOptions = '';
-    this.enquiryForm.organisationId = environment.parentOrganisationId;
+    enquiryForm.foodOptions = '';
+    enquiryForm.organisationId = environment.parentOrganisationId;
     this.paymentLoader = true;
-    this.enquiryForm.enquiryId = sessionStorage.getItem('enquiryNo');
+    enquiryForm.enquiryId = Number(sessionStorage.getItem('enquiryNo'));
     this.hotelBookingService
-      .accommodationEnquiry(this.enquiryForm)
+      .accommodationEnquiry(enquiryForm)
       .subscribe((response) => {
         this.enquiryForm = response.body;
-        this.paymentLoader = false;
         this.paymentLoader = false;
         this.isSuccess = true;
         this.submitButtonDisable = true;
@@ -770,158 +762,124 @@ externalreservation.promotionName = this.booking.promotionName;
       });
   }
 
-  createEnquiry() {
-    this.booking.modeOfPayment = this.payment?.paymentMode;
-    this.booking.externalSite = 'The Hotel Mate';
-    this.booking.businessName = this.businessUser.name;
-    this.booking.businessEmail = this.businessUser.email;
-    this.booking.roomBooking = true;
-    this.booking.bookingAmount = this.booking.totalAmount;
-    this.booking.groupBooking = false;
-    this.booking.available = true;
-    this.booking.payableAmount = this.booking.totalAmount;
-    this.booking.currency = this.businessUser.localCurrency;
-    this.booking.paymentId = this.payment.id;
+  public createEnquiry(): void {
+    const booking = this.booking;
+    const payment = this.payment;
+    const businessUser = this.businessUser;
+    if (!booking || !payment || !businessUser) {
+      return;
+    }
 
-    //Logger.log('createBooking ', JSON.stringify(this.booking));
+    booking.modeOfPayment = payment.paymentMode;
+    booking.externalSite = 'The Hotel Mate';
+    booking.businessName = businessUser.name;
+    booking.businessEmail = businessUser.email;
+    booking.roomBooking = true;
+    booking.bookingAmount = booking.totalAmount;
+    booking.groupBooking = false;
+    booking.available = true;
+    booking.payableAmount = booking.totalAmount;
+    booking.currency = businessUser.localCurrency;
+    booking.paymentId = payment.id;
 
     this.paymentLoader = true;
 
-    // //Logger.log(JSON.stringify(this.subscriptions));
     const TO_EMAIL = 'subhasmitatripathy37@gmail.com';
-    // const TO_EMAIL = 'abir.sayeed@gmail.com';
     const TO_NAME = 'Support - The Hotel Mate';
     const bccEmail = 'rajeshbiswal591@gmail.com';
-    // const bccEmail= 'abir.sayeed@credencesoft.co.nz';
 
-    const bccName = 'Samaya';
-    this.enquiryForm = new EnquiryForm();
-    this.enquiryForm.businessEmail = this.businessUser.email;
-    this.enquiryForm.businessName = this.businessUser.name;
-    this.enquiryForm.roomBooking = this.booking.roomBooking;
-    this.enquiryForm.groupBooking = this.booking.groupBooking;
-    this.enquiryForm.roomId = this.booking.roomId;
-    this.enquiryForm.roomPrice = this.booking.roomPrice;
-    this.enquiryForm.roomName = this.booking.roomName;
-    this.enquiryForm.firstName = this.booking.firstName;
-    this.enquiryForm.lastName = this.booking.lastName;
-    this.enquiryForm.fromDate = this.booking.fromDate;
-    this.enquiryForm.toDate = this.booking.toDate;
-    // this.enquiryForm.fromTime =  this.booking.fromTime;
-    // this.enquiryForm.toTime =  this.booking.toTime;
-    this.enquiryForm.checkInDate = this.booking.fromDate;
-    this.enquiryForm.checkOutDate = this.booking.toDate;
-    this.enquiryForm.email = this.booking.email;
-    this.enquiryForm.hsnCode = this.booking.hsnCode;
-    this.enquiryForm.phone = this.booking.mobile;
-    this.enquiryForm.mobile = this.booking.mobile;
-    this.enquiryForm.noOfRooms = this.booking.noOfRooms;
-    this.enquiryForm.noOfPerson = this.booking.noOfPersons;
-    this.enquiryForm.noOfChildren = this.booking.noOfChildren;
-    this.enquiryForm.noOfPets = this.booking.noOfPets;
-    this.enquiryForm.externalSite = this.booking.externalSite;
-    this.enquiryForm.location = '';
-    this.enquiryForm.min = 0;
-    this.enquiryForm.max = 0;
-    this.enquiryForm.roomRatePlanName = this.booking.roomRatePlanName;
-    this.enquiryForm.noOfExtraPerson = this.booking.noOfExtraPerson;
-    this.enquiryForm.extraPersonCharge = this.booking.extraPersonCharge;
-    this.enquiryForm.noOfExtraChild = this.booking.noOfExtraChild;
-    this.enquiryForm.extraChildCharge = this.booking.extraChildCharge;
-    this.enquiryForm.roomTariffBeforeDiscount =
-      this.booking.roomTariffBeforeDiscount;
-    this.enquiryForm.totalBookingAmount = this.booking.totalBookingAmount;
-    this.enquiryForm.paymentStatus = this.payment.status;
-    this.enquiryForm.totalRoomTariffBeforeDiscount =
-      this.booking.totalRoomTariffBeforeDiscount;
-    this.enquiryForm.discountAmount = this.booking.discountAmount;
-    this.enquiryForm.taxAmount =
-      (this.booking.netAmount * this.booking.taxPercentage) / 100;
-    this.enquiryForm.taxDetails = this.booking.taxDetails;
-    this.enquiryForm.payableAmount = this.booking.payableAmount;
-    this.enquiryForm.totalAmount = this.booking.totalAmount;
-    this.enquiryForm.beforeTaxAmount = this.booking.beforeTaxAmount;
-    this.enquiryForm.propertyId = this.booking.propertyId;
-    this.enquiryForm.currency = this.booking.currency;
-    this.enquiryForm.available = this.booking.available;
-    this.enquiryForm.modeOfPayment = this.booking.modeOfPayment;
-    this.enquiryForm.includeService = this.booking.includeService;
-    this.enquiryForm.customerId = this.booking.customerId;
-    this.enquiryForm.businessEmail = this.businessUser.email;
-    this.enquiryForm.planCode = this.booking.planCode;
+    const enquiryForm: any = new EnquiryForm();
+    this.enquiryForm = enquiryForm;
 
-    this.enquiryForm.organisationId = this.businessUser.organisationId;
-
-    this.enquiryForm.counterNumber = '1';
-    this.enquiryForm.operatorName = '';
+    enquiryForm.businessEmail = businessUser.email;
+    enquiryForm.businessName = businessUser.name;
+    enquiryForm.roomBooking = booking.roomBooking;
+    enquiryForm.groupBooking = booking.groupBooking;
+    enquiryForm.roomId = booking.roomId;
+    enquiryForm.roomPrice = booking.roomPrice;
+    enquiryForm.roomName = booking.roomName;
+    enquiryForm.firstName = booking.firstName;
+    enquiryForm.lastName = booking.lastName;
+    enquiryForm.fromDate = booking.fromDate;
+    enquiryForm.toDate = booking.toDate;
+    enquiryForm.checkInDate = booking.fromDate;
+    enquiryForm.checkOutDate = booking.toDate;
+    enquiryForm.email = booking.email;
+    enquiryForm.hsnCode = booking.hsnCode;
+    enquiryForm.phone = booking.mobile;
+    enquiryForm.mobile = booking.mobile;
+    enquiryForm.noOfRooms = booking.noOfRooms;
+    enquiryForm.noOfPerson = booking.noOfPersons;
+    enquiryForm.noOfChildren = booking.noOfChildren;
+    enquiryForm.noOfPets = booking.noOfPets;
+    enquiryForm.externalSite = booking.externalSite;
+    enquiryForm.location = '';
+    enquiryForm.min = 0;
+    enquiryForm.max = 0;
+    enquiryForm.roomRatePlanName = booking.roomRatePlanName;
+    enquiryForm.noOfExtraPerson = booking.noOfExtraPerson;
+    enquiryForm.extraPersonCharge = booking.extraPersonCharge;
+    enquiryForm.noOfExtraChild = booking.noOfExtraChild;
+    enquiryForm.extraChildCharge = booking.extraChildCharge;
+    enquiryForm.roomTariffBeforeDiscount = booking.roomTariffBeforeDiscount;
+    enquiryForm.totalBookingAmount = booking.totalBookingAmount;
+    enquiryForm.paymentStatus = payment.status;
+    enquiryForm.totalRoomTariffBeforeDiscount = booking.totalRoomTariffBeforeDiscount;
+    enquiryForm.discountAmount = booking.discountAmount;
+    enquiryForm.taxAmount = (booking.netAmount * booking.taxPercentage) / 100;
+    enquiryForm.taxDetails = booking.taxDetails;
+    enquiryForm.payableAmount = booking.payableAmount;
+    enquiryForm.totalAmount = booking.totalAmount;
+    enquiryForm.beforeTaxAmount = booking.beforeTaxAmount;
+    enquiryForm.propertyId = booking.propertyId;
+    enquiryForm.currency = booking.currency;
+    enquiryForm.available = booking.available;
+    enquiryForm.modeOfPayment = booking.modeOfPayment;
+    enquiryForm.includeService = booking.includeService;
+    enquiryForm.customerId = booking.customerId;
+    enquiryForm.planCode = booking.planCode;
+    enquiryForm.organisationId = businessUser.organisationId;
+    enquiryForm.counterNumber = '1';
+    enquiryForm.operatorName = '';
 
     this.enquirySent = true;
 
-    this.enquiryForm.fromName =
-      this.enquiryForm.firstName + ' ' + this.enquiryForm.lastName;
-    this.enquiryForm.toName = TO_NAME;
-    this.enquiryForm.fromEmail = this.enquiryForm.email;
-    this.enquiryForm.toEmail = TO_EMAIL;
-    this.enquiryForm.bccEmail = bccEmail;
-    this.enquiryForm.bccName = bccEmail;
+    enquiryForm.fromName = enquiryForm.firstName + ' ' + enquiryForm.lastName;
+    enquiryForm.toName = TO_NAME;
+    enquiryForm.fromEmail = enquiryForm.email;
+    enquiryForm.toEmail = TO_EMAIL;
+    enquiryForm.bccEmail = bccEmail;
+    enquiryForm.bccName = bccEmail;
+    enquiryForm.accommodationType = businessUser.businessSubtype || '';
+    enquiryForm.status = 'Enquiry';
 
-    this.enquiryForm.accommodationType = '';
-    // this.enquiryForm.dietaryRequirement = form.controls.dietaryRequirement.value;
-
-    this.enquiryForm.accommodationType = this.businessUser.businessSubtype;
-    this.enquiryForm.status = 'Enquiry';
-
-    if (
-      this.enquiryForm.dietaryRequirement === null ||
-      this.enquiryForm.dietaryRequirement === undefined
-    ) {
-      this.enquiryForm.dietaryRequirement = '';
+    if (enquiryForm.dietaryRequirement === null || enquiryForm.dietaryRequirement === undefined) {
+      enquiryForm.dietaryRequirement = '';
     }
-    if (
-      this.enquiryForm.accommodationType === null ||
-      this.enquiryForm.accommodationType === undefined
-    ) {
-      this.enquiryForm.accommodationType = '';
+    if (enquiryForm.accommodationType === null || enquiryForm.accommodationType === undefined) {
+      enquiryForm.accommodationType = '';
     }
-    if (
-      this.enquiryForm.specialNotes === null ||
-      this.enquiryForm.specialNotes === undefined
-    ) {
-      this.enquiryForm.specialNotes = '';
+    if (enquiryForm.specialNotes === null || enquiryForm.specialNotes === undefined) {
+      enquiryForm.specialNotes = '';
     }
-    if (
-      this.enquiryForm.alternativeLocation === null ||
-      this.enquiryForm.alternativeLocation === undefined
-    ) {
-      this.enquiryForm.alternativeLocation = '';
+    if (enquiryForm.alternativeLocation === null || enquiryForm.alternativeLocation === undefined) {
+      enquiryForm.alternativeLocation = '';
     }
 
-    this.enquiryForm.foodOptions = '';
-
-    this.enquiryForm.subject = '';
+    enquiryForm.foodOptions = '';
+    enquiryForm.subject = '';
     this.setApi();
-    //Logger.log('form data ' + JSON.stringify(this.enquiryForm));
-    //  this.success = true;
+
     this.http
-      .post<EnquiryForm>(
-        this.API_URL + '/api/website/enquire',
-        this.enquiryForm
-      )
+      .post<EnquiryForm>(this.API_URL + '/api/website/enquire', enquiryForm)
       .subscribe((response) => {
         this.enquiryResponse = response;
         this.successMessage = true;
-        //Logger.log('save ' + response);
       });
-    this.http
-      .post<EnquiryForm>(
-        environment.apiUrlBookone + '/api/email/enquire',
-        this.enquiryForm
-      )
-      .subscribe((response) => {
-        // this.success = response;
-        //Logger.log('sent ' + response);
 
-        // this.enquiryForm = new EnquiryForm();
+    this.http
+      .post<EnquiryForm>(environment.apiUrlBookone + '/api/email/enquire', enquiryForm)
+      .subscribe(() => {
         this.successMessage = true;
       });
 
