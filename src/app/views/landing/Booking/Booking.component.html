@@ -324,7 +324,14 @@
                       <div style="text-align: end">{{ plan.price | currency: currency : 'symbol' : '1.2-2' }}</div>
                       <div style="text-align: end; margin-top: -5px"
                         *ngIf="plan.extraPersonAdultCountAmount + plan.extraPersonChildCountAmount > 0">
-                        Inclusive of Extra Pax
+                        {{
+                          plan.extraPersonAdultCountAmount > 0 &&
+                          plan.extraPersonChildCountAmount > 0
+                            ? 'Inclusive of Extra Pax/Child'
+                            : plan.extraPersonAdultCountAmount > 0
+                            ? 'Inclusive of Extra Pax'
+                            : 'Inclusive of Extra Child'
+                        }}
                       </div>
                     </div>
                   </div>
@@ -1072,7 +1079,14 @@
                           0
                         "
                       >
-                        Inclusive of Extra Pax
+                        {{
+                          plan.extraPersonAdultCountAmount > 0 &&
+                          plan.extraPersonChildCountAmount > 0
+                            ? 'Inclusive of Extra Pax/Child'
+                            : plan.extraPersonAdultCountAmount > 0
+                            ? 'Inclusive of Extra Pax'
+                            : 'Inclusive of Extra Child'
+                        }}
                       </div>
                     </div>
                     <div *ngIf="!activeGoogleCenter">
@@ -1087,7 +1101,14 @@
                           0
                         "
                       >
-                        Inclusive of Extra Pax
+                        {{
+                          plan.extraPersonAdultCountAmount > 0 &&
+                          plan.extraPersonChildCountAmount > 0
+                            ? 'Inclusive of Extra Pax/Child'
+                            : plan.extraPersonAdultCountAmount > 0
+                            ? 'Inclusive of Extra Pax'
+                            : 'Inclusive of Extra Child'
+                        }}
                       </div>
                     </div>
                   </div>
