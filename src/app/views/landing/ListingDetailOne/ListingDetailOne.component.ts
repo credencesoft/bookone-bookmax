@@ -1127,9 +1127,6 @@ this.token.savePropertyUrl(currentUrl);
 
     this.selectedServices = [];
     this.oneDayFromDate = calendar.getToday();
-    this.triggerEventService.events$.forEach((event) =>
-      console.log(this.publishPage(event))
-    );
     if (this.token.getBookingCity() !== null) {
       if (
         this.token.getBookingCity() != null &&
@@ -2001,7 +1998,7 @@ onIncrement(planCode: string, type: 'adults' | 'children', plan: any, room: any)
   this.guestSelectionErrors[planCode] = '';
 
     const selectedRooms = this.selectedRoomsByPlan[planCode] || 0;
-  
+
   if (selectedRooms === 0 && !plan?.nonRoomPlan) {
     this.showTemporaryError(planCode, 'Please add a room first.');
     return;
@@ -2043,9 +2040,9 @@ if (type === 'adults') {
         this.selectedGuestsByPlan[planCode].adults++;
     } else {
         this.showTemporaryError(planCode, `Maximum occupancy of ${totalMaxOccupancy} exceeded.`);
-        return; 
+        return;
     }
-} 
+}
 else if (type === 'children') {
     const projectedChildren = currentChildren + 1;
     const projectedTotal = currentAdults + projectedChildren;
@@ -2061,7 +2058,7 @@ else if (type === 'children') {
         this.childAgesByPlan[planCode].push(null);
     } else {
         this.showTemporaryError(planCode, `Maximum occupancy of ${totalMaxOccupancy} reached.`);
-        return; 
+        return;
     }
 }
 
@@ -2341,23 +2338,6 @@ resetLastChangedAge(planCode: string) {
         if (plan.code === ele1.code) {
           const totalMinAdults = ele1.minimumOccupancy * selectedRooms;
           const totalMinChildren = selectedGuests.adults < (ele1.minimumOccupancy * selectedRooms) ? (ele1.minimumOccupancy * selectedRooms) - selectedGuests.adults : plan.noOfChildren;
-          console.log('totalMinAdults is', totalMinAdults);
-          console.log('totalMinChildren is', totalMinChildren);
-          // if (selectedRooms > 1) {
-          // const singleRoomCountOccupancyAdult = ele1.minimumOccupancy * 1;
-          // console.log('singleRoomCountOccupancyAdult is',singleRoomCountOccupancyAdult);
-          // const singleRoomCountOccupancyChild = ele1.noOfChildren * 1;
-          // console.log('singleRoomCountOccupancyChild is',singleRoomCountOccupancyChild);
-          //       this.singleextraAdults =
-          //   selectedGuests.adults > singleRoomCountOccupancyAdult
-          //     ? selectedGuests.adults - (totalMinAdults + singleRoomCountOccupancyAdult)
-          //     : 0;
-          //     console.log('singleextraAdults is',this.singleextraAdults);
-          //  this.singleextraChild =  above5Count > singleRoomCountOccupancyChild
-          //     ? above5Count - (totalMinChildren + singleRoomCountOccupancyChild)
-          //     : 0;
-          //     console.log('singleextraChild is',this.singleextraChild);
-          // }
           if (selectedRooms > 1) {
             const singleRoomCountOccupancyAdult = ele1.minimumOccupancy * 1;
 
@@ -2599,9 +2579,6 @@ resetLastChangedAge(planCode: string) {
           planDescription,
         };
 
-        //console.log("SUMMARY", summaryEntry);
-        // Replace if already exists
-
         const index = this.selectedPlansSummary.findIndex(
           (p) => p.planName === planName && p.roomId === roomId
         );
@@ -2610,12 +2587,10 @@ resetLastChangedAge(planCode: string) {
         } else {
           this.selectedPlansSummary.push(summaryEntry);
         }
-        //console.log('summaryEntry', summaryEntry);
         sessionStorage.setItem(
           'bookingSummaryDetails',
           JSON.stringify({
             selectedPlansSummary: this.selectedPlansSummary
-            // Add any other relevant data if needed
           })
         );
       }
@@ -4074,7 +4049,6 @@ onCheckOutClosed(): void {
         this.businessUser.propertyServicesList.forEach((ele) => {
           if (ele.id == null || ele.id == undefined) {
             this.propertyServicesNoId.push(ele);
-            console.log("IDDD", this.propertyServicesNoId);
           }
           if (ele.id != null && ele.id != undefined) {
             // ✅ Separate non-paid and paid services
@@ -4326,7 +4300,6 @@ onCheckOutClosed(): void {
     "availability": "https://schema.org/InStock"
   }]
 };
-  console.log("schema",schema);
     this.SchemaService.setSchema(schema);
   }
 
@@ -4615,7 +4588,7 @@ onCheckOutClosed(): void {
       return 'Room';
     }
   }
-    
+
   getPropertyDetailsBySeoName(seoName: string) {
     this.loader = true;
     this.listingService.findPropertyBySEOName(seoName).subscribe(
@@ -4726,7 +4699,7 @@ onCheckOutClosed(): void {
               }
             }
           });
-          
+
           if (
             this.selectedServices != null &&
             this.selectedServices != undefined
@@ -5056,17 +5029,6 @@ onCheckOutClosed(): void {
       .subscribe(
         (response) => {
           this.roomsone = response.body;
-          // this.rooms = [];
-
-          // for (var arr in response.body) {
-          //   for (var filter in this.availableRooms) {
-          //     if (response.body[arr].id === this.availableRooms[filter].roomId) {
-          //       this.rooms.push(response.body[arr]);
-          //       this.rooms[arr].roomRatePlans = this.availableRooms[filter].roomRatePlans;
-          //     }
-          //   }
-          // }
-          // console.log('response room ' + JSON.stringify(this.roomsone));
         },
         (error) => {
           if (error instanceof HttpErrorResponse) {
@@ -5682,7 +5644,7 @@ this.token.savePropertyUrl(currentUrl);
           this.getTotalTaxFacility()).toFixed(2)),
     };
     sessionStorage.setItem('bookingSummaryDetails', JSON.stringify(bookingData));
-    
+
     // Phase 4: Store selected add-ons for Booking component and LMS enquiry snapshot
     sessionStorage.setItem('addOnServices', JSON.stringify(selectedAddOns));
   } else if(this.specialDiscountData && !this.activeForGoogleHotelCenter){
@@ -6201,9 +6163,6 @@ this.token.savePropertyUrl(currentUrl);
   }
 
   onRoomBook(roomId, index, indexOne) {
-    // //console.log("ftgyhjkl"+JSON.stringify(this.booking))
-    // this.checkAvailabilityStatus = false;
-    // this.selectedRoomIndex = indexOne;
     this.selectedIndex = index;
     this.viewAddon = true;
 
@@ -6212,8 +6171,6 @@ this.token.savePropertyUrl(currentUrl);
     const stickyCard = document.getElementById('stickyCard');
 
     stickyCard.classList.toggle('show');
-
-    // this.getPlan(roomId);
   }
 
   getPlan(roomId: string) {
@@ -6449,7 +6406,6 @@ this.token.savePropertyUrl(currentUrl);
 
                 const isStopSellOTA =
                   rates[0]?.stopSellOTA !== null && rates[0]?.stopSellOTA !== false;
-                console.log(rates.length === this.booking.noOfNights,"rates.length === this.booking.noOfNights")
                 return (
                   rates.length === this.booking.noOfNights &&
                   !isStopSellOBE &&
@@ -6568,11 +6524,7 @@ this.token.savePropertyUrl(currentUrl);
           //   return 0; // Keep original order if both have or don't have "Economy"
           // });
 
-
-          // console.log('sortedRooms is',sortedRooms);
-
                     this.shortrooms =  response.body.roomList;
-          //           console.log('after response is',sortedRooms);
 
           // (window as any).dataLayer = (window as any).dataLayer.filter(event => event.event !== 'hotel_booking');
           // setTimeout(() => {
@@ -6610,7 +6562,6 @@ this.token.savePropertyUrl(currentUrl);
               });
               if (room.dayTrip == true) {
                 this.dayOneTrip = true;
-                // console.log('dayonetrip: ' + this.dayOneTrip);
               } else {
                 this.dayOneTrip = false;
               }
@@ -6662,8 +6613,6 @@ this.token.savePropertyUrl(currentUrl);
                   this.daterangefilter = Array.from(
                     new Set(this.daterangefilter)
                   );
-                  // console.log(JSON.stringify(this.daterangefilter));
-
                   event2.roomRatePlans = [];
                   ghcPlan = plan;
                   event2.roomRatePlans.push(ghcPlan);
@@ -6692,12 +6641,6 @@ this.token.savePropertyUrl(currentUrl);
                   let totalPrice =
                     Number(element2.price) +
                     (extraPerson + extraChild) / noOfNights;
-                    // console.log('taxArray is',this.taxArray);
-                    // console.log('element2.price is',element2.price);
-                    // console.log('extraPerson is',extraPerson);
-                    // console.log('extraChild is',extraChild);
-                    // console.log('noOfNights is',noOfNights);
-                  // let totalPrice = Number(element2.price) + Number((this.extraPersonChargee) + Number(this.extraChildChargee) / (this.booking.noOfNights));
                   if (totalPrice <= 7500) {
                     this.taxAmount =
                       ((totalPrice * this.booking.noOfRooms) * 12) / 100;
@@ -6723,9 +6666,6 @@ this.token.savePropertyUrl(currentUrl);
                     this.token.saveLandingPrice(this.totalplanPrice);
                   }
                 }
-                // console.log(
-                //   'ota price is equa;' + JSON.stringify(this.planPrice)
-                // );
               });
             });
           });
@@ -6772,7 +6712,6 @@ this.token.savePropertyUrl(currentUrl);
                     element.noOfAvailable = this.otaAvailableRooms;
                   }
                 });
-                // console.log('my data is ', des2);
                 return des2.stopSellOBE !== true && des2.stopSellOBE !== null;
               }
             );
@@ -6837,16 +6776,11 @@ this.token.savePropertyUrl(currentUrl);
               ele.ratesAndAvailabilityDtos != undefined &&
               ele.ratesAndAvailabilityDtos.length > 0
             ) {
-              // console.log("Available rooms: "+JSON.stringify(ele.ratesAndAvailabilityDtos));
               this.availability = true;
             } else {
               this.allDtosNull();
             }
           });
-          // console.log('this.availability: ' + this.availability);
-          // if (this.availableRooms === null && this.availableRooms === undefined) {
-          //   this.availability =false;
-          // }
           if (response.body.available === true) {
             this.checkAvailabilityStatusName = 'Available';
           } else {
@@ -7487,7 +7421,6 @@ isPlanVisible(filteredPlans: any[], roomName: string) {
             this.availableRooms.forEach((room) => {
               room?.ratesAndAvailabilityDtos?.forEach((ele) => {
                 ele.roomRatePlans?.forEach((e) => {
-                  // console.log(JSON.stringify(e.propertyServicesList));
                   if (e.name === this.booking.roomRatePlanName) {
                     this.planpropertyServiceList = e.propertyServicesList;
                     this.planpropertyServiceList?.forEach((service) => {
@@ -7500,10 +7433,6 @@ isPlanVisible(filteredPlans: any[], roomName: string) {
                       if (service.name == 'Dinner') {
                         this.dinnerservice = service;
                       }
-                      // if (service.name != 'Breakfast' || 'Breakfast (Adult)' || 'Lunch' || 'Dinner') {
-                      //   this.addServiceList = [];
-                      //   console.log("dfghjkljhgvg" + JSON.stringify(this.addServiceList))
-                      // }
                     });
                   }
                 });
@@ -7533,7 +7462,6 @@ isPlanVisible(filteredPlans: any[], roomName: string) {
               });
               if (room.dayTrip == true) {
                 this.dayOneTrip = true;
-                // console.log('dayonetrip: ' + this.dayOneTrip);
               } else {
                 this.dayOneTrip = false;
               }
@@ -7578,7 +7506,6 @@ isPlanVisible(filteredPlans: any[], roomName: string) {
                         this.daterangefilter = Array.from(
                           new Set(this.daterangefilter)
                         );
-                        // console.log(JSON.stringify(this.daterangefilter));
                       }
                     });
                   }
@@ -7620,7 +7547,6 @@ isPlanVisible(filteredPlans: any[], roomName: string) {
           this.availableRooms?.forEach((des) => {
             const hasAvailableRooms = des?.ratesAndAvailabilityDtos?.some(
               (des2) => {
-                // console.log('my data is ', des2);
                 return des2.stopSellOBE !== true && des2.stopSellOBE !== null;
               }
             );
@@ -7630,7 +7556,6 @@ isPlanVisible(filteredPlans: any[], roomName: string) {
 
           if (facilities !== null && facilities !== undefined) {
             facilities.forEach((fac) => {
-              // console.log("Image url: "+fac.imageUrl)
               if (fac.name == 'Breakfast (Adult)' || fac.name == 'Breakfast') {
                 this.breakfast = fac;
               }
@@ -7687,23 +7612,16 @@ isPlanVisible(filteredPlans: any[], roomName: string) {
               ele.ratesAndAvailabilityDtos != undefined &&
               ele.ratesAndAvailabilityDtos.length > 0
             ) {
-              // console.log("Available rooms: "+JSON.stringify(ele.ratesAndAvailabilityDtos));
               this.availability = true;
             } else {
               this.allDtosNull();
             }
           });
-          // console.log('this.availability: ' + this.availability);
-          // if (this.availableRooms === null && this.availableRooms === undefined) {
-          //   this.availability =false;
-          // }
           if (response.body.available === true) {
             this.checkAvailabilityStatusName = 'Available';
           } else {
             this.checkAvailabilityStatusName = 'Not Available';
           }
-
-          // Logger.log('checkAvailability ' + JSON.stringify(response.body));
         },
         (error) => {
           if (error instanceof HttpErrorResponse) {
@@ -7782,21 +7700,6 @@ getAvailableRoomsForGHC(availableRooms: any[]) {
     }
   }
 
-  // onCouponInputChange(event:string){
-  //    this.enteredCoupon = event;
-  //     const privateOffers = this.offersList.filter(
-  //     (offer) => offer.promotionAppliedFor === 'Private'
-  //   );
-  //   console.log('privateOffers is',privateOffers);
-
-  //   privateOffers.forEach(item2 =>{
-  //     console.log('item2 is',item2);
-  //   })
-
-  //    if (privateOffers.length > 0) {
-  //      this.validCouponCode = privateOffers[0].couponCode;
-  //   }
-  // }
 
 onCouponInputChange(event: string) {
   this.enteredCoupon = event.trim();
@@ -8118,10 +8021,10 @@ onYesClick() {
   getFilteredDataBasedOnRoomRateOrder(roomList: any[]): any[] {
     try {
       if (!roomList || roomList.length === 0) return [];
-      const sortedRooms = [...roomList];  
+      const sortedRooms = [...roomList];
        const activeGoogleHotelCenter = sessionStorage.getItem('checkbookingengine');
     if (activeGoogleHotelCenter === 'googlehotelcenter') {
-      return sortedRooms.sort((a, b) => {const priceA = Number(a?.roomOnlyPrice) || 0;const priceB = Number(b?.roomOnlyPrice) || 0; 
+      return sortedRooms.sort((a, b) => {const priceA = Number(a?.roomOnlyPrice) || 0;const priceB = Number(b?.roomOnlyPrice) || 0;
         return priceA - priceB;});
     }
 
@@ -8129,13 +8032,13 @@ onYesClick() {
         return sortedRooms.sort((a: any, b: any) => this.getPrimaryRoomRateAmount(a) - this.getPrimaryRoomRateAmount(b));
       }
       return sortedRooms.sort((a: any, b: any) => (Number(b?.roomOnlyPrice) || 0) - (Number(a?.roomOnlyPrice) || 0));
-    } 
+    }
     catch (error) {
       console.error('Error in getFilteredDataBasedOnRoomRateOrder: ',error);
       return roomList || [];
     }
   }
-  
+
   private getPrimaryRoomRateAmount(room: any): number {
     try{
       const amount = this.sortedRooms.sort((a: any, b: any)=> a.roomOnlyPrice - b.roomOnlyPrice);

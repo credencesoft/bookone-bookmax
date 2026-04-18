@@ -367,7 +367,7 @@ export class BookingComponent implements OnInit {
   advanceDiscountSlabs: AdvanceDiscountSlab[] = [];
   selectedAdvanceDiscountSlab: AdvanceDiscountSlab | null = null;
   selectedPlansSummary: any[] = [];
-  
+
   // ✅ Phase 4: Add-on Services Tracking
   addOnServices: any[] = [];                    // Available add-ons to display
   selectedAddOns: any[] = [];                   // User-selected add-ons
@@ -380,7 +380,7 @@ export class BookingComponent implements OnInit {
   totalAddOnsTax: number = 0;                   // Tax on add-ons
   totalAddOnsDiscount: number = 0;              // Discount on add-ons
   private readonly enableCalculationDebug = false;
-  
+
   constructor(
     private token: TokenStorage,
     private ngZone: NgZone,
@@ -553,11 +553,10 @@ export class BookingComponent implements OnInit {
       this.propertyData.shortName = this.token.getProperty().shortName;
     }
     const savedLabel = localStorage.getItem('savedBookingLabel');
-    console.log('savedLabel data is',savedLabel);
     if (savedLabel) {
     try {
       const parsedData = JSON.parse(savedLabel);
-      this.roomLabel = parsedData.label || 'Room'; 
+      this.roomLabel = parsedData.label || 'Room';
     } catch (e) {
       console.error("Error parsing token", e);
     }
@@ -571,7 +570,7 @@ export class BookingComponent implements OnInit {
     this.clearFormField(this.booking);
     this.initializeCountrySelection();
     const couponCodeValues = sessionStorage.getItem('selectedPromoData');
-    
+
     if (couponCodeValues) {
       const parsed = JSON.parse(couponCodeValues); // convert to object
       this.specialDiscountData = JSON.parse(couponCodeValues);
@@ -597,6 +596,7 @@ export class BookingComponent implements OnInit {
     this.otaPlanPrice = this.token.getLandingPrice();
     this.otaTaxAmount = this.token.getAllTaxArray();
     this.googleCenter = this.token.getBookingEngineBoolean();
+    /*
     if (this.otaPlanPrice > 0) {
       const OtaPlanAllPrice = Number(this.otaPlanPrice);
       this.storedActualNetAmount = OtaPlanAllPrice;
@@ -605,6 +605,8 @@ export class BookingComponent implements OnInit {
       // Use booking summary total price if available
       this.storedActualNetAmount = bookingSummary?.totalPlanPrice || this.booking.netAmount;
     }
+      */
+     this.storedActualNetAmount = bookingSummary?.totalPlanPrice || this.booking.netAmount;
     // this.storedActualNetAmount = this.booking.netAmount;
     this.actualTaxAmount = this.booking.gstAmount;
     this.storeNightPerRoom = this.bookingRoomPrice;
@@ -660,17 +662,9 @@ export class BookingComponent implements OnInit {
 
     // If coupon was loaded from sessionStorage, initialize selectedCouponList and recalculate
     if (this.specialDiscountData && this.specialDiscountData.discountPercentage) {
-      console.log('[DEBUG] Coupon found in sessionStorage:', this.specialDiscountData);
-      console.log('[DEBUG] storedActualNetAmount:', this.storedActualNetAmount);
-      console.log('[DEBUG] bookingSummary?.totalPlanPrice:', bookingSummary?.totalPlanPrice);
-      console.log('[DEBUG] bookingSummary?.totalTax:', bookingSummary?.totalTax);
       this.selectedCouponList = this.specialDiscountData;
       this.showTheSelectedCoupon = true;
       this.calculateMultiDiscountAndTax();
-      console.log('[DEBUG] After calculateMultiDiscountAndTax - couponDiscountAmount:', this.couponDiscountAmount);
-      console.log('[DEBUG] After calculateMultiDiscountAndTax - totalDiscountAmount:', this.totalDiscountAmount);
-    } else {
-      console.log('[DEBUG] No coupon in sessionStorage');
     }
 
     const storedPromo = localStorage.getItem('selectPromo');
@@ -1638,16 +1632,16 @@ export class BookingComponent implements OnInit {
       this.showTheSelectedCoupon = true;
       this.visiblePromotion = false;
       this.showingSuccessMessage = true;
-      
+
       // Always use multi-discount calculation to ensure all properties updated
       this.calculateMultiDiscountAndTax();
-      
+
       localStorage.setItem('selectedPromoData', JSON.stringify(coupon));
       localStorage.setItem('selectPromo', 'true');
-      
+
       // Trigger change detection
       this.changeDetectorRefs.markForCheck();
-      
+
       setTimeout(() => {
         this.showingSuccessMessage = false;
       }, 3000);
@@ -1682,7 +1676,7 @@ export class BookingComponent implements OnInit {
       this.couponDiscountAmount = 0;
       this.booking.netAmount = this.storedActualNetAmount;
       this.bookingRoomPrice = this.storeNightPerRoom;
-      
+
       // Recalculate with only advance discount if it's selected
       if (this.selectedAdvanceDiscountSlab) {
         this.calculateMultiDiscountAndTax();
@@ -1720,9 +1714,9 @@ export class BookingComponent implements OnInit {
           balanceAtCheckIn: this.remainingPaymentAmount,
         });
       }
-      
+
       this.visiblePromotion = false;
-      
+
       // Trigger change detection
       this.changeDetectorRefs.markForCheck();
     } catch (error) {
@@ -2041,9 +2035,6 @@ export class BookingComponent implements OnInit {
           }
         }
       });
-      // console.log("this.taxPercentage1" +this.taxPercentage)
-
-      // this.taxPercentage = this.booking.taxDetails[0].percentage;
     }
 
     this.booking.taxAmount =
@@ -2374,7 +2365,6 @@ export class BookingComponent implements OnInit {
   }
 
   submitFormOne() {
-    // console.log("taxxation", this.booking.taxAmount)
     const bookingSummaryStr = sessionStorage.getItem('bookingSummaryDetails');
     if (bookingSummaryStr) {
       this.bookingSummaryDetails = JSON.parse(bookingSummaryStr);
@@ -2947,7 +2937,6 @@ export class BookingComponent implements OnInit {
                 !isStopSellOTA
               );
             });
-            console.log('this.availableRoomsOne', this.availableRoomsOne);
             this.soldOutRooms = sortedRoomsOne.filter((room) => {
               const rates = room.ratesAndAvailabilityDtos;
               if (!rates || rates.length !== this.booking.noOfNights)
@@ -3696,7 +3685,7 @@ export class BookingComponent implements OnInit {
           //     this.bookingSummaryDetails.totalAmount
           //   );
           // }
-          
+
           this.payment.referenceNumber = new Date().getTime().toString();
           this.payment.deliveryChargeAmount = 0;
           this.payment.date = this.datePipe.transform(
@@ -8069,20 +8058,6 @@ export class BookingComponent implements OnInit {
         const existingBookings = existingBookingsStr
           ? JSON.parse(existingBookingsStr)
           : [];
-
-        // if (existingBookings.length > 0) {
-        //   const lastBooking = existingBookings[existingBookings.length - 1];
-        //   this.hotelBookingService
-        //     .sendBookingEmailToCustomer(lastBooking.id)
-        //     .subscribe({
-        //       next: (emailResponse) => {
-        //         console.log('Booking email sent successfully:', emailResponse);
-        //       },
-        //       error: (err) => {
-        //         console.error('Failed to send booking email:', err);
-        //       },
-        //     });
-        // }
         this.createAllPayLaterEnquiries();
         return;
       }
@@ -10269,7 +10244,6 @@ export class BookingComponent implements OnInit {
       this.paymentLoader = false;
       if (response.status === 200) {
         this.payment = response.body;
-        // console.log("payment Intent Response: " + response);
       }
     });
   }
@@ -10673,8 +10647,6 @@ export class BookingComponent implements OnInit {
       this.paymentLoader = false;
       if (response.status === 200) {
         this.payment = response.body;
-        // console.log("payment Intent Response: " + response);
-
         this.booking.paymentId = response.body.id;
         this.booking.modeOfPayment = this.payment.paymentMode;
         this.booking.outstandingAmount = 0;
@@ -11080,10 +11052,9 @@ export class BookingComponent implements OnInit {
   }
 
   propertyenquiryemails(enquiryForm) {
-    // console.log(this.equitycreatedData.enquiryId)
     this.propertyenquiryone.customerName = enquiryForm.fromName;
     this.propertyenquiryone.propertyEnquiryId =
-      this.equitycreatedData.enquiryId;
+    this.equitycreatedData.enquiryId;
     this.propertyenquiryone.propertyId = this.businessUser.id;
     this.propertyenquiryone.propertyName = this.businessUser.name;
     this.propertyenquiryone.propertyLandPhone = this.businessUser.mobile;
@@ -11374,10 +11345,6 @@ sendWhatsappMessageToPropertyOwner() {
     if (!this.shouldLogCalculationDebug()) {
       return;
     }
-    console.log('[BOOKING_CALC]', context, {
-      ...snapshot,
-      timestamp: new Date().toISOString(),
-    });
   }
 
   private toSafeAmount(value: any): number {
@@ -11447,14 +11414,13 @@ sendWhatsappMessageToPropertyOwner() {
    */
   /**
    * Calculate multi-discount with proper tax application
-   * Formula: 
+   * Formula:
    * 1. Apply coupon discount to base amount
    * 2. Apply advance discount to already discounted amount
    * 3. Calculate tax on final discounted amount
    * 4. Calculate advance and remaining payment amounts
    */
   calculateMultiDiscountAndTax(): void {
-    console.log('booking data is',this.booking);
     try {
       const baseAmount = this.toSafeAmount(
         this.storedActualNetAmount ||
@@ -11493,8 +11459,6 @@ sendWhatsappMessageToPropertyOwner() {
         this.changeDetectorRefs.markForCheck();
         return;
       }
-
-      console.log('[CALC] baseAmount:', baseAmount, 'selectedCouponList:', this.selectedCouponList, 'advanceSlab:', this.selectedAdvanceDiscountSlab);
       let currentAmount = baseAmount;
       const couponPct = this.toSafePercent(this.selectedCouponList?.discountPercentage);
       const advanceDiscountPct = this.toSafePercent(this.selectedAdvanceDiscountSlab?.discountPercentage);
@@ -11508,7 +11472,6 @@ sendWhatsappMessageToPropertyOwner() {
         this.couponDiscountAmount =
           (baseAmount * couponPct) / 100;
         currentAmount = Math.max(0, baseAmount - this.couponDiscountAmount);
-        console.log('[CALC] Coupon applied: discountPercentage=', couponPct, 'couponDiscountAmount=', this.couponDiscountAmount, 'currentAmount=', currentAmount);
       }
 
       // Step 2: Apply Advance Discount (percentage-based on already discounted amount)
@@ -11559,9 +11522,6 @@ sendWhatsappMessageToPropertyOwner() {
         this.advancePaymentAmount = 0;
         this.remainingPaymentAmount = grandTotalAmount;
       }
-      
-      console.log('[CALC] Convenience Fee (on post-discount amount):', this.convenienceFeeAmount);
-      console.log('[CALC] Total Payment with Convenience Fee:', grandTotalAmount);
 
       // Update booking object with calculated values
       this.booking.netAmount = this.amountAfterDiscount;
@@ -11602,7 +11562,7 @@ sendWhatsappMessageToPropertyOwner() {
         payNowAmount: this.advancePaymentAmount,
         balanceAtCheckIn: this.remainingPaymentAmount,
       });
-      
+
       // Trigger change detection to update UI
       this.changeDetectorRefs.markForCheck();
     } catch (error) {
@@ -12114,7 +12074,7 @@ sendWhatsappMessageToPropertyOwner() {
     });
 
     this.taxOnDiscountedAmount = this.toSafeAmount(totalTax);
-    
+
     return this.taxOnDiscountedAmount;
   }
 
@@ -12148,17 +12108,14 @@ sendWhatsappMessageToPropertyOwner() {
           .map((service) => service?.name)
           .filter((name) => !!name);
         this.calculateAddOnsTotals();
-        console.log('[DEBUG] Add-ons initialized from sessionStorage:', this.addOnServices);
         this.showAddOnServices = this.addOnServices.length > 0;
       } else {
-        console.log('[DEBUG] No add-ons found in sessionStorage');
         this.addOnServices = [];
         this.selectedAddOns = [];
         this.selectedAddOnNames = [];
         this.showAddOnServices = false;
       }
     } catch (error) {
-      console.error('[ERROR] Failed to parse add-ons from sessionStorage:', error);
       this.addOnServices = [];
       this.selectedAddOns = [];
       this.selectedAddOnNames = [];
