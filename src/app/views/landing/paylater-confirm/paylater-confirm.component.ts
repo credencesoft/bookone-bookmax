@@ -60,7 +60,9 @@ export class PaylaterConfirmComponent {
     this.PropertyUrl = this.token.getPropertyUrl();
     this.propertyDetails = this.token.getProperty();
     this.bookingone = this.token.getBookingData();
+    console.log('bookingone isss',this.bookingone);
     this.booking = this.token.getBookingDataObj();
+    console.log('booking isss',this.booking);
     const couponCodeValues = sessionStorage.getItem('selectedPromoData');
 
       if (couponCodeValues) {
@@ -72,7 +74,7 @@ export class PaylaterConfirmComponent {
           }
       }
     if (this.bookingone.taxDetails?.length > 0) {
-      this.bookingone.taxDetails.forEach((element) => {
+      this.bookingone?.taxDetails.forEach((element) => {
         if (element.name === 'GST') {
           this.booking.taxDetails = [];
           this.booking.taxDetails.push(element);

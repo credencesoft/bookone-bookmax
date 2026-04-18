@@ -8483,13 +8483,15 @@ export class BookingComponent implements OnInit {
     //   enquiryForm,
     //   enquiryForm.totalAmount || enquiryForm.payableAmount,
     // );
-
+   this.token.saveBookingData(enquiryForm as any);
     this.paymentLoader = true;
     try {
       const response: HttpResponse<EnquiryDto> = await this.hotelBookingService
         .accommodationEnquiry(enquiryForm)
         .toPromise();
+        console.log('data is',enquiryForm);
       if (response) {
+        this.router.navigate(['/reservation-confirm-page']);
         return true;
       }
     } catch (e) {
