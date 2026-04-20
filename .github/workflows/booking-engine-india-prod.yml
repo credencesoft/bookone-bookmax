@@ -135,12 +135,23 @@ jobs:
     name: Invalidate
     runs-on: ubuntu-latest
     steps:
-      - name: configure aws credentials
+      - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v3
         with:
           role-to-assume: ${{ env.AWS_ROLE }}
           aws-region: ${{ env.AWS_REGION }}
 
+      # Debug
+      - name: Verify AWS identity
+        run: aws sts get-caller-identity
+
+      # Actual invalidation
       - name: Invalidate CloudFront Cache
         run: |
-          aws cloudfront create-invalidation --distribution-id ${{ env.CLOUDFRONT_DIST_ID }} --paths "/" "/*"
+          aws cloudfront create-invalidation \
+            --distribution-id ${{ env.CLOUDFRONT_DIST_ID }} \
+            --paths "/*"
+
+          aws cloudfront wait invalidation-completed \
+          --distribution-id ${{ env.CLOUDFRONT_DIST_ID }} \
+          --id $INVALIDATION_ID
