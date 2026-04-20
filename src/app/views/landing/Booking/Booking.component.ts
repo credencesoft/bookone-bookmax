@@ -2600,7 +2600,7 @@ export class BookingComponent implements OnInit {
 
     const bookingList = bookingSummary.selectedPlansSummary;
     this.equitycreatedData = null;
-
+    
     for (let i = 0; i < bookingList.length; i++) {
       const _booking = bookingList[i];
 
@@ -2611,6 +2611,7 @@ export class BookingComponent implements OnInit {
   async submitFormBooking(plan: any, bookingSummary: any, index: number = 0) {
     const booking: any = this.booking;
     const isFirstEnquiryPayload = index === 0;
+    let advanceAmountWithConvienceFee = 0;
 
     // booking discount/advance fields are set authoritatively by calculateMultiDiscountAndTax() — do NOT overwrite.
 
@@ -2633,9 +2634,11 @@ export class BookingComponent implements OnInit {
     const selectedServiceTotal = isFirstEnquiryPayload
       ? this.toSafeAmount(this.getServicesTotal())
       : 0;
-    const convenienceFee = isFirstEnquiryPayload
-      ? this.toSafeAmount(this.getDisplayedConvenienceFeeAmount())
-      : 0;
+    // const convenienceFee = isFirstEnquiryPayload
+    //   ? this.toSafeAmount(this.getDisplayedConvenienceFeeAmount())
+    //   : 0;
+
+    const convenienceFee = this.toSafeAmount(this.getDisplayedConvenienceFeeAmountB(plan));
     const planTotalAmount = this.toSafeAmount(
       planBeforeTaxAmount +
         planTaxAmount +
@@ -2784,13 +2787,15 @@ export class BookingComponent implements OnInit {
       enquiryForm.roomTariffBeforeDiscount *
       plan.nights *
       plan.selectedRoomnumber;
-    // Room payload values stay room-specific. Pay Now amount, add-ons and convenience
-    // fee are attached only to the first enquiry in a multi-room group.
+    const planAdvanceAmount = this.getPlanPayNowAmount(
+      plan,
+      selectedServiceTotal,
+      convenienceFee,
+    );
+    
     enquiryForm.totalAmount = planTotalAmount;
     enquiryForm.payableAmount = planTotalAmount;
-    enquiryForm.advanceAmount = isFirstEnquiryPayload
-      ? this.toSafeAmount(this.getNewPayNowAmount())
-      : 0;
+    enquiryForm.advanceAmount = planAdvanceAmount;
     enquiryForm.convenienceFee = convenienceFee;
     enquiryForm.discountAmountPercentage = booking.discountPercentage;
     enquiryForm.selectedServiceTotal = selectedServiceTotal;
@@ -2970,6 +2975,7 @@ export class BookingComponent implements OnInit {
   }
 
   async payAndCheckout() {
+    
     if (this.isPayDisabled) return;
     this.isPayDisabled = true;
     const hasSoldOut = await this.checkingAvailabilityOne();
@@ -8068,13 +8074,18 @@ export class BookingComponent implements OnInit {
         setTimeout(() => {
           processPlan(index + 1);
         }, 1000);
-      });
+      }, index);
     };
 
     processPlan(0);
   }
 
-  createBooking(plan: any, bookingSummary: any, callback?: () => void) {
+  createBooking(
+    plan: any,
+    bookingSummary: any,
+    callback?: () => void,
+    index: number = 0,
+  ) {
     if (this.isBackendFinalizedGateway()) {
       if (callback) callback();
       return;
@@ -8116,6 +8127,18 @@ export class BookingComponent implements OnInit {
 
     this.tokenFromTime = this.combinedDateFromTime;
     this.tokenToTime = this.combinedDateToTime;
+    const isFirstBookingPayload = index === 0;
+    const selectedServiceTotal = isFirstBookingPayload
+      ? this.toSafeAmount(this.getServicesTotal())
+      : 0;
+    const convenienceFee = isFirstBookingPayload
+      ? this.toSafeAmount(this.getDisplayedConvenienceFeeAmount())
+      : 0;
+    const planAdvanceAmount = this.getPlanPayNowAmount(
+      plan,
+      selectedServiceTotal,
+      convenienceFee,
+    );
     booking.roomRatePlanName = plan.planCodeName;
     booking.roomName = plan.roomName;
     booking.roomType = plan.roomName;
@@ -8173,7 +8196,7 @@ export class BookingComponent implements OnInit {
     booking.noOfExtraPerson = plan.extraCountAdult;
     booking.noOfExtraChild = plan.extraCountChild;
     booking.purposeOfVisit = '';
-    booking.advanceAmount = 0;
+    booking.advanceAmount = planAdvanceAmount;
     booking.paymentId = this.booking.paymentId;
     booking.includeService = this.booking.includeService;
     booking.taxDetails = this.token
@@ -8276,12 +8299,17 @@ export class BookingComponent implements OnInit {
 
     for (let i = 0; i < bookingList.length; i++) {
       const _booking = bookingList[i];
-      await this.submitFormPaylaterCRM(_booking, bookingList);
+      await this.submitFormPaylaterCRM(_booking, bookingList, i);
     }
   }
 
-  async submitFormPaylaterCRM(plan: any, bookingSummary: any) {
+  async submitFormPaylaterCRM(
+    plan: any,
+    bookingSummary: any,
+    index: number = 0,
+  ) {
     const booking: any = this.booking;
+    const isFirstEnquiryPayload = index === 0;
     const bookingsStr = sessionStorage.getItem('bookingsResponseList');
     const bookings = bookingsStr ? JSON.parse(bookingsStr) : [];
 
@@ -8299,6 +8327,17 @@ export class BookingComponent implements OnInit {
     } else {
       booking.discountPercentage = 0;
     }
+    const selectedServiceTotal = isFirstEnquiryPayload
+      ? this.toSafeAmount(this.getServicesTotal())
+      : 0;
+    const convenienceFee = isFirstEnquiryPayload
+      ? this.toSafeAmount(this.getDisplayedConvenienceFeeAmount())
+      : 0;
+    const planAdvanceAmount = this.getPlanPayNowAmount(
+      plan,
+      selectedServiceTotal,
+      convenienceFee,
+    );
 
     const enquiryForm = new EnquiryDto();
 
@@ -8442,6 +8481,9 @@ export class BookingComponent implements OnInit {
     enquiryForm.alternativeLocation = enquiryForm.alternativeLocation || '';
 
     enquiryForm.totalAmount = plan.price + plan.taxPercentageperroom;
+    enquiryForm.advanceAmount = planAdvanceAmount;
+    enquiryForm.convenienceFee = convenienceFee;
+    enquiryForm.selectedServiceTotal = selectedServiceTotal;
     enquiryForm.discountAmountPercentage = booking.discountPercentage;
     enquiryForm.noOfNights = plan.nights;
     enquiryForm.foodOptions = '';
@@ -12065,6 +12107,26 @@ sendWhatsappMessageToPropertyOwner() {
     return this.toSafeAmount((amountAfterDiscount * taxPercentage) / 100);
   }
 
+  getPlanPayNowAmount(
+    plan: any,
+    selectedServiceTotal: number = 0,
+    convenienceFee: number = 0,
+  ): number {
+    const roomTotal = this.toSafeAmount(
+      this.getPlanAmountAfterDiscount(plan) + this.getPlanTaxAfterDiscount(plan),
+    );
+    const advancePercentage = this.selectedAdvanceDiscountSlab
+      ? this.toSafePercent(this.selectedAdvanceDiscountSlab.advancePercentage) / 100
+      : 1;
+    const roomAdvanceAmount = this.toSafeAmount(roomTotal * advancePercentage);
+
+    return this.toSafeAmount(
+      roomAdvanceAmount +
+        this.toSafeAmount(selectedServiceTotal) +
+        this.toSafeAmount(convenienceFee),
+    );
+  }
+
   getTotalTax(): number {
     let totalTax = 0;
 
@@ -12302,6 +12364,33 @@ sendWhatsappMessageToPropertyOwner() {
       );
     }
 
+    return this.toSafeAmount(this.convenienceFeeAmount || 0);
+  }
+
+  getDisplayedConvenienceFeeAmountB(plan :any): number {
+    console.log('Booking in getDisplayedConvenienceFeeAmountB:', plan);
+    // const selectedPlansArray = this.bookingSummaryDetails?.selectedPlansSummary || [];
+    // if(selectedPlansArray?.length > 0){
+    //   selectedPlansArray?.forEach((plan: any) => {
+    //   });
+    // }
+    const actualPrice = plan?.actualRoomPrice ?? 0;
+    const noofNoights = plan?.nights ?? 0;
+    const noOfRooms = plan?.selectedRoomnumber ?? 0;
+    const extraPerson = plan?.extraCountAdult ?? 0;
+    const extraChild = plan?.extraCountChild ?? 0;
+    const discountAmount = (plan.price - (plan.price * (this.specialDiscountData?.discountPercentage || 0)) / 100) * ((this.selectedAdvanceDiscountSlab?.discountPercentage || 0) / 100);
+    let discountedAmount = ((actualPrice * noofNoights * noOfRooms) + (extraPerson + extraChild)) - Math.abs(discountAmount);
+    console.log('Calculated sum for plan:', discountedAmount);
+    // discountedAmount = this.toSafeAmount(
+    //   (this.booking.roomPrice * this.booking.noOfNights * this.booking.noOfRooms)
+    //   - this.booking.discountAmount
+    // );
+    // console.log('Discounted Amount in getDisplayedConvenienceFeeAmountB:', discountedAmount);
+    const feePercent = this.toSafePercent(this.serviceChargePercentage);
+    if (discountedAmount > 0 && feePercent > 0) {
+      return this.toSafeAmount(this.calculateConvenienceFee(discountedAmount, feePercent),);
+    }
     return this.toSafeAmount(this.convenienceFeeAmount || 0);
   }
 
