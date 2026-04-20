@@ -132,7 +132,7 @@ jobs:
 
   invalidate:
     needs: deploy
-    name: Invalidate
+    name: Invalidate CloudFront
     runs-on: ubuntu-latest
     steps:
       - name: Configure AWS credentials
@@ -141,17 +141,31 @@ jobs:
           role-to-assume: ${{ env.AWS_ROLE }}
           aws-region: ${{ env.AWS_REGION }}
 
-      # Debug
-      - name: Verify AWS identity
-        run: aws sts get-caller-identity
-
-      # Actual invalidation
-      - name: Invalidate CloudFront Cache
+      - name: Invalidate CloudFront cache and wait
         run: |
-          aws cloudfront create-invalidation \
+          # Create invalidation and capture ID directly from output
+          INVALIDATION_ID=$(aws cloudfront create-invalidation \
             --distribution-id ${{ env.CLOUDFRONT_DIST_ID }} \
-            --paths "/*"
+            --paths "/*" \
+            --query 'Invalidation.Id' \
+            --output text)
 
+          echo "Invalidation ID: $INVALIDATION_ID"
+          echo "Waiting for cache to clear globally..."
+
+          # Wait for completion
           aws cloudfront wait invalidation-completed \
-          --distribution-id ${{ env.CLOUDFRONT_DIST_ID }} \
-          --id $INVALIDATION_ID
+            --distribution-id ${{ env.CLOUDFRONT_DIST_ID }} \
+            --id "$INVALIDATION_ID"
+
+          echo "Cache fully cleared globally"
+
+      - name: Print deployment summary
+        run: |
+          echo "========================================="
+          echo "Deployment complete"
+          echo "Service  : ${{ env.SERVICE_NAME }}"
+          echo "Commit   : ${{ needs.build.outputs.COMMIT_ID }}"
+          echo "Region   : ${{ env.GCP_REGION }}"
+          echo "CF Dist  : ${{ env.CLOUDFRONT_DIST_ID }}"
+          echo "========================================="
