@@ -1,8 +1,6 @@
 import { environment } from './src/environments/environment';
-
 import 'node_modules/zone.js/dist/zone.js';
-import 'localstorage-polyfill'
-// import { APP_BASE_HREF } from '@angular/common';
+import 'localstorage-polyfill';
 import { ngExpressEngine } from '@nguniversal/express-engine';
 import * as express from 'express';
 import { existsSync } from 'node:fs';
@@ -10,44 +8,88 @@ import { join } from 'node:path';
 import { AppServerModule } from './src/main.server';
 import { APP_BASE_HREF } from '@angular/common';
 
-// The Express app is exported so that it can be used by serverless Functions.
 export function app(): express.Express {
   const server = express();
   const domino = require('domino');
   const CircularJSON = require('circular-json');
-  const obj=CircularJSON.stringify(Object)
+  const obj = CircularJSON.stringify(Object);
+
   const distFolder = join(process.cwd(), 'dist/demoSSR/browser');
-  const indexHtml = existsSync(join(distFolder, 'index.original.html')) ? 'index.original.html' : 'index';
+  const indexHtml = existsSync(join(distFolder, 'index.original.html'))
+    ? 'index.original.html'
+    : 'index';
+
   const win = domino.createWindow(indexHtml).toString();
   (global as any).self = global;
-global['self'] = win;
-global['document'] = win.document;
+  global['self'] = win;
+  global['document'] = win.document;
+  global['IDBIndex'] = win.IDBIndex;
+  global['navigator'] = win.navigator;
+  global['getComputedStyle'] = win.getComputedStyle;
+  global['Event'] = null;
+  global['localStorage'] = localStorage;
 
-global['IDBIndex'] = win.IDBIndex
-global['document'] = win.document
-global['navigator'] = win.navigator
-global['getComputedStyle'] = win.getComputedStyle;
-global['Event'] = null;
-global['localStorage'] = localStorage;
-
-  // Our Universal express-engine (found @ https://github.com/angular/universal/tree/main/modules/express-engine)
-  server.engine('html', ngExpressEngine({
-    bootstrap: AppServerModule
-  }));
-
+  server.engine('html', ngExpressEngine({ bootstrap: AppServerModule }));
   server.set('view engine', 'html');
   server.set('views', distFolder);
 
-  // Example Express Rest API endpoints
-  // server.get('/api/**', (req, res) => { });
-  // Serve static files from /browser
-  server.get('*.*', express.static(distFolder, {
-    maxAge: '1y'
-  }));
+  // ================================================================
+  // JS / CSS / fonts — cache 1 year (hashed filenames, safe forever)
+  // ================================================================
+  server.get(
+    /\.(js|css|woff2|woff|ttf|eot)$/,
+    express.static(distFolder, {
+      maxAge: '1y',
+      immutable: true,
+      setHeaders: (res) => {
+        res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+      }
+    })
+  );
 
-  // All regular routes use the Universal engine
+  // ================================================================
+  // Images — cache 30 days
+  // ================================================================
+  server.get(
+    /\.(png|jpg|jpeg|svg|ico|webp|gif)$/,
+    express.static(distFolder, {
+      maxAge: '30d',
+      setHeaders: (res) => {
+        res.setHeader('Cache-Control', 'public, max-age=2592000');
+      }
+    })
+  );
+
+  // ================================================================
+  // All other static files
+  // ================================================================
+  server.get(
+    '.',
+    express.static(distFolder, {
+      maxAge: '1y',
+      immutable: true
+    })
+  );
+
+  // ================================================================
+  // HTML routes — NEVER cache
+  // CloudFront will not cache, Chrome will not cache
+  // No hard reload ever needed after deploy
+  // ================================================================
   server.get('*', (req, res) => {
-    res.render(indexHtml, { req, providers: [{ provide: APP_BASE_HREF, useValue: req.baseUrl }] });
+    // Tell browser never to cache HTML
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+    // Tell CloudFront never to cache HTML
+    res.setHeader('Surrogate-Control', 'no-store');
+    // Tell CDNs (Cloudflare etc) never to cache HTML
+    res.setHeader('CDN-Cache-Control', 'no-store');
+
+    res.render(indexHtml, {
+      req,
+      providers: [{ provide: APP_BASE_HREF, useValue: req.baseUrl }]
+    });
   });
 
   return server;
@@ -55,21 +97,15 @@ global['localStorage'] = localStorage;
 
 function run(): void {
   const port = process.env['PORT'] || 4200;
-
-  // Start up the Node server
   const server = app();
   server.listen(port, () => {
     console.log(`Node Express server listening on http://localhost:${port}`);
   });
 }
 
-
-// Webpack will replace 'require' with '__webpack_require__'
-// '__non_webpack_require__' is a proxy to Node 'require'
-// The below code is to ensure that the server is run only when not requiring the bundle.
 declare const __non_webpack_require__: NodeRequire;
 const mainModule = __non_webpack_require__.main;
-const moduleFilename = mainModule && mainModule.filename || '';
+const moduleFilename = (mainModule && mainModule.filename) || '';
 if (moduleFilename === __filename || moduleFilename.includes('iisnode')) {
   run();
 }
