@@ -2811,6 +2811,7 @@ export class BookingComponent implements OnInit {
     enquiryForm.organisationId = environment.parentOrganisationId;
     enquiryForm.bookingCommissionAmount = 0;
     enquiryForm.taxPercentage = plan.taxpercentage;
+    enquiryForm.paymentStatus = 'NotPaid';
     // Do NOT overwrite room-specific totals here with booking-level totals.
 
     this.paymentLoader = true;
@@ -12368,12 +12369,6 @@ sendWhatsappMessageToPropertyOwner() {
   }
 
   getDisplayedConvenienceFeeAmountB(plan :any): number {
-    console.log('Booking in getDisplayedConvenienceFeeAmountB:', plan);
-    // const selectedPlansArray = this.bookingSummaryDetails?.selectedPlansSummary || [];
-    // if(selectedPlansArray?.length > 0){
-    //   selectedPlansArray?.forEach((plan: any) => {
-    //   });
-    // }
     const actualPrice = plan?.actualRoomPrice ?? 0;
     const noofNoights = plan?.nights ?? 0;
     const noOfRooms = plan?.selectedRoomnumber ?? 0;
@@ -12381,12 +12376,6 @@ sendWhatsappMessageToPropertyOwner() {
     const extraChild = plan?.extraCountChild ?? 0;
     const discountAmount = (plan.price - (plan.price * (this.specialDiscountData?.discountPercentage || 0)) / 100) * ((this.selectedAdvanceDiscountSlab?.discountPercentage || 0) / 100);
     let discountedAmount = ((actualPrice * noofNoights * noOfRooms) + (extraPerson + extraChild)) - Math.abs(discountAmount);
-    console.log('Calculated sum for plan:', discountedAmount);
-    // discountedAmount = this.toSafeAmount(
-    //   (this.booking.roomPrice * this.booking.noOfNights * this.booking.noOfRooms)
-    //   - this.booking.discountAmount
-    // );
-    // console.log('Discounted Amount in getDisplayedConvenienceFeeAmountB:', discountedAmount);
     const feePercent = this.toSafePercent(this.serviceChargePercentage);
     if (discountedAmount > 0 && feePercent > 0) {
       return this.toSafeAmount(this.calculateConvenienceFee(discountedAmount, feePercent),);
@@ -12394,9 +12383,6 @@ sendWhatsappMessageToPropertyOwner() {
     return this.toSafeAmount(this.convenienceFeeAmount || 0);
   }
 
-  // ── Section 3: Order Summary helpers ─────────────────────────────────────
-
-  /** Grand Total = rooms after discounts + room tax + services (full) + convenience fee */
   getNewGrandTotal(): number {
     return (this.amountAfterDiscount || 0)
       + this.getTotalTax()
