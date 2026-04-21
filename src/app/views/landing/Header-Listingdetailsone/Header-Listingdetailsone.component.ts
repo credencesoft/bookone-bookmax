@@ -94,7 +94,6 @@ export class HeaderListingdetailsoneComponent implements OnInit {
                   this.urlLocation = params['bookingEngine'];
                   let websitebookingURL = 'true';
                   this.websiteUrlBookingEngine = true;
-                  console.log("websiteUrlBookingEngine",this.websiteUrlBookingEngine)
                   sessionStorage.setItem('BookingEngine', 'true');
                 }
     });
