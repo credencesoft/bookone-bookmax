@@ -405,16 +405,6 @@ fetchBookingById(bookingId: number) {
     );
   }
 
-    createAnalytic(body: any) {
-      const baseURL = environment.apiLms + '/api/google-analytic';
-    return this.http.post<any>(baseURL, body);
-  }
-
-  updateAnalytic(id: number, body: any) {
-    const baseURL = environment.apiLms + '/api/google-analytic';
-    return this.http.put<any>(`${baseURL}/${id}`, body);
-  }
-
   private enrichEnquiryWithServiceSnapshot(enquiry: EnquiryDto): EnquiryDto {
     const selectedServices = this.getPersistedSelectedServices();
     if (!selectedServices || selectedServices.length === 0) {

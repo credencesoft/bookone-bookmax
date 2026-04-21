@@ -1,37 +1,37 @@
-# Use official Node.js image as base
-FROM node:16-alpine AS build
+# ================================================================
+# Stage 1 - Build
+# ================================================================
+FROM node:18-alpine AS build
 
-# Set the working directory in the container
 WORKDIR /usr/src/app
 
-# Copy package.json and package-lock.json to container
 COPY package*.json ./
 
-# Install dependencies
 RUN npm install --force
 
-# Copy the rest of the application
 COPY . .
 
-# Build the Angular app for production with SSR
+# Build both browser and SSR bundles
 RUN npm run build
 RUN npm run build:ssr
 
-# Stage 2: Use a small image for production
+# ================================================================
+# Stage 2 - Production (lean image, no devDependencies)
+# ================================================================
 FROM node:18-alpine
 
-# Set the working directory in the container
 WORKDIR /usr/src/app
 
-# Copy the built Angular app from the previous stage
-COPY --from=build /usr/src/app/dist /usr/src/app/dist
+# Copy only built output from build stage
+COPY --from=build /usr/src/app/dist ./dist
+COPY --from=build /usr/src/app/node_modules ./node_modules
+COPY --from=build /usr/src/app/package.json ./package.json
 
-# Expose the port the app runs on
+# Set production environment
+ENV NODE_ENV=production
+ENV PORT=4200
+
 EXPOSE 4200
-EXPOSE 9229
 
-# Define the command to run the app
-# CMD ["node", "dist/server/main.js"]
-# CMD node dist/demoSSR/server/main.js
-CMD node --inspect=0.0.0.0:9229 dist/demoSSR/server/main.js
-# CMD npm run  serve:ssr
+# Run SSR server in production mode (no inspect/debug)
+CMD ["node", "dist/demoSSR/server/main.js"]
