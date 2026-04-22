@@ -2772,6 +2772,7 @@ getTotalWithoutTax(plan: any): number {
 
   calculateTaxAmount(basePrice: number, plan: any): number {
   let taxPercentage = 0;
+  const planCode = plan?.code || plan?.planCode || plan?.planName;
 
  if (this.businessUser?.taxDetails?.length > 0) {
       this.businessUser.taxDetails.forEach((element) => {
@@ -2781,7 +2782,7 @@ getTotalWithoutTax(plan: any): number {
           this.taxPercentage = element.percentage;
           this.booking.taxPercentage = this.taxPercentage;
           if (
-            plan?.code === 'GHC' &&
+            planCode === 'GHC' &&
             this.activeForGoogleHotelCenter === true
           ) {
             if (element.taxSlabsList.length > 0) {
@@ -7195,6 +7196,34 @@ calculateConvenienceFee(totalAmount: number, percentage: number): number {
 //   }
 
 getTotalTaxPrice(): number {
+  {
+    const savedBooking = sessionStorage.getItem('bookingSummaryDetails');
+    if (savedBooking) {
+      const data = JSON.parse(savedBooking);
+      this.selectedPlansSummary = data.selectedPlansSummary || [];
+    }
+
+    const couponCodeValues = sessionStorage.getItem('selectedPromoData');
+    if (couponCodeValues) {
+      const parsed = JSON.parse(couponCodeValues);
+      this.specialDiscountData = parsed;
+    } else {
+      this.specialDiscountData = null;
+    }
+
+    if (this.selectedPlansSummary?.length) {
+      const discountPercentage = Number(
+        this.specialDiscountData?.discountPercentage || 0
+      );
+
+      return this.selectedPlansSummary.reduce((sum: number, plan: any) => {
+        return sum + this.getPlanTaxTotal(plan, discountPercentage);
+      }, 0);
+    }
+
+    return 0;
+  }
+
   const savedBooking = sessionStorage.getItem('bookingSummaryDetails');
   if (savedBooking) {
     const data = JSON.parse(savedBooking);
