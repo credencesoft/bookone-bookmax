@@ -413,36 +413,42 @@
                     <br/>
                     <small
                       *ngIf="
-                        plan.SingleDayextraPersonAdultCountAmount &&
+                        getSummaryPlanAdultCharge(plan) > 0 &&
                         !activeForGoogleHotelCenter
                       "
                       >Inclusive Adult Charge <br />
-                      
                       {{
-                        plan.SingleDayextraPersonAdultCountAmount
+                        getSummaryPlanAdultCharge(plan)
                           | currency : currency : "symbol" : "1.2-2"
                       }}
-                      per night</small
-                    > <br *ngIf="
-                        plan.SingleDayextraPersonAdultCountAmount &&
+                      {{
+                        plan?.dailyRates?.length ? "total" : "per night"
+                      }}</small
+                    >
+                    <br
+                      *ngIf="
+                        getSummaryPlanAdultCharge(plan) > 0 &&
                         !activeForGoogleHotelCenter
-                      "/>
+                      "
+                    />
                     <small
                       *ngIf="
-                        plan.SingleDayextraPersonChildCountAmount &&
+                        getSummaryPlanChildCharge(plan) > 0 &&
                         !activeForGoogleHotelCenter
                       "
                       >Inclusive Children Charge <br />
-                      
                       {{
-                        plan.SingleDayextraPersonChildCountAmount
+                        getSummaryPlanChildCharge(plan)
                           | currency : currency : "symbol" : "1.2-2"
                       }}
                       per night</small
-                    > <br *ngIf="
-                        plan.SingleDayextraPersonChildCountAmount &&
+                    >
+                    <br
+                      *ngIf="
+                        getSummaryPlanChildCharge(plan) > 0 &&
                         !activeForGoogleHotelCenter
-                      " />
+                      "
+                    />
                   </div>
 
                   <div class="d-flex align-items-start">
@@ -490,154 +496,51 @@
               </small> -->
                 </div>
 
-                <div *ngIf="isOpen" class="dropdown-menuOne">
-                  <div style="display: block" *ngIf="plan.planName === 'GHC'">
-                    <div *ngFor="let item of daterangefilter; let i = index">
+                  <div *ngIf="isOpen" class="dropdown-menuOne">
+                  <div style="display: block">
+                    <div *ngFor="let night of getSummaryPlanNightlyBreakdown(plan); let i = index">
                       <small class="text-muted">
-                        {{ item }}
+                        {{ night.dateLabel }}
                       </small>
                       &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp;
-                      <small
-                        class="text-muted"
-                        *ngFor="let price of [planPrice[i]]"
-                      >
+                      <small class="text-muted">
                         {{
-                          price * plan.selectedRoomnumber
+                          night.roomPrice
                             | currency: currency : "symbol" : "1.2-2"
                         }}
                         <br />
                         <ng-container
-                          *ngIf="plan.SingleDayextraPersonAdultCountAmount > 0"
+                          *ngIf="night.extraAdultCharge > 0"
                         >
                           <b style="font-weight: normal">Extra Adult Charge:</b
                           >&nbsp; &nbsp; &nbsp; &nbsp;
                           <b style="font-weight: normal">{{
-                            plan.SingleDayextraPersonAdultCountAmount
+                            night.extraAdultCharge
                               | currency: currency : "symbol" : "1.2-2"
                           }}</b>
                           <br />
                         </ng-container>
 
                         <ng-container
-                          *ngIf="plan.SingleDayextraPersonChildCountAmount > 0"
+                          *ngIf="night.extraChildCharge > 0"
                         >
                           <b style="font-weight: normal"
                             >Extra Children Charge</b
                           >
                           &nbsp; &nbsp; &nbsp; &nbsp;
                           <b style="font-weight: normal">{{
-                            plan.SingleDayextraPersonChildCountAmount
+                            night.extraChildCharge
                               | currency: currency : "symbol" : "1.2-2"
                           }}</b>
                           <br />
                         </ng-container>
-                        <ng-container *ngIf="price">
+                        <ng-container *ngIf="night.subtotal">
                           <b style="font-weight: normal"> Tax Fees: </b> &nbsp;
                           &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;
                           &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;
-                          <b
-                            style="font-weight: normal"
-                            *ngIf="plan.selectedRoomnumber > 1"
-                          >
+                          <b style="font-weight: normal">
                             {{
-                              calculateTaxAmount(
-                                price +
-                                  (plan.singleextraAdultCharges +
-                                    plan.singleextraChildrenCharges),
-                                plan
-                              ) * plan.selectedRoomnumber
-                                | currency: currency : "symbol" : "1.2-2"
-                            }}
-                          </b>
-                          <b
-                            style="font-weight: normal"
-                            *ngIf="plan.selectedRoomnumber <= 1"
-                          >
-                            {{
-                              calculateTaxAmount(
-                                price +
-                                  (plan.SingleDayextraPersonAdultCountAmount +
-                                    plan.SingleDayextraPersonChildCountAmount),
-                                plan
-                              ) * plan.selectedRoomnumber
-                                | currency: currency : "symbol" : "1.2-2"
-                            }}
-                          </b>
-                        </ng-container>
-                      </small>
-                    </div>
-                  </div>
-                  <div style="display: block" *ngIf="plan.planName != 'GHC'">
-                    <div *ngFor="let item of daterangefilterSeo; let i = index">
-                      <small class="text-muted">
-                        {{ item }}
-                      </small>
-                      &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp;
-                      <small class="text-muted">
-                        {{
-                          plan.actualRoomPrice * plan.selectedRoomnumber
-                            | currency: currency : "symbol" : "1.2-2"
-                        }}
-                        <br />
-                        <ng-container
-                          *ngIf="plan.SingleDayextraPersonAdultCountAmount > 0"
-                        >
-                          <b style="font-weight: normal">Extra Adult Charge:</b
-                          >&nbsp; &nbsp; &nbsp; &nbsp;
-                          <b style="font-weight: normal">{{
-                            plan.SingleDayextraPersonAdultCountAmount
-                              | currency: currency : "symbol" : "1.2-2"
-                          }}</b>
-                          <br />
-                        </ng-container>
-
-                        <ng-container
-                          *ngIf="plan.SingleDayextraPersonChildCountAmount > 0"
-                        >
-                          <b style="font-weight: normal"
-                            >Extra Children Charge</b
-                          >
-                          &nbsp; &nbsp; &nbsp; &nbsp;
-                          <b style="font-weight: normal">{{
-                            plan.SingleDayextraPersonChildCountAmount
-                              | currency: currency : "symbol" : "1.2-2"
-                          }}</b>
-                          <br />
-                        </ng-container>
-                        <ng-container
-                          *ngIf="
-                            plan.actualRoomPrice * plan.selectedRoomnumber +
-                            (plan.SingleDayextraPersonAdultCountAmount +
-                              plan.SingleDayextraPersonChildCountAmount)
-                          "
-                        >
-                          <b style="font-weight: normal"> Tax Fees: </b> &nbsp;
-                          &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;
-                          &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;
-                          <b
-                            style="font-weight: normal"
-                            *ngIf="plan.selectedRoomnumber <= 1"
-                          >
-                            {{
-                              calculateTaxAmount(
-                                plan.actualRoomPrice * plan.selectedRoomnumber +
-                                  (plan.SingleDayextraPersonAdultCountAmount +
-                                    plan.SingleDayextraPersonChildCountAmount),
-                                plan
-                              ) | currency: currency : "symbol" : "1.2-2"
-                            }}
-                          </b>
-                          <b
-                            style="font-weight: normal"
-                            *ngIf="plan.selectedRoomnumber > 1"
-                          >
-                            {{
-                              calculateTaxAmount(
-                                plan.actualRoomPrice +
-                                  (plan.singleextraAdultCharges +
-                                    plan.singleextraChildrenCharges),
-                                plan
-                              ) * plan.selectedRoomnumber
+                              getSummaryNightTaxAmount(night, plan)
                                 | currency: currency : "symbol" : "1.2-2"
                             }}
                           </b>
@@ -3175,15 +3078,11 @@
                           >
                             <div class="pricing">
                               {{
-                                activeForGoogleHotelCenter &&
-                                plan.code === "GHC"
-                                  ? (this.totalplanPrice
-                                    | currency: currency : "symbol" : "1.2-2")
-                                  : (plan.amount
-                                    | currency: currency : "symbol" : "1.2-2")
+                                getRoomPlanDisplayAmount(room, plan)
+                                  | currency: currency : "symbol" : "1.2-2"
                               }}
                             </div>
-                            <div class="perNight">per night + taxes</div>
+                            <div class="perNight">{{ getRoomPlanPriceLabel(room, plan) }}</div>
                           </div>
                         </div>
                       </div>
@@ -3410,15 +3309,11 @@
                           >
                             <div class="pricing">
                               {{
-                                activeForGoogleHotelCenter &&
-                                plan.code === "GHC"
-                                  ? (this.totalplanPrice
-                                    | currency: currency : "symbol" : "1.2-2")
-                                  : (plan.amount
-                                    | currency: currency : "symbol" : "1.2-2")
+                                getRoomPlanDisplayAmount(room, plan)
+                                  | currency: currency : "symbol" : "1.2-2"
                               }}
                             </div>
-                            <div class="perNight">per night + taxes</div>
+                            <div class="perNight">{{ getRoomPlanPriceLabel(room, plan) }}</div>
                           </div>
                         </div>
                       </div>
@@ -4032,36 +3927,42 @@
                     <br />
                     <small
                       *ngIf="
-                        plan.SingleDayextraPersonAdultCountAmount &&
+                        getSummaryPlanAdultCharge(plan) > 0 &&
                         !activeForGoogleHotelCenter
                       "
                       >Inclusive Adult Charge <br />
-                      
                       {{
-                        plan.SingleDayextraPersonAdultCountAmount
+                        getSummaryPlanAdultCharge(plan)
                           | currency : currency : "symbol" : "1.2-2"
                       }}
-                      per night</small
-                    > <br *ngIf="
-                        plan.SingleDayextraPersonAdultCountAmount &&
+                      {{
+                        plan?.dailyRates?.length ? "total" : "per night"
+                      }}</small
+                    >
+                    <br
+                      *ngIf="
+                        getSummaryPlanAdultCharge(plan) > 0 &&
                         !activeForGoogleHotelCenter
-                      " />
+                      "
+                    />
                     <small
                       *ngIf="
-                        plan.SingleDayextraPersonChildCountAmount &&
+                        getSummaryPlanChildCharge(plan) > 0 &&
                         !activeForGoogleHotelCenter
                       "
                       >Inclusive Children Charge <br />
-                      
                       {{
-                        plan.SingleDayextraPersonChildCountAmount
+                        getSummaryPlanChildCharge(plan)
                           | currency : currency : "symbol" : "1.2-2"
                       }}
                       per night</small
-                    > <br *ngIf="
-                        plan.SingleDayextraPersonChildCountAmount &&
+                    >
+                    <br
+                      *ngIf="
+                        getSummaryPlanChildCharge(plan) > 0 &&
                         !activeForGoogleHotelCenter
-                      " />
+                      "
+                    />
                   </div>
 
                   <div class="d-flex align-items-start">
@@ -4110,159 +4011,50 @@
                 </div>
 
                 <div *ngIf="isOpen" class="dropdown-menuOne">
-                  <div style="display: block" *ngIf="plan.planName === 'GHC'">
-                    <div *ngFor="let item of daterangefilter; let i = index">
+                  <div style="display: block">
+                    <div *ngFor="let night of getSummaryPlanNightlyBreakdown(plan); let i = index">
                       <small class="text-muted">
-                        {{ item }}
-                      </small>
-                      &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp;
-                      <small
-                        class="text-muted"
-                        *ngFor="let price of [planPrice[i]]"
-                      >
-                        {{
-                          price * plan.selectedRoomnumber
-                            | currency: currency : "symbol" : "1.2-2"
-                        }}
-                        <br />
-                        <ng-container
-                          *ngIf="plan.SingleDayextraPersonAdultCountAmount > 0"
-                        >
-                          <b style="font-weight: normal">Extra Adult Charge:</b
-                          >&nbsp; &nbsp; &nbsp; &nbsp;
-                          <b style="font-weight: normal">
-                            {{
-                              plan.SingleDayextraPersonAdultCountAmount
-                                | currency: currency : "symbol" : "1.2-2"
-                            }}</b
-                          >
-                          <br />
-                        </ng-container>
-
-                        <ng-container
-                          *ngIf="plan.SingleDayextraPersonChildCountAmount > 0"
-                        >
-                          <b style="font-weight: normal"
-                            >Extra Children Charge</b
-                          >
-                          &nbsp; &nbsp; &nbsp; &nbsp;
-                          <b style="font-weight: normal">
-                            {{
-                              plan.SingleDayextraPersonChildCountAmount
-                                | currency: currency : "symbol" : "1.2-2"
-                            }}</b
-                          >
-                          <br />
-                        </ng-container>
-                        <ng-container *ngIf="price">
-                          <b style="font-weight: normal"> Tax Fees: </b> &nbsp;
-                          &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;
-                          &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;
-
-                          <b
-                            style="font-weight: normal"
-                            *ngIf="plan.selectedRoomnumber > 1"
-                          >
-                            {{
-                              calculateTaxAmount(
-                                price +
-                                  (plan.singleextraAdultCharges +
-                                    plan.singleextraChildrenCharges),
-                                plan
-                              ) * plan.selectedRoomnumber
-                                | currency: currency : "symbol" : "1.2-2"
-                            }}
-                          </b>
-                          <b
-                            style="font-weight: normal"
-                            *ngIf="plan.selectedRoomnumber <= 1"
-                          >
-                            {{
-                              calculateTaxAmount(
-                                price +
-                                  (plan.SingleDayextraPersonAdultCountAmount +
-                                    plan.SingleDayextraPersonChildCountAmount),
-                                plan
-                              ) * plan.selectedRoomnumber
-                                | currency: currency : "symbol" : "1.2-2"
-                            }}
-                          </b>
-                        </ng-container>
-                      </small>
-                    </div>
-                  </div>
-                  <div style="display: block" *ngIf="plan.planName != 'GHC'">
-                    <div *ngFor="let item of daterangefilterSeo; let i = index">
-                      <small class="text-muted">
-                        {{ item }}
+                        {{ night.dateLabel }}
                       </small>
                       &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp;
                       <small class="text-muted">
                         {{
-                          plan.actualRoomPrice * plan.selectedRoomnumber
+                          night.roomPrice
                             | currency: currency : "symbol" : "1.2-2"
                         }}
                         <br />
                         <ng-container
-                          *ngIf="plan.SingleDayextraPersonAdultCountAmount > 0"
+                          *ngIf="night.extraAdultCharge > 0"
                         >
                           <b style="font-weight: normal">Extra Adult Charge:</b
                           >&nbsp; &nbsp; &nbsp; &nbsp;
                           <b style="font-weight: normal">{{
-                            plan.SingleDayextraPersonAdultCountAmount
+                            night.extraAdultCharge
                               | currency: currency : "symbol" : "1.2-2"
                           }}</b>
                           <br />
                         </ng-container>
 
                         <ng-container
-                          *ngIf="plan.SingleDayextraPersonChildCountAmount > 0"
+                          *ngIf="night.extraChildCharge > 0"
                         >
                           <b style="font-weight: normal"
                             >Extra Children Charge</b
                           >
                           &nbsp; &nbsp; &nbsp; &nbsp;
                           <b style="font-weight: normal">{{
-                            plan.SingleDayextraPersonChildCountAmount
+                            night.extraChildCharge
                               | currency: currency : "symbol" : "1.2-2"
                           }}</b>
                           <br />
                         </ng-container>
-                        <ng-container
-                          *ngIf="
-                            plan.actualRoomPrice * plan.selectedRoomnumber +
-                            (plan.SingleDayextraPersonAdultCountAmount +
-                              plan.SingleDayextraPersonChildCountAmount)
-                          "
-                        >
+                        <ng-container *ngIf="night.subtotal">
                           <b style="font-weight: normal"> Tax Fees: </b> &nbsp;
                           &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;
                           &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;
-                          <b
-                            style="font-weight: normal"
-                            *ngIf="plan.selectedRoomnumber > 1"
-                          >
+                          <b style="font-weight: normal">
                             {{
-                              calculateTaxAmount(
-                                plan.actualRoomPrice +
-                                  (plan.singleextraAdultCharges +
-                                    plan.singleextraChildrenCharges),
-                                plan
-                              ) * plan.selectedRoomnumber
-                                | currency: currency : "symbol" : "1.2-2"
-                            }}
-                          </b>
-                          <b
-                            style="font-weight: normal"
-                            *ngIf="plan.selectedRoomnumber <= 1"
-                          >
-                            {{
-                              calculateTaxAmount(
-                                plan.actualRoomPrice +
-                                  (plan.SingleDayextraPersonAdultCountAmount +
-                                    plan.SingleDayextraPersonChildCountAmount),
-                                plan
-                              ) * plan.selectedRoomnumber
+                              getSummaryNightTaxAmount(night, plan)
                                 | currency: currency : "symbol" : "1.2-2"
                             }}
                           </b>
