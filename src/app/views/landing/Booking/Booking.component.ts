@@ -12129,11 +12129,17 @@ sendWhatsappMessageToPropertyOwner() {
   }
 
   getTotalTax(): number {
+    const summaryTax = this.toSafeAmount(this.bookingSummaryDetails?.totalTax);
+
+    if (summaryTax > 0) {
+      this.taxOnDiscountedAmount = summaryTax;
+      return this.taxOnDiscountedAmount;
+    }
+
     let totalTax = 0;
 
-    this.bookingSummaryDetails?.selectedPlansSummary?.forEach(plan => {
+    this.bookingSummaryDetails?.selectedPlansSummary?.forEach((plan) => {
       totalTax += this.getPlanTaxAfterDiscount(plan);
-
     });
 
     this.taxOnDiscountedAmount = this.toSafeAmount(totalTax);

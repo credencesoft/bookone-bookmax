@@ -454,7 +454,7 @@
                   <div class="d-flex align-items-start">
                     <div class="room-price">
                       <ng-container *ngIf="!activeForGoogleHotelCenter">
-                         {{ plan.price | currency : currency : "symbol" : "1.2-2" }}
+                        {{ getPlanSubtotal(plan) | currency : currency : "symbol" : "1.2-2" }}
                       </ng-container>
 
                       <ng-container *ngIf="activeForGoogleHotelCenter">
@@ -3968,7 +3968,7 @@
                   <div class="d-flex align-items-start">
                     <div class="room-price">
                       <ng-container *ngIf="!activeForGoogleHotelCenter">
-                        {{ plan.price | currency : currency : "symbol" : "1.2-2" }}
+                        {{ getPlanSubtotal(plan) | currency : currency : "symbol" : "1.2-2" }}
                       </ng-container>
 
                       <ng-container *ngIf="activeForGoogleHotelCenter">
