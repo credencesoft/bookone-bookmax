@@ -6490,7 +6490,6 @@ this.token.savePropertyUrl(currentUrl);
   }
 
   checkingAvailability() {
-    debugger
     this.smartLoading = true;
     if (this.activeForGoogleHotelCenter === true) {
       this.showDiv = false;
