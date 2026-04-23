@@ -225,7 +225,7 @@
         </a>
       </div>
       <div>
-     <a class="blinking-unique-btn" [href]="'tel:' + (
+     <a *ngIf="websiteUrlBookingEngine" class="blinking-unique-btn" [href]="'tel:' + (
      (websiteUrlBookingEngine && businessUser?.mobile)
        ? businessUser.mobile 
        : (businessUser?.id === 2614 
@@ -345,7 +345,7 @@
         </a>
       </div>
       <div>
-        <a class="blinking-unique-btn" [href]="'tel:' + (
+        <a *ngIf="websiteUrlBookingEngine" class="blinking-unique-btn" [href]="'tel:' + (
      (websiteUrlBookingEngine && businessUser?.mobile)
        ? businessUser.mobile 
        : (businessUser?.id === 2614 

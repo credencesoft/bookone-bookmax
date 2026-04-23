@@ -2636,7 +2636,7 @@ export class BookingComponent implements OnInit {
     //   ? this.toSafeAmount(this.getDisplayedConvenienceFeeAmount())
     //   : 0;
 
-    const convenienceFee = this.toSafeAmount(this.getDisplayedConvenienceFeeAmountB(plan));
+    const convenienceFee = this.toSafeAmount(this.getDisplayedConvenienceFeeAmountPerRoom(plan));
     const planTotalAmount = this.toSafeAmount(
       planBeforeTaxAmount +
         planTaxAmount +
@@ -12125,14 +12125,21 @@ sendWhatsappMessageToPropertyOwner() {
   }
 
   getTotalTax(): number {
+    const summaryTax = this.toSafeAmount(this.bookingSummaryDetails?.totalTax);
+
+    if (summaryTax > 0) {
+      this.taxOnDiscountedAmount = summaryTax;
+      return this.taxOnDiscountedAmount;
+    }
+
     let totalTax = 0;
 
-    this.bookingSummaryDetails?.selectedPlansSummary?.forEach(plan => {
+    this.bookingSummaryDetails?.selectedPlansSummary?.forEach((plan) => {
       totalTax += this.getPlanTaxAfterDiscount(plan);
-
     });
 
     this.taxOnDiscountedAmount = this.toSafeAmount(totalTax);
+
     return this.taxOnDiscountedAmount;
   }
 
@@ -12363,7 +12370,7 @@ sendWhatsappMessageToPropertyOwner() {
     return this.toSafeAmount(this.convenienceFeeAmount || 0);
   }
 
-  getDisplayedConvenienceFeeAmountB(plan :any): number {
+  getDisplayedConvenienceFeeAmountPerRoom(plan :any): number {
     const actualPrice = plan?.actualRoomPrice ?? 0;
     const noofNoights = plan?.nights ?? 0;
     const noOfRooms = plan?.selectedRoomnumber ?? 0;
