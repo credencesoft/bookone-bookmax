@@ -2638,7 +2638,7 @@ export class BookingComponent implements OnInit {
     //   ? this.toSafeAmount(this.getDisplayedConvenienceFeeAmount())
     //   : 0;
 
-    const convenienceFee = this.toSafeAmount(this.getDisplayedConvenienceFeeAmountB(plan));
+    const convenienceFee = this.toSafeAmount(this.getDisplayedConvenienceFeeAmountPerRoom(plan));
     const planTotalAmount = this.toSafeAmount(
       planBeforeTaxAmount +
         planTaxAmount +
@@ -12374,7 +12374,7 @@ sendWhatsappMessageToPropertyOwner() {
     return this.toSafeAmount(this.convenienceFeeAmount || 0);
   }
 
-  getDisplayedConvenienceFeeAmountB(plan :any): number {
+  getDisplayedConvenienceFeeAmountPerRoom(plan :any): number {
     const actualPrice = plan?.actualRoomPrice ?? 0;
     const noofNoights = plan?.nights ?? 0;
     const noOfRooms = plan?.selectedRoomnumber ?? 0;
