@@ -3086,9 +3086,7 @@ getPlanSubtotal(plan: any): number {
   
 
   const fallbackSubtotal =
-    Number(plan?.price || 0) *
-    Number(plan?.nights || 1) *
-    Number(plan?.selectedRoomnumber || 1);
+    Number(plan?.price || 0)
     console.log('fallbackSubtotal is',fallbackSubtotal);
 
   return Number(fallbackSubtotal.toFixed(2));
@@ -3135,29 +3133,24 @@ private getSelectedRoomCountForPlan(room: any, plan: any): number {
 }
 
 getRoomPlanDisplayAmount(room: any, plan: any): number {
-  if (this.activeForGoogleHotelCenter && plan?.code === 'GHC') {
-    const nightlyRates = this.getRatesForRoomPlan(room?.id, plan?.code).map((rate: any) => {
-      const matchedPlan = rate?.roomRatePlans?.find((roomPlan: any) => roomPlan?.code === plan?.code);
+  const nightlyRates = this.getRatesForRoomPlan(room?.id, plan?.code)
+    .map((rate: any) => {
+      const matchedPlan = rate?.roomRatePlans?.find(
+        (roomPlan: any) => roomPlan?.code === plan?.code
+      );
       return Number(matchedPlan?.amount || 0);
-    });
+    })
+    .filter((amount: number) => amount > 0);
 
-    const totalAmount = nightlyRates.length
-      ? nightlyRates.reduce((sum: number, amount: number) => sum + amount, 0)
-      : Number(plan?.amount || 0);
+  const totalAmount = nightlyRates.length
+    ? nightlyRates.reduce((sum: number, amount: number) => sum + amount, 0)
+    : Number(plan?.amount || 0);
 
+  if (this.activeForGoogleHotelCenter && plan?.code === 'GHC') {
     return Number(totalAmount || this.totalplanPrice || 0);
   }
 
-  const nightlyRates = this.getRatesForRoomPlan(room?.id, plan?.code).map((rate: any) => {
-    const matchedPlan = rate?.roomRatePlans?.find((roomPlan: any) => roomPlan?.code === plan?.code);
-    return Number(matchedPlan?.amount || 0);
-  });
-
-  if (nightlyRates.length > 1) {
-    return nightlyRates.reduce((sum: number, amount: number) => sum + amount, 0);
-  }
-
-  return Number(nightlyRates[0] || plan?.amount || 0);
+  return totalAmount;
 }
 
 getRoomPlanPriceLabel(room: any, plan: any): string {
