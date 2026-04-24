@@ -12183,9 +12183,13 @@ sendWhatsappMessageToPropertyOwner() {
 
   private getPlanRoomTariffBeforeDiscountPayloadValue(plan: any): number {
     const totalRoomTariff = this.getPlanRoomTariffBeforeDiscountTotal(plan);
+    const roomCount = Math.max(
+      1,
+      this.toSafeAmount(plan?.selectedRoomnumber || 1),
+    );
     const nights = Math.max(1, this.toSafeAmount(plan?.nights || 1));
 
-    return this.toSafeAmount(totalRoomTariff / nights);
+    return this.toSafeAmount(totalRoomTariff / (roomCount * nights));
   }
 
   private getPlanRoomPricePerNight(plan: any): number {

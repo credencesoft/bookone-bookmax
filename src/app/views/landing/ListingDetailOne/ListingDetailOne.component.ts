@@ -2289,6 +2289,7 @@ resetLastChangedAge(planCode: string) {
 }
 
   onPlanSelect(planCode: string, rates: any) {
+    console.log('plan selected value is',this.selectedRoomsByPlan);
     const selectedRooms = this.selectedRoomsByPlan[planCode];
     const selectedGuests = this.selectedGuestsByPlan[planCode];
     const roomId = rates.roomId;
