@@ -2626,6 +2626,12 @@ export class BookingComponent implements OnInit {
       this.getPlanAmountAfterDiscount(plan),
     );
     const planTaxAmount = this.toSafeAmount(this.getPlanTaxAfterDiscount(plan));
+    const perNightRoomTariff = this.toSafeAmount(
+      this.getPlanRoomPricePerNight(plan),
+    );
+    const totalRoomTariffBeforeDiscount = this.toSafeAmount(
+      this.getPlanRoomTariffBeforeDiscountTotal(plan),
+    );
     const planRoomTotalAmount = this.toSafeAmount(
       planBeforeTaxAmount + planTaxAmount,
     );
@@ -2665,8 +2671,8 @@ export class BookingComponent implements OnInit {
     }
     enquiryForm.payableAmount = planTotalAmount;
     enquiryForm.roomName = plan.roomName;
-    enquiryForm.extraPersonCharge = plan.extraPersonAdultCountAmount;
-    enquiryForm.extraChildCharge = plan?.extraPersonChildCountAmount;
+    enquiryForm.extraPersonCharge = this.getPlanStayAdultExtraCharge(plan);
+    enquiryForm.extraChildCharge = this.getPlanStayChildExtraCharge(plan);
     enquiryForm.noOfExtraChild = plan.extraCountChild;
     const bookingEngineFlag = sessionStorage.getItem('BookingEngine');
     this.websiteUrlBookingEngine = bookingEngineFlag === 'true';
@@ -2688,9 +2694,8 @@ export class BookingComponent implements OnInit {
       enquiryForm.utmMedium = 'unknown';
     }
 
-    // roomPrice must be per-room-per-night tariff so LMS can multiply: roomPrice × noOfRooms × noOfNights.
-    // plan.actualRoomPrice is the per-room-per-night rate; do NOT subtract extra charges (different units).
-    enquiryForm.roomPrice = plan.actualRoomPrice;
+    // roomPrice should carry the stay-level room tariff only, excluding extra guest charges.
+    enquiryForm.roomPrice = this.getPlanRoomPricePayloadValue(plan);
 
     enquiryForm.externalSite = 'WebSite';
     enquiryForm.source = 'Bookone Connect';
@@ -2780,11 +2785,9 @@ export class BookingComponent implements OnInit {
     enquiryForm.accommodationType = enquiryForm.accommodationType || '';
     enquiryForm.specialNotes = enquiryForm.specialNotes || '';
     enquiryForm.alternativeLocation = enquiryForm.alternativeLocation || '';
-    enquiryForm.roomTariffBeforeDiscount = plan.actualRoomPrice.toFixed(2);
-    enquiryForm.totalRoomTariffBeforeDiscount =
-      enquiryForm.roomTariffBeforeDiscount *
-      plan.nights *
-      plan.selectedRoomnumber;
+    enquiryForm.roomTariffBeforeDiscount =
+      this.getPlanRoomTariffBeforeDiscountPayloadValue(plan).toFixed(2);
+    enquiryForm.totalRoomTariffBeforeDiscount = totalRoomTariffBeforeDiscount;
     const planAdvanceAmount = this.getPlanPayNowAmount(
       plan,
       selectedServiceTotal,
@@ -3009,10 +3012,22 @@ export class BookingComponent implements OnInit {
         // are set authoritatively by calculateMultiDiscountAndTax() — do NOT overwrite them here.
         this.calculateMultiDiscountAndTax();
         const checkoutTaxAmount = this.toSafeAmount(this.getTotalTax());
+        const checkoutGrandTotal = this.toSafeAmount(this.getNewGrandTotal());
+        const checkoutPayNowAmount = this.toSafeAmount(this.getNewPayNowAmount());
         this.booking.taxAmount = checkoutTaxAmount;
         this.booking.gstAmount = checkoutTaxAmount;
+        this.booking.totalAmount = checkoutGrandTotal;
+        this.booking.payableAmount = checkoutGrandTotal;
+        this.booking.advanceAmount = checkoutPayNowAmount;
+        this.booking.outstandingAmount = this.toSafeAmount(
+          Math.max(0, checkoutGrandTotal - checkoutPayNowAmount),
+        );
         this.bookingSummaryDetails.totalTax = checkoutTaxAmount;
-        this.bookingroomPrice = firstPlan?.actualRoomPrice;
+        this.bookingSummaryDetails.totalAmount = checkoutGrandTotal;
+        this.bookingSummaryDetails.payableAmount = checkoutGrandTotal;
+        this.bookingSummaryDetails.quotedGrandTotal = checkoutGrandTotal;
+        this.bookingSummaryDetails.quotedPayableAmount = checkoutPayNowAmount;
+        this.bookingroomPrice = this.getPlanRoomPricePerNight(firstPlan).toFixed(2);
         await this.createAllEnquiriesBooking();
         this.payment.callbackUrl =
           environment.callbackUrl +
@@ -8163,9 +8178,10 @@ export class BookingComponent implements OnInit {
     booking.dayTrip = false;
     booking.discountPercentage = 0;
     booking.discountAmount = 0;
-    booking.extraChildCharge = plan.extraPersonChildCountAmount || 0;
-    booking.extraPersonCharge = plan.extraPersonAdultCountAmount || 0;
-    booking.roomTariffBeforeDiscount = plan.actualRoomPrice.toFixed(2);
+    booking.extraChildCharge = this.getPlanStayChildExtraCharge(plan);
+    booking.extraPersonCharge = this.getPlanStayAdultExtraCharge(plan);
+    booking.roomTariffBeforeDiscount =
+      this.getPlanRoomTariffBeforeDiscountPayloadValue(plan).toFixed(2);
     booking.totalAmount = (plan.price + plan.taxPercentageperroom).toFixed(2);
     booking.bookingAmount = (plan.price + plan.taxPercentageperroom).toFixed(2);
     booking.payableAmount = this.showTheSelectedCoupon
@@ -8183,14 +8199,11 @@ export class BookingComponent implements OnInit {
     booking.roomBooking = true;
     booking.groupBooking = false;
     booking.available = true;
-    booking.roomPrice = plan.actualRoomPrice.toFixed(2);
+    booking.roomPrice = this.getPlanRoomPricePayloadValue(plan).toFixed(2);
     booking.totalServiceAmount = this.totalServiceCost || 0;
     booking.taxAmount = booking.gstAmount.toFixed(2);
-    booking.totalRoomTariffBeforeDiscount = (
-      plan.actualRoomPrice *
-      plan.nights *
-      plan.selectedRoomnumber
-    ).toFixed(2);
+    booking.totalRoomTariffBeforeDiscount =
+      this.getPlanRoomTariffBeforeDiscountTotal(plan).toFixed(2);
     booking.noOfExtraPerson = plan.extraCountAdult;
     booking.noOfExtraChild = plan.extraCountChild;
     booking.purposeOfVisit = '';
@@ -8361,8 +8374,8 @@ export class BookingComponent implements OnInit {
     enquiryForm.roomId = plan.roomId;
     enquiryForm.payableAmount = plan.price + plan.taxPercentageperroom;
     enquiryForm.roomName = plan.roomName;
-    enquiryForm.extraPersonCharge = plan.extraPersonAdultCountAmount;
-    enquiryForm.extraChildCharge = plan.extraPersonChildCountAmount;
+    enquiryForm.extraPersonCharge = this.getPlanStayAdultExtraCharge(plan);
+    enquiryForm.extraChildCharge = this.getPlanStayChildExtraCharge(plan);
     enquiryForm.noOfExtraChild = plan.extraCountChild;
     const bookingEngineFlag = sessionStorage.getItem('BookingEngine');
     this.websiteUrlBookingEngine = bookingEngineFlag === 'true';
@@ -8385,7 +8398,7 @@ export class BookingComponent implements OnInit {
     }
 
     // roomPrice must be per-room-per-night tariff so LMS can multiply: roomPrice × noOfRooms × noOfNights.
-    enquiryForm.roomPrice = plan.actualRoomPrice;
+    enquiryForm.roomPrice = this.getPlanRoomPricePayloadValue(plan);
 
     enquiryForm.externalSite = 'WebSite';
     enquiryForm.source = 'Bookone Connect';
@@ -10760,8 +10773,8 @@ export class BookingComponent implements OnInit {
     }
     enquiryForm.payableAmount = plan.price + plan.taxPercentageperroom;
     enquiryForm.roomName = plan.roomName;
-    enquiryForm.extraPersonCharge = plan.extraPersonAdultCountAmount;
-    enquiryForm.extraChildCharge = plan.extraPersonChildCountAmount;
+    enquiryForm.extraPersonCharge = this.getPlanStayAdultExtraCharge(plan);
+    enquiryForm.extraChildCharge = this.getPlanStayChildExtraCharge(plan);
     enquiryForm.noOfExtraChild = plan.extraCountChild;
     const bookingEngineFlag = sessionStorage.getItem('BookingEngine');
     this.websiteUrlBookingEngine = bookingEngineFlag === 'true';
@@ -10784,7 +10797,7 @@ export class BookingComponent implements OnInit {
     }
 
     // roomPrice must be per-room-per-night tariff so LMS can multiply: roomPrice × noOfRooms × noOfNights.
-    enquiryForm.roomPrice = plan.actualRoomPrice;
+    enquiryForm.roomPrice = this.getPlanRoomPricePayloadValue(plan);
 
     enquiryForm.externalSite = 'WebSite';
     enquiryForm.source = 'Bookone Connect';
@@ -10906,11 +10919,11 @@ export class BookingComponent implements OnInit {
     bookingForm.roomId = plan.roomId;
     bookingForm.payableAmount = plan.price + plan.taxPercentageperroom;
     bookingForm.roomName = plan.roomName;
-    bookingForm.extraPersonCharge = plan.extraPersonAdultCountAmount;
-    bookingForm.extraChildCharge = plan.extraPersonChildCountAmount;
+    bookingForm.extraPersonCharge = this.getPlanStayAdultExtraCharge(plan);
+    bookingForm.extraChildCharge = this.getPlanStayChildExtraCharge(plan);
     bookingForm.noOfExtraChild = plan.extraCountChild;
 
-    bookingForm.roomPrice = plan.actualRoomPrice;
+    bookingForm.roomPrice = this.getPlanRoomPricePayloadValue(plan);
 
     bookingForm.externalSite = 'WebSite';
     bookingForm.couponCode = booking.couponCode;
@@ -10952,9 +10965,10 @@ export class BookingComponent implements OnInit {
     bookingForm.discountPercentage = booking.discountPercentage;
     bookingForm.noOfNights = plan.nights;
     bookingForm.taxPercentage = plan.taxpercentage;
-    bookingForm.roomTariffBeforeDiscount = plan.actualRoomPrice;
+    bookingForm.roomTariffBeforeDiscount =
+      this.getPlanRoomTariffBeforeDiscountPayloadValue(plan);
     bookingForm.totalRoomTariffBeforeDiscount =
-      plan.actualRoomPrice * plan.nights * plan.selectedRoomnumber;
+      this.getPlanRoomTariffBeforeDiscountTotal(plan);
     bookingForm.totalBookingAmount = bookingForm.totalRoomTariffBeforeDiscount;
     if (this.specialDiscountData) {
       bookingForm.payableAmount = Number(plan.finalPrice.toFixed(2));
@@ -12091,6 +12105,93 @@ sendWhatsappMessageToPropertyOwner() {
     return this.toSafeAmount(afterAdvanceDiscount);
   }
 
+  private getPlanStayAdultExtraCharge(plan: any): number {
+    if (Array.isArray(plan?.dailyRates) && plan.dailyRates.length) {
+      return this.toSafeAmount(
+        plan.dailyRates.reduce(
+          (sum: number, night: any) =>
+            sum +
+            (this.toSafeAmount(night?.extraAdultCharge) *
+              this.toSafeAmount(night?.roomMultiplier || 1)),
+          0,
+        ),
+      );
+    }
+
+    return this.toSafeAmount(
+      plan?.extraPersonAdultCountAmount ??
+        (this.toSafeAmount(plan?.SingleDayextraPersonAdultCountAmount) *
+          this.toSafeAmount(plan?.nights || 0)),
+    );
+  }
+
+  private getPlanStayChildExtraCharge(plan: any): number {
+    if (Array.isArray(plan?.dailyRates) && plan.dailyRates.length) {
+      return this.toSafeAmount(
+        plan.dailyRates.reduce(
+          (sum: number, night: any) =>
+            sum +
+            (this.toSafeAmount(night?.extraChildCharge) *
+              this.toSafeAmount(night?.roomMultiplier || 1)),
+          0,
+        ),
+      );
+    }
+
+    return this.toSafeAmount(
+      plan?.extraPersonChildCountAmount ??
+        (this.toSafeAmount(plan?.SingleDayextraPersonChildCountAmount) *
+          this.toSafeAmount(plan?.nights || 0)),
+    );
+  }
+
+  private getPlanStayExtraCharges(plan: any): number {
+    const adultExtraCharge = this.getPlanStayAdultExtraCharge(plan);
+    const childExtraCharge = this.getPlanStayChildExtraCharge(plan);
+
+    return this.toSafeAmount(adultExtraCharge + childExtraCharge);
+  }
+
+  private getPlanRoomTariffBeforeDiscountTotal(plan: any): number {
+    if (Array.isArray(plan?.dailyRates) && plan.dailyRates.length) {
+      return this.toSafeAmount(
+        plan.dailyRates.reduce(
+          (sum: number, night: any) => sum + this.toSafeAmount(night?.roomPrice),
+          0,
+        ),
+      );
+    }
+
+    const fallbackRoomTariffTotal =
+      this.toSafeAmount(plan?.actualRoomPrice) *
+      this.toSafeAmount(plan?.nights || 0) *
+      this.toSafeAmount(plan?.selectedRoomnumber || 1);
+
+    if (fallbackRoomTariffTotal > 0) {
+      return this.toSafeAmount(fallbackRoomTariffTotal);
+    }
+
+    const stayExtras = this.getPlanStayExtraCharges(plan);
+    const planPrice = this.toSafeAmount(plan?.price);
+
+    return this.toSafeAmount(Math.max(0, planPrice - stayExtras));
+  }
+
+  private getPlanRoomPricePayloadValue(plan: any): number {
+    return this.getPlanRoomTariffBeforeDiscountTotal(plan);
+  }
+
+  private getPlanRoomTariffBeforeDiscountPayloadValue(plan: any): number {
+    const totalRoomTariff = this.getPlanRoomTariffBeforeDiscountTotal(plan);
+    const nights = Math.max(1, this.toSafeAmount(plan?.nights || 1));
+
+    return this.toSafeAmount(totalRoomTariff / nights);
+  }
+
+  private getPlanRoomPricePerNight(plan: any): number {
+    return this.getPlanRoomTariffBeforeDiscountTotal(plan);
+  }
+
   getPlanDiscountAmount(plan: any): number {
     const price = this.toSafeAmount(plan?.price);
 
@@ -12371,18 +12472,14 @@ sendWhatsappMessageToPropertyOwner() {
   }
 
   getDisplayedConvenienceFeeAmountPerRoom(plan :any): number {
-    const actualPrice = plan?.actualRoomPrice ?? 0;
-    const noofNoights = plan?.nights ?? 0;
-    const noOfRooms = plan?.selectedRoomnumber ?? 0;
-    const extraPerson = plan?.extraCountAdult ?? 0;
-    const extraChild = plan?.extraCountChild ?? 0;
-    const discountAmount = (plan.price - (plan.price * (this.specialDiscountData?.discountPercentage || 0)) / 100) * ((this.selectedAdvanceDiscountSlab?.discountPercentage || 0) / 100);
-    let discountedAmount = ((actualPrice * noofNoights * noOfRooms) + (extraPerson + extraChild)) - Math.abs(discountAmount);
+    const discountedAmount = this.getPlanAmountAfterDiscount(plan);
     const feePercent = this.toSafePercent(this.serviceChargePercentage);
     if (discountedAmount > 0 && feePercent > 0) {
-      return this.toSafeAmount(this.calculateConvenienceFee(discountedAmount, feePercent),);
+      return this.toSafeAmount(
+        this.calculateConvenienceFee(discountedAmount, feePercent),
+      );
     }
-    return this.toSafeAmount(this.convenienceFeeAmount || 0);
+    return 0;
   }
 
   getNewGrandTotal(): number {

@@ -2460,8 +2460,8 @@ resetLastChangedAge(planCode: string) {
         const selectedRoomnumber = selectedRooms;
         const SingleDayextraPersonAdultCountAmount = this.extraAdultCharge;
         const SingleDayextraPersonChildCountAmount = this.extraChildrenCharge;
-        const extraPersonAdultCountAmount = this.extraAdultCharge * this.DiffDate;
-        const extraPersonChildCountAmount = this.extraChildrenCharge * this.DiffDate;
+        const extraPersonAdultCountAmount = this.extraAdultCharge;
+        const extraPersonChildCountAmount = this.extraChildrenCharge;
         const extraCountAdult = this.extraAdultCount ? this.extraAdultCount : 0;
         const extraCountChild = this.extraChildCount ? this.extraChildCount : 0;
         const childrenBelow5years = below5Count;
@@ -3052,7 +3052,10 @@ getSummaryPlanAdultCharge(plan: any): number {
   if (Array.isArray(plan?.dailyRates) && plan.dailyRates.length) {
     return Number(
       plan.dailyRates.reduce(
-        (sum: number, night: any) => sum + Number(night?.extraAdultCharge || 0),
+        (sum: number, night: any) =>
+          sum +
+          (Number(night?.extraAdultCharge || 0) *
+            Number(night?.roomMultiplier || 1)),
         0
       )
     );
@@ -3066,6 +3069,18 @@ getSummaryPlanAdultCharge(plan: any): number {
 }
 
 getSummaryPlanChildCharge(plan: any): number {
+  if (Array.isArray(plan?.dailyRates) && plan.dailyRates.length) {
+    return Number(
+      plan.dailyRates.reduce(
+        (sum: number, night: any) =>
+          sum +
+          (Number(night?.extraChildCharge || 0) *
+            Number(night?.roomMultiplier || 1)),
+        0
+      )
+    );
+  }
+
   return Number(
     Number(plan?.selectedRoomnumber || 0) > 1
       ? plan?.singleextraChildrenCharges || 0
