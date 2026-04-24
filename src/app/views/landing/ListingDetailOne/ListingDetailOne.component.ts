@@ -3053,7 +3053,10 @@ getSummaryPlanAdultCharge(plan: any): number {
   if (Array.isArray(plan?.dailyRates) && plan.dailyRates.length) {
     return Number(
       plan.dailyRates.reduce(
-        (sum: number, night: any) => sum + Number(night?.extraAdultCharge || 0),
+        (sum: number, night: any) =>
+          sum +
+          (Number(night?.extraAdultCharge || 0) *
+            Number(night?.roomMultiplier || 1)),
         0
       )
     );
@@ -3067,6 +3070,18 @@ getSummaryPlanAdultCharge(plan: any): number {
 }
 
 getSummaryPlanChildCharge(plan: any): number {
+  if (Array.isArray(plan?.dailyRates) && plan.dailyRates.length) {
+    return Number(
+      plan.dailyRates.reduce(
+        (sum: number, night: any) =>
+          sum +
+          (Number(night?.extraChildCharge || 0) *
+            Number(night?.roomMultiplier || 1)),
+        0
+      )
+    );
+  }
+
   return Number(
     Number(plan?.selectedRoomnumber || 0) > 1
       ? plan?.singleextraChildrenCharges || 0
