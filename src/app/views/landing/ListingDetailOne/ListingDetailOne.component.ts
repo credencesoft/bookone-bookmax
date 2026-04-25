@@ -4887,6 +4887,7 @@ onCheckOutClosed(): void {
               }
             }
           });
+
           if (
             this.selectedServices != null &&
             this.selectedServices != undefined
@@ -5831,6 +5832,7 @@ this.token.savePropertyUrl(currentUrl);
           this.getTotalTaxFacility()).toFixed(2)),
     };
     sessionStorage.setItem('bookingSummaryDetails', JSON.stringify(bookingData));
+
     // Phase 4: Store selected add-ons for Booking component and LMS enquiry snapshot
     sessionStorage.setItem('addOnServices', JSON.stringify(selectedAddOns));
   } else if(this.specialDiscountData && !this.activeForGoogleHotelCenter){

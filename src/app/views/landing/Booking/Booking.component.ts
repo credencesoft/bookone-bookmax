@@ -380,6 +380,7 @@ export class BookingComponent implements OnInit {
   totalAddOnsTax: number = 0;                   // Tax on add-ons
   totalAddOnsDiscount: number = 0;              // Discount on add-ons
   private readonly enableCalculationDebug = false;
+
   constructor(
     private token: TokenStorage,
     private ngZone: NgZone,
@@ -569,7 +570,7 @@ export class BookingComponent implements OnInit {
     this.clearFormField(this.booking);
     this.initializeCountrySelection();
     const couponCodeValues = sessionStorage.getItem('selectedPromoData');
-    
+
     if (couponCodeValues) {
       const parsed = JSON.parse(couponCodeValues); // convert to object
       this.specialDiscountData = JSON.parse(couponCodeValues);
@@ -1675,6 +1676,7 @@ export class BookingComponent implements OnInit {
       this.couponDiscountAmount = 0;
       this.booking.netAmount = this.storedActualNetAmount;
       this.bookingRoomPrice = this.storeNightPerRoom;
+
       // Recalculate with only advance discount if it's selected
       if (this.selectedAdvanceDiscountSlab) {
         this.calculateMultiDiscountAndTax();
@@ -3705,6 +3707,7 @@ export class BookingComponent implements OnInit {
           //     this.bookingSummaryDetails.totalAmount
           //   );
           // }
+
           this.payment.referenceNumber = new Date().getTime().toString();
           this.payment.deliveryChargeAmount = 0;
           this.payment.date = this.datePipe.transform(
@@ -11616,6 +11619,7 @@ sendWhatsappMessageToPropertyOwner() {
         payNowAmount: this.advancePaymentAmount,
         balanceAtCheckIn: this.remainingPaymentAmount,
       });
+
       // Trigger change detection to update UI
       this.changeDetectorRefs.markForCheck();
     } catch (error) {
