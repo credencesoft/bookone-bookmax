@@ -22,7 +22,7 @@ env:
   AWS_REGION: ap-south-1
   # AWS_SECRET: bookone_prod_deployment_credentials
 
-  BRANCH: release-india-prod-bookine-engine
+  BRANCH: release/india-prod
 
   CLOUDFRONT_DIST_ID: E1QQJOM9U7RFEO
   
