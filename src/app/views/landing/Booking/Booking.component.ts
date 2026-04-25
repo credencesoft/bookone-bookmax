@@ -12234,20 +12234,29 @@ sendWhatsappMessageToPropertyOwner() {
   }
 
   getTotalTax(): number {
-    const summaryTax = this.toSafeAmount(this.bookingSummaryDetails?.totalTax);
+    let totalTax = 0;
+    const hasDiscount =
+      this.toSafePercent(
+        this.specialDiscountData?.discountPercentage ??
+          this.selectedCouponList?.discountPercentage,
+      ) > 0 ||
+      this.toSafePercent(this.selectedAdvanceDiscountSlab?.discountPercentage) >
+        0;
 
-    if (summaryTax > 0) {
-      this.taxOnDiscountedAmount = summaryTax;
+    if (this.bookingSummaryDetails?.selectedPlansSummary?.length) {
+      this.bookingSummaryDetails.selectedPlansSummary.forEach((plan) => {
+        totalTax += hasDiscount
+          ? this.getPlanTaxAfterDiscount(plan)
+          : this.toSafeAmount(plan?.taxPercentageperroom);
+      });
+
+      this.taxOnDiscountedAmount = this.toSafeAmount(totalTax);
       return this.taxOnDiscountedAmount;
     }
 
-    let totalTax = 0;
-
-    this.bookingSummaryDetails?.selectedPlansSummary?.forEach((plan) => {
-      totalTax += this.getPlanTaxAfterDiscount(plan);
-    });
-
-    this.taxOnDiscountedAmount = this.toSafeAmount(totalTax);
+    this.taxOnDiscountedAmount = this.toSafeAmount(
+      this.bookingSummaryDetails?.totalTax,
+    );
 
     return this.taxOnDiscountedAmount;
   }
