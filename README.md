@@ -5,10 +5,13 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 ## Architecture Docs
 
 - [Bookmax Checkout Flow](./BOOKMAX_CHECKOUT_FLOW.md)
+- [BookMax Demand Redistribution Engine](./BOOKMAX_DEMAND_REDISTRIBUTION_ENGINE.md)
 - [Bookmax Refactor Plan](./BOOKMAX_REFACTOR_IMPLEMENTATION_PLAN.md)
 - [Cross-Project Field Mapping](./BOOKONE_CROSS_PROJECT_FIELD_MAPPING.md)
 
 This repository contains multiple active and legacy booking/payment paths. Use the checkout flow document above as the maintained reference for cross-project ownership, API call order, and sequence diagrams.
+
+For the upcoming enquiry-mode rescue and redistribution design across BookMax and THM Cockpit, use the demand redistribution engine document as the maintained reference.
 
 ## Development server
 

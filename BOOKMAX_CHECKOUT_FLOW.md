@@ -14,6 +14,8 @@ This document captures the Bookmax checkout and booking orchestration flow acros
 
 For field-level ownership and cross-project naming alignment, use `BOOKONE_CROSS_PROJECT_FIELD_MAPPING.md` alongside this flow document.
 
+For the enquiry-mode rescue and redistribution flow that will feed into booking conversion later, use `BOOKMAX_DEMAND_REDISTRIBUTION_ENGINE.md`.
+
 ## Related Repositories
 
 The full checkout flow spans these repositories:
@@ -44,6 +46,20 @@ The current refactor direction is now established and partially enforced in code
 - `paymentGateway` and `paymentMode` are intentionally separate:
     - `paymentGateway` = `Razorpay`, `PayU`
     - `paymentMode` = `UPI`, `Card`, `NetBanking`, etc.
+
+## Relationship To Demand Redistribution
+
+The checkout flow and the upcoming demand-redistribution flow are related but distinct:
+
+- `BOOKMAX_CHECKOUT_FLOW.md`
+  - covers booking creation and payment finalization after a guest has selected and confirmed a property/offer
+- `BOOKMAX_DEMAND_REDISTRIBUTION_ENGINE.md`
+  - covers enquiry-mode routing, rescue, and cross-property escalation before booking is finalized
+
+Boundary rule:
+
+- BookMax demand redistribution owns enquiry routing, target selection, SLA, and offer aggregation
+- THM booking flow still owns final booking creation, payment finalization, voucher, and payout handoff after an offer is accepted
 
 What remains legacy:
 

@@ -2,10 +2,41 @@
   "permissions": {
     "allow": [
       "Bash(npx ng:*)",
-      "Read(//private/tmp/**)"
+      "Read(//private/tmp/**)",
+      "Bash(grep -n \"^\\\\s*async\\\\|^\\\\s*[a-zA-Z].*\\([^\\)]*\\)\\\\s*{$\\\\|^\\\\s*[a-zA-Z].*\\([^\\)]*\\)\\\\s*:\\\\s*void\\\\|^\\\\s*[a-zA-Z].*\\([^\\)]*\\)\\\\s*:\\\\s*Promise\" /Users/samayamuduli/dev/csoft/bookone-bookmax/src/app/views/landing/Booking/Booking.component.ts)",
+      "Bash(awk -F: '$2 < 10810 && $2 > 10500')",
+      "Bash(awk -F: '$2 < 2600 && $2 > 2300')",
+      "Bash(python3 -)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:4200)",
+      "Bash(/usr/local/mysql/bin/mysql -u root -pBishnu@17 thehotelmate -e \"SHOW COLUMNS FROM property LIKE '%subtype%';\")",
+      "Bash(/usr/local/mysql/bin/mysql -u root -pBishnu@17 thehotelmate -e \"SELECT id, name, business_type, business_subtype, property_status, city FROM property WHERE business_type='Accommodation' AND \\(property_status='1' OR property_status='2'\\) AND city='Jaipur';\")",
+      "Bash(/usr/local/mysql/bin/mysql -u root -pBishnu@17 thm -e \"SELECT id, name, business_type, property_status, city FROM property WHERE city LIKE '%aipur%' LIMIT 10;\")",
+      "Bash(/usr/local/mysql/bin/mysql -u root -pBishnu@17 thm -e \"SELECT p.id, p.name, p.image_url, i.url, i.image_type FROM property p LEFT JOIN image i ON i.property_id = p.id WHERE p.city='Jaipur' AND p.business_type='Accommodation' AND \\(p.property_status='1' OR p.property_status='2'\\) LIMIT 5;\")",
+      "Bash(/usr/local/mysql/bin/mysql -u root -pBishnu@17 thm -e \"SHOW TABLES LIKE '%image%';\")",
+      "Bash(/usr/local/mysql/bin/mysql -u root -pBishnu@17 thm -e \"SELECT p.id, p.name, p.image_url FROM property p WHERE p.city='Jaipur' AND p.business_type='Accommodation' LIMIT 5;\")",
+      "Bash(/usr/local/mysql/bin/mysql -u root -pBishnu@17 thm -e \"SELECT id, name, image_url, background_image_url FROM property WHERE business_type='Accommodation' AND image_url IS NOT NULL LIMIT 5;\")",
+      "Bash(npm run *)",
+      "Bash(lsof -ti:8083)",
+      "Bash(lsof -ti:8090)",
+      "Bash(JAVA_HOME=/Users/samayamuduli/Library/Java/JavaVirtualMachines/corretto-21.0.3/Contents/Home mvn compile -f /Users/samayamuduli/dev/csoft/java-thm-chat/pom.xml)",
+      "Bash(lsof -ti:8081,8090,3001)",
+      "Bash(xargs ps *)",
+      "Bash(/usr/libexec/java_home -v 1.8)",
+      "Bash(/usr/libexec/java_home -v 11)",
+      "Bash(JAVA_HOME=$\\(/usr/libexec/java_home -v 1.8 || /usr/libexec/java_home -v 11 || echo \"\"\\) bash mvnw compile -q)",
+      "Bash(mvn --version)",
+      "Bash(JAVA_HOME=/Users/samayamuduli/Library/Java/JavaVirtualMachines/corretto-21.0.3/Contents/Home mvn compile -q -Dmaven.test.skip=true)",
+      "Bash(lsof -ti:8081,8090)",
+      "Bash(mvn spring-boot:run)",
+      "Bash(echo \"notify PID: $!\")",
+      "Bash(JAVA_HOME=/Users/samayamuduli/Library/Java/JavaVirtualMachines/corretto-21.0.3/Contents/Home mvn spring-boot:run -Dspring.profiles.active=local)",
+      "Bash(echo \"chat PID: $!\")",
+      "Bash(lsof -ti:8080)",
+      "Bash(npx vite *)"
     ],
     "additionalDirectories": [
-      "/Users/samayamuduli/dev/csoft/angular-bookone-lead-management/src/app/views/business-lead"
+      "/Users/samayamuduli/dev/csoft/angular-bookone-lead-management/src/app/views/business-lead",
+      "/private/tmp"
     ]
   }
 }

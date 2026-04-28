@@ -38,6 +38,7 @@ This file started as a forward-looking refactor plan. It now serves two purposes
 - define the orchestration state model for `PENDING_CONFIRMATION`, refund evaluation, retry, and manual review
 - define the property-level configuration flag and rollout rules for auto refund on PMS-connected properties
 - define idempotency rules for both service sync and refund initiation
+- define the BookMax enquiry redistribution state model and routing-session contract before implementing automated rescue and cross-property escalation
 
 ### Still pending or intentionally deferred
 
@@ -59,6 +60,16 @@ while fixing the current architectural issues:
 - orchestration happening in the wrong service
 - duplicated pricing logic
 - non-maintainable cross-service coupling
+
+This plan also now has a closely related follow-on design track:
+
+- BookMax enquiry redistribution and rescue routing
+
+That flow is documented separately in `BOOKMAX_DEMAND_REDISTRIBUTION_ENGINE.md` because it builds on the same ownership principle:
+
+- BookMax owns the enquiry-routing engine
+- THM owns booking-domain finalization
+- THM Cockpit provides operational control, not duplicate orchestration
 
 This plan recommended a focused refactor first, followed by feature delivery on top of the corrected seams. That refactor-first decision has now been validated by the implemented backend finalization changes.
 
