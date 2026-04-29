@@ -1697,6 +1697,7 @@ export class BookingComponent implements OnInit {
             this.toSafeAmount(this.getServicesTotal()) +
             this.convenienceFeeAmount,
         );
+        this.booking.beforeTaxAmount = netAmount;
         this.booking.totalAmount = grandTotal;
         this.booking.payableAmount = grandTotal;
         this.totalDiscountAmount = 0;
@@ -11496,6 +11497,7 @@ sendWhatsappMessageToPropertyOwner() {
         this.remainingPaymentAmount = 0;
         this.booking.netAmount = 0;
         this.booking.discountAmount = 0;
+        this.booking.beforeTaxAmount = 0;
         this.booking.taxAmount = 0;
         this.booking.totalAmount = 0;
         this.booking.advanceAmount = 0;
@@ -11583,6 +11585,7 @@ sendWhatsappMessageToPropertyOwner() {
       // Update booking object with calculated values
       this.booking.netAmount = this.amountAfterDiscount;
       this.booking.discountAmount = this.totalDiscountAmount;
+      this.booking.beforeTaxAmount = this.amountAfterDiscount;
       // Effective combined discount percentage — the single % that produced discountAmount from baseAmount.
       // This keeps discountPercentage and discountAmount mathematically consistent for LMS, PMS, THM and templates.
       this.booking.discountPercentage = baseAmount > 0
