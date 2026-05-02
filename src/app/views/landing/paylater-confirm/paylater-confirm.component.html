@@ -373,7 +373,7 @@
                   <th>Count</th>
                   <th>Extra Pax</th>
                   <th>Extra Child</th>
-                  <th *ngIf="booking?.discountPercentage">Discount ({{booking?.discountPercentage}}%)</th>
+                  <th *ngIf="booking?.discountAmount">Discount Amount</th>
                   <th>Sub Total</th>
                   <th>Tax</th>
                   <th>Total</th>
@@ -855,9 +855,8 @@
                 <div>₹{{ booking?.extraPersonChildCountAmount | number : "1.2-2" }}</div>
             </div>
             <div class="d-flex justify-content-between" *ngIf="booking?.discountAmount">
-              <div *ngIf="booking?.discountPercentage">Discount ({{booking?.discountPercentage}}%)</div>
+              <div *ngIf="booking?.discountAmount">Discount Amount</div>
               <div *ngIf="booking?.discountAmount">-₹{{ booking?.discountAmount | number : "1.2-2" }}</div>
-
             </div>
             <div class="d-flex justify-content-between">
                 <div>Sub Total</div>

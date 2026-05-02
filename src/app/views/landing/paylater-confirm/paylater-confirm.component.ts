@@ -190,7 +190,7 @@ export class PaylaterConfirmComponent {
   }
 
   getTotalAmountWithConvenienceFee(): number {
-    return (Number(this.bookingSummaryDetails?.totalAmount) || 0) ;
+    return (Number(this.bookingSummaryDetails?.totalAmount) || 0) + this.getConvenienceFee();
   }
 
 getTrimmedDescription(description: string): string {
