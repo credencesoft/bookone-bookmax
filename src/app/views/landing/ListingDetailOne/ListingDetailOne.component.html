@@ -849,7 +849,6 @@
         </div>
       </div>
     </div>
-  </div>
 
   <div class="container-div">
     <div
@@ -3007,7 +3006,7 @@
                     </div>
                   </div>
                   <div
-                    *ngIf="rates.roomRatePlans.length === 1"
+                    *ngIf="rates.roomRatePlans.length > 0"
                     [class.disabled-room]="shouldDisableRoomImageClick(room)"
                   >
                     <div [innerHTML]="roomDescriptionPreview(room)"></div>
@@ -4677,6 +4676,7 @@
     </div>
     <!-- Add terms and conditions end here -->
 
+    </div>
   <script
     async
     src="https://www.googletagmanager.com/gtag/js?id=AW-10904222935"

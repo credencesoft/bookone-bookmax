@@ -42,7 +42,7 @@ export class PaylaterConfirmComponent {
   bookingSummaryDetails: any;
   totalPlanAdults: number = 0;
   totalPlanChildren: number = 0;
-  bookingsResponseList: any;
+  bookingsResponseList: any[] = [];
   expanded: boolean = false;
     url: string;
     activeGoogleCenter: boolean = false;
@@ -60,7 +60,7 @@ export class PaylaterConfirmComponent {
     this.PropertyUrl = this.token.getPropertyUrl();
     this.propertyDetails = this.token.getProperty();
     this.bookingone = this.token.getBookingData();
-    this.booking = this.token.getBookingDataObj();
+    this.booking = this.token.getEnquiryData();
     const couponCodeValues = sessionStorage.getItem('selectedPromoData');
 
       if (couponCodeValues) {
@@ -75,7 +75,7 @@ export class PaylaterConfirmComponent {
       this.bookingone.taxDetails.forEach((element) => {
         if (element.name === 'GST') {
           this.booking.taxDetails = [];
-          this.booking.taxDetails.push(element);
+          this.booking?.taxDetails.push(element);
           this.taxPercentage = element.percentage;
           this.booking.taxPercentage = this.taxPercentage;
 
@@ -142,24 +142,48 @@ export class PaylaterConfirmComponent {
 
   }
   loadBookingSessionData(): void {
-  const bookingDataDetails = sessionStorage.getItem('bookingSummaryDetails');
-  if (bookingDataDetails) {
-    this.bookingSummaryDetails = JSON.parse(bookingDataDetails);
+    const bookingDataDetails = sessionStorage.getItem('bookingSummaryDetails');
+
+    if (!bookingDataDetails) {
+      this.bookingsResponseList = [];
+      this.totalDiscount = 0;
+      return;
+    }
+
+    const parsedBookingSummary = JSON.parse(bookingDataDetails);
+    this.bookingSummaryDetails = parsedBookingSummary;
+    this.bookingsResponseList = this.normalizeBookingsResponseList(parsedBookingSummary);
+    this.totalDiscount = this.bookingsResponseList.reduce(
+      (sum, booking) => sum + (booking.discountAmount || 0),
+      0
+    );
     this.calculateTotalGuestsFromPlans();
-    // console.log('bookingSummaryDetails', this.bookingSummaryDetails);
   }
 
-  const bookingsResponseList = sessionStorage.getItem('bookingsResponseList');
-  if (bookingsResponseList) {
-    this.bookingsResponseList = JSON.parse(bookingsResponseList);
-          this.totalDiscount = this.bookingsResponseList.reduce(
-    (sum, booking) => sum + (booking.discountAmount || 0),
-    0
-  );
-    this.calculateTotalGuestsFromPlans();
-    // console.log('bookingsResponseList', this.bookingsResponseList);
+  private normalizeBookingsResponseList(bookingSummary: any): any[] {
+    if (Array.isArray(bookingSummary)) {
+      return bookingSummary;
+    }
+
+    if (Array.isArray(bookingSummary?.selectedPlansSummary)) {
+      return bookingSummary.selectedPlansSummary;
+    }
+
+    return [];
   }
-}
+
+  getPlanSubTotal(booking: any): number {
+    return (
+      (Number(booking?.actualRoomPrice) || 0) +
+      (Number(booking?.extraPersonAdultCountAmount) || 0) +
+      (Number(booking?.extraPersonChildCountAmount) || 0) -
+      (Number(booking?.discountAmount) || 0)
+    );
+  }
+
+  getPlanTotal(booking: any): number {
+    return this.getPlanSubTotal(booking) + (Number(booking?.taxPercentageperroom) || 0);
+  }
 getTrimmedDescription(description: string): string {
   if (!description) return '';
 
@@ -273,14 +297,16 @@ onGenerateVouchers() {
     return textContent.trim().split(/\s+/).length > 20;
   }
   calculateTotalGuestsFromPlans() {
+    const selectedPlansSummary = this.bookingsResponseList || [];
+
     this.totalPlanAdults =
-      this.bookingSummaryDetails?.selectedPlansSummary?.reduce(
+      selectedPlansSummary.reduce(
         (sum, plan) => sum + (plan.adults || 0),
         0
       );
 
     this.totalPlanChildren =
-      this.bookingSummaryDetails?.selectedPlansSummary?.reduce(
+      selectedPlansSummary.reduce(
         (sum, plan) => sum + (plan.children || 0),
         0
       );
