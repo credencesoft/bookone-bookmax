@@ -184,6 +184,15 @@ export class PaylaterConfirmComponent {
   getPlanTotal(booking: any): number {
     return this.getPlanSubTotal(booking) + (Number(booking?.taxPercentageperroom) || 0);
   }
+
+  getConvenienceFee(): number {
+    return Number(this.booking?.convenienceFee) || 0;
+  }
+
+  getTotalAmountWithConvenienceFee(): number {
+    return (Number(this.bookingSummaryDetails?.totalAmount) || 0) ;
+  }
+
 getTrimmedDescription(description: string): string {
   if (!description) return '';
 
