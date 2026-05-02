@@ -1,5 +1,5 @@
-<div [ngClass]="{ 'background-image-website': [3063, 3424, 3425].includes(businessUser?.id) }">
-<app-Header-Listingdetailsone [businessUser]="businessUser">
+<div [ngClass]="{ 'background-image-website': [3063, 3424, 3425].includes(propertyDetails?.id) }">
+<app-Header-Listingdetailsone [propertyDetails]="propertyDetails">
 </app-Header-Listingdetailsone>
 
 <div class="desktop-view-booking-voucher">
@@ -132,25 +132,25 @@
         <div style="justify-content: center; display: flex; gap: 20px">
            <div class="d-flex justify-content-center align-items-center">
 
-          <div class="hotel-card-unique d-flex flex-row" *ngIf="businessUser?.name">
+          <div class="hotel-card-unique d-flex flex-row" *ngIf="propertyDetails?.name">
             <!-- Left Side: Text Content -->
             <div class="hotel-card-unique-body flex-fill">
-              <h3 class="hotel-card-unique-title">{{ businessUser?.name }}</h3>
+              <h3 class="hotel-card-unique-title">{{ propertyDetails?.name }}</h3>
               <p class="hotel-card-unique-location">
-                <i class="bi bi-geo-alt-fill"></i> {{ businessUser.address?.streetName }},
-          {{ businessUser.address?.city }}, {{ businessUser.address?.state }},
-          {{ businessUser.address?.country }}
+                <i class="bi bi-geo-alt-fill"></i> {{ propertyDetails.address?.streetName }},
+          {{ propertyDetails.address?.city }}, {{ propertyDetails.address?.state }},
+          {{ propertyDetails.address?.country }}
               </p>
-              <div class="hotel-card-unique-text" *ngIf="businessUser.businessDescription">
-              <p [innerHTML]="getTrimmedDescription(businessUser.businessDescription)" style=" text-align: justify;">
-                {{ businessUser.businessDescription }}
+              <div class="hotel-card-unique-text" *ngIf="propertyDetails.businessDescription">
+              <p [innerHTML]="getTrimmedDescription(propertyDetails.businessDescription)" style=" text-align: justify;">
+                {{ propertyDetails.businessDescription }}
               </p>
           </div>
             </div>
 
             <!-- Right Side: Image -->
-            <div *ngIf="businessUser?.imageList?.length > 0" class="flex-shrink-0" style="width: 240px;">
-              <img [src]="businessUser?.imageList[0]?.url" >
+            <div *ngIf="propertyDetails?.imageList?.length > 0" class="flex-shrink-0" style="width: 240px;">
+              <img [src]="propertyDetails?.imageList[0]?.url" >
             </div>
           </div>
 
@@ -342,7 +342,7 @@
                 <div>Mobile No:</div>
                 <div>
                   <span>
-                    <b>{{ booking?.mobile }}</b></span
+                    <b>{{ booking?.phone }}</b></span
                   >
                 </div>
               </div>
@@ -410,6 +410,12 @@
                   <div>₹{{ bookingSummaryDetails?.totalPlanPrice - totalDiscount  | number : "1.2-2" }}</div>
                 </div>
                 </div>
+              <div class="footer-borders" *ngIf="getConvenienceFee() > 0">
+                <div class="d-flex justify-content-between">
+                  <div>Convenience Fee:</div>
+                  <div>₹ {{ getConvenienceFee() | number : "1.2-2" }}</div>
+                </div>
+                </div>
               <div class="footer-borders">
                 <div class="d-flex justify-content-between">
                   <div>Total GST:</div>
@@ -443,7 +449,7 @@
                 <div class="d-flex justify-content-between ">
                   <div>Total Amount:</div>
                   <div>₹
-                {{ bookingSummaryDetails?.totalAmount | number : "1.2-2" }}</div>
+                {{ getTotalAmountWithConvenienceFee() | number : "1.2-2" }}</div>
                 </div>
 
               </div>
@@ -561,22 +567,22 @@
             Didn’t receive it yet? It might be in your spam folder — or simply
             check WhatsApp.
           </div>
-          <div class="hotel-card-unique d-flex flex-row" style="flex-wrap: wrap;" *ngIf="businessUser?.name">
+          <div class="hotel-card-unique d-flex flex-row" style="flex-wrap: wrap;" *ngIf="propertyDetails?.name">
             <!-- Right Side: Image -->
-            <div *ngIf="businessUser?.imageList?.length > 0" class="flex-shrink-0" style=" width: 100%; height: 100%;">
-              <img [src]="businessUser?.imageList[0]?.url" >
+            <div *ngIf="propertyDetails?.imageList?.length > 0" class="flex-shrink-0" style=" width: 100%; height: 100%;">
+              <img [src]="propertyDetails?.imageList[0]?.url" >
             </div>
             <!-- Left Side: Text Content -->
             <div class="hotel-card-unique-body flex-fill">
-              <h3 class="hotel-card-unique-title">{{ businessUser?.name }}</h3>
+              <h3 class="hotel-card-unique-title">{{ propertyDetails?.name }}</h3>
               <p class="hotel-card-unique-location">
-                <i class="bi bi-geo-alt-fill"></i> {{ businessUser.address?.streetName }},
-          {{ businessUser.address?.city }}, {{ businessUser.address?.state }},
-          {{ businessUser.address?.country }}
+                <i class="bi bi-geo-alt-fill"></i> {{ propertyDetails.address?.streetName }},
+          {{ propertyDetails.address?.city }}, {{ propertyDetails.address?.state }},
+          {{ propertyDetails.address?.country }}
               </p>
-              <div class="hotel-card-unique-text" *ngIf="businessUser.businessDescription">
-              <p [innerHTML]="getTrimmedDescription(businessUser.businessDescription)" style=" text-align: justify;">
-                {{ businessUser.businessDescription }}
+              <div class="hotel-card-unique-text" *ngIf="propertyDetails.businessDescription">
+              <p [innerHTML]="getTrimmedDescription(propertyDetails.businessDescription)" style=" text-align: justify;">
+                {{ propertyDetails.businessDescription }}
               </p>
           </div>
             </div>
@@ -810,7 +816,7 @@
                 <div>Mobile No:</div>
                 <div>
                   <span>
-                    <b>{{ booking?.mobile }}</b></span
+                    <b>{{ booking?.phone }}</b></span
                   >
                 </div>
               </div>
@@ -879,6 +885,10 @@
                             <div>Final {{this.roomLabel}} Tariff:</div>
                             <div>₹ {{ bookingSummaryDetails?.totalPlanPrice - totalDiscount  | number : "1.2-2" }}</div>
                         </div>
+                        <div class="d-flex justify-content-between" *ngIf="getConvenienceFee() > 0">
+                            <div>Convenience Fee:</div>
+                            <div>₹ {{ getConvenienceFee() | number : "1.2-2" }}</div>
+                        </div>
                          <div class="d-flex justify-content-between" >
                             <div>Total GST:</div>
                             <div>₹ {{ bookingSummaryDetails?.totalTax | number : "1.2-2" }}</div>
@@ -901,7 +911,7 @@
                         <hr style="border: 1px solid #E5E7EB; margin-top: 10px; margin-bottom: 10px;">
                         <div class="d-flex justify-content-between" style="font-weight: 600; color:#16A34A">
                           <div>Total Amount:</div>
-                          <div>₹{{ bookingSummaryDetails?.totalAmount | number : "1.2-2" }}</div>
+                          <div>₹{{ getTotalAmountWithConvenienceFee() | number : "1.2-2" }}</div>
                         </div>
               <div>
               </div>
