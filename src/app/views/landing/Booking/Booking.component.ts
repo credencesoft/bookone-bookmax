@@ -12224,9 +12224,14 @@ sendWhatsappMessageToPropertyOwner() {
     const roomTotal = this.toSafeAmount(
       this.getPlanAmountAfterDiscount(plan) + this.getPlanTaxAfterDiscount(plan),
     );
-    const advancePercentage = this.selectedAdvanceDiscountSlab
-      ? this.toSafePercent(this.selectedAdvanceDiscountSlab.advancePercentage) / 100
-      : 1;
+    const configuredAdvancePercentage = this.toSafePercent(
+      this.businessServiceDto?.advanceAmountPercentage,
+    );
+    const advancePercentage = (
+      this.selectedAdvanceDiscountSlab
+        ? this.toSafePercent(this.selectedAdvanceDiscountSlab.advancePercentage)
+        : configuredAdvancePercentage || 100
+    ) / 100;
     const roomAdvanceAmount = this.toSafeAmount(roomTotal * advancePercentage);
 
     return this.toSafeAmount(
