@@ -3103,7 +3103,6 @@ getPlanSubtotal(plan: any): number {
 
   const fallbackSubtotal =
     Number(plan?.price || 0)
-    console.log('fallbackSubtotal is',fallbackSubtotal);
 
   return Number(fallbackSubtotal.toFixed(2));
   const subtotal = this.getSummaryPlanNightlyBreakdown(plan).reduce(
