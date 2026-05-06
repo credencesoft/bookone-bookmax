@@ -3050,7 +3050,7 @@ export class BookingComponent implements OnInit {
           this.payment.currency = this.businessUser.localCurrency;
           this.payment.propertyId = this.businessUser.id;
           this.booking.taxAmount = firstPlan?.taxPercentageperroom;
-          if (this.businessServiceDto.advanceAmountPercentage === 100) {
+          if (this.getEffectiveAdvanceAmountPercentage() === 100) {
             if (
               this.serviceChargePercentage &&
               this.serviceChargePercentage > 0
@@ -3128,7 +3128,7 @@ export class BookingComponent implements OnInit {
                 Number((this.bookingSummaryDetails?.totalAmount).toFixed(2)),
               );
             }
-          } else if (this.businessServiceDto.advanceAmountPercentage === 50) {
+          } else if (this.getEffectiveAdvanceAmountPercentage() === 50) {
             if (
               this.serviceChargePercentage &&
               this.serviceChargePercentage > 0
@@ -3390,7 +3390,7 @@ export class BookingComponent implements OnInit {
               this.booking.couponCode = this.specialDiscountData.couponCode;
               this.booking.promotionName = this.specialDiscountData.name;
 
-              if (this.businessServiceDto.advanceAmountPercentage === 100) {
+              if (this.getEffectiveAdvanceAmountPercentage() === 100) {
                 const serviceChargeAmount =
                   ((this.bookingSummaryDetails?.totalPlanPrice -
                     (this.bookingSummaryDetails?.totalPlanPrice *
@@ -3444,7 +3444,7 @@ export class BookingComponent implements OnInit {
                   ).toFixed(2),
                 );
               } else if (
-                this.businessServiceDto.advanceAmountPercentage === 50
+                this.getEffectiveAdvanceAmountPercentage() === 50
               ) {
                 const serviceChargeAmount =
                   (firstPlanOne.discountedPrice *
@@ -3573,7 +3573,7 @@ export class BookingComponent implements OnInit {
               this.booking.couponCode = this.specialDiscountData.couponCode;
               this.booking.promotionName = this.specialDiscountData.name;
 
-              if (this.businessServiceDto.advanceAmountPercentage === 100) {
+              if (this.getEffectiveAdvanceAmountPercentage() === 100) {
                 this.payment.taxAmount = Number(
                   Number(
                     (this.bookingSummaryDetails?.totalTax).toFixed(2),
@@ -3597,7 +3597,7 @@ export class BookingComponent implements OnInit {
                   Number((this.bookingSummaryDetails?.totalAmount).toFixed(2)),
                 );
               } else if (
-                this.businessServiceDto.advanceAmountPercentage === 50
+                this.getEffectiveAdvanceAmountPercentage() === 50
               ) {
                 this.payment.taxAmount = Number(
                   Number(
@@ -3739,7 +3739,7 @@ export class BookingComponent implements OnInit {
           this.payment.currency = this.businessUser.localCurrency;
           this.payment.propertyId = this.businessUser.id;
           this.booking.taxAmount = firstPlan?.taxPercentageperroom;
-          if (this.businessServiceDto.advanceAmountPercentage === 100) {
+          if (this.getEffectiveAdvanceAmountPercentage() === 100) {
             if (
               this.serviceChargePercentage &&
               this.serviceChargePercentage > 0
@@ -3817,7 +3817,7 @@ export class BookingComponent implements OnInit {
                 Number((this.bookingSummaryDetails?.totalAmount).toFixed(2)),
               );
             }
-          } else if (this.businessServiceDto.advanceAmountPercentage === 50) {
+          } else if (this.getEffectiveAdvanceAmountPercentage() === 50) {
             if (
               this.serviceChargePercentage &&
               this.serviceChargePercentage > 0
@@ -4079,7 +4079,7 @@ export class BookingComponent implements OnInit {
               this.booking.couponCode = this.specialDiscountData.couponCode;
               this.booking.promotionName = this.specialDiscountData.name;
 
-              if (this.businessServiceDto.advanceAmountPercentage === 100) {
+              if (this.getEffectiveAdvanceAmountPercentage() === 100) {
                 const serviceChargeAmount =
                   ((this.bookingSummaryDetails?.totalPlanPrice -
                     (this.bookingSummaryDetails?.totalPlanPrice *
@@ -4133,7 +4133,7 @@ export class BookingComponent implements OnInit {
                   ).toFixed(2),
                 );
               } else if (
-                this.businessServiceDto.advanceAmountPercentage === 50
+                this.getEffectiveAdvanceAmountPercentage() === 50
               ) {
                 const serviceChargeAmount =
                   (firstPlanOne.discountedPrice *
@@ -4262,7 +4262,7 @@ export class BookingComponent implements OnInit {
               this.booking.couponCode = this.specialDiscountData.couponCode;
               this.booking.promotionName = this.specialDiscountData.name;
 
-              if (this.businessServiceDto.advanceAmountPercentage === 100) {
+              if (this.getEffectiveAdvanceAmountPercentage() === 100) {
                 this.payment.taxAmount = Number(
                   Number(
                     (this.bookingSummaryDetails?.totalTax).toFixed(2),
@@ -4286,7 +4286,7 @@ export class BookingComponent implements OnInit {
                   Number((this.bookingSummaryDetails?.totalAmount).toFixed(2)),
                 );
               } else if (
-                this.businessServiceDto.advanceAmountPercentage === 50
+                this.getEffectiveAdvanceAmountPercentage() === 50
               ) {
                 this.payment.taxAmount = Number(
                   Number(
@@ -4486,7 +4486,7 @@ export class BookingComponent implements OnInit {
           this.payment.currency = this.businessUser.localCurrency;
           this.payment.propertyId = this.businessUser.id;
           this.booking.taxAmount = firstPlan?.taxPercentageperroom;
-          if (this.businessServiceDto.advanceAmountPercentage === 100) {
+          if (this.getEffectiveAdvanceAmountPercentage() === 100) {
             if (
               this.serviceChargePercentage &&
               this.serviceChargePercentage > 0
@@ -4564,7 +4564,7 @@ export class BookingComponent implements OnInit {
                 Number((this.bookingSummaryDetails?.totalAmount).toFixed(2)),
               );
             }
-          } else if (this.businessServiceDto.advanceAmountPercentage === 50) {
+          } else if (this.getEffectiveAdvanceAmountPercentage() === 50) {
             if (
               this.serviceChargePercentage &&
               this.serviceChargePercentage > 0
@@ -4826,7 +4826,7 @@ export class BookingComponent implements OnInit {
               this.booking.couponCode = this.specialDiscountData.couponCode;
               this.booking.promotionName = this.specialDiscountData.name;
 
-              if (this.businessServiceDto.advanceAmountPercentage === 100) {
+              if (this.getEffectiveAdvanceAmountPercentage() === 100) {
                 const serviceChargeAmount =
                   ((this.bookingSummaryDetails?.totalPlanPrice -
                     (this.bookingSummaryDetails?.totalPlanPrice *
@@ -4880,7 +4880,7 @@ export class BookingComponent implements OnInit {
                   ).toFixed(2),
                 );
               } else if (
-                this.businessServiceDto.advanceAmountPercentage === 50
+                this.getEffectiveAdvanceAmountPercentage() === 50
               ) {
                 const serviceChargeAmount =
                   (firstPlanOne.discountedPrice *
@@ -5009,7 +5009,7 @@ export class BookingComponent implements OnInit {
               this.booking.couponCode = this.specialDiscountData.couponCode;
               this.booking.promotionName = this.specialDiscountData.name;
 
-              if (this.businessServiceDto.advanceAmountPercentage === 100) {
+              if (this.getEffectiveAdvanceAmountPercentage() === 100) {
                 this.payment.taxAmount = Number(
                   Number(
                     (this.bookingSummaryDetails?.totalTax).toFixed(2),
@@ -5033,7 +5033,7 @@ export class BookingComponent implements OnInit {
                   Number((this.bookingSummaryDetails?.totalAmount).toFixed(2)),
                 );
               } else if (
-                this.businessServiceDto.advanceAmountPercentage === 50
+                this.getEffectiveAdvanceAmountPercentage() === 50
               ) {
                 this.payment.taxAmount = Number(
                   Number(
@@ -5132,7 +5132,7 @@ export class BookingComponent implements OnInit {
           // this.payment.amount = Number((Number(((this.booking.totalAmount / 100) * 20).toFixed(2))));
           // this.booking.advanceAmount = Number((Number(((this.booking.totalAmount / 100) * 20).toFixed(2)) + Number(((this.totalExtraAmount / 100) * 20).toFixed(2))).toFixed(2));
           // this.payment.transactionChargeAmount = Number((Number(((this.booking.totalAmount / 100) * 20).toFixed(2)) + Number(((this.totalExtraAmount /100) * 20).toFixed(2))).toFixed(2));
-          if (this.businessServiceDto.advanceAmountPercentage === 100) {
+          if (this.getEffectiveAdvanceAmountPercentage() === 100) {
             if (
               this.serviceChargePercentage &&
               this.serviceChargePercentage > 0
@@ -5210,7 +5210,7 @@ export class BookingComponent implements OnInit {
                 Number((this.bookingSummaryDetails?.totalAmount).toFixed(2)),
               );
             }
-          } else if (this.businessServiceDto.advanceAmountPercentage === 50) {
+          } else if (this.getEffectiveAdvanceAmountPercentage() === 50) {
             if (
               this.serviceChargePercentage &&
               this.serviceChargePercentage > 0
@@ -5472,7 +5472,7 @@ export class BookingComponent implements OnInit {
               this.booking.couponCode = this.specialDiscountData.couponCode;
               this.booking.promotionName = this.specialDiscountData.name;
 
-              if (this.businessServiceDto.advanceAmountPercentage === 100) {
+              if (this.getEffectiveAdvanceAmountPercentage() === 100) {
                 const serviceChargeAmount =
                   ((this.bookingSummaryDetails?.totalPlanPrice -
                     (this.bookingSummaryDetails?.totalPlanPrice *
@@ -5526,7 +5526,7 @@ export class BookingComponent implements OnInit {
                   ).toFixed(2),
                 );
               } else if (
-                this.businessServiceDto.advanceAmountPercentage === 50
+                this.getEffectiveAdvanceAmountPercentage() === 50
               ) {
                 const serviceChargeAmount =
                   (firstPlanOne.discountedPrice *
@@ -5655,7 +5655,7 @@ export class BookingComponent implements OnInit {
               this.booking.couponCode = this.specialDiscountData.couponCode;
               this.booking.promotionName = this.specialDiscountData.name;
 
-              if (this.businessServiceDto.advanceAmountPercentage === 100) {
+              if (this.getEffectiveAdvanceAmountPercentage() === 100) {
                 this.payment.taxAmount = Number(
                   Number(
                     (this.bookingSummaryDetails?.totalTax).toFixed(2),
@@ -5679,7 +5679,7 @@ export class BookingComponent implements OnInit {
                   Number((this.bookingSummaryDetails?.totalAmount).toFixed(2)),
                 );
               } else if (
-                this.businessServiceDto.advanceAmountPercentage === 50
+                this.getEffectiveAdvanceAmountPercentage() === 50
               ) {
                 this.payment.taxAmount = Number(
                   Number(
@@ -5767,7 +5767,7 @@ export class BookingComponent implements OnInit {
             this.equitycreatedData?.externalSite || this.booking.externalSite;
           this.payment.sourceChannel = this.equitycreatedData?.source || null;
           this.booking.taxAmount = firstPlan?.taxPercentageperroom;
-          if (this.businessServiceDto.advanceAmountPercentage === 100) {
+          if (this.getEffectiveAdvanceAmountPercentage() === 100) {
             if (
               this.serviceChargePercentage &&
               this.serviceChargePercentage > 0
@@ -5845,7 +5845,7 @@ export class BookingComponent implements OnInit {
                 Number((this.bookingSummaryDetails?.totalAmount).toFixed(2)),
               );
             }
-          } else if (this.businessServiceDto.advanceAmountPercentage === 50) {
+          } else if (this.getEffectiveAdvanceAmountPercentage() === 50) {
             if (
               this.serviceChargePercentage &&
               this.serviceChargePercentage > 0
@@ -6107,7 +6107,7 @@ export class BookingComponent implements OnInit {
               this.booking.couponCode = this.specialDiscountData.couponCode;
               this.booking.promotionName = this.specialDiscountData.name;
 
-              if (this.businessServiceDto.advanceAmountPercentage === 100) {
+              if (this.getEffectiveAdvanceAmountPercentage() === 100) {
                 const serviceChargeAmount =
                   ((this.bookingSummaryDetails?.totalPlanPrice -
                     (this.bookingSummaryDetails?.totalPlanPrice *
@@ -6161,7 +6161,7 @@ export class BookingComponent implements OnInit {
                   ).toFixed(2),
                 );
               } else if (
-                this.businessServiceDto.advanceAmountPercentage === 50
+                this.getEffectiveAdvanceAmountPercentage() === 50
               ) {
                 const serviceChargeAmount =
                   (firstPlanOne.discountedPrice *
@@ -6290,7 +6290,7 @@ export class BookingComponent implements OnInit {
               this.booking.couponCode = this.specialDiscountData.couponCode;
               this.booking.promotionName = this.specialDiscountData.name;
 
-              if (this.businessServiceDto.advanceAmountPercentage === 100) {
+              if (this.getEffectiveAdvanceAmountPercentage() === 100) {
                 this.payment.taxAmount = Number(
                   Number(
                     (this.bookingSummaryDetails?.totalTax).toFixed(2),
@@ -6314,7 +6314,7 @@ export class BookingComponent implements OnInit {
                   Number((this.bookingSummaryDetails?.totalAmount).toFixed(2)),
                 );
               } else if (
-                this.businessServiceDto.advanceAmountPercentage === 50
+                this.getEffectiveAdvanceAmountPercentage() === 50
               ) {
                 this.payment.taxAmount = Number(
                   Number(
@@ -6401,7 +6401,7 @@ export class BookingComponent implements OnInit {
           this.payment.propertyId = this.businessUser.id;
           this.payment.orderId = this.equitycreatedData.enquiryId;
           this.booking.taxAmount = firstPlan?.taxPercentageperroom;
-          if (this.businessServiceDto.advanceAmountPercentage === 100) {
+          if (this.getEffectiveAdvanceAmountPercentage() === 100) {
             if (
               this.serviceChargePercentage &&
               this.serviceChargePercentage > 0
@@ -6479,7 +6479,7 @@ export class BookingComponent implements OnInit {
                 Number((this.bookingSummaryDetails?.totalAmount).toFixed(2)),
               );
             }
-          } else if (this.businessServiceDto.advanceAmountPercentage === 50) {
+          } else if (this.getEffectiveAdvanceAmountPercentage() === 50) {
             if (
               this.serviceChargePercentage &&
               this.serviceChargePercentage > 0
@@ -6741,7 +6741,7 @@ export class BookingComponent implements OnInit {
               this.booking.couponCode = this.specialDiscountData.couponCode;
               this.booking.promotionName = this.specialDiscountData.name;
 
-              if (this.businessServiceDto.advanceAmountPercentage === 100) {
+              if (this.getEffectiveAdvanceAmountPercentage() === 100) {
                 const serviceChargeAmount =
                   ((this.bookingSummaryDetails?.totalPlanPrice -
                     (this.bookingSummaryDetails?.totalPlanPrice *
@@ -6795,7 +6795,7 @@ export class BookingComponent implements OnInit {
                   ).toFixed(2),
                 );
               } else if (
-                this.businessServiceDto.advanceAmountPercentage === 50
+                this.getEffectiveAdvanceAmountPercentage() === 50
               ) {
                 const serviceChargeAmount =
                   (firstPlanOne.discountedPrice *
@@ -6924,7 +6924,7 @@ export class BookingComponent implements OnInit {
               this.booking.couponCode = this.specialDiscountData.couponCode;
               this.booking.promotionName = this.specialDiscountData.name;
 
-              if (this.businessServiceDto.advanceAmountPercentage === 100) {
+              if (this.getEffectiveAdvanceAmountPercentage() === 100) {
                 this.payment.taxAmount = Number(
                   Number(
                     (this.bookingSummaryDetails?.totalTax).toFixed(2),
@@ -6948,7 +6948,7 @@ export class BookingComponent implements OnInit {
                   Number((this.bookingSummaryDetails?.totalAmount).toFixed(2)),
                 );
               } else if (
-                this.businessServiceDto.advanceAmountPercentage === 50
+                this.getEffectiveAdvanceAmountPercentage() === 50
               ) {
                 this.payment.taxAmount = Number(
                   Number(
@@ -7045,6 +7045,7 @@ export class BookingComponent implements OnInit {
           } else {
             this.paymentLoader = false;
             this.payment = response.body;
+            this.applyAuthoritativeGatewayAmounts(this.payment, 'razorpay-response');
 
             //for post booking create
 
@@ -7083,6 +7084,7 @@ export class BookingComponent implements OnInit {
         this.paymentLoader = false;
         if (response.status === 200) {
           this.payment = response.body;
+          this.applyAuthoritativeGatewayAmounts(this.payment, 'razorpay-intent');
           this.openBookingProcess(
             this.equitycreatedData.enquiryId,
             this.payment.razorpayOrderId,
@@ -7129,6 +7131,7 @@ export class BookingComponent implements OnInit {
           } else {
             this.paymentLoader = false;
             this.payment = response.body;
+            this.applyAuthoritativeGatewayAmounts(this.payment, 'payu-response');
             this.openBookingProcess(
               this.equitycreatedData.enquiryId,
               this.payment.referenceNumber,
@@ -7211,6 +7214,7 @@ export class BookingComponent implements OnInit {
           } else {
             this.paymentLoader = false;
             this.payment = response.body;
+            this.applyAuthoritativeGatewayAmounts(this.payment, 'paytm-response');
             //for post booking create
 
             this.paymentIntentPayTm(this.payment);
@@ -7261,6 +7265,7 @@ export class BookingComponent implements OnInit {
           } else {
             this.paymentLoader = false;
             this.payment = response.body;
+            this.applyAuthoritativeGatewayAmounts(this.payment, 'atom-response');
 
             //for post booking create
 
@@ -7312,6 +7317,7 @@ export class BookingComponent implements OnInit {
           } else {
             this.paymentLoader = false;
             this.payment = response.body;
+            this.applyAuthoritativeGatewayAmounts(this.payment, 'hdfc-response');
 
             //for post booking create
 
@@ -7362,6 +7368,7 @@ export class BookingComponent implements OnInit {
           } else {
             this.paymentLoader = false;
             this.payment = response.body;
+            this.applyAuthoritativeGatewayAmounts(this.payment, 'phonepe-response');
 
             //for post booking create
 
@@ -7399,6 +7406,7 @@ export class BookingComponent implements OnInit {
         this.paymentLoader = false;
         if (response.status === 200) {
           this.payment = response.body;
+          this.applyAuthoritativeGatewayAmounts(this.payment, 'phonepe-intent');
 
           this.token.saveBookingData(this.booking);
           this.token.savePaymentData(this.payment);
@@ -7532,6 +7540,7 @@ export class BookingComponent implements OnInit {
       this.paymentLoader = false;
       if (response.status === 200) {
         this.payment = response.body;
+        this.applyAuthoritativeGatewayAmounts(this.payment, 'paytm-intent');
         this.token.saveBookingData(this.booking);
         this.token.savePaymentData(this.payment);
         this.token.savePropertyData(this.businessUser);
@@ -7644,6 +7653,7 @@ export class BookingComponent implements OnInit {
       this.paymentLoader = false;
       if (response.status === 200) {
         this.payment = response.body;
+        this.applyAuthoritativeGatewayAmounts(this.payment, 'atom-intent');
 
         this.token.saveBookingData(this.booking);
         this.token.savePaymentData(this.payment);
@@ -7660,6 +7670,7 @@ export class BookingComponent implements OnInit {
       this.paymentLoader = false;
       if (response.status === 200) {
         this.payment = response.body;
+        this.applyAuthoritativeGatewayAmounts(this.payment, 'hdfc-intent');
 
         this.token.saveBookingData(this.booking);
         this.token.savePaymentData(this.payment);
@@ -11521,7 +11532,7 @@ sendWhatsappMessageToPropertyOwner() {
       let currentAmount = baseAmount;
       const couponPct = this.toSafePercent(this.selectedCouponList?.discountPercentage);
       const advanceDiscountPct = this.toSafePercent(this.selectedAdvanceDiscountSlab?.discountPercentage);
-      const advancePayPct = this.toSafePercent(this.selectedAdvanceDiscountSlab?.advancePercentage);
+      const advancePayPct = this.getEffectiveAdvanceAmountPercentage();
       const roomTaxPct = this.toSafePercent(this.booking?.taxPercentage);
       const servicesTotal = this.toSafeAmount(this.getServicesTotal());
 
@@ -11567,20 +11578,12 @@ sendWhatsappMessageToPropertyOwner() {
         roomsWithTax + servicesTotal + this.convenienceFeeAmount,
       );
 
-      if (this.selectedAdvanceDiscountSlab) {
-        const roomAdvancePortion = this.toSafeAmount(
-          (roomsWithTax * advancePayPct) / 100,
-        );
-        this.advancePaymentAmount = this.toSafeAmount(
-          roomAdvancePortion + servicesTotal + this.convenienceFeeAmount,
-        );
-        this.remainingPaymentAmount = this.toSafeAmount(
-          roomsWithTax - roomAdvancePortion,
-        );
-      } else {
-        this.advancePaymentAmount = 0;
-        this.remainingPaymentAmount = grandTotalAmount;
-      }
+      this.advancePaymentAmount = this.toSafeAmount(
+        (grandTotalAmount * advancePayPct) / 100,
+      );
+      this.remainingPaymentAmount = this.toSafeAmount(
+        grandTotalAmount - this.advancePaymentAmount,
+      );
 
       // Update booking object with calculated values
       this.booking.netAmount = this.amountAfterDiscount;
@@ -11641,7 +11644,7 @@ sendWhatsappMessageToPropertyOwner() {
    * Get the advance payment percentage (what percentage to pay now)
    */
   getSelectedAdvancePaymentPercentage(): number {
-    return this.selectedAdvanceDiscountSlab?.advancePercentage || 0;
+    return this.getEffectiveAdvanceAmountPercentage();
   }
 
   hasAdvancePaymentPlans(): boolean {
@@ -11667,12 +11670,23 @@ sendWhatsappMessageToPropertyOwner() {
   private getAdvancePercentageForPlan(
     slab: AdvanceDiscountSlab | null = null,
   ): number {
+    return this.getEffectiveAdvanceAmountPercentage(slab);
+  }
+
+  private getEffectiveAdvanceAmountPercentage(
+    slab: AdvanceDiscountSlab | null = null,
+  ): number {
     const selectedSlab = slab ?? this.ensureSelectedAdvancePaymentPlan();
-    return Number(
-      selectedSlab?.advancePercentage ??
-      this.businessServiceDto?.advanceAmountPercentage ??
-      0,
+
+    if (selectedSlab) {
+      return this.toSafePercent(selectedSlab.advancePercentage);
+    }
+
+    const configuredPercentage = this.toSafePercent(
+      this.businessServiceDto?.advanceAmountPercentage,
     );
+
+    return configuredPercentage > 0 ? configuredPercentage : 100;
   }
 
   private getAdvanceDiscountPercentageForPlan(
@@ -12224,21 +12238,14 @@ sendWhatsappMessageToPropertyOwner() {
     const roomTotal = this.toSafeAmount(
       this.getPlanAmountAfterDiscount(plan) + this.getPlanTaxAfterDiscount(plan),
     );
-    const configuredAdvancePercentage = this.toSafePercent(
-      this.businessServiceDto?.advanceAmountPercentage,
-    );
-    const advancePercentage = (
-      this.selectedAdvanceDiscountSlab
-        ? this.toSafePercent(this.selectedAdvanceDiscountSlab.advancePercentage)
-        : configuredAdvancePercentage || 100
-    ) / 100;
-    const roomAdvanceAmount = this.toSafeAmount(roomTotal * advancePercentage);
-
-    return this.toSafeAmount(
-      roomAdvanceAmount +
+    const advancePercentage = this.getEffectiveAdvanceAmountPercentage() / 100;
+    const planGrandTotal = this.toSafeAmount(
+      roomTotal +
         this.toSafeAmount(selectedServiceTotal) +
         this.toSafeAmount(convenienceFee),
     );
+
+    return this.toSafeAmount(planGrandTotal * advancePercentage);
   }
 
   getTotalTax(): number {
@@ -12515,23 +12522,17 @@ sendWhatsappMessageToPropertyOwner() {
   }
 
   /**
-   * Pay Now = advance% of (rooms after all discounts + room tax)
-   *         + services total in full (add-ons always paid completely now)
-   *         + convenience fee in full
+   * Pay Now = advance% of Grand Total after discounts, tax, services and fee
    */
   getNewPayNowAmount(): number {
-    if (!this.selectedAdvanceDiscountSlab) { return this.getNewGrandTotal(); }
-    const advancePct = this.toSafePercent(this.selectedAdvanceDiscountSlab.advancePercentage) / 100;
-    const roomsWithTax = (this.amountAfterDiscount || 0) + (this.taxOnDiscountedAmount || 0);
-    return (roomsWithTax * advancePct) + this.getServicesTotal() + this.getDisplayedConvenienceFeeAmount();
+    const advancePct = this.getEffectiveAdvanceAmountPercentage() / 100;
+    return this.toSafeAmount(this.getNewGrandTotal() * advancePct);
   }
 
-  /** Balance at Check-in = remaining room portion (after advance %) */
+  /** Balance at Check-in = remaining Grand Total after advance payment */
   getNewBalanceAtCheckIn(): number {
-    if (!this.selectedAdvanceDiscountSlab) { return 0; }
-    const advancePct = this.toSafePercent(this.selectedAdvanceDiscountSlab.advancePercentage) / 100;
-    const roomsWithTax = (this.amountAfterDiscount || 0) + (this.taxOnDiscountedAmount || 0);
-    return roomsWithTax * (1 - advancePct);
+    const advancePct = this.getEffectiveAdvanceAmountPercentage() / 100;
+    return this.toSafeAmount(this.getNewGrandTotal() * (1 - advancePct));
   }
 
   private applyAuthoritativeGatewayAmounts(
@@ -12541,9 +12542,7 @@ sendWhatsappMessageToPropertyOwner() {
     const grandTotal = this.toSafeAmount(this.getNewGrandTotal());
     const payNowAmount = this.toSafeAmount(this.getNewPayNowAmount());
     const roomTaxTotal = this.toSafeAmount(this.getTotalTax());
-    const advancePct = this.selectedAdvanceDiscountSlab
-      ? this.toSafePercent(this.selectedAdvanceDiscountSlab.advancePercentage) / 100
-      : 1;
+    const advancePct = this.getEffectiveAdvanceAmountPercentage() / 100;
     const payableRoomTax = this.toSafeAmount(roomTaxTotal * advancePct);
     const balanceAtCheckIn = this.toSafeAmount(
       Math.max(0, grandTotal - payNowAmount),
@@ -12571,7 +12570,5 @@ sendWhatsappMessageToPropertyOwner() {
       balanceAtCheckIn,
     });
   }
-
 }
-
 
