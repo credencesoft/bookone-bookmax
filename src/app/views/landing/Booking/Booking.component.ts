@@ -11660,9 +11660,9 @@ sendWhatsappMessageToPropertyOwner() {
   }
 
   private ensureSelectedAdvancePaymentPlan(): AdvanceDiscountSlab | null {
-    if (this.hasAdvancePaymentPlans() && !this.selectedAdvanceDiscountSlab) {
-      this.selectedAdvanceDiscountSlab = this.advanceDiscountSlabs[0] || null;
-    }
+    // if (this.hasAdvancePaymentPlans() && !this.selectedAdvanceDiscountSlab) {
+    //   this.selectedAdvanceDiscountSlab = this.advanceDiscountSlabs[0] || null;
+    // }
 
     return this.selectedAdvanceDiscountSlab;
   }
@@ -11736,13 +11736,10 @@ sendWhatsappMessageToPropertyOwner() {
   // }
 
   isAdvancePaymentPlanSelected(slab: AdvanceDiscountSlab | null): boolean {
+     if (!slab || !this.selectedAdvanceDiscountSlab) return false;
     return (
-      !!slab &&
-      !!this.selectedAdvanceDiscountSlab &&
-      Number(slab.advancePercentage) ===
-      Number(this.selectedAdvanceDiscountSlab.advancePercentage) &&
-      Number(slab.discountPercentage) ===
-      Number(this.selectedAdvanceDiscountSlab.discountPercentage)
+      Number(slab.advancePercentage) === Number(this.selectedAdvanceDiscountSlab.advancePercentage) &&
+      Number(slab.discountPercentage) === Number(this.selectedAdvanceDiscountSlab.discountPercentage)
     );
   }
 
