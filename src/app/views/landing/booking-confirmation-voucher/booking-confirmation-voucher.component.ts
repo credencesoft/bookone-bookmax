@@ -724,31 +724,44 @@ export class BookingConfirmationVoucherComponent {
 
   // Unified calculation helpers based on displayed voucher values
   getNewGrandTotal(): number {
-    return this.toSafeAmount(
-      this.getDisplayedAccommodationAfterDiscounts() +
-        this.getDisplayedRoomTax() +
-        this.getServicesTotal() +
-        this.getDisplayedConvenienceFee()
-    );
+  if (this.grandTotal > 0) {
+    return this.toSafeAmount(this.grandTotal);
   }
+  return this.toSafeAmount(
+    this.getDisplayedAccommodationAfterDiscounts() +
+      this.getDisplayedRoomTax() +
+      this.getServicesTotal() +
+      this.getDisplayedConvenienceFee()
+  );
+}
 
   getNewPayNowAmount(): number {
-    if (this.advancePaymentPercentage > 0) {
-      const advancePct = this.toSafePercent(this.advancePaymentPercentage) / 100;
-      const roomsWithTax = this.getDisplayedAccommodationAfterDiscounts() + this.getDisplayedRoomTax();
-      return this.toSafeAmount(
-        (roomsWithTax * advancePct) + this.getServicesTotal() + this.getDisplayedConvenienceFee(),
-      );
-    }
-    return this.getNewGrandTotal();
+  if (this.payNowAmount > 0) {
+    return this.toSafeAmount(this.payNowAmount);
   }
+  if (this.advancePaymentPercentage > 0) {
+    const advancePct = this.toSafePercent(this.advancePaymentPercentage) / 100;
+    const roomsWithTax =
+      this.getDisplayedAccommodationAfterDiscounts() + this.getDisplayedRoomTax();
+    return this.toSafeAmount(
+      (roomsWithTax + this.getDisplayedConvenienceFee()) * advancePct
+    );
+  }
+  return this.getNewGrandTotal();
+}
+
 
   getNewBalanceAtCheckIn(): number {
-    if (this.advancePaymentPercentage > 0) {
-      return this.toSafeAmount(Math.max(0, this.getNewGrandTotal() - this.getNewPayNowAmount()));
-    }
-    return 0;
+  if (this.balanceAtCheckIn > 0) {
+    return this.toSafeAmount(this.balanceAtCheckIn);
   }
+  if (this.advancePaymentPercentage > 0) {
+    return this.toSafeAmount(
+      Math.max(0, this.getNewGrandTotal() - this.getNewPayNowAmount())
+    );
+  }
+  return 0;
+}
 
   // isPaid(): boolean {
   //   return this.getNewBalanceAtCheckIn() === 0;

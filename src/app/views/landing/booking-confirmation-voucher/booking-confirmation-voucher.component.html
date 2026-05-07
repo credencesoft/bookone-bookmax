@@ -460,7 +460,7 @@
                 <div *ngIf="advancePaymentPercentage === 0" class="booking-summary-total total-borders">
                   <div class="d-flex justify-content-between" style="font-weight: 700">
                     <div>Total Amount (Due Now):</div>
-                    <div style="color: #dc2626">{{ booking.outstandingAmount | currency: currency : 'symbol' : '1.2-2' }}</div>
+                    <div style="color: #dc2626">{{ getNewGrandTotal() | currency: currency : 'symbol' : '1.2-2' }}</div>
                   </div>
                 </div>
               </div>
