@@ -11579,7 +11579,7 @@ sendWhatsappMessageToPropertyOwner() {
       );
 
       this.advancePaymentAmount = this.toSafeAmount(
-        (grandTotalAmount * advancePayPct) / 100,
+        ((grandTotalAmount - servicesTotal) * advancePayPct) / 100 + servicesTotal,
       );
       this.remainingPaymentAmount = this.toSafeAmount(
         grandTotalAmount - this.advancePaymentAmount,
@@ -12239,13 +12239,12 @@ sendWhatsappMessageToPropertyOwner() {
       this.getPlanAmountAfterDiscount(plan) + this.getPlanTaxAfterDiscount(plan),
     );
     const advancePercentage = this.getEffectiveAdvanceAmountPercentage() / 100;
-    const planGrandTotal = this.toSafeAmount(
-      roomTotal +
-        this.toSafeAmount(selectedServiceTotal) +
-        this.toSafeAmount(convenienceFee),
+    const servicesTotal = this.toSafeAmount(selectedServiceTotal);
+    const advanceBaseTotal = this.toSafeAmount(
+      roomTotal + this.toSafeAmount(convenienceFee),
     );
 
-    return this.toSafeAmount(planGrandTotal * advancePercentage);
+    return this.toSafeAmount(advanceBaseTotal * advancePercentage + servicesTotal);
   }
 
   getTotalTax(): number {
@@ -12522,17 +12521,21 @@ sendWhatsappMessageToPropertyOwner() {
   }
 
   /**
-   * Pay Now = advance% of Grand Total after discounts, tax, services and fee
+   * Pay Now = advance% of rooms/tax/fee + selected add-on services in full.
    */
   getNewPayNowAmount(): number {
     const advancePct = this.getEffectiveAdvanceAmountPercentage() / 100;
-    return this.toSafeAmount(this.getNewGrandTotal() * advancePct);
+    const servicesTotal = this.toSafeAmount(this.getServicesTotal());
+    const advanceBaseTotal = this.toSafeAmount(
+      this.getNewGrandTotal() - servicesTotal,
+    );
+
+    return this.toSafeAmount(advanceBaseTotal * advancePct + servicesTotal);
   }
 
   /** Balance at Check-in = remaining Grand Total after advance payment */
   getNewBalanceAtCheckIn(): number {
-    const advancePct = this.getEffectiveAdvanceAmountPercentage() / 100;
-    return this.toSafeAmount(this.getNewGrandTotal() * (1 - advancePct));
+    return this.toSafeAmount(this.getNewGrandTotal() - this.getNewPayNowAmount());
   }
 
   private applyAuthoritativeGatewayAmounts(
