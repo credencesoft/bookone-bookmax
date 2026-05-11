@@ -12536,17 +12536,32 @@ sendWhatsappMessageToPropertyOwner() {
   }
 
   private getAddOnChargeBasis(addon: any): string {
-    return (addon?.chargeBasis || addon?.type || addon?.serviceType || '')
+    const chargeBasis = (addon?.chargeBasis || addon?.type || addon?.serviceType || '')
       .toString()
       .trim()
       .toLowerCase()
       .replace(/[\s_-]+/g, '');
+
+    if (['paxwise', 'perpax', 'pax', 'perperson', 'personwise'].includes(chargeBasis)) {
+      return 'perpax';
+    }
+
+    if (['roomwise', 'perroom', 'room'].includes(chargeBasis)) {
+      return 'perroom';
+    }
+
+    if (['bookingwise', 'perbooking', 'booking'].includes(chargeBasis)) {
+      return 'perbooking';
+    }
+
+    return chargeBasis;
   }
 
   private getAddOnPlanMultiplier(addon: any, plan: any): number {
     switch (this.getAddOnChargeBasis(addon)) {
       case 'perbooking':
         return 1 / this.getSelectedPlanCount();
+      case 'perpax':
       case 'pernight':
         return Math.max(1, this.toSafeAmount(plan?.adults || this.booking?.noOfPersons || 1));
       case 'perroom':
@@ -12559,6 +12574,7 @@ sendWhatsappMessageToPropertyOwner() {
     switch (this.getAddOnChargeBasis(addon)) {
       case 'perbooking':
         return 1;
+      case 'perpax':
       case 'pernight':
         return this.getTotalSelectedAdultsCount();
       case 'perroom':
@@ -12571,6 +12587,7 @@ sendWhatsappMessageToPropertyOwner() {
     switch (this.getAddOnChargeBasis(addon)) {
       case 'perbooking':
         return 1;
+      case 'perpax':
       case 'pernight':
         return Math.max(1, this.toSafeAmount(plan?.adults || this.booking?.noOfPersons || 1));
       case 'perroom':
