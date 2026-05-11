@@ -358,25 +358,25 @@
                     <div class="color-graying">Tax & Services</div>
                     <div>{{ plan.taxPercentageperroom | currency: currency : 'symbol' : '1.2-2' }}</div>
                   </div>
+                  <ng-container *ngIf="selectedAddOns && selectedAddOns.length > 0">
+                    <div class="d-flex justify-content-between line-height-27px"
+                      *ngFor="let addon of getSelectedServicesForPlan(plan)">
+                      <div class="color-graying">
+                        <div class="font-weight-600">Add-On Services</div>
+                        <div>({{ addon.name }} x {{ addon.quantity }})</div>
+                      </div>
+                      <div>{{ addon.afterTaxAmount | currency: currency : 'symbol' : '1.2-2' }}</div>
+                    </div>
+                  </ng-container>
                   <div class="d-flex justify-content-between line-height-27px"
                     *ngIf="!this.specialDiscountData?.discountPercentage && !activeGoogleCenter && !selectedAdvanceDiscountSlab?.discountPercentage">
                     <div class="color-graying font-weight-600">Room Total</div>
-                    <div class="font-weight-600">{{ (plan.price + plan.taxPercentageperroom) | currency: currency : 'symbol' : '1.2-2' }}</div>
+                    <div class="font-weight-600">{{ getPlanRoomTotal(plan) | currency: currency : 'symbol' : '1.2-2' }}</div>
                   </div>
                   <div class="d-flex justify-content-between line-height-27px"
                     *ngIf="this.specialDiscountData?.discountPercentage || selectedAdvanceDiscountSlab?.discountPercentage">
                     <div class="color-graying font-weight-600">Room Total</div>
-                    <div class="font-weight-600">{{
-                      (plan.price -
-                        ((plan.price * (this.specialDiscountData?.discountPercentage || 0)) / 100) -
-                        (((plan.price - ((plan.price * (this.specialDiscountData?.discountPercentage || 0)) / 100)) *
-                          (selectedAdvanceDiscountSlab?.discountPercentage || 0)) / 100) +
-                        ((plan.price -
-                            ((plan.price * (this.specialDiscountData?.discountPercentage || 0)) / 100) -
-                            (((plan.price - ((plan.price * (this.specialDiscountData?.discountPercentage || 0)) / 100)) *
-                              (selectedAdvanceDiscountSlab?.discountPercentage || 0)) / 100)) *
-                          plan.taxpercentage) / 100) | currency: currency : 'symbol' : '1.2-2'
-                    }}</div>
+                    <div class="font-weight-600">{{ getPlanRoomTotal(plan) | currency: currency : 'symbol' : '1.2-2' }}</div>
                   </div>
                   <hr *ngIf="!last" style="border: 1px solid #e5e7eb" />
                 </div>
@@ -454,6 +454,7 @@
                     <thead style="background-color: #f9fafb">
                       <tr>
                         <th style="font-weight: 600; padding: 8px 12px; color: #6b7280">Service</th>
+                        <th style="font-weight: 600; text-align: right; padding: 8px 12px; color: #6b7280">Type</th>
                         <th style="font-weight: 600; text-align: right; padding: 8px 12px; color: #6b7280">Price</th>
                         <th style="font-weight: 600; text-align: right; padding: 8px 12px; color: #6b7280">Tax</th>
                         <th style="font-weight: 600; text-align: right; padding: 8px 12px; color: #6b7280">Total</th>
@@ -477,6 +478,7 @@
                             </div>
                           </div>
                         </td>
+                        <td style="text-align: right; vertical-align: middle; padding: 10px 12px">{{ addon.chargeBasis }}</td>
                         <td style="text-align: right; vertical-align: middle; padding: 10px 12px">{{ addon.servicePrice | currency: currency : 'symbol' : '1.2-2' }}</td>
                         <td style="text-align: right; vertical-align: middle; padding: 10px 12px; color: #6b7280">{{ addon.taxAmount | currency: currency : 'symbol' : '1.2-2' }}</td>
                         <td style="text-align: right; vertical-align: middle; padding: 10px 12px; font-weight: 600">{{ (addon.servicePrice + addon.taxAmount) | currency: currency : 'symbol' : '1.2-2' }}</td>
@@ -1187,6 +1189,20 @@
                       {{ plan.taxPercentageperroom | currency: currency : 'symbol' : '1.2-2' }}
                     </div>
                   </div>
+                  <ng-container *ngIf="selectedAddOns && selectedAddOns.length > 0">
+                    <div
+                      *ngFor="let addon of getSelectedServicesForPlan(plan)"
+                      class="d-flex justify-content-between line-height-27px"
+                    >
+                      <div class="color-graying">
+                        <div class="font-weight-600">Add-On Services</div>
+                        <div>({{ addon.name }} x {{ addon.quantity }})</div>
+                      </div>
+                      <div>
+                        {{ addon.afterTaxAmount | currency: currency : 'symbol' : '1.2-2' }}
+                      </div>
+                    </div>
+                  </ng-container>
                   <!-- Total: no discounts -->
                   <div
                     *ngIf="!this.specialDiscountData?.discountPercentage && !this.selectedAdvanceDiscountSlab?.discountPercentage"
@@ -1194,7 +1210,7 @@
                   >
                     <div class="color-graying font-weight-600">Total</div>
                     <div class="font-weight-600">
-                      {{ plan.price + plan.taxPercentageperroom | currency: currency : 'symbol' : '1.2-2' }}
+                      {{ getPlanRoomTotal(plan) | currency: currency : 'symbol' : '1.2-2' }}
                     </div>
                   </div>
                   <!-- Total: advance discount applied (± coupon) -->
@@ -1204,13 +1220,7 @@
                   >
                     <div class="color-graying font-weight-600">Total</div>
                     <div class="font-weight-600">
-                      {{
-                        (
-                          (plan.price - ((plan.price * (this.specialDiscountData?.discountPercentage || 0)) / 100)) *
-                          (1 - (this.selectedAdvanceDiscountSlab?.discountPercentage || 0) / 100) *
-                          (1 + plan.taxpercentage / 100)
-                        ) | currency: currency : 'symbol' : '1.2-2'
-                      }}
+                      {{ getPlanRoomTotal(plan) | currency: currency : 'symbol' : '1.2-2' }}
                     </div>
                   </div>
                   <!-- Total: coupon only (no advance discount) -->
@@ -1220,12 +1230,7 @@
                   >
                     <div class="color-graying font-weight-600">Total</div>
                     <div class="font-weight-600">
-                      {{
-                        plan.price -
-                          (plan.price * this.specialDiscountData?.discountPercentage) / 100 +
-                          ((plan.price - (plan.price * this.specialDiscountData?.discountPercentage) / 100) *
-                            plan.taxpercentage) / 100 | currency: currency : 'symbol' : '1.2-2'
-                      }}
+                      {{ getPlanRoomTotal(plan) | currency: currency : 'symbol' : '1.2-2' }}
                     </div>
                   </div>
                   <hr *ngIf="!last" style="border: 1px solid #e5e7eb" />
@@ -1318,6 +1323,7 @@
                   <thead style="background-color: #f9fafb">
                     <tr>
                       <th style="font-weight: 600; padding: 6px 10px; color: #6b7280">Service</th>
+                      <th style="font-weight: 600; text-align: right; padding: 6px 10px; color: #6b7280">Type</th>
                       <th style="font-weight: 600; text-align: right; padding: 6px 10px; color: #6b7280">Price</th>
                       <th style="font-weight: 600; text-align: right; padding: 6px 10px; color: #6b7280">Tax</th>
                       <th style="font-weight: 600; text-align: right; padding: 6px 10px; color: #6b7280">Total</th>
@@ -1338,6 +1344,7 @@
                           <div style="font-weight: 600; color: #111827">{{ addon.name }}</div>
                         </div>
                       </td>
+                      <td style="text-align: right; vertical-align: middle; padding: 8px 10px">{{ addon.chargeBasis }}</td>
                       <td style="text-align: right; vertical-align: middle; padding: 8px 10px">{{ addon.servicePrice | currency: currency : 'symbol' : '1.2-2' }}</td>
                       <td style="text-align: right; vertical-align: middle; padding: 8px 10px; color: #6b7280">{{ addon.taxAmount | currency: currency : 'symbol' : '1.2-2' }}</td>
                       <td style="text-align: right; vertical-align: middle; padding: 8px 10px; font-weight: 600">{{ (addon.servicePrice + addon.taxAmount) | currency: currency : 'symbol' : '1.2-2' }}</td>

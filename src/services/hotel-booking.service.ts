@@ -406,7 +406,12 @@ fetchBookingById(bookingId: number) {
   }
 
   private enrichEnquiryWithServiceSnapshot(enquiry: EnquiryDto): EnquiryDto {
-    const selectedServices = this.getPersistedSelectedServices();
+    const hasExplicitSelectedServices =
+      Array.isArray(enquiry?.selectedServices) && enquiry.selectedServices.length > 0;
+    const selectedServices =
+      hasExplicitSelectedServices
+        ? enquiry.selectedServices
+        : this.getPersistedSelectedServices();
     if (!selectedServices || selectedServices.length === 0) {
       enquiry.selectedServiceCount = 0;
       enquiry.selectedServiceTotal = 0;
@@ -466,12 +471,18 @@ fetchBookingById(bookingId: number) {
       }))
     );
 
-    enquiry.quotedGrandTotal = Number(
-      ((enquiry.totalAmount || 0) + enquiry.selectedServiceTotal).toFixed(2)
-    );
-    enquiry.quotedPayableAmount = Number(
-      ((enquiry.payableAmount || enquiry.totalAmount || 0) + enquiry.selectedServiceTotal).toFixed(2)
-    );
+    enquiry.quotedGrandTotal = hasExplicitSelectedServices
+      ? Number((enquiry.quotedGrandTotal ?? enquiry.totalAmount ?? 0).toFixed(2))
+      : Number(
+        ((enquiry.totalAmount || 0) + enquiry.selectedServiceTotal).toFixed(2)
+      );
+    enquiry.quotedPayableAmount = hasExplicitSelectedServices
+      ? Number(
+        (enquiry.quotedPayableAmount ?? enquiry.payableAmount ?? enquiry.totalAmount ?? 0).toFixed(2)
+      )
+      : Number(
+        ((enquiry.payableAmount || enquiry.totalAmount || 0) + enquiry.selectedServiceTotal).toFixed(2)
+      );
 
     return enquiry;
   }

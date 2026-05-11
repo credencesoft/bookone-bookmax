@@ -81,6 +81,7 @@ export class BookingConfirmationVoucherComponent {
       this.bookingSummaryDetails = JSON.parse(bookingDataDetails);
       this.calculateTotalGuestsFromPlans();
     }
+    this.loadCalculationStateFromEnquiries();
     const couponCodeValues = sessionStorage.getItem('selectedPromoData');
     if (couponCodeValues) {
       const parsed = JSON.parse(couponCodeValues); // convert to object
@@ -464,13 +465,20 @@ export class BookingConfirmationVoucherComponent {
   // ✅ NEW: Load calculation state from stored enquiries
   private loadCalculationStateFromEnquiries() {
     const bookedStr = sessionStorage.getItem('BookedEnquiryList');
-    if (!bookedStr) return;
+    if (!bookedStr) {
+      this.selectedAddOns = this.getSelectedAddOnsFromPersistedState();
+      return;
+    }
 
     try {
       const bookedEnquiries = JSON.parse(bookedStr);
-      if (!Array.isArray(bookedEnquiries) || bookedEnquiries.length === 0) return;
+      if (!Array.isArray(bookedEnquiries) || bookedEnquiries.length === 0) {
+        this.selectedAddOns = this.getSelectedAddOnsFromPersistedState();
+        return;
+      }
 
-      // Use the first enquiry's calculation state for now (can be enhanced for multiple bookings)
+      // Group totals are stored on every enquiry, so use the first one for the
+      // payment state and aggregate only the per-room add-on lines below.
       const firstEnquiry = bookedEnquiries[0];
 
       this.couponDiscountPercentage = firstEnquiry.couponDiscountPercentage || 0;
@@ -483,10 +491,10 @@ export class BookingConfirmationVoucherComponent {
       this.taxOnDiscountedAmount = firstEnquiry.taxOnDiscountedAmount || 0;
       this.serviceChargePercentage = firstEnquiry.serviceChargePercentage || this.serviceChargePercentage;
       this.convenienceFeeAmount = firstEnquiry.convenienceFeeAmount || 0;
+      this.selectedAddOns = this.resolveSelectedAddOns(bookedEnquiries);
       this.grandTotal = firstEnquiry.grandTotal || this.getNewGrandTotal();
       this.payNowAmount = firstEnquiry.payNowAmount || 0;
       this.balanceAtCheckIn = firstEnquiry.balanceAtCheckIn || 0;
-      this.selectedAddOns = this.resolveSelectedAddOns(firstEnquiry);
 
       this.isPaid = this.advancePaymentPercentage === 100 || this.balanceAtCheckIn === 0;
 
@@ -495,11 +503,130 @@ export class BookingConfirmationVoucherComponent {
     }
   }
 
-  private resolveSelectedAddOns(firstEnquiry: any): any[] {
-    if (Array.isArray(firstEnquiry?.selectedAddOns) && firstEnquiry.selectedAddOns.length > 0) {
-      return firstEnquiry.selectedAddOns;
+  private resolveSelectedAddOns(bookedEnquiries: any[]): any[] {
+    const addOnsFromQuotes = this.getSelectedAddOnsFromEnquiryQuotes(bookedEnquiries);
+    if (addOnsFromQuotes.length > 0) {
+      return addOnsFromQuotes;
     }
+
+    const addOnsFromEnquiries = this.getSelectedAddOnsFromEnquiries(bookedEnquiries);
+    if (addOnsFromEnquiries.length > 0) {
+      return addOnsFromEnquiries;
+    }
+
+    const persistedAddOns = this.getSelectedAddOnsFromPersistedState();
+    if (persistedAddOns.length > 0) {
+      return persistedAddOns;
+    }
+
     return this.getSelectedAddOnsFromBookings();
+  }
+
+  private getSelectedAddOnsFromPersistedState(): any[] {
+    const tokenSelectedServices = this.getSelectedAddOnsFromToken();
+    if (tokenSelectedServices.length > 0) {
+      return tokenSelectedServices;
+    }
+
+    const summarySelectedServices = this.getSelectedAddOnsFromBookingSummary();
+    if (summarySelectedServices.length > 0) {
+      return summarySelectedServices;
+    }
+
+    const sessionSelectedServices = this.getSelectedAddOnsFromSessionStorage();
+    if (sessionSelectedServices.length > 0) {
+      return sessionSelectedServices;
+    }
+
+    return [];
+  }
+
+  private getSelectedAddOnsFromToken(): any[] {
+    try {
+      const selectedServices = this.token.getSelectedServices();
+      if (!Array.isArray(selectedServices)) {
+        return [];
+      }
+
+      return this.aggregateAddOns(
+        selectedServices.map((service: any) => this.normalizeAddOn(service)),
+      );
+    } catch (error) {
+      return [];
+    }
+  }
+
+  private getSelectedAddOnsFromBookingSummary(): any[] {
+    const selectedServices = this.bookingSummaryDetails?.propertyServiceListDataOne;
+    if (!Array.isArray(selectedServices)) {
+      return [];
+    }
+
+    return this.aggregateAddOns(
+      selectedServices.map((service: any) => this.normalizeAddOn(service)),
+    );
+  }
+
+  private getSelectedAddOnsFromSessionStorage(): any[] {
+    try {
+      const storedAddOns = sessionStorage.getItem('addOnServices');
+      if (!storedAddOns) {
+        return [];
+      }
+
+      const selectedServices = JSON.parse(storedAddOns);
+      if (!Array.isArray(selectedServices)) {
+        return [];
+      }
+
+      return this.aggregateAddOns(
+        selectedServices.map((service: any) => this.normalizeAddOn(service)),
+      );
+    } catch (error) {
+      return [];
+    }
+  }
+
+  private getSelectedAddOnsFromEnquiryQuotes(bookedEnquiries: any[]): any[] {
+    const quoteAddOns = bookedEnquiries.flatMap((enquiry: any) =>
+      this.parseServiceQuoteSummary(enquiry?.serviceQuoteSummary),
+    );
+
+    return this.aggregateAddOns(quoteAddOns);
+  }
+
+  private parseServiceQuoteSummary(serviceQuoteSummary: any): any[] {
+    if (!serviceQuoteSummary) {
+      return [];
+    }
+
+    try {
+      const parsed =
+        typeof serviceQuoteSummary === 'string'
+          ? JSON.parse(serviceQuoteSummary)
+          : serviceQuoteSummary;
+
+      if (!Array.isArray(parsed)) {
+        return [];
+      }
+
+      return parsed.map((service: any) => this.normalizeAddOn(service));
+    } catch (error) {
+      console.warn('Invalid serviceQuoteSummary on booked enquiry:', error);
+      return [];
+    }
+  }
+
+  private getSelectedAddOnsFromEnquiries(bookedEnquiries: any[]): any[] {
+    const enquiryAddOns = bookedEnquiries.flatMap((enquiry: any) => {
+      if (!Array.isArray(enquiry?.selectedAddOns)) {
+        return [];
+      }
+
+      return enquiry.selectedAddOns.map((service: any) => this.normalizeAddOn(service));
+    });
+
+    return this.aggregateAddOns(enquiryAddOns);
   }
 
   private getSelectedAddOnsFromBookings(): any[] {
@@ -507,18 +634,75 @@ export class BookingConfirmationVoucherComponent {
       return [];
     }
 
-    return this.bookingsResponseList.flatMap((booking: any) => {
+    const bookingAddOns = this.bookingsResponseList.flatMap((booking: any) => {
       if (!Array.isArray(booking?.services)) {
         return [];
       }
 
-      return booking.services.map((service: any) => ({
-        name: service?.name || service?.serviceType || 'Service',
-        quantity: this.toSafeQuantity(service?.quantityApplied ?? service?.count ?? 1),
-        servicePrice: this.toSafeAmount(service?.servicePrice ?? service?.beforeTaxAmount ?? 0),
-        taxAmount: this.toSafeAmount(service?.taxAmount ?? 0),
-      }));
+      return booking.services.map((service: any) => this.normalizeAddOn(service));
     });
+
+    return this.aggregateAddOns(bookingAddOns);
+  }
+
+  private normalizeAddOn(service: any): any {
+    const quantity = this.toSafeQuantity(
+      service?.quantityApplied ?? service?.quantity ?? service?.count ?? 1,
+    );
+    const servicePrice = this.toSafeAmount(
+      service?.beforeTaxAmount ??
+        service?.servicePrice ??
+        service?.amount ??
+        service?.netAmount ??
+        0,
+    );
+    const taxAmount = this.toSafeAmount(service?.taxAmount ?? 0);
+
+    return {
+      id: service?.id,
+      name: service?.name || service?.serviceName || service?.serviceType || 'Service',
+      quantity,
+      servicePrice,
+      taxAmount,
+    };
+  }
+
+  private aggregateAddOns(addOns: any[]): any[] {
+    const groupedAddOns = new Map<string, any>();
+
+    addOns.forEach((addon) => {
+      const key = this.getAddOnGroupKey(addon);
+      const current = groupedAddOns.get(key);
+
+      if (current) {
+        current.quantity += this.toSafeQuantity(addon?.quantity);
+        current.servicePrice = this.toSafeAmount(
+          current.servicePrice + this.toSafeAmount(addon?.servicePrice),
+        );
+        current.taxAmount = this.toSafeAmount(
+          current.taxAmount + this.toSafeAmount(addon?.taxAmount),
+        );
+        return;
+      }
+
+      groupedAddOns.set(key, {
+        ...addon,
+        quantity: this.toSafeQuantity(addon?.quantity),
+        servicePrice: this.toSafeAmount(addon?.servicePrice),
+        taxAmount: this.toSafeAmount(addon?.taxAmount),
+      });
+    });
+
+    return Array.from(groupedAddOns.values());
+  }
+
+  private getAddOnGroupKey(addon: any): string {
+    const name = (addon?.name || addon?.serviceName || addon?.serviceType || '')
+      .toString()
+      .trim()
+      .toLowerCase();
+
+    return name || `${addon?.id || 'service'}`;
   }
 
   // ✅ NEW: Guard functions
@@ -744,7 +928,8 @@ export class BookingConfirmationVoucherComponent {
     const roomsWithTax =
       this.getDisplayedAccommodationAfterDiscounts() + this.getDisplayedRoomTax();
     return this.toSafeAmount(
-      (roomsWithTax + this.getDisplayedConvenienceFee()) * advancePct
+      (roomsWithTax + this.getDisplayedConvenienceFee()) * advancePct +
+        this.getServicesTotal()
     );
   }
   return this.getNewGrandTotal();
@@ -775,7 +960,10 @@ export class BookingConfirmationVoucherComponent {
     if (!this.selectedAddOns || this.selectedAddOns.length === 0) return 0;
     return this.toSafeAmount(
       this.selectedAddOns.reduce(
-        (sum, addon) => sum + ((addon.servicePrice || 0) + (addon.taxAmount || 0)),
+        (sum, addon) =>
+          sum +
+          this.toSafeAmount(addon?.servicePrice) +
+          this.toSafeAmount(addon?.taxAmount),
         0
       )
     );
@@ -784,14 +972,20 @@ export class BookingConfirmationVoucherComponent {
   getServicesSubtotal(): number {
     if (!this.selectedAddOns || this.selectedAddOns.length === 0) return 0;
     return this.toSafeAmount(
-      this.selectedAddOns.reduce((sum, addon) => sum + (addon.servicePrice || 0), 0)
+      this.selectedAddOns.reduce(
+        (sum, addon) => sum + this.toSafeAmount(addon?.servicePrice),
+        0,
+      )
     );
   }
 
   getServicesTax(): number {
     if (!this.selectedAddOns || this.selectedAddOns.length === 0) return 0;
     return this.toSafeAmount(
-      this.selectedAddOns.reduce((sum, addon) => sum + (addon.taxAmount || 0), 0)
+      this.selectedAddOns.reduce(
+        (sum, addon) => sum + this.toSafeAmount(addon?.taxAmount),
+        0,
+      )
     );
   }
   private onAllBookingsLoaded() {

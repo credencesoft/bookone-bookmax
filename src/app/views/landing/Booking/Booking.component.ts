@@ -1550,8 +1550,7 @@ export class BookingComponent implements OnInit {
     roomdetailss.roomTypeName = booking?.roomName;
     this.reservationRoomDetails.push(roomdetailss);
     externalreservation.roomDetails = this.reservationRoomDetails;
-    this.propertyServices =
-      this.bookingSummaryDetails?.propertyServiceListDataOne;
+    this.propertyServices = this.getSelectedServicesForPlan(plan);
     this.propertyServices?.forEach((ele) => {
       ele.count = ele.quantity;
       ele.id = null;
@@ -2419,8 +2418,11 @@ export class BookingComponent implements OnInit {
     // advanceAmount = Pay Now amount (booking.advanceAmount set by calculateMultiDiscountAndTax / applyAuthoritativeGatewayAmounts)
     this.enquiryForm.advanceAmount = this.toSafeAmount(this.getNewPayNowAmount());
     this.enquiryForm.selectedServiceTotal = servicesTotalForEnquiry;
-    if (this.savedServices && this.savedServices.length > 0) {
-      this.enquiryForm.selectedServices = this.savedServices;
+    const selectedServicesForEnquiry = this.getSelectedServicesForPlan({
+      selectedRoomnumber: this.getTotalSelectedRoomCount(),
+    });
+    if (selectedServicesForEnquiry.length > 0) {
+      this.enquiryForm.selectedServices = selectedServicesForEnquiry;
     }
     this.enquiryForm.roomName = this.booking.roomName;
     this.enquiryForm.extraPersonCharge = this.booking.extraPersonCharge;
@@ -2611,7 +2613,6 @@ export class BookingComponent implements OnInit {
 
   async submitFormBooking(plan: any, bookingSummary: any, index: number = 0) {
     const booking: any = this.booking;
-    const isFirstEnquiryPayload = index === 0;
     let advanceAmountWithConvienceFee = 0;
 
     // booking discount/advance fields are set authoritatively by calculateMultiDiscountAndTax() — do NOT overwrite.
@@ -2638,9 +2639,8 @@ export class BookingComponent implements OnInit {
     const planRoomTotalAmount = this.toSafeAmount(
       planBeforeTaxAmount + planTaxAmount,
     );
-    const selectedServiceTotal = isFirstEnquiryPayload
-      ? this.toSafeAmount(this.getServicesTotal())
-      : 0;
+    const selectedServiceTotal = this.getPlanServicesTotal(plan);
+    const selectedServices = this.getSelectedServicePayloadForPlan(plan);
     // const convenienceFee = isFirstEnquiryPayload
     //   ? this.toSafeAmount(this.getDisplayedConvenienceFeeAmount())
     //   : 0;
@@ -2803,12 +2803,8 @@ export class BookingComponent implements OnInit {
     enquiryForm.convenienceFee = convenienceFee;
     enquiryForm.discountAmountPercentage = booking.discountPercentage;
     enquiryForm.selectedServiceTotal = selectedServiceTotal;
-    if (
-      isFirstEnquiryPayload &&
-      this.savedServices &&
-      this.savedServices.length > 0
-    ) {
-      enquiryForm.selectedServices = this.savedServices;
+    if (selectedServices.length > 0) {
+      enquiryForm.selectedServices = selectedServices;
     }
     enquiryForm.noOfNights = plan.nights;
     enquiryForm.foodOptions = '';
@@ -2826,7 +2822,7 @@ export class BookingComponent implements OnInit {
       if (response) {
         this.paymentLoader = false;
         const createdEnquiry = response.body;
-        if (isFirstEnquiryPayload || !this.equitycreatedData) {
+        if (index === 0 || !this.equitycreatedData) {
           this.equitycreatedData = createdEnquiry;
           this.token.saveEnquiryData(this.equitycreatedData);
           this.enquiryNo = 'THM-' + createdEnquiry.enquiryId;
@@ -7376,7 +7372,12 @@ export class BookingComponent implements OnInit {
 
             // for pre booking create
 
-            this.addServiceToBooking(this.booking.id, this.savedServices);
+            this.addServiceToBooking(
+              this.booking.id,
+              this.getSelectedServicesForPlan({
+                selectedRoomnumber: this.getTotalSelectedRoomCount(),
+              }),
+            );
           }
         } else {
           this.paymentLoader = false;
@@ -7869,13 +7870,42 @@ export class BookingComponent implements OnInit {
       return;
     }
 
-    this.savedServices?.forEach((element) => {
-      element.count = element.quantity;
-      element.afterTaxAmount = element.quantity * element.servicePrice;
-      element.date = new Date();
+    const servicesForBooking = (savedServices || []).map((service) => {
+      const quantity = Math.max(
+        1,
+        Number(service?.quantity ?? service?.count ?? 1) || 1,
+      );
+      const servicePrice = this.toSafeAmount(
+        service?.unitPrice ?? service?.servicePrice ?? service?.beforeTaxAmount,
+      );
+      const unitTaxAmount = this.toSafeAmount(service?.taxAmount);
+      const beforeTaxAmount = service?.beforeTaxAmount != null
+        ? this.toSafeAmount(service.beforeTaxAmount)
+        : this.toSafeAmount(servicePrice * quantity);
+      const taxAmount = service?.beforeTaxAmount != null
+        ? unitTaxAmount
+        : this.toSafeAmount(unitTaxAmount * quantity);
+
+      return {
+        ...service,
+        quantity,
+        count: quantity,
+        servicePrice,
+        beforeTaxAmount,
+        taxAmount,
+        afterTaxAmount: service?.afterTaxAmount != null
+          ? this.toSafeAmount(service.afterTaxAmount)
+          : this.toSafeAmount(beforeTaxAmount + taxAmount),
+        date: new Date(),
+      };
     });
+
+    if (!servicesForBooking.length) {
+      return;
+    }
+
     this.hotelBookingService
-      .saveBookingService(bookingId, savedServices)
+      .saveBookingService(bookingId, servicesForBooking)
       .subscribe(
         (data) => {
           this.changeDetectorRefs.detectChanges();
@@ -8155,11 +8185,9 @@ export class BookingComponent implements OnInit {
 
     this.tokenFromTime = this.combinedDateFromTime;
     this.tokenToTime = this.combinedDateToTime;
-    const isFirstBookingPayload = index === 0;
-    const selectedServiceTotal = isFirstBookingPayload
-      ? this.toSafeAmount(this.getServicesTotal())
-      : 0;
-    const convenienceFee = isFirstBookingPayload
+    const selectedServiceTotal = this.getPlanServicesTotal(plan);
+    const selectedServices = this.getSelectedServicesForPlan(plan);
+    const convenienceFee = index === 0
       ? this.toSafeAmount(this.getDisplayedConvenienceFeeAmount())
       : 0;
     const planAdvanceAmount = this.getPlanPayNowAmount(
@@ -8215,7 +8243,7 @@ export class BookingComponent implements OnInit {
     booking.groupBooking = false;
     booking.available = true;
     booking.roomPrice = this.getPlanRoomPricePayloadValue(plan).toFixed(2);
-    booking.totalServiceAmount = this.totalServiceCost || 0;
+    booking.totalServiceAmount = selectedServiceTotal;
     booking.taxAmount = booking.gstAmount.toFixed(2);
     booking.totalRoomTariffBeforeDiscount =
       this.getPlanRoomTariffBeforeDiscountTotal(plan).toFixed(2);
@@ -8278,7 +8306,7 @@ export class BookingComponent implements OnInit {
 
           this.addServiceToBooking(
             savedBooking.id,
-            this.bookingSummaryDetails?.propertyServiceListDataOne,
+            selectedServices,
           );
           this.getSubscriptions(savedBooking, plan);
           // this.sendWhatsappMessageToTHM(savedBooking);
@@ -8335,7 +8363,6 @@ export class BookingComponent implements OnInit {
     index: number = 0,
   ) {
     const booking: any = this.booking;
-    const isFirstEnquiryPayload = index === 0;
     const bookingsStr = sessionStorage.getItem('bookingsResponseList');
     const bookings = bookingsStr ? JSON.parse(bookingsStr) : [];
 
@@ -8353,10 +8380,9 @@ export class BookingComponent implements OnInit {
     } else {
       booking.discountPercentage = 0;
     }
-    const selectedServiceTotal = isFirstEnquiryPayload
-      ? this.toSafeAmount(this.getServicesTotal())
-      : 0;
-    const convenienceFee = isFirstEnquiryPayload
+    const selectedServiceTotal = this.getPlanServicesTotal(plan);
+    const selectedServices = this.getSelectedServicePayloadForPlan(plan);
+    const convenienceFee = index === 0
       ? this.toSafeAmount(this.getDisplayedConvenienceFeeAmount())
       : 0;
     const planAdvanceAmount = this.getPlanPayNowAmount(
@@ -8510,6 +8536,9 @@ export class BookingComponent implements OnInit {
     enquiryForm.advanceAmount = planAdvanceAmount;
     enquiryForm.convenienceFee = convenienceFee;
     enquiryForm.selectedServiceTotal = selectedServiceTotal;
+    if (selectedServices.length > 0) {
+      enquiryForm.selectedServices = selectedServices;
+    }
     enquiryForm.discountAmountPercentage = booking.discountPercentage;
     enquiryForm.noOfNights = plan.nights;
     enquiryForm.foodOptions = '';
@@ -10437,8 +10466,11 @@ export class BookingComponent implements OnInit {
     this.enquiryForm.advanceAmount = this.booking.advanceAmount;
     this.enquiryForm.selectedServiceTotal = servicesTotalForEnquiry; // LMS field: selectedServiceTotal (not totalServiceAmount)
     // Serialize selected services so BookingPaymentOrchestrationServiceImpl can recreate ServiceDto rows.
-    if (this.savedServices && this.savedServices.length > 0) {
-      this.enquiryForm.selectedServices = this.savedServices;
+    const selectedServicesForEnquiry = this.getSelectedServicesForPlan({
+      selectedRoomnumber: this.getTotalSelectedRoomCount(),
+    });
+    if (selectedServicesForEnquiry.length > 0) {
+      this.enquiryForm.selectedServices = selectedServicesForEnquiry;
     }
     // this.enquiryForm.taxDetails = this.booking.taxDetails;
     // this.enquiryForm.currency = this.token.getProperty().localCurrency;
@@ -12366,9 +12398,7 @@ sendWhatsappMessageToPropertyOwner() {
    * Sum of all selected service prices
    */
   calculateTotalAddOnsAmount(): number {
-    return this.selectedAddOns.reduce((total, service) => {
-      return total + (Number(service.servicePrice) || 0);
-    }, 0);
+    return this.getServicesSubtotal();
   }
 
   /**
@@ -12409,7 +12439,9 @@ sendWhatsappMessageToPropertyOwner() {
    * Ready to add to room total for final payment
    */
   getAddOnsGrandTotal(): number {
-    return this.totalAddOnsAmount - this.totalAddOnsDiscount + this.totalAddOnsTax;
+    return this.toSafeAmount(
+      this.totalAddOnsAmount - this.totalAddOnsDiscount + this.totalAddOnsTax,
+    );
   }
 
   /**
@@ -12469,20 +12501,235 @@ sendWhatsappMessageToPropertyOwner() {
 
   // ── Section 2: Add-On Services table helpers ──────────────────────────────
 
-  /** Sum of servicePrice for all selected add-ons (before tax) */
-  getServicesSubtotal(): number {
-    return (this.selectedAddOns || []).reduce((sum, addon) => sum + (Number(addon.servicePrice) || 0), 0);
+  private getTotalSelectedRoomCount(): number {
+    return Math.max(1, this.toSafeAmount(this.getTotalRooms() || 1));
   }
 
-  /** Sum of taxAmount for all selected add-ons */
+  private getPlanRoomCount(plan: any): number {
+    return Math.max(1, this.toSafeAmount(plan?.selectedRoomnumber || 1));
+  }
+
+  private getSelectedPlanCount(): number {
+    return Math.max(
+      1,
+      this.bookingSummaryDetails?.selectedPlansSummary?.length ||
+        this.selectedPlansSummary?.length ||
+        1,
+    );
+  }
+
+  private getTotalSelectedAdultsCount(): number {
+    const adultsFromPlans =
+      this.bookingSummaryDetails?.selectedPlansSummary?.reduce(
+        (sum: number, plan: any) => sum + this.toSafeAmount(plan?.adults),
+        0,
+      ) ||
+      this.selectedPlansSummary?.reduce(
+        (sum: number, plan: any) => sum + this.toSafeAmount(plan?.adults),
+        0,
+      ) ||
+      this.totalPlanAdults ||
+      this.booking?.noOfPersons ||
+      1;
+
+    return Math.max(1, this.toSafeAmount(adultsFromPlans));
+  }
+
+  private getAddOnChargeBasis(addon: any): string {
+    return (addon?.chargeBasis || addon?.type || addon?.serviceType || '')
+      .toString()
+      .trim()
+      .toLowerCase()
+      .replace(/[\s_-]+/g, '');
+  }
+
+  private getAddOnPlanMultiplier(addon: any, plan: any): number {
+    switch (this.getAddOnChargeBasis(addon)) {
+      case 'perbooking':
+        return 1 / this.getSelectedPlanCount();
+      case 'pernight':
+        return Math.max(1, this.toSafeAmount(plan?.adults || this.booking?.noOfPersons || 1));
+      case 'perroom':
+      default:
+        return this.getPlanRoomCount(plan);
+    }
+  }
+
+  private getAddOnTotalMultiplier(addon: any): number {
+    switch (this.getAddOnChargeBasis(addon)) {
+      case 'perbooking':
+        return 1;
+      case 'pernight':
+        return this.getTotalSelectedAdultsCount();
+      case 'perroom':
+      default:
+        return this.getTotalSelectedRoomCount();
+    }
+  }
+
+  private getAddOnDisplayQuantity(addon: any, plan: any): number {
+    switch (this.getAddOnChargeBasis(addon)) {
+      case 'perbooking':
+        return 1;
+      case 'pernight':
+        return Math.max(1, this.toSafeAmount(plan?.adults || this.booking?.noOfPersons || 1));
+      case 'perroom':
+      default:
+        return this.getPlanRoomCount(plan);
+    }
+  }
+
+  private getPlanServicesSubtotal(plan: any): number {
+    return this.toSafeAmount(
+      (this.selectedAddOns || []).reduce(
+        (sum, addon) =>
+          sum +
+          this.toSafeAmount(addon?.servicePrice) *
+            this.getAddOnPlanMultiplier(addon, plan),
+        0,
+      ),
+    );
+  }
+
+  private getPlanServicesTax(plan: any): number {
+    return this.toSafeAmount(
+      (this.selectedAddOns || []).reduce(
+        (sum, addon) =>
+          sum +
+          this.toSafeAmount(addon?.taxAmount) *
+            this.getAddOnPlanMultiplier(addon, plan),
+        0,
+      ),
+    );
+  }
+
+  private getPlanServicesTotal(plan: any): number {
+    return this.toSafeAmount(
+      this.getPlanServicesSubtotal(plan) + this.getPlanServicesTax(plan),
+    );
+  }
+
+  getPlanRoomTotal(plan: any): number {
+    const price = this.toSafeAmount(plan?.price);
+    const servicesTotal = this.getPlanServicesTotal(plan);
+    const couponPercentage = this.toSafePercent(
+      this.specialDiscountData?.discountPercentage,
+    );
+    const advancePercentage = this.toSafePercent(
+      this.selectedAdvanceDiscountSlab?.discountPercentage,
+    );
+
+    if (couponPercentage <= 0 && advancePercentage <= 0) {
+      return this.toSafeAmount(
+        price + this.toSafeAmount(plan?.taxPercentageperroom) + servicesTotal,
+      );
+    }
+
+    const couponDiscount = this.toSafeAmount((price * couponPercentage) / 100);
+    const priceAfterCoupon = this.toSafeAmount(price - couponDiscount);
+    const advanceDiscount = this.toSafeAmount(
+      (priceAfterCoupon * advancePercentage) / 100,
+    );
+    const priceAfterDiscounts = this.toSafeAmount(
+      priceAfterCoupon - advanceDiscount,
+    );
+    const taxAfterDiscounts = this.toSafeAmount(
+      (priceAfterDiscounts * this.toSafePercent(plan?.taxpercentage)) / 100,
+    );
+
+    return this.toSafeAmount(
+      priceAfterDiscounts + taxAfterDiscounts + servicesTotal,
+    );
+  }
+
+  getSelectedServicesForPlan(plan: any): any[] {
+    return (this.selectedAddOns || []).map((service) => {
+      const servicePrice = this.toSafeAmount(
+        service?.servicePrice ?? service?.beforeTaxAmount ?? service?.unitPrice,
+      );
+      const taxAmount = this.toSafeAmount(service?.taxAmount);
+      const multiplier = this.getAddOnPlanMultiplier(service, plan);
+      const quantity = this.getAddOnDisplayQuantity(service, plan);
+      const beforeTaxAmount = this.toSafeAmount(servicePrice * multiplier);
+      const totalTaxAmount = this.toSafeAmount(taxAmount * multiplier);
+
+      return {
+        ...service,
+        quantity,
+        count: quantity,
+        unitPrice: servicePrice,
+        servicePrice,
+        beforeTaxAmount,
+        taxAmount: totalTaxAmount,
+        afterTaxAmount: this.toSafeAmount(beforeTaxAmount + totalTaxAmount),
+        netAmount: this.toSafeAmount(beforeTaxAmount + totalTaxAmount),
+        sourceChannel: service?.sourceChannel ?? this.booking?.externalSite ?? 'BookMax',
+      };
+    });
+  }
+
+  private getSelectedServicePayloadForPlan(plan: any): any[] {
+    return (this.selectedAddOns || []).map((service) => {
+      const servicePrice = this.toSafeAmount(
+        service?.servicePrice ?? service?.beforeTaxAmount ?? service?.unitPrice,
+      );
+      const taxAmount = this.toSafeAmount(service?.taxAmount);
+      const multiplier = this.getAddOnPlanMultiplier(service, plan);
+      const quantity = this.getAddOnDisplayQuantity(service, plan);
+      const beforeTaxAmount = this.toSafeAmount(servicePrice * multiplier);
+      const totalTaxAmount = this.toSafeAmount(taxAmount * multiplier);
+      const afterTaxAmount = this.toSafeAmount(beforeTaxAmount + totalTaxAmount);
+
+      return {
+        ...service,
+        quantity,
+        count: quantity,
+        quantityApplied: quantity,
+        roomSequence: 1,
+        roomId: plan?.roomId,
+        roomName: plan?.roomName,
+        roomRatePlanName: plan?.planCodeName,
+        unitPrice: servicePrice,
+        servicePrice,
+        beforeTaxAmount,
+        taxAmount: totalTaxAmount,
+        afterTaxAmount,
+        netAmount: afterTaxAmount,
+        sourceChannel: service?.sourceChannel ?? this.booking?.externalSite ?? 'BookMax',
+      };
+    });
+  }
+
+  /** Sum of servicePrice for all selected add-ons across all selected rooms (before tax) */
+  getServicesSubtotal(): number {
+    return this.toSafeAmount(
+      (this.selectedAddOns || []).reduce(
+        (sum, addon) =>
+          sum +
+          this.toSafeAmount(addon?.servicePrice) *
+            this.getAddOnTotalMultiplier(addon),
+        0,
+      ),
+    );
+  }
+
+  /** Sum of taxAmount for all selected add-ons across all selected rooms */
   getServicesTax(): number {
-    return (this.selectedAddOns || []).reduce((sum, addon) => sum + (Number(addon.taxAmount) || 0), 0);
+    return this.toSafeAmount(
+      (this.selectedAddOns || []).reduce(
+        (sum, addon) =>
+          sum +
+          this.toSafeAmount(addon?.taxAmount) *
+            this.getAddOnTotalMultiplier(addon),
+        0,
+      ),
+    );
   }
 
   /** Grand total for selected add-ons (servicePrice + taxAmount per addon) */
   getServicesTotal(): number {
-    return (this.selectedAddOns || []).reduce(
-      (sum, addon) => sum + (Number(addon.servicePrice) || 0) + (Number(addon.taxAmount) || 0), 0
+    return this.toSafeAmount(
+      this.getServicesSubtotal() + this.getServicesTax(),
     );
   }
 
