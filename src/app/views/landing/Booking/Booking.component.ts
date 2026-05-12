@@ -12361,7 +12361,11 @@ sendWhatsappMessageToPropertyOwner() {
    * Adds/removes service from selectedAddOns array
    */
   toggleAddOnSelection(service: any): void {
-    const index = this.selectedAddOns.findIndex(s => s.id === service.id);
+    const serviceKey = this.getAddOnSelectionKey(service);
+    const index = this.selectedAddOns.findIndex(
+      (selectedService) => this.getAddOnSelectionKey(selectedService) === serviceKey,
+    );
+
     if (index > -1) {
       // Remove from selection
       this.selectedAddOns.splice(index, 1);
@@ -12383,7 +12387,27 @@ sendWhatsappMessageToPropertyOwner() {
    * Check if service is currently selected
    */
   isAddOnSelected(service: any): boolean {
-    return this.selectedAddOns.some(s => s.id === service.id);
+    const serviceKey = this.getAddOnSelectionKey(service);
+    return this.selectedAddOns.some(
+      (selectedService) => this.getAddOnSelectionKey(selectedService) === serviceKey,
+    );
+  }
+
+  private getAddOnSelectionKey(service: any): string {
+    if (service?.id !== null && service?.id !== undefined) {
+      return `id:${service.id}`;
+    }
+
+    return [
+      service?.name,
+      service?.serviceType,
+      service?.chargeBasis ?? 'booking',
+      service?.servicePrice,
+      service?.taxAmount,
+      service?.taxPercentage,
+    ]
+      .map((value) => (value ?? '').toString().trim().toLowerCase())
+      .join('|');
   }
 
   /**
@@ -12518,6 +12542,28 @@ sendWhatsappMessageToPropertyOwner() {
     );
   }
 
+  private isFirstSelectedPlan(plan: any): boolean {
+    const plans =
+      this.bookingSummaryDetails?.selectedPlansSummary ||
+      this.selectedPlansSummary ||
+      [];
+    const firstPlan = plans[0];
+
+    if (!firstPlan || !plan) {
+      return false;
+    }
+
+    if (firstPlan === plan) {
+      return true;
+    }
+
+    return (
+      Number(firstPlan.roomId) === Number(plan.roomId) &&
+      firstPlan.planCodeName === plan.planCodeName &&
+      Number(firstPlan.selectedRoomnumber) === Number(plan.selectedRoomnumber)
+    );
+  }
+
   private getTotalSelectedAdultsCount(): number {
     const adultsFromPlans =
       this.bookingSummaryDetails?.selectedPlansSummary?.reduce(
@@ -12536,11 +12582,21 @@ sendWhatsappMessageToPropertyOwner() {
   }
 
   private getAddOnChargeBasis(addon: any): string {
-    const chargeBasis = (addon?.chargeBasis || addon?.type || addon?.serviceType || '')
+    const rawChargeBasis = addon?.chargeBasis;
+
+    if (rawChargeBasis == null || rawChargeBasis === '') {
+      return 'perbooking';
+    }
+
+    const chargeBasis = (rawChargeBasis || addon?.type || addon?.serviceType || '')
       .toString()
       .trim()
       .toLowerCase()
       .replace(/[\s_-]+/g, '');
+
+    if (!chargeBasis) {
+      return 'perbooking';
+    }
 
     if (['paxwise', 'perpax', 'pax', 'perperson', 'personwise'].includes(chargeBasis)) {
       return 'perpax';
@@ -12560,7 +12616,7 @@ sendWhatsappMessageToPropertyOwner() {
   private getAddOnPlanMultiplier(addon: any, plan: any): number {
     switch (this.getAddOnChargeBasis(addon)) {
       case 'perbooking':
-        return 1 / this.getSelectedPlanCount();
+        return this.isFirstSelectedPlan(plan) ? 1 : 0;
       case 'perpax':
       case 'pernight':
         return Math.max(1, this.toSafeAmount(plan?.adults || this.booking?.noOfPersons || 1));
@@ -12586,7 +12642,7 @@ sendWhatsappMessageToPropertyOwner() {
   private getAddOnDisplayQuantity(addon: any, plan: any): number {
     switch (this.getAddOnChargeBasis(addon)) {
       case 'perbooking':
-        return 1;
+        return this.isFirstSelectedPlan(plan) ? 1 : 0;
       case 'perpax':
       case 'pernight':
         return Math.max(1, this.toSafeAmount(plan?.adults || this.booking?.noOfPersons || 1));
@@ -12660,17 +12716,22 @@ sendWhatsappMessageToPropertyOwner() {
   }
 
   getSelectedServicesForPlan(plan: any): any[] {
-    return (this.selectedAddOns || []).map((service) => {
+    return (this.selectedAddOns || []).reduce((services, service) => {
       const servicePrice = this.toSafeAmount(
         service?.servicePrice ?? service?.beforeTaxAmount ?? service?.unitPrice,
       );
       const taxAmount = this.toSafeAmount(service?.taxAmount);
       const multiplier = this.getAddOnPlanMultiplier(service, plan);
+
+      if (multiplier <= 0) {
+        return services;
+      }
+
       const quantity = this.getAddOnDisplayQuantity(service, plan);
       const beforeTaxAmount = this.toSafeAmount(servicePrice * multiplier);
       const totalTaxAmount = this.toSafeAmount(taxAmount * multiplier);
 
-      return {
+      services.push({
         ...service,
         quantity,
         count: quantity,
@@ -12681,23 +12742,30 @@ sendWhatsappMessageToPropertyOwner() {
         afterTaxAmount: this.toSafeAmount(beforeTaxAmount + totalTaxAmount),
         netAmount: this.toSafeAmount(beforeTaxAmount + totalTaxAmount),
         sourceChannel: service?.sourceChannel ?? this.booking?.externalSite ?? 'BookMax',
-      };
-    });
+      });
+
+      return services;
+    }, []);
   }
 
   private getSelectedServicePayloadForPlan(plan: any): any[] {
-    return (this.selectedAddOns || []).map((service) => {
+    return (this.selectedAddOns || []).reduce((services, service) => {
       const servicePrice = this.toSafeAmount(
         service?.servicePrice ?? service?.beforeTaxAmount ?? service?.unitPrice,
       );
       const taxAmount = this.toSafeAmount(service?.taxAmount);
       const multiplier = this.getAddOnPlanMultiplier(service, plan);
+
+      if (multiplier <= 0) {
+        return services;
+      }
+
       const quantity = this.getAddOnDisplayQuantity(service, plan);
       const beforeTaxAmount = this.toSafeAmount(servicePrice * multiplier);
       const totalTaxAmount = this.toSafeAmount(taxAmount * multiplier);
       const afterTaxAmount = this.toSafeAmount(beforeTaxAmount + totalTaxAmount);
 
-      return {
+      services.push({
         ...service,
         quantity,
         count: quantity,
@@ -12713,8 +12781,10 @@ sendWhatsappMessageToPropertyOwner() {
         afterTaxAmount,
         netAmount: afterTaxAmount,
         sourceChannel: service?.sourceChannel ?? this.booking?.externalSite ?? 'BookMax',
-      };
-    });
+      });
+
+      return services;
+    }, []);
   }
 
   /** Sum of servicePrice for all selected add-ons across all selected rooms (before tax) */
