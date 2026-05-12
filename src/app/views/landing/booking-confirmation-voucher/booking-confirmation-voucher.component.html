@@ -384,7 +384,9 @@
 
                 <!-- Add-ons itemised table -->
                 <div class="footer-borders" *ngIf="selectedAddOns && selectedAddOns.length > 0">
-                  <div style="font-weight: 700; margin-bottom: 8px; color: #1465cf">Add-On Services</div>
+                  <div style="font-weight: 700; margin-bottom: 8px; color: #1465cf">
+                    Add-On Services ({{ selectedAddOns.length }})
+                  </div>
                   <div style="overflow-x: auto">
                     <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem">
                       <thead>
@@ -460,7 +462,7 @@
                 <div *ngIf="advancePaymentPercentage === 0" class="booking-summary-total total-borders">
                   <div class="d-flex justify-content-between" style="font-weight: 700">
                     <div>Total Amount (Due Now):</div>
-                    <div style="color: #dc2626">{{ booking.outstandingAmount | currency: currency : 'symbol' : '1.2-2' }}</div>
+                    <div style="color: #dc2626">{{ getNewGrandTotal() | currency: currency : 'symbol' : '1.2-2' }}</div>
                   </div>
                 </div>
               </div>
@@ -864,7 +866,8 @@
               <!-- Add-ons itemised table for mobile/webview -->
               <div *ngIf="selectedAddOns && selectedAddOns.length > 0"
                 style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #e5e7eb">
-                <div style="font-weight: 700; margin-bottom: 8px; color: #1465cf; font-size: 0.9rem">Add-on Services
+                <div style="font-weight: 700; margin-bottom: 8px; color: #1465cf; font-size: 0.9rem">
+                  Add-On Services ({{ selectedAddOns.length }})
                 </div>
                 <div style="overflow-x: auto">
                   <table style="width: 100%; border-collapse: collapse; font-size: 0.82rem">

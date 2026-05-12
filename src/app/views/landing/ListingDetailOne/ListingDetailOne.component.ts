@@ -4236,18 +4236,15 @@ onCheckOutClosed(): void {
         this.businessUser.propertyServicesList.forEach((ele) => {
           if (ele.id == null || ele.id == undefined) {
             this.propertyServicesNoId.push(ele);
+            return;
           }
-          if (ele.id != null && ele.id != undefined) {
-            // ✅ Separate non-paid and paid services
-            if (Number(ele.servicePrice) === 0 || ele.servicePrice == null) {
-              // Non-paid → Property Highlights
-              this.amenitiesHighlights.push(ele);
-              this.propertyServiceListData.push(ele);  // Backward compatibility
-            } else {
-              // Paid → Add-on Services
-              this.addOnServices.push(ele);
-              this.propertyServiceListDataOne.push(ele);  // Backward compatibility
-            }
+
+          if (Number(ele.servicePrice) === 0 || ele.servicePrice == null) {
+            this.amenitiesHighlights.push(ele);
+            this.propertyServiceListData.push(ele);  // Backward compatibility
+          } else {
+            this.addOnServices.push(ele);
+            this.propertyServiceListDataOne.push(ele);  // Backward compatibility
           }
         });
 
@@ -4255,10 +4252,11 @@ onCheckOutClosed(): void {
           this.socialmedialist = element;
         });
 
-        this.propertyServiceListDataOne =
-          this.businessUser.propertyServicesList.filter(
-            (ele) => Number(ele.servicePrice) > 0
-          );
+        // this.propertyServiceListDataOne =
+        //   this.businessUser.propertyServicesList.filter((ele) =>
+        //     this.isEligibleAddOnService(ele)
+        //   );
+        this.addOnServices = [...this.propertyServiceListDataOne];
 
         if (
           this.selectedServices != null &&
@@ -4873,17 +4871,13 @@ onCheckOutClosed(): void {
 
           // ✅ Separate non-paid and paid services
           this.businessUser.propertyServicesList.forEach((ele) => {
-            if (ele.id == null || ele.id == undefined) {
-              this.propertyServicesNoId.push(ele);
-            }
-            if (ele.id != null && ele.id != undefined) {
-              if (Number(ele.servicePrice) === 0 || ele.servicePrice == null) {
-                this.amenitiesHighlights.push(ele);
-                this.propertyServiceListData.push(ele);
-              } else {
-                this.addOnServices.push(ele);
-                this.propertyServiceListDataOne.push(ele);
-              }
+                            console.log('ele is',ele);
+            if (Number(ele.servicePrice) === 0 || ele.servicePrice == null) {
+              this.amenitiesHighlights.push(ele);
+              this.propertyServiceListData.push(ele);
+            } else {
+              this.addOnServices.push(ele);
+              this.propertyServiceListDataOne.push(ele);
             }
           });
 
