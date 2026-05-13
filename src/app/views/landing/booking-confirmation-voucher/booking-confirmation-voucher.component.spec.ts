@@ -323,6 +323,33 @@ describe('BookingConfirmationVoucherComponent – 14 booking scenarios', () => {
     expect(component.getNewBalanceAtCheckIn()).toBeCloseTo(0, 2);
   });
 
+  it('uses fallback add-ons while booking is still pending', () => {
+    component.bookingsResponseList = [{ bookingStatus: 'ENQUIRY', services: [] }];
+    component.bookingSummaryDetails = {
+      propertyServiceListDataOne: [
+        { serviceName: 'Airport Pickup', quantity: 1, servicePrice: 20, taxAmount: 1 },
+      ],
+    };
+
+    const addOns = (component as any).resolveSelectedAddOns([]);
+
+    expect(addOns.length).toBe(1);
+    expect(addOns[0].name).toBe('Airport Pickup');
+  });
+
+  it('uses only backend booking services after booking is confirmed', () => {
+    component.bookingsResponseList = [{ bookingStatus: 'Confirmed', services: [] }];
+    component.bookingSummaryDetails = {
+      propertyServiceListDataOne: [
+        { serviceName: 'Airport Pickup', quantity: 1, servicePrice: 20, taxAmount: 1 },
+      ],
+    };
+
+    const addOns = (component as any).resolveSelectedAddOns([]);
+
+    expect(addOns).toEqual([]);
+  });
+
   it('falls back to backend booking services when enquiry add-ons are unavailable', () => {
     component.bookingsResponseList = [{
       beforeTaxAmount: 100,

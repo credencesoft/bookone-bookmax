@@ -504,6 +504,10 @@ export class BookingConfirmationVoucherComponent {
   }
 
   private resolveSelectedAddOns(bookedEnquiries: any[]): any[] {
+    if (this.hasConfirmedBooking()) {
+      return this.getSelectedAddOnsFromBookings();
+    }
+
     const addOnsFromQuotes = this.getSelectedAddOnsFromEnquiryQuotes(bookedEnquiries);
     if (addOnsFromQuotes.length > 0) {
       return addOnsFromQuotes;
@@ -520,6 +524,29 @@ export class BookingConfirmationVoucherComponent {
     }
 
     return this.getSelectedAddOnsFromBookings();
+  }
+
+  private hasConfirmedBooking(): boolean {
+    if (!Array.isArray(this.bookingsResponseList) || this.bookingsResponseList.length === 0) {
+      return false;
+    }
+
+    return this.bookingsResponseList.some((booking: any) =>
+      this.isBookingConfirmed(booking),
+    );
+  }
+
+  private isBookingConfirmed(booking: any): boolean {
+    const bookingStatus = (booking?.bookingStatus || booking?.status || '')
+      .toString()
+      .trim()
+      .toUpperCase();
+
+    if (!bookingStatus) {
+      return false;
+    }
+
+    return bookingStatus !== 'ENQUIRY' && bookingStatus !== 'PENDING';
   }
 
   private getSelectedAddOnsFromPersistedState(): any[] {
