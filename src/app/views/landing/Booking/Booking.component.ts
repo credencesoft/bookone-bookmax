@@ -318,6 +318,7 @@ export class BookingComponent implements OnInit {
   soldOutRooms: any;
   availableRoomsOne: any;
   availableRoomIdSet = new Set<number>();
+  private roomDayTripByRoomId = new Map<number, boolean>();
   soldOutSectionRef!: HTMLElement;
   availabilityLoaded = false;
   showModal = false;
@@ -370,6 +371,7 @@ export class BookingComponent implements OnInit {
 
   // ✅ Phase 4: Add-on Services Tracking
   addOnServices: any[] = [];                    // Available add-ons to display
+  expandedAddOnDescriptions: { [key: number]: boolean } = {};
   selectedAddOns: any[] = [];                   // User-selected add-ons
   selectedAddOnNames: string[] = [];            // Track selected add-on names
   isAddOnServiceLoading: boolean = false;
@@ -2669,6 +2671,7 @@ export class BookingComponent implements OnInit {
     enquiryForm.enquiryType = 'Pay Now';
     enquiryForm.noOfExtraPerson = plan.extraCountAdult;
     enquiryForm.roomId = plan.roomId;
+    enquiryForm.dayTrip = this.isDayTripRoom(plan);
     if (this.token?.getProperty()?.paymentGateway === 'PayU') {
       enquiryForm.modeOfPayment = 'PayU';
     }
@@ -2879,6 +2882,27 @@ export class BookingComponent implements OnInit {
     }
   }
 
+  private updateRoomDayTripLookup(roomList: any[]): void {
+    this.roomDayTripByRoomId.clear();
+
+    (roomList || []).forEach((room) => {
+      const roomId = Number(room?.id ?? room?.roomId);
+      if (Number.isFinite(roomId)) {
+        this.roomDayTripByRoomId.set(roomId, room?.dayTrip === true);
+      }
+    });
+  }
+
+  private isDayTripRoom(plan: any): boolean {
+    const roomId = Number(plan?.roomId ?? plan?.id);
+
+    if (Number.isFinite(roomId) && this.roomDayTripByRoomId.has(roomId)) {
+      return this.roomDayTripByRoomId.get(roomId) === true;
+    }
+
+    return plan?.dayTrip === true || this.booking?.dayTrip === true;
+  }
+
   onEditBooking() {
     this.PropertyUrl = this.token.getPropertyUrl();
     if (!this.PropertyUrl) return;
@@ -2920,6 +2944,7 @@ export class BookingComponent implements OnInit {
         .subscribe(
           (response) => {
             const roomListOne = response.body.roomList || [];
+            this.updateRoomDayTripLookup(roomListOne);
 
             const sortedRoomsOne = roomListOne.sort(
               (a: any, b: any) => b.roomOnlyPrice - a.roomOnlyPrice,
@@ -8218,7 +8243,7 @@ export class BookingComponent implements OnInit {
     booking.createdDate = new Date().toISOString();
     booking.propertyId = this.booking.propertyId;
     booking.gstAmount = plan.taxPercentageperroom;
-    booking.dayTrip = false;
+    booking.dayTrip = this.isDayTripRoom(plan);
     booking.discountPercentage = 0;
     booking.discountAmount = 0;
     booking.extraChildCharge = this.getPlanStayChildExtraCharge(plan);
@@ -8413,6 +8438,7 @@ export class BookingComponent implements OnInit {
     enquiryForm.noOfPerson = plan.adults;
     enquiryForm.noOfExtraPerson = plan.extraCountAdult;
     enquiryForm.roomId = plan.roomId;
+    enquiryForm.dayTrip = this.isDayTripRoom(plan);
     enquiryForm.payableAmount = plan.price + plan.taxPercentageperroom;
     enquiryForm.roomName = plan.roomName;
     enquiryForm.extraPersonCharge = this.getPlanStayAdultExtraCharge(plan);
@@ -10815,6 +10841,7 @@ export class BookingComponent implements OnInit {
     enquiryForm.noOfPerson = plan.adults;
     enquiryForm.noOfExtraPerson = plan.extraCountAdult;
     enquiryForm.roomId = plan.roomId;
+    enquiryForm.dayTrip = this.isDayTripRoom(plan);
     if (this.groupBookingId) {
       enquiryForm.groupEnquiryId = this.groupBookingId;
     }
@@ -12383,6 +12410,11 @@ sendWhatsappMessageToPropertyOwner() {
     this.syncSelectedAddOnsToCheckoutState();
   }
 
+  toggleAddOnDescription(index: number, event: Event): void {
+    event.stopPropagation();
+    this.expandedAddOnDescriptions[index] = !this.expandedAddOnDescriptions[index];
+  }
+
   /**
    * Check if service is currently selected
    */
@@ -12676,7 +12708,7 @@ sendWhatsappMessageToPropertyOwner() {
     );
   }
 
-  private getPlanServicesTotal(plan: any): number {
+  getPlanServicesTotal(plan: any): number {
     return this.toSafeAmount(
       this.getPlanServicesSubtotal(plan) + this.getPlanServicesTax(plan),
     );
@@ -12811,6 +12843,16 @@ sendWhatsappMessageToPropertyOwner() {
         0,
       ),
     );
+  }
+
+  getSelectedAddOnTotal(addon: any): number {
+    const servicePrice = this.toSafeAmount(
+      addon?.servicePrice ?? addon?.beforeTaxAmount ?? addon?.unitPrice,
+    );
+    const taxAmount = this.toSafeAmount(addon?.taxAmount);
+    const multiplier = this.getAddOnTotalMultiplier(addon);
+
+    return this.toSafeAmount((servicePrice + taxAmount) * multiplier);
   }
 
   /** Grand total for selected add-ons (servicePrice + taxAmount per addon) */

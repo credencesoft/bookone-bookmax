@@ -89,6 +89,7 @@ import { TaxDetails } from "./TaxDetails";
     serviceQuoteSummary: string;
     quotedGrandTotal: number;
     quotedPayableAmount: number;
+    dayTrip: boolean;
     // noOfNights:number;
     // counterName:string;
   }
