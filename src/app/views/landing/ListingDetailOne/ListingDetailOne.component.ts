@@ -4871,7 +4871,6 @@ onCheckOutClosed(): void {
 
           // ✅ Separate non-paid and paid services
           this.businessUser.propertyServicesList.forEach((ele) => {
-                            console.log('ele is',ele);
             if (Number(ele.servicePrice) === 0 || ele.servicePrice == null) {
               this.amenitiesHighlights.push(ele);
               this.propertyServiceListData.push(ele);
