@@ -337,13 +337,26 @@ describe('BookingConfirmationVoucherComponent – 14 booking scenarios', () => {
     expect(addOns[0].name).toBe('Airport Pickup');
   });
 
-  it('uses only backend booking services after booking is confirmed', () => {
+  it('uses selected checkout add-ons after booking is confirmed if backend services are empty', () => {
     component.bookingsResponseList = [{ bookingStatus: 'Confirmed', services: [] }];
     component.bookingSummaryDetails = {
       propertyServiceListDataOne: [
         { serviceName: 'Airport Pickup', quantity: 1, servicePrice: 20, taxAmount: 1 },
       ],
     };
+
+    const addOns = (component as any).resolveSelectedAddOns([]);
+
+    expect(addOns.length).toBe(1);
+    expect(addOns[0].name).toBe('Airport Pickup');
+  });
+
+  it('does not treat the available add-on catalog as selected services', () => {
+    sessionStorage.setItem('addOnServices', JSON.stringify([
+      { serviceName: 'Airport Pickup', quantity: 1, servicePrice: 20, taxAmount: 1 },
+    ]));
+    component.bookingsResponseList = [{ bookingStatus: 'Confirmed', services: [] }];
+    component.bookingSummaryDetails = { propertyServiceListDataOne: [] };
 
     const addOns = (component as any).resolveSelectedAddOns([]);
 

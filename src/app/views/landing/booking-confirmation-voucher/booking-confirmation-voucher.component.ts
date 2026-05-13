@@ -505,7 +505,10 @@ export class BookingConfirmationVoucherComponent {
 
   private resolveSelectedAddOns(bookedEnquiries: any[]): any[] {
     if (this.hasConfirmedBooking()) {
-      return this.getSelectedAddOnsFromBookings();
+      const addOnsFromBookings = this.getSelectedAddOnsFromBookings();
+      if (addOnsFromBookings.length > 0) {
+        return addOnsFromBookings;
+      }
     }
 
     const addOnsFromQuotes = this.getSelectedAddOnsFromEnquiryQuotes(bookedEnquiries);
@@ -596,7 +599,7 @@ export class BookingConfirmationVoucherComponent {
 
   private getSelectedAddOnsFromSessionStorage(): any[] {
     try {
-      const storedAddOns = sessionStorage.getItem('addOnServices');
+      const storedAddOns = sessionStorage.getItem('SELECTED_SERVICE_DATA');
       if (!storedAddOns) {
         return [];
       }
@@ -646,11 +649,12 @@ export class BookingConfirmationVoucherComponent {
 
   private getSelectedAddOnsFromEnquiries(bookedEnquiries: any[]): any[] {
     const enquiryAddOns = bookedEnquiries.flatMap((enquiry: any) => {
-      if (!Array.isArray(enquiry?.selectedAddOns)) {
-        return [];
-      }
+      const selectedServices = [
+        ...(Array.isArray(enquiry?.selectedAddOns) ? enquiry.selectedAddOns : []),
+        ...(Array.isArray(enquiry?.selectedServices) ? enquiry.selectedServices : []),
+      ];
 
-      return enquiry.selectedAddOns.map((service: any) => this.normalizeAddOn(service));
+      return selectedServices.map((service: any) => this.normalizeAddOn(service));
     });
 
     return this.aggregateAddOns(enquiryAddOns);
