@@ -8198,6 +8198,5 @@ onYesClick() {
 
     this.token.saveSelectedServices(normalizedAddOns);
     this.token.saveServiceData(normalizedAddOns);
-    sessionStorage.setItem('addOnServices', JSON.stringify(normalizedAddOns));
   }
 }
