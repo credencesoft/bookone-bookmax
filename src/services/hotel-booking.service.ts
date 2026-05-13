@@ -407,7 +407,7 @@ fetchBookingById(bookingId: number) {
 
   private enrichEnquiryWithServiceSnapshot(enquiry: EnquiryDto): EnquiryDto {
     const hasExplicitSelectedServices =
-      Array.isArray(enquiry?.selectedServices) && enquiry.selectedServices.length > 0;
+      Array.isArray(enquiry?.selectedServices);
     const selectedServices =
       hasExplicitSelectedServices
         ? enquiry.selectedServices
@@ -493,31 +493,12 @@ fetchBookingById(bookingId: number) {
       return selectedServices;
     }
 
-    const sessionAddOns = this.getSessionAddOnServices();
-    if (sessionAddOns.length > 0) {
-      return sessionAddOns;
-    }
-
     const serviceData = this.token.getServiceData();
     if (Array.isArray(serviceData) && serviceData.length > 0) {
       return serviceData;
     }
 
     return [];
-  }
-
-  private getSessionAddOnServices(): PropertyServiceDTO[] {
-    try {
-      const storedAddOns = sessionStorage.getItem('addOnServices');
-      if (!storedAddOns) {
-        return [];
-      }
-
-      const parsedAddOns = JSON.parse(storedAddOns);
-      return Array.isArray(parsedAddOns) ? parsedAddOns : [];
-    } catch (error) {
-      return [];
-    }
   }
 
   emailEnquire(enquiry: EnquiryDto) {

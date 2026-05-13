@@ -11,7 +11,7 @@ export const environment = {
   apiScheduler: 'https://scheduler.api.bookone.io',
   apiUrlAddress: 'https://api.uat.bookone.io/api-address',
   apiUrlPromotion: 'https://api.bookonelocal.in/promotion-api',
-  apiLms: 'https://api.bookone.io/api-lms',
+  apiLms: 'https://api.uat.bookone.io/lms',
   channelIntegration:'https://api.bookonelocal.in/channel-integration',
   apiUrlBookone: 'https://api.bookonelocal.in/api-bookone',
   parentOrganisationId: 1,

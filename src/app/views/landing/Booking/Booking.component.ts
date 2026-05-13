@@ -2423,9 +2423,7 @@ export class BookingComponent implements OnInit {
     const selectedServicesForEnquiry = this.getSelectedServicesForPlan({
       selectedRoomnumber: this.getTotalSelectedRoomCount(),
     });
-    if (selectedServicesForEnquiry.length > 0) {
-      this.enquiryForm.selectedServices = selectedServicesForEnquiry;
-    }
+    this.enquiryForm.selectedServices = selectedServicesForEnquiry;
     this.enquiryForm.roomName = this.booking.roomName;
     this.enquiryForm.extraPersonCharge = this.booking.extraPersonCharge;
     this.enquiryForm.extraChildCharge = this.booking.extraChildCharge;
@@ -2806,9 +2804,7 @@ export class BookingComponent implements OnInit {
     enquiryForm.convenienceFee = convenienceFee;
     enquiryForm.discountAmountPercentage = booking.discountPercentage;
     enquiryForm.selectedServiceTotal = selectedServiceTotal;
-    if (selectedServices.length > 0) {
-      enquiryForm.selectedServices = selectedServices;
-    }
+    enquiryForm.selectedServices = selectedServices;
     enquiryForm.noOfNights = plan.nights;
     enquiryForm.foodOptions = '';
     enquiryForm.organisationId = environment.parentOrganisationId;
@@ -8562,9 +8558,7 @@ export class BookingComponent implements OnInit {
     enquiryForm.advanceAmount = planAdvanceAmount;
     enquiryForm.convenienceFee = convenienceFee;
     enquiryForm.selectedServiceTotal = selectedServiceTotal;
-    if (selectedServices.length > 0) {
-      enquiryForm.selectedServices = selectedServices;
-    }
+    enquiryForm.selectedServices = selectedServices;
     enquiryForm.discountAmountPercentage = booking.discountPercentage;
     enquiryForm.noOfNights = plan.nights;
     enquiryForm.foodOptions = '';
@@ -10495,9 +10489,7 @@ export class BookingComponent implements OnInit {
     const selectedServicesForEnquiry = this.getSelectedServicesForPlan({
       selectedRoomnumber: this.getTotalSelectedRoomCount(),
     });
-    if (selectedServicesForEnquiry.length > 0) {
-      this.enquiryForm.selectedServices = selectedServicesForEnquiry;
-    }
+    this.enquiryForm.selectedServices = selectedServicesForEnquiry;
     // this.enquiryForm.taxDetails = this.booking.taxDetails;
     // this.enquiryForm.currency = this.token.getProperty().localCurrency;
     let taxarray = this.token.getProperty().taxDetails;
@@ -12353,25 +12345,32 @@ sendWhatsappMessageToPropertyOwner() {
       const addOnsData = sessionStorage.getItem('addOnServices');
       if (addOnsData) {
         this.addOnServices = JSON.parse(addOnsData);
+        const selectedAddOnsFromSummary =
+          this.bookingSummaryDetails?.propertyServiceListDataOne;
         const persistedSelectedAddOns = this.token.getSelectedServices();
-        this.selectedAddOns = Array.isArray(persistedSelectedAddOns)
+        this.selectedAddOns = Array.isArray(selectedAddOnsFromSummary)
+          ? selectedAddOnsFromSummary
+          : Array.isArray(persistedSelectedAddOns)
           ? persistedSelectedAddOns
           : [];
         this.selectedAddOnNames = this.selectedAddOns
           .map((service) => service?.name)
           .filter((name) => !!name);
+        this.syncSelectedAddOnsToCheckoutState();
         this.calculateAddOnsTotals();
         this.showAddOnServices = this.addOnServices.length > 0;
       } else {
         this.addOnServices = [];
         this.selectedAddOns = [];
         this.selectedAddOnNames = [];
+        this.syncSelectedAddOnsToCheckoutState();
         this.showAddOnServices = false;
       }
     } catch (error) {
       this.addOnServices = [];
       this.selectedAddOns = [];
       this.selectedAddOnNames = [];
+      this.syncSelectedAddOnsToCheckoutState();
       this.showAddOnServices = false;
     }
   }
@@ -12548,7 +12547,6 @@ sendWhatsappMessageToPropertyOwner() {
     }));
 
     this.token.saveSelectedServices(normalizedAddOns);
-    sessionStorage.setItem('addOnServices', JSON.stringify(normalizedAddOns));
   }
 
   /**
@@ -12708,7 +12706,7 @@ sendWhatsappMessageToPropertyOwner() {
     );
   }
 
-  getPlanServicesTotal(plan: any): number {
+  private getPlanServicesTotal(plan: any): number {
     return this.toSafeAmount(
       this.getPlanServicesSubtotal(plan) + this.getPlanServicesTax(plan),
     );
@@ -12843,16 +12841,6 @@ sendWhatsappMessageToPropertyOwner() {
         0,
       ),
     );
-  }
-
-  getSelectedAddOnTotal(addon: any): number {
-    const servicePrice = this.toSafeAmount(
-      addon?.servicePrice ?? addon?.beforeTaxAmount ?? addon?.unitPrice,
-    );
-    const taxAmount = this.toSafeAmount(addon?.taxAmount);
-    const multiplier = this.getAddOnTotalMultiplier(addon);
-
-    return this.toSafeAmount((servicePrice + taxAmount) * multiplier);
   }
 
   /** Grand total for selected add-ons (servicePrice + taxAmount per addon) */
