@@ -23,6 +23,29 @@
     (onBookNowClick)="onBookNowClick()"
   >
   </app-Header-Listingdetailsone>
+
+  <div
+    class="date-restriction-popup"
+    *ngIf="showPastDateRestrictionPopup"
+    role="alert"
+    aria-live="polite"
+  >
+    <div class="date-restriction-popup__icon">
+      <i class="fa-solid fa-calendar-check"></i>
+    </div>
+    <div class="date-restriction-popup__copy">
+      <h6>Dates Updated</h6>
+      <p>{{ pastDateRestrictionMessage }}</p>
+    </div>
+    <button
+      type="button"
+      class="date-restriction-popup__close"
+      aria-label="Close date update message"
+      (click)="showPastDateRestrictionPopup = false"
+    >
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+  </div>
   <div *ngIf="showAllTheOfferList?.length > 0">
     <p-carousel
       class="carousel-section"
@@ -4606,10 +4629,10 @@
                     class="nearby-card"
                     style="margin-right: 20px"
                   >
-                    <div>
+                    <div *ngIf="item?.fields?.file?.url">
                       <img [src]="item.fields.file.url" class="img-fluid" />
                     </div>
-                    <p class="place-name">{{ item.fields.title }}</p>
+                    <p class="place-name">{{ item?.fields?.title }}</p>
                   </div>
                 </ngx-slick-carousel>
               </div>

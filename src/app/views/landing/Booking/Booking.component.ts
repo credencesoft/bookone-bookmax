@@ -86,6 +86,7 @@ interface Step {
 })
 export class BookingComponent implements OnInit {
   bookingContextMissing = false;
+  invalidBookingDatesBlocked = false;
   bookingContextMessage =
     'Your booking session has expired. Please reselect your room to continue.';
   PropertyUrl: string;
@@ -480,6 +481,10 @@ export class BookingComponent implements OnInit {
       this.children = this.booking.noOfChildren;
       this.noOfrooms = this.booking.noOfRooms;
     }
+    if (this.hasPastCheckInDate(this.booking?.fromDate)) {
+      this.handleInvalidStayDates();
+      return;
+    }
     if (this.token.getBookingCity() !== null) {
       this.bookingCity = this.token.getBookingCity();
     }
@@ -710,6 +715,41 @@ export class BookingComponent implements OnInit {
     setTimeout(() => {
       this.redirectToPropertyPage();
     }, 1500);
+  }
+
+  private hasPastCheckInDate(rawDate: any): boolean {
+    if (!rawDate) {
+      return false;
+    }
+
+    const checkInDate = new Date(rawDate);
+    if (Number.isNaN(checkInDate.getTime())) {
+      return false;
+    }
+
+    checkInDate.setHours(0, 0, 0, 0);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    return checkInDate < today;
+  }
+
+  private handleInvalidStayDates(): void {
+    if (this.invalidBookingDatesBlocked) {
+      return;
+    }
+
+    this.invalidBookingDatesBlocked = true;
+    this.bookingContextMissing = true;
+    this.bookingContextMessage =
+      'Past check-in dates are no longer available. Please choose current or future dates to continue with your booking.';
+    this.showAlert = true;
+    this.alertType = 'warning';
+    this.headerTitle = 'Dates updated';
+    this.bodyMessage = this.bookingContextMessage;
+    sessionStorage.removeItem('bookingSummaryDetails');
+    sessionStorage.removeItem('bookingSummary');
+    this.token.clearBookingDataObj();
   }
 
   private redirectToPropertyPage(): void {

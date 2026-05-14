@@ -404,6 +404,9 @@ promoSelected = false;
   isSuccess: boolean;
   headerTitle: string;
   bodyMessage: string;
+  showPastDateRestrictionPopup = false;
+  pastDateRestrictionMessage =
+    'Past check-in dates are not available. We have updated your stay to the next available date. Please review the revised dates before continuing.';
   hasPlan = false;
   customerReviews: Review[];
   sideMinderUrl: string;
@@ -1086,6 +1089,7 @@ if (params['Children'] !== undefined) {
       today.getMonth() + 1,
       today.getDate()
     );
+    this.normalizeQueryDatesForRestriction();
     // this.checkAvailabilityDisabled = true;
 let currentUrl = window.location.href;
 
@@ -6484,6 +6488,61 @@ this.token.savePropertyUrl(currentUrl);
     this.token.clearAllTaxArray();
     this.token.clearExtraPersonCharge();
     this.token.clearExtraChildCharge();
+  }
+
+  private normalizeQueryDatesForRestriction(): void {
+    if (!this.checkinDay || !this.checkinMonth || !this.checkinYear) {
+      return;
+    }
+
+    const requestedCheckIn = new Date(
+      Number(this.checkinYear),
+      Number(this.checkinMonth) - 1,
+      Number(this.checkinDay)
+    );
+
+    if (Number.isNaN(requestedCheckIn.getTime())) {
+      return;
+    }
+
+    requestedCheckIn.setHours(0, 0, 0, 0);
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    let queryUpdated = false;
+
+    if (requestedCheckIn < today) {
+      this.checkinDay = today.getDate();
+      this.checkinMonth = today.getMonth() + 1;
+      this.checkinYear = today.getFullYear();
+      this.showPastDateRestrictionPopup = true;
+      queryUpdated = true;
+
+      setTimeout(() => {
+        this.showPastDateRestrictionPopup = false;
+        this.changeDetectorRefs.detectChanges();
+      }, 5000);
+    }
+
+    if (!this.nights || Number(this.nights) < 1) {
+      this.nights = 1;
+      queryUpdated = true;
+    }
+
+    if (queryUpdated) {
+      this.router.navigate([], {
+        relativeTo: this.acRoute,
+        queryParams: {
+          checkinDay: this.checkinDay,
+          checkinMonth: this.checkinMonth,
+          checkinYear: this.checkinYear,
+          nights: this.nights,
+        },
+        queryParamsHandling: 'merge',
+        replaceUrl: true,
+      });
+    }
   }
   clicked() {
     this.checkAvailabilityDisabled = true;
