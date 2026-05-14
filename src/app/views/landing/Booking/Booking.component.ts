@@ -1173,13 +1173,47 @@ export class BookingComponent implements OnInit {
       payNowAmount: this.getNewPayNowAmount(),
       balanceAtCheckIn: this.getNewBalanceAtCheckIn(),
       // Add-ons
-      selectedAddOns: this.selectedAddOns,
+      selectedAddOns: this.getSelectedAddOnsForStoredEnquiry(enquiry),
     }));
 
     sessionStorage.setItem(
       'BookedEnquiryList',
       JSON.stringify(enhancedEnquiries),
     );
+  }
+
+  private getSelectedAddOnsForStoredEnquiry(enquiry: any): any[] {
+    const selectedServicesFromEnquiry = Array.isArray(enquiry?.selectedServices)
+      ? enquiry.selectedServices
+      : Array.isArray(enquiry?.selectedAddOns)
+      ? enquiry.selectedAddOns
+      : [];
+
+    if (selectedServicesFromEnquiry.length > 0) {
+      return selectedServicesFromEnquiry;
+    }
+
+    const plans =
+      this.bookingSummaryDetails?.selectedPlansSummary ||
+      this.selectedPlansSummary ||
+      [];
+    const matchedPlan = plans.find((plan: any) => {
+      const sameRoomId =
+        Number(plan?.roomId || 0) > 0 &&
+        Number(plan?.roomId) === Number(enquiry?.roomId);
+      const sameRoomName =
+        plan?.roomName &&
+        enquiry?.roomName &&
+        plan.roomName === enquiry.roomName;
+
+      return sameRoomId || sameRoomName;
+    });
+
+    if (matchedPlan) {
+      return this.getSelectedServicePayloadForPlan(matchedPlan);
+    }
+
+    return [];
   }
 
   private handleBookingTimeout() {
@@ -12706,7 +12740,7 @@ sendWhatsappMessageToPropertyOwner() {
     );
   }
 
-  private getPlanServicesTotal(plan: any): number {
+  getPlanServicesTotal(plan: any): number {
     return this.toSafeAmount(
       this.getPlanServicesSubtotal(plan) + this.getPlanServicesTax(plan),
     );
@@ -12841,6 +12875,16 @@ sendWhatsappMessageToPropertyOwner() {
         0,
       ),
     );
+  }
+
+  getSelectedAddOnTotal(addon: any): number {
+    const servicePrice = this.toSafeAmount(
+      addon?.servicePrice ?? addon?.beforeTaxAmount ?? addon?.unitPrice,
+    );
+    const taxAmount = this.toSafeAmount(addon?.taxAmount);
+    const multiplier = this.getAddOnTotalMultiplier(addon);
+
+    return this.toSafeAmount((servicePrice + taxAmount) * multiplier);
   }
 
   /** Grand total for selected add-ons (servicePrice + taxAmount per addon) */

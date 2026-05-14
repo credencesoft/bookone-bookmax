@@ -504,6 +504,13 @@ export class BookingConfirmationVoucherComponent {
   }
 
   private resolveSelectedAddOns(bookedEnquiries: any[]): any[] {
+    if (this.hasConfirmedBooking()) {
+      const addOnsFromBookings = this.getSelectedAddOnsFromBookings();
+      if (addOnsFromBookings.length > 0) {
+        return addOnsFromBookings;
+      }
+    }
+
     const addOnsFromQuotes = this.getSelectedAddOnsFromEnquiryQuotes(bookedEnquiries);
     if (addOnsFromQuotes.length > 0) {
       return addOnsFromQuotes;
@@ -520,6 +527,29 @@ export class BookingConfirmationVoucherComponent {
     }
 
     return this.getSelectedAddOnsFromBookings();
+  }
+
+  private hasConfirmedBooking(): boolean {
+    if (!Array.isArray(this.bookingsResponseList) || this.bookingsResponseList.length === 0) {
+      return false;
+    }
+
+    return this.bookingsResponseList.some((booking: any) =>
+      this.isBookingConfirmed(booking),
+    );
+  }
+
+  private isBookingConfirmed(booking: any): boolean {
+    const bookingStatus = (booking?.bookingStatus || booking?.status || '')
+      .toString()
+      .trim()
+      .toUpperCase();
+
+    if (!bookingStatus) {
+      return false;
+    }
+
+    return bookingStatus !== 'ENQUIRY' && bookingStatus !== 'PENDING';
   }
 
   private getSelectedAddOnsFromPersistedState(): any[] {
@@ -569,7 +599,7 @@ export class BookingConfirmationVoucherComponent {
 
   private getSelectedAddOnsFromSessionStorage(): any[] {
     try {
-      const storedAddOns = sessionStorage.getItem('addOnServices');
+      const storedAddOns = sessionStorage.getItem('SELECTED_SERVICE_DATA');
       if (!storedAddOns) {
         return [];
       }
@@ -619,11 +649,12 @@ export class BookingConfirmationVoucherComponent {
 
   private getSelectedAddOnsFromEnquiries(bookedEnquiries: any[]): any[] {
     const enquiryAddOns = bookedEnquiries.flatMap((enquiry: any) => {
-      if (!Array.isArray(enquiry?.selectedAddOns)) {
-        return [];
-      }
+      const selectedServices = [
+        ...(Array.isArray(enquiry?.selectedAddOns) ? enquiry.selectedAddOns : []),
+        ...(Array.isArray(enquiry?.selectedServices) ? enquiry.selectedServices : []),
+      ];
 
-      return enquiry.selectedAddOns.map((service: any) => this.normalizeAddOn(service));
+      return selectedServices.map((service: any) => this.normalizeAddOn(service));
     });
 
     return this.aggregateAddOns(enquiryAddOns);
