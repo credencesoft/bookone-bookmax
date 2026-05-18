@@ -531,10 +531,34 @@
                             </div>
                           </div>
                         </td>
-                        <td class="add-on-type-cell" style="text-align: right; vertical-align: middle; padding: 10px 12px">{{ addon.chargeBasis }}</td>
+                        <td class="add-on-type-cell" style="text-align: right; vertical-align: middle; padding: 10px 12px">
+                          <div>{{ addon.chargeBasis }}</div>
+                          <div
+                            *ngIf="isItemWiseAddOn(addon)"
+                            class="add-on-quantity-control"
+                            (click)="$event.stopPropagation()"
+                          >
+                            <button
+                              type="button"
+                              class="add-on-quantity-btn"
+                              [disabled]="!isAddOnSelected(addon)"
+                              (click)="decreaseAddOnQuantity(addon, $event)"
+                            >
+                              -
+                            </button>
+                            <span class="add-on-quantity-value">{{ getSelectedAddOnQuantity(addon) }}</span>
+                            <button
+                              type="button"
+                              class="add-on-quantity-btn"
+                              (click)="increaseAddOnQuantity(addon, $event)"
+                            >
+                              +
+                            </button>
+                          </div>
+                        </td>
                         <td style="text-align: right; vertical-align: middle; padding: 10px 12px">{{ addon.servicePrice | currency: currency : 'symbol' : '1.2-2' }}</td>
                         <td style="text-align: right; vertical-align: middle; padding: 10px 12px; color: #6b7280">{{ addon.taxAmount | currency: currency : 'symbol' : '1.2-2' }}</td>
-                        <td style="text-align: right; vertical-align: middle; padding: 10px 12px; font-weight: 600">{{ (addon.servicePrice + addon.taxAmount) | currency: currency : 'symbol' : '1.2-2' }}</td>
+                        <td style="text-align: right; vertical-align: middle; padding: 10px 12px; font-weight: 600">{{ getAddOnRowTotal(addon) | currency: currency : 'symbol' : '1.2-2' }}</td>
                       </tr>
                     </tbody>
                   </table>
@@ -554,6 +578,9 @@
                     <div class="add-on-selected-chip-list">
                       <span class="add-on-selected-chip" *ngFor="let addon of selectedAddOns">
                         {{ addon.name }}
+                        <span *ngIf="isItemWiseAddOn(addon)">
+                          {{ addon.servicePrice | currency: currency : 'symbol' : '1.2-2' }} * {{ getSelectedAddOnQuantity(addon) }} =
+                        </span>
                         <strong>{{ getSelectedAddOnTotal(addon) | currency: currency : 'symbol' : '1.2-2' }}</strong>
                       </span>
                     </div>
@@ -719,7 +746,7 @@
                         id="mobile"
                         name="mobile"
                         required
-                        placeholder="Enter phone number"
+                        placeholder="Enter valid digits number"
                         style="width: 60%; height: 2.5rem"
                         (ngModelChange)="validateMobile()"
                       />
@@ -1445,10 +1472,34 @@
                           </div>
                         </div>
                       </td>
-                      <td class="add-on-type-cell" style="text-align: right; vertical-align: middle; padding: 8px 10px">{{ addon.chargeBasis }}</td>
+                      <td class="add-on-type-cell" style="text-align: right; vertical-align: middle; padding: 8px 10px">
+                        <div>{{ addon.chargeBasis }}</div>
+                        <div
+                          *ngIf="isItemWiseAddOn(addon)"
+                          class="add-on-quantity-control add-on-quantity-control-mobile"
+                          (click)="$event.stopPropagation()"
+                        >
+                          <button
+                            type="button"
+                            class="add-on-quantity-btn"
+                            [disabled]="!isAddOnSelected(addon)"
+                            (click)="decreaseAddOnQuantity(addon, $event)"
+                          >
+                            -
+                          </button>
+                          <span class="add-on-quantity-value">{{ getSelectedAddOnQuantity(addon) }}</span>
+                          <button
+                            type="button"
+                            class="add-on-quantity-btn"
+                            (click)="increaseAddOnQuantity(addon, $event)"
+                          >
+                            +
+                          </button>
+                        </div>
+                      </td>
                       <td style="text-align: right; vertical-align: middle; padding: 8px 10px">{{ addon.servicePrice | currency: currency : 'symbol' : '1.2-2' }}</td>
                       <td style="text-align: right; vertical-align: middle; padding: 8px 10px; color: #6b7280">{{ addon.taxAmount | currency: currency : 'symbol' : '1.2-2' }}</td>
-                      <td style="text-align: right; vertical-align: middle; padding: 8px 10px; font-weight: 600">{{ (addon.servicePrice + addon.taxAmount) | currency: currency : 'symbol' : '1.2-2' }}</td>
+                      <td style="text-align: right; vertical-align: middle; padding: 8px 10px; font-weight: 600">{{ getAddOnRowTotal(addon) | currency: currency : 'symbol' : '1.2-2' }}</td>
                     </tr>
                   </tbody>
                 </table>
@@ -1467,6 +1518,9 @@
                   <div class="add-on-selected-chip-list">
                     <span class="add-on-selected-chip" *ngFor="let addon of selectedAddOns">
                       {{ addon.name }}
+                      <span *ngIf="isItemWiseAddOn(addon)">
+                        {{ addon.servicePrice | currency: currency : 'symbol' : '1.2-2' }} * {{ getSelectedAddOnQuantity(addon) }} =
+                      </span>
                       <strong>{{ getSelectedAddOnTotal(addon) | currency: currency : 'symbol' : '1.2-2' }}</strong>
                     </span>
                   </div>
@@ -1695,7 +1749,7 @@
                         id="mobile"
                         name="mobile"
                         required
-                        placeholder="Enter phone number"
+                        placeholder="Enter valid digits number"
                         style="width: 60%; height: 2.5rem"
                         (ngModelChange)="validateMobile()"
                       />

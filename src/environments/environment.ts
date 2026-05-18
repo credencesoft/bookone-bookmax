@@ -1,5 +1,5 @@
 export const environment = {
-  appIdCustomer: 'BookOneCustomerApp',
+   appIdCustomer: 'BookOneCustomerApp',
   sessionAppId: 'BOOKONE_MOBILE_APP_CUSTOMER',
   production: true,
   appId: 'TheHotelMate',
