@@ -4132,6 +4132,14 @@ textarea {
     margin-left: 10px;
     margin-right: 10px;
   }
+
+  .mobile-number-error {
+    display: block;
+    font-size: 10px;
+    line-height: 1.2;
+    margin-top: 4px;
+    white-space: nowrap;
+  }
 }
 
 .loader-overlay {
