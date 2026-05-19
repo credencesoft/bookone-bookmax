@@ -687,12 +687,16 @@ export class BookingConfirmationVoucherComponent {
         service?.netAmount ??
         0,
     );
+    const unitPrice = this.toSafeAmount(
+      service?.unitPrice ?? servicePrice / quantity,
+    );
     const taxAmount = this.toSafeAmount(service?.taxAmount ?? 0);
 
     return {
       id: service?.id,
       name: service?.name || service?.serviceName || service?.serviceType || 'Service',
       quantity,
+      unitPrice,
       servicePrice,
       taxAmount,
     };
@@ -713,12 +717,14 @@ export class BookingConfirmationVoucherComponent {
         current.taxAmount = this.toSafeAmount(
           current.taxAmount + this.toSafeAmount(addon?.taxAmount),
         );
+        current.unitPrice = this.getAddOnBasePrice(current);
         return;
       }
 
       groupedAddOns.set(key, {
         ...addon,
         quantity: this.toSafeQuantity(addon?.quantity),
+        unitPrice: this.toSafeAmount(addon?.unitPrice),
         servicePrice: this.toSafeAmount(addon?.servicePrice),
         taxAmount: this.toSafeAmount(addon?.taxAmount),
       });
@@ -745,6 +751,17 @@ export class BookingConfirmationVoucherComponent {
   private toSafeQuantity(value: any): number {
     const num = Number(value);
     return Number.isFinite(num) && num > 0 ? num : 1;
+  }
+
+  getAddOnBasePrice(addon: any): number {
+    const unitPrice = this.toSafeAmount(addon?.unitPrice);
+    if (unitPrice > 0) {
+      return unitPrice;
+    }
+
+    return this.toSafeAmount(
+      this.toSafeAmount(addon?.servicePrice) / this.toSafeQuantity(addon?.quantity),
+    );
   }
 
   private toSafePercent(value: any): number {

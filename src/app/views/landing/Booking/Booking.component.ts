@@ -12467,20 +12467,24 @@ sendWhatsappMessageToPropertyOwner() {
     );
 
     if (index > -1) {
-      // Remove from selection
       this.selectedAddOns.splice(index, 1);
       const nameIndex = this.selectedAddOnNames.findIndex(n => n === service.name);
       if (nameIndex > -1) {
         this.selectedAddOnNames.splice(nameIndex, 1);
       }
     } else {
-      // Add to selection
-      this.selectedAddOns.push(service);
+      const quantity = this.isItemWiseAddOn(service)
+        ? Math.max(1, this.getSelectedAddOnQuantity(service))
+        : (service?.quantity ?? service?.count ?? 1);
+
+      this.selectedAddOns.push({
+        ...service,
+        quantity,
+        count: quantity,
+      });
       this.selectedAddOnNames.push(service.name);
     }
-    // Recalculate totals on selection change
-    this.calculateAddOnsTotals();
-    this.syncSelectedAddOnsToCheckoutState();
+    this.recalculateAddOnSelectionState();
   }
 
   toggleAddOnDescription(index: number, event: Event): void {
@@ -12496,6 +12500,73 @@ sendWhatsappMessageToPropertyOwner() {
     return this.selectedAddOns.some(
       (selectedService) => this.getAddOnSelectionKey(selectedService) === serviceKey,
     );
+  }
+
+  private getSelectedAddOn(service: any): any | undefined {
+    const serviceKey = this.getAddOnSelectionKey(service);
+    return this.selectedAddOns.find(
+      (selectedService) => this.getAddOnSelectionKey(selectedService) === serviceKey,
+    );
+  }
+
+  isItemWiseAddOn(addon: any): boolean {
+    return this.getAddOnChargeBasis(addon) === 'peritem';
+  }
+
+  getSelectedAddOnQuantity(addon: any): number {
+    const selectedAddOn = this.getSelectedAddOn(addon);
+    if (this.isItemWiseAddOn(addon) && !selectedAddOn) {
+      return 0;
+    }
+
+    const quantity = selectedAddOn?.quantity ?? selectedAddOn?.count ?? addon?.quantity ?? addon?.count ?? 1;
+    return Math.max(1, Math.floor(Number(quantity) || 1));
+  }
+
+  increaseAddOnQuantity(addon: any, event?: Event): void {
+    event?.stopPropagation();
+    const selectedAddOn = this.getSelectedAddOn(addon);
+
+    if (!selectedAddOn) {
+      this.selectedAddOns.push({
+        ...addon,
+        quantity: 1,
+        count: 1,
+      });
+      this.selectedAddOnNames.push(addon.name);
+    } else {
+      const quantity = this.getSelectedAddOnQuantity(addon) + 1;
+      selectedAddOn.quantity = quantity;
+      selectedAddOn.count = quantity;
+    }
+
+    this.recalculateAddOnSelectionState();
+  }
+
+  decreaseAddOnQuantity(addon: any, event?: Event): void {
+    event?.stopPropagation();
+    const selectedAddOn = this.getSelectedAddOn(addon);
+
+    if (!selectedAddOn) {
+      return;
+    }
+
+    const quantity = this.getSelectedAddOnQuantity(addon);
+    if (quantity <= 1) {
+      this.toggleAddOnSelection(addon);
+      return;
+    }
+
+    selectedAddOn.quantity = quantity - 1;
+    selectedAddOn.count = quantity - 1;
+    this.recalculateAddOnSelectionState();
+  }
+
+  private recalculateAddOnSelectionState(): void {
+    this.calculateAddOnsTotals();
+    this.syncSelectedAddOnsToCheckoutState();
+    this.calculateMultiDiscountAndTax();
+    this.changeDetectorRefs.markForCheck();
   }
 
   private getAddOnSelectionKey(service: any): string {
@@ -12608,17 +12679,25 @@ sendWhatsappMessageToPropertyOwner() {
   }
 
   private syncSelectedAddOnsToCheckoutState(): void {
-    const normalizedAddOns = (this.selectedAddOns || []).map((service) => ({
-      ...service,
-      quantity: service?.quantity ?? service?.count ?? 1,
-      count: service?.count ?? service?.quantity ?? 1,
-      afterTaxAmount:
-        service?.afterTaxAmount ??
-        ((Number(service?.servicePrice) || 0) + (Number(service?.taxAmount) || 0)),
-      netAmount: service?.netAmount ?? service?.servicePrice ?? 0,
-      servicePrice: service?.servicePrice ?? service?.beforeTaxAmount ?? 0,
-      sourceChannel: service?.sourceChannel ?? this.booking?.externalSite ?? 'BookMax',
-    }));
+    const normalizedAddOns = (this.selectedAddOns || []).map((service) => {
+      const quantity = this.getSelectedAddOnQuantity(service);
+      const servicePrice = this.toSafeAmount(service?.servicePrice ?? service?.beforeTaxAmount ?? 0);
+      const taxAmount = this.toSafeAmount(service?.taxAmount);
+      const afterTaxAmount = this.toSafeAmount(servicePrice + taxAmount);
+
+      return {
+        ...service,
+        quantity,
+        count: quantity,
+        beforeTaxAmount: servicePrice,
+        taxAmount,
+        afterTaxAmount,
+        netAmount: afterTaxAmount,
+        selectedTotalAmount: this.toSafeAmount(afterTaxAmount * quantity),
+        servicePrice,
+        sourceChannel: service?.sourceChannel ?? this.booking?.externalSite ?? 'BookMax',
+      };
+    });
 
     this.token.saveSelectedServices(normalizedAddOns);
   }
@@ -12714,6 +12793,10 @@ sendWhatsappMessageToPropertyOwner() {
       return 'perbooking';
     }
 
+    if (['itemwise', 'peritem', 'item', 'quantitywise', 'perquantity'].includes(chargeBasis)) {
+      return 'peritem';
+    }
+
     return chargeBasis;
   }
 
@@ -12721,6 +12804,8 @@ sendWhatsappMessageToPropertyOwner() {
     switch (this.getAddOnChargeBasis(addon)) {
       case 'perbooking':
         return this.isFirstSelectedPlan(plan) ? 1 : 0;
+      case 'peritem':
+        return this.isFirstSelectedPlan(plan) ? this.getSelectedAddOnQuantity(addon) : 0;
       case 'perpax':
       case 'pernight':
         return Math.max(1, this.toSafeAmount(plan?.adults || this.booking?.noOfPersons || 1));
@@ -12734,6 +12819,8 @@ sendWhatsappMessageToPropertyOwner() {
     switch (this.getAddOnChargeBasis(addon)) {
       case 'perbooking':
         return 1;
+      case 'peritem':
+        return this.getSelectedAddOnQuantity(addon);
       case 'perpax':
       case 'pernight':
         return this.getTotalSelectedAdultsCount();
@@ -12747,6 +12834,8 @@ sendWhatsappMessageToPropertyOwner() {
     switch (this.getAddOnChargeBasis(addon)) {
       case 'perbooking':
         return this.isFirstSelectedPlan(plan) ? 1 : 0;
+      case 'peritem':
+        return this.isFirstSelectedPlan(plan) ? this.getSelectedAddOnQuantity(addon) : 0;
       case 'perpax':
       case 'pernight':
         return Math.max(1, this.toSafeAmount(plan?.adults || this.booking?.noOfPersons || 1));
@@ -12925,6 +13014,16 @@ sendWhatsappMessageToPropertyOwner() {
     const multiplier = this.getAddOnTotalMultiplier(addon);
 
     return this.toSafeAmount((servicePrice + taxAmount) * multiplier);
+  }
+
+  getAddOnRowTotal(addon: any): number {
+    const servicePrice = this.toSafeAmount(
+      addon?.servicePrice ?? addon?.beforeTaxAmount ?? addon?.unitPrice,
+    );
+    const taxAmount = this.toSafeAmount(addon?.taxAmount);
+    const quantity = this.isItemWiseAddOn(addon) ? this.getSelectedAddOnQuantity(addon) : 1;
+
+    return this.toSafeAmount((servicePrice + taxAmount) * quantity);
   }
 
   /** Grand total for selected add-ons (servicePrice + taxAmount per addon) */

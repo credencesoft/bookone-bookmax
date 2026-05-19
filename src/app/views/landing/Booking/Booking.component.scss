@@ -192,6 +192,53 @@
   white-space: nowrap;
 }
 
+.add-on-quantity-control {
+  align-items: center;
+  display: inline-flex;
+  gap: 4px;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+.add-on-quantity-btn {
+  align-items: center;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 50%;
+  color: #0f172a;
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 14px;
+  font-weight: 700;
+  height: 24px;
+  justify-content: center;
+  line-height: 1;
+  padding: 0;
+  transition: all 0.15s ease;
+  width: 24px;
+}
+
+.add-on-quantity-btn:hover:not(:disabled) {
+  background: #0d9488;
+  border-color: #0d9488;
+  color: #ffffff;
+}
+
+.add-on-quantity-btn:disabled {
+  background: #f8fafc;
+  color: #cbd5e1;
+  cursor: not-allowed;
+}
+
+.add-on-quantity-value {
+  color: #0f172a;
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 700;
+  min-width: 18px;
+  text-align: center;
+}
+
 .add-on-description-wrap {
   color: #6b7280;
   font-size: 11px;
@@ -414,6 +461,15 @@
 
   .add-on-description {
     max-width: 150px;
+  }
+
+  .add-on-quantity-control-mobile {
+    gap: 3px;
+  }
+
+  .add-on-quantity-btn {
+    height: 22px;
+    width: 22px;
   }
 
   .add-on-totals-footer-mobile {
@@ -4075,6 +4131,14 @@ textarea {
     gap: 13px;
     margin-left: 10px;
     margin-right: 10px;
+  }
+
+  .mobile-number-error {
+    display: block;
+    font-size: 10px;
+    line-height: 1.2;
+    margin-top: 4px;
+    white-space: nowrap;
   }
 }
 
