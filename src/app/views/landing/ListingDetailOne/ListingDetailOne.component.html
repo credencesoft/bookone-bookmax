@@ -2789,11 +2789,11 @@
                         >
                           <h4 class="popup-plan font-weight-bold">
                             {{
-                              plan.amount
+                              getRoomPlanDisplayAmount(selectedRoom, plan)
                                 | currency: currency : "symbol" : "1.2-2"
                             }}
                           </h4>
-                          <p style="font-size: smaller">per night + taxes</p>
+                          <p style="font-size: smaller">{{ getRoomPlanPriceLabel(selectedRoom, plan) }}</p>
                         </div>
                         <div class="d-flex justify-content-between">
                           <div

@@ -1881,6 +1881,10 @@ isDayTripPlan(plan: any, room?: any): boolean {
   return this.isDayTripRoom(room) || plan?.dayTrip === true || plan?.roomDetails?.dayTrip === true;
 }
 
+private getDayTripPlanAmount(plan: any): number {
+  return Number(plan?.extraChargePerPerson || 0);
+}
+
 private getPlanIncludedAdults(plan: any): number {
   return Number(plan?.minimumOccupancy ?? plan?.includedAdults ?? plan?.noOfAdults ?? 0) || 0;
 }
@@ -2495,9 +2499,17 @@ resetLastChangedAge(planCode: string) {
             : [];
 
         if (isDayTrip) {
-          this.actualroompriceCharge = 0;
-          this.roomPricePerPlan =
-            (this.extraAdultCharge || 0) + (this.extraChildrenCharge || 0);
+          const dayTripAdultCharge =
+            this.getDayTripPlanAmount(plan) * Number(selectedGuests?.adults || 0);
+          const dayTripChildCharge =
+            Number(plan?.extraChargePerChild || 0) * Number(this.getChildCount(planCode) || 0);
+
+          this.extraAdultCount = Number(selectedGuests?.adults || 0);
+          this.extraChildCount = Number(this.getChildCount(planCode) || 0);
+          this.extraAdultCharge = dayTripAdultCharge;
+          this.extraChildrenCharge = dayTripChildCharge;
+          this.actualroompriceCharge = this.getDayTripPlanAmount(plan);
+          this.roomPricePerPlan = dayTripAdultCharge + dayTripChildCharge;
         } else if (datewiseBreakdown.length) {
           this.roomPricePerPlan = datewiseBreakdown.reduce(
             (sum: number, night: any) => sum + Number(night?.subtotal || 0),
@@ -3241,7 +3253,7 @@ private getSelectedRoomCountForPlan(room: any, plan: any): number {
 
 getRoomPlanDisplayAmount(room: any, plan: any): number {
   if (this.isDayTripPlan(plan, room)) {
-    return Number(plan?.amount || 0);
+    return this.getDayTripPlanAmount(plan);
   }
 
   const nightlyRates = this.getRatesForRoomPlan(room?.id, plan?.code)
