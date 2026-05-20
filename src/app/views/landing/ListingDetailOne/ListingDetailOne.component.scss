@@ -92,6 +92,15 @@ background-color: #f5f5f5;
   flex-wrap: wrap;
   // filter: grayscale(1);
 }
+
+.disabled-plan-card {
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+.disabled-plan-card .plan-warning-row {
+  opacity: 1;
+}
 // /* Add this to your component's CSS file */
 // .input-group-text {
 //   max-width: 100px;           /* Adjust this width to match your UI space */

@@ -3063,10 +3063,11 @@
                       [attr.id]="'plan-' + plan.code"
                       [ngClass]="{
                         'scroll-highlight': isPlanSelected(plan.code),
+                        'disabled-plan-card': isPlanDisabled(plan, room),
                       }"
                     >
                       <!-- web view Plans sub-Section -->
-                      <div class="card-title website-web-vision" [class.disabled-room]="booking?.noOfNights > 1 && plan?.onedayPlan">
+                      <div class="card-title website-web-vision">
                         <div
                           class="d-flex justify-content-between align-item-center"
                           style="gap: 20px"
@@ -3122,7 +3123,7 @@
                           {{ guestSelectionErrors[plan.code] }}
                         </div>
                         <div
-                          class="d-flex justify-content-between align-items-start" [class.disabled-room]="booking?.noOfNights > 1 && plan?.onedayPlan"
+                          class="d-flex justify-content-between align-items-start"
                         >
                           <div class="d-flex room-number">
                             <div *ngIf="!plan?.nonRoomPlan && !isDayTripPlan(plan, room)">
@@ -3288,7 +3289,7 @@
                           </div>
                         </div>
                         <div
-                          *ngIf="booking?.noOfNights > 1 && plan?.onedayPlan"
+                          *ngIf="isPlanDisabled(plan, room)"
                           class="plan-warning-row"
                         >
                           <div class="plan-warning-text">
@@ -3301,7 +3302,7 @@
                       <!-- web view Plans Section -->
 
                       <!-- mob view Plans Section -->
-                      <div class="card-title website-mob-vision" [class.disabled-room]="booking?.noOfNights > 1 && plan?.onedayPlan">
+                      <div class="card-title website-mob-vision">
                         <div
                           class="d-flex justify-content-between align-item-center"
                           style="gap: 12px"
@@ -3357,7 +3358,7 @@
                           {{ guestSelectionErrors[plan.code] }}
                         </div>
                         <div
-                          class="d-flex justify-content-between align-items-end" [class.disabled-room]="booking?.noOfNights > 1 && plan?.onedayPlan"
+                          class="d-flex justify-content-between align-items-end"
                         >
                           <div class="d-flex room-number">
                             <div *ngIf="!plan?.nonRoomPlan && !isDayTripPlan(plan, room)">
@@ -3514,7 +3515,7 @@
                           </div>
                         </div>
                         <div
-                          class="d-flex justify-content-center margin-top-20px" [class.disabled-room]="booking?.noOfNights > 1 && plan?.onedayPlan"
+                          class="d-flex justify-content-center margin-top-20px"
                         >
                           <div class="d-flex room-number">
                             <div
@@ -3529,7 +3530,7 @@
                           </div>
                         </div>
                         <div
-                          *ngIf="booking?.noOfNights > 1 && plan?.onedayPlan"
+                          *ngIf="isPlanDisabled(plan, room)"
                           class="plan-warning-row plan-warning-row-mobile"
                         >
                           <div class="plan-warning-text">

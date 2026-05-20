@@ -1881,6 +1881,13 @@ isDayTripPlan(plan: any, room?: any): boolean {
   return this.isDayTripRoom(room) || plan?.dayTrip === true || plan?.roomDetails?.dayTrip === true;
 }
 
+isPlanDisabled(plan: any, room?: any): boolean {
+  return (
+    Number(this.booking?.noOfNights || 0) > 1 &&
+    (plan?.onedayPlan === true || this.isDayTripPlan(plan, room))
+  );
+}
+
 private getDayTripPlanAmount(plan: any): number {
   return Number(plan?.extraChargePerPerson || 0);
 }
@@ -1907,6 +1914,11 @@ getDayTripAdultLimit(plan: any): number {
     return true;
   }
 onRoomSelect(roomName: string, planCode: string, count: number | string) {
+  const plan = this.findPlanByCode(planCode);
+  if (this.isPlanDisabled(plan)) {
+    return;
+  }
+
   const key = roomName + '_' + planCode;
   const selectedCount = Number(count) || 0;
 
@@ -2026,6 +2038,10 @@ onRoomSelect(roomName: string, planCode: string, count: number | string) {
   // }
 
 onIncrement(planCode: string, type: 'adults' | 'children', plan: any, room: any) {
+  if (this.isPlanDisabled(plan, room)) {
+    return;
+  }
+
   this.guestSelectionErrors[planCode] = '';
 
   const isDayTrip = this.isDayTripPlan(plan, room);
@@ -2201,6 +2217,11 @@ private showTemporaryError(planCode: string, message: string) {
   }, 4000);
 }
 onDecrement(planCode: string, type: 'adults' | 'children') {
+  const plan = this.findPlanByCode(planCode);
+  if (this.isPlanDisabled(plan)) {
+    return;
+  }
+
   if (this.selectedGuestsByPlan[planCode] && this.selectedGuestsByPlan[planCode][type] > 0) {
     this.selectedGuestsByPlan[planCode][type]--;
 
@@ -2238,6 +2259,9 @@ onDecrement(planCode: string, type: 'adults' | 'children') {
 
 
 onChildAgeChange(planCode: string, plan: any) {
+  if (this.isPlanDisabled(plan)) {
+    return;
+  }
 
   const selectedRooms = this.selectedRoomsByPlan[planCode] || 0;
   const maxAdult = plan.maximumOccupancy || 0;
@@ -2347,6 +2371,8 @@ resetLastChangedAge(planCode: string) {
 
     // Reset
     if (!plan) return;
+    if (this.isPlanDisabled(plan, roomContext || rates)) return;
+
     const isDayTrip = this.isDayTripPlan(plan, roomContext || rates);
     if (isDayTrip) {
       this.selectedRoomsByPlan[planCode] = 1;
@@ -2967,6 +2993,25 @@ getRateByPlanCodeSmartCard(planCode: string) {
       }
     }
   }
+  return null;
+}
+
+private findPlanByCode(planCode: string): any {
+  const rooms = [
+    ...(this.availableRooms || []),
+    ...(this.soldOutRooms || []),
+    ...(this.selectedRoom ? [this.selectedRoom] : []),
+  ];
+
+  for (const room of rooms) {
+    for (const rate of room?.ratesAndAvailabilityDtos || []) {
+      const plan = rate?.roomRatePlans?.find((roomPlan: any) => roomPlan?.code === planCode);
+      if (plan) {
+        return plan;
+      }
+    }
+  }
+
   return null;
 }
 
@@ -7206,7 +7251,10 @@ isPlanSelected(planName: string): boolean {
       rate?.roomRatePlans?.some((plan: any) => plan?.onedayPlan === true)
     );
 
-    return Number(this.booking?.noOfNights) > 1 && !!hasOneDayPlan;
+    return (
+      Number(this.booking?.noOfNights) > 1 &&
+      (!!hasOneDayPlan || this.isDayTripRoom(room))
+    );
   }
 
   toggleDropdownNights(index) {
