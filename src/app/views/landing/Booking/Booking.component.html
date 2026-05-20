@@ -333,12 +333,18 @@
                         <img src=" media-be/images/coupon-image-change.svg" alt="" />&nbsp; Coupon Applied!
                       </span>
                     </div>
-                    <div class="nights">{{ plan.selectedRoomnumber }} Room(s)</div>
+                    <div class="nights">{{ getPlanRoomCountLabel(plan) }}</div>
                   </div>
                   <div class="d-flex justify-content-between line-height-27px">
-                    <div class="color-graying">{{ plan.planCodeName }} x {{ plan.selectedRoomnumber }}</div>
+                    <div class="color-graying">
+                      {{ plan.planCodeName }} x {{ isDayTripPlan(plan) ? 1 : plan.selectedRoomnumber }}
+                      <span *ngIf="isDayTripPlan(plan)" class="badge badge-success badge-successTwo px-2 py-1 ml-1">Day Trip</span>
+                      <div *ngIf="isDayTripPlan(plan)" class="small text-muted">
+                        {{ getPlanDisplayDate(plan) | date : "dd-MM-yyyy" }}
+                      </div>
+                    </div>
                     <div>
-                      <div style="text-align: end">{{ plan.price | currency: currency : 'symbol' : '1.2-2' }}</div>
+                      <div style="text-align: end">{{ getPlanBaseAmount(plan) | currency: currency : 'symbol' : '1.2-2' }}</div>
                       <div style="text-align: end; margin-top: -5px"
                         *ngIf="plan.extraPersonAdultCountAmount + plan.extraPersonChildCountAmount > 0">
                         {{
@@ -355,13 +361,13 @@
                   <div class="d-flex justify-content-between line-height-27px promo-discounts"
                     *ngIf="this.specialDiscountData?.discountPercentage">
                     <div class="color-graying">Coupon Discount ({{ this.specialDiscountData?.discountPercentage }}%)</div>
-                    <div>-{{ ((plan.price * this.specialDiscountData?.discountPercentage) / 100) | currency: currency : 'symbol' : '1.2-2' }}</div>
+                    <div>-{{ ((getPlanBaseAmount(plan) * this.specialDiscountData?.discountPercentage) / 100) | currency: currency : 'symbol' : '1.2-2' }}</div>
                   </div>
                   <div class="d-flex justify-content-between line-height-27px advance-discounts"
                     *ngIf="this.selectedAdvanceDiscountSlab?.discountPercentage">
                     <div class="color-graying">Advance Discount ({{ this.selectedAdvanceDiscountSlab?.discountPercentage }}%)</div>
                     <div>-{{
-                      (((plan.price - ((plan.price * (this.specialDiscountData?.discountPercentage || 0)) / 100)) *
+                      (((getPlanBaseAmount(plan) - ((getPlanBaseAmount(plan) * (this.specialDiscountData?.discountPercentage || 0)) / 100)) *
                         this.selectedAdvanceDiscountSlab?.discountPercentage) / 100) | currency: currency : 'symbol' : '1.2-2'
                     }}</div>
                   </div>
@@ -794,7 +800,7 @@
                 <div style="padding: 0 10px 6px">
                   <!-- Total Room Charges -->
                   <div class="d-flex justify-content-between line-height-27px">
-                    <div class="color-graying">Total {{ roomLabel }} Charges</div>
+                    <div class="color-graying">{{ getAccommodationChargesLabel() }}</div>
                     <div style="color: #3b82f6; font-weight: 500">{{ bookingSummaryDetails?.totalPlanPrice | currency: currency : 'symbol' : '1.2-2' }}</div>
                   </div>
                   <!-- Coupon Discount -->
@@ -1154,19 +1160,24 @@
                       >
                     </div>
                     <div class="nights">
-                      {{ plan.selectedRoomnumber }} Room(s)
+                      {{ getPlanRoomCountLabel(plan) }}
                     </div>
                   </div>
                   <div class="d-flex justify-content-between line-height-27px">
                     <div class="color-graying">
-                        {{ plan.planCodeName }} x {{ plan.selectedRoomnumber }} <br/>
+                        {{ plan.planCodeName }} x {{ isDayTripPlan(plan) ? 1 : plan.selectedRoomnumber }}
+                        <span *ngIf="isDayTripPlan(plan)" class="badge badge-success badge-successTwo px-2 py-1 ml-1">Day Trip</span>
+                        <br/>
+                        <small *ngIf="isDayTripPlan(plan)" class="text-muted">
+                          {{ getPlanDisplayDate(plan) | date : "dd-MM-yyyy" }}
+                        </small>
 
                       </div>
 
 
                     <div *ngIf="activeGoogleCenter">
                       <div style="text-align: end">
-                        {{ plan.price | currency: currency : 'symbol' : '1.2-2' }}
+                        {{ getPlanBaseAmount(plan) | currency: currency : 'symbol' : '1.2-2' }}
                       </div>
                       <div
                         style="text-align: end; margin-top: -5px"
@@ -1188,7 +1199,7 @@
                     </div>
                     <div *ngIf="!activeGoogleCenter">
                       <div style="text-align: end">
-                        {{ plan.price | currency: currency : 'symbol' : '1.2-2' }}
+                        {{ getPlanBaseAmount(plan) | currency: currency : 'symbol' : '1.2-2' }}
                       </div>
                       <div
                         style="text-align: end; margin-top: -5px"
@@ -1239,7 +1250,7 @@
 
                     <div>
                      -{{
-                       ( (plan.price *
+                       ( (getPlanBaseAmount(plan) *
                           this.specialDiscountData?.discountPercentage) /
                           100
                       ) | currency: currency : 'symbol' : '1.2-2'
@@ -1256,7 +1267,7 @@
                       <!-- Advance discount applies to (price - coupon), matching calculateMultiDiscountAndTax() -->
                       -{{
                         (
-                          (plan.price - ((plan.price * (this.specialDiscountData?.discountPercentage || 0)) / 100)) *
+                          (getPlanBaseAmount(plan) - ((getPlanBaseAmount(plan) * (this.specialDiscountData?.discountPercentage || 0)) / 100)) *
                           (this.selectedAdvanceDiscountSlab?.discountPercentage / 100)
                         ) | currency: currency : 'symbol' : '1.2-2'
                       }}
@@ -1555,7 +1566,7 @@
                 </div>
                 <div style="padding: 0 12px">
                   <div class="d-flex justify-content-between line-height-27px">
-                    <div class="color-graying">Total {{ roomLabel }} Charges</div>
+                    <div class="color-graying">{{ getAccommodationChargesLabel() }}</div>
                     <div style="color: #3b82f6; font-weight: 500">{{ bookingSummaryDetails?.totalPlanPrice | currency: currency : 'symbol' : '1.2-2' }}</div>
                   </div>
                   <div *ngIf="couponDiscountAmount > 0" class="d-flex justify-content-between line-height-27px">

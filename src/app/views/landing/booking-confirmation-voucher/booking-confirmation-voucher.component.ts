@@ -769,6 +769,22 @@ export class BookingConfirmationVoucherComponent {
     return isFinite(num) && num >= 0 && num <= 100 ? num : 0;
   }
 
+  isDayTripBooking(booking: any): boolean {
+    return booking?.dayTrip === true || booking?.roomDetails?.dayTrip === true;
+  }
+
+  getBookingRoomTariffLabel(booking: any): string {
+    return this.isDayTripBooking(booking) ? 'Day Trip' : 'Tariff';
+  }
+
+  getBookingNightsLabel(booking: any): string | number {
+    return this.isDayTripBooking(booking) ? 'Single Day' : booking?.noOfNights;
+  }
+
+  getBookingRoomCountLabel(booking: any): string | number {
+    return this.isDayTripBooking(booking) ? 1 : booking?.noOfRooms;
+  }
+
   getDiscountColumnLabel(): string {
     if (this.specialDiscountData?.discountPercentage) {
       return 'Coupon / Promo';
@@ -784,6 +800,13 @@ export class BookingConfirmationVoucherComponent {
   }
 
   private getDisplayedBookingBaseAmount(booking: any): number {
+    if (this.isDayTripBooking(booking)) {
+      return this.toSafeAmount(
+        this.toSafeAmount(booking?.extraPersonCharge) +
+          this.toSafeAmount(booking?.extraChildCharge),
+      );
+    }
+
     const roomTariff = this.toSafeAmount(booking?.roomTariffBeforeDiscount);
     const noOfRooms = this.toSafeAmount(booking?.noOfRooms);
     const noOfNights = this.toSafeAmount(booking?.noOfNights);

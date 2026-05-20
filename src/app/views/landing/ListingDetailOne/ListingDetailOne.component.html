@@ -402,8 +402,11 @@
               <div class="room-details">
                 <div class="d-flex justify-content-between" style="gap: 2px">
                   <div>
-                    <div class="room-title">{{ plan.selectedRoomnumber }} &times; {{ plan.roomName }} &times;
-                      {{ plan.nights }}&nbsp;{{ plan.nights === 1 ? 'Night' : 'Nights' }}</div>
+                    <div class="room-title">
+                      {{ plan.dayTrip ? 1 : plan.selectedRoomnumber }} &times; {{ plan.roomName }} &times;
+                      {{ plan.dayTrip ? 'Single Day' : (plan.nights + ' ' + (plan.nights === 1 ? 'Night' : 'Nights')) }}
+                      <span *ngIf="plan.dayTrip" class="day-trip-badge ml-1">Day Trip</span>
+                    </div>
 
                     <small class="text-muted">
                       {{ plan.planCodeName }}
@@ -3004,7 +3007,10 @@
                     style="gap: 15px"
                     [class.disabled-room]="shouldDisableRoomImageClick(room)"
                   >
-                    <h3 class="margin-top-mobile-30px">{{ room.name }}</h3>
+                    <h3 class="margin-top-mobile-30px">
+                      {{ room.name }}
+                      <span *ngIf="isDayTripRoom(room)" class="day-trip-badge ml-1">Day Trip</span>
+                    </h3>
                     <div
                       class="d-flex"
                       style="gap: 15px; width: 100px; align-items: center"
@@ -3105,6 +3111,9 @@
                               }}
                             </div>
                             <div class="perNight">{{ getRoomPlanPriceLabel(room, plan) }}</div>
+                            <span *ngIf="isDayTripPlan(plan, room)" class="day-trip-badge">
+                              Day Trip
+                            </span>
                           </div>
                         </div>
                       </div>
@@ -3116,7 +3125,7 @@
                           class="d-flex justify-content-between align-items-start" [class.disabled-room]="booking?.noOfNights > 1 && plan?.onedayPlan"
                         >
                           <div class="d-flex room-number">
-                            <div *ngIf="!plan?.nonRoomPlan">
+                            <div *ngIf="!plan?.nonRoomPlan && !isDayTripPlan(plan, room)">
                               <label
                                 class="input-group-text"
                                 for="inputGroupSelect01"
@@ -3125,7 +3134,7 @@
                                 >{{ getBookingUnitLabel(room) | slice:0:8 }}{{ getBookingUnitLabel(room).length > 8 ? '...' : '' }}</label
                               >
                             </div>
-                           <ng-container *ngIf="!plan?.nonRoomPlan">
+                           <ng-container *ngIf="!plan?.nonRoomPlan && !isDayTripPlan(plan, room)">
                              <select
                               class="select-icon"
                               id="inputGroupSelect01"
@@ -3155,6 +3164,7 @@
                               </option>
                             </select>
                            </ng-container>
+                           <div *ngIf="isDayTripPlan(plan, room)" class="nights">{{ getBookingUnitLabel(room) }}</div>
                           </div>
                           <div class="d-flex room-numberOne">
                             <div>
@@ -3271,7 +3281,7 @@
                           <div class="d-flex room-number">
                             <div
                               class="selected"
-                              (click)="onPlanSelect(plan.code, rates)"
+                              (click)="onPlanSelect(plan.code, rates, room)"
                             >
                               Select
                             </div>
@@ -3336,6 +3346,9 @@
                               }}
                             </div>
                             <div class="perNight">{{ getRoomPlanPriceLabel(room, plan) }}</div>
+                            <span *ngIf="isDayTripPlan(plan, room)" class="day-trip-badge">
+                              Day Trip
+                            </span>
                           </div>
                         </div>
                       </div>
@@ -3347,7 +3360,7 @@
                           class="d-flex justify-content-between align-items-end" [class.disabled-room]="booking?.noOfNights > 1 && plan?.onedayPlan"
                         >
                           <div class="d-flex room-number">
-                            <div *ngIf="!plan?.nonRoomPlan">
+                            <div *ngIf="!plan?.nonRoomPlan && !isDayTripPlan(plan, room)">
                               <label
                                 class="input-group-text"
                                 [matTooltip]="fullText" matTooltipPosition="above" matTooltipShowDelay="300"
@@ -3356,7 +3369,7 @@
                                 >{{ getBookingUnitLabel(room) | slice:0:8 }}{{ getBookingUnitLabel(room).length > 8 ? '...' : '' }}</label
                               >
                             </div>
-                           <ng-container *ngIf="!plan?.nonRoomPlan">
+                           <ng-container *ngIf="!plan?.nonRoomPlan && !isDayTripPlan(plan, room)">
                              <select
                               class="select-icon"
                               id="inputGroupSelect01"
@@ -3386,6 +3399,7 @@
                               </option>
                             </select>
                            </ng-container>
+                           <div *ngIf="isDayTripPlan(plan, room)" class="nights">{{ getBookingUnitLabel(room) }}</div>
                           </div>
                           <div class="d-flex room-numberOne">
                             <div>
@@ -3506,7 +3520,7 @@
                             <div
                               class="selected"
                               (click)="
-                                onPlanSelect(plan.code, rates);
+                                onPlanSelect(plan.code, rates, room);
                                 bookingSummaryView()
                               "
                             >

@@ -309,18 +309,20 @@
                     ">
                     <td>
                       <div>
-                        <b>{{ booking?.roomName }} </b> <br />
+                        <b>{{ booking?.roomName }} </b>
+                        <span *ngIf="isDayTripBooking(booking)" class="status-badge status-enquiry" style="font-size: 11px; margin-left: 4px">Day Trip</span>
+                        <br />
                         {{ booking?.roomRatePlanName }}
                       </div>
                     </td>
                     <td>
-                      {{
-                      booking?.roomTariffBeforeDiscount
-                      | currency: currency : 'symbol' : '1.2-2'
-                      }}
+                      <ng-container *ngIf="!isDayTripBooking(booking); else dayTripTariffDesk">
+                        {{ booking?.roomTariffBeforeDiscount | currency: currency : 'symbol' : '1.2-2' }}
+                      </ng-container>
+                      <ng-template #dayTripTariffDesk>Day Trip</ng-template>
                     </td>
-                    <td>{{ booking?.noOfNights }}</td>
-                    <td>{{ booking?.noOfRooms }}</td>
+                    <td>{{ getBookingNightsLabel(booking) }}</td>
+                    <td>{{ getBookingRoomCountLabel(booking) }}</td>
                     <td>{{ booking?.extraPersonCharge | currency: currency : 'symbol' : '1.2-2' }}</td>
                     <td>{{ booking?.extraChildCharge | currency: currency : 'symbol' : '1.2-2' }}</td>
                     <td *ngIf="specialDiscountData?.discountPercentage">
@@ -773,18 +775,21 @@
               <ng-container *ngFor="let booking of bookingsResponseList; let last = last">
                 <div class="d-flex justify-content-between" style="gap: 10px">
                   <div>
-                    <b>{{ booking?.roomName }} </b> <br />
+                    <b>{{ booking?.roomName }} </b>
+                    <span *ngIf="isDayTripBooking(booking)" class="status-badge status-enquiry" style="font-size: 11px; margin-left: 4px">Day Trip</span>
+                    <br />
                     {{ booking?.roomRatePlanName }}
                   </div>
                   <div>
-                    {{
-                    booking?.roomTariffBeforeDiscount | currency: currency : 'symbol' : '1.2-2'
-                    }}
+                    <ng-container *ngIf="!isDayTripBooking(booking); else dayTripTariffMob">
+                      {{ booking?.roomTariffBeforeDiscount | currency: currency : 'symbol' : '1.2-2' }}
+                    </ng-container>
+                    <ng-template #dayTripTariffMob>Day Trip</ng-template>
                   </div>
                 </div>
                 <div class="d-flex justify-content-between">
                   <div>Room Count</div>
-                  <div>{{ booking?.noOfRooms }}</div>
+                  <div>{{ getBookingRoomCountLabel(booking) }}</div>
                 </div>
                 <div class="d-flex justify-content-between">
                   <div>Extra Pax</div>

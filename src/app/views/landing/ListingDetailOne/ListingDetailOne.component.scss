@@ -1435,6 +1435,23 @@ position: absolute;
     font-weight: 600;
 }
 
+.day-trip-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  min-height: 24px;
+  padding: 3px 10px;
+  border-radius: 5px;
+  background-color: var(--secondary, #0b01cc) !important;
+  color: var(--tertiary, #fff) !important;
+  font-family: 'Poppins';
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
 .room-box-best-fit {
      border-left: 3px solid #5BCEFF;
     padding-left: 12px;

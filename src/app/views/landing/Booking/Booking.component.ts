@@ -2692,6 +2692,7 @@ export class BookingComponent implements OnInit {
     // booking discount/advance fields are set authoritatively by calculateMultiDiscountAndTax() — do NOT overwrite.
 
     const enquiryForm = new EnquiryDto();
+    this.applyDayTripFlagToEnquiry(enquiryForm, plan);
 
     if (this.token.getProperty()?.address?.city) {
       enquiryForm.address = this.token.getProperty().address;
@@ -2737,8 +2738,12 @@ export class BookingComponent implements OnInit {
     enquiryForm.lastName = booking.lastName;
     enquiryForm.email = booking.email;
     enquiryForm.phone = this.buildFullPhoneNumber(booking.mobile);
-    enquiryForm.checkOutDate = booking.toDate;
-    enquiryForm.checkInDate = booking.fromDate;
+    enquiryForm.checkInDate = this.isDayTripPlan(plan)
+      ? (plan.checkInDate || booking.fromDate)
+      : booking.fromDate;
+    enquiryForm.checkOutDate = this.isDayTripPlan(plan)
+      ? (plan.checkInDate || booking.fromDate)
+      : booking.toDate;
     enquiryForm.noOfPerson = plan.adults;
     enquiryForm.enquiryType = 'Pay Now';
     enquiryForm.noOfExtraPerson = plan.extraCountAdult;
@@ -2819,11 +2824,18 @@ export class BookingComponent implements OnInit {
       return utcTimestamp;
     };
 
+    const enquiryPlanCheckInDate = this.isDayTripPlan(plan)
+      ? (plan.checkInDate || this.booking.fromDate)
+      : this.booking.fromDate;
+    const enquiryPlanCheckOutDate = this.isDayTripPlan(plan)
+      ? enquiryPlanCheckInDate
+      : this.booking.toDate;
+
     this.combinedDateFromTime = getPropertyTimestamp(
-      this.booking.fromDate,
+      enquiryPlanCheckInDate,
       fromTime,
     );
-    this.combinedDateToTime = getPropertyTimestamp(this.booking.toDate, toTime);
+    this.combinedDateToTime = getPropertyTimestamp(enquiryPlanCheckOutDate, toTime);
 
     this.tokenFromTime = this.combinedDateFromTime;
     this.tokenToTime = this.combinedDateToTime;
@@ -2833,7 +2845,7 @@ export class BookingComponent implements OnInit {
     this.token.saveToTime(String(enquiryForm.toTime));
     enquiryForm.accountManager = '';
     enquiryForm.consultantPerson = '';
-    enquiryForm.noOfRooms = Number(plan.selectedRoomnumber);
+    enquiryForm.noOfRooms = this.isDayTripPlan(plan) ? 1 : Number(plan.selectedRoomnumber);
     enquiryForm.noOfChildren = plan.children;
     enquiryForm.accommodationType = this.token.getProperty().businessType;
     enquiryForm.status = 'Enquiry';
@@ -2879,7 +2891,7 @@ export class BookingComponent implements OnInit {
     enquiryForm.discountAmountPercentage = booking.discountPercentage;
     enquiryForm.selectedServiceTotal = selectedServiceTotal;
     enquiryForm.selectedServices = selectedServices;
-    enquiryForm.noOfNights = plan.nights;
+    enquiryForm.noOfNights = this.isDayTripPlan(plan) ? 0 : plan.nights;
     enquiryForm.foodOptions = '';
     enquiryForm.organisationId = environment.parentOrganisationId;
     enquiryForm.bookingCommissionAmount = 0;
@@ -8272,11 +8284,18 @@ export class BookingComponent implements OnInit {
       return utcTimestamp;
     };
 
+    const bookingPlanCheckInDate = this.isDayTripPlan(plan)
+      ? (plan.checkInDate || this.booking.fromDate)
+      : this.booking.fromDate;
+    const bookingPlanCheckOutDate = this.isDayTripPlan(plan)
+      ? bookingPlanCheckInDate
+      : this.booking.toDate;
+
     this.combinedDateFromTime = getPropertyTimestamp(
-      this.booking.fromDate,
+      bookingPlanCheckInDate,
       fromTime,
     );
-    this.combinedDateToTime = getPropertyTimestamp(this.booking.toDate, toTime);
+    this.combinedDateToTime = getPropertyTimestamp(bookingPlanCheckOutDate, toTime);
 
     this.tokenFromTime = this.combinedDateFromTime;
     this.tokenToTime = this.combinedDateToTime;
@@ -8306,27 +8325,31 @@ export class BookingComponent implements OnInit {
     // }
     booking.groupBookingId = null;
     booking.noOfChildrenUnder5years = plan.childrenBelow5years;
-    booking.noOfNights = plan.nights;
-    booking.noOfRooms = Number(plan.selectedRoomnumber);
-    booking.netAmount = plan.price.toFixed(2);
-    booking.beforeTaxAmount = plan.price.toFixed(2);
+    booking.noOfNights = this.isDayTripPlan(plan) ? 0 : plan.nights;
+    booking.noOfRooms = this.isDayTripPlan(plan) ? 1 : Number(plan.selectedRoomnumber);
+    booking.netAmount = this.getPlanBaseAmount(plan).toFixed(2);
+    booking.beforeTaxAmount = this.getPlanBaseAmount(plan).toFixed(2);
     booking.createdDate = new Date().toISOString();
     booking.propertyId = this.booking.propertyId;
     booking.gstAmount = plan.taxPercentageperroom;
-    booking.dayTrip = this.isDayTripRoom(plan);
+    booking.dayTrip = this.isDayTripPlan(plan);
     booking.discountPercentage = 0;
     booking.discountAmount = 0;
     booking.extraChildCharge = this.getPlanStayChildExtraCharge(plan);
     booking.extraPersonCharge = this.getPlanStayAdultExtraCharge(plan);
     booking.roomTariffBeforeDiscount =
       this.getPlanRoomTariffBeforeDiscountPayloadValue(plan).toFixed(2);
-    booking.totalAmount = (plan.price + plan.taxPercentageperroom).toFixed(2);
-    booking.bookingAmount = (plan.price + plan.taxPercentageperroom).toFixed(2);
+    booking.totalAmount = (this.getPlanBaseAmount(plan) + plan.taxPercentageperroom).toFixed(2);
+    booking.bookingAmount = (this.getPlanBaseAmount(plan) + plan.taxPercentageperroom).toFixed(2);
     booking.payableAmount = this.showTheSelectedCoupon
-      ? (plan.price + plan.taxPercentageperroom).toFixed(2)
-      : (plan.price + plan.taxPercentageperroom).toFixed(2);
-    booking.fromDate = bookingSummary.fromDate;
-    booking.toDate = bookingSummary.toDate;
+      ? (this.getPlanBaseAmount(plan) + plan.taxPercentageperroom).toFixed(2)
+      : (this.getPlanBaseAmount(plan) + plan.taxPercentageperroom).toFixed(2);
+    booking.fromDate = this.isDayTripPlan(plan)
+      ? (plan.checkInDate || bookingSummary.fromDate)
+      : bookingSummary.fromDate;
+    booking.toDate = this.isDayTripPlan(plan)
+      ? (plan.checkInDate || bookingSummary.fromDate)
+      : bookingSummary.toDate;
     booking.currency = this.businessUser.localCurrency;
     booking.fromTime = this.tokenFromTime;
     booking.toTime = this.tokenToTime;
@@ -8337,7 +8360,9 @@ export class BookingComponent implements OnInit {
     booking.roomBooking = true;
     booking.groupBooking = false;
     booking.available = true;
-    booking.roomPrice = this.getPlanRoomPricePayloadValue(plan).toFixed(2);
+    booking.roomPrice = this.isDayTripPlan(plan)
+      ? null
+      : this.getPlanRoomPricePayloadValue(plan).toFixed(2);
     booking.totalServiceAmount = selectedServiceTotal;
     booking.taxAmount = booking.gstAmount.toFixed(2);
     booking.totalRoomTariffBeforeDiscount =
@@ -8487,6 +8512,7 @@ export class BookingComponent implements OnInit {
     );
 
     const enquiryForm = new EnquiryDto();
+    this.applyDayTripFlagToEnquiry(enquiryForm, plan);
 
     if (this.token.getProperty()?.address?.city) {
       enquiryForm.address = this.token.getProperty().address;
@@ -8503,8 +8529,12 @@ export class BookingComponent implements OnInit {
     enquiryForm.lastName = booking.lastName;
     enquiryForm.email = booking.email;
     enquiryForm.phone = this.buildFullPhoneNumber(booking.mobile);
-    enquiryForm.checkOutDate = booking.toDate;
-    enquiryForm.checkInDate = booking.fromDate;
+    enquiryForm.checkInDate = this.isDayTripPlan(plan)
+      ? (plan.checkInDate || booking.fromDate)
+      : booking.fromDate;
+    enquiryForm.checkOutDate = this.isDayTripPlan(plan)
+      ? (plan.checkInDate || booking.fromDate)
+      : booking.toDate;
     enquiryForm.noOfPerson = plan.adults;
     enquiryForm.noOfExtraPerson = plan.extraCountAdult;
     enquiryForm.roomId = plan.roomId;
@@ -8594,7 +8624,7 @@ export class BookingComponent implements OnInit {
     }
     enquiryForm.accountManager = '';
     enquiryForm.consultantPerson = '';
-    enquiryForm.noOfRooms = Number(plan.selectedRoomnumber);
+    enquiryForm.noOfRooms = this.isDayTripPlan(plan) ? 1 : Number(plan.selectedRoomnumber);
     enquiryForm.noOfChildren = plan.children;
     enquiryForm.accommodationType = this.token.getProperty().businessType;
     enquiryForm.status = 'Booked';
@@ -8634,7 +8664,7 @@ export class BookingComponent implements OnInit {
     enquiryForm.selectedServiceTotal = selectedServiceTotal;
     enquiryForm.selectedServices = selectedServices;
     enquiryForm.discountAmountPercentage = booking.discountPercentage;
-    enquiryForm.noOfNights = plan.nights;
+    enquiryForm.noOfNights = this.isDayTripPlan(plan) ? 0 : plan.nights;
     enquiryForm.foodOptions = '';
     enquiryForm.organisationId = environment.parentOrganisationId;
     enquiryForm.bookingCommissionAmount = 0;
@@ -10886,6 +10916,7 @@ export class BookingComponent implements OnInit {
     }
 
     const enquiryForm = new EnquiryDto();
+    this.applyDayTripFlagToEnquiry(enquiryForm, plan);
 
     if (this.token.getProperty()?.address?.city) {
       enquiryForm.address = this.token.getProperty().address;
@@ -10902,8 +10933,12 @@ export class BookingComponent implements OnInit {
     enquiryForm.lastName = booking.lastName;
     enquiryForm.email = booking.email;
     enquiryForm.phone = this.buildFullPhoneNumber(booking.mobile);
-    enquiryForm.checkOutDate = booking.toDate;
-    enquiryForm.checkInDate = booking.fromDate;
+    enquiryForm.checkInDate = this.isDayTripPlan(plan)
+      ? (plan.checkInDate || booking.fromDate)
+      : booking.fromDate;
+    enquiryForm.checkOutDate = this.isDayTripPlan(plan)
+      ? (plan.checkInDate || booking.fromDate)
+      : booking.toDate;
     enquiryForm.noOfPerson = plan.adults;
     enquiryForm.noOfExtraPerson = plan.extraCountAdult;
     enquiryForm.roomId = plan.roomId;
@@ -10995,7 +11030,7 @@ export class BookingComponent implements OnInit {
 
     enquiryForm.accountManager = '';
     enquiryForm.consultantPerson = '';
-    enquiryForm.noOfRooms = Number(plan.selectedRoomnumber);
+    enquiryForm.noOfRooms = this.isDayTripPlan(plan) ? 1 : Number(plan.selectedRoomnumber);
     enquiryForm.noOfChildren = plan.children;
     enquiryForm.accommodationType = this.token.getProperty().businessType;
     enquiryForm.status = 'Enquiry';
@@ -11028,7 +11063,7 @@ export class BookingComponent implements OnInit {
 
     enquiryForm.totalAmount = plan.price + plan.taxPercentageperroom;
     enquiryForm.discountAmountPercentage = booking.discountPercentage;
-    enquiryForm.noOfNights = plan.nights;
+    enquiryForm.noOfNights = this.isDayTripPlan(plan) ? 0 : plan.nights;
     enquiryForm.foodOptions = '';
     enquiryForm.organisationId = environment.parentOrganisationId;
     enquiryForm.bookingCommissionAmount = 0;
@@ -11052,12 +11087,16 @@ export class BookingComponent implements OnInit {
     bookingForm.lastName = booking.lastName;
     bookingForm.email = booking.email;
     bookingForm.mobile = booking.mobile;
-    bookingForm.toDate = booking.toDate;
-    bookingForm.fromDate = booking.fromDate;
+    bookingForm.fromDate = this.isDayTripPlan(plan)
+      ? (plan.checkInDate || booking.fromDate)
+      : booking.fromDate;
+    bookingForm.toDate = this.isDayTripPlan(plan)
+      ? (plan.checkInDate || booking.fromDate)
+      : booking.toDate;
     bookingForm.noOfPersons = plan.adults;
     bookingForm.noOfExtraPerson = plan.extraCountAdult;
     bookingForm.roomId = plan.roomId;
-    bookingForm.payableAmount = plan.price + plan.taxPercentageperroom;
+    bookingForm.payableAmount = this.getPlanBaseAmount(plan) + plan.taxPercentageperroom;
     bookingForm.roomName = plan.roomName;
     bookingForm.extraPersonCharge = this.getPlanStayAdultExtraCharge(plan);
     bookingForm.extraChildCharge = this.getPlanStayChildExtraCharge(plan);
@@ -11069,7 +11108,7 @@ export class BookingComponent implements OnInit {
     bookingForm.couponCode = booking.couponCode;
     bookingForm.promotionName = booking.promotionName;
     bookingForm.discountAmount = booking.discountAmount;
-    bookingForm.beforeTaxAmount = plan.price;
+    bookingForm.beforeTaxAmount = this.getPlanBaseAmount(plan);
 
     bookingForm.mobile =
       this.token.getProperty().whatsApp || this.token.getProperty().mobile;
@@ -11090,7 +11129,7 @@ export class BookingComponent implements OnInit {
     this.token.saveTime(String(checkInDateTimeOne));
     this.token.saveToTime(String(checkOutDateTimeOne));
 
-    bookingForm.noOfRooms = Number(plan.selectedRoomnumber);
+    bookingForm.noOfRooms = this.isDayTripPlan(plan) ? 1 : Number(plan.selectedRoomnumber);
     bookingForm.noOfChildren = plan.children;
     bookingForm.propertyId = 107;
     bookingForm.propertyId = this.token.getProperty().id;
@@ -11101,9 +11140,9 @@ export class BookingComponent implements OnInit {
     if (this.groupBookingId) {
       bookingForm.groupBookingId = null;
     }
-    bookingForm.totalAmount = plan.price + plan.taxPercentageperroom;
+    bookingForm.totalAmount = this.getPlanBaseAmount(plan) + plan.taxPercentageperroom;
     bookingForm.discountPercentage = booking.discountPercentage;
-    bookingForm.noOfNights = plan.nights;
+    bookingForm.noOfNights = this.isDayTripPlan(plan) ? 0 : plan.nights;
     bookingForm.taxPercentage = plan.taxpercentage;
     bookingForm.roomTariffBeforeDiscount =
       this.getPlanRoomTariffBeforeDiscountPayloadValue(plan);
@@ -12229,8 +12268,57 @@ sendWhatsappMessageToPropertyOwner() {
     return discountedPrice + tax;
   }
 
+  isDayTripPlan(plan: any): boolean {
+    return plan?.dayTrip === true || plan?.roomDetails?.dayTrip === true;
+  }
+
+  isDayTripBooking(booking: any): boolean {
+    return booking?.dayTrip === true || booking?.roomDetails?.dayTrip === true;
+  }
+
+  private applyDayTripFlagToEnquiry(enquiryForm: any, plan: any): void {
+    enquiryForm.dayTrip = this.isDayTripPlan(plan);
+  }
+
+  getPlanRoomCountLabel(plan: any): string {
+    return this.isDayTripPlan(plan)
+      ? '1 Room'
+      : `${this.toSafeAmount(plan?.selectedRoomnumber || 0)} Room(s)`;
+  }
+
+  getPlanChargeLabel(plan: any): string {
+    return this.isDayTripPlan(plan) ? 'Day Trip Charges' : `${this.roomLabel} Charges`;
+  }
+
+  hasAnyDayTripPlan(): boolean {
+    const plans =
+      this.bookingSummaryDetails?.selectedPlansSummary ||
+      this.selectedPlansSummary ||
+      [];
+    return plans.some((plan: any) => this.isDayTripPlan(plan));
+  }
+
+  getAccommodationChargesLabel(): string {
+    return this.hasAnyDayTripPlan() ? 'Total Booking Charges' : `Total ${this.roomLabel} Charges`;
+  }
+
+  getPlanDisplayDate(plan: any): string {
+    return this.isDayTripPlan(plan)
+      ? (plan?.checkInDate || this.bookingSummaryDetails?.fromDate)
+      : '';
+  }
+
+  getPlanBaseAmount(plan: any): number {
+    if (this.isDayTripPlan(plan)) {
+      return this.toSafeAmount(
+        this.getPlanStayAdultExtraCharge(plan) + this.getPlanStayChildExtraCharge(plan),
+      );
+    }
+    return this.toSafeAmount(plan?.price);
+  }
+
   getPlanAmountAfterDiscount(plan: any): number {
-    const price = this.toSafeAmount(plan?.price);
+    const price = this.getPlanBaseAmount(plan);
     const couponPercentage = this.toSafePercent(
       this.specialDiscountData?.discountPercentage ??
         this.selectedCouponList?.discountPercentage,
@@ -12249,6 +12337,14 @@ sendWhatsappMessageToPropertyOwner() {
   }
 
   private getPlanStayAdultExtraCharge(plan: any): number {
+    if (this.isDayTripPlan(plan)) {
+      return this.toSafeAmount(
+        plan?.extraPersonAdultCountAmount ??
+          plan?.SingleDayextraPersonAdultCountAmount ??
+          0,
+      );
+    }
+
     if (Array.isArray(plan?.dailyRates) && plan.dailyRates.length) {
       return this.toSafeAmount(
         plan.dailyRates.reduce(
@@ -12269,6 +12365,14 @@ sendWhatsappMessageToPropertyOwner() {
   }
 
   private getPlanStayChildExtraCharge(plan: any): number {
+    if (this.isDayTripPlan(plan)) {
+      return this.toSafeAmount(
+        plan?.extraPersonChildCountAmount ??
+          plan?.SingleDayextraPersonChildCountAmount ??
+          0,
+      );
+    }
+
     if (Array.isArray(plan?.dailyRates) && plan.dailyRates.length) {
       return this.toSafeAmount(
         plan.dailyRates.reduce(
@@ -12296,6 +12400,10 @@ sendWhatsappMessageToPropertyOwner() {
   }
 
   private getPlanRoomTariffBeforeDiscountTotal(plan: any): number {
+    if (this.isDayTripPlan(plan)) {
+      return 0;
+    }
+
     if (Array.isArray(plan?.dailyRates) && plan.dailyRates.length) {
       return this.toSafeAmount(
         plan.dailyRates.reduce(
@@ -12321,10 +12429,17 @@ sendWhatsappMessageToPropertyOwner() {
   }
 
   private getPlanRoomPricePayloadValue(plan: any): number {
+    if (this.isDayTripPlan(plan)) {
+      return null as any;
+    }
     return this.getPlanRoomTariffBeforeDiscountTotal(plan);
   }
 
   private getPlanRoomTariffBeforeDiscountPayloadValue(plan: any): number {
+    if (this.isDayTripPlan(plan)) {
+      return 0;
+    }
+
     const totalRoomTariff = this.getPlanRoomTariffBeforeDiscountTotal(plan);
     const roomCount = Math.max(
       1,
@@ -12340,7 +12455,7 @@ sendWhatsappMessageToPropertyOwner() {
   }
 
   getPlanDiscountAmount(plan: any): number {
-    const price = this.toSafeAmount(plan?.price);
+    const price = this.getPlanBaseAmount(plan);
 
     return this.toSafeAmount(price - this.getPlanAmountAfterDiscount(plan));
   }
@@ -12382,6 +12497,8 @@ sendWhatsappMessageToPropertyOwner() {
     if (this.bookingSummaryDetails?.selectedPlansSummary?.length) {
       this.bookingSummaryDetails.selectedPlansSummary.forEach((plan) => {
         totalTax += hasDiscount
+          ? this.getPlanTaxAfterDiscount(plan)
+          : this.isDayTripPlan(plan)
           ? this.getPlanTaxAfterDiscount(plan)
           : this.toSafeAmount(plan?.taxPercentageperroom);
       });
@@ -12876,7 +12993,7 @@ sendWhatsappMessageToPropertyOwner() {
   }
 
   getPlanRoomTotal(plan: any): number {
-    const price = this.toSafeAmount(plan?.price);
+    const price = this.getPlanBaseAmount(plan);
     const servicesTotal = this.getPlanServicesTotal(plan);
     const couponPercentage = this.toSafePercent(
       this.specialDiscountData?.discountPercentage,
