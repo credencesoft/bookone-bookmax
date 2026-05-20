@@ -7192,7 +7192,7 @@ export class BookingComponent implements OnInit {
             this.equitycreatedData.enquiryId,
             this.payment.razorpayOrderId,
           );
-          this.token.saveBookingData(this.booking);
+          this.saveCheckoutBookingData();
           this.token.savePaymentData(this.payment);
           this.token.savePropertyData(this.businessUser);
           const url = `${window.location.origin}/checkout-rayzorpay`;
@@ -7239,7 +7239,7 @@ export class BookingComponent implements OnInit {
               this.equitycreatedData.enquiryId,
               this.payment.referenceNumber,
             );
-            this.token.saveBookingData(this.booking);
+            this.saveCheckoutBookingData();
             this.token.savePaymentData(this.payment);
             this.token.savePropertyData(this.businessUser);
             //for post booking create
@@ -7516,7 +7516,7 @@ export class BookingComponent implements OnInit {
           this.payment = response.body;
           this.applyAuthoritativeGatewayAmounts(this.payment, 'phonepe-intent');
 
-          this.token.saveBookingData(this.booking);
+          this.saveCheckoutBookingData();
           this.token.savePaymentData(this.payment);
           this.token.savePropertyData(this.businessUser);
 
@@ -7649,7 +7649,7 @@ export class BookingComponent implements OnInit {
       if (response.status === 200) {
         this.payment = response.body;
         this.applyAuthoritativeGatewayAmounts(this.payment, 'paytm-intent');
-        this.token.saveBookingData(this.booking);
+        this.saveCheckoutBookingData();
         this.token.savePaymentData(this.payment);
         this.token.savePropertyData(this.businessUser);
 
@@ -7763,7 +7763,7 @@ export class BookingComponent implements OnInit {
         this.payment = response.body;
         this.applyAuthoritativeGatewayAmounts(this.payment, 'atom-intent');
 
-        this.token.saveBookingData(this.booking);
+        this.saveCheckoutBookingData();
         this.token.savePaymentData(this.payment);
         this.token.savePropertyData(this.businessUser);
 
@@ -7780,7 +7780,7 @@ export class BookingComponent implements OnInit {
         this.payment = response.body;
         this.applyAuthoritativeGatewayAmounts(this.payment, 'hdfc-intent');
 
-        this.token.saveBookingData(this.booking);
+        this.saveCheckoutBookingData();
         this.token.savePaymentData(this.payment);
         this.token.savePropertyData(this.businessUser);
 
@@ -12274,6 +12274,25 @@ sendWhatsappMessageToPropertyOwner() {
 
   isDayTripBooking(booking: any): boolean {
     return booking?.dayTrip === true || booking?.roomDetails?.dayTrip === true;
+  }
+
+  private hasSelectedDayTripPlan(): boolean {
+    const plans =
+      this.bookingSummaryDetails?.selectedPlansSummary ||
+      this.selectedPlansSummary ||
+      JSON.parse(sessionStorage.getItem('bookingSummaryDetails') || '{}')
+        ?.selectedPlansSummary ||
+      [];
+
+    return Array.isArray(plans) && plans.some((plan: any) => this.isDayTripPlan(plan));
+  }
+
+  private saveCheckoutBookingData(): void {
+    if (this.hasSelectedDayTripPlan() && this.booking?.fromDate) {
+      this.booking.toDate = this.booking.fromDate;
+    }
+
+    this.token.saveBookingData(this.booking);
   }
 
   private applyDayTripFlagToEnquiry(enquiryForm: any, plan: any): void {
