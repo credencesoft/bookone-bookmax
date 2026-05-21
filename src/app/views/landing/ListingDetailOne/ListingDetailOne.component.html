@@ -4665,6 +4665,14 @@
       *ngIf="policies?.length > 0"
     >
     <div class="container-div">
+      <div class="cancellation-rules-card" *ngIf="cancellationPolicyData?.enabled && cancellationRuleRows?.length">
+        <h3 class="ameniti1">Cancellation Rules</h3>
+        <p class="cancellation-rules-subtitle">Simple summary of deductions based on cancellation time before check-in.</p>
+        <div class="cancellation-rule-row" *ngFor="let rule of cancellationRuleRows">
+          <div class="cancellation-rule-window">{{ rule.window }}</div>
+          <div class="cancellation-rule-charge">{{ rule.chargeLabel }}</div>
+        </div>
+      </div>
       <div class="row mr-0 ml-0">
         <div class="col-lg-12 pl-0 pr-0">
           <div

@@ -1,3 +1,5 @@
+@use "sass:math";
+
 $elSet: 3;
 $elCount: $elSet * 2;
 $orange-light: #221950;
@@ -28,11 +30,11 @@ $smooth: cubic-bezier(0, 0.72, 0.58, 1);
           @if $r % 2==0 {
             &:nth-child(#{$r}) {
               &:after {
-                transition-delay: 0.1s * ($n / 2 - 1);
+                transition-delay: 0.1s * (math.div($n, 2) - 1);
               }
 
               .bar-button:before {
-                transition-delay: 0.1s * ($n / 2 - 1) + 0.06s;
+                transition-delay: 0.1s * (math.div($n, 2) - 1) + 0.06s;
               }
             }
           }
@@ -91,11 +93,11 @@ $smooth: cubic-bezier(0, 0.72, 0.58, 1);
         @if $n % 2==0 {
           &:nth-child(#{$n}) {
             &:after {
-              transition-delay: 0.1s * ($n / 2 - 1);
+              transition-delay: 0.1s * (math.div($n, 2) - 1);
             }
 
             .bar-button:before {
-              transition-delay: 0.1s * ($n / 2 - 1) + 0.06s;
+              transition-delay: 0.1s * (math.div($n, 2) - 1) + 0.06s;
             }
           }
         }

@@ -113,6 +113,46 @@
   color: #6B7280;
 }
 
+.cancellation-policy-preview {
+  margin-top: 18px;
+  margin-bottom: 8px;
+}
+
+.cancellation-rules-card-booking {
+  background: #f8fbff;
+  border: 1px solid #dbeafe;
+  border-radius: 12px;
+  padding: 14px;
+  font-family: 'Poppins';
+}
+
+.cancellation-rules-card-booking h5 {
+  margin: 0 0 8px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.cancellation-rules-subtitle-booking {
+  margin: 0 0 8px;
+  font-size: 13px;
+  color: #475569;
+}
+
+.cancellation-rule-row-booking {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  border-top: 1px dashed #cbd5e1;
+  padding: 8px 0;
+  font-size: 13px;
+  color: #334155;
+}
+
+.cancellation-rule-row-booking .charge {
+  font-weight: 600;
+  color: #0f172a;
+}
+
 .color-purple {
   color: #7B1FA2;
   font-weight: 700;

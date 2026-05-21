@@ -33,6 +33,13 @@ export class BookingConfirmationVoucherComponent {
   isReadMore: any;
   accommodationService: any;
   roomLabel: string = 'Room';
+  cancellationPolicyData: any;
+  cancellationRuleRows: { window: string; chargeLabel: string }[] = [];
+  cancellationEstimate: {
+    deductionAmount: number;
+    refundableAmount: number;
+    chargeLabel: string;
+  } | null = null;
 
   // ✅ NEW: Calculation and payment plan tracking properties
   couponDiscountPercentage: number = 0;
@@ -94,6 +101,9 @@ export class BookingConfirmationVoucherComponent {
     this.accommodationData = this.businessUser.businessServiceDtoList?.filter(
       (entry) => entry.name === 'Accommodation',
     );
+    this.cancellationPolicyData = this.accommodationData?.[0]?.cancellationPolicy;
+    this.buildCancellationRuleRows();
+    this.computeCancellationEstimate();
     this.accommodationData.forEach((element) => {
       this.serviceChargePercentage = element.serviceChargePercentage;
     });
@@ -340,6 +350,9 @@ export class BookingConfirmationVoucherComponent {
         this.policies = this.businessUser.businessServiceDtoList.filter(
           (ele) => ele.name === 'Accommodation',
         );
+        this.cancellationPolicyData = this.policies?.[0]?.cancellationPolicy;
+        this.buildCancellationRuleRows();
+        this.computeCancellationEstimate();
         this.calculateServiceHours();
         this.businessUser?.socialMediaLinks.forEach((element) => {
           this.socialmedialist = element;
@@ -1121,5 +1134,92 @@ export class BookingConfirmationVoucherComponent {
         },
       });
     });
+  }
+
+  private parsePolicyDurationToHours(value: string): number {
+    const upper = String(value || '').toUpperCase();
+    if (upper === 'P-INF') return Number.POSITIVE_INFINITY;
+    const match = upper.match(/^P-(\d+)H$/);
+    return match ? Number(match[1]) : 0;
+  }
+
+  private formatChargeLabel(type: string, value: number): string {
+    const normalized = String(type || '').toLowerCase();
+    const safeValue = Number(value || 0);
+    if (normalized === 'none') return 'No deduction';
+    if (normalized === 'full') return '100% deduction';
+    if (normalized === 'fixed') return `Fixed Rs. ${safeValue}`;
+    return `${safeValue}% deduction`;
+  }
+
+  private formatPolicyWindow(from: string, to: string): string {
+    const parse = (value: string) => {
+      const upper = String(value || '').toUpperCase();
+      if (upper === 'P-INF') return 'Anytime';
+      const match = upper.match(/^P-(\d+)H$/);
+      return match ? `${match[1]}h` : upper;
+    };
+    const fromText = parse(from);
+    const toText = parse(to);
+    if (String(from || '').toUpperCase() === 'P-INF') return `Before ${toText}`;
+    return `${fromText} to ${toText} before check-in`;
+  }
+
+  private buildCancellationRuleRows() {
+    const rules = this.cancellationPolicyData?.rules || [];
+    this.cancellationRuleRows = rules.map((rule: any) => ({
+      window: this.formatPolicyWindow(rule?.from, rule?.to),
+      chargeLabel: this.formatChargeLabel(rule?.charge_type, Number(rule?.charge_value || 0)),
+    }));
+  }
+
+  private calculateCancellationDeduction(baseAmount: number, chargeType: string, chargeValue: number): number {
+    const safeBase = Math.max(0, Number(baseAmount || 0));
+    const normalized = String(chargeType || '').toLowerCase();
+    const value = Number(chargeValue || 0);
+    if (normalized === 'none') return 0;
+    if (normalized === 'full') return safeBase;
+    if (normalized === 'fixed') return Math.min(value, safeBase);
+    return Math.min((safeBase * Math.max(0, value)) / 100, safeBase);
+  }
+
+  private computeCancellationEstimate() {
+    const policy = this.cancellationPolicyData;
+    const checkInDate = this.bookingSummaryDetails?.fromDate || this.bookingsResponseList?.[0]?.fromDate;
+    const totalAmount = this.toSafeAmount(
+      this.getNewGrandTotal() ||
+      this.grandTotal ||
+      this.bookingSummaryDetails?.grandTotal ||
+      this.bookingSummaryDetails?.totalAmount ||
+      this.bookingsResponseList?.[0]?.totalAmount ||
+      0,
+    );
+    if (!policy?.enabled || !checkInDate || totalAmount <= 0) {
+      this.cancellationEstimate = null;
+      return;
+    }
+
+    const serviceStart = new Date(checkInDate);
+    if (Number.isNaN(serviceStart.getTime())) {
+      this.cancellationEstimate = null;
+      return;
+    }
+
+    const hoursBeforeStart = Math.max(0, (serviceStart.getTime() - Date.now()) / (1000 * 60 * 60));
+    const matchedRule = (policy?.rules || []).find((rule: any) => {
+      const fromH = this.parsePolicyDurationToHours(rule?.from);
+      const toH = this.parsePolicyDurationToHours(rule?.to);
+      const maxH = Number.isFinite(fromH) ? fromH : Number.POSITIVE_INFINITY;
+      return hoursBeforeStart <= maxH && hoursBeforeStart >= toH;
+    });
+
+    const chargeType = matchedRule?.charge_type || policy?.no_show_charge_type || 'none';
+    const chargeValue = Number(matchedRule?.charge_value ?? policy?.no_show_charge_value ?? 0);
+    const deductionAmount = this.calculateCancellationDeduction(totalAmount, chargeType, chargeValue);
+    this.cancellationEstimate = {
+      deductionAmount,
+      refundableAmount: Math.max(totalAmount - deductionAmount, 0),
+      chargeLabel: this.formatChargeLabel(chargeType, chargeValue),
+    };
   }
 }

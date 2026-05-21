@@ -3088,3 +3088,37 @@ text-align: center;
 .spin-btn:hover {
   background: #0c3a46;
 }
+.cancellation-rules-card {
+  background: #f8fbff;
+  border: 1px solid #dbeafe;
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 14px;
+}
+
+.cancellation-rules-subtitle {
+  margin: 0 0 8px 0;
+  color: #64748b;
+  font-size: 13px;
+  font-family: "Poppins";
+}
+
+.cancellation-rule-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 0;
+  border-top: 1px dashed #cbd5e1;
+  font-family: "Poppins";
+}
+
+.cancellation-rule-window {
+  color: #334155;
+  font-size: 13px;
+}
+
+.cancellation-rule-charge {
+  color: #0f172a;
+  font-size: 13px;
+  font-weight: 600;
+}

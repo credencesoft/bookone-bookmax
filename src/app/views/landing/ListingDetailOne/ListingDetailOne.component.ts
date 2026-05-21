@@ -744,6 +744,8 @@ selectedAddonNames: string[] = [];
   nights: number;
   hotelID: number;
   policies = [];
+  cancellationPolicyData: any;
+  cancellationRuleRows: { window: string; chargeLabel: string }[] = [];
   propertyId: any;
   breakfast: PropertyServiceDTO;
   addServiceList: PropertyServiceDTO[] = [];
@@ -4383,6 +4385,8 @@ onCheckOutClosed(): void {
         this.policies = this.businessUser.businessServiceDtoList.filter(
           (ele) => ele.name === 'Accommodation'
         );
+        this.cancellationPolicyData = this.accommodationData?.[0]?.cancellationPolicy;
+        this.buildCancellationRuleRows();
 
         this.amenitiesHighlights = [];
         this.propertyServiceListData = [];
@@ -4956,6 +4960,8 @@ onCheckOutClosed(): void {
           this.policies = this.businessUser.businessServiceDtoList.filter(
             (ele) => ele.name === 'Accommodation'
           );
+          this.cancellationPolicyData = this.accommodationData?.[0]?.cancellationPolicy;
+          this.buildCancellationRuleRows();
 
           this.updateTag();
           this.changeDetectorRefs.detectChanges();
@@ -5141,6 +5147,39 @@ onCheckOutClosed(): void {
         // this.router.navigate(["/error"]);
       }
     );
+  }
+
+  private formatChargeLabel(type: string, value: number): string {
+    const normalized = String(type || '').toLowerCase();
+    const safeValue = Number(value || 0);
+    if (normalized === 'none') return 'No deduction';
+    if (normalized === 'full') return '100% deduction';
+    if (normalized === 'fixed') return `Fixed Rs. ${safeValue}`;
+    return `${safeValue}% deduction`;
+  }
+
+  private formatPolicyWindow(from: string, to: string): string {
+    const parse = (value: string) => {
+      const upper = String(value || '').toUpperCase();
+      if (upper === 'P-INF') return 'Anytime before 48h';
+      const match = upper.match(/^P-(\d+)H$/);
+      if (!match) return upper;
+      return `${match[1]}h`;
+    };
+    const fromText = parse(from);
+    const toText = parse(to);
+    if (String(from || '').toUpperCase() === 'P-INF') {
+      return `Before ${toText}`;
+    }
+    return `${fromText} to ${toText} before check-in`;
+  }
+
+  private buildCancellationRuleRows() {
+    const rules = this.cancellationPolicyData?.rules || [];
+    this.cancellationRuleRows = rules.map((rule: any) => ({
+      window: this.formatPolicyWindow(rule?.from, rule?.to),
+      chargeLabel: this.formatChargeLabel(rule?.charge_type, Number(rule?.charge_value || 0)),
+    }));
   }
   getBranch(id) {
     this.listingService.getBusinessBranch(id).subscribe((response) => {

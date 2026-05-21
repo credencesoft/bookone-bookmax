@@ -507,6 +507,19 @@
                 email, please check your spam or promotions folder.
               </li>
             </ul>
+            <div class="cancellation-rules-card-voucher" *ngIf="cancellationRuleRows?.length">
+              <h5>Cancellation Rules</h5>
+              <p class="cancellation-rules-subtitle-voucher" *ngIf="cancellationEstimate">
+                If cancelled now, estimated deduction:
+                <strong>{{ cancellationEstimate.deductionAmount | currency: currency : 'symbol' : '1.2-2' }}</strong>
+                ({{ cancellationEstimate.chargeLabel }}), refundable:
+                <strong>{{ cancellationEstimate.refundableAmount | currency: currency : 'symbol' : '1.2-2' }}</strong>.
+              </p>
+              <div class="cancellation-rule-row-voucher" *ngFor="let rule of cancellationRuleRows">
+                <div>{{ rule.window }}</div>
+                <div class="charge">{{ rule.chargeLabel }}</div>
+              </div>
+            </div>
             <div *ngFor="let bServiceDtoList of policies; let i = index">
               <div *ngIf="bServiceDtoList?.policy">
                 <div class="property-rules" *ngIf="policies">
@@ -989,6 +1002,19 @@
               please check your spam or promotions folder.
             </li>
           </ul>
+          <div class="cancellation-rules-card-voucher" *ngIf="cancellationRuleRows?.length">
+            <h5>Cancellation Rules</h5>
+            <p class="cancellation-rules-subtitle-voucher" *ngIf="cancellationEstimate">
+              If cancelled now, estimated deduction:
+              <strong>{{ cancellationEstimate.deductionAmount | currency: currency : 'symbol' : '1.2-2' }}</strong>
+              ({{ cancellationEstimate.chargeLabel }}), refundable:
+              <strong>{{ cancellationEstimate.refundableAmount | currency: currency : 'symbol' : '1.2-2' }}</strong>.
+            </p>
+            <div class="cancellation-rule-row-voucher" *ngFor="let rule of cancellationRuleRows">
+              <div>{{ rule.window }}</div>
+              <div class="charge">{{ rule.chargeLabel }}</div>
+            </div>
+          </div>
           <div *ngFor="let bServiceDtoList of policies; let i = index">
             <div *ngIf="bServiceDtoList?.policy">
               <div class="property-rules" *ngIf="policies">Property rules:</div>

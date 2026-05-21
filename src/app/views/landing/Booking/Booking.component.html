@@ -1908,6 +1908,22 @@
           >Enquiry Now</button>
         </div>
       </div>
+
+      <div class="container-div cancellation-policy-preview" *ngIf="cancellationRuleRows?.length">
+        <div class="cancellation-rules-card-booking">
+          <h5>Cancellation Rules</h5>
+          <p class="cancellation-rules-subtitle-booking" *ngIf="cancellationEstimate">
+            Cancelling now may deduct
+            <strong>{{ cancellationEstimate.deductionAmount | currency: currency : 'symbol' : '1.2-2' }}</strong>
+            ({{ cancellationEstimate.chargeLabel }}). Estimated refundable:
+            <strong>{{ cancellationEstimate.refundableAmount | currency: currency : 'symbol' : '1.2-2' }}</strong>.
+          </p>
+          <div class="cancellation-rule-row-booking" *ngFor="let rule of cancellationRuleRows">
+            <div>{{ rule.window }}</div>
+            <div class="charge">{{ rule.chargeLabel }}</div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="terms-unique-overlay" *ngIf="showTermsUniquePopup">
