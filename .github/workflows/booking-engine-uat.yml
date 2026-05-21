@@ -1,9 +1,12 @@
 name: Release UAT Booking Engine
 
-on: [workflow_dispatch]
+on:
+  push:
+    branches:
+      - release/uat-new
+  workflow_dispatch:
 
 env:
-  # build
   IMAGE_NAME: booking-engine
   
   GCP_REGION: asia-south1
@@ -13,9 +16,7 @@ env:
   GCP_IDENTITY_POOL_NAME: release
   GCP_IDENTITY_PROVIDER_NAME: github-provider
   GCP_SERVICE_ACCOUNT: build-manager@uat-bookone.iam.gserviceaccount.com
-  
 
-  # deployment
   NAMESPACE: webui
   SERVICE_NAME: booking_engine
   
@@ -24,15 +25,6 @@ env:
   AWS_SECRET: bookone_uat_deployment_credentials
 
   BRANCH: release/uat-new
-  
-  # generated do not touch
-  # IDENTITY_PROVIDER: projects/${{ env.GCP_PROJECT_NUMBER }}/locations/global/workloadIdentityPools/${{ env.GCP_IDENTITY_POOL_NAME }}/providers/${GCP_IDENTITY_PROVIDER_NAME}
-  # CONTAINER_REGISTRY: ${{ env.GCP_REGION }}-docker.pkg.dev
-  # IMAGE_URI: ${{ env.GCP_REGION }}-docker.pkg.dev/${{ env.GCP_PROJECT }}/${{ env.IMAGE_NAME }}/release
-  # depl_username: aa
-  # depl_password: aa
-  # depl_url: aa
-
 
 permissions:
   contents: read
@@ -49,7 +41,7 @@ jobs:
         with:
           ref: ${{ env.BRANCH }}
           fetch-depth: 1
-  
+
       - name: Generate Derived Environment Variables
         id: set-env-vars
         run: |
@@ -64,7 +56,6 @@ jobs:
           echo "CONTAINER_REGISTRY: $CONTAINER_REGISTRY"
           echo "IMAGE_URI: $IMAGE_URI"
           echo "COMMIT_ID: $COMMIT_ID"
-
 
       - name: Authenticate to Google Cloud
         id: auth
@@ -88,19 +79,18 @@ jobs:
           docker push ${{ env.IMAGE_URI }}:latest
           docker push ${{ env.IMAGE_URI }}:${{ env.COMMIT_ID }}
 
-
   deploy:
     needs: build
     name: deploy
     runs-on: ubuntu-latest
     steps:
-      - name: configure aws credentials
+      - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v3
         with:
           role-to-assume: ${{ env.AWS_ROLE }}
           aws-region: ${{ env.AWS_REGION }}
 
-      - name: Fetch deployment credentials from aws secrets
+      - name: Fetch deployment credentials from AWS Secrets
         uses: aws-actions/aws-secretsmanager-get-secrets@v2
         with:
           secret-ids: ${{ env.AWS_SECRET }}
@@ -117,10 +107,14 @@ jobs:
           echo "depl_password=${!password_var}" >> $GITHUB_ENV
           echo "depl_url=${!url_var}" >> $GITHUB_ENV
 
-      - name: deploy
+      - name: Deploy
         id: deploy
         run: |
-          response=$(curl -s -o /dev/null -w "%{http_code}" -X POST -H "Content-Type: application/x-www-form-urlencoded" -u "$depl_username:$depl_password" -d "service_to_update=$SERVICE_NAME" "$depl_url/job/$NAMESPACE/buildWithParameters")
+          response=$(curl -s -o /dev/null -w "%{http_code}" -X POST \
+            -H "Content-Type: application/x-www-form-urlencoded" \
+            -u "$depl_username:$depl_password" \
+            -d "service_to_update=$SERVICE_NAME" \
+            "$depl_url/job/$NAMESPACE/buildWithParameters")
           if [ "$response" -eq 201 ]; then
             echo "Success! The response code is $response."
           else
