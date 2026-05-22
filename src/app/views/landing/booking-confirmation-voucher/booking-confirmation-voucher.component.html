@@ -514,6 +514,10 @@
                 <strong>{{ cancellationEstimate.deductionAmount | currency: currency : 'symbol' : '1.2-2' }}</strong>
                 ({{ cancellationEstimate.chargeLabel }}), refundable:
                 <strong>{{ cancellationEstimate.refundableAmount | currency: currency : 'symbol' : '1.2-2' }}</strong>.
+                <span *ngIf="cancellationEstimate.dueAmount > 0">
+                  Additional payable:
+                  <strong>{{ cancellationEstimate.dueAmount | currency: currency : 'symbol' : '1.2-2' }}</strong>.
+                </span>
               </p>
               <div class="cancellation-rule-row-voucher" *ngFor="let rule of cancellationRuleRows">
                 <div>{{ rule.window }}</div>
@@ -1009,6 +1013,10 @@
               <strong>{{ cancellationEstimate.deductionAmount | currency: currency : 'symbol' : '1.2-2' }}</strong>
               ({{ cancellationEstimate.chargeLabel }}), refundable:
               <strong>{{ cancellationEstimate.refundableAmount | currency: currency : 'symbol' : '1.2-2' }}</strong>.
+              <span *ngIf="cancellationEstimate.dueAmount > 0">
+                Additional payable:
+                <strong>{{ cancellationEstimate.dueAmount | currency: currency : 'symbol' : '1.2-2' }}</strong>.
+              </span>
             </p>
             <div class="cancellation-rule-row-voucher" *ngFor="let rule of cancellationRuleRows">
               <div>{{ rule.window }}</div>

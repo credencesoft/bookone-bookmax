@@ -38,6 +38,7 @@ export class BookingConfirmationVoucherComponent {
   cancellationEstimate: {
     deductionAmount: number;
     refundableAmount: number;
+    dueAmount: number;
     chargeLabel: string;
   } | null = null;
 
@@ -1183,10 +1184,28 @@ export class BookingConfirmationVoucherComponent {
     return Math.min((safeBase * Math.max(0, value)) / 100, safeBase);
   }
 
+  private getCancellationChargeAmount(): number {
+    const booking = this.bookingsResponseList?.[0] || {};
+    const bookingSummary = this.bookingSummaryDetails || {};
+    const bookingCommission = this.toSafeAmount(
+      booking?.bookingCommissionAmount ??
+        booking?.commissionAmount ??
+        bookingSummary?.bookingCommissionAmount ??
+        bookingSummary?.commissionAmount ??
+        0,
+    );
+
+    if (bookingCommission > 0) {
+      return bookingCommission;
+    }
+
+    return this.toSafeAmount(this.getDisplayedConvenienceFee());
+  }
+
   private computeCancellationEstimate() {
     const policy = this.cancellationPolicyData;
     const checkInDate = this.bookingSummaryDetails?.fromDate || this.bookingsResponseList?.[0]?.fromDate;
-    const totalAmount = this.toSafeAmount(
+    const bookingTotalAmount = this.toSafeAmount(
       this.getNewGrandTotal() ||
       this.grandTotal ||
       this.bookingSummaryDetails?.grandTotal ||
@@ -1194,7 +1213,10 @@ export class BookingConfirmationVoucherComponent {
       this.bookingsResponseList?.[0]?.totalAmount ||
       0,
     );
-    if (!policy?.enabled || !checkInDate || totalAmount <= 0) {
+    const cancellationChargeAmount = this.getCancellationChargeAmount();
+    const cancellationBaseAmount = Math.max(0, bookingTotalAmount - cancellationChargeAmount);
+
+    if (!policy?.enabled || !checkInDate || cancellationBaseAmount <= 0) {
       this.cancellationEstimate = null;
       return;
     }
@@ -1215,10 +1237,18 @@ export class BookingConfirmationVoucherComponent {
 
     const chargeType = matchedRule?.charge_type || policy?.no_show_charge_type || 'none';
     const chargeValue = Number(matchedRule?.charge_value ?? policy?.no_show_charge_value ?? 0);
-    const deductionAmount = this.calculateCancellationDeduction(totalAmount, chargeType, chargeValue);
+    const penaltyAmount = this.calculateCancellationDeduction(cancellationBaseAmount, chargeType, chargeValue);
+    const paidAmount = Math.min(
+      cancellationBaseAmount,
+      this.toSafeAmount(this.getNewPayNowAmount() || cancellationBaseAmount),
+    );
+    const deductionAmount = Math.min(penaltyAmount, paidAmount);
+    const refundableAmount = Math.max(paidAmount - penaltyAmount, 0);
+    const dueAmount = Math.max(penaltyAmount - paidAmount, 0);
     this.cancellationEstimate = {
       deductionAmount,
-      refundableAmount: Math.max(totalAmount - deductionAmount, 0),
+      refundableAmount,
+      dueAmount,
       chargeLabel: this.formatChargeLabel(chargeType, chargeValue),
     };
   }
