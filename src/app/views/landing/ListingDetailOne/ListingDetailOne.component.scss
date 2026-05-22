@@ -3027,3 +3027,69 @@ text-align: center;
 .spin-btn:hover {
   background: #0c3a46;
 }
+
+/* Cancellation rules card aligned with Terms & Conditions card style */
+.cancellation-rules-card {
+  background: #f8f8f8;
+  border-radius: 6px;
+  padding: 20px 24px;
+  margin: 0 0 20px 0;
+  border: 1px solid #ececec;
+}
+
+.cancellation-rules-subtitle {
+  margin: 4px 0 14px;
+  color: #5f6368;
+  font-size: 14px;
+  font-family: "Poppins";
+}
+
+.cancellation-rule-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 0;
+  border-top: 1px solid #e9e9e9;
+}
+
+.cancellation-rule-row:first-of-type {
+  border-top: none;
+}
+
+.cancellation-rule-window {
+  color: #202124;
+  font-weight: 500;
+  font-family: "Poppins";
+}
+
+.cancellation-rule-charge {
+  color: var(--secondary, #0b01cc);
+  font-weight: 700;
+  font-family: "Poppins";
+  white-space: nowrap;
+}
+
+@media (max-width: 1180px) {
+  .cancellation-rules-card {
+    padding: 16px;
+    margin-bottom: 14px;
+  }
+
+  .cancellation-rules-subtitle {
+    font-size: 13px;
+    margin-bottom: 10px;
+  }
+
+  .cancellation-rule-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+    padding: 10px 0;
+  }
+
+  .cancellation-rule-window,
+  .cancellation-rule-charge {
+    font-size: 13px;
+  }
+}

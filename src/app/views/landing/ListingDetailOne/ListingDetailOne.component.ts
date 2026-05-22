@@ -87,6 +87,9 @@ interface RoomOne {
   encapsulation: ViewEncapsulation.None,
 })
 export class ListingDetailOneComponent implements OnInit {
+  showPastDateRestrictionPopup: boolean = false;
+  pastDateRestrictionMessage: string =
+    'Past dates are not allowed. Please choose today or a future date.';
   isLoadingProperty : boolean;
   roomLowestPrices: { [roomId: string]: number | null } = {};
   roomLowestPricesBookingEngine: { [roomId: string]: number | null } = {};
@@ -741,6 +744,8 @@ selectedAddonNames: string[] = [];
   nights: number;
   hotelID: number;
   policies = [];
+  cancellationPolicyData: any;
+  cancellationRuleRows: { window: string; chargeLabel: string }[] = [];
   propertyId: any;
   breakfast: PropertyServiceDTO;
   addServiceList: PropertyServiceDTO[] = [];
@@ -3709,6 +3714,43 @@ if (roomKey) {
     // Toggle the read more/less flag for the clicked policy
     this.isReadMore[index] = !this.isReadMore[index];
   }
+
+  private parsePolicyDurationToHours(value: string): number {
+    const upper = String(value || '').toUpperCase();
+    if (upper === 'P-INF') return Number.POSITIVE_INFINITY;
+    const match = upper.match(/^P-(\d+)H$/);
+    return match ? Number(match[1]) : 0;
+  }
+
+  private formatChargeLabel(type: string, value: number): string {
+    const normalized = String(type || '').toLowerCase();
+    const safeValue = Number(value || 0);
+    if (normalized === 'none') return 'No deduction';
+    if (normalized === 'full') return '100% deduction';
+    if (normalized === 'fixed') return `Fixed Rs. ${safeValue}`;
+    return `${safeValue}% deduction`;
+  }
+
+  private formatPolicyWindow(from: string, to: string): string {
+    const parse = (policyDuration: string) => {
+      const upper = String(policyDuration || '').toUpperCase();
+      if (upper === 'P-INF') return 'Anytime';
+      const match = upper.match(/^P-(\d+)H$/);
+      return match ? `${match[1]}h` : upper;
+    };
+    const fromText = parse(from);
+    const toText = parse(to);
+    if (String(from || '').toUpperCase() === 'P-INF') return `Before ${toText}`;
+    return `${fromText} to ${toText} before check-in`;
+  }
+
+  private buildCancellationRuleRows() {
+    const rules = this.cancellationPolicyData?.rules || [];
+    this.cancellationRuleRows = rules.map((rule: any) => ({
+      window: this.formatPolicyWindow(rule?.from, rule?.to),
+      chargeLabel: this.formatChargeLabel(rule?.charge_type, Number(rule?.charge_value || 0)),
+    }));
+  }
   decrementL(lunchservice) {
     if (this.counterl > 0) {
       this.counterl--;
@@ -4482,6 +4524,8 @@ onCheckOutClosed(): void {
         this.policies = this.businessUser.businessServiceDtoList.filter(
           (ele) => ele.name === 'Accommodation'
         );
+        this.cancellationPolicyData = this.policies?.[0]?.cancellationPolicy;
+        this.buildCancellationRuleRows();
 
         this.amenitiesHighlights = [];
         this.propertyServiceListData = [];
@@ -5055,6 +5099,8 @@ onCheckOutClosed(): void {
           this.policies = this.businessUser.businessServiceDtoList.filter(
             (ele) => ele.name === 'Accommodation'
           );
+          this.cancellationPolicyData = this.policies?.[0]?.cancellationPolicy;
+          this.buildCancellationRuleRows();
 
           this.updateTag();
           this.changeDetectorRefs.detectChanges();
