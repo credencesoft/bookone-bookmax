@@ -12909,6 +12909,11 @@ sendWhatsappMessageToPropertyOwner() {
     }
   }
 
+  isItemWiseAddOn(addon: any): boolean {
+    const basis = this.getAddOnChargeBasis(addon);
+    return ['itemwise', 'peritem', 'item', 'perunit', 'unitwise'].includes(basis);
+  }
+
   private getPlanServicesSubtotal(plan: any): number {
     return this.toSafeAmount(
       (this.selectedAddOns || []).reduce(
