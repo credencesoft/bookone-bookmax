@@ -12799,6 +12799,89 @@ sendWhatsappMessageToPropertyOwner() {
     );
   }
 
+  getAddOnRowTotal(addon: any): number {
+    const servicePrice = this.toSafeAmount(
+      addon?.servicePrice ?? addon?.beforeTaxAmount ?? addon?.unitPrice,
+    );
+    const taxAmount = this.toSafeAmount(addon?.taxAmount);
+    const quantity = this.isItemWiseAddOn(addon) ? this.getSelectedAddOnQuantity(addon) : 1;
+
+    return this.toSafeAmount((servicePrice + taxAmount) * quantity);
+  }
+
+  getSelectedAddOnQuantity(addon: any): number {
+    const selectedAddOn = this.getSelectedAddOn(addon);
+    if (this.isItemWiseAddOn(addon) && !selectedAddOn) {
+      return 0;
+    }
+
+    const quantity = selectedAddOn?.quantity ?? selectedAddOn?.count ?? addon?.quantity ?? addon?.count ?? 1;
+    return Math.max(1, Math.floor(Number(quantity) || 1));
+  }
+
+  private getSelectedAddOn(service: any): any | undefined {
+    const serviceKey = this.getAddOnSelectionKey(service);
+    return this.selectedAddOns.find(
+      (selectedService) => this.getAddOnSelectionKey(selectedService) === serviceKey,
+    );
+  }
+
+  increaseAddOnQuantity(addon: any, event?: Event): void {
+    event?.stopPropagation();
+    const selectedAddOn = this.getSelectedAddOn(addon);
+
+    if (!selectedAddOn) {
+      this.selectedAddOns.push({
+        ...addon,
+        quantity: 1,
+        count: 1,
+      });
+      this.selectedAddOnNames.push(addon.name);
+    } else {
+      const quantity = this.getSelectedAddOnQuantity(addon) + 1;
+      selectedAddOn.quantity = quantity;
+      selectedAddOn.count = quantity;
+    }
+
+    this.recalculateAddOnSelectionState();
+  }
+
+  decreaseAddOnQuantity(addon: any, event?: Event): void {
+    event?.stopPropagation();
+    const selectedAddOn = this.getSelectedAddOn(addon);
+
+    if (!selectedAddOn) {
+      return;
+    }
+
+    const quantity = this.getSelectedAddOnQuantity(addon);
+    if (quantity <= 1) {
+      this.toggleAddOnSelection(addon);
+      return;
+    }
+
+    selectedAddOn.quantity = quantity - 1;
+    selectedAddOn.count = quantity - 1;
+    this.recalculateAddOnSelectionState();
+  }
+
+   private recalculateAddOnSelectionState(): void {
+    this.calculateAddOnsTotals();
+    this.syncSelectedAddOnsToCheckoutState();
+    this.calculateMultiDiscountAndTax();
+    this.changeDetectorRefs.markForCheck();
+  }
+
+  getSelectedAddOnTotal(addon: any): number {
+    const servicePrice = this.toSafeAmount(
+      addon?.servicePrice ?? addon?.beforeTaxAmount ?? addon?.unitPrice,
+    );
+    const taxAmount = this.toSafeAmount(addon?.taxAmount);
+    const multiplier = this.getAddOnTotalMultiplier(addon);
+
+    return this.toSafeAmount((servicePrice + taxAmount) * multiplier);
+  }
+
   private isFirstSelectedPlan(plan: any): boolean {
     const plans =
       this.bookingSummaryDetails?.selectedPlansSummary ||
