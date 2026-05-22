@@ -995,7 +995,7 @@
                         outsideDays="hidden"
                         [startDate]="toDate"
                         tabindex="-1"
-                        [minDate]="fromDate"
+                        [minDate]="getCheckoutMinDate()"
                       />
                     </div>
                   </div>
@@ -1389,7 +1389,7 @@
                           outsideDays="hidden"
                           [startDate]="toDate"
                           tabindex="-1"
-                          [minDate]="fromDate"
+                          [minDate]="getCheckoutMinDate()"
                         />
                       </div>
                     </div>
@@ -3056,7 +3056,8 @@
                       *ngFor="
                         let plan of isPlanVisible(
                           rates.roomRatePlans,
-                          room.name
+                          room.name,
+                          room
                         );
                         let p = index
                       "
@@ -3139,14 +3140,14 @@
                              <select
                               class="select-icon"
                               id="inputGroupSelect01"
-                              [(ngModel)]="selectedRoomsByPlan[plan.code]"
+                              [(ngModel)]="selectedRoomsByPlan[getRoomPlanSelectionKey(room.name, plan.code)]"
                               (ngModelChange)="
                                 onRoomSelect(room.name, plan.code, $event)
                               "
                             >
                               <!-- Ensure default is assigned -->
                               <ng-container
-                                *ngIf="setDefaultRoomIfMissing(plan.code)"
+                                *ngIf="setDefaultRoomIfMissing(getRoomPlanSelectionKey(room.name, plan.code))"
                               ></ng-container>
 
                               <option
@@ -3293,9 +3294,7 @@
                           class="plan-warning-row"
                         >
                           <div class="plan-warning-text">
-                            This plan is only available for 1-night stay.
-                            Please adjust your dates to select these
-                            {{ getBookingUnitLabel(room) }}s.
+                            {{ getPlanDisabledMessage(plan, room) }}
                           </div>
                         </div>
                       </div>
@@ -3374,14 +3373,14 @@
                              <select
                               class="select-icon"
                               id="inputGroupSelect01"
-                              [(ngModel)]="selectedRoomsByPlan[plan.code]"
+                              [(ngModel)]="selectedRoomsByPlan[getRoomPlanSelectionKey(room.name, plan.code)]"
                               (ngModelChange)="
                                 onRoomSelect(room.name, plan.code, $event)
                               "
                             >
                               <!-- Ensure default is assigned -->
                               <ng-container
-                                *ngIf="setDefaultRoomIfMissing(plan.code)"
+                                *ngIf="setDefaultRoomIfMissing(getRoomPlanSelectionKey(room.name, plan.code))"
                               ></ng-container>
 
                               <option
@@ -3534,9 +3533,7 @@
                           class="plan-warning-row plan-warning-row-mobile"
                         >
                           <div class="plan-warning-text">
-                            This plan is only available for 1-night stay.
-                            Please adjust your dates to select these
-                            {{ getBookingUnitLabel(room) }}s.
+                            {{ getPlanDisabledMessage(plan, room) }}
                           </div>
                         </div>
                       </div>

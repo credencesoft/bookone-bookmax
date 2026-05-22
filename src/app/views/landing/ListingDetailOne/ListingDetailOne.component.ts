@@ -404,9 +404,6 @@ promoSelected = false;
   isSuccess: boolean;
   headerTitle: string;
   bodyMessage: string;
-  showPastDateRestrictionPopup = false;
-  pastDateRestrictionMessage =
-    'Past check-in dates are not available. We have updated your stay to the next available date. Please review the revised dates before continuing.';
   hasPlan = false;
   customerReviews: Review[];
   sideMinderUrl: string;
@@ -744,8 +741,6 @@ selectedAddonNames: string[] = [];
   nights: number;
   hotelID: number;
   policies = [];
-  cancellationPolicyData: any;
-  cancellationRuleRows: { window: string; chargeLabel: string }[] = [];
   propertyId: any;
   breakfast: PropertyServiceDTO;
   addServiceList: PropertyServiceDTO[] = [];
@@ -770,6 +765,7 @@ selectedAddonNames: string[] = [];
   planPrice: any;
   minDateForCheckIn: NgbDate;
   minDateForCheckOut: NgbDate;
+  dayTripCheckoutAllowed: boolean = false;
   totalplanPrice: any;
   lunchservice: any;
   propertyData: BusinessUser;
@@ -1091,7 +1087,6 @@ if (params['Children'] !== undefined) {
       today.getMonth() + 1,
       today.getDate()
     );
-    this.normalizeQueryDatesForRestriction();
     // this.checkAvailabilityDisabled = true;
 let currentUrl = window.location.href;
 
@@ -1883,12 +1878,101 @@ isDayTripPlan(plan: any, room?: any): boolean {
   return this.isDayTripRoom(room) || plan?.dayTrip === true || plan?.roomDetails?.dayTrip === true;
 }
 
-isPlanDisabled(plan: any, room?: any): boolean {
-  return (
-    Number(this.booking?.noOfNights || 0) > 1 &&
-    (plan?.onedayPlan === true || this.isDayTripPlan(plan, room))
+private isSameDayBookingSearch(): boolean {
+  if (this.booking?.fromDate && this.booking?.toDate) {
+    return this.booking.fromDate === this.booking.toDate;
+  }
+
+  return Number(this.booking?.noOfNights || 0) === 0;
+}
+
+  private hasDayTripRate(room: any): boolean {
+    const rates = room?.ratesAndAvailabilityDtos || [];
+    return (
+      this.isDayTripRoom(room) ||
+    rates.some((rate: any) =>
+      rate?.roomRatePlans?.some((plan: any) => this.isDayTripPlan(plan, room))
+    )
   );
 }
+
+  isPlanDisabled(plan: any, room?: any): boolean {
+    const isDayTrip = this.isDayTripPlan(plan, room);
+    if (isDayTrip && !this.isSameDayBookingSearch()) {
+      return true;
+    }
+
+    return (
+      Number(this.booking?.noOfNights || 0) > 1 &&
+      plan?.onedayPlan === true &&
+      !isDayTrip
+    );
+  }
+
+  getPlanDisabledMessage(plan: any, room?: any): string {
+    if (this.isDayTripPlan(plan, room) && !this.isSameDayBookingSearch()) {
+      return 'It is a same day plan. Please select both dates as same.';
+    }
+
+    return `This plan is only available for 1-night stay. Please adjust your dates to select these ${this.getBookingUnitLabel(room)}s.`;
+  }
+
+  private updateDayTripCheckoutAvailability(roomList: any[]): void {
+    if (this.activeForGoogleHotelCenter) {
+      return;
+    }
+
+    this.dayTripCheckoutAllowed = (roomList || []).some((room: any) =>
+      this.hasDayTripRate(room)
+    );
+    this.dayOneTrip = this.dayTripCheckoutAllowed;
+  }
+
+  getCheckoutMinDate(): NgbDate {
+    if (!this.fromDate) {
+      return this.minDateForCheckOut || this.minDateForCheckIn;
+    }
+
+    return this.dayTripCheckoutAllowed || this.activeForGoogleHotelCenter
+      ? this.fromDate
+      : this.calendar.getNext(this.fromDate, 'd', 1);
+  }
+
+  private addDaysToDateString(dateValue: any, days: number): string {
+    if (!dateValue) {
+      return dateValue;
+    }
+
+    const dateString = dateValue.toString();
+    const parts =
+      dateString.includes('-') && dateString.split('-')[0].length === 4
+        ? dateString.split('-').map(Number)
+        : dateString.split('-').reverse().map(Number);
+
+    if (parts.length !== 3 || parts.some((part) => Number.isNaN(part))) {
+      return dateValue;
+    }
+
+    const [year, month, day] = parts;
+    const date = new Date(year, month - 1, day);
+    date.setDate(date.getDate() + days);
+
+    return this.getDateFormatYearMonthDay(
+      date.getDate(),
+      date.getMonth() + 1,
+      date.getFullYear()
+    );
+  }
+
+  private getAvailabilityCheckoutDate(): string {
+    if (this.activeForGoogleHotelCenter) {
+      return this.booking.toDate;
+    }
+
+    return Number(this.DiffDate || 0) === 0
+      ? this.addDaysToDateString(this.booking.fromDate, 1)
+      : this.booking.toDate;
+  }
 
 private getDayTripPlanAmount(plan: any): number {
   return Number(plan?.extraChargePerPerson || 0);
@@ -1902,12 +1986,16 @@ private getPlanMaxExtraPersons(plan: any): number {
   return Number(plan?.maxExtraPersons ?? plan?.maximumExtraPersons ?? plan?.extraPersonAllowed ?? 0) || 0;
 }
 
-getDayTripAdultLimit(plan: any): number {
+  getDayTripAdultLimit(plan: any): number {
   const includedAdults = this.getPlanIncludedAdults(plan);
   const maxExtraPersons = this.getPlanMaxExtraPersons(plan);
   const fallback = Number(plan?.maximumOccupancy || 0);
   return Math.max(1, includedAdults + maxExtraPersons || fallback || 1);
 }
+
+  getRoomPlanSelectionKey(roomName: string, planCode: string): string {
+    return `${roomName || 'room'}_${planCode}`;
+  }
 
   setDefaultRoomIfMissing(planCode: string): boolean {
     if (this.selectedRoomsByPlan[planCode] === undefined) {
@@ -1921,7 +2009,7 @@ onRoomSelect(roomName: string, planCode: string, count: number | string) {
     return;
   }
 
-  const key = roomName + '_' + planCode;
+  const key = this.getRoomPlanSelectionKey(roomName, planCode);
   const selectedCount = Number(count) || 0;
 
   this.selectedRoomsByPlan[key] = selectedCount;
@@ -2047,13 +2135,15 @@ onIncrement(planCode: string, type: 'adults' | 'children', plan: any, room: any)
   this.guestSelectionErrors[planCode] = '';
 
   const isDayTrip = this.isDayTripPlan(plan, room);
-  const scopedRoomKey = room?.name ? `${room.name}_${planCode}` : planCode;
+  const scopedRoomKey = room?.name ? this.getRoomPlanSelectionKey(room.name, planCode) : planCode;
   if (isDayTrip) {
     this.selectedRoomsByPlan[planCode] = 1;
     this.selectedRoomsByPlan[scopedRoomKey] = 1;
   }
 
-    const selectedRooms = isDayTrip ? 1 : (this.selectedRoomsByPlan[planCode] || 0);
+    const selectedRooms = isDayTrip
+      ? 1
+      : (this.selectedRoomsByPlan[scopedRoomKey] || this.selectedRoomsByPlan[planCode] || 0);
 
   if (selectedRooms === 0 && !plan?.nonRoomPlan) {
     this.showTemporaryError(planCode, 'Please add a room first.');
@@ -2379,7 +2469,7 @@ resetLastChangedAge(planCode: string) {
     if (isDayTrip) {
       this.selectedRoomsByPlan[planCode] = 1;
       if (rates?.roomName) {
-        this.selectedRoomsByPlan[`${rates.roomName}_${planCode}`] = 1;
+        this.selectedRoomsByPlan[this.getRoomPlanSelectionKey(rates.roomName, planCode)] = 1;
       }
       if (!this.selectedGuestsByPlan[planCode]) {
         this.selectedGuestsByPlan[planCode] = { adults: this.getPlanIncludedAdults(plan) || 1, children: 0 };
@@ -2389,7 +2479,14 @@ resetLastChangedAge(planCode: string) {
         this.getDayTripAdultLimit(plan),
       );
     }
-    const selectedRooms = isDayTrip ? 1 : this.selectedRoomsByPlan[planCode];
+    const scopedRoomKey = roomContext?.name
+      ? this.getRoomPlanSelectionKey(roomContext.name, planCode)
+      : rates?.roomName
+      ? this.getRoomPlanSelectionKey(rates.roomName, planCode)
+      : planCode;
+    const selectedRooms = isDayTrip
+      ? 1
+      : (this.selectedRoomsByPlan[scopedRoomKey] || this.selectedRoomsByPlan[planCode] || 0);
     const selectedGuests = this.selectedGuestsByPlan[planCode];
     const childAges = (this.childAgesByPlan[planCode] || []).map(a => Number(a));
     const below5Count = childAges.filter(a => !isNaN(a) && a <= 5).length;
@@ -2509,6 +2606,7 @@ resetLastChangedAge(planCode: string) {
         const planName = plan.code;
         const planCodeName = plan.name;
         const nights = isDayTrip ? 1 : this.DiffDate;
+        const summaryNights = isDayTrip ? 1 : this.DiffDate;
         const planDescription = plan.description;
         const datewiseBreakdown =
           isDayTrip
@@ -2714,7 +2812,7 @@ resetLastChangedAge(planCode: string) {
           planName,
           adults: selectedGuests.adults,
           children: this.getChildCount(planCode) || 0,
-          nights,
+          nights: summaryNights,
           price,
           selectedRoomnumber,
           taxPercentageperroom,
@@ -2729,7 +2827,9 @@ resetLastChangedAge(planCode: string) {
           dailyRates: datewiseBreakdown,
           dayTrip: isDayTrip,
           checkInDate: this.booking.fromDate,
-          checkOutDate: isDayTrip ? this.booking.fromDate : this.booking.toDate,
+          checkOutDate: isDayTrip
+            ? this.addDaysToDateString(this.booking.fromDate, 1)
+            : this.booking.toDate,
         };
       
         summaryEntry.price = Number(
@@ -4003,11 +4103,7 @@ if (roomKey) {
       this.oneDayFromDate.year
     );
 
-    this.booking.toDate = this.getDateFormatYearMonthDay(
-      this.oneDayFromDate.day + 1,
-      this.oneDayFromDate.month,
-      this.oneDayFromDate.year
-    );
+    this.booking.toDate = this.addDaysToDateString(this.booking.fromDate, 1);
     this.booking.noOfRooms = this.noOfrooms;
     this.booking.noOfPersons = this.adults;
 
@@ -4016,7 +4112,7 @@ if (roomKey) {
     this.hotelBookingService
       .checkAvailabilityByProperty(
         this.booking.fromDate,
-        this.booking.toDate,
+        this.getAvailabilityCheckoutDate(),
         this.booking.noOfRooms,
         this.booking.noOfPersons,
         this.booking.propertyId
@@ -4024,6 +4120,7 @@ if (roomKey) {
       .subscribe(
         (response) => {
           this.loaderHotelBooking = false;
+          this.updateDayTripCheckoutAvailability(response?.body?.roomList || []);
           this.availableRooms = this.getFilteredDataBasedOnRoomRateOrder(response?.body?.roomList);
           this.availableRooms = this.availableRooms.filter(room =>
           room.ratesAndAvailabilityDtos?.length > 0 &&
@@ -4385,8 +4482,6 @@ onCheckOutClosed(): void {
         this.policies = this.businessUser.businessServiceDtoList.filter(
           (ele) => ele.name === 'Accommodation'
         );
-        this.cancellationPolicyData = this.accommodationData?.[0]?.cancellationPolicy;
-        this.buildCancellationRuleRows();
 
         this.amenitiesHighlights = [];
         this.propertyServiceListData = [];
@@ -4960,8 +5055,6 @@ onCheckOutClosed(): void {
           this.policies = this.businessUser.businessServiceDtoList.filter(
             (ele) => ele.name === 'Accommodation'
           );
-          this.cancellationPolicyData = this.accommodationData?.[0]?.cancellationPolicy;
-          this.buildCancellationRuleRows();
 
           this.updateTag();
           this.changeDetectorRefs.detectChanges();
@@ -5034,6 +5127,7 @@ onCheckOutClosed(): void {
 
           // ✅ Separate non-paid and paid services
           this.businessUser.propertyServicesList.forEach((ele) => {
+                            console.log('ele is',ele);
             if (Number(ele.servicePrice) === 0 || ele.servicePrice == null) {
               this.amenitiesHighlights.push(ele);
               this.propertyServiceListData.push(ele);
@@ -5147,39 +5241,6 @@ onCheckOutClosed(): void {
         // this.router.navigate(["/error"]);
       }
     );
-  }
-
-  private formatChargeLabel(type: string, value: number): string {
-    const normalized = String(type || '').toLowerCase();
-    const safeValue = Number(value || 0);
-    if (normalized === 'none') return 'No deduction';
-    if (normalized === 'full') return '100% deduction';
-    if (normalized === 'fixed') return `Fixed Rs. ${safeValue}`;
-    return `${safeValue}% deduction`;
-  }
-
-  private formatPolicyWindow(from: string, to: string): string {
-    const parse = (value: string) => {
-      const upper = String(value || '').toUpperCase();
-      if (upper === 'P-INF') return 'Anytime before 48h';
-      const match = upper.match(/^P-(\d+)H$/);
-      if (!match) return upper;
-      return `${match[1]}h`;
-    };
-    const fromText = parse(from);
-    const toText = parse(to);
-    if (String(from || '').toUpperCase() === 'P-INF') {
-      return `Before ${toText}`;
-    }
-    return `${fromText} to ${toText} before check-in`;
-  }
-
-  private buildCancellationRuleRows() {
-    const rules = this.cancellationPolicyData?.rules || [];
-    this.cancellationRuleRows = rules.map((rule: any) => ({
-      window: this.formatPolicyWindow(rule?.from, rule?.to),
-      chargeLabel: this.formatChargeLabel(rule?.charge_type, Number(rule?.charge_value || 0)),
-    }));
   }
   getBranch(id) {
     this.listingService.getBusinessBranch(id).subscribe((response) => {
@@ -5924,7 +5985,7 @@ this.token.savePropertyUrl(currentUrl);
         return {
           ...plan,
           selectedRoomnumber: 1,
-          nights: 1,
+          nights: 0,
           price: this.getPlanSubtotal(plan),
           taxPercentageperroom: Number(this.getPlanTaxTotal(plan).toFixed(2)),
           checkOutDate: plan.checkInDate || this.booking.fromDate,
@@ -6691,61 +6752,6 @@ this.token.savePropertyUrl(currentUrl);
     this.token.clearExtraPersonCharge();
     this.token.clearExtraChildCharge();
   }
-
-  private normalizeQueryDatesForRestriction(): void {
-    if (!this.checkinDay || !this.checkinMonth || !this.checkinYear) {
-      return;
-    }
-
-    const requestedCheckIn = new Date(
-      Number(this.checkinYear),
-      Number(this.checkinMonth) - 1,
-      Number(this.checkinDay)
-    );
-
-    if (Number.isNaN(requestedCheckIn.getTime())) {
-      return;
-    }
-
-    requestedCheckIn.setHours(0, 0, 0, 0);
-
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    let queryUpdated = false;
-
-    if (requestedCheckIn < today) {
-      this.checkinDay = today.getDate();
-      this.checkinMonth = today.getMonth() + 1;
-      this.checkinYear = today.getFullYear();
-      this.showPastDateRestrictionPopup = true;
-      queryUpdated = true;
-
-      setTimeout(() => {
-        this.showPastDateRestrictionPopup = false;
-        this.changeDetectorRefs.detectChanges();
-      }, 5000);
-    }
-
-    if (!this.nights || Number(this.nights) < 1) {
-      this.nights = 1;
-      queryUpdated = true;
-    }
-
-    if (queryUpdated) {
-      this.router.navigate([], {
-        relativeTo: this.acRoute,
-        queryParams: {
-          checkinDay: this.checkinDay,
-          checkinMonth: this.checkinMonth,
-          checkinYear: this.checkinYear,
-          nights: this.nights,
-        },
-        queryParamsHandling: 'merge',
-        replaceUrl: true,
-      });
-    }
-  }
   clicked() {
     this.checkAvailabilityDisabled = true;
   }
@@ -6823,7 +6829,7 @@ this.token.savePropertyUrl(currentUrl);
     this.hotelBookingService
       .checkAvailabilityByProperty(
         this.booking.fromDate,
-        this.booking.toDate,
+        this.getAvailabilityCheckoutDate(),
         this.booking.noOfRooms,
         this.booking.noOfPersons,
         this.booking.propertyId
@@ -6833,7 +6839,12 @@ this.token.savePropertyUrl(currentUrl);
           this.loaderHotelBooking = false;
 
           const roomListOne = response?.body?.roomList || [];
+          this.updateDayTripCheckoutAvailability(roomListOne);
           const sortedRoomsOne = this.getFilteredDataBasedOnRoomRateOrder(roomListOne);
+          const isSameDaySearch = this.isSameDayBookingSearch();
+          const availabilityNightCount = isSameDaySearch
+            ? 1
+            : Number(this.booking.noOfNights || 0);
 
           this.availableRooms = sortedRoomsOne.filter(room => {
                 const rates = room.ratesAndAvailabilityDtos;
@@ -6847,8 +6858,15 @@ this.token.savePropertyUrl(currentUrl);
 
                 const isStopSellOTA =
                   rates[0]?.stopSellOTA !== null && rates[0]?.stopSellOTA !== false;
+                const hasDayTripRate = this.hasDayTripRate(room);
+                const matchesDateType =
+                  rates.length === availabilityNightCount || hasDayTripRate;
+                const matchesDayTripSearch =
+                  !isSameDaySearch || hasDayTripRate;
+
                 return (
-                  rates.length === this.booking.noOfNights &&
+                  matchesDateType &&
+                  matchesDayTripSearch &&
                   !isStopSellOBE &&
                   !isStopSellOTA
                 );
@@ -6871,7 +6889,18 @@ this.token.savePropertyUrl(currentUrl);
           // );
           this.soldOutRooms = sortedRoomsOne.filter(room => {
               const rates = room.ratesAndAvailabilityDtos;
-              if (!rates || rates.length !== this.booking.noOfNights) {
+
+              const hasDayTripRate = this.hasDayTripRate(room);
+              const matchesDateType =
+                rates?.length === availabilityNightCount || hasDayTripRate;
+              const matchesDayTripSearch =
+                !isSameDaySearch || hasDayTripRate;
+
+              if (isSameDaySearch && (!matchesDateType || !matchesDayTripSearch)) {
+                return false;
+              }
+
+              if (!rates || !matchesDateType) {
                 return true;
               }
 
@@ -6977,6 +7006,7 @@ this.token.savePropertyUrl(currentUrl);
             this.availableRooms !== null &&
             this.availableRooms !== undefined
           ) {
+            this.dayOneTrip = this.availableRooms.some((room) => this.hasDayTripRate(room));
             this.availableRooms.forEach((room) => {
               room?.roomFacilities?.forEach((element) => {
                 if (element.name == 'Bar') {
@@ -7001,11 +7031,6 @@ this.token.savePropertyUrl(currentUrl);
                   this.tv = element;
                 }
               });
-              if (room.dayTrip == true) {
-                this.dayOneTrip = true;
-              } else {
-                this.dayOneTrip = false;
-              }
             });
           }
           this.roomWithGHCPlan = [];
@@ -7289,6 +7314,11 @@ isPlanSelected(planName: string): boolean {
     const hasOneDayPlan = room?.ratesAndAvailabilityDtos?.some((rate: any) =>
       rate?.roomRatePlans?.some((plan: any) => plan?.onedayPlan === true)
     );
+    const hasDayTripPlan = this.hasDayTripRate(room);
+
+    if (!this.isSameDayBookingSearch() && hasDayTripPlan) {
+      return true;
+    }
 
     return (
       Number(this.booking?.noOfNights) > 1 &&
@@ -7530,9 +7560,10 @@ getTotalTaxPrice(): number {
       }
       this.fromDate = date;
       this.toDate = this.calendar.getNext(date, 'd', 1);
-      this.minDateForCheckOut = this.toDate; // Disable dates before the auto-selected checkout
+      this.minDateForCheckOut = this.getCheckoutMinDate();
     } else if (type === 'checkout') {
-      if (this.fromDate && date.after(this.fromDate)) {
+      const minCheckoutDate = this.getCheckoutMinDate();
+      if (date.equals(minCheckoutDate) || date.after(minCheckoutDate)) {
         this.toDate = date;
       }
     }
@@ -7666,7 +7697,7 @@ getTotalTaxPrice(): number {
 
   expandedRooms: string[] = [];
 
-isPlanVisible(filteredPlans: any[], roomName: string) {
+isPlanVisible(filteredPlans: any[], roomName: string, room?: any) {
   // If websiteBookingEngine is true, remove "Economy" plans first
   this.websiteUrlBookingEngine;
   let plans = this.websiteUrlBookingEngine
@@ -7731,6 +7762,7 @@ isPlanVisible(filteredPlans: any[], roomName: string) {
       .subscribe(
         (response) => {
           this.loaderHotelBooking = false;
+          this.updateDayTripCheckoutAvailability(response?.body?.roomList || []);
           this.availableRooms = this.getFilteredDataBasedOnRoomRateOrder(response?.body?.roomList);
                     this.availableRooms = this.availableRooms.filter(room =>
           room.ratesAndAvailabilityDtos?.length > 0 &&
@@ -7752,6 +7784,7 @@ isPlanVisible(filteredPlans: any[], roomName: string) {
             this.availableRooms !== null &&
             this.availableRooms !== undefined
           ) {
+            this.dayOneTrip = this.availableRooms.some((room) => this.hasDayTripRate(room));
             this.availableRooms.forEach((room) => {
               room?.ratesAndAvailabilityDtos?.forEach((ele) => {
                 ele.roomRatePlans?.forEach((e) => {
@@ -7794,11 +7827,6 @@ isPlanVisible(filteredPlans: any[], roomName: string) {
                   this.tv = element;
                 }
               });
-              if (room.dayTrip == true) {
-                this.dayOneTrip = true;
-              } else {
-                this.dayOneTrip = false;
-              }
             });
           }
           this.roomWithGHCPlan = [];

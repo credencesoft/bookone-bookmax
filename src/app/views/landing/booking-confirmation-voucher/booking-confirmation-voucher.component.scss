@@ -522,6 +522,27 @@
   padding: 10px
 }
 
+.booking-selection-dates {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 6px;
+  color: #4b5563;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.booking-selection-dates b {
+  color: #111827;
+  font-weight: 600;
+}
+
+.booking-id-values {
+  flex: 1;
+  text-align: right;
+  word-break: break-word;
+}
+
 .booking-summary-footer {
   margin-top: 10px;
   text-align: right;

@@ -33,14 +33,6 @@ export class BookingConfirmationVoucherComponent {
   isReadMore: any;
   accommodationService: any;
   roomLabel: string = 'Room';
-  cancellationPolicyData: any;
-  cancellationRuleRows: { window: string; chargeLabel: string }[] = [];
-  cancellationEstimate: {
-    deductionAmount: number;
-    refundableAmount: number;
-    dueAmount: number;
-    chargeLabel: string;
-  } | null = null;
 
   // ✅ NEW: Calculation and payment plan tracking properties
   couponDiscountPercentage: number = 0;
@@ -102,9 +94,6 @@ export class BookingConfirmationVoucherComponent {
     this.accommodationData = this.businessUser.businessServiceDtoList?.filter(
       (entry) => entry.name === 'Accommodation',
     );
-    this.cancellationPolicyData = this.accommodationData?.[0]?.cancellationPolicy;
-    this.buildCancellationRuleRows();
-    this.computeCancellationEstimate();
     this.accommodationData.forEach((element) => {
       this.serviceChargePercentage = element.serviceChargePercentage;
     });
@@ -351,9 +340,6 @@ export class BookingConfirmationVoucherComponent {
         this.policies = this.businessUser.businessServiceDtoList.filter(
           (ele) => ele.name === 'Accommodation',
         );
-        this.cancellationPolicyData = this.policies?.[0]?.cancellationPolicy;
-        this.buildCancellationRuleRows();
-        this.computeCancellationEstimate();
         this.calculateServiceHours();
         this.businessUser?.socialMediaLinks.forEach((element) => {
           this.socialmedialist = element;
@@ -701,16 +687,12 @@ export class BookingConfirmationVoucherComponent {
         service?.netAmount ??
         0,
     );
-    const unitPrice = this.toSafeAmount(
-      service?.unitPrice ?? servicePrice / quantity,
-    );
     const taxAmount = this.toSafeAmount(service?.taxAmount ?? 0);
 
     return {
       id: service?.id,
       name: service?.name || service?.serviceName || service?.serviceType || 'Service',
       quantity,
-      unitPrice,
       servicePrice,
       taxAmount,
     };
@@ -731,14 +713,12 @@ export class BookingConfirmationVoucherComponent {
         current.taxAmount = this.toSafeAmount(
           current.taxAmount + this.toSafeAmount(addon?.taxAmount),
         );
-        current.unitPrice = this.getAddOnBasePrice(current);
         return;
       }
 
       groupedAddOns.set(key, {
         ...addon,
         quantity: this.toSafeQuantity(addon?.quantity),
-        unitPrice: this.toSafeAmount(addon?.unitPrice),
         servicePrice: this.toSafeAmount(addon?.servicePrice),
         taxAmount: this.toSafeAmount(addon?.taxAmount),
       });
@@ -767,17 +747,6 @@ export class BookingConfirmationVoucherComponent {
     return Number.isFinite(num) && num > 0 ? num : 1;
   }
 
-  getAddOnBasePrice(addon: any): number {
-    const unitPrice = this.toSafeAmount(addon?.unitPrice);
-    if (unitPrice > 0) {
-      return unitPrice;
-    }
-
-    return this.toSafeAmount(
-      this.toSafeAmount(addon?.servicePrice) / this.toSafeQuantity(addon?.quantity),
-    );
-  }
-
   private toSafePercent(value: any): number {
     const num = Number(value);
     return isFinite(num) && num >= 0 && num <= 100 ? num : 0;
@@ -793,6 +762,10 @@ export class BookingConfirmationVoucherComponent {
 
   getBookingNightsLabel(booking: any): string | number {
     return this.isDayTripBooking(booking) ? 'Single Day' : booking?.noOfNights;
+  }
+
+  getBookingDisplayCheckoutDate(booking: any): any {
+    return this.isDayTripBooking(booking) ? booking?.fromDate : booking?.toDate;
   }
 
   getBookingRoomCountLabel(booking: any): string | number {
@@ -1135,121 +1108,5 @@ export class BookingConfirmationVoucherComponent {
         },
       });
     });
-  }
-
-  private parsePolicyDurationToHours(value: string): number {
-    const upper = String(value || '').toUpperCase();
-    if (upper === 'P-INF') return Number.POSITIVE_INFINITY;
-    const match = upper.match(/^P-(\d+)H$/);
-    return match ? Number(match[1]) : 0;
-  }
-
-  private formatChargeLabel(type: string, value: number): string {
-    const normalized = String(type || '').toLowerCase();
-    const safeValue = Number(value || 0);
-    if (normalized === 'none') return 'No deduction';
-    if (normalized === 'full') return '100% deduction';
-    if (normalized === 'fixed') return `Fixed Rs. ${safeValue}`;
-    return `${safeValue}% deduction`;
-  }
-
-  private formatPolicyWindow(from: string, to: string): string {
-    const parse = (value: string) => {
-      const upper = String(value || '').toUpperCase();
-      if (upper === 'P-INF') return 'Anytime';
-      const match = upper.match(/^P-(\d+)H$/);
-      return match ? `${match[1]}h` : upper;
-    };
-    const fromText = parse(from);
-    const toText = parse(to);
-    if (String(from || '').toUpperCase() === 'P-INF') return `Before ${toText}`;
-    return `${fromText} to ${toText} before check-in`;
-  }
-
-  private buildCancellationRuleRows() {
-    const rules = this.cancellationPolicyData?.rules || [];
-    this.cancellationRuleRows = rules.map((rule: any) => ({
-      window: this.formatPolicyWindow(rule?.from, rule?.to),
-      chargeLabel: this.formatChargeLabel(rule?.charge_type, Number(rule?.charge_value || 0)),
-    }));
-  }
-
-  private calculateCancellationDeduction(baseAmount: number, chargeType: string, chargeValue: number): number {
-    const safeBase = Math.max(0, Number(baseAmount || 0));
-    const normalized = String(chargeType || '').toLowerCase();
-    const value = Number(chargeValue || 0);
-    if (normalized === 'none') return 0;
-    if (normalized === 'full') return safeBase;
-    if (normalized === 'fixed') return Math.min(value, safeBase);
-    return Math.min((safeBase * Math.max(0, value)) / 100, safeBase);
-  }
-
-  private getCancellationChargeAmount(): number {
-    const booking = this.bookingsResponseList?.[0] || {};
-    const bookingSummary = this.bookingSummaryDetails || {};
-    const bookingCommission = this.toSafeAmount(
-      booking?.bookingCommissionAmount ??
-        booking?.commissionAmount ??
-        bookingSummary?.bookingCommissionAmount ??
-        bookingSummary?.commissionAmount ??
-        0,
-    );
-
-    if (bookingCommission > 0) {
-      return bookingCommission;
-    }
-
-    return this.toSafeAmount(this.getDisplayedConvenienceFee());
-  }
-
-  private computeCancellationEstimate() {
-    const policy = this.cancellationPolicyData;
-    const checkInDate = this.bookingSummaryDetails?.fromDate || this.bookingsResponseList?.[0]?.fromDate;
-    const bookingTotalAmount = this.toSafeAmount(
-      this.getNewGrandTotal() ||
-      this.grandTotal ||
-      this.bookingSummaryDetails?.grandTotal ||
-      this.bookingSummaryDetails?.totalAmount ||
-      this.bookingsResponseList?.[0]?.totalAmount ||
-      0,
-    );
-    const cancellationChargeAmount = this.getCancellationChargeAmount();
-    const cancellationBaseAmount = Math.max(0, bookingTotalAmount - cancellationChargeAmount);
-
-    if (!policy?.enabled || !checkInDate || cancellationBaseAmount <= 0) {
-      this.cancellationEstimate = null;
-      return;
-    }
-
-    const serviceStart = new Date(checkInDate);
-    if (Number.isNaN(serviceStart.getTime())) {
-      this.cancellationEstimate = null;
-      return;
-    }
-
-    const hoursBeforeStart = Math.max(0, (serviceStart.getTime() - Date.now()) / (1000 * 60 * 60));
-    const matchedRule = (policy?.rules || []).find((rule: any) => {
-      const fromH = this.parsePolicyDurationToHours(rule?.from);
-      const toH = this.parsePolicyDurationToHours(rule?.to);
-      const maxH = Number.isFinite(fromH) ? fromH : Number.POSITIVE_INFINITY;
-      return hoursBeforeStart <= maxH && hoursBeforeStart >= toH;
-    });
-
-    const chargeType = matchedRule?.charge_type || policy?.no_show_charge_type || 'none';
-    const chargeValue = Number(matchedRule?.charge_value ?? policy?.no_show_charge_value ?? 0);
-    const penaltyAmount = this.calculateCancellationDeduction(cancellationBaseAmount, chargeType, chargeValue);
-    const paidAmount = Math.min(
-      cancellationBaseAmount,
-      this.toSafeAmount(this.getNewPayNowAmount() || cancellationBaseAmount),
-    );
-    const deductionAmount = Math.min(penaltyAmount, paidAmount);
-    const refundableAmount = Math.max(paidAmount - penaltyAmount, 0);
-    const dueAmount = Math.max(penaltyAmount - paidAmount, 0);
-    this.cancellationEstimate = {
-      deductionAmount,
-      refundableAmount,
-      dueAmount,
-      chargeLabel: this.formatChargeLabel(chargeType, chargeValue),
-    };
   }
 }
