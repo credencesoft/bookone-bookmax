@@ -1,4 +1,4 @@
-<div [ngClass]="{
+﻿<div [ngClass]="{
     'background-image-website': [3063, 3424, 3425].includes(businessUser?.id),
   }">
   <app-Header-Listingdetailsone [businessUser]="businessUser">
@@ -37,8 +37,8 @@
               Your booking is confirmed.
             </div>
             <div style="color: #615d5d; font-weight: 600; font-size: 13px">
-              We’ve sent your booking details to your mail. <br />
-              Didn’t receive it yet? It might be in your spam folder — or simply
+              Weâ€™ve sent your booking details to your mail. <br />
+              Didnâ€™t receive it yet? It might be in your spam folder â€” or simply
               check WhatsApp.
             </div>
             <div style="display: flex; gap: 20px; margin-top: 20px">
@@ -419,7 +419,7 @@
                   </div>
                 </div>
 
-                <!-- ✅ NEW: Grand Total -->
+                <!-- âœ… NEW: Grand Total -->
                 <div class="booking-summary-total total-borders" style="background-color: #eff6ff">
                   <div class="d-flex justify-content-between" style="font-weight: 700; font-size: 1.1rem">
                     <div>Grand Total:</div>
@@ -427,7 +427,7 @@
                   </div>
                 </div>
 
-                <!-- ✅ NEW: Advance plan indicator and payment breakdown -->
+                <!-- âœ… NEW: Advance plan indicator and payment breakdown -->
                 <div *ngIf="advancePaymentPercentage > 0" class="booking-summary-total total-borders"
                   style="background-color: #fffcdf; border: 1px solid #fef08a">
                   <div class="d-flex justify-content-between">
@@ -445,7 +445,7 @@
                   </div>
                 </div>
 
-                <!-- ✅ UPDATED: Payment status summary -->
+                <!-- âœ… UPDATED: Payment status summary -->
                 <!-- <div *ngIf="advancePaymentPercentage > 0" class="booking-summary-total total-borders due-borders">
                   <div class="d-flex justify-content-between">
                     <div style="font-weight: 700">Amount Paid (Pay Now):</div>
@@ -506,7 +506,7 @@
             <div class="cancellation-rules-card-voucher" *ngIf="cancellationRuleRows?.length">
               <h5>Cancellation Rules</h5>
               <p class="cancellation-rules-subtitle-voucher" *ngIf="cancellationEstimate">
-                If cancelled now, estimated deduction:
+                Rule is applied on (Booking Amount - Convenience Fee). Total estimated deduction (including non-refundable convenience fee):
                 <strong>{{ cancellationEstimate.deductionAmount | currency: currency : 'symbol' : '1.2-2' }}</strong>
                 ({{ cancellationEstimate.chargeLabel }}), refundable:
                 <strong>{{ cancellationEstimate.refundableAmount | currency: currency : 'symbol' : '1.2-2' }}</strong>.
@@ -573,8 +573,8 @@
               Your booking is confirmed.
             </div>
             <div style="color: #615d5d; font-weight: 600; font-size: 13px">
-              We’ve sent your booking details to your mail. <br />
-              Didn’t receive it yet? It might be in your spam folder — or simply
+              Weâ€™ve sent your booking details to your mail. <br />
+              Didnâ€™t receive it yet? It might be in your spam folder â€” or simply
               check WhatsApp.
             </div>
             <div class="hotel-card-unique d-flex flex-row" style="flex-wrap: wrap" *ngIf="businessUser?.name">
@@ -919,13 +919,13 @@
                   </table>
                 </div>
               </div>
-              <!-- ✅ NEW: Grand Total -->
+              <!-- âœ… NEW: Grand Total -->
               <div class="d-flex justify-content-between"
                 style="font-weight: 700; margin-top: 8px; padding-top: 8px; border-top: 1px solid #e5e7eb; color: #1465cf">
                 <div>Grand Total:</div>
                 <div>{{ getNewGrandTotal() | currency: currency : 'symbol' : '1.2-2' }}</div>
               </div>
-              <!-- ✅ NEW: Advance plan indicator -->
+              <!-- âœ… NEW: Advance plan indicator -->
               <div *ngIf="advancePaymentPercentage > 0"
                 style="margin-top: 8px; padding: 8px; background-color: #fffcdf; border: 1px solid #fef08a; border-radius: 4px">
                 <div class="d-flex justify-content-between" style="font-weight: 700; color: #b45309">
@@ -941,7 +941,7 @@
                   </div>
                 </div>
               </div>
-              <!-- ✅ NEW: Payment status summary -->
+              <!-- âœ… NEW: Payment status summary -->
               <!-- <div *ngIf="advancePaymentPercentage > 0" style="margin-top: 8px; padding: 8px; background-color: #f0fdf4; border: 1px solid #dcfce7">
                 <div class="d-flex justify-content-between" style="font-weight: 600">
                   <div style="font-size: 0.9rem">Amount Paid (Now):</div>
@@ -952,7 +952,7 @@
                   <div>{{ getNewBalanceAtCheckIn() | currency: currency : 'symbol' : '1.2-2' }}</div>
                 </div>
               </div> -->
-              <!-- ✅ FALLBACK: Full payment due -->
+              <!-- âœ… FALLBACK: Full payment due -->
               <div *ngIf="advancePaymentPercentage === 0" class="d-flex justify-content-between"
                 style="font-weight: 600; color: #dc2626; margin-top: 8px; padding-top: 8px; border-top: 1px solid #e5e7eb">
                 <div>Total Due (Now):</div>
@@ -1001,7 +1001,7 @@
           <div class="cancellation-rules-card-voucher" *ngIf="cancellationRuleRows?.length">
             <h5>Cancellation Rules</h5>
             <p class="cancellation-rules-subtitle-voucher" *ngIf="cancellationEstimate">
-              If cancelled now, estimated deduction:
+              Rule is applied on (Booking Amount - Convenience Fee). Total estimated deduction (including non-refundable convenience fee):
               <strong>{{ cancellationEstimate.deductionAmount | currency: currency : 'symbol' : '1.2-2' }}</strong>
               ({{ cancellationEstimate.chargeLabel }}), refundable:
               <strong>{{ cancellationEstimate.refundableAmount | currency: currency : 'symbol' : '1.2-2' }}</strong>.
@@ -1039,3 +1039,4 @@
     </div>
   </div>
 </div>
+
