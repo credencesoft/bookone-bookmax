@@ -407,9 +407,9 @@ promoSelected = false;
   isSuccess: boolean;
   headerTitle: string;
   bodyMessage: string;
-  showPastDateRestrictionPopup = false;
-  pastDateRestrictionMessage =
-    'Past check-in dates are not available. We have updated your stay to the next available date. Please review the revised dates before continuing.';
+  // showPastDateRestrictionPopup = false;
+  // pastDateRestrictionMessage =
+  //   'Past check-in dates are not available. We have updated your stay to the next available date. Please review the revised dates before continuing.';
   hasPlan = false;
   customerReviews: Review[];
   sideMinderUrl: string;
