@@ -86,6 +86,7 @@ interface Step {
 })
 export class BookingComponent implements OnInit {
   bookingContextMissing = false;
+  invalidBookingDatesBlocked = false;
   bookingContextMessage =
     'Your booking session has expired. Please reselect your room to continue.';
   PropertyUrl: string;
@@ -318,6 +319,7 @@ export class BookingComponent implements OnInit {
   soldOutRooms: any;
   availableRoomsOne: any;
   availableRoomIdSet = new Set<number>();
+  private roomDayTripByRoomId = new Map<number, boolean>();
   soldOutSectionRef!: HTMLElement;
   availabilityLoaded = false;
   showModal = false;
@@ -370,6 +372,7 @@ export class BookingComponent implements OnInit {
 
   // ✅ Phase 4: Add-on Services Tracking
   addOnServices: any[] = [];                    // Available add-ons to display
+  expandedAddOnDescriptions: { [key: number]: boolean } = {};
   selectedAddOns: any[] = [];                   // User-selected add-ons
   selectedAddOnNames: string[] = [];            // Track selected add-on names
   isAddOnServiceLoading: boolean = false;
@@ -477,6 +480,10 @@ export class BookingComponent implements OnInit {
       this.adults = this.booking.noOfPersons;
       this.children = this.booking.noOfChildren;
       this.noOfrooms = this.booking.noOfRooms;
+    }
+    if (this.hasPastCheckInDate(this.booking?.fromDate)) {
+      this.handleInvalidStayDates();
+      return;
     }
     if (this.token.getBookingCity() !== null) {
       this.bookingCity = this.token.getBookingCity();
@@ -708,6 +715,41 @@ export class BookingComponent implements OnInit {
     setTimeout(() => {
       this.redirectToPropertyPage();
     }, 1500);
+  }
+
+  private hasPastCheckInDate(rawDate: any): boolean {
+    if (!rawDate) {
+      return false;
+    }
+
+    const checkInDate = new Date(rawDate);
+    if (Number.isNaN(checkInDate.getTime())) {
+      return false;
+    }
+
+    checkInDate.setHours(0, 0, 0, 0);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    return checkInDate < today;
+  }
+
+  private handleInvalidStayDates(): void {
+    if (this.invalidBookingDatesBlocked) {
+      return;
+    }
+
+    this.invalidBookingDatesBlocked = true;
+    this.bookingContextMissing = true;
+    this.bookingContextMessage =
+      'Past check-in dates are no longer available. Please choose current or future dates to continue with your booking.';
+    this.showAlert = true;
+    this.alertType = 'warning';
+    this.headerTitle = 'Dates updated';
+    this.bodyMessage = this.bookingContextMessage;
+    sessionStorage.removeItem('bookingSummaryDetails');
+    sessionStorage.removeItem('bookingSummary');
+    this.token.clearBookingDataObj();
   }
 
   private redirectToPropertyPage(): void {
@@ -2706,6 +2748,7 @@ export class BookingComponent implements OnInit {
     enquiryForm.enquiryType = 'Pay Now';
     enquiryForm.noOfExtraPerson = plan.extraCountAdult;
     enquiryForm.roomId = plan.roomId;
+    enquiryForm.dayTrip = this.isDayTripRoom(plan);
     if (this.token?.getProperty()?.paymentGateway === 'PayU') {
       enquiryForm.modeOfPayment = 'PayU';
     }
@@ -2946,6 +2989,26 @@ export class BookingComponent implements OnInit {
       ),
     );
   }
+  private updateRoomDayTripLookup(roomList: any[]): void {
+    this.roomDayTripByRoomId.clear();
+
+    (roomList || []).forEach((room) => {
+      const roomId = Number(room?.id ?? room?.roomId);
+      if (Number.isFinite(roomId)) {
+        this.roomDayTripByRoomId.set(roomId, room?.dayTrip === true);
+      }
+    });
+  }
+
+  private isDayTripRoom(plan: any): boolean {
+    const roomId = Number(plan?.roomId ?? plan?.id);
+
+    if (Number.isFinite(roomId) && this.roomDayTripByRoomId.has(roomId)) {
+      return this.roomDayTripByRoomId.get(roomId) === true;
+    }
+
+    return plan?.dayTrip === true || this.booking?.dayTrip === true;
+  }
 
   onEditBooking() {
     this.PropertyUrl = this.token.getPropertyUrl();
@@ -2989,6 +3052,7 @@ export class BookingComponent implements OnInit {
           (response) => {
             const roomListOne = response.body.roomList || [];
             const availabilityNightCount = this.getAvailabilityNightCount();
+            this.updateRoomDayTripLookup(roomListOne);
 
             const sortedRoomsOne = roomListOne.sort(
               (a: any, b: any) => b.roomOnlyPrice - a.roomOnlyPrice,
@@ -8297,7 +8361,7 @@ export class BookingComponent implements OnInit {
     booking.createdDate = new Date().toISOString();
     booking.propertyId = this.booking.propertyId;
     booking.gstAmount = plan.taxPercentageperroom;
-    booking.dayTrip = this.isDayTripPlan(plan);
+    booking.dayTrip = this.isDayTripRoom(plan);
     booking.discountPercentage = 0;
     booking.discountAmount = 0;
     booking.extraChildCharge = this.getPlanStayChildExtraCharge(plan);
@@ -8503,6 +8567,7 @@ export class BookingComponent implements OnInit {
     enquiryForm.noOfPerson = plan.adults;
     enquiryForm.noOfExtraPerson = plan.extraCountAdult;
     enquiryForm.roomId = plan.roomId;
+    enquiryForm.dayTrip = this.isDayTripRoom(plan);
     enquiryForm.payableAmount = plan.price + plan.taxPercentageperroom;
     enquiryForm.roomName = plan.roomName;
     enquiryForm.extraPersonCharge = this.getPlanStayAdultExtraCharge(plan);
@@ -10906,6 +10971,7 @@ export class BookingComponent implements OnInit {
     enquiryForm.noOfPerson = plan.adults;
     enquiryForm.noOfExtraPerson = plan.extraCountAdult;
     enquiryForm.roomId = plan.roomId;
+    enquiryForm.dayTrip = this.isDayTripRoom(plan);
     if (this.groupBookingId) {
       enquiryForm.groupEnquiryId = this.groupBookingId;
     }
@@ -12625,20 +12691,29 @@ sendWhatsappMessageToPropertyOwner() {
     );
 
     if (index > -1) {
-      // Remove from selection
       this.selectedAddOns.splice(index, 1);
       const nameIndex = this.selectedAddOnNames.findIndex(n => n === service.name);
       if (nameIndex > -1) {
         this.selectedAddOnNames.splice(nameIndex, 1);
       }
     } else {
-      // Add to selection
-      this.selectedAddOns.push(service);
+      const quantity = this.isItemWiseAddOn(service)
+        ? Math.max(1, this.getSelectedAddOnQuantity(service))
+        : (service?.quantity ?? service?.count ?? 1);
+
+      this.selectedAddOns.push({
+        ...service,
+        quantity,
+        count: quantity,
+      });
       this.selectedAddOnNames.push(service.name);
     }
-    // Recalculate totals on selection change
-    this.calculateAddOnsTotals();
-    this.syncSelectedAddOnsToCheckoutState();
+    this.recalculateAddOnSelectionState();
+  }
+
+  toggleAddOnDescription(index: number, event: Event): void {
+    event.stopPropagation();
+    this.expandedAddOnDescriptions[index] = !this.expandedAddOnDescriptions[index];
   }
 
   /**
@@ -12650,6 +12725,73 @@ sendWhatsappMessageToPropertyOwner() {
       (selectedService) => this.getAddOnSelectionKey(selectedService) === serviceKey,
     );
   }
+
+  private getSelectedAddOn(service: any): any | undefined {
+    const serviceKey = this.getAddOnSelectionKey(service);
+    return this.selectedAddOns.find(
+      (selectedService) => this.getAddOnSelectionKey(selectedService) === serviceKey,
+    );
+  }
+
+  isItemWiseAddOn(addon: any): boolean {
+    return this.getAddOnChargeBasis(addon) === 'peritem';
+  }
+
+  getSelectedAddOnQuantity(addon: any): number {
+    const selectedAddOn = this.getSelectedAddOn(addon);
+    if (this.isItemWiseAddOn(addon) && !selectedAddOn) {
+      return 0;
+    }
+
+    const quantity = selectedAddOn?.quantity ?? selectedAddOn?.count ?? addon?.quantity ?? addon?.count ?? 1;
+    return Math.max(1, Math.floor(Number(quantity) || 1));
+  }
+
+  increaseAddOnQuantity(addon: any, event?: Event): void {
+    event?.stopPropagation();
+    const selectedAddOn = this.getSelectedAddOn(addon);
+
+    if (!selectedAddOn) {
+      this.selectedAddOns.push({
+        ...addon,
+        quantity: 1,
+        count: 1,
+      });
+      this.selectedAddOnNames.push(addon.name);
+    } else {
+      const quantity = this.getSelectedAddOnQuantity(addon) + 1;
+      selectedAddOn.quantity = quantity;
+      selectedAddOn.count = quantity;
+    }
+
+    this.recalculateAddOnSelectionState();
+  }
+
+  decreaseAddOnQuantity(addon: any, event?: Event): void {
+    event?.stopPropagation();
+    const selectedAddOn = this.getSelectedAddOn(addon);
+
+    if (!selectedAddOn) {
+      return;
+    }
+
+    const quantity = this.getSelectedAddOnQuantity(addon);
+    if (quantity <= 1) {
+      this.toggleAddOnSelection(addon);
+      return;
+    }
+
+    selectedAddOn.quantity = quantity - 1;
+    selectedAddOn.count = quantity - 1;
+    this.recalculateAddOnSelectionState();
+  }
+
+  // private recalculateAddOnSelectionState(): void {
+  //   this.calculateAddOnsTotals();
+  //   this.syncSelectedAddOnsToCheckoutState();
+  //   this.calculateMultiDiscountAndTax();
+  //   this.changeDetectorRefs.markForCheck();
+  // }
 
   private getAddOnSelectionKey(service: any): string {
     if (service?.id !== null && service?.id !== undefined) {
@@ -12761,17 +12903,25 @@ sendWhatsappMessageToPropertyOwner() {
   }
 
   private syncSelectedAddOnsToCheckoutState(): void {
-    const normalizedAddOns = (this.selectedAddOns || []).map((service) => ({
-      ...service,
-      quantity: service?.quantity ?? service?.count ?? 1,
-      count: service?.count ?? service?.quantity ?? 1,
-      afterTaxAmount:
-        service?.afterTaxAmount ??
-        ((Number(service?.servicePrice) || 0) + (Number(service?.taxAmount) || 0)),
-      netAmount: service?.netAmount ?? service?.servicePrice ?? 0,
-      servicePrice: service?.servicePrice ?? service?.beforeTaxAmount ?? 0,
-      sourceChannel: service?.sourceChannel ?? this.booking?.externalSite ?? 'BookMax',
-    }));
+    const normalizedAddOns = (this.selectedAddOns || []).map((service) => {
+      const quantity = this.getSelectedAddOnQuantity(service);
+      const servicePrice = this.toSafeAmount(service?.servicePrice ?? service?.beforeTaxAmount ?? 0);
+      const taxAmount = this.toSafeAmount(service?.taxAmount);
+      const afterTaxAmount = this.toSafeAmount(servicePrice + taxAmount);
+
+      return {
+        ...service,
+        quantity,
+        count: quantity,
+        beforeTaxAmount: servicePrice,
+        taxAmount,
+        afterTaxAmount,
+        netAmount: afterTaxAmount,
+        selectedTotalAmount: this.toSafeAmount(afterTaxAmount * quantity),
+        servicePrice,
+        sourceChannel: service?.sourceChannel ?? this.booking?.externalSite ?? 'BookMax',
+      };
+    });
 
     this.token.saveSelectedServices(normalizedAddOns);
   }
@@ -12809,61 +12959,61 @@ sendWhatsappMessageToPropertyOwner() {
     return this.toSafeAmount((servicePrice + taxAmount) * quantity);
   }
 
-  getSelectedAddOnQuantity(addon: any): number {
-    const selectedAddOn = this.getSelectedAddOn(addon);
-    if (this.isItemWiseAddOn(addon) && !selectedAddOn) {
-      return 0;
-    }
+  // getSelectedAddOnQuantity(addon: any): number {
+  //   const selectedAddOn = this.getSelectedAddOn(addon);
+  //   if (this.isItemWiseAddOn(addon) && !selectedAddOn) {
+  //     return 0;
+  //   }
 
-    const quantity = selectedAddOn?.quantity ?? selectedAddOn?.count ?? addon?.quantity ?? addon?.count ?? 1;
-    return Math.max(1, Math.floor(Number(quantity) || 1));
-  }
+  //   const quantity = selectedAddOn?.quantity ?? selectedAddOn?.count ?? addon?.quantity ?? addon?.count ?? 1;
+  //   return Math.max(1, Math.floor(Number(quantity) || 1));
+  // }
 
-  private getSelectedAddOn(service: any): any | undefined {
-    const serviceKey = this.getAddOnSelectionKey(service);
-    return this.selectedAddOns.find(
-      (selectedService) => this.getAddOnSelectionKey(selectedService) === serviceKey,
-    );
-  }
+  // private getSelectedAddOn(service: any): any | undefined {
+  //   const serviceKey = this.getAddOnSelectionKey(service);
+  //   return this.selectedAddOns.find(
+  //     (selectedService) => this.getAddOnSelectionKey(selectedService) === serviceKey,
+  //   );
+  // }
 
-  increaseAddOnQuantity(addon: any, event?: Event): void {
-    event?.stopPropagation();
-    const selectedAddOn = this.getSelectedAddOn(addon);
+  // increaseAddOnQuantity(addon: any, event?: Event): void {
+  //   event?.stopPropagation();
+  //   const selectedAddOn = this.getSelectedAddOn(addon);
 
-    if (!selectedAddOn) {
-      this.selectedAddOns.push({
-        ...addon,
-        quantity: 1,
-        count: 1,
-      });
-      this.selectedAddOnNames.push(addon.name);
-    } else {
-      const quantity = this.getSelectedAddOnQuantity(addon) + 1;
-      selectedAddOn.quantity = quantity;
-      selectedAddOn.count = quantity;
-    }
+  //   if (!selectedAddOn) {
+  //     this.selectedAddOns.push({
+  //       ...addon,
+  //       quantity: 1,
+  //       count: 1,
+  //     });
+  //     this.selectedAddOnNames.push(addon.name);
+  //   } else {
+  //     const quantity = this.getSelectedAddOnQuantity(addon) + 1;
+  //     selectedAddOn.quantity = quantity;
+  //     selectedAddOn.count = quantity;
+  //   }
 
-    this.recalculateAddOnSelectionState();
-  }
+  //   this.recalculateAddOnSelectionState();
+  // }
 
-  decreaseAddOnQuantity(addon: any, event?: Event): void {
-    event?.stopPropagation();
-    const selectedAddOn = this.getSelectedAddOn(addon);
+  // decreaseAddOnQuantity(addon: any, event?: Event): void {
+  //   event?.stopPropagation();
+  //   const selectedAddOn = this.getSelectedAddOn(addon);
 
-    if (!selectedAddOn) {
-      return;
-    }
+  //   if (!selectedAddOn) {
+  //     return;
+  //   }
 
-    const quantity = this.getSelectedAddOnQuantity(addon);
-    if (quantity <= 1) {
-      this.toggleAddOnSelection(addon);
-      return;
-    }
+  //   const quantity = this.getSelectedAddOnQuantity(addon);
+  //   if (quantity <= 1) {
+  //     this.toggleAddOnSelection(addon);
+  //     return;
+  //   }
 
-    selectedAddOn.quantity = quantity - 1;
-    selectedAddOn.count = quantity - 1;
-    this.recalculateAddOnSelectionState();
-  }
+  //   selectedAddOn.quantity = quantity - 1;
+  //   selectedAddOn.count = quantity - 1;
+  //   this.recalculateAddOnSelectionState();
+  // }
 
    private recalculateAddOnSelectionState(): void {
     this.calculateAddOnsTotals();
@@ -12950,6 +13100,10 @@ sendWhatsappMessageToPropertyOwner() {
       return 'perbooking';
     }
 
+    if (['itemwise', 'peritem', 'item', 'quantitywise', 'perquantity'].includes(chargeBasis)) {
+      return 'peritem';
+    }
+
     return chargeBasis;
   }
 
@@ -12957,6 +13111,8 @@ sendWhatsappMessageToPropertyOwner() {
     switch (this.getAddOnChargeBasis(addon)) {
       case 'perbooking':
         return this.isFirstSelectedPlan(plan) ? 1 : 0;
+      case 'peritem':
+        return this.isFirstSelectedPlan(plan) ? this.getSelectedAddOnQuantity(addon) : 0;
       case 'perpax':
       case 'pernight':
         return Math.max(1, this.toSafeAmount(plan?.adults || this.booking?.noOfPersons || 1));
@@ -12970,6 +13126,8 @@ sendWhatsappMessageToPropertyOwner() {
     switch (this.getAddOnChargeBasis(addon)) {
       case 'perbooking':
         return 1;
+      case 'peritem':
+        return this.getSelectedAddOnQuantity(addon);
       case 'perpax':
       case 'pernight':
         return this.getTotalSelectedAdultsCount();
@@ -12983,6 +13141,8 @@ sendWhatsappMessageToPropertyOwner() {
     switch (this.getAddOnChargeBasis(addon)) {
       case 'perbooking':
         return this.isFirstSelectedPlan(plan) ? 1 : 0;
+      case 'peritem':
+        return this.isFirstSelectedPlan(plan) ? this.getSelectedAddOnQuantity(addon) : 0;
       case 'perpax':
       case 'pernight':
         return Math.max(1, this.toSafeAmount(plan?.adults || this.booking?.noOfPersons || 1));
@@ -12992,10 +13152,10 @@ sendWhatsappMessageToPropertyOwner() {
     }
   }
 
-  isItemWiseAddOn(addon: any): boolean {
-    const basis = this.getAddOnChargeBasis(addon);
-    return ['itemwise', 'peritem', 'item', 'perunit', 'unitwise'].includes(basis);
-  }
+  // isItemWiseAddOn(addon: any): boolean {
+  //   const basis = this.getAddOnChargeBasis(addon);
+  //   return ['itemwise', 'peritem', 'item', 'perunit', 'unitwise'].includes(basis);
+  // }
 
   private getPlanServicesSubtotal(plan: any): number {
     return this.toSafeAmount(
@@ -13021,7 +13181,7 @@ sendWhatsappMessageToPropertyOwner() {
     );
   }
 
-  private getPlanServicesTotal(plan: any): number {
+  getPlanServicesTotal(plan: any): number {
     return this.toSafeAmount(
       this.getPlanServicesSubtotal(plan) + this.getPlanServicesTax(plan),
     );
@@ -13157,6 +13317,26 @@ sendWhatsappMessageToPropertyOwner() {
       ),
     );
   }
+
+  // getSelectedAddOnTotal(addon: any): number {
+  //   const servicePrice = this.toSafeAmount(
+  //     addon?.servicePrice ?? addon?.beforeTaxAmount ?? addon?.unitPrice,
+  //   );
+  //   const taxAmount = this.toSafeAmount(addon?.taxAmount);
+  //   const multiplier = this.getAddOnTotalMultiplier(addon);
+
+  //   return this.toSafeAmount((servicePrice + taxAmount) * multiplier);
+  // }
+
+  // getAddOnRowTotal(addon: any): number {
+  //   const servicePrice = this.toSafeAmount(
+  //     addon?.servicePrice ?? addon?.beforeTaxAmount ?? addon?.unitPrice,
+  //   );
+  //   const taxAmount = this.toSafeAmount(addon?.taxAmount);
+  //   const quantity = this.isItemWiseAddOn(addon) ? this.getSelectedAddOnQuantity(addon) : 1;
+
+  //   return this.toSafeAmount((servicePrice + taxAmount) * quantity);
+  // }
 
   /** Grand total for selected add-ons (servicePrice + taxAmount per addon) */
   getServicesTotal(): number {
