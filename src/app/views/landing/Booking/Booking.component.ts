@@ -12651,6 +12651,8 @@ sendWhatsappMessageToPropertyOwner() {
           : Array.isArray(persistedSelectedAddOns)
           ? persistedSelectedAddOns
           : [];
+        this.addOnServices = this.filterDayTripIneligibleAddOns(this.addOnServices);
+        this.selectedAddOns = this.filterDayTripIneligibleAddOns(this.selectedAddOns);
         this.selectedAddOnNames = this.selectedAddOns
           .map((service) => service?.name)
           .filter((name) => !!name);
@@ -12685,6 +12687,10 @@ sendWhatsappMessageToPropertyOwner() {
    * Adds/removes service from selectedAddOns array
    */
   toggleAddOnSelection(service: any): void {
+    if (this.isDayTripRoomWiseAddOn(service)) {
+      return;
+    }
+
     const serviceKey = this.getAddOnSelectionKey(service);
     const index = this.selectedAddOns.findIndex(
       (selectedService) => this.getAddOnSelectionKey(selectedService) === serviceKey,
@@ -12749,6 +12755,9 @@ sendWhatsappMessageToPropertyOwner() {
 
   increaseAddOnQuantity(addon: any, event?: Event): void {
     event?.stopPropagation();
+    if (this.isDayTripRoomWiseAddOn(addon)) {
+      return;
+    }
     const selectedAddOn = this.getSelectedAddOn(addon);
 
     if (!selectedAddOn) {
@@ -12815,6 +12824,14 @@ sendWhatsappMessageToPropertyOwner() {
    */
   getSelectedAddOns(): any[] {
     return this.selectedAddOns;
+  }
+
+  getVisibleAddOnServices(): any[] {
+    return this.filterDayTripIneligibleAddOns(this.addOnServices || []);
+  }
+
+  hasVisibleAddOnServices(): boolean {
+    return this.getVisibleAddOnServices().length > 0;
   }
 
   /**
@@ -13105,6 +13122,22 @@ sendWhatsappMessageToPropertyOwner() {
     }
 
     return chargeBasis;
+  }
+
+  private isDayTripRoomWiseAddOn(addon: any): boolean {
+    return this.hasAnyDayTripPlan() && this.getAddOnChargeBasis(addon) === 'perroom';
+  }
+
+  private filterDayTripIneligibleAddOns(addOns: any[]): any[] {
+    if (!Array.isArray(addOns) || addOns.length === 0) {
+      return [];
+    }
+
+    if (!this.hasAnyDayTripPlan()) {
+      return addOns;
+    }
+
+    return addOns.filter((addon) => !this.isDayTripRoomWiseAddOn(addon));
   }
 
   private getAddOnPlanMultiplier(addon: any, plan: any): number {
