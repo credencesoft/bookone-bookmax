@@ -1,4 +1,4 @@
-﻿import { HttpClient } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { ChangeDetectorRef, Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { HotelBookingService } from 'src/services/hotel-booking.service';
@@ -42,7 +42,7 @@ export class BookingConfirmationVoucherComponent {
     chargeLabel: string;
   } | null = null;
 
-  // âœ… NEW: Calculation and payment plan tracking properties
+  // ✅ NEW: Calculation and payment plan tracking properties
   couponDiscountPercentage: number = 0;
   couponDiscountAmount: number = 0;
   advanceDiscountPercentage: number = 0;
@@ -118,7 +118,7 @@ export class BookingConfirmationVoucherComponent {
       ) {
         this.booking = this.token.getBookingData();
       }
-      // âœ… NEW: Load calculation state from stored enquiries
+      // ✅ NEW: Load calculation state from stored enquiries
       this.loadCalculationStateFromEnquiries();
     }, 2000);
   }
@@ -195,7 +195,7 @@ export class BookingConfirmationVoucherComponent {
     const fetchedBookingIds = new Set<number>();
 
     const next = () => {
-      // âœ… Finished processing all enquiries
+      // ✅ Finished processing all enquiries
       if (index >= bookedEnquiries.length) {
         this.finalizeBookings();
         return;
@@ -206,13 +206,13 @@ export class BookingConfirmationVoucherComponent {
 
       index++;
 
-      // â­ Skip if enquiry has no booking yet
+      // ⏭ Skip if enquiry has no booking yet
       if (!bookingId) {
         next();
         return;
       }
 
-      // ðŸ›‘ GROUP BOOKING PROTECTION
+      // 🛑 GROUP BOOKING PROTECTION
       // If booking already fetched once, don't fetch again.
       if (fetchedBookingIds.has(Number(bookingId))) {
         next();
@@ -228,7 +228,7 @@ export class BookingConfirmationVoucherComponent {
           }
         },
         error: (err) => {
-          console.error('âŒ Booking fetch failed:', bookingId, err);
+          console.error('❌ Booking fetch failed:', bookingId, err);
         },
         complete: () => {
           next();
@@ -476,7 +476,7 @@ export class BookingConfirmationVoucherComponent {
       );
   }
 
-  // âœ… NEW: Load calculation state from stored enquiries
+  // ✅ NEW: Load calculation state from stored enquiries
   private loadCalculationStateFromEnquiries() {
     const bookedStr = sessionStorage.getItem('BookedEnquiryList');
     if (!bookedStr) {
@@ -756,7 +756,7 @@ export class BookingConfirmationVoucherComponent {
     return name || `${addon?.id || 'service'}`;
   }
 
-  // âœ… NEW: Guard functions
+  // ✅ NEW: Guard functions
   private toSafeAmount(value: any): number {
     const num = Number(value);
     return isFinite(num) ? num : 0;
@@ -1110,7 +1110,7 @@ export class BookingConfirmationVoucherComponent {
           );
 
           if (response.voucherUrl) {
-            // âœ… Call backend API to download directly
+            // ✅ Call backend API to download directly
             this.hotelBookingService
               .downloadVoucher(response.voucherUrl)
               .subscribe({
@@ -1192,10 +1192,15 @@ export class BookingConfirmationVoucherComponent {
     const booking = this.bookingsResponseList?.[0] || {};
     const bookingSummary = this.bookingSummaryDetails || {};
     const bookingCommission = this.toSafeAmount(
-      booking?.bookingCommissionAmount ??
+      booking?.convenienceFee ??
+        booking?.convenienceFeeAmount ??
+        booking?.bookingCommissionAmount ??
         booking?.commissionAmount ??
+        bookingSummary?.convenienceFee ??
+        bookingSummary?.convenienceFeeAmount ??
         bookingSummary?.bookingCommissionAmount ??
         bookingSummary?.commissionAmount ??
+        this.convenienceFeeAmount ??
         0,
     );
 
@@ -1206,19 +1211,45 @@ export class BookingConfirmationVoucherComponent {
     return this.toSafeAmount(this.getDisplayedConvenienceFee());
   }
 
+
+  private getCancellationBookingAmount(): number {
+    const booking = this.bookingsResponseList?.[0] || {};
+    const bookingSummary = this.bookingSummaryDetails || {};
+    return this.toSafeAmount(
+      booking?.advanceAmount ??
+        bookingSummary?.advanceAmount ??
+        this.getNewPayNowAmount() ??
+        booking?.totalPaymentAmount ??
+        booking?.totalAmount ??
+        bookingSummary?.grandTotal ??
+        bookingSummary?.totalAmount ??
+        this.grandTotal ??
+        0,
+    );
+  }
+
+  private getCancellationPaidAmount(
+    cancellationBookingAmount: number,
+    bookingTotalAmount: number,
+  ): number {
+    const booking = this.bookingsResponseList?.[0] || {};
+    const bookingSummary = this.bookingSummaryDetails || {};
+
+    return this.toSafeAmount(
+      this.getNewPayNowAmount() ||
+        booking?.advanceAmount ||
+        bookingSummary?.advanceAmount ||
+        cancellationBookingAmount ||
+        bookingTotalAmount,
+    );
+  }
   private computeCancellationEstimate() {
     const policy = this.cancellationPolicyData;
     const checkInDate = this.bookingSummaryDetails?.fromDate || this.bookingsResponseList?.[0]?.fromDate;
-    const bookingTotalAmount = this.toSafeAmount(
-      this.getNewGrandTotal() ||
-      this.grandTotal ||
-      this.bookingSummaryDetails?.grandTotal ||
-      this.bookingSummaryDetails?.totalAmount ||
-      this.bookingsResponseList?.[0]?.totalAmount ||
-      0,
-    );
+    const bookingTotalAmount = this.toSafeAmount(this.getNewGrandTotal());
+    const cancellationBookingAmount = this.getCancellationBookingAmount();
     const cancellationChargeAmount = this.getCancellationChargeAmount();
-    const cancellationBaseAmount = Math.max(0, bookingTotalAmount - cancellationChargeAmount);
+    const cancellationBaseAmount = Math.max(0, cancellationBookingAmount - cancellationChargeAmount);
 
     if (!policy?.enabled || !checkInDate || cancellationBaseAmount <= 0) {
       this.cancellationEstimate = null;
@@ -1246,7 +1277,10 @@ export class BookingConfirmationVoucherComponent {
       chargeType,
       chargeValue,
     );
-    const paidAmount = this.toSafeAmount(this.getNewPayNowAmount() || bookingTotalAmount);
+    const paidAmount = this.getCancellationPaidAmount(
+      cancellationBookingAmount,
+      bookingTotalAmount,
+    );
     const totalPenaltyAmount = policyPenaltyAmount + cancellationChargeAmount;
     const deductionAmount = Math.min(totalPenaltyAmount, paidAmount);
     const refundableAmount = Math.max(paidAmount - deductionAmount, 0);
@@ -1260,4 +1294,6 @@ export class BookingConfirmationVoucherComponent {
     };
   }
 }
+
+
 
