@@ -2472,6 +2472,11 @@ resetLastChangedAge(planCode: string) {
 
     // Reset
     if (!plan) return;
+    
+   const ghcOtaPrice = this.getGhcOtaPlanPrice(plan);
+     if (this.activeForGoogleHotelCenter === true && plan.code === 'GHC' && ghcOtaPrice !== null) {
+       plan.amount = ghcOtaPrice;
+     }
     if (this.isPlanDisabled(plan, roomContext || rates)) return;
 
     const isDayTrip = this.isDayTripPlan(plan, roomContext || rates);
@@ -2861,6 +2866,17 @@ resetLastChangedAge(planCode: string) {
       }
     }
   }
+
+  getGhcOtaPlanPrice(plan: any): number | null {
+  if (!Array.isArray(plan?.otaPlanList)) {
+    return null;
+  }
+
+  const ghcPlan = plan.otaPlanList.find((otaPlan: any) => otaPlan?.otaName === 'GHC');
+  const ghcPrice = Number(ghcPlan?.price);
+
+  return Number.isFinite(ghcPrice) ? ghcPrice : null;
+}
 
 // getTotalGhCPrice(plan: any): number {
 //   let total = 0;
