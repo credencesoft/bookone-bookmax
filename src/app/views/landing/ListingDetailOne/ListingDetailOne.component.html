@@ -402,11 +402,8 @@
               <div class="room-details">
                 <div class="d-flex justify-content-between" style="gap: 2px">
                   <div>
-                    <div class="room-title">
-                      {{ plan.dayTrip ? 1 : plan.selectedRoomnumber }} &times; {{ plan.roomName }} &times;
-                      {{ plan.dayTrip ? 'Single Day' : (plan.nights + ' ' + (plan.nights === 1 ? 'Night' : 'Nights')) }}
-                      <span *ngIf="plan.dayTrip" class="day-trip-badge ml-1">Day Trip</span>
-                    </div>
+                    <div class="room-title">{{ plan.selectedRoomnumber }} &times; {{ plan.roomName }} &times;
+                      {{ plan.nights }}&nbsp;{{ plan.nights === 1 ? 'Night' : 'Nights' }}</div>
 
                     <small class="text-muted">
                       {{ plan.planCodeName }}
@@ -995,7 +992,7 @@
                         outsideDays="hidden"
                         [startDate]="toDate"
                         tabindex="-1"
-                        [minDate]="getCheckoutMinDate()"
+                        [minDate]="fromDate"
                       />
                     </div>
                   </div>
@@ -1389,7 +1386,7 @@
                           outsideDays="hidden"
                           [startDate]="toDate"
                           tabindex="-1"
-                          [minDate]="getCheckoutMinDate()"
+                          [minDate]="fromDate"
                         />
                       </div>
                     </div>
@@ -2789,11 +2786,11 @@
                         >
                           <h4 class="popup-plan font-weight-bold">
                             {{
-                              getRoomPlanDisplayAmount(selectedRoom, plan)
+                              plan.amount
                                 | currency: currency : "symbol" : "1.2-2"
                             }}
                           </h4>
-                          <p style="font-size: smaller">{{ getRoomPlanPriceLabel(selectedRoom, plan) }}</p>
+                          <p style="font-size: smaller">per night + taxes</p>
                         </div>
                         <div class="d-flex justify-content-between">
                           <div
@@ -3007,10 +3004,7 @@
                     style="gap: 15px"
                     [class.disabled-room]="shouldDisableRoomImageClick(room)"
                   >
-                    <h3 class="margin-top-mobile-30px">
-                      {{ room.name }}
-                      <span *ngIf="isDayTripRoom(room)" class="day-trip-badge ml-1">Day Trip</span>
-                    </h3>
+                    <h3 class="margin-top-mobile-30px">{{ room.name }}</h3>
                     <div
                       class="d-flex"
                       style="gap: 15px; width: 100px; align-items: center"
@@ -3056,19 +3050,17 @@
                       *ngFor="
                         let plan of isPlanVisible(
                           rates.roomRatePlans,
-                          room.name,
-                          room
+                          room.name
                         );
                         let p = index
                       "
                       [attr.id]="'plan-' + plan.code"
                       [ngClass]="{
                         'scroll-highlight': isPlanSelected(plan.code),
-                        'disabled-plan-card': isPlanDisabled(plan, room),
                       }"
                     >
                       <!-- web view Plans sub-Section -->
-                      <div class="card-title website-web-vision">
+                      <div class="card-title website-web-vision" [class.disabled-room]="booking?.noOfNights > 1 && plan?.onedayPlan">
                         <div
                           class="d-flex justify-content-between align-item-center"
                           style="gap: 20px"
@@ -3113,9 +3105,6 @@
                               }}
                             </div>
                             <div class="perNight">{{ getRoomPlanPriceLabel(room, plan) }}</div>
-                            <span *ngIf="isDayTripPlan(plan, room)" class="day-trip-badge">
-                              Day Trip
-                            </span>
                           </div>
                         </div>
                       </div>
@@ -3124,10 +3113,10 @@
                           {{ guestSelectionErrors[plan.code] }}
                         </div>
                         <div
-                          class="d-flex justify-content-between align-items-start"
+                          class="d-flex justify-content-between align-items-start" [class.disabled-room]="booking?.noOfNights > 1 && plan?.onedayPlan"
                         >
                           <div class="d-flex room-number">
-                            <div *ngIf="!plan?.nonRoomPlan && !isDayTripPlan(plan, room)">
+                            <div *ngIf="!plan?.nonRoomPlan">
                               <label
                                 class="input-group-text"
                                 for="inputGroupSelect01"
@@ -3136,18 +3125,18 @@
                                 >{{ getBookingUnitLabel(room) | slice:0:8 }}{{ getBookingUnitLabel(room).length > 8 ? '...' : '' }}</label
                               >
                             </div>
-                           <ng-container *ngIf="!plan?.nonRoomPlan && !isDayTripPlan(plan, room)">
+                           <ng-container *ngIf="!plan?.nonRoomPlan">
                              <select
                               class="select-icon"
                               id="inputGroupSelect01"
-                              [(ngModel)]="selectedRoomsByPlan[getRoomPlanSelectionKey(room.name, plan.code)]"
+                              [(ngModel)]="selectedRoomsByPlan[plan.code]"
                               (ngModelChange)="
                                 onRoomSelect(room.name, plan.code, $event)
                               "
                             >
                               <!-- Ensure default is assigned -->
                               <ng-container
-                                *ngIf="setDefaultRoomIfMissing(getRoomPlanSelectionKey(room.name, plan.code))"
+                                *ngIf="setDefaultRoomIfMissing(plan.code)"
                               ></ng-container>
 
                               <option
@@ -3166,7 +3155,6 @@
                               </option>
                             </select>
                            </ng-container>
-                           <div *ngIf="isDayTripPlan(plan, room)" class="nights">{{ getBookingUnitLabel(room) }}</div>
                           </div>
                           <div class="d-flex room-numberOne">
                             <div>
@@ -3283,25 +3271,27 @@
                           <div class="d-flex room-number">
                             <div
                               class="selected"
-                              (click)="onPlanSelect(plan.code, rates, room)"
+                              (click)="onPlanSelect(plan.code, rates)"
                             >
                               Select
                             </div>
                           </div>
                         </div>
                         <div
-                          *ngIf="isPlanDisabled(plan, room)"
+                          *ngIf="booking?.noOfNights > 1 && plan?.onedayPlan"
                           class="plan-warning-row"
                         >
                           <div class="plan-warning-text">
-                            {{ getPlanDisabledMessage(plan, room) }}
+                            This plan is only available for 1-night stay.
+                            Please adjust your dates to select these
+                            {{ getBookingUnitLabel(room) }}s.
                           </div>
                         </div>
                       </div>
                       <!-- web view Plans Section -->
 
                       <!-- mob view Plans Section -->
-                      <div class="card-title website-mob-vision">
+                      <div class="card-title website-mob-vision" [class.disabled-room]="booking?.noOfNights > 1 && plan?.onedayPlan">
                         <div
                           class="d-flex justify-content-between align-item-center"
                           style="gap: 12px"
@@ -3346,9 +3336,6 @@
                               }}
                             </div>
                             <div class="perNight">{{ getRoomPlanPriceLabel(room, plan) }}</div>
-                            <span *ngIf="isDayTripPlan(plan, room)" class="day-trip-badge">
-                              Day Trip
-                            </span>
                           </div>
                         </div>
                       </div>
@@ -3357,10 +3344,10 @@
                           {{ guestSelectionErrors[plan.code] }}
                         </div>
                         <div
-                          class="d-flex justify-content-between align-items-end"
+                          class="d-flex justify-content-between align-items-end" [class.disabled-room]="booking?.noOfNights > 1 && plan?.onedayPlan"
                         >
                           <div class="d-flex room-number">
-                            <div *ngIf="!plan?.nonRoomPlan && !isDayTripPlan(plan, room)">
+                            <div *ngIf="!plan?.nonRoomPlan">
                               <label
                                 class="input-group-text"
                                 [matTooltip]="fullText" matTooltipPosition="above" matTooltipShowDelay="300"
@@ -3369,18 +3356,18 @@
                                 >{{ getBookingUnitLabel(room) | slice:0:8 }}{{ getBookingUnitLabel(room).length > 8 ? '...' : '' }}</label
                               >
                             </div>
-                           <ng-container *ngIf="!plan?.nonRoomPlan && !isDayTripPlan(plan, room)">
+                           <ng-container *ngIf="!plan?.nonRoomPlan">
                              <select
                               class="select-icon"
                               id="inputGroupSelect01"
-                              [(ngModel)]="selectedRoomsByPlan[getRoomPlanSelectionKey(room.name, plan.code)]"
+                              [(ngModel)]="selectedRoomsByPlan[plan.code]"
                               (ngModelChange)="
                                 onRoomSelect(room.name, plan.code, $event)
                               "
                             >
                               <!-- Ensure default is assigned -->
                               <ng-container
-                                *ngIf="setDefaultRoomIfMissing(getRoomPlanSelectionKey(room.name, plan.code))"
+                                *ngIf="setDefaultRoomIfMissing(plan.code)"
                               ></ng-container>
 
                               <option
@@ -3399,7 +3386,6 @@
                               </option>
                             </select>
                            </ng-container>
-                           <div *ngIf="isDayTripPlan(plan, room)" class="nights">{{ getBookingUnitLabel(room) }}</div>
                           </div>
                           <div class="d-flex room-numberOne">
                             <div>
@@ -3514,13 +3500,13 @@
                           </div>
                         </div>
                         <div
-                          class="d-flex justify-content-center margin-top-20px"
+                          class="d-flex justify-content-center margin-top-20px" [class.disabled-room]="booking?.noOfNights > 1 && plan?.onedayPlan"
                         >
                           <div class="d-flex room-number">
                             <div
                               class="selected"
                               (click)="
-                                onPlanSelect(plan.code, rates, room);
+                                onPlanSelect(plan.code, rates);
                                 bookingSummaryView()
                               "
                             >
@@ -3529,11 +3515,13 @@
                           </div>
                         </div>
                         <div
-                          *ngIf="isPlanDisabled(plan, room)"
+                          *ngIf="booking?.noOfNights > 1 && plan?.onedayPlan"
                           class="plan-warning-row plan-warning-row-mobile"
                         >
                           <div class="plan-warning-text">
-                            {{ getPlanDisabledMessage(plan, room) }}
+                            This plan is only available for 1-night stay.
+                            Please adjust your dates to select these
+                            {{ getBookingUnitLabel(room) }}s.
                           </div>
                         </div>
                       </div>
@@ -4662,14 +4650,6 @@
       *ngIf="policies?.length > 0"
     >
     <div class="container-div">
-      <div class="cancellation-rules-card" *ngIf="cancellationPolicyData?.enabled && cancellationRuleRows?.length">
-        <h3 class="ameniti1">Cancellation Rules</h3>
-        <p class="cancellation-rules-subtitle">Simple summary of deductions based on cancellation time before check-in.</p>
-        <div class="cancellation-rule-row" *ngFor="let rule of cancellationRuleRows">
-          <div class="cancellation-rule-window">{{ rule.window }}</div>
-          <div class="cancellation-rule-charge">{{ rule.chargeLabel }}</div>
-        </div>
-      </div>
       <div class="row mr-0 ml-0">
         <div class="col-lg-12 pl-0 pr-0">
           <div
