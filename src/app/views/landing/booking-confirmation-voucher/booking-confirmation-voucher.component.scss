@@ -101,6 +101,42 @@
   color: #000;
 }
 
+.cancellation-rules-card-voucher {
+  margin-top: 16px;
+  background: #f8fbff;
+  border: 1px solid #dbeafe;
+  border-radius: 12px;
+  padding: 14px;
+  font-family: 'Poppins';
+}
+
+.cancellation-rules-card-voucher h5 {
+  margin: 0 0 8px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.cancellation-rules-subtitle-voucher {
+  margin: 0 0 8px;
+  font-size: 13px;
+  color: #475569;
+}
+
+.cancellation-rule-row-voucher {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  border-top: 1px dashed #cbd5e1;
+  padding: 8px 0;
+  font-size: 13px;
+  color: #334155;
+}
+
+.cancellation-rule-row-voucher .charge {
+  font-weight: 600;
+  color: #0f172a;
+}
+
 
 .assistance-section .contact-info {
 
@@ -484,6 +520,27 @@
 .booking-summary-table td {
   font-size: 14px;
   padding: 10px
+}
+
+.booking-selection-dates {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 6px;
+  color: #4b5563;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.booking-selection-dates b {
+  color: #111827;
+  font-weight: 600;
+}
+
+.booking-id-values {
+  flex: 1;
+  text-align: right;
+  word-break: break-word;
 }
 
 .booking-summary-footer {

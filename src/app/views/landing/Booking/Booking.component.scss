@@ -113,6 +113,46 @@
   color: #6B7280;
 }
 
+.cancellation-policy-preview {
+  margin-top: 18px;
+  margin-bottom: 8px;
+}
+
+.cancellation-rules-card-booking {
+  background: #f8fbff;
+  border: 1px solid #dbeafe;
+  border-radius: 12px;
+  padding: 14px;
+  font-family: 'Poppins';
+}
+
+.cancellation-rules-card-booking h5 {
+  margin: 0 0 8px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.cancellation-rules-subtitle-booking {
+  margin: 0 0 8px;
+  font-size: 13px;
+  color: #475569;
+}
+
+.cancellation-rule-row-booking {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  border-top: 1px dashed #cbd5e1;
+  padding: 8px 0;
+  font-size: 13px;
+  color: #334155;
+}
+
+.cancellation-rule-row-booking .charge {
+  font-weight: 600;
+  color: #0f172a;
+}
+
 .color-purple {
   color: #7B1FA2;
   font-weight: 700;
@@ -170,22 +210,38 @@
 }
 
 .add-on-services-table {
+  min-width: 680px;
   table-layout: fixed;
   width: 100%;
 }
 
+.add-on-services-table-mobile {
+  min-width: 560px !important;
+}
+
 .add-on-service-col {
-  width: 58%;
+  width: 45%;
 }
 
 .add-on-type-col {
-  width: 14%;
+  width: 16%;
 }
 
 .add-on-price-col,
-.add-on-tax-col,
 .add-on-total-col {
-  width: 9.33%;
+  width: 14%;
+}
+
+.add-on-tax-col {
+  width: 11%;
+}
+
+.add-on-amount-cell {
+  line-height: 1.35;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  white-space: normal;
+  word-break: break-word;
 }
 
 .add-on-type-cell {
@@ -445,8 +501,12 @@
 }
 
 @media (max-width: 767px) {
+  .add-on-services-table {
+    min-width: 560px;
+  }
+
   .add-on-services-table-mobile .add-on-service-col {
-    width: 47%;
+    width: 38%;
   }
 
   .add-on-services-table-mobile .add-on-type-col {
@@ -454,9 +514,12 @@
   }
 
   .add-on-services-table-mobile .add-on-price-col,
-  .add-on-services-table-mobile .add-on-tax-col,
   .add-on-services-table-mobile .add-on-total-col {
-    width: 11.66%;
+    width: 15%;
+  }
+
+  .add-on-services-table-mobile .add-on-tax-col {
+    width: 14%;
   }
 
   .add-on-description {
@@ -522,6 +585,30 @@
 
   .plan-add-on-row {
     padding: 6px 10px;
+  }
+}
+
+@media (max-width: 575px) {
+  .add-on-services-table,
+  .add-on-services-table-mobile {
+    min-width: 540px !important;
+  }
+
+  .add-on-services-table th,
+  .add-on-services-table td {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+
+  .add-on-amount-cell {
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 390px) {
+  .add-on-services-table,
+  .add-on-services-table-mobile {
+    min-width: 520px !important;
   }
 }
 

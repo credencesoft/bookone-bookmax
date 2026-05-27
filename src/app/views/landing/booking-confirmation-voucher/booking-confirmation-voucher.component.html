@@ -1,4 +1,4 @@
-<div [ngClass]="{
+﻿<div [ngClass]="{
     'background-image-website': [3063, 3424, 3425].includes(businessUser?.id),
   }">
   <app-Header-Listingdetailsone [businessUser]="businessUser">
@@ -37,8 +37,8 @@
               Your booking is confirmed.
             </div>
             <div style="color: #615d5d; font-weight: 600; font-size: 13px">
-              We’ve sent your booking details to your mail. <br />
-              Didn’t receive it yet? It might be in your spam folder — or simply
+              Weâ€™ve sent your booking details to your mail. <br />
+              Didnâ€™t receive it yet? It might be in your spam folder â€” or simply
               check WhatsApp.
             </div>
             <div style="display: flex; gap: 20px; margin-top: 20px">
@@ -159,23 +159,25 @@
                   gap: 20px;
                   margin-top: 10px;
                 ">
-                <div class="d-flex justify-content-between" style="width: 49%; padding-bottom: 10px">
+                <div class="d-flex justify-content-between" style="width: 100%; padding-bottom: 10px">
                   <div>Booking ID:</div>
-                  <div *ngFor="
-                      let booking of bookingsResponseList;
-                      let last = last
-                    ">
-                    <span *ngIf="booking?.groupBookingId && last">
-                      <b>{{ booking?.groupBookingId }}</b></span>
+                  <div class="booking-id-values">
+                    <ng-container *ngFor="
+                        let booking of bookingsResponseList;
+                        let last = last
+                      ">
+                      <span *ngIf="booking?.groupBookingId && last">
+                        <b>{{ booking?.groupBookingId }}</b>
+                      </span>
 
-                    <span *ngIf="!booking?.groupBookingId">
-                      <b id="copyTexttwo">{{
-                        getUpdatedReservationNumber(
-                        booking?.propertyReservationNumber
-                        )
-                        }}</b>
-                      <span *ngIf="!last">, </span><br />
-                    </span>
+                      <span *ngIf="!booking?.groupBookingId">
+                        <b id="copyTexttwo">{{
+                          getUpdatedReservationNumber(
+                          booking?.propertyReservationNumber
+                          )
+                          }}</b><span *ngIf="!last">, </span>
+                      </span>
+                    </ng-container>
                   </div>
                 </div>
               </div>
@@ -184,27 +186,7 @@
                   gap: 20px;
                   margin-top: 10px;
                 ">
-                <div class="d-flex justify-content-between" style="width: 50%; padding-bottom: 10px">
-                  <div>Check-in Date:</div>
-                  <div>
-                    <span *ngIf="booking?.fromDate">
-                      <b>{{ booking?.fromDate | date: "d MMM yyyy" }}</b></span>
-                  </div>
-                </div>
-                <div class="d-flex justify-content-between" style="width: 50%; padding-bottom: 10px">
-                  <div>Check-out Date:</div>
-                  <div>
-                    <span *ngIf="booking?.toDate">
-                      <b>{{ booking?.toDate | date: "d MMM yyyy" }}</b></span>
-                  </div>
-                </div>
-              </div>
-              <div class="d-flex justify-content-between" style="
-                  border-bottom: 1px solid #f3f4f6;
-                  gap: 20px;
-                  margin-top: 10px;
-                ">
-                <div class="d-flex justify-content-between" style="width: 50%; padding-bottom: 10px">
+                <div class="d-flex justify-content-between" style="width: 100%; padding-bottom: 10px">
                   <div>Guests:</div>
                   <div>
                     <span>
@@ -212,11 +194,17 @@
                         {{ totalPlanChildren }} Children</b></span>
                   </div>
                 </div>
-                <div class="d-flex justify-content-between" style="width: 50%; padding-bottom: 10px">
+              </div>
+              <div class="d-flex justify-content-between" style="
+                  border-bottom: 1px solid #f3f4f6;
+                  gap: 20px;
+                  margin-top: 10px;
+                ">
+                <div class="d-flex justify-content-between" style="width: 100%; padding-bottom: 10px">
                   <div>Nights:</div>
                   <div>
                     <span>
-                      <b>{{ booking?.noOfNights }}</b></span>
+                      <b>{{ getBookingNightsLabel(booking) }}</b></span>
                   </div>
                 </div>
               </div>
@@ -309,18 +297,28 @@
                     ">
                     <td>
                       <div>
-                        <b>{{ booking?.roomName }} </b> <br />
+                        <b>{{ booking?.roomName }} </b>
+                        <span *ngIf="isDayTripBooking(booking)" class="status-badge status-enquiry" style="font-size: 11px; margin-left: 4px">Day Trip</span>
+                        <br />
                         {{ booking?.roomRatePlanName }}
+                        <div class="booking-selection-dates">
+                          <span *ngIf="booking?.fromDate">
+                            Check-in: <b>{{ booking?.fromDate | date: "d MMM yyyy" }}</b>
+                          </span>
+                          <span *ngIf="getBookingDisplayCheckoutDate(booking)">
+                            Check-out: <b>{{ getBookingDisplayCheckoutDate(booking) | date: "d MMM yyyy" }}</b>
+                          </span>
+                        </div>
                       </div>
                     </td>
                     <td>
-                      {{
-                      booking?.roomTariffBeforeDiscount
-                      | currency: currency : 'symbol' : '1.2-2'
-                      }}
+                      <ng-container *ngIf="!isDayTripBooking(booking); else dayTripTariffDesk">
+                        {{ booking?.roomTariffBeforeDiscount | currency: currency : 'symbol' : '1.2-2' }}
+                      </ng-container>
+                      <ng-template #dayTripTariffDesk>Day Trip</ng-template>
                     </td>
-                    <td>{{ booking?.noOfNights }}</td>
-                    <td>{{ booking?.noOfRooms }}</td>
+                    <td>{{ getBookingNightsLabel(booking) }}</td>
+                    <td>{{ getBookingRoomCountLabel(booking) }}</td>
                     <td>{{ booking?.extraPersonCharge | currency: currency : 'symbol' : '1.2-2' }}</td>
                     <td>{{ booking?.extraChildCharge | currency: currency : 'symbol' : '1.2-2' }}</td>
                     <td *ngIf="specialDiscountData?.discountPercentage">
@@ -421,7 +419,7 @@
                   </div>
                 </div>
 
-                <!-- ✅ NEW: Grand Total -->
+                <!-- âœ… NEW: Grand Total -->
                 <div class="booking-summary-total total-borders" style="background-color: #eff6ff">
                   <div class="d-flex justify-content-between" style="font-weight: 700; font-size: 1.1rem">
                     <div>Grand Total:</div>
@@ -429,7 +427,7 @@
                   </div>
                 </div>
 
-                <!-- ✅ NEW: Advance plan indicator and payment breakdown -->
+                <!-- âœ… NEW: Advance plan indicator and payment breakdown -->
                 <div *ngIf="advancePaymentPercentage > 0" class="booking-summary-total total-borders"
                   style="background-color: #fffcdf; border: 1px solid #fef08a">
                   <div class="d-flex justify-content-between">
@@ -447,7 +445,7 @@
                   </div>
                 </div>
 
-                <!-- ✅ UPDATED: Payment status summary -->
+                <!-- âœ… UPDATED: Payment status summary -->
                 <!-- <div *ngIf="advancePaymentPercentage > 0" class="booking-summary-total total-borders due-borders">
                   <div class="d-flex justify-content-between">
                     <div style="font-weight: 700">Amount Paid (Pay Now):</div>
@@ -505,6 +503,23 @@
                 email, please check your spam or promotions folder.
               </li>
             </ul>
+            <div class="cancellation-rules-card-voucher" *ngIf="cancellationRuleRows?.length">
+              <h5>Cancellation Rules</h5>
+              <p class="cancellation-rules-subtitle-voucher" *ngIf="cancellationEstimate">
+                Rule is applied on (Booking Amount - Convenience Fee). Total estimated deduction (including non-refundable convenience fee):
+                <strong>{{ cancellationEstimate.deductionAmount | currency: currency : 'symbol' : '1.2-2' }}</strong>
+                ({{ cancellationEstimate.chargeLabel }}), refundable:
+                <strong>{{ cancellationEstimate.refundableAmount | currency: currency : 'symbol' : '1.2-2' }}</strong>.
+                <span *ngIf="cancellationEstimate.dueAmount > 0">
+                  Additional payable:
+                  <strong>{{ cancellationEstimate.dueAmount | currency: currency : 'symbol' : '1.2-2' }}</strong>.
+                </span>
+              </p>
+              <div class="cancellation-rule-row-voucher" *ngFor="let rule of cancellationRuleRows">
+                <div>{{ rule.window }}</div>
+                <div class="charge">{{ rule.chargeLabel }}</div>
+              </div>
+            </div>
             <div *ngFor="let bServiceDtoList of policies; let i = index">
               <div *ngIf="bServiceDtoList?.policy">
                 <div class="property-rules" *ngIf="policies">
@@ -558,8 +573,8 @@
               Your booking is confirmed.
             </div>
             <div style="color: #615d5d; font-weight: 600; font-size: 13px">
-              We’ve sent your booking details to your mail. <br />
-              Didn’t receive it yet? It might be in your spam folder — or simply
+              Weâ€™ve sent your booking details to your mail. <br />
+              Didnâ€™t receive it yet? It might be in your spam folder â€” or simply
               check WhatsApp.
             </div>
             <div class="hotel-card-unique d-flex flex-row" style="flex-wrap: wrap" *ngIf="businessUser?.name">
@@ -660,37 +675,23 @@
               <div class="d-flex justify-content-between" style="border-bottom: 1px solid #f3f4f6; margin-top: 10px">
                 <div class="d-flex justify-content-between" style="width: 100%; padding-bottom: 10px; flex-wrap: wrap">
                   <div>Booking ID:</div>
-                  <div *ngFor="
-                      let booking of bookingsResponseList;
-                      let last = last
-                    ">
-                    <span *ngIf="booking?.groupBookingId && last">
-                      <b>{{ booking?.groupBookingId }}</b></span>
+                  <div class="booking-id-values">
+                    <ng-container *ngFor="
+                        let booking of bookingsResponseList;
+                        let last = last
+                      ">
+                      <span *ngIf="booking?.groupBookingId && last">
+                        <b>{{ booking?.groupBookingId }}</b>
+                      </span>
 
-                    <span *ngIf="!booking?.groupBookingId">
-                      <b id="copyTexttwo">{{
-                        getUpdatedReservationNumber(
-                        booking?.propertyReservationNumber
-                        )
-                        }}</b>
-                      <span *ngIf="!last">, </span><br />
-                    </span>
-                  </div>
-                </div>
-              </div>
-              <div class="d-flex justify-content-between" style="border-bottom: 1px solid #f3f4f6; flex-wrap: wrap">
-                <div class="d-flex justify-content-between" style="width: 100%; padding-bottom: 10px">
-                  <div>Check-in Date:</div>
-                  <div>
-                    <span *ngIf="booking?.fromDate">
-                      <b>{{ booking?.fromDate | date: "d MMM yyyy" }}</b></span>
-                  </div>
-                </div>
-                <div class="d-flex justify-content-between" style="width: 100%; padding-bottom: 10px">
-                  <div>Check-out Date:</div>
-                  <div>
-                    <span *ngIf="booking?.toDate">
-                      <b>{{ booking?.toDate | date: "d MMM yyyy" }}</b></span>
+                      <span *ngIf="!booking?.groupBookingId">
+                        <b id="copyTexttwo">{{
+                          getUpdatedReservationNumber(
+                          booking?.propertyReservationNumber
+                          )
+                          }}</b><span *ngIf="!last">, </span>
+                      </span>
+                    </ng-container>
                   </div>
                 </div>
               </div>
@@ -703,11 +704,13 @@
                         {{ totalPlanChildren }} Children</b></span>
                   </div>
                 </div>
+              </div>
+              <div class="d-flex justify-content-between" style="border-bottom: 1px solid #f3f4f6; flex-wrap: wrap">
                 <div class="d-flex justify-content-between" style="width: 100%; padding-bottom: 10px">
                   <div>Nights:</div>
                   <div>
                     <span>
-                      <b>{{ booking?.noOfNights }}</b></span>
+                      <b>{{ getBookingNightsLabel(booking) }}</b></span>
                   </div>
                 </div>
               </div>
@@ -773,18 +776,29 @@
               <ng-container *ngFor="let booking of bookingsResponseList; let last = last">
                 <div class="d-flex justify-content-between" style="gap: 10px">
                   <div>
-                    <b>{{ booking?.roomName }} </b> <br />
+                    <b>{{ booking?.roomName }} </b>
+                    <span *ngIf="isDayTripBooking(booking)" class="status-badge status-enquiry" style="font-size: 11px; margin-left: 4px">Day Trip</span>
+                    <br />
                     {{ booking?.roomRatePlanName }}
+                    <div class="booking-selection-dates">
+                      <span *ngIf="booking?.fromDate">
+                        Check-in: <b>{{ booking?.fromDate | date: "d MMM yyyy" }}</b>
+                      </span>
+                      <span *ngIf="getBookingDisplayCheckoutDate(booking)">
+                        Check-out: <b>{{ getBookingDisplayCheckoutDate(booking) | date: "d MMM yyyy" }}</b>
+                      </span>
+                    </div>
                   </div>
                   <div>
-                    {{
-                    booking?.roomTariffBeforeDiscount | currency: currency : 'symbol' : '1.2-2'
-                    }}
+                    <ng-container *ngIf="!isDayTripBooking(booking); else dayTripTariffMob">
+                      {{ booking?.roomTariffBeforeDiscount | currency: currency : 'symbol' : '1.2-2' }}
+                    </ng-container>
+                    <ng-template #dayTripTariffMob>Day Trip</ng-template>
                   </div>
                 </div>
                 <div class="d-flex justify-content-between">
                   <div>Room Count</div>
-                  <div>{{ booking?.noOfRooms }}</div>
+                  <div>{{ getBookingRoomCountLabel(booking) }}</div>
                 </div>
                 <div class="d-flex justify-content-between">
                   <div>Extra Pax</div>
@@ -905,13 +919,13 @@
                   </table>
                 </div>
               </div>
-              <!-- ✅ NEW: Grand Total -->
+              <!-- âœ… NEW: Grand Total -->
               <div class="d-flex justify-content-between"
                 style="font-weight: 700; margin-top: 8px; padding-top: 8px; border-top: 1px solid #e5e7eb; color: #1465cf">
                 <div>Grand Total:</div>
                 <div>{{ getNewGrandTotal() | currency: currency : 'symbol' : '1.2-2' }}</div>
               </div>
-              <!-- ✅ NEW: Advance plan indicator -->
+              <!-- âœ… NEW: Advance plan indicator -->
               <div *ngIf="advancePaymentPercentage > 0"
                 style="margin-top: 8px; padding: 8px; background-color: #fffcdf; border: 1px solid #fef08a; border-radius: 4px">
                 <div class="d-flex justify-content-between" style="font-weight: 700; color: #b45309">
@@ -927,7 +941,7 @@
                   </div>
                 </div>
               </div>
-              <!-- ✅ NEW: Payment status summary -->
+              <!-- âœ… NEW: Payment status summary -->
               <!-- <div *ngIf="advancePaymentPercentage > 0" style="margin-top: 8px; padding: 8px; background-color: #f0fdf4; border: 1px solid #dcfce7">
                 <div class="d-flex justify-content-between" style="font-weight: 600">
                   <div style="font-size: 0.9rem">Amount Paid (Now):</div>
@@ -938,7 +952,7 @@
                   <div>{{ getNewBalanceAtCheckIn() | currency: currency : 'symbol' : '1.2-2' }}</div>
                 </div>
               </div> -->
-              <!-- ✅ FALLBACK: Full payment due -->
+              <!-- âœ… FALLBACK: Full payment due -->
               <div *ngIf="advancePaymentPercentage === 0" class="d-flex justify-content-between"
                 style="font-weight: 600; color: #dc2626; margin-top: 8px; padding-top: 8px; border-top: 1px solid #e5e7eb">
                 <div>Total Due (Now):</div>
@@ -984,6 +998,23 @@
               please check your spam or promotions folder.
             </li>
           </ul>
+          <div class="cancellation-rules-card-voucher" *ngIf="cancellationRuleRows?.length">
+            <h5>Cancellation Rules</h5>
+            <p class="cancellation-rules-subtitle-voucher" *ngIf="cancellationEstimate">
+              Rule is applied on (Booking Amount - Convenience Fee). Total estimated deduction (including non-refundable convenience fee):
+              <strong>{{ cancellationEstimate.deductionAmount | currency: currency : 'symbol' : '1.2-2' }}</strong>
+              ({{ cancellationEstimate.chargeLabel }}), refundable:
+              <strong>{{ cancellationEstimate.refundableAmount | currency: currency : 'symbol' : '1.2-2' }}</strong>.
+              <span *ngIf="cancellationEstimate.dueAmount > 0">
+                Additional payable:
+                <strong>{{ cancellationEstimate.dueAmount | currency: currency : 'symbol' : '1.2-2' }}</strong>.
+              </span>
+            </p>
+            <div class="cancellation-rule-row-voucher" *ngFor="let rule of cancellationRuleRows">
+              <div>{{ rule.window }}</div>
+              <div class="charge">{{ rule.chargeLabel }}</div>
+            </div>
+          </div>
           <div *ngFor="let bServiceDtoList of policies; let i = index">
             <div *ngIf="bServiceDtoList?.policy">
               <div class="property-rules" *ngIf="policies">Property rules:</div>
@@ -1008,3 +1039,4 @@
     </div>
   </div>
 </div>
+
