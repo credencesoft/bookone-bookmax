@@ -605,6 +605,7 @@
   }
 }
 
+
 @media (max-width: 390px) {
   .add-on-services-table,
   .add-on-services-table-mobile {
@@ -5467,4 +5468,49 @@ p-dialog .p-dialog-header .p-dialog-title {
   .mob-inline-cta {
     display: none;
   }
+}
+
+
+@media (max-width: 767px) {
+  .add-on-services-table {
+    min-width: 560px;
+  }
+
+.add-on-services-table-mobile .add-on-service-col {
+    width: 38%;
+  }
+
+.add-on-services-table-mobile .add-on-price-col,
+  .add-on-services-table-mobile .add-on-total-col {
+    width: 15%;
+  }
+
+  .add-on-services-table-mobile .add-on-tax-col {
+    width: 14%;
+  }
+
+
+@media (max-width: 575px) {
+  .add-on-services-table,
+  .add-on-services-table-mobile {
+    min-width: 540px !important;
+  }
+
+  .add-on-services-table th,
+  .add-on-services-table td {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+
+  .add-on-amount-cell {
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 390px) {
+  .add-on-services-table,
+  .add-on-services-table-mobile {
+    min-width: 520px !important;
+  }
+}
 }
