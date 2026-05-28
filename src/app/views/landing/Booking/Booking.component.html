@@ -333,12 +333,18 @@
                         <img src=" media-be/images/coupon-image-change.svg" alt="" />&nbsp; Coupon Applied!
                       </span>
                     </div>
-                    <div class="nights">{{ plan.selectedRoomnumber }} Room(s)</div>
+                    <div class="nights">{{ getPlanRoomCountLabel(plan) }}</div>
                   </div>
                   <div class="d-flex justify-content-between line-height-27px">
-                    <div class="color-graying">{{ plan.planCodeName }} x {{ plan.selectedRoomnumber }}</div>
+                    <div class="color-graying">
+                      {{ plan.planCodeName }} x {{ isDayTripPlan(plan) ? 1 : plan.selectedRoomnumber }}
+                      <span *ngIf="isDayTripPlan(plan)" class="badge badge-success badge-successTwo px-2 py-1 ml-1">Day Trip</span>
+                      <div *ngIf="isDayTripPlan(plan)" class="small text-muted">
+                        {{ getPlanDisplayDate(plan) | date : "dd-MM-yyyy" }}
+                      </div>
+                    </div>
                     <div>
-                      <div style="text-align: end">{{ plan.price | currency: currency : 'symbol' : '1.2-2' }}</div>
+                      <div style="text-align: end">{{ getPlanBaseAmount(plan) | currency: currency : 'symbol' : '1.2-2' }}</div>
                       <div style="text-align: end; margin-top: -5px"
                         *ngIf="plan.extraPersonAdultCountAmount + plan.extraPersonChildCountAmount > 0">
                         {{
@@ -355,13 +361,13 @@
                   <div class="d-flex justify-content-between line-height-27px promo-discounts"
                     *ngIf="this.specialDiscountData?.discountPercentage">
                     <div class="color-graying">Coupon Discount ({{ this.specialDiscountData?.discountPercentage }}%)</div>
-                    <div>-{{ ((plan.price * this.specialDiscountData?.discountPercentage) / 100) | currency: currency : 'symbol' : '1.2-2' }}</div>
+                    <div>-{{ ((getPlanBaseAmount(plan) * this.specialDiscountData?.discountPercentage) / 100) | currency: currency : 'symbol' : '1.2-2' }}</div>
                   </div>
                   <div class="d-flex justify-content-between line-height-27px advance-discounts"
                     *ngIf="this.selectedAdvanceDiscountSlab?.discountPercentage">
                     <div class="color-graying">Advance Discount ({{ this.selectedAdvanceDiscountSlab?.discountPercentage }}%)</div>
                     <div>-{{
-                      (((plan.price - ((plan.price * (this.specialDiscountData?.discountPercentage || 0)) / 100)) *
+                      (((getPlanBaseAmount(plan) - ((getPlanBaseAmount(plan) * (this.specialDiscountData?.discountPercentage || 0)) / 100)) *
                         this.selectedAdvanceDiscountSlab?.discountPercentage) / 100) | currency: currency : 'symbol' : '1.2-2'
                     }}</div>
                   </div>
@@ -469,7 +475,7 @@
               </div>
 
               <!-- ③ ADD-ON SERVICES ──────────────────────────────────────── -->
-              <div *ngIf="addOnServices && addOnServices.length > 0"
+              <div *ngIf="hasVisibleAddOnServices()"
                 class="rooms-cards-pricing card"
                 style="padding: 30px; margin-bottom: 20px">
                 <div class="d-flex align-items-center" style="gap: 10px; margin-bottom: 8px">
@@ -492,13 +498,13 @@
                       <tr>
                         <th style="font-weight: 600; padding: 8px 12px; color: #6b7280">Service</th>
                         <th class="add-on-type-cell" style="font-weight: 600; text-align: right; padding: 8px 12px; color: #6b7280">Type</th>
-                        <th style="font-weight: 600; text-align: right; padding: 8px 12px; color: #6b7280">Price</th>
-                        <th style="font-weight: 600; text-align: right; padding: 8px 12px; color: #6b7280">Tax</th>
-                        <th style="font-weight: 600; text-align: right; padding: 8px 12px; color: #6b7280">Total</th>
+                        <th class="add-on-amount-cell" style="font-weight: 600; text-align: right; padding: 8px 12px; color: #6b7280">Price</th>
+                        <th class="add-on-amount-cell" style="font-weight: 600; text-align: right; padding: 8px 12px; color: #6b7280">Tax</th>
+                        <th class="add-on-amount-cell" style="font-weight: 600; text-align: right; padding: 8px 12px; color: #6b7280">Total</th>
                       </tr>
                     </thead>
                     <tbody>
-                      <tr *ngFor="let addon of addOnServices; let addonIndex = index"
+                      <tr *ngFor="let addon of getVisibleAddOnServices(); let addonIndex = index"
                         (click)="toggleAddOnSelection(addon)"
                         [style.background-color]="isAddOnSelected(addon) ? '#f0fdfa' : 'transparent'"
                         [style.border-left]="isAddOnSelected(addon) ? '3px solid #0d9488' : '3px solid transparent'"
@@ -556,9 +562,9 @@
                             </button>
                           </div>
                         </td>
-                        <td style="text-align: right; vertical-align: middle; padding: 10px 12px">{{ addon.servicePrice | currency: currency : 'symbol' : '1.2-2' }}</td>
-                        <td style="text-align: right; vertical-align: middle; padding: 10px 12px; color: #6b7280">{{ addon.taxAmount | currency: currency : 'symbol' : '1.2-2' }}</td>
-                        <td style="text-align: right; vertical-align: middle; padding: 10px 12px; font-weight: 600">{{ getAddOnRowTotal(addon) | currency: currency : 'symbol' : '1.2-2' }}</td>
+                        <td class="add-on-amount-cell" style="text-align: right; vertical-align: middle; padding: 10px 12px">{{ addon.servicePrice | currency: currency : 'symbol' : '1.2-2' }}</td>
+                        <td class="add-on-amount-cell" style="text-align: right; vertical-align: middle; padding: 10px 12px; color: #6b7280">{{ addon.taxAmount | currency: currency : 'symbol' : '1.2-2' }}</td>
+                        <td class="add-on-amount-cell" style="text-align: right; vertical-align: middle; padding: 10px 12px; font-weight: 600">{{ getAddOnRowTotal(addon) | currency: currency : 'symbol' : '1.2-2' }}</td>
                       </tr>
                     </tbody>
                   </table>
@@ -794,7 +800,7 @@
                 <div style="padding: 0 10px 6px">
                   <!-- Total Room Charges -->
                   <div class="d-flex justify-content-between line-height-27px">
-                    <div class="color-graying">Total {{ roomLabel }} Charges</div>
+                    <div class="color-graying">{{ getAccommodationChargesLabel() }}</div>
                     <div style="color: #3b82f6; font-weight: 500">{{ bookingSummaryDetails?.totalPlanPrice | currency: currency : 'symbol' : '1.2-2' }}</div>
                   </div>
                   <!-- Coupon Discount -->
@@ -1154,19 +1160,24 @@
                       >
                     </div>
                     <div class="nights">
-                      {{ plan.selectedRoomnumber }} Room(s)
+                      {{ getPlanRoomCountLabel(plan) }}
                     </div>
                   </div>
                   <div class="d-flex justify-content-between line-height-27px">
                     <div class="color-graying">
-                        {{ plan.planCodeName }} x {{ plan.selectedRoomnumber }} <br/>
+                        {{ plan.planCodeName }} x {{ isDayTripPlan(plan) ? 1 : plan.selectedRoomnumber }}
+                        <span *ngIf="isDayTripPlan(plan)" class="badge badge-success badge-successTwo px-2 py-1 ml-1">Day Trip</span>
+                        <br/>
+                        <small *ngIf="isDayTripPlan(plan)" class="text-muted">
+                          {{ getPlanDisplayDate(plan) | date : "dd-MM-yyyy" }}
+                        </small>
 
                       </div>
 
 
                     <div *ngIf="activeGoogleCenter">
                       <div style="text-align: end">
-                        {{ plan.price | currency: currency : 'symbol' : '1.2-2' }}
+                        {{ getPlanBaseAmount(plan) | currency: currency : 'symbol' : '1.2-2' }}
                       </div>
                       <div
                         style="text-align: end; margin-top: -5px"
@@ -1188,7 +1199,7 @@
                     </div>
                     <div *ngIf="!activeGoogleCenter">
                       <div style="text-align: end">
-                        {{ plan.price | currency: currency : 'symbol' : '1.2-2' }}
+                        {{ getPlanBaseAmount(plan) | currency: currency : 'symbol' : '1.2-2' }}
                       </div>
                       <div
                         style="text-align: end; margin-top: -5px"
@@ -1239,7 +1250,7 @@
 
                     <div>
                      -{{
-                       ( (plan.price *
+                       ( (getPlanBaseAmount(plan) *
                           this.specialDiscountData?.discountPercentage) /
                           100
                       ) | currency: currency : 'symbol' : '1.2-2'
@@ -1256,7 +1267,7 @@
                       <!-- Advance discount applies to (price - coupon), matching calculateMultiDiscountAndTax() -->
                       -{{
                         (
-                          (plan.price - ((plan.price * (this.specialDiscountData?.discountPercentage || 0)) / 100)) *
+                          (getPlanBaseAmount(plan) - ((getPlanBaseAmount(plan) * (this.specialDiscountData?.discountPercentage || 0)) / 100)) *
                           (this.selectedAdvanceDiscountSlab?.discountPercentage / 100)
                         ) | currency: currency : 'symbol' : '1.2-2'
                       }}
@@ -1412,7 +1423,7 @@
             </div>
 
             <!-- ② ADD-ON SERVICES (mobile) ──────────────────────────── -->
-            <div *ngIf="addOnServices && addOnServices.length > 0"
+            <div *ngIf="hasVisibleAddOnServices()"
               class="rooms-cards-pricing card"
               style="padding: 20px; margin-bottom: 20px">
               <div class="d-flex align-items-center" style="gap: 10px; margin-bottom: 8px">
@@ -1435,13 +1446,13 @@
                     <tr>
                       <th style="font-weight: 600; padding: 6px 10px; color: #6b7280">Service</th>
                       <th class="add-on-type-cell" style="font-weight: 600; text-align: right; padding: 6px 10px; color: #6b7280">Type</th>
-                      <th style="font-weight: 600; text-align: right; padding: 6px 10px; color: #6b7280">Price</th>
-                      <th style="font-weight: 600; text-align: right; padding: 6px 10px; color: #6b7280">Tax</th>
-                      <th style="font-weight: 600; text-align: right; padding: 6px 10px; color: #6b7280">Total</th>
+                      <th class="add-on-amount-cell" style="font-weight: 600; text-align: right; padding: 6px 10px; color: #6b7280">Price</th>
+                      <th class="add-on-amount-cell" style="font-weight: 600; text-align: right; padding: 6px 10px; color: #6b7280">Tax</th>
+                      <th class="add-on-amount-cell" style="font-weight: 600; text-align: right; padding: 6px 10px; color: #6b7280">Total</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr *ngFor="let addon of addOnServices; let addonIndex = index"
+                    <tr *ngFor="let addon of getVisibleAddOnServices(); let addonIndex = index"
                       (click)="toggleAddOnSelection(addon)"
                       [style.background-color]="isAddOnSelected(addon) ? '#f0fdfa' : 'transparent'"
                       [style.border-left]="isAddOnSelected(addon) ? '3px solid #0d9488' : '3px solid transparent'"
@@ -1499,9 +1510,9 @@
                           </button>
                         </div>
                       </td>
-                      <td style="text-align: right; vertical-align: middle; padding: 8px 10px">{{ addon.servicePrice | currency: currency : 'symbol' : '1.2-2' }}</td>
-                      <td style="text-align: right; vertical-align: middle; padding: 8px 10px; color: #6b7280">{{ addon.taxAmount | currency: currency : 'symbol' : '1.2-2' }}</td>
-                      <td style="text-align: right; vertical-align: middle; padding: 8px 10px; font-weight: 600">{{ getAddOnRowTotal(addon) | currency: currency : 'symbol' : '1.2-2' }}</td>
+                      <td class="add-on-amount-cell" style="text-align: right; vertical-align: middle; padding: 8px 10px">{{ addon.servicePrice | currency: currency : 'symbol' : '1.2-2' }}</td>
+                      <td class="add-on-amount-cell" style="text-align: right; vertical-align: middle; padding: 8px 10px; color: #6b7280">{{ addon.taxAmount | currency: currency : 'symbol' : '1.2-2' }}</td>
+                      <td class="add-on-amount-cell" style="text-align: right; vertical-align: middle; padding: 8px 10px; font-weight: 600">{{ getAddOnRowTotal(addon) | currency: currency : 'symbol' : '1.2-2' }}</td>
                     </tr>
                   </tbody>
                 </table>
@@ -1555,7 +1566,7 @@
                 </div>
                 <div style="padding: 0 12px">
                   <div class="d-flex justify-content-between line-height-27px">
-                    <div class="color-graying">Total {{ roomLabel }} Charges</div>
+                    <div class="color-graying">{{ getAccommodationChargesLabel() }}</div>
                     <div style="color: #3b82f6; font-weight: 500">{{ bookingSummaryDetails?.totalPlanPrice | currency: currency : 'symbol' : '1.2-2' }}</div>
                   </div>
                   <div *ngIf="couponDiscountAmount > 0" class="d-flex justify-content-between line-height-27px">
@@ -1895,6 +1906,22 @@
             *ngIf="showPayNow() === false && showPayLater() === false"
             (click)="createAllEnquiries()"
           >Enquiry Now</button>
+        </div>
+      </div>
+
+      <div class="container-div cancellation-policy-preview" *ngIf="cancellationRuleRows?.length">
+        <div class="cancellation-rules-card-booking">
+          <h5>Cancellation Rules</h5>
+          <p class="cancellation-rules-subtitle-booking" *ngIf="cancellationEstimate">
+            Cancelling now may deduct
+            <strong>{{ cancellationEstimate.deductionAmount | currency: currency : 'symbol' : '1.2-2' }}</strong>
+            ({{ cancellationEstimate.chargeLabel }}). Estimated refundable:
+            <strong>{{ cancellationEstimate.refundableAmount | currency: currency : 'symbol' : '1.2-2' }}</strong>.
+          </p>
+          <div class="cancellation-rule-row-booking" *ngFor="let rule of cancellationRuleRows">
+            <div>{{ rule.window }}</div>
+            <div class="charge">{{ rule.chargeLabel }}</div>
+          </div>
         </div>
       </div>
     </div>
