@@ -3063,7 +3063,7 @@
                       "
                       [attr.id]="'plan-' + plan.code"
                       [ngClass]="{
-                        'scroll-highlight': isPlanSelected(plan.code),
+                        'scroll-highlight': isPlanSelected(plan.code, room),
                         'disabled-plan-card': isPlanDisabled(plan, room),
                       }"
                     >
@@ -3140,14 +3140,14 @@
                              <select
                               class="select-icon"
                               id="inputGroupSelect01"
-                              [(ngModel)]="selectedRoomsByPlan[getRoomPlanSelectionKey(room.name, plan.code)]"
+                              [(ngModel)]="selectedRoomsByPlan[getRoomPlanSelectionKey(room.id, plan.code)]"
                               (ngModelChange)="
-                                onRoomSelect(room.name, plan.code, $event)
+                                onRoomSelect(room.id, plan.code, $event)
                               "
                             >
                               <!-- Ensure default is assigned -->
                               <ng-container
-                                *ngIf="setDefaultRoomIfMissing(getRoomPlanSelectionKey(room.name, plan.code))"
+                                *ngIf="setDefaultRoomIfMissing(getRoomPlanSelectionKey(room.id, plan.code))"
                               ></ng-container>
 
                               <option
@@ -3156,7 +3156,7 @@
                                     getMinAvailableRooms(
                                       room.ratesAndAvailabilityDtos
                                     ),
-                                    room.name,
+                                    room.id,
                                     plan.code
                                   )
                                 "
@@ -3181,11 +3181,11 @@
                               <div class="d-flex increament-bg">
                                 <div
                                   class="cursor-pointer minus-btn"
-                                  (click)="onDecrement(plan.code, 'adults')"
+                                  (click)="onDecrement(plan.code, 'adults', room)"
                                   [class.disabled]="
-                                    selectedGuestsByPlan[plan.code]?.adults <=
+                                    getSelectedAdultsForPlan(room, plan) <=
                                     selectedRoomsByPlan[
-                                      room.name + '_' + plan.code
+                                      getRoomPlanSelectionKey(room.id, plan.code)
                                     ]
                                   "
                                 >
@@ -3193,7 +3193,7 @@
                                 </div>
                                 <div>
                                   {{
-                                    selectedGuestsByPlan[plan.code]?.adults || 0
+                                    getSelectedAdultsForPlan(room, plan)
                                   }}
                                 </div>
                                 <div
@@ -3220,12 +3220,12 @@
                               <div class="d-flex increament-bg">
                                 <div
                                   class="cursor-pointer minus-btn"
-                                  (click)="onDecrement(plan.code, 'children')"
+                                  (click)="onDecrement(plan.code, 'children', room)"
                                 >
                                   <i class="fa-solid fa-minus"></i>
                                 </div>
                                 <div>
-                                  {{ getChildCount(plan.code) }}
+                                  {{ getChildCount(plan.code, room) }}
                                 </div>
                                 <div
                                   class="cursor-pointer plus-btn"
@@ -3246,7 +3246,7 @@
                             </div>
 
                             <!-- Show age selectors for each child -->
-                            <div *ngIf="childAgesByPlan[plan.code]?.length">
+                            <div *ngIf="childAgesByPlan[getRoomPlanSelectionKey(room.id, plan.code)]?.length">
                               <div
                                 style="
                                   display: flex;
@@ -3255,7 +3255,7 @@
                                   flex-wrap: wrap;
                                 "
                                 *ngFor="
-                                  let age of childAgesByPlan[plan.code];
+                                  let age of childAgesByPlan[getRoomPlanSelectionKey(room.id, plan.code)];
                                   let i = index
                                 "
                                 class="mt-2"
@@ -3265,8 +3265,8 @@
                                 >
                                 <select
                                   class="select-icon"
-                                  [(ngModel)]="childAgesByPlan[plan.code][i]"
-                                  (change)="onChildAgeChange(plan.code, plan)"
+                                  [(ngModel)]="childAgesByPlan[getRoomPlanSelectionKey(room.id, plan.code)][i]"
+                                  (change)="onChildAgeChange(plan.code, plan, room)"
                                 >
                                   <option [ngValue]="null" disabled>0</option>
                                   <option
@@ -3373,14 +3373,14 @@
                              <select
                               class="select-icon"
                               id="inputGroupSelect01"
-                              [(ngModel)]="selectedRoomsByPlan[getRoomPlanSelectionKey(room.name, plan.code)]"
+                              [(ngModel)]="selectedRoomsByPlan[getRoomPlanSelectionKey(room.id, plan.code)]"
                               (ngModelChange)="
-                                onRoomSelect(room.name, plan.code, $event)
+                                onRoomSelect(room.id, plan.code, $event)
                               "
                             >
                               <!-- Ensure default is assigned -->
                               <ng-container
-                                *ngIf="setDefaultRoomIfMissing(getRoomPlanSelectionKey(room.name, plan.code))"
+                                *ngIf="setDefaultRoomIfMissing(getRoomPlanSelectionKey(room.id, plan.code))"
                               ></ng-container>
 
                               <option
@@ -3389,7 +3389,7 @@
                                     getMinAvailableRooms(
                                       room.ratesAndAvailabilityDtos
                                     ),
-                                    room.name,
+                                    room.id,
                                     plan.code
                                   )
                                 "
@@ -3423,11 +3423,11 @@
                               <div class="d-flex increament-bg">
                                 <div
                                   class="cursor-pointer minus-btn"
-                                  (click)="onDecrement(plan.code, 'adults')"
+                                  (click)="onDecrement(plan.code, 'adults', room)"
                                   [class.disabled]="
-                                    selectedGuestsByPlan[plan.code]?.adults <=
+                                    getSelectedAdultsForPlan(room, plan) <=
                                     selectedRoomsByPlan[
-                                      room.name + '_' + plan.code
+                                      getRoomPlanSelectionKey(room.id, plan.code)
                                     ]
                                   "
                                 >
@@ -3435,7 +3435,7 @@
                                 </div>
                                 <div>
                                   {{
-                                    selectedGuestsByPlan[plan.code]?.adults || 0
+                                    getSelectedAdultsForPlan(room, plan)
                                   }}
                                 </div>
                                 <div
@@ -3463,12 +3463,12 @@
                             <div class="d-flex increament-bg">
                               <div
                                 class="cursor-pointer minus-btn"
-                                (click)="onDecrement(plan.code, 'children')"
+                                (click)="onDecrement(plan.code, 'children', room)"
                               >
                                 <i class="fa-solid fa-minus"></i>
                               </div>
                               <div>
-                                {{ getChildCount(plan.code) }}
+                                {{ getChildCount(plan.code, room) }}
                               </div>
                               <div
                                 class="cursor-pointer plus-btn"
@@ -3483,7 +3483,7 @@
                         </div>
                         <div
                           class="d-block"
-                          *ngIf="childAgesByPlan[plan.code]?.length"
+                          *ngIf="childAgesByPlan[getRoomPlanSelectionKey(room.id, plan.code)]?.length"
                         >
                           <div
                             style="
@@ -3493,7 +3493,7 @@
                               flex-wrap: wrap;
                             "
                             *ngFor="
-                              let age of childAgesByPlan[plan.code];
+                              let age of childAgesByPlan[getRoomPlanSelectionKey(room.id, plan.code)];
                               let i = index
                             "
                             class="mt-2"
@@ -3503,8 +3503,8 @@
                             >
                             <select
                               class="select-icon"
-                              [(ngModel)]="childAgesByPlan[plan.code][i]"
-                              (change)="onChildAgeChange(plan.code, plan)"
+                              [(ngModel)]="childAgesByPlan[getRoomPlanSelectionKey(room.id, plan.code)][i]"
+                              (change)="onChildAgeChange(plan.code, plan, room)"
                             >
                               <option [ngValue]="null" disabled>0</option>
                               <option *ngFor="let a of ageOptions" [value]="a">

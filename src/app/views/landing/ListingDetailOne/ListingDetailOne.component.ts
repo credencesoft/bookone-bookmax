@@ -1233,6 +1233,12 @@ this.token.savePropertyUrl(currentUrl);
     this.selectedRoomsByPlan = {};
 
     this.selectedPlansSummary.forEach(plan => {
+      const planKey = this.getRoomPlanSelectionKey(plan.roomId ?? plan.roomName ?? 'room', plan.planName);
+      this.selectedGuestsByPlan[planKey] = {
+        adults: plan.adults,
+        children: plan.children
+      };
+      this.selectedRoomsByPlan[planKey] = plan.selectedRoomnumber;
       this.selectedGuestsByPlan[plan.planName] = {
         adults: plan.adults,
         children: plan.children
@@ -1659,6 +1665,12 @@ if (storedBooking) {
     this.selectedRoomsByPlan = {};
 
     this.selectedPlansSummary.forEach(plan => {
+      const planKey = this.getRoomPlanSelectionKey(plan.roomId ?? plan.roomName ?? 'room', plan.planName);
+      this.selectedGuestsByPlan[planKey] = {
+        adults: plan.adults,
+        children: plan.children
+      };
+      this.selectedRoomsByPlan[planKey] = plan.selectedRoomnumber;
       this.selectedGuestsByPlan[plan.planName] = {
         adults: plan.adults,
         children: plan.children
@@ -1781,6 +1793,13 @@ restoreGuestSelectionsFromSummary() {
   this.childAgesByPlan = {};
 
   guestDataArray.forEach(entry => {
+    const scopedKey = this.getRoomPlanSelectionKey(entry.roomId ?? entry.roomName ?? 'room', entry.planCode);
+    this.selectedGuestsByPlan[scopedKey] = {
+      adults: entry.adults,
+      children: entry.children
+    };
+    this.selectedRoomsByPlan[scopedKey] = entry.roomCount;
+    this.childAgesByPlan[scopedKey] = entry.childAges || [];
     this.selectedGuestsByPlan[entry.planCode] = {
       adults: entry.adults,
       children: entry.children
@@ -1864,13 +1883,13 @@ getMinAvailableRooms(ratesList: any[]): number {
   );
 }
 
-getRoomOptions(totalAvailable: number, roomName: string, currentPlanCode: string): number[] {
+getRoomOptions(totalAvailable: number, roomIdentifier: string | number, currentPlanCode: string): number[] {
   // Filter only plans that belong to this room
   const usedRooms = Object.entries(this.selectedRoomsByPlan)
-    .filter(([code]) => code !== currentPlanCode && code.startsWith(roomName + '_'))
+    .filter(([code]) => code !== currentPlanCode && code.startsWith(`${roomIdentifier}_`))
     .reduce((sum, [, count]) => sum + (Number(count) || 0), 0);
 
-  const currentKey = roomName + '_' + currentPlanCode;
+  const currentKey = `${roomIdentifier}_${currentPlanCode}`;
   const currentSelection = Number(this.selectedRoomsByPlan[currentKey]) || 0;
 
   const remaining = totalAvailable - usedRooms;
@@ -2002,8 +2021,13 @@ private getPlanMaxExtraPersons(plan: any): number {
   return Math.max(1, includedAdults + maxExtraPersons || fallback || 1);
 }
 
-  getRoomPlanSelectionKey(roomName: string, planCode: string): string {
-    return `${roomName || 'room'}_${planCode}`;
+  getRoomPlanSelectionKey(roomIdentifier: string | number, planCode: string): string {
+    return `${roomIdentifier ?? 'room'}_${planCode}`;
+  }
+
+  private getScopedRoomPlanKey(room: any, rates: any, planCode: string): string {
+    const roomIdentifier = room?.id ?? rates?.roomId ?? room?.name ?? rates?.roomName;
+    return this.getRoomPlanSelectionKey(roomIdentifier, planCode);
   }
 
   setDefaultRoomIfMissing(planCode: string): boolean {
@@ -2012,20 +2036,20 @@ private getPlanMaxExtraPersons(plan: any): number {
     }
     return true;
   }
-onRoomSelect(roomName: string, planCode: string, count: number | string) {
+onRoomSelect(roomIdentifier: string | number, planCode: string, count: number | string) {
   const plan = this.findPlanByCode(planCode);
   if (this.isPlanDisabled(plan)) {
     return;
   }
 
-  const key = this.getRoomPlanSelectionKey(roomName, planCode);
+  const key = this.getRoomPlanSelectionKey(roomIdentifier, planCode);
   const selectedCount = Number(count) || 0;
 
   this.selectedRoomsByPlan[key] = selectedCount;
-  if (!this.selectedGuestsByPlan[planCode]) {
-    this.selectedGuestsByPlan[planCode] = { adults: 0, children: 0 };
+  if (!this.selectedGuestsByPlan[key]) {
+    this.selectedGuestsByPlan[key] = { adults: 0, children: 0 };
   }
-  this.selectedGuestsByPlan[planCode].adults = selectedCount;
+  this.selectedGuestsByPlan[key].adults = selectedCount;
 
 }
 
@@ -2144,26 +2168,25 @@ onIncrement(planCode: string, type: 'adults' | 'children', plan: any, room: any)
   this.guestSelectionErrors[planCode] = '';
 
   const isDayTrip = this.isDayTripPlan(plan, room);
-  const scopedRoomKey = room?.name ? this.getRoomPlanSelectionKey(room.name, planCode) : planCode;
+  const scopedRoomKey = this.getScopedRoomPlanKey(room, null, planCode);
   if (isDayTrip) {
-    this.selectedRoomsByPlan[planCode] = 1;
     this.selectedRoomsByPlan[scopedRoomKey] = 1;
   }
 
     const selectedRooms = isDayTrip
       ? 1
-      : (this.selectedRoomsByPlan[scopedRoomKey] || this.selectedRoomsByPlan[planCode] || 0);
+      : (this.selectedRoomsByPlan[scopedRoomKey] || 0);
 
   if (selectedRooms === 0 && !plan?.nonRoomPlan) {
     this.showTemporaryError(planCode, 'Please add a room first.');
     return;
   }
-  if (!this.selectedGuestsByPlan[planCode]) {
-    this.selectedGuestsByPlan[planCode] = { adults: 0, children: 0 };
+  if (!this.selectedGuestsByPlan[scopedRoomKey]) {
+    this.selectedGuestsByPlan[scopedRoomKey] = { adults: 0, children: 0 };
   }
 
-  if (!this.childAgesByPlan[planCode]) {
-    this.childAgesByPlan[planCode] = [];
+  if (!this.childAgesByPlan[scopedRoomKey]) {
+    this.childAgesByPlan[scopedRoomKey] = [];
   }
  if (plan?.nonRoomPlan) {
 const lastPlan = room?.ratesAndAvailabilityDtos?.at(-1);
@@ -2176,8 +2199,8 @@ const roomsAvailable = lastPlan?.noOfAvailable || 0;
 const totalMaxOccupancy = maxCapacityPerRoom * roomsAvailable;
 const totalMaxAdultOccupancy = maxAdult * roomsAvailable;
 
-const currentAdults = this.selectedGuestsByPlan[planCode].adults ?? 0;
-const currentChildren = this.selectedGuestsByPlan[planCode].children ?? 0;
+const currentAdults = this.selectedGuestsByPlan[scopedRoomKey].adults ?? 0;
+const currentChildren = this.selectedGuestsByPlan[scopedRoomKey].children ?? 0;
 
 if (type === 'adults') {
     const projectedAdults = currentAdults + 1;
@@ -2192,7 +2215,7 @@ if (type === 'adults') {
   }
 
     if (projectedTotal <= totalMaxOccupancy) {
-        this.selectedGuestsByPlan[planCode].adults++;
+        this.selectedGuestsByPlan[scopedRoomKey].adults++;
     } else {
         this.showTemporaryError(planCode, `Maximum occupancy of ${totalMaxOccupancy} exceeded.`);
         return;
@@ -2201,7 +2224,7 @@ if (type === 'adults') {
 else if (type === 'children') {
     const projectedChildren = currentChildren + 1;
     const projectedTotal = currentAdults + projectedChildren;
-    const ages = this.childAgesByPlan[planCode];
+    const ages = this.childAgesByPlan[scopedRoomKey];
 
     if (ages.some(a => a === null)) {
         this.showTemporaryError(planCode, 'Please select age for all existing children first.');
@@ -2209,8 +2232,8 @@ else if (type === 'children') {
     }
 
     if (projectedTotal <= totalMaxOccupancy) {
-        this.selectedGuestsByPlan[planCode].children++;
-        this.childAgesByPlan[planCode].push(null);
+        this.selectedGuestsByPlan[scopedRoomKey].children++;
+        this.childAgesByPlan[scopedRoomKey].push(null);
     } else {
         this.showTemporaryError(planCode, `Maximum occupancy of ${totalMaxOccupancy} reached.`);
         return;
@@ -2218,7 +2241,7 @@ else if (type === 'children') {
 }
 
 
-const totalGuests = this.selectedGuestsByPlan[planCode].adults + this.selectedGuestsByPlan[planCode].children;
+const totalGuests = this.selectedGuestsByPlan[scopedRoomKey].adults + this.selectedGuestsByPlan[scopedRoomKey].children;
 const selectedRooms = Math.ceil(totalGuests / maxCapacityPerRoom);
 
 if (selectedRooms === 0 && !plan?.nonRoomPlan) {
@@ -2226,10 +2249,10 @@ if (selectedRooms === 0 && !plan?.nonRoomPlan) {
     return;
 }
 
-  this.selectedRoomsByPlan[planCode] = selectedRooms;
+  this.selectedRoomsByPlan[scopedRoomKey] = selectedRooms;
   }else {
     if (isDayTrip && type === 'adults') {
-      const currentAdults = this.selectedGuestsByPlan[planCode].adults || 0;
+      const currentAdults = this.selectedGuestsByPlan[scopedRoomKey].adults || 0;
       const adultLimit = this.getDayTripAdultLimit(plan);
       if (currentAdults >= adultLimit) {
         this.showTemporaryError(
@@ -2238,7 +2261,7 @@ if (selectedRooms === 0 && !plan?.nonRoomPlan) {
         );
         return;
       }
-      this.selectedGuestsByPlan[planCode].adults++;
+      this.selectedGuestsByPlan[scopedRoomKey].adults++;
       return;
     }
 
@@ -2249,9 +2272,9 @@ if (selectedRooms === 0 && !plan?.nonRoomPlan) {
     const maxOccupancy = maxCapacityPerRoom * selectedRooms;
     const totalMaxAdultOccupancy = maxAdult * selectedRooms;
 
-     const adults = this.selectedGuestsByPlan[planCode].adults;
+     const adults = this.selectedGuestsByPlan[scopedRoomKey].adults;
 
-  const ages = this.childAgesByPlan[planCode];
+  const ages = this.childAgesByPlan[scopedRoomKey];
 
   const above5Count = ages.filter(a => a !== null && a > 5).length;
   const under5Count = ages.filter(a => a !== null && a <= 5).length;
@@ -2277,7 +2300,7 @@ if (selectedRooms === 0 && !plan?.nonRoomPlan) {
      }
 
 
-    this.selectedGuestsByPlan[planCode].adults++;
+    this.selectedGuestsByPlan[scopedRoomKey].adults++;
     return;
   }
 
@@ -2299,8 +2322,8 @@ if (selectedRooms === 0 && !plan?.nonRoomPlan) {
       return;
     }
 
-    this.selectedGuestsByPlan[planCode].children++;
-    this.childAgesByPlan[planCode].push(null);
+    this.selectedGuestsByPlan[scopedRoomKey].children++;
+    this.childAgesByPlan[scopedRoomKey].push(null);
 
     return;
   }
@@ -2317,20 +2340,22 @@ private showTemporaryError(planCode: string, message: string) {
     this.guestSelectionErrors[planCode] = '';
   }, 4000);
 }
-onDecrement(planCode: string, type: 'adults' | 'children') {
+onDecrement(planCode: string, type: 'adults' | 'children', room?: any) {
   const plan = this.findPlanByCode(planCode);
   if (this.isPlanDisabled(plan)) {
     return;
   }
 
-  if (this.selectedGuestsByPlan[planCode] && this.selectedGuestsByPlan[planCode][type] > 0) {
-    this.selectedGuestsByPlan[planCode][type]--;
+  const scopedRoomKey = this.getScopedRoomPlanKey(room, null, planCode);
+
+  if (this.selectedGuestsByPlan[scopedRoomKey] && this.selectedGuestsByPlan[scopedRoomKey][type] > 0) {
+    this.selectedGuestsByPlan[scopedRoomKey][type]--;
 
     if (type === 'children') {
-      this.childAgesByPlan[planCode].pop();
+      this.childAgesByPlan[scopedRoomKey].pop();
     }
 
-    const currentGuests = this.selectedGuestsByPlan[planCode];
+    const currentGuests = this.selectedGuestsByPlan[scopedRoomKey];
     const totalGuests = (currentGuests.adults || 0) + (currentGuests.children || 0);
 
     if (totalGuests === 0) {
@@ -2340,14 +2365,14 @@ onDecrement(planCode: string, type: 'adults' | 'children') {
       );
 
       // ✅ Optionally remove from localStorage
-      const roomCount = this.selectedRoomsByPlan[planCode] || 0;
+      const roomCount = this.selectedRoomsByPlan[scopedRoomKey] || 0;
       const guestDataKey = `guestData_${planCode}_${roomCount}`;
       sessionStorage.removeItem(guestDataKey);
 
       // ✅ Optionally clean up in-memory maps
-      delete this.selectedGuestsByPlan[planCode];
-      delete this.selectedRoomsByPlan[planCode];
-      delete this.childAgesByPlan[planCode];
+      delete this.selectedGuestsByPlan[scopedRoomKey];
+      delete this.selectedRoomsByPlan[scopedRoomKey];
+      delete this.childAgesByPlan[scopedRoomKey];
 
       // ✅ Update sessionStorage
       sessionStorage.setItem(
@@ -2359,21 +2384,22 @@ onDecrement(planCode: string, type: 'adults' | 'children') {
 }
 
 
-onChildAgeChange(planCode: string, plan: any) {
+onChildAgeChange(planCode: string, plan: any, room?: any) {
   if (this.isPlanDisabled(plan)) {
     return;
   }
 
-  const selectedRooms = this.selectedRoomsByPlan[planCode] || 0;
+  const scopedRoomKey = this.getScopedRoomPlanKey(room, null, planCode);
+  const selectedRooms = this.selectedRoomsByPlan[scopedRoomKey] || 0;
   const maxAdult = plan.maximumOccupancy || 0;
   const maxChild = plan.noOfChildren || 0;
 
   const maxCapacityPerRoom = maxAdult + maxChild;
   const maxOccupancy = maxCapacityPerRoom * selectedRooms;
 
-  const ages = this.childAgesByPlan[planCode] || [];
+  const ages = this.childAgesByPlan[scopedRoomKey] || [];
 
-  const adults = this.selectedGuestsByPlan[planCode]?.adults || 0;
+  const adults = this.selectedGuestsByPlan[scopedRoomKey]?.adults || 0;
 
   const above5Count = ages.filter(a => a !== null && a > 5).length;
   const under5Count = ages.filter(a => a !== null && a <= 5).length;
@@ -2398,12 +2424,14 @@ onChildAgeChange(planCode: string, plan: any) {
 
   this.guestSelectionErrors[planCode] = '';
 }
-getChildCount(planCode: string) {
-  return (this.childAgesByPlan[planCode] || []).filter(age => age > 0).length;
+getChildCount(planCode: string, room?: any) {
+  const scopedRoomKey = this.getScopedRoomPlanKey(room, null, planCode);
+  return (this.childAgesByPlan[scopedRoomKey] || this.childAgesByPlan[planCode] || []).filter(age => age > 0).length;
 }
-resetLastChangedAge(planCode: string) {
-  const lastIndex = this.childAgesByPlan[planCode].length - 1;
-  this.childAgesByPlan[planCode][lastIndex] = null;
+resetLastChangedAge(planCode: string, room?: any) {
+  const scopedRoomKey = this.getScopedRoomPlanKey(room, null, planCode);
+  const lastIndex = this.childAgesByPlan[scopedRoomKey]?.length - 1;
+  this.childAgesByPlan[scopedRoomKey][lastIndex] = null;
 }
   addRoom() {
     if (this.rooms >= 30) return; // max 30 rooms total
@@ -2439,16 +2467,18 @@ resetLastChangedAge(planCode: string) {
 
   getCodeandSetDefaultGHC(plancode): void {
   const planCode = plancode;
+  const rate = this.getRateByPlanCode(planCode);
+  const scopedKey = this.getScopedRoomPlanKey(this.selectedRoom, rate, planCode);
 
   // 1. Assign default selection
-  this.selectedRoomsByPlan[planCode] = 1;
-  this.selectedGuestsByPlan[planCode] = {
+  this.selectedRoomsByPlan[scopedKey] = 1;
+  this.selectedGuestsByPlan[scopedKey] = {
     adults: this.adults,
     children: this.childno,
   };
 
   // 2. Trigger plan selection
-  this.onPlanSelect(planCode, this.getRateByPlanCode(planCode));
+  this.onPlanSelect(planCode, rate, this.selectedRoom);
   this.isPanelOpen = false;
   // 3. Scroll to the plan card — even if it's already in view
   setTimeout(() => {
@@ -2467,8 +2497,9 @@ resetLastChangedAge(planCode: string) {
 
   onPlanSelect(planCode: string, rates: any, roomContext?: any) {
     console.log('plan selected value is',this.selectedRoomsByPlan);
-    const roomId = rates.roomId;
-    const plan = rates.roomRatePlans.find((p) => p.code === planCode && rates.roomId === roomId);
+    const roomId = roomContext?.id ?? rates?.roomId;
+    const roomName = roomContext?.name ?? rates?.roomName ?? '';
+    const plan = rates?.roomRatePlans?.find((p) => p.code === planCode && rates?.roomId === roomId);
 
     // Reset
     if (!plan) return;
@@ -2480,29 +2511,22 @@ resetLastChangedAge(planCode: string) {
     if (this.isPlanDisabled(plan, roomContext || rates)) return;
 
     const isDayTrip = this.isDayTripPlan(plan, roomContext || rates);
+    const scopedRoomKey = this.getScopedRoomPlanKey(roomContext, rates, planCode);
     if (isDayTrip) {
-      this.selectedRoomsByPlan[planCode] = 1;
-      if (rates?.roomName) {
-        this.selectedRoomsByPlan[this.getRoomPlanSelectionKey(rates.roomName, planCode)] = 1;
+      this.selectedRoomsByPlan[scopedRoomKey] = 1;
+      if (!this.selectedGuestsByPlan[scopedRoomKey]) {
+        this.selectedGuestsByPlan[scopedRoomKey] = { adults: this.getPlanIncludedAdults(plan) || 1, children: 0 };
       }
-      if (!this.selectedGuestsByPlan[planCode]) {
-        this.selectedGuestsByPlan[planCode] = { adults: this.getPlanIncludedAdults(plan) || 1, children: 0 };
-      }
-      this.selectedGuestsByPlan[planCode].adults = Math.min(
-        Math.max(1, Number(this.selectedGuestsByPlan[planCode].adults || 1)),
+      this.selectedGuestsByPlan[scopedRoomKey].adults = Math.min(
+        Math.max(1, Number(this.selectedGuestsByPlan[scopedRoomKey].adults || 1)),
         this.getDayTripAdultLimit(plan),
       );
     }
-    const scopedRoomKey = roomContext?.name
-      ? this.getRoomPlanSelectionKey(roomContext.name, planCode)
-      : rates?.roomName
-      ? this.getRoomPlanSelectionKey(rates.roomName, planCode)
-      : planCode;
     const selectedRooms = isDayTrip
       ? 1
-      : (this.selectedRoomsByPlan[scopedRoomKey] || this.selectedRoomsByPlan[planCode] || 0);
-    const selectedGuests = this.selectedGuestsByPlan[planCode];
-    const childAges = (this.childAgesByPlan[planCode] || []).map(a => Number(a));
+      : (this.selectedRoomsByPlan[scopedRoomKey] || 0);
+    const selectedGuests = this.selectedGuestsByPlan[scopedRoomKey] || this.selectedGuestsByPlan[planCode] || { adults: 0, children: 0 };
+    const childAges = (this.childAgesByPlan[scopedRoomKey] || this.childAgesByPlan[planCode] || []).map(a => Number(a));
     const below5Count = childAges.filter(a => !isNaN(a) && a <= 5).length;
     const above5Count = childAges.filter(a => !isNaN(a) && a > 5).length;
 
@@ -2520,13 +2544,15 @@ resetLastChangedAge(planCode: string) {
       const newEntry = {
         planCode: plan.code,
         planName: plan.name,
+        roomId,
+        roomName,
         adults: selectedGuests.adults,
         children: selectedGuests.children,
         childAges: childAges,
         roomCount: selectedRooms
       };
       const existingIndex = guestDataArray.findIndex(
-        entry => entry.planCode === plan.code
+        entry => entry.planCode === plan.code && Number(entry.roomId || 0) === Number(roomId || 0)
       );
 
 
@@ -3046,14 +3072,15 @@ onSelectPlanFromSmartCard(plan: any): void {
   }
 
   // 1. Assign default selection
-  this.selectedRoomsByPlan[planCode] = this.rooms;
-  this.selectedGuestsByPlan[planCode] = {
+  const scopedKey = this.getScopedRoomPlanKey(this.selectedRoom, rate, planCode);
+  this.selectedRoomsByPlan[scopedKey] = this.rooms;
+  this.selectedGuestsByPlan[scopedKey] = {
     adults: this.booking.noOfPersons,
     children: 0,
   };
 
   // 2. Trigger plan selection with rate
-  this.onPlanSelect(planCode, rate);
+  this.onPlanSelect(planCode, rate, this.selectedRoom);
   this.isPanelOpen = false;
 
   // 3. Scroll to the plan card — even if it's already in view
@@ -3076,14 +3103,16 @@ onSelectPlanFromPopup(plan: any): void {
   const planCode = plan.code;
 
   // 1. Assign default selection
-  this.selectedRoomsByPlan[planCode] = 1;
-  this.selectedGuestsByPlan[planCode] = {
+  const rate = this.getRateByPlanCode(planCode);
+  const scopedKey = this.getScopedRoomPlanKey(this.selectedRoom, rate, planCode);
+  this.selectedRoomsByPlan[scopedKey] = 1;
+  this.selectedGuestsByPlan[scopedKey] = {
     adults: 2,
     children: 0,
   };
 
   // 2. Trigger plan selection
-  this.onPlanSelect(planCode, this.getRateByPlanCode(planCode));
+  this.onPlanSelect(planCode, rate, this.selectedRoom);
   this.isPanelOpen = false;
   // 3. Scroll to the plan card — even if it's already in view
   setTimeout(() => {
@@ -3411,7 +3440,7 @@ getPlanTaxTotal(plan: any, discountPercentage = 0): number {
 private getSelectedRoomCountForPlan(room: any, plan: any): number {
   const directSelection = Number(this.selectedRoomsByPlan?.[plan?.code]);
   const roomScopedSelection = Number(
-    this.selectedRoomsByPlan?.[`${room?.name}_${plan?.code}`]
+    this.selectedRoomsByPlan?.[this.getRoomPlanSelectionKey(room?.id ?? room?.name, plan?.code)]
   );
   const selectedRoomCount =
     (!Number.isNaN(directSelection) && directSelection > 0
@@ -3421,6 +3450,19 @@ private getSelectedRoomCountForPlan(room: any, plan: any): number {
       : 1);
 
   return selectedRoomCount;
+}
+
+private getSelectedGuestsForPlan(room: any, plan: any): { adults: number; children: number } {
+  const scopedKey = this.getRoomPlanSelectionKey(room?.id ?? room?.name, plan?.code);
+  return this.selectedGuestsByPlan?.[scopedKey] || this.selectedGuestsByPlan?.[plan?.code] || { adults: 0, children: 0 };
+}
+
+getSelectedAdultsForPlan(room: any, plan: any): number {
+  return Number(this.getSelectedGuestsForPlan(room, plan)?.adults || 0);
+}
+
+getSelectedChildrenForPlan(room: any, plan: any): number {
+  return Number(this.getSelectedGuestsForPlan(room, plan)?.children || 0);
 }
 
 getRoomPlanDisplayAmount(room: any, plan: any): number {
@@ -7423,9 +7465,11 @@ this.token.savePropertyUrl(currentUrl);
 
     return cheapestPlan;
   }
-isPlanSelected(planName: string): boolean {
+isPlanSelected(planName: string, room?: any): boolean {
   return this.selectedPlansSummary.some(
-    (p) => p.planName === planName
+    (p) =>
+      p.planName === planName &&
+      (!room?.id || Number(p.roomId || 0) === Number(room.id))
   );
 
 }
@@ -8123,14 +8167,15 @@ getAvailableRoomsForGHC(availableRooms: any[]) {
               const planCode = plan.code;
 
               // 1. Assign default selection
-              this.selectedRoomsByPlan[planCode] = 1;
-              this.selectedGuestsByPlan[planCode] = {
+              const scopedKey = this.getRoomPlanSelectionKey(room.id, planCode);
+              this.selectedRoomsByPlan[scopedKey] = 1;
+              this.selectedGuestsByPlan[scopedKey] = {
                 adults: this.adults,
                 children: this.childno,
               };
 
               // 2. Trigger plan selection
-              this.onPlanSelect(plan.code, rate);
+              this.onPlanSelect(plan.code, rate, room);
               this.isPanelOpen = false;
               // 3. Scroll to the plan card — even if it's already in view
               setTimeout(() => {
