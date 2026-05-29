@@ -58,6 +58,7 @@ import { HotelBookingService } from 'src/services/hotel-booking.service';
 import { Logger } from 'src/services/logger.service';
 import { Template } from 'src/app/model/template';
 import { Components } from 'src/app/model/components';
+import { CurrencyService } from 'src/app/services/currency.service';
 import { Customer } from 'src/app/model/customer';
 import { EnquiryForm } from '../onboarding-roomdetails-form/onboarding-roomdetails-form.component';
 import { PropertyEnquiryDto } from 'src/model/propertyEnquiryDto';
@@ -91,6 +92,7 @@ export class BookingComponent implements OnInit {
     'Your booking session has expired. Please reselect your room to continue.';
   PropertyUrl: string;
   currency: string;
+  exchangeRates: any;
   message: MessageDto;
   enquiryForm: EnquiryDto;
   template: Template;
@@ -395,6 +397,7 @@ export class BookingComponent implements OnInit {
     private messageService: MessageService,
     private http: HttpClient,
     private hotelBookingService: HotelBookingService,
+    private currencyService: CurrencyService,
   ) {
     this.message = new MessageDto();
     this.myDate = new Date();
@@ -570,7 +573,40 @@ export class BookingComponent implements OnInit {
   }
   }
 
+  resolveActiveCurrency() {
+    if (!this.exchangeRates) {
+      this.currency = (this.businessUser && this.businessUser.localCurrency) ? this.businessUser.localCurrency.toUpperCase() : 'INR';
+      return;
+    }
+    const savedCurrency = sessionStorage.getItem('selected_currency');
+    if (savedCurrency) {
+      this.currency = savedCurrency.toUpperCase();
+    } else {
+      this.currency = (this.businessUser && this.businessUser.localCurrency) ? this.businessUser.localCurrency.toUpperCase() : 'INR';
+    }
+  }
+
   ngOnInit() {
+    this.currencyService.getLatestRates().subscribe(
+      (data) => {
+        if (data && data.rates) {
+          this.exchangeRates = data.rates;
+          this.resolveActiveCurrency();
+          this.changeDetectorRefs.detectChanges();
+        } else {
+          this.exchangeRates = null;
+          this.resolveActiveCurrency();
+          this.changeDetectorRefs.detectChanges();
+        }
+      },
+      (error) => {
+        console.error('Failed to load exchange rates in BookingComponent:', error);
+        this.exchangeRates = null;
+        this.resolveActiveCurrency();
+        this.changeDetectorRefs.detectChanges();
+      }
+    );
+
     if (this.bookingContextMissing) {
       return;
     }
@@ -2045,7 +2081,7 @@ export class BookingComponent implements OnInit {
     this.accommodationvalue = this.businessUser.businessServiceDtoList.filter(
       (ele) => ele.name === 'Accommodation',
     );
-    this.currency = this.businessUser.localCurrency.toUpperCase();
+    this.resolveActiveCurrency();
     this.getOfferDetails();
     this.bookingData = this.token.getBookingData();
     this.getPropertyDetailsById(this.bookingData?.propertyId);
@@ -10758,7 +10794,7 @@ export class BookingComponent implements OnInit {
           (ele) => ele.name === 'Accommodation',
         );
         this.token.saveProperty(this.businessUser);
-        this.currency = this.businessUser.localCurrency.toUpperCase();
+        this.resolveActiveCurrency();
         this.businessTypeName = this.businessUser.businessType;
         this.businessServiceDto = this.businessUser.businessServiceDtoList.find(
           (data) => data.name === this.businessUser.businessType,

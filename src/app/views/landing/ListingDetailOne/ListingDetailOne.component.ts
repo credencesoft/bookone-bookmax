@@ -13,7 +13,9 @@ import {
   Output,
   PLATFORM_ID,
   Inject,
+  Optional,
 } from '@angular/core';
+import { CurrencyService } from 'src/app/services/currency.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
   ModalDismissReasons,
@@ -279,6 +281,7 @@ export class ListingDetailOneComponent implements OnInit {
     message: this.messageControl,
   });
   currency: string;
+  exchangeRates: any;
   model: NgbDateStruct;
   businessServices: BusinessServiceDtoList[];
   businessService: BusinessServiceDtoList;
@@ -985,6 +988,8 @@ expandedPlans: { [key: string]: boolean } = {};
     private viewportScroller: ViewportScroller,
     private cd: ChangeDetectorRef,
     @Inject(PLATFORM_ID) private platformId: Object,
+    private currencyService: CurrencyService,
+    @Optional() @Inject('VIEWER_COUNTRY') private viewerCountry: string
   ) {
         this.acRoute.queryParams.subscribe((params) => {
       if (params['hotelID'] !== undefined) {
@@ -1024,7 +1029,9 @@ if (params['Children'] !== undefined) {
   this.childno = Number(params['Children']);
   this.children = Number(params['Children']);
 }
-      if (params['userCurrency'] !== undefined) {
+      if (params['currency'] !== undefined) {
+        this.currency = params['currency'];
+      } else if (params['userCurrency'] !== undefined) {
         this.currency = params['userCurrency'];
       }
 
@@ -1425,6 +1432,23 @@ this.token.savePropertyUrl(currentUrl);
 
   ngOnInit() {
     localStorage.removeItem('selectPromo');
+
+    this.currencyService.getLatestRates().subscribe(
+      (data) => {
+        if (data && data.rates) {
+          this.exchangeRates = data.rates;
+          this.setCurrencyAndLocalization();
+        } else {
+          this.exchangeRates = null;
+          this.fallbackToLocalINR();
+        }
+      },
+      (error) => {
+        console.error('Failed to load exchange rates:', error);
+        this.exchangeRates = null;
+        this.fallbackToLocalINR();
+      }
+    );
 
 const couponCodeValues = sessionStorage.getItem('selectedPromoData');
 
@@ -4656,7 +4680,7 @@ onCheckOutClosed(): void {
         this.trustedURL = this.sanitizer.bypassSecurityTrustResourceUrl(
           this.dangerousUrl
         );
-        this.currency = this.businessUser.localCurrency.toUpperCase();
+        this.setCurrencyAndLocalization();
         this.businessTypeName = this.businessUser.businessType;
 
         if (this.token.getBookingCity() !== null) {
@@ -5183,7 +5207,7 @@ onCheckOutClosed(): void {
           this.trustedURL = this.sanitizer.bypassSecurityTrustResourceUrl(
             this.dangerousUrl
           );
-          this.currency = this.businessUser.localCurrency.toUpperCase();
+          this.setCurrencyAndLocalization();
           this.getOfferList(seoName);
           this.businessTypeName = this.businessUser.businessType;
 
@@ -8654,5 +8678,97 @@ onYesClick() {
 
     this.token.saveSelectedServices(normalizedAddOns);
     this.token.saveServiceData(normalizedAddOns);
+  }
+
+  setCurrencyAndLocalization() {
+    if (!this.exchangeRates) {
+      this.fallbackToLocalINR();
+      return;
+    }
+
+    // 1. If query param currency or userCurrency exists, use it
+    const queryCurrency = this.acRoute.snapshot.queryParams['currency'] || this.acRoute.snapshot.queryParams['userCurrency'];
+    if (queryCurrency) {
+      this.currency = queryCurrency.toUpperCase();
+      try {
+        sessionStorage.setItem('selected_currency', this.currency);
+      } catch (e) {
+        console.error('Error writing to sessionStorage selected_currency:', e);
+      }
+      this.cd.detectChanges();
+      return;
+    }
+
+    // 2. If query param country exists, map it to currency and use it
+    const queryCountry = this.acRoute.snapshot.queryParams['country'];
+    if (queryCountry) {
+      const countryCurrency = this.getCurrencyFromCountry(queryCountry);
+      if (countryCurrency) {
+        this.currency = countryCurrency;
+        try {
+          sessionStorage.setItem('selected_currency', this.currency);
+        } catch (e) {
+          console.error('Error writing to sessionStorage selected_currency:', e);
+        }
+        this.cd.detectChanges();
+        return;
+      }
+    }
+
+    // 3. If CloudFront viewerCountry was injected via SSR, map it
+    if (this.viewerCountry) {
+      const countryCurrency = this.getCurrencyFromCountry(this.viewerCountry);
+      if (countryCurrency) {
+        this.currency = countryCurrency;
+        try {
+          sessionStorage.setItem('selected_currency', this.currency);
+        } catch (e) {
+          console.error('Error writing to sessionStorage selected_currency:', e);
+        }
+        this.cd.detectChanges();
+        return;
+      }
+    }
+
+    // 4. Fallback to property's local currency
+    if (this.businessUser && this.businessUser.localCurrency) {
+      this.currency = this.businessUser.localCurrency.toUpperCase();
+    } else {
+      this.currency = 'INR';
+    }
+    try {
+      sessionStorage.setItem('selected_currency', this.currency);
+    } catch (e) {
+      console.error('Error writing to sessionStorage selected_currency:', e);
+    }
+    this.cd.detectChanges();
+  }
+
+  getCurrencyFromCountry(country: string): string {
+    const mapping = {
+      'US': 'USD',
+      'IN': 'INR',
+      'AU': 'AUD',
+      'NZ': 'NZD',
+      'GB': 'GBP',
+      'EU': 'EUR',
+      'CA': 'CAD',
+      'BD': 'BDT'
+    };
+    return mapping[country.toUpperCase()] || null;
+  }
+
+  fallbackToLocalINR() {
+    if (this.businessUser && this.businessUser.localCurrency) {
+      this.currency = this.businessUser.localCurrency.toUpperCase();
+    } else {
+      this.currency = 'INR';
+    }
+    try {
+      sessionStorage.setItem('selected_currency', this.currency);
+    } catch (e) {
+      console.error('Error writing to sessionStorage selected_currency:', e);
+    }
+    this.cd.detectChanges();
   }
 }
