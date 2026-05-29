@@ -4463,6 +4463,20 @@ onCheckOutClosed(): void {
   );
 }
 
+  stripHtml(html: string): string {
+    if (!html) return '';
+    let text = html
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&amp;/g, '&')
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;/g, "'")
+      .replace(/&nbsp;/g, ' ');
+
+    text = text.replace(/<[^>]*>/g, '');
+    return text.replace(/\s+/g, ' ').trim();
+  }
+
   updateTag() {
     let keywords = this.businessUser?.address?.city;
 
@@ -4470,7 +4484,7 @@ onCheckOutClosed(): void {
       this.businessUser.businessDescription != null &&
       this.businessUser.businessDescription != undefined
     ) {
-      this.description = this.businessUser.businessDescription;
+      this.description = this.stripHtml(this.businessUser.businessDescription);
     } else {
       this.description = 'Contact No: +91-7326079861';
     }
@@ -4488,7 +4502,7 @@ onCheckOutClosed(): void {
       this.businessUser.businessDescription != null &&
       this.businessUser.businessDescription != undefined
     ) {
-      this.ogDescription = this.businessUser.businessDescription;
+      this.ogDescription = this.stripHtml(this.businessUser.businessDescription);
     } else {
       this.ogDescription = 'Contact No: +91-7326079861';
     }
@@ -4830,6 +4844,12 @@ onCheckOutClosed(): void {
       return;
     }
 
+    const activeCurrency = (this.currency || this.businessUser.localCurrency || 'INR').toUpperCase();
+
+    const totalVal = this.totalAmountParam != null && this.totalAmountParam !== undefined ? Number(this.totalAmountParam).toFixed(2) : '0.00';
+    const taxVal = this.taxAmountParam != null && this.taxAmountParam !== undefined ? Number(this.taxAmountParam).toFixed(2) : '0.00';
+    const baseVal = (Number(totalVal) - Number(taxVal)).toFixed(2);
+
   const schema = {
   "@context": "https://schema.org",
   "@type": "Hotel",
@@ -4851,20 +4871,20 @@ onCheckOutClosed(): void {
     "name": "Economy",
     "priceSpecification": {
       "@type": "CompoundPriceSpecification",
-      "price": this.totalAmountParam,       // total amount
-      "priceCurrency": this.businessUser.localCurrency.toUpperCase(),
+      "price": totalVal,       // total amount
+      "priceCurrency": activeCurrency,
       "priceComponent": [
         {
           "@type": "UnitPriceSpecification",
           "name": "Base rate",
-          "price": this.totalAmountParam - this.taxAmountParam,
-          "priceCurrency": this.businessUser.localCurrency.toUpperCase()
+          "price": baseVal,
+          "priceCurrency": activeCurrency
         },
         {
           "@type": "UnitPriceSpecification",
           "name": "Tax",
-          "price": this.taxAmountParam,
-          "priceCurrency": this.businessUser.localCurrency.toUpperCase()
+          "price": taxVal,
+          "priceCurrency": activeCurrency
         }
       ]
     },
@@ -8695,6 +8715,7 @@ onYesClick() {
       } catch (e) {
         console.error('Error writing to sessionStorage selected_currency:', e);
       }
+      this.generateAndSetSchema();
       this.cd.detectChanges();
       return;
     }
@@ -8710,6 +8731,7 @@ onYesClick() {
         } catch (e) {
           console.error('Error writing to sessionStorage selected_currency:', e);
         }
+        this.generateAndSetSchema();
         this.cd.detectChanges();
         return;
       }
@@ -8725,6 +8747,7 @@ onYesClick() {
         } catch (e) {
           console.error('Error writing to sessionStorage selected_currency:', e);
         }
+        this.generateAndSetSchema();
         this.cd.detectChanges();
         return;
       }
@@ -8741,6 +8764,7 @@ onYesClick() {
     } catch (e) {
       console.error('Error writing to sessionStorage selected_currency:', e);
     }
+    this.generateAndSetSchema();
     this.cd.detectChanges();
   }
 
@@ -8769,6 +8793,7 @@ onYesClick() {
     } catch (e) {
       console.error('Error writing to sessionStorage selected_currency:', e);
     }
+    this.generateAndSetSchema();
     this.cd.detectChanges();
   }
 }
