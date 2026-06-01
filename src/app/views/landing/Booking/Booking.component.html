@@ -298,9 +298,6 @@
                       <div class="text-center aminities-highlights-details">Guests</div>
                       <div class="text-center">
                         {{ totalPlanAdults }} Adults, {{ totalPlanChildren }} Children
-                        <div *ngIf="totalPlanChildren > 0" style="font-size: 11px; color: #6b7280; margin-top: 1px;">
-                          ({{ totalPlanChildrenAboveAgeLimit }} Charged, {{ totalPlanChildrenBelowAgeLimit }} Free)
-                        </div>
                       </div>
                     </div>
                   </div>
@@ -1094,9 +1091,6 @@
                       <div class="text-center">
                         {{ totalPlanAdults }} Adults,
                         {{ totalPlanChildren }} Children
-                        <div *ngIf="totalPlanChildren > 0" style="font-size: 11px; color: #6b7280; margin-top: 1px;">
-                          ({{ totalPlanChildrenAboveAgeLimit }} Charged, {{ totalPlanChildrenBelowAgeLimit }} Free)
-                        </div>
                       </div>
                     </div>
                   </div>
