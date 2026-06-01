@@ -328,7 +328,7 @@
       </div>
 
       <button class="btn-summary-change" (click)="bookingSummaryView()">
-        Details &nbsp;
+        Continue &nbsp;
         <i
           style="margin-top: 4px"
           class="fa-solid fa-angle-up"
@@ -2676,7 +2676,8 @@
         <div class="image-container">
           <div class="maiiin">
         <div *ngFor="let room of availableRooms; let i = index">
-          <div class="right-popup" [class.show]="isPanelOpen">
+          <ng-container *ngIf="hasVisiblePlans(room)">
+            <div class="right-popup" [class.show]="isPanelOpen">
             <div class="popup-header">
               <div
                 style="
@@ -2857,9 +2858,7 @@
                     style="
                       border: 1px solid #e0e0e0;
                       border-radius: 20px;
-                    "
-                    [style.cursor]="
-                      shouldDisableRoomImageClick(room) ? 'default' : 'pointer'
+                      cursor: pointer;
                     "
                   >
                     <!-- Top Badge -->
@@ -2888,9 +2887,7 @@
                     <!-- Room Image -->
                     <!-- Fallback image if imageList is empty or undefined -->
                     <img
-                      (click)="
-                        !shouldDisableRoomImageClick(room) && togglePanel(room, i)
-                      "
+                      (click)="togglePanel(room, i)"
                       *ngIf="!room.imageList || room.imageList.length === 0"
                       src="https://themissionneighbourhood.com/images/no-image.png"
                       class="w-100"
@@ -2898,16 +2895,13 @@
                         aspect-ratio: 4/3;
                         object-fit: cover;
                         border-radius: 0;
-                      " [style.cursor]="
-                      shouldDisableRoomImageClick(room) ? 'default' : 'pointer'
-                    "
+                        cursor: pointer;
+                      "
                     />
 
                     <!-- Show single image if only one or two images but they are same -->
                     <img
-                      (click)="
-                        !shouldDisableRoomImageClick(room) && togglePanel(room, i)
-                      "
+                      (click)="togglePanel(room, i)"
                       *ngIf="
                         room.imageList?.length > 0 &&
                         (room.imageList.length === 1 ||
@@ -2920,25 +2914,21 @@
                         aspect-ratio: 4/3;
                         object-fit: cover;
                         border-radius: 0;
-                      " [style.cursor]="
-                      shouldDisableRoomImageClick(room) ? 'default' : 'pointer'
-                    "
+                        cursor: pointer;
+                      "
                     />
 
                     <!-- Show carousel only if there are 2+ unique images -->
                     <div
-                      (click)="
-                        !shouldDisableRoomImageClick(room) && togglePanel(room, i)
-                      "
+                      (click)="togglePanel(room, i)"
                       *ngIf="
                         room.imageList?.length > 1 &&
                         room.imageList[0]?.url !== room.imageList[1]?.url
                       "
                       id="carouselExampleIndicators"
                       class="carousel slide"
-                      data-ride="carousel" [style.cursor]="
-                      shouldDisableRoomImageClick(room) ? 'default' : 'pointer'
-                    "
+                      data-ride="carousel"
+                      style="cursor: pointer;"
                     >
                       <div class="carousel-inner img_size_room">
                         <div
@@ -2954,9 +2944,8 @@
                               aspect-ratio: 4/3;
                               object-fit: cover;
                               border-radius: 0;
-                            " [style.cursor]="
-                      shouldDisableRoomImageClick(room) ? 'default' : 'pointer'
-                    "
+                              cursor: pointer;
+                            "
                           />
                         </div>
                       </div>
@@ -2981,10 +2970,7 @@
                         </div>
 
                         <div
-                          (click)="
-                            !shouldDisableRoomImageClick(room) &&
-                            togglePanel(room, i)
-                          "
+                          (click)="togglePanel(room, i)"
                           [style.top.px]="
                             (room.roomFacilities?.length || 0) > 0 ? null : -17
                           "
@@ -3113,9 +3099,6 @@
                               }}
                             </div>
                             <div class="perNight">{{ getRoomPlanPriceLabel(room, plan) }}</div>
-                            <span *ngIf="isDayTripPlan(plan, room)" class="day-trip-badge">
-                              Day Trip
-                            </span>
                           </div>
                         </div>
                       </div>
@@ -3144,6 +3127,8 @@
                               (ngModelChange)="
                                 onRoomSelect(room.id, plan.code, $event)
                               "
+                              [disabled]="isPlanDisabled(plan, room)"
+                              [class.disabled-plan-control]="isPlanDisabled(plan, room)"
                             >
                               <!-- Ensure default is assigned -->
                               <ng-container
@@ -3178,10 +3163,10 @@
                               Adult
                             </div>
                             <div>
-                              <div class="d-flex increament-bg">
+                              <div class="d-flex increament-bg" [class.disabled-plan-control]="isPlanDisabled(plan, room)">
                                 <div
                                   class="cursor-pointer minus-btn"
-                                  (click)="onDecrement(plan.code, 'adults', room)"
+                                  (click)="!isPlanDisabled(plan, room) ? onDecrement(plan.code, 'adults', room) : null"
                                   [class.disabled]="
                                     getSelectedAdultsForPlan(room, plan) <=
                                     selectedRoomsByPlan[
@@ -3199,7 +3184,7 @@
                                 <div
                                   class="cursor-pointer plus-btn"
                                   (click)="
-                                    onIncrement(plan.code, 'adults', plan, room)
+                                    !isPlanDisabled(plan, room) ? onIncrement(plan.code, 'adults', plan, room) : null
                                   "
                                 >
                                   <i class="fa-solid fa-plus"></i>
@@ -3217,10 +3202,10 @@
                           <div class="d-block">
                             <div class="d-flex room-number">
                               <div>Child</div>
-                              <div class="d-flex increament-bg">
+                              <div class="d-flex increament-bg" [class.disabled-plan-control]="isPlanDisabled(plan, room)">
                                 <div
                                   class="cursor-pointer minus-btn"
-                                  (click)="onDecrement(plan.code, 'children', room)"
+                                  (click)="!isPlanDisabled(plan, room) ? onDecrement(plan.code, 'children', room) : null"
                                 >
                                   <i class="fa-solid fa-minus"></i>
                                 </div>
@@ -3230,7 +3215,7 @@
                                 <div
                                   class="cursor-pointer plus-btn"
                                   (click)="
-                                    onIncrement(plan.code, 'children', plan, room)
+                                    !isPlanDisabled(plan, room) ? onIncrement(plan.code, 'children', plan, room) : null
                                   "
                                 >
                                   <i class="fa-solid fa-plus"></i>
@@ -3264,9 +3249,12 @@
                                   >Child {{ i + 1 }} Age:</label
                                 >
                                 <select
+                                  [id]="'child-age-select-' + getRoomPlanSelectionKey(room.id, plan.code) + '-' + i"
                                   class="select-icon"
                                   [(ngModel)]="childAgesByPlan[getRoomPlanSelectionKey(room.id, plan.code)][i]"
                                   (change)="onChildAgeChange(plan.code, plan, room)"
+                                  [disabled]="isPlanDisabled(plan, room)"
+                                  [class.disabled-plan-control]="isPlanDisabled(plan, room)"
                                 >
                                   <option [ngValue]="null" disabled>0</option>
                                   <option
@@ -3283,7 +3271,8 @@
                           <div class="d-flex room-number">
                             <div
                               class="selected"
-                              (click)="onPlanSelect(plan.code, rates, room)"
+                              [class.disabled-select-btn]="isPlanDisabled(plan, room)"
+                              (click)="!isPlanDisabled(plan, room) ? onPlanSelect(plan.code, rates, room) : null"
                             >
                               Select
                             </div>
@@ -3293,8 +3282,9 @@
                           *ngIf="isPlanDisabled(plan, room)"
                           class="plan-warning-row"
                         >
-                          <div class="plan-warning-text">
-                            {{ getPlanDisabledMessage(plan, room) }}
+                          <div class="plan-warning-text d-flex align-items-center" style="gap: 6px;">
+                            <i class="fa-solid fa-circle-info" style="font-size: 13px;"></i>
+                            <span>{{ getPlanDisabledMessage(plan, room) }}</span>
                           </div>
                         </div>
                       </div>
@@ -3346,9 +3336,6 @@
                               }}
                             </div>
                             <div class="perNight">{{ getRoomPlanPriceLabel(room, plan) }}</div>
-                            <span *ngIf="isDayTripPlan(plan, room)" class="day-trip-badge">
-                              Day Trip
-                            </span>
                           </div>
                         </div>
                       </div>
@@ -3377,6 +3364,8 @@
                               (ngModelChange)="
                                 onRoomSelect(room.id, plan.code, $event)
                               "
+                              [disabled]="isPlanDisabled(plan, room)"
+                              [class.disabled-plan-control]="isPlanDisabled(plan, room)"
                             >
                               <!-- Ensure default is assigned -->
                               <ng-container
@@ -3420,10 +3409,10 @@
                                   ></span
                                 >
                               </div>
-                              <div class="d-flex increament-bg">
+                              <div class="d-flex increament-bg" [class.disabled-plan-control]="isPlanDisabled(plan, room)">
                                 <div
                                   class="cursor-pointer minus-btn"
-                                  (click)="onDecrement(plan.code, 'adults', room)"
+                                  (click)="!isPlanDisabled(plan, room) ? onDecrement(plan.code, 'adults', room) : null"
                                   [class.disabled]="
                                     getSelectedAdultsForPlan(room, plan) <=
                                     selectedRoomsByPlan[
@@ -3441,7 +3430,7 @@
                                 <div
                                   class="cursor-pointer plus-btn"
                                   (click)="
-                                    onIncrement(plan.code, 'adults', plan , room)
+                                    !isPlanDisabled(plan, room) ? onIncrement(plan.code, 'adults', plan , room) : null
                                   "
                                 >
                                   <i class="fa-solid fa-plus"></i>
@@ -3460,10 +3449,10 @@
                                 >
                               </span>
                             </div>
-                            <div class="d-flex increament-bg">
+                            <div class="d-flex increament-bg" [class.disabled-plan-control]="isPlanDisabled(plan, room)">
                               <div
                                 class="cursor-pointer minus-btn"
-                                (click)="onDecrement(plan.code, 'children', room)"
+                                (click)="!isPlanDisabled(plan, room) ? onDecrement(plan.code, 'children', room) : null"
                               >
                                 <i class="fa-solid fa-minus"></i>
                               </div>
@@ -3473,7 +3462,7 @@
                               <div
                                 class="cursor-pointer plus-btn"
                                 (click)="
-                                  onIncrement(plan.code, 'children', plan ,room)
+                                  !isPlanDisabled(plan, room) ? onIncrement(plan.code, 'children', plan ,room) : null
                                 "
                               >
                                 <i class="fa-solid fa-plus"></i>
@@ -3502,9 +3491,12 @@
                               >Child {{ i + 1 }} Age:</label
                             >
                             <select
+                              [id]="'child-age-select-' + getRoomPlanSelectionKey(room.id, plan.code) + '-' + i"
                               class="select-icon"
                               [(ngModel)]="childAgesByPlan[getRoomPlanSelectionKey(room.id, plan.code)][i]"
                               (change)="onChildAgeChange(plan.code, plan, room)"
+                              [disabled]="isPlanDisabled(plan, room)"
+                              [class.disabled-plan-control]="isPlanDisabled(plan, room)"
                             >
                               <option [ngValue]="null" disabled>0</option>
                               <option *ngFor="let a of ageOptions" [value]="a">
@@ -3519,10 +3511,8 @@
                           <div class="d-flex room-number">
                             <div
                               class="selected"
-                              (click)="
-                                onPlanSelect(plan.code, rates, room);
-                                bookingSummaryView()
-                              "
+                              [class.disabled-select-btn]="isPlanDisabled(plan, room)"
+                              (click)="!isPlanDisabled(plan, room) ? onPlanSelect(plan.code, rates, room) : null"
                             >
                               Select
                             </div>
@@ -3532,8 +3522,9 @@
                           *ngIf="isPlanDisabled(plan, room)"
                           class="plan-warning-row plan-warning-row-mobile"
                         >
-                          <div class="plan-warning-text">
-                            {{ getPlanDisabledMessage(plan, room) }}
+                          <div class="plan-warning-text d-flex align-items-center" style="gap: 6px;">
+                            <i class="fa-solid fa-circle-info" style="font-size: 13px;"></i>
+                            <span>{{ getPlanDisabledMessage(plan, room) }}</span>
                           </div>
                         </div>
                       </div>
@@ -3559,6 +3550,7 @@
               </div>
             </div>
           </div>
+          </ng-container>
         </div>
 
         <div *ngFor="let room of soldOutRooms; let i = index">
@@ -3689,9 +3681,7 @@
                     style="
                       border: 1px solid #e0e0e0;
                       border-radius: 20px;
-                    "
-                    [style.cursor]="
-                      shouldDisableRoomImageClick(room) ? 'default' : 'pointer'
+                      cursor: pointer;
                     "
                   >
                     <!-- Top Badge -->
@@ -3705,10 +3695,7 @@
                     <!-- Room Image -->
                     <!-- Fallback image if imageList is empty or undefined -->
                     <img
-                      (click)="
-                        !shouldDisableRoomImageClick(room) &&
-                        togglePanelOne(room, i)
-                      "
+                      (click)="togglePanelOne(room, i)"
                       *ngIf="!room.imageList || room.imageList.length === 0"
                       src="https://themissionneighbourhood.com/images/no-image.png"
                       class="w-100"
@@ -3716,15 +3703,13 @@
                         aspect-ratio: 4/3;
                         object-fit: cover;
                         border-radius: 0;
+                        cursor: pointer;
                       "
                     />
 
                     <!-- Show single image if only one or two images but they are same -->
                     <img
-                      (click)="
-                        !shouldDisableRoomImageClick(room) &&
-                        togglePanelOne(room, i)
-                      "
+                      (click)="togglePanelOne(room, i)"
                       *ngIf="
                         room.imageList?.length > 0 &&
                         (room.imageList.length === 1 ||
@@ -3737,15 +3722,13 @@
                         aspect-ratio: 4/3;
                         object-fit: cover;
                         border-radius: 0;
+                        cursor: pointer;
                       "
                     />
 
                     <!-- Show carousel only if there are 2+ unique images -->
                     <div
-                      (click)="
-                        !shouldDisableRoomImageClick(room) &&
-                        togglePanelOne(room, i)
-                      "
+                      (click)="togglePanelOne(room, i)"
                       *ngIf="
                         room.imageList?.length > 1 &&
                         room.imageList[0]?.url !== room.imageList[1]?.url
@@ -3753,6 +3736,7 @@
                       id="carouselExampleIndicators"
                       class="carousel slide"
                       data-ride="carousel"
+                      style="cursor: pointer;"
                     >
                       <div class="carousel-inner img_size_room">
                         <div
@@ -3793,10 +3777,7 @@
                         </div>
 
                         <div
-                          (click)="
-                            !shouldDisableRoomImageClick(room) &&
-                            togglePanelOne(room, i)
-                          "
+                          (click)="togglePanelOne(room, i)"
                           [style.top.px]="
                             (room.roomFacilities?.length || 0) > 0 ? null : -17
                           "
@@ -3819,7 +3800,10 @@
                     style="gap: 15px"
                     [class.disabled-room]="shouldDisableRoomImageClick(room)"
                   >
-                    <h3 class="margin-top-mobile-30px">{{ room.name }}</h3>
+                    <h3 class="margin-top-mobile-30px">
+                      {{ room.name }}
+                      <span *ngIf="isDayTripRoom(room)" class="day-trip-badge ml-1">Day Trip</span>
+                    </h3>
                     <div
                       class="d-flex"
                       style="gap: 15px; width: 100px; align-items: center"

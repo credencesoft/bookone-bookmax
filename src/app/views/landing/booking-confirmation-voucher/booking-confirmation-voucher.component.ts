@@ -19,6 +19,8 @@ export class BookingConfirmationVoucherComponent {
   booking: any;
   totalPlanAdults: number = 0;
   totalPlanChildren: number = 0;
+  totalPlanChildrenAboveAgeLimit: number = 0;
+  totalPlanChildrenBelowAgeLimit: number = 0;
   totalDiscount = 0;
   bookingSummaryDetails: any;
   specialDiscountData: any;
@@ -472,6 +474,18 @@ export class BookingConfirmationVoucherComponent {
     this.totalPlanChildren =
       this.bookingSummaryDetails?.selectedPlansSummary?.reduce(
         (sum, plan) => sum + (plan.children || 0),
+        0,
+      );
+
+    this.totalPlanChildrenAboveAgeLimit =
+      this.bookingSummaryDetails?.selectedPlansSummary?.reduce(
+        (sum, plan) => sum + (plan.childrenAbove5years || 0),
+        0,
+      );
+
+    this.totalPlanChildrenBelowAgeLimit =
+      this.bookingSummaryDetails?.selectedPlansSummary?.reduce(
+        (sum, plan) => sum + (plan.childrenBelow5years || 0),
         0,
       );
   }

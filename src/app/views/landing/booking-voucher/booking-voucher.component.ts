@@ -36,6 +36,8 @@ export class BookingVoucherComponent {
   bookingSummaryDetails: any;
   totalPlanAdults: number = 0;
   totalPlanChildren: number = 0;
+  totalPlanChildrenAboveAgeLimit: number = 0;
+  totalPlanChildrenBelowAgeLimit: number = 0;
   bookingsResponseList: any;
   expanded: boolean = false;
     totalDiscount = 0;
@@ -263,6 +265,18 @@ getTrimmedDescription(description: string): string {
     this.totalPlanChildren =
       this.bookingSummaryDetails?.selectedPlansSummary?.reduce(
         (sum, plan) => sum + (plan.children || 0),
+        0
+      );
+
+    this.totalPlanChildrenAboveAgeLimit =
+      this.bookingSummaryDetails?.selectedPlansSummary?.reduce(
+        (sum, plan) => sum + (plan.childrenAbove5years || 0),
+        0
+      );
+
+    this.totalPlanChildrenBelowAgeLimit =
+      this.bookingSummaryDetails?.selectedPlansSummary?.reduce(
+        (sum, plan) => sum + (plan.childrenBelow5years || 0),
         0
       );
   }

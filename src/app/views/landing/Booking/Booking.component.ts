@@ -285,6 +285,8 @@ export class BookingComponent implements OnInit {
   bookingSummaryDetails: any;
   totalPlanAdults: number = 0;
   totalPlanChildren: number = 0;
+  totalPlanChildrenAboveAgeLimit: number = 0;
+  totalPlanChildrenBelowAgeLimit: number = 0;
   bookingsResponseList: any[] = [];
   termsAccepted = false;
   groupBookingId: number;
@@ -1426,6 +1428,18 @@ export class BookingComponent implements OnInit {
     this.totalPlanChildren =
       this.bookingSummaryDetails?.selectedPlansSummary?.reduce(
         (sum, plan) => sum + (plan.children || 0),
+        0,
+      );
+
+    this.totalPlanChildrenAboveAgeLimit =
+      this.bookingSummaryDetails?.selectedPlansSummary?.reduce(
+        (sum, plan) => sum + (plan.childrenAbove5years || 0),
+        0,
+      );
+
+    this.totalPlanChildrenBelowAgeLimit =
+      this.bookingSummaryDetails?.selectedPlansSummary?.reduce(
+        (sum, plan) => sum + (plan.childrenBelow5years || 0),
         0,
       );
   }
@@ -12148,12 +12162,36 @@ sendWhatsappMessageToPropertyOwner() {
       .replace(/[^a-z0-9]/g, '');
   }
 
+  private mapIsoCodeToCountryName(code: string): string {
+    const map: { [key: string]: string } = {
+      'nz': 'New Zeland',
+      'in': 'India',
+      'au': 'Austrilia',
+      'bd': 'Bangladesh',
+      'uk': 'United Kingdom',
+      'gb': 'United Kingdom',
+      'za': 'South Africa',
+      'ca': 'Canada',
+      'fr': 'France',
+      'fj': 'Fiji',
+      'de': 'Germany',
+      'it': 'Italy',
+      'es': 'Spain',
+      'lk': 'Sri Lanka',
+      'th': 'Thailand',
+      'ae': 'United Arab Emirates',
+      'us': 'United States'
+    };
+    return map[code.toLowerCase()] || code;
+  }
+
   private findCountry(searchValue: string): CountryListInterFace | undefined {
     if (!searchValue) {
       return undefined;
     }
 
-    const normalizedSearch = this.normalizeCountrySearchValue(searchValue);
+    const mappedValue = this.mapIsoCodeToCountryName(searchValue);
+    const normalizedSearch = this.normalizeCountrySearchValue(mappedValue);
     return this.CountryArray?.countries?.find((country) => {
       const normalizedValue = this.normalizeCountrySearchValue(country.value);
       const normalizedViewValue = this.normalizeCountrySearchValue(
@@ -12163,15 +12201,16 @@ sendWhatsappMessageToPropertyOwner() {
       return (
         normalizedValue === normalizedSearch ||
         normalizedViewValue === normalizedSearch ||
-        country.countryCode === searchValue
+        country.countryCode === searchValue ||
+        country.countryCode === ('+' + searchValue.replace('+', ''))
       );
     });
   }
 
   private getDefaultCountry(): CountryListInterFace {
     const preferredCountry =
-      this.propertyData?.address?.country ||
       this.token.getCountry() ||
+      this.propertyData?.address?.country ||
       this.token.getProperty()?.address?.country ||
       'India';
 
