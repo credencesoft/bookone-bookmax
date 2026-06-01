@@ -87,19 +87,32 @@ background-color: #f5f5f5;
 }
 
 .disabled-room {
-  opacity: 0.5;
-  pointer-events: none; /* Prevents clicks on the entire container */
   flex-wrap: wrap;
-  // filter: grayscale(1);
+  /* Keep pointer events enabled so room images and details description are clickable */
 }
 
 .disabled-plan-card {
-  opacity: 0.55;
-  pointer-events: none;
+  /* Keep pointer events enabled so View Details and details link are clickable */
 }
 
 .disabled-plan-card .plan-warning-row {
   opacity: 1;
+}
+
+/* Specific disabled styling for selection elements inside a disabled plan card */
+.disabled-plan-control {
+  opacity: 0.5 !important;
+  pointer-events: none !important;
+  cursor: not-allowed !important;
+}
+
+.disabled-select-btn {
+  background-color: #cccccc !important;
+  color: #777777 !important;
+  border-color: #cccccc !important;
+  cursor: not-allowed !important;
+  pointer-events: none !important;
+  opacity: 0.7 !important;
 }
 // /* Add this to your component's CSS file */
 // .input-group-text {

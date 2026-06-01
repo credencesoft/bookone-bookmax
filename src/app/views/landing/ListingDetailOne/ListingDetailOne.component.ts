@@ -1980,10 +1980,10 @@ private isSameDayBookingSearch(): boolean {
 
   getPlanDisabledMessage(plan: any, room?: any): string {
     if (this.isDayTripPlan(plan, room) && !this.isSameDayBookingSearch()) {
-      return 'It is a same day plan. Please select both dates as same.';
+      return 'Requires same-day check-in & check-out.';
     }
 
-    return `This plan is only available for 1-night stay. Please adjust your dates to select these ${this.getBookingUnitLabel(room)}s.`;
+    return 'Requires exactly a 1-night stay.';
   }
 
   private updateDayTripCheckoutAvailability(roomList: any[]): void {
