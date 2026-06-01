@@ -101,4 +101,4 @@ Thumbs.db
 .vscode/settings.json
 package-lock.json
 
-environment.ts
+src/environments/environment.ts
