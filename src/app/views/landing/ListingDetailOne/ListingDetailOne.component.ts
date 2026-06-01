@@ -13,7 +13,9 @@ import {
   Output,
   PLATFORM_ID,
   Inject,
+  Optional,
 } from '@angular/core';
+import { CurrencyService } from 'src/app/services/currency.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
   ModalDismissReasons,
@@ -279,6 +281,7 @@ export class ListingDetailOneComponent implements OnInit {
     message: this.messageControl,
   });
   currency: string;
+  exchangeRates: any;
   model: NgbDateStruct;
   businessServices: BusinessServiceDtoList[];
   businessService: BusinessServiceDtoList;
@@ -985,6 +988,8 @@ expandedPlans: { [key: string]: boolean } = {};
     private viewportScroller: ViewportScroller,
     private cd: ChangeDetectorRef,
     @Inject(PLATFORM_ID) private platformId: Object,
+    private currencyService: CurrencyService,
+    @Optional() @Inject('VIEWER_COUNTRY') private viewerCountry: string
   ) {
         this.acRoute.queryParams.subscribe((params) => {
       if (params['hotelID'] !== undefined) {
@@ -1024,7 +1029,9 @@ if (params['Children'] !== undefined) {
   this.childno = Number(params['Children']);
   this.children = Number(params['Children']);
 }
-      if (params['userCurrency'] !== undefined) {
+      if (params['currency'] !== undefined) {
+        this.currency = params['currency'];
+      } else if (params['userCurrency'] !== undefined) {
         this.currency = params['userCurrency'];
       }
 
@@ -1426,6 +1433,23 @@ this.token.savePropertyUrl(currentUrl);
   ngOnInit() {
     localStorage.removeItem('selectPromo');
 
+    this.currencyService.getLatestRates().subscribe(
+      (data) => {
+        if (data && data.rates) {
+          this.exchangeRates = data.rates;
+          this.setCurrencyAndLocalization();
+        } else {
+          this.exchangeRates = null;
+          this.fallbackToLocalINR();
+        }
+      },
+      (error) => {
+        console.error('Failed to load exchange rates:', error);
+        this.exchangeRates = null;
+        this.fallbackToLocalINR();
+      }
+    );
+
 const couponCodeValues = sessionStorage.getItem('selectedPromoData');
 
 
@@ -1628,12 +1652,29 @@ getTotalAdults(): number {
   return this.selectedPlansSummary.reduce((sum, plan) => sum + (plan.adults || 0), 0);
 }
 
-  getFilteredPlans(plans: any[]) {
-    try{
+  getFilteredPlans(plans: any[], room?: any) {
+    try {
       if (!plans) return [];
-      return this.websiteUrlBookingEngine ? plans.filter(p => p?.name?.trim().toLowerCase() !== 'economy') : plans;
-    }
-    catch(error){
+      let filtered = this.websiteUrlBookingEngine
+        ? plans.filter(p => p?.name?.trim().toLowerCase() !== 'economy')
+        : plans;
+
+      if (isPlatformBrowser(this.platformId)) {
+        const searchAdults = Number(this.booking?.noOfPersons || this.adults || 1);
+        const searchRooms = Number(this.booking?.noOfRooms || this.rooms || 1);
+        const roomContext = room || this.selectedRoom;
+
+        if (searchAdults > 0 && searchRooms > 0) {
+          const requiredPerRoom = Math.ceil(searchAdults / searchRooms);
+          filtered = filtered.filter((plan: any) => {
+            const planMax = Number(plan?.maximumOccupancy ?? roomContext?.maximumOccupancy ?? 2);
+            return planMax >= requiredPerRoom;
+          });
+        }
+      }
+
+      return filtered;
+    } catch(error) {
       console.error('Error filtering plans:', error);
       return [];
     }
@@ -4439,6 +4480,20 @@ onCheckOutClosed(): void {
   );
 }
 
+  stripHtml(html: string): string {
+    if (!html) return '';
+    let text = html
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&amp;/g, '&')
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;/g, "'")
+      .replace(/&nbsp;/g, ' ');
+
+    text = text.replace(/<[^>]*>/g, '');
+    return text.replace(/\s+/g, ' ').trim();
+  }
+
   updateTag() {
     let keywords = this.businessUser?.address?.city;
 
@@ -4446,7 +4501,7 @@ onCheckOutClosed(): void {
       this.businessUser.businessDescription != null &&
       this.businessUser.businessDescription != undefined
     ) {
-      this.description = this.businessUser.businessDescription;
+      this.description = this.stripHtml(this.businessUser.businessDescription);
     } else {
       this.description = 'Contact No: +91-7326079861';
     }
@@ -4464,7 +4519,7 @@ onCheckOutClosed(): void {
       this.businessUser.businessDescription != null &&
       this.businessUser.businessDescription != undefined
     ) {
-      this.ogDescription = this.businessUser.businessDescription;
+      this.ogDescription = this.stripHtml(this.businessUser.businessDescription);
     } else {
       this.ogDescription = 'Contact No: +91-7326079861';
     }
@@ -4656,7 +4711,7 @@ onCheckOutClosed(): void {
         this.trustedURL = this.sanitizer.bypassSecurityTrustResourceUrl(
           this.dangerousUrl
         );
-        this.currency = this.businessUser.localCurrency.toUpperCase();
+        this.setCurrencyAndLocalization();
         this.businessTypeName = this.businessUser.businessType;
 
         if (this.token.getBookingCity() !== null) {
@@ -4806,6 +4861,12 @@ onCheckOutClosed(): void {
       return;
     }
 
+    const activeCurrency = (this.currency || this.businessUser.localCurrency || 'INR').toUpperCase();
+
+    const totalVal = this.totalAmountParam != null && this.totalAmountParam !== undefined ? Number(this.totalAmountParam).toFixed(2) : '0.00';
+    const taxVal = this.taxAmountParam != null && this.taxAmountParam !== undefined ? Number(this.taxAmountParam).toFixed(2) : '0.00';
+    const baseVal = (Number(totalVal) - Number(taxVal)).toFixed(2);
+
   const schema = {
   "@context": "https://schema.org",
   "@type": "Hotel",
@@ -4827,20 +4888,20 @@ onCheckOutClosed(): void {
     "name": "Economy",
     "priceSpecification": {
       "@type": "CompoundPriceSpecification",
-      "price": this.totalAmountParam,       // total amount
-      "priceCurrency": this.businessUser.localCurrency.toUpperCase(),
+      "price": totalVal,       // total amount
+      "priceCurrency": activeCurrency,
       "priceComponent": [
         {
           "@type": "UnitPriceSpecification",
           "name": "Base rate",
-          "price": this.totalAmountParam - this.taxAmountParam,
-          "priceCurrency": this.businessUser.localCurrency.toUpperCase()
+          "price": baseVal,
+          "priceCurrency": activeCurrency
         },
         {
           "@type": "UnitPriceSpecification",
           "name": "Tax",
-          "price": this.taxAmountParam,
-          "priceCurrency": this.businessUser.localCurrency.toUpperCase()
+          "price": taxVal,
+          "priceCurrency": activeCurrency
         }
       ]
     },
@@ -5183,7 +5244,7 @@ onCheckOutClosed(): void {
           this.trustedURL = this.sanitizer.bypassSecurityTrustResourceUrl(
             this.dangerousUrl
           );
-          this.currency = this.businessUser.localCurrency.toUpperCase();
+          this.setCurrencyAndLocalization();
           this.getOfferList(seoName);
           this.businessTypeName = this.businessUser.businessType;
 
@@ -7862,18 +7923,44 @@ getTotalTaxPrice(): number {
   expandedRooms: string[] = [];
 
 isPlanVisible(filteredPlans: any[], roomName: string, room?: any) {
+  if (!filteredPlans) return [];
   // If websiteBookingEngine is true, remove "Economy" plans first
-  this.websiteUrlBookingEngine;
   let plans = this.websiteUrlBookingEngine
     ? filteredPlans.filter(
         (plan: any) => plan.name?.trim().toLowerCase() !== 'economy'
       )
     : filteredPlans;
 
+  // Apply minimum & maximum occupancy filtering based on the search query:
+  // ONLY run filtering in the browser to avoid SSR (Server Side Rendering) issues and allow search engines to see all plans
+  if (isPlatformBrowser(this.platformId)) {
+    const searchAdults = Number(this.booking?.noOfPersons || this.adults || 1);
+    const searchRooms = Number(this.booking?.noOfRooms || this.rooms || 1);
+
+    if (searchAdults > 0 && searchRooms > 0) {
+      const requiredPerRoom = Math.ceil(searchAdults / searchRooms);
+      plans = plans.filter((plan: any) => {
+        const planMax = Number(plan?.maximumOccupancy ?? room?.maximumOccupancy ?? 2);
+        
+        // A plan is visible if its maxOccupancy can fit the required room's share
+        return planMax >= requiredPerRoom;
+      });
+    }
+  }
+
   // Then handle expanded/collapsed logic
   return this.expandedRooms.includes(roomName)
     ? plans
     : plans.slice(0, 3);
+}
+
+hasVisiblePlans(room: any): boolean {
+  if (!room || !room.ratesAndAvailabilityDtos) return false;
+  return room.ratesAndAvailabilityDtos.some((rate: any) => {
+    if (!rate || !rate.roomRatePlans) return false;
+    const plans = this.isPlanVisible(rate.roomRatePlans, room.name, room);
+    return plans && plans.length > 0;
+  });
 }
 
   toggleRoomExpansion(roomName: string): void {
@@ -8654,5 +8741,102 @@ onYesClick() {
 
     this.token.saveSelectedServices(normalizedAddOns);
     this.token.saveServiceData(normalizedAddOns);
+  }
+
+  setCurrencyAndLocalization() {
+    if (!this.exchangeRates) {
+      this.fallbackToLocalINR();
+      return;
+    }
+
+    // 1. If query param currency or userCurrency exists, use it
+    const queryCurrency = this.acRoute.snapshot.queryParams['currency'] || this.acRoute.snapshot.queryParams['userCurrency'];
+    if (queryCurrency) {
+      this.currency = queryCurrency.toUpperCase();
+      try {
+        sessionStorage.setItem('selected_currency', this.currency);
+      } catch (e) {
+        console.error('Error writing to sessionStorage selected_currency:', e);
+      }
+      this.generateAndSetSchema();
+      this.cd.detectChanges();
+      return;
+    }
+
+    // 2. If query param country exists, map it to currency and use it
+    const queryCountry = this.acRoute.snapshot.queryParams['country'];
+    if (queryCountry) {
+      const countryCurrency = this.getCurrencyFromCountry(queryCountry);
+      if (countryCurrency) {
+        this.currency = countryCurrency;
+        try {
+          sessionStorage.setItem('selected_currency', this.currency);
+        } catch (e) {
+          console.error('Error writing to sessionStorage selected_currency:', e);
+        }
+        this.generateAndSetSchema();
+        this.cd.detectChanges();
+        return;
+      }
+    }
+
+    // 3. If CloudFront viewerCountry was injected via SSR, map it
+    if (this.viewerCountry) {
+      const countryCurrency = this.getCurrencyFromCountry(this.viewerCountry);
+      if (countryCurrency) {
+        this.currency = countryCurrency;
+        try {
+          sessionStorage.setItem('selected_currency', this.currency);
+        } catch (e) {
+          console.error('Error writing to sessionStorage selected_currency:', e);
+        }
+        this.generateAndSetSchema();
+        this.cd.detectChanges();
+        return;
+      }
+    }
+
+    // 4. Fallback to property's local currency
+    if (this.businessUser && this.businessUser.localCurrency) {
+      this.currency = this.businessUser.localCurrency.toUpperCase();
+    } else {
+      this.currency = 'INR';
+    }
+    try {
+      sessionStorage.setItem('selected_currency', this.currency);
+    } catch (e) {
+      console.error('Error writing to sessionStorage selected_currency:', e);
+    }
+    this.generateAndSetSchema();
+    this.cd.detectChanges();
+  }
+
+  getCurrencyFromCountry(country: string): string {
+    const mapping = {
+      'US': 'USD',
+      'IN': 'INR',
+      'AU': 'AUD',
+      'NZ': 'NZD',
+      'GB': 'GBP',
+      'EU': 'EUR',
+      'CA': 'CAD',
+      'BD': 'BDT'
+    };
+    return mapping[country.toUpperCase()] || null;
+  }
+
+  fallbackToLocalINR() {
+    if (this.businessUser && this.businessUser.localCurrency) {
+      this.currency = this.businessUser.localCurrency.toUpperCase();
+    } else {
+      this.currency = 'INR';
+    }
+    try {
+      sessionStorage.setItem('selected_currency', this.currency);
+    } catch (e) {
+      console.error('Error writing to sessionStorage selected_currency:', e);
+    }
+    this.generateAndSetSchema();
+    this.cd.detectChanges();
   }
 }

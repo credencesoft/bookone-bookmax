@@ -93,6 +93,7 @@ import { GooglePlaceModule } from 'ngx-google-places-autocomplete';
 import { TokenStorage } from 'src/token.storage';
 import { BookOneConnectComponent } from 'src/app/views/landing/book-one-connect/book-one-connect.component';
 import { ListingDetailOneComponent } from './ListingDetailOne/ListingDetailOne.component';
+import { ConvertCurrencyPipe } from './helpers/convert-currency.pipe';
 import { SlickCarouselModule } from 'ngx-slick-carousel';
 // import { BookingComponent } from 'src/app/views/landing/Booking/Booking.component';
 import { RouterModule, Routes } from '@angular/router';
@@ -257,7 +258,8 @@ EnquiryComponent,
     AboutUsComponent,
     PaymentFailureComponent,
     BookingConfirmationComponent,
-    BookingConfirmationVoucherComponent
+    BookingConfirmationVoucherComponent,
+    ConvertCurrencyPipe
 
   ],
   providers: [WINDOW_PROVIDERS,

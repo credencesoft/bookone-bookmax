@@ -86,9 +86,14 @@ export function app(): express.Express {
     // Tell CDNs (Cloudflare etc) never to cache HTML
     res.setHeader('CDN-Cache-Control', 'no-store');
 
+    const viewerCountry = (req.headers['cloudfront-viewer-country'] as string) || 'IN';
+
     res.render(indexHtml, {
       req,
-      providers: [{ provide: APP_BASE_HREF, useValue: req.baseUrl }]
+      providers: [
+        { provide: APP_BASE_HREF, useValue: req.baseUrl },
+        { provide: 'VIEWER_COUNTRY', useValue: viewerCountry }
+      ]
     });
   });
 

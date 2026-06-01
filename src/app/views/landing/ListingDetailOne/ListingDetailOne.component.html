@@ -270,9 +270,9 @@
       <div class="sum-section" *ngIf="!activeForGoogleHotelCenter">
         <span *ngIf="specialDiscountPercentage">
           {{
-            getTotalPlanPrice() +
-              getTotalTaxPrice() -
+            (getTotalPlanPrice() -
               (getTotalPlanPrice() * specialDiscountPercentage) / 100 +
+              getTotalTaxPrice() +
               (serviceChargePercentage > 0
                 ? calculateConvenienceFee(
                     getTotalPlanPrice() -
@@ -281,26 +281,26 @@
                         100,
                     serviceChargePercentage
                   )
-                : 0) | currency : currency : "symbol" : "1.2-2"
+                : 0)) | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency : currency : "symbol" : "1.2-2"
           }}
         </span>
         <span *ngIf="!specialDiscountPercentage">
           {{
-            getTotalPlanPrice() +
+            (getTotalPlanPrice() +
               getTotalTaxPrice() +
               (serviceChargePercentage > 0
                 ? calculateConvenienceFee(
                     getTotalPlanPrice(),
                     serviceChargePercentage
                   )
-                : 0) | currency : currency : "symbol" : "1.2-2"
+                : 0)) | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency : currency : "symbol" : "1.2-2"
           }}
         </span>
       </div>
       <div class="sum-section" *ngIf="activeForGoogleHotelCenter">
         <span *ngIf="specialDiscountPercentage">
           {{
-            getGrandSubtotal() -
+            (getGrandSubtotal() -
               (getGrandSubtotal() * specialDiscountPercentage) / 100 +
               getGrandTaxTotal() +
               (serviceChargePercentage > 0
@@ -311,18 +311,18 @@
                         100,
                     serviceChargePercentage
                   )
-                : 0) | currency : currency : "symbol" : "1.2-2"
+                : 0)) | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency : currency : "symbol" : "1.2-2"
           }}
         </span>
         <span *ngIf="!specialDiscountPercentage">
           {{
-            getGrandTotal() +
+            (getGrandTotal() +
               (serviceChargePercentage > 0
                 ? calculateConvenienceFee(
                     getTotalPlanPrice(),
                     serviceChargePercentage
                   )
-                : 0) | currency : currency : "symbol" : "1.2-2"
+                : 0)) | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency : currency : "symbol" : "1.2-2"
           }}
         </span>
       </div>
@@ -445,7 +445,7 @@
                       >Inclusive Adult Charge <br />
                       {{
                         getSummaryPlanAdultCharge(plan)
-                          | currency : currency : "symbol" : "1.2-2"
+                          | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency : currency : "symbol" : "1.2-2"
                       }}
                       {{
                         plan?.dailyRates?.length ? "total" : "per night"
@@ -465,7 +465,7 @@
                       >Inclusive Children Charge <br />
                       {{
                         getSummaryPlanChildCharge(plan)
-                          | currency : currency : "symbol" : "1.2-2"
+                          | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency : currency : "symbol" : "1.2-2"
                       }}
                       per night</small
                     >
@@ -480,17 +480,17 @@
                   <div class="d-flex align-items-start">
                     <div class="room-price">
                       <ng-container *ngIf="!activeForGoogleHotelCenter">
-                        {{ getPlanSubtotal(plan) | currency : currency : "symbol" : "1.2-2" }}
+                        {{ getPlanSubtotal(plan) | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency : currency : "symbol" : "1.2-2" }}
                       </ng-container>
 
                       <ng-container *ngIf="activeForGoogleHotelCenter">
                         <ng-container
                           *ngIf="plan.planName === 'GHC'; else nonGhcPrice"
                         >
-                          {{ getTotalGhCPrice(plan) | currency : currency : "symbol" : "1.2-2" }}
+                          {{ getTotalGhCPrice(plan) | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency : currency : "symbol" : "1.2-2" }}
                         </ng-container>
                         <ng-template #nonGhcPrice>
-                          {{ getTotalNonGhCPrice(plan) | currency : currency : "symbol" : "1.2-2" }}
+                          {{ getTotalNonGhCPrice(plan) | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency : currency : "symbol" : "1.2-2" }}
                         </ng-template>
                       </ng-container>
                     </div>
@@ -518,7 +518,7 @@
                     ></i>
                   </small>
                   <!-- <small class="text-muted" *ngIf="taxArray && taxArray.length">
-                Tax Fee: {{ taxArray[i] | currency : currency : "symbol" : "1.2-2" }}
+                Tax Fee: {{ taxArray[i] | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency : currency : "symbol" : "1.2-2" }}
               </small> -->
                 </div>
 
@@ -532,7 +532,7 @@
                       <small class="text-muted">
                         {{
                           night.roomPrice
-                            | currency: currency : "symbol" : "1.2-2"
+                            | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency : currency : "symbol" : "1.2-2"
                         }}
                         <br />
                         <ng-container
@@ -542,7 +542,7 @@
                           >&nbsp; &nbsp; &nbsp; &nbsp;
                           <b style="font-weight: normal">{{
                             night.extraAdultCharge
-                              | currency: currency : "symbol" : "1.2-2"
+                              | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency : currency : "symbol" : "1.2-2"
                           }}</b>
                           <br />
                         </ng-container>
@@ -556,7 +556,7 @@
                           &nbsp; &nbsp; &nbsp; &nbsp;
                           <b style="font-weight: normal">{{
                             night.extraChildCharge
-                              | currency: currency : "symbol" : "1.2-2"
+                              | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency : currency : "symbol" : "1.2-2"
                           }}</b>
                           <br />
                         </ng-container>
@@ -567,7 +567,7 @@
                           <b style="font-weight: normal">
                             {{
                               getSummaryNightTaxAmount(night, plan)
-                                | currency: currency : "symbol" : "1.2-2"
+                                | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency : currency : "symbol" : "1.2-2"
                             }}
                           </b>
                         </ng-container>
@@ -675,14 +675,14 @@
               *ngIf="!activeForGoogleHotelCenter"
             >
               <span>Rooms Total</span>
-              <span>{{ getTotalPlanPrice() | currency : currency : "symbol" : "1.2-2" }}</span>
+              <span>{{ getTotalPlanPrice() | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency : currency : "symbol" : "1.2-2" }}</span>
             </div>
             <div
               class="d-flex justify-content-between"
               *ngIf="activeForGoogleHotelCenter"
             >
               <span>Rooms Total</span>
-              <span>{{ getGrandSubtotal() | currency : currency : "symbol" : "1.2-2" }}</span>
+              <span>{{ getGrandSubtotal() | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency : currency : "symbol" : "1.2-2" }}</span>
             </div>
 
             <div
@@ -701,7 +701,7 @@
                 <b style="color: #16a34a; font-weight: 400"
                   >-{{
                     (getTotalPlanPrice() * specialDiscountPercentage) / 100
-                      | currency : currency : "symbol" : "1.2-2"
+                      | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency : currency : "symbol" : "1.2-2"
                   }}</b
                 ></span
               >
@@ -723,7 +723,7 @@
                 <b style="color: #16a34a; font-weight: 400"
                   >-{{
                     (getGrandSubtotal() * specialDiscountPercentage) / 100
-                      | currency : currency : "symbol" : "1.2-2"
+                      | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency : currency : "symbol" : "1.2-2"
                   }}</b
                 ></span
               >
@@ -734,14 +734,14 @@
               *ngIf="!activeForGoogleHotelCenter"
             >
               <span>Tax & Services</span>
-              <span>{{ getTotalTaxPrice() | currency : currency : "symbol" : "1.2-2" }}</span>
+              <span>{{ getTotalTaxPrice() | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency : currency : "symbol" : "1.2-2" }}</span>
             </div>
             <div
               class="d-flex justify-content-between mb-2"
               *ngIf="activeForGoogleHotelCenter"
             >
               <span>Tax & Services</span>
-              <span>{{ getGrandTaxTotal() | currency : currency : "symbol" : "1.2-2" }}</span>
+              <span>{{ getGrandTaxTotal() | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency : currency : "symbol" : "1.2-2" }}</span>
             </div>
             <div
               class="d-flex justify-content-between"
@@ -756,7 +756,7 @@
                         this.specialDiscountPercentage) /
                         100,
                     serviceChargePercentage
-                  ) | currency : currency : "symbol" : "1.2-2"
+                  ) | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency : currency : "symbol" : "1.2-2"
                 }}
               </span>
               <span *ngIf="!specialDiscountPercentage">
@@ -764,7 +764,7 @@
                   calculateConvenienceFee(
                     getTotalPlanPrice(),
                     serviceChargePercentage
-                  ) | currency : currency : "symbol" : "1.2-2"
+                  ) | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency : currency : "symbol" : "1.2-2"
                 }}
               </span>
             </div>
@@ -780,7 +780,7 @@
                       (getGrandSubtotal() * this.specialDiscountPercentage) /
                         100,
                     serviceChargePercentage
-                  ) | currency : currency : "symbol" : "1.2-2"
+                  ) | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency : currency : "symbol" : "1.2-2"
                 }}
               </span>
               <span *ngIf="!specialDiscountPercentage">
@@ -788,7 +788,7 @@
                   calculateConvenienceFee(
                     getGrandSubtotal(),
                     serviceChargePercentage
-                  ) | currency : currency : "symbol" : "1.2-2"
+                  ) | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency : currency : "symbol" : "1.2-2"
                 }}
               </span>
             </div>
@@ -810,7 +810,7 @@
                               100,
                           serviceChargePercentage
                         )
-                      : 0) | currency : currency : "symbol" : "1.2-2"
+                      : 0) | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency : currency : "symbol" : "1.2-2"
                 }}
               </span>
               <span *ngIf="!specialDiscountPercentage">
@@ -822,7 +822,7 @@
                           getTotalPlanPrice(),
                           serviceChargePercentage
                         )
-                      : 0) | currency : currency : "symbol" : "1.2-2"
+                      : 0) | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency : currency : "symbol" : "1.2-2"
                 }}
               </span>
             </div>
@@ -845,7 +845,7 @@
                               100,
                           serviceChargePercentage
                         )
-                      : 0) | currency : currency : "symbol" : "1.2-2"
+                      : 0) | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency : currency : "symbol" : "1.2-2"
                 }}
               </span>
               <span *ngIf="!specialDiscountPercentage">
@@ -856,7 +856,7 @@
                           getTotalPlanPrice(),
                           serviceChargePercentage
                         )
-                      : 0) | currency : currency : "symbol" : "1.2-2"
+                      : 0) | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency : currency : "symbol" : "1.2-2"
                 }}
               </span>
             </div>
@@ -2125,7 +2125,7 @@
                             />&nbsp; Budget Combo
                           </h5>
                           <div class="line-height pricing-best-fit">
-                            {{ plan?.totalPrice | currency : currency : "symbol" : "1.2-2" }}
+                            {{ plan?.totalPrice | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency : currency : "symbol" : "1.2-2" }}
                           </div>
                           <div class="line-height">
                             Total for
@@ -2163,7 +2163,7 @@
                               <ng-container>
                                 <div>
                                   {{
-                                    plan.pricePerNight | currency : currency : "symbol" : "1.2-2"
+                                    plan.pricePerNight | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency : currency : "symbol" : "1.2-2"
                                   }}
                                   per night
                                 </div>
@@ -2396,7 +2396,7 @@
 
                       <!-- Price & details -->
                       <div class="line-height pricing-best-fit">
-                        &nbsp; &nbsp; {{ plan?.totalPrice | currency : currency : "symbol" : "1.2-2" }}
+                        &nbsp; &nbsp; {{ plan?.totalPrice | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency : currency : "symbol" : "1.2-2" }}
                       </div>
                       <div class="line-height">
                         &nbsp; &nbsp; &nbsp; &nbsp; Total for
@@ -2438,7 +2438,7 @@
                           <div class="room-title">{{ room?.roomName }}</div>
                           <ng-container>
                             <div>
-                              {{ plan.pricePerNight | currency : currency : "symbol" : "1.2-2" }} per
+                              {{ plan.pricePerNight | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency : currency : "symbol" : "1.2-2" }} per
                               night
                             </div>
                           </ng-container>
@@ -2676,7 +2676,8 @@
         <div class="image-container">
           <div class="maiiin">
         <div *ngFor="let room of availableRooms; let i = index">
-          <div class="right-popup" [class.show]="isPanelOpen">
+          <ng-container *ngIf="hasVisiblePlans(room)">
+            <div class="right-popup" [class.show]="isPanelOpen">
             <div class="popup-header">
               <div
                 style="
@@ -2790,7 +2791,7 @@
                           <h4 class="popup-plan font-weight-bold">
                             {{
                               getRoomPlanDisplayAmount(selectedRoom, plan)
-                                | currency: currency : "symbol" : "1.2-2"
+                                | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency : currency : "symbol" : "1.2-2"
                             }}
                           </h4>
                           <p style="font-size: smaller">{{ getRoomPlanPriceLabel(selectedRoom, plan) }}</p>
@@ -2806,7 +2807,7 @@
                               Extra Adult Charge:
                               {{
                                 plan?.extraChargePerPerson
-                                  | currency: currency : "symbol" : "1.2-2"
+                                  | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency : currency : "symbol" : "1.2-2"
                               }}
                             </p>
                           </div>
@@ -2820,7 +2821,7 @@
                               Extra Child Charge:
                               {{
                                 plan?.extraChargePerChild
-                                  | currency: currency : "symbol" : "1.2-2"
+                                  | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency : currency : "symbol" : "1.2-2"
                               }}
                             </p>
                           </div>
@@ -3109,7 +3110,7 @@
                             <div class="pricing">
                               {{
                                 getRoomPlanDisplayAmount(room, plan)
-                                  | currency: currency : "symbol" : "1.2-2"
+                                  | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency : currency : "symbol" : "1.2-2"
                               }}
                             </div>
                             <div class="perNight">{{ getRoomPlanPriceLabel(room, plan) }}</div>
@@ -3342,7 +3343,7 @@
                             <div class="pricing">
                               {{
                                 getRoomPlanDisplayAmount(room, plan)
-                                  | currency: currency : "symbol" : "1.2-2"
+                                  | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency : currency : "symbol" : "1.2-2"
                               }}
                             </div>
                             <div class="perNight">{{ getRoomPlanPriceLabel(room, plan) }}</div>
@@ -3559,6 +3560,7 @@
               </div>
             </div>
           </div>
+          </ng-container>
         </div>
 
         <div *ngFor="let room of soldOutRooms; let i = index">
@@ -3967,7 +3969,7 @@
                       >Inclusive Adult Charge <br />
                       {{
                         getSummaryPlanAdultCharge(plan)
-                          | currency : currency : "symbol" : "1.2-2"
+                          | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency : currency : "symbol" : "1.2-2"
                       }}
                       {{
                         plan?.dailyRates?.length ? "total" : "per night"
@@ -3987,7 +3989,7 @@
                       >Inclusive Children Charge <br />
                       {{
                         getSummaryPlanChildCharge(plan)
-                          | currency : currency : "symbol" : "1.2-2"
+                          | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency : currency : "symbol" : "1.2-2"
                       }}
                       per night</small
                     >
@@ -4002,17 +4004,17 @@
                   <div class="d-flex align-items-start">
                     <div class="room-price">
                       <ng-container *ngIf="!activeForGoogleHotelCenter">
-                        {{ getPlanSubtotal(plan) | currency : currency : "symbol" : "1.2-2" }}
+                        {{ getPlanSubtotal(plan) | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency : currency : "symbol" : "1.2-2" }}
                       </ng-container>
 
                       <ng-container *ngIf="activeForGoogleHotelCenter">
                         <ng-container
                           *ngIf="plan.planName === 'GHC'; else nonGhcPrice"
                         >
-                          {{ getTotalGhCPrice(plan) | currency : currency : "symbol" : "1.2-2" }}
+                          {{ getTotalGhCPrice(plan) | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency : currency : "symbol" : "1.2-2" }}
                         </ng-container>
                         <ng-template #nonGhcPrice>
-                          {{ getTotalNonGhCPrice(plan) | currency : currency : "symbol" : "1.2-2" }}
+                          {{ getTotalNonGhCPrice(plan) | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency : currency : "symbol" : "1.2-2" }}
                         </ng-template>
                       </ng-container>
                     </div>
@@ -4040,7 +4042,7 @@
                     ></i>
                   </small>
                   <!-- <small class="text-muted" *ngIf="taxArray && taxArray.length">
-                Tax Fee: {{ taxArray[i] | currency : currency : "symbol" : "1.2-2" }}
+                Tax Fee: {{ taxArray[i] | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency : currency : "symbol" : "1.2-2" }}
               </small> -->
                 </div>
 
@@ -4054,7 +4056,7 @@
                       <small class="text-muted">
                         {{
                           night.roomPrice
-                            | currency: currency : "symbol" : "1.2-2"
+                            | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency : currency : "symbol" : "1.2-2"
                         }}
                         <br />
                         <ng-container
@@ -4064,7 +4066,7 @@
                           >&nbsp; &nbsp; &nbsp; &nbsp;
                           <b style="font-weight: normal">{{
                             night.extraAdultCharge
-                              | currency: currency : "symbol" : "1.2-2"
+                              | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency : currency : "symbol" : "1.2-2"
                           }}</b>
                           <br />
                         </ng-container>
@@ -4078,7 +4080,7 @@
                           &nbsp; &nbsp; &nbsp; &nbsp;
                           <b style="font-weight: normal">{{
                             night.extraChildCharge
-                              | currency: currency : "symbol" : "1.2-2"
+                              | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency : currency : "symbol" : "1.2-2"
                           }}</b>
                           <br />
                         </ng-container>
@@ -4089,7 +4091,7 @@
                           <b style="font-weight: normal">
                             {{
                               getSummaryNightTaxAmount(night, plan)
-                                | currency: currency : "symbol" : "1.2-2"
+                                | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency : currency : "symbol" : "1.2-2"
                             }}
                           </b>
                         </ng-container>
@@ -4196,14 +4198,14 @@
               *ngIf="!activeForGoogleHotelCenter"
             >
               <span>Rooms Total</span>
-              <span>{{ getTotalPlanPrice() | currency : currency : "symbol" : "1.2-2" }}</span>
+              <span>{{ getTotalPlanPrice() | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency : currency : "symbol" : "1.2-2" }}</span>
             </div>
             <div
               class="d-flex justify-content-between"
               *ngIf="activeForGoogleHotelCenter"
             >
               <span>Rooms Total</span>
-              <span>{{ getGrandSubtotal() | currency : currency : "symbol" : "1.2-2" }}</span>
+              <span>{{ getGrandSubtotal() | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency : currency : "symbol" : "1.2-2" }}</span>
             </div>
 
             <div
@@ -4222,7 +4224,7 @@
                 <b style="color: #16a34a; font-weight: 400"
                   >-{{
                     (getTotalPlanPrice() * specialDiscountPercentage) / 100
-                      | currency : currency : "symbol" : "1.2-2"
+                      | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency : currency : "symbol" : "1.2-2"
                   }}</b
                 ></span
               >
@@ -4244,7 +4246,7 @@
                 <b style="color: #16a34a; font-weight: 400"
                   >-{{
                     (getGrandSubtotal() * specialDiscountPercentage) / 100
-                      | currency : currency : "symbol" : "1.2-2"
+                      | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency : currency : "symbol" : "1.2-2"
                   }}</b
                 ></span
               >
@@ -4255,14 +4257,14 @@
               *ngIf="!activeForGoogleHotelCenter"
             >
               <span>Tax & Services</span>
-              <span>{{ getTotalTaxPrice() | currency : currency : "symbol" : "1.2-2" }}</span>
+              <span>{{ getTotalTaxPrice() | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency : currency : "symbol" : "1.2-2" }}</span>
             </div>
             <div
               class="d-flex justify-content-between"
               *ngIf="activeForGoogleHotelCenter"
             >
               <span>Tax & Services</span>
-              <span>{{ getGrandTaxTotal() | currency : currency : "symbol" : "1.2-2" }}</span>
+              <span>{{ getGrandTaxTotal() | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency : currency : "symbol" : "1.2-2" }}</span>
             </div>
             <div
               class="d-flex justify-content-between"
@@ -4277,7 +4279,7 @@
                         this.specialDiscountPercentage) /
                         100,
                     serviceChargePercentage
-                  ) | currency : currency : "symbol" : "1.2-2"
+                  ) | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency : currency : "symbol" : "1.2-2"
                 }}
               </span>
               <span *ngIf="!specialDiscountPercentage">
@@ -4285,7 +4287,7 @@
                   calculateConvenienceFee(
                     getTotalPlanPrice(),
                     serviceChargePercentage
-                  ) | currency : currency : "symbol" : "1.2-2"
+                  ) | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency : currency : "symbol" : "1.2-2"
                 }}
               </span>
             </div>
@@ -4301,7 +4303,7 @@
                       (getGrandSubtotal() * this.specialDiscountPercentage) /
                         100,
                     serviceChargePercentage
-                  ) | currency : currency : "symbol" : "1.2-2"
+                  ) | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency : currency : "symbol" : "1.2-2"
                 }}
               </span>
               <span *ngIf="!specialDiscountPercentage">
@@ -4309,7 +4311,7 @@
                   calculateConvenienceFee(
                     getGrandSubtotal(),
                     serviceChargePercentage
-                  ) | currency : currency : "symbol" : "1.2-2"
+                  ) | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency : currency : "symbol" : "1.2-2"
                 }}
               </span>
             </div>
@@ -4332,7 +4334,7 @@
                               100,
                           serviceChargePercentage
                         )
-                      : 0) | currency : currency : "symbol" : "1.2-2"
+                      : 0) | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency : currency : "symbol" : "1.2-2"
                 }}
               </span>
               <span *ngIf="!specialDiscountPercentage">
@@ -4344,7 +4346,7 @@
                           getTotalPlanPrice(),
                           serviceChargePercentage
                         )
-                      : 0) | currency : currency : "symbol" : "1.2-2"
+                      : 0) | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency : currency : "symbol" : "1.2-2"
                 }}
               </span>
             </div>
@@ -4367,7 +4369,7 @@
                               100,
                           serviceChargePercentage
                         )
-                      : 0) | currency : currency : "symbol" : "1.2-2"
+                      : 0) | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency : currency : "symbol" : "1.2-2"
                 }}
               </span>
               <span *ngIf="!specialDiscountPercentage">
@@ -4378,7 +4380,7 @@
                           getTotalPlanPrice(),
                           serviceChargePercentage
                         )
-                      : 0) | currency : currency : "symbol" : "1.2-2"
+                      : 0) | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency : currency : "symbol" : "1.2-2"
                 }}
               </span>
             </div>
