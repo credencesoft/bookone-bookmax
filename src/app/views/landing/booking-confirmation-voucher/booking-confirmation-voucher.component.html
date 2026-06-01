@@ -1,4 +1,4 @@
-﻿<div [ngClass]="{
+<div [ngClass]="{
     'background-image-website': [3063, 3424, 3425].includes(businessUser?.id),
   }">
   <app-Header-Listingdetailsone [businessUser]="businessUser">
@@ -191,7 +191,7 @@
                   <div>
                     <span>
                       <b>{{ totalPlanAdults }} Adults,
-                        {{ totalPlanChildren }} Children</b></span>
+                        {{ totalPlanChildren }} Children<span *ngIf="totalPlanChildren > 0"> ({{ totalPlanChildrenAboveAgeLimit }} Charged, {{ totalPlanChildrenBelowAgeLimit }} Free)</span></b></span>
                   </div>
                 </div>
               </div>
@@ -701,7 +701,7 @@
                   <div>
                     <span>
                       <b>{{ totalPlanAdults }} Adults,
-                        {{ totalPlanChildren }} Children</b></span>
+                        {{ totalPlanChildren }} Children<span *ngIf="totalPlanChildren > 0"> ({{ totalPlanChildrenAboveAgeLimit }} Charged, {{ totalPlanChildrenBelowAgeLimit }} Free)</span></b></span>
                   </div>
                 </div>
               </div>

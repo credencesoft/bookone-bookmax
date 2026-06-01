@@ -328,7 +328,7 @@
       </div>
 
       <button class="btn-summary-change" (click)="bookingSummaryView()">
-        Details &nbsp;
+        Continue &nbsp;
         <i
           style="margin-top: 4px"
           class="fa-solid fa-angle-up"
@@ -3099,9 +3099,6 @@
                               }}
                             </div>
                             <div class="perNight">{{ getRoomPlanPriceLabel(room, plan) }}</div>
-                            <span *ngIf="isDayTripPlan(plan, room)" class="day-trip-badge">
-                              Day Trip
-                            </span>
                           </div>
                         </div>
                       </div>
@@ -3252,6 +3249,7 @@
                                   >Child {{ i + 1 }} Age:</label
                                 >
                                 <select
+                                  [id]="'child-age-select-' + getRoomPlanSelectionKey(room.id, plan.code) + '-' + i"
                                   class="select-icon"
                                   [(ngModel)]="childAgesByPlan[getRoomPlanSelectionKey(room.id, plan.code)][i]"
                                   (change)="onChildAgeChange(plan.code, plan, room)"
@@ -3338,9 +3336,6 @@
                               }}
                             </div>
                             <div class="perNight">{{ getRoomPlanPriceLabel(room, plan) }}</div>
-                            <span *ngIf="isDayTripPlan(plan, room)" class="day-trip-badge">
-                              Day Trip
-                            </span>
                           </div>
                         </div>
                       </div>
@@ -3496,6 +3491,7 @@
                               >Child {{ i + 1 }} Age:</label
                             >
                             <select
+                              [id]="'child-age-select-' + getRoomPlanSelectionKey(room.id, plan.code) + '-' + i"
                               class="select-icon"
                               [(ngModel)]="childAgesByPlan[getRoomPlanSelectionKey(room.id, plan.code)][i]"
                               (change)="onChildAgeChange(plan.code, plan, room)"
@@ -3516,7 +3512,7 @@
                             <div
                               class="selected"
                               [class.disabled-select-btn]="isPlanDisabled(plan, room)"
-                              (click)="!isPlanDisabled(plan, room) ? onPlanSelect(plan.code, rates, room) : null; !isPlanDisabled(plan, room) ? bookingSummaryView() : null"
+                              (click)="!isPlanDisabled(plan, room) ? onPlanSelect(plan.code, rates, room) : null"
                             >
                               Select
                             </div>
@@ -3804,7 +3800,10 @@
                     style="gap: 15px"
                     [class.disabled-room]="shouldDisableRoomImageClick(room)"
                   >
-                    <h3 class="margin-top-mobile-30px">{{ room.name }}</h3>
+                    <h3 class="margin-top-mobile-30px">
+                      {{ room.name }}
+                      <span *ngIf="isDayTripRoom(room)" class="day-trip-badge ml-1">Day Trip</span>
+                    </h3>
                     <div
                       class="d-flex"
                       style="gap: 15px; width: 100px; align-items: center"
