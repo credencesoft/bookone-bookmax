@@ -100,3 +100,5 @@ Thumbs.db
 .sfdx/typings/lwc/sobjects/User.d.ts
 .vscode/settings.json
 package-lock.json
+
+environment.ts
