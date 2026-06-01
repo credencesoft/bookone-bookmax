@@ -4273,11 +4273,14 @@ if (roomKey) {
           (room.ratesAndAvailabilityDtos[0]?.stopSellOTA === null || room.ratesAndAvailabilityDtos[0]?.stopSellOTA === false)
         );
     // Filter sold-out rooms
-          this.soldOutRooms = response.body.roomList.filter(room =>
-            room.ratesAndAvailabilityDtos === null ||
-            (room.ratesAndAvailabilityDtos[0]?.stopSellOBE != null && room.ratesAndAvailabilityDtos[0]?.stopSellOBE !== false) ||
-            (room.ratesAndAvailabilityDtos[0]?.stopSellOTA != null && room.ratesAndAvailabilityDtos[0]?.stopSellOTA !== false)
-          );
+          this.soldOutRooms = response.body.roomList.filter(room => {
+            if (this.isRoomTooSmall(room)) {
+              return false;
+            }
+            return room.ratesAndAvailabilityDtos === null ||
+              (room.ratesAndAvailabilityDtos[0]?.stopSellOBE != null && room.ratesAndAvailabilityDtos[0]?.stopSellOBE !== false) ||
+              (room.ratesAndAvailabilityDtos[0]?.stopSellOTA != null && room.ratesAndAvailabilityDtos[0]?.stopSellOTA !== false);
+          });
           this.shortrooms = response.body.roomList;
           this.checkAvailabilityStatus = response.body.available;
           this.booking.bookingAmount = response.body.bookingAmount;
@@ -7111,6 +7114,9 @@ this.token.savePropertyUrl(currentUrl);
           //   (room.ratesAndAvailabilityDtos[0]?.stopSellOTA != null && room.ratesAndAvailabilityDtos[0]?.stopSellOTA !== false)
           // );
           this.soldOutRooms = sortedRoomsOne.filter(room => {
+              if (this.isRoomTooSmall(room)) {
+                return false;
+              }
               const rates = room.ratesAndAvailabilityDtos;
 
               const hasDayTripRate = this.hasDayTripRate(room);
@@ -7963,6 +7969,38 @@ hasVisiblePlans(room: any): boolean {
   });
 }
 
+isRoomTooSmall(room: any): boolean {
+  if (!room) return false;
+  if (!isPlatformBrowser(this.platformId)) {
+    return false;
+  }
+  const searchAdults = Number(this.booking?.noOfPersons || this.adults || 1);
+  const searchRooms = Number(this.booking?.noOfRooms || this.rooms || 1);
+  if (searchAdults > 0 && searchRooms > 0) {
+    const requiredPerRoom = Math.ceil(searchAdults / searchRooms);
+    
+    // Check if the room's maximum occupancy is less than requiredPerRoom
+    const roomMax = Number(room.maximumOccupancy ?? 2);
+    if (roomMax < requiredPerRoom) {
+      return true;
+    }
+    
+    // Also check if any plan inside the room has a maximum occupancy that is at least requiredPerRoom
+    if (room.ratesAndAvailabilityDtos && room.ratesAndAvailabilityDtos.length > 0) {
+      const hasAnyAccommodatingPlan = room.ratesAndAvailabilityDtos.some((rate: any) => {
+        return rate.roomRatePlans && rate.roomRatePlans.some((plan: any) => {
+          const planMax = Number(plan?.maximumOccupancy ?? room.maximumOccupancy ?? 2);
+          return planMax >= requiredPerRoom;
+        });
+      });
+      if (!hasAnyAccommodatingPlan) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
   toggleRoomExpansion(roomName: string): void {
     const index = this.expandedRooms.indexOf(roomName);
     if (index > -1) {
@@ -8024,11 +8062,14 @@ hasVisiblePlans(room: any): boolean {
           this.getAvailableRoomsForGHC(this.availableRooms);
         }
     // Filter sold-out rooms
-          this.soldOutRooms = response.body.roomList.filter(room =>
-            room.ratesAndAvailabilityDtos === null ||
-            (room.ratesAndAvailabilityDtos[0]?.stopSellOBE != null && room.ratesAndAvailabilityDtos[0]?.stopSellOBE !== false) ||
-            (room.ratesAndAvailabilityDtos[0]?.stopSellOTA != null && room.ratesAndAvailabilityDtos[0]?.stopSellOTA !== false)
-          );
+          this.soldOutRooms = response.body.roomList.filter(room => {
+            if (this.isRoomTooSmall(room)) {
+              return false;
+            }
+            return room.ratesAndAvailabilityDtos === null ||
+              (room.ratesAndAvailabilityDtos[0]?.stopSellOBE != null && room.ratesAndAvailabilityDtos[0]?.stopSellOBE !== false) ||
+              (room.ratesAndAvailabilityDtos[0]?.stopSellOTA != null && room.ratesAndAvailabilityDtos[0]?.stopSellOTA !== false);
+          });
           this.shortrooms = response.body.roomList;
           let facilities = this.businessUser.propertyServicesList;
           if (
