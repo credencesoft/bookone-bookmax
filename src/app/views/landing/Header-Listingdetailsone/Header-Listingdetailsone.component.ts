@@ -146,6 +146,20 @@ checkBookingEngineFlag(): void {
   const url = this.getWhatsappShareUrl();
   window.open(url, '_blank'); // opens WhatsApp link in new tab/app
 }
+
+  copyPageUrl(): void {
+    if (typeof window === 'undefined' || !window.location?.href) {
+      return;
+    }
+
+    const currentUrl = window.location.href;
+    if (navigator?.clipboard?.writeText) {
+      navigator.clipboard.writeText(currentUrl);
+      return;
+    }
+
+    window.prompt('Copy this page URL:', currentUrl);
+  }
     getWhatsappShareUrl(): string {
     const baseUrl = 'https://api.whatsapp.com/send';
     this.dynamicText = this.businessUser.name;

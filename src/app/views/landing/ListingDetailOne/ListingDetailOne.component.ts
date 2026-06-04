@@ -949,6 +949,12 @@ guestDataArray: Array<{
   showWhatsappPopup = false;
   whatsappNumber = '';
   isLoadingWhatsapp: boolean = false;
+  isTwentyFourHourCheckIn = false;
+  activeGalleryTab = 'photo';
+  selectedCheckInTime = '12:00';
+  availableCheckInTimes = Array.from({ length: 24 }, (_, hour) =>
+    `${String(hour).padStart(2, '0')}:00`
+  );
     checkinDate: string;
   checkoutDate: string;
 isRoomDescriptionExpanded = false;
@@ -1071,6 +1077,7 @@ if (params['Children'] !== undefined) {
     checkin.setDate(checkin.getDate() + nights);
     this.checkoutDate = `${checkin.getFullYear()}-${('0' + (checkin.getMonth() + 1)).slice(-2)}-${('0' + checkin.getDate()).slice(-2)}`;
   }
+
 }
            if (params['bookingEngine'] !== undefined) {
         this.urlLocation = params['bookingEngine'];
@@ -9015,6 +9022,13 @@ onYesClick() {
 
     this.token.saveSelectedServices(normalizedAddOns);
     this.token.saveServiceData(normalizedAddOns);
+  }
+
+  setCheckInMode(isTwentyFourHour: boolean): void {
+    this.isTwentyFourHourCheckIn = isTwentyFourHour;
+    if (!isTwentyFourHour) {
+      this.selectedCheckInTime = '12:00';
+    }
   }
 
   setCurrencyAndLocalization() {
