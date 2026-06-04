@@ -46,6 +46,43 @@
       <i class="fa-solid fa-xmark"></i>
     </button>
   </div>
+
+
+  <!-- Stop Sell Modal Backdrop & Container -->
+  <div class="stop-sell-backdrop" *ngIf="showStopSellPopup">
+    <div class="stop-sell-modal" role="alert" aria-live="polite">
+      <button
+        type="button"
+        class="stop-sell-modal__close-btn"
+        aria-label="Close message"
+        (click)="closeStopSellPopup()"
+      >
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      
+      <div class="stop-sell-modal__body">
+        <div class="stop-sell-modal__icon">
+          <i class="fa-solid fa-calendar-times"></i>
+        </div>
+        
+        <h3 class="stop-sell-modal__title">Reservations Closed</h3>
+        
+        <p class="stop-sell-modal__message">{{ stopSellMessage }}</p>
+        
+        <div class="stop-sell-modal__actions">
+          <button 
+            type="button" 
+            class="stop-sell-modal__btn stop-sell-modal__btn--primary"
+            (click)="closeStopSellPopup()"
+          >
+            Change Dates
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
   <div *ngIf="showAllTheOfferList?.length > 0">
     <p-carousel
       class="carousel-section"
@@ -3647,21 +3684,7 @@
                 </div>
 
                 <ng-container
-                  *ngIf="selectedRoom?.ratesAndAvailabilityDtos === null"
-                >
-                  <h4 class="not-available">No Plans Available</h4>
-                </ng-container>
-                <ng-container
-                  *ngIf="
-                    (selectedRoom?.ratesAndAvailabilityDtos?.[0]?.stopSellOBE !=
-                      null &&
-                      selectedRoom?.ratesAndAvailabilityDtos?.[0]
-                        ?.stopSellOBE !== false) ||
-                    (selectedRoom?.ratesAndAvailabilityDtos?.[0]?.stopSellOTA !=
-                      null &&
-                      selectedRoom?.ratesAndAvailabilityDtos?.[0]
-                        ?.stopSellOTA !== false)
-                  "
+                  *ngIf="selectedRoom?.ratesAndAvailabilityDtos === null || isRoomStopSelled(selectedRoom)"
                 >
                   <h4 class="not-available">No Plans Available</h4>
                 </ng-container>

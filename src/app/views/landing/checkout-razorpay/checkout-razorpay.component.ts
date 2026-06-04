@@ -2,7 +2,7 @@
 // import { Email } from './../ecosystem/ecosystem.component';
 // import { Component } from '@angular/core';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
-import { ChangeDetectorRef, Component, NgZone } from '@angular/core';
+import { ChangeDetectorRef, Component, NgZone, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { CheckoutService } from 'paytm-blink-checkout-angular';
 import { Subscription } from 'rxjs';
@@ -20,7 +20,9 @@ declare var Razorpay:any;
   templateUrl: './checkout-razorpay.component.html',
   styleUrls: ['./checkout-razorpay.component.scss']
 })
-export class CheckoutRazorpayComponent {
+export class CheckoutRazorpayComponent implements OnInit, OnDestroy {
+
+  private razorpayInstance: any;
 
   businessUser: BusinessUser;
   payment: Payment;
@@ -155,10 +157,10 @@ if (this.businessUser.paymentGatewayApiKey === keyId) {
     }
   };
 
-  const razorpayObject = new Razorpay(options);
-  razorpayObject.open();
+  this.razorpayInstance = new Razorpay(options);
+  this.razorpayInstance.open();
 
-  razorpayObject.on('payment.failed', (response: any) => {
+  this.razorpayInstance.on('payment.failed', (response: any) => {
     console.error('Payment failed:', response);
     this.showDanger('Payment failed. Please try again.');
   });
@@ -252,5 +254,32 @@ if (this.businessUser.paymentGatewayApiKey === keyId) {
   onGoHome() {
     this.router.navigate(["/"]);
     // this.locationBack.back();
+  }
+
+  ngOnDestroy(): void {
+    // 1. Programmatically close the Razorpay instance if it's active
+    if (this.razorpayInstance) {
+      try {
+        this.razorpayInstance.close();
+      } catch (err) {
+        console.error('Error closing Razorpay instance:', err);
+      }
+    }
+
+    // 2. Remove any injected Razorpay script tags to prevent piling them up
+    const scripts = document.querySelectorAll('script[src*="razorpay.com"]');
+    scripts.forEach(script => script.remove());
+
+    // 3. Remove all Razorpay iframes and containers to terminate background connections & prefetching
+    const razorpayContainers = document.querySelectorAll('.razorpay-container');
+    razorpayContainers.forEach(el => el.remove());
+
+    const razorpayIframes = document.querySelectorAll('iframe[src*="razorpay"]');
+    razorpayIframes.forEach(el => el.remove());
+
+    // 4. Delete the global variable to free up memory
+    if ((window as any).Razorpay) {
+      delete (window as any).Razorpay;
+    }
   }
 }

@@ -24,6 +24,7 @@ import { externalReservationDtoList } from 'src/app/model/externalReservation';
 import { ListingService } from 'src/services/listing.service';
 import { BusinessServiceDtoList } from 'src/app/model/businessServiceDtoList';
 import { PropertyServiceDTO } from 'src/app/model/PropertyServices';
+import { CurrencyService } from 'src/app/services/currency.service';
 
 @Component({
   selector: 'app-Confirm-Booking',
@@ -32,6 +33,7 @@ import { PropertyServiceDTO } from 'src/app/model/PropertyServices';
   styleUrls: ['./Confirm-Booking.component.scss'],
 })
 export class ConfirmBookingComponent implements OnInit {
+  exchangeRates: any;
   businessUser: BusinessUser;
   booking: Booking;
   payment: Payment;
@@ -89,7 +91,8 @@ export class ConfirmBookingComponent implements OnInit {
     private location: Location,
     private router: Router,
     private datePipe: DatePipe,
-    private listingService: ListingService
+    private listingService: ListingService,
+    private currencyService: CurrencyService
   ) {
     this.businessUser = new BusinessUser();
     this.booking = new Booking();
@@ -206,7 +209,52 @@ export class ConfirmBookingComponent implements OnInit {
         // this.children3to5 = this.booking.noOfChildren3To5yrs;
         this.noOfrooms = this.booking.noOfRooms;
       }
+      if (params['currency'] !== undefined) {
+        this.currency = params['currency'].toUpperCase();
+        try {
+          sessionStorage.setItem('selected_currency', this.currency);
+        } catch (e) {
+          console.error('Error writing to sessionStorage selected_currency:', e);
+        }
+      } else if (params['userCurrency'] !== undefined) {
+        this.currency = params['userCurrency'].toUpperCase();
+        try {
+          sessionStorage.setItem('selected_currency', this.currency);
+        } catch (e) {
+          console.error('Error writing to sessionStorage selected_currency:', e);
+        }
+      }
+
+      const countryParam =
+        params['country'] ||
+        params['user_country'] ||
+        params['userCountry'] ||
+        params['user_country_code'] ||
+        params['userCountryCode'];
+      if (countryParam) {
+        this.token.saveCountry(countryParam);
+      }
     });
+
+    this.currencyService.getLatestRates().subscribe(
+      (data) => {
+        if (data && data.rates) {
+          this.exchangeRates = data.rates;
+          this.resolveActiveCurrency();
+          this.changeDetectorRefs.detectChanges();
+        } else {
+          this.exchangeRates = null;
+          this.resolveActiveCurrency();
+          this.changeDetectorRefs.detectChanges();
+        }
+      },
+      (error) => {
+        console.error('Failed to load exchange rates in ConfirmBookingComponent:', error);
+        this.exchangeRates = null;
+        this.resolveActiveCurrency();
+        this.changeDetectorRefs.detectChanges();
+      }
+    );
 
     this.totalExtraAmount = 0;
     this.totalBeforeTaxAmount = 0;
@@ -222,7 +270,7 @@ export class ConfirmBookingComponent implements OnInit {
     if (this.booking.id !== undefined) {
       this.bookingConfirmed = true;
     }
-    this.currency = 'INR';
+    this.resolveActiveCurrency();
     this.extraChildCharge = this.token.getExtraChildCharge();
   }
   ngAfterViewInit() {
@@ -492,7 +540,7 @@ export class ConfirmBookingComponent implements OnInit {
         });
 
         this.token.saveProperty(this.businessUser);
-        this.currency = this.businessUser.localCurrency.toUpperCase();
+        this.resolveActiveCurrency();
 
         this.businessServiceDto =
           this.businessUser?.businessServiceDtoList.find(
@@ -932,4 +980,58 @@ export class ConfirmBookingComponent implements OnInit {
   goback() {
     this.token.clearBookingDataObj();
   }
+
+  resolveActiveCurrency() {
+    if (!this.exchangeRates) {
+      this.currency = (this.businessUser && this.businessUser.localCurrency) ? this.businessUser.localCurrency.toUpperCase() : 'INR';
+      return;
+    }
+
+    const queryCurrency = this.acRoute.snapshot.queryParams['currency'] || this.acRoute.snapshot.queryParams['userCurrency'];
+    if (queryCurrency) {
+      this.currency = queryCurrency.toUpperCase();
+      try {
+        sessionStorage.setItem('selected_currency', this.currency);
+      } catch (e) {
+        console.error('Error writing to sessionStorage selected_currency:', e);
+      }
+      return;
+    }
+
+    const queryCountry = this.acRoute.snapshot.queryParams['country'];
+    if (queryCountry) {
+      const countryCurrency = this.getCurrencyFromCountry(queryCountry);
+      if (countryCurrency) {
+        this.currency = countryCurrency;
+        try {
+          sessionStorage.setItem('selected_currency', this.currency);
+        } catch (e) {
+          console.error('Error writing to sessionStorage selected_currency:', e);
+        }
+        return;
+      }
+    }
+
+    const savedCurrency = sessionStorage.getItem('selected_currency');
+    if (savedCurrency) {
+      this.currency = savedCurrency.toUpperCase();
+    } else {
+      this.currency = (this.businessUser && this.businessUser.localCurrency) ? this.businessUser.localCurrency.toUpperCase() : 'INR';
+    }
+  }
+
+  getCurrencyFromCountry(country: string): string {
+    const mapping = {
+      'US': 'USD',
+      'IN': 'INR',
+      'AU': 'AUD',
+      'NZ': 'NZD',
+      'GB': 'GBP',
+      'EU': 'EUR',
+      'CA': 'CAD',
+      'BD': 'BDT'
+    };
+    return mapping[country.toUpperCase()] || null;
+  }
 }
+

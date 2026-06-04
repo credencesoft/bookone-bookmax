@@ -23,6 +23,7 @@ import { environment } from 'src/environments/environment';
 import { formatDate } from '@angular/common';
 import { WhatsappDto } from 'src/app/model/whatsappDto';
 import { Template } from 'src/app/model/template';
+import { CurrencyService } from 'src/app/services/currency.service';
 import { Language } from 'src/app/model/language';
 import { Components } from 'src/app/model/components';
 import { Para } from 'src/app/model/parameters';
@@ -51,6 +52,7 @@ export class BookingConfirmComponent {
   externalReservationDtoList:externalReservationDtoList[];
   showAlert: boolean = false;
   alertType: string;
+  exchangeRates: any;
   bookingConfirmed = false;
   fromDate: any;
   copyTextOne:boolean=false;
@@ -161,6 +163,7 @@ textToCopyOne: string = 'This is some text to copy';
     private router: Router,
     private listingService: ListingService,
     private datePipe: DatePipe,
+    private currencyService: CurrencyService,
   ) {
     this.businessUser = new BusinessUser();
     this.booking = new Booking();
@@ -353,24 +356,24 @@ calculateConvenienceFee(totalAmount: number, percentage: number): number {
 }
 
   ngOnInit() {
-        const couponCodeValues = sessionStorage.getItem('selectedPromoData');
+    const couponCodeValues = sessionStorage.getItem('selectedPromoData');
 
-if (couponCodeValues) {
-  const parsed = JSON.parse(couponCodeValues); // convert to object
-  this.specialDiscountData = JSON.parse(couponCodeValues);
-    console.log("this.privatePromotionData", this.specialDiscountData);
-    if (parsed.discountPercentage) {
-          this.specialDiscountPercentage = parsed.discountPercentage;
-        }
+    if (couponCodeValues) {
+      const parsed = JSON.parse(couponCodeValues); // convert to object
+      this.specialDiscountData = JSON.parse(couponCodeValues);
+      console.log("this.privatePromotionData", this.specialDiscountData);
+      if (parsed.discountPercentage) {
+        this.specialDiscountPercentage = parsed.discountPercentage;
+      }
     }
-        const bookingSummaryStr = sessionStorage.getItem('bookingSummaryDetails');
+    const bookingSummaryStr = sessionStorage.getItem('bookingSummaryDetails');
     const bookingSummary = bookingSummaryStr
       ? JSON.parse(bookingSummaryStr)
       : null;
-        const plans = bookingSummary.selectedPlansSummary;
-          if (plans.length >= 2) {
-            this.groupBookingId = parseInt(sessionStorage.getItem('groupbookingId') || '0', 10);
-      }
+    const plans = bookingSummary ? bookingSummary.selectedPlansSummary : [];
+    if (plans && plans.length >= 2) {
+      this.groupBookingId = parseInt(sessionStorage.getItem('groupbookingId') || '0', 10);
+    }
     this.acRoute.queryParams.subscribe((params) => {
       if (params["businessUser"] !== undefined) {
         this.businessUser = JSON.parse(params["businessUser"]);
@@ -405,8 +408,52 @@ if (couponCodeValues) {
         this.noOfrooms = this.booking.noOfRooms;
       }
 
+      if (params['currency'] !== undefined) {
+        this.currency = params['currency'].toUpperCase();
+        try {
+          sessionStorage.setItem('selected_currency', this.currency);
+        } catch (e) {
+          console.error('Error writing to sessionStorage selected_currency:', e);
+        }
+      } else if (params['userCurrency'] !== undefined) {
+        this.currency = params['userCurrency'].toUpperCase();
+        try {
+          sessionStorage.setItem('selected_currency', this.currency);
+        } catch (e) {
+          console.error('Error writing to sessionStorage selected_currency:', e);
+        }
+      }
+
+      const countryParam =
+        params['country'] ||
+        params['user_country'] ||
+        params['userCountry'] ||
+        params['user_country_code'] ||
+        params['userCountryCode'];
+      if (countryParam) {
+        this.token.saveCountry(countryParam);
+      }
     });
 
+    this.currencyService.getLatestRates().subscribe(
+      (data) => {
+        if (data && data.rates) {
+          this.exchangeRates = data.rates;
+          this.resolveActiveCurrency();
+          this.changeDetectorRefs.detectChanges();
+        } else {
+          this.exchangeRates = null;
+          this.resolveActiveCurrency();
+          this.changeDetectorRefs.detectChanges();
+        }
+      },
+      (error) => {
+        console.error('Failed to load exchange rates in BookingConfirmComponent:', error);
+        this.exchangeRates = null;
+        this.resolveActiveCurrency();
+        this.changeDetectorRefs.detectChanges();
+      }
+    );
 
     this.totalExtraAmount = 0;
     this.totalBeforeTaxAmount = 0;
@@ -422,7 +469,7 @@ if (couponCodeValues) {
     if (this.booking.id !== undefined) {
       this.bookingConfirmed = true;
     }
-    this.currency = 'INR';
+    this.resolveActiveCurrency();
     this.getDiffDate(this.toDate, this.fromDate);
   }
   loadBookingSessionData(): void {
@@ -4019,4 +4066,58 @@ getUpdatedReservationNumber(value: string): string {
                   this.paymentLoader = false;
                 });
               }
+
+  resolveActiveCurrency() {
+    if (!this.exchangeRates) {
+      this.currency = (this.businessUser && this.businessUser.localCurrency) ? this.businessUser.localCurrency.toUpperCase() : 'INR';
+      return;
+    }
+
+    const queryCurrency = this.acRoute.snapshot.queryParams['currency'] || this.acRoute.snapshot.queryParams['userCurrency'];
+    if (queryCurrency) {
+      this.currency = queryCurrency.toUpperCase();
+      try {
+        sessionStorage.setItem('selected_currency', this.currency);
+      } catch (e) {
+        console.error('Error writing to sessionStorage selected_currency:', e);
+      }
+      return;
+    }
+
+    const queryCountry = this.acRoute.snapshot.queryParams['country'];
+    if (queryCountry) {
+      const countryCurrency = this.getCurrencyFromCountry(queryCountry);
+      if (countryCurrency) {
+        this.currency = countryCurrency;
+        try {
+          sessionStorage.setItem('selected_currency', this.currency);
+        } catch (e) {
+          console.error('Error writing to sessionStorage selected_currency:', e);
+        }
+        return;
+      }
+    }
+
+    const savedCurrency = sessionStorage.getItem('selected_currency');
+    if (savedCurrency) {
+      this.currency = savedCurrency.toUpperCase();
+    } else {
+      this.currency = (this.businessUser && this.businessUser.localCurrency) ? this.businessUser.localCurrency.toUpperCase() : 'INR';
+    }
+  }
+
+  getCurrencyFromCountry(country: string): string {
+    const mapping = {
+      'US': 'USD',
+      'IN': 'INR',
+      'AU': 'AUD',
+      'NZ': 'NZD',
+      'GB': 'GBP',
+      'EU': 'EUR',
+      'CA': 'CAD',
+      'BD': 'BDT',
+      'GH': 'GHS'
+    };
+    return mapping[country.toUpperCase()] || null;
+  }
 }

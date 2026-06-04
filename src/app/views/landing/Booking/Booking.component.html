@@ -40,6 +40,7 @@
             >Minimum Order:
             {{
               coupon.minimumOrderAmount
+                | convertCurrency : businessUser?.localCurrency : currency : exchangeRates
                 | currency : currency : "symbol" : "1.2-2"
             }}</span
           ><br />
@@ -346,7 +347,7 @@
                       </div>
                     </div>
                     <div>
-                      <div style="text-align: end">{{ getPlanBaseAmount(plan) | currency: currency : 'symbol' : '1.2-2' }}</div>
+                      <div style="text-align: end">{{ getPlanBaseAmount(plan) | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2' }}</div>
                       <div style="text-align: end; margin-top: -5px"
                         *ngIf="plan.extraPersonAdultCountAmount + plan.extraPersonChildCountAmount > 0">
                         {{
@@ -363,25 +364,25 @@
                   <div class="d-flex justify-content-between line-height-27px promo-discounts"
                     *ngIf="this.specialDiscountData?.discountPercentage">
                     <div class="color-graying">Coupon Discount ({{ this.specialDiscountData?.discountPercentage }}%)</div>
-                    <div>-{{ ((getPlanBaseAmount(plan) * this.specialDiscountData?.discountPercentage) / 100) | currency: currency : 'symbol' : '1.2-2' }}</div>
+                    <div>-{{ ((getPlanBaseAmount(plan) * this.specialDiscountData?.discountPercentage) / 100) | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2' }}</div>
                   </div>
                   <div class="d-flex justify-content-between line-height-27px advance-discounts"
                     *ngIf="this.selectedAdvanceDiscountSlab?.discountPercentage">
                     <div class="color-graying">Advance Discount ({{ this.selectedAdvanceDiscountSlab?.discountPercentage }}%)</div>
                     <div>-{{
                       (((getPlanBaseAmount(plan) - ((getPlanBaseAmount(plan) * (this.specialDiscountData?.discountPercentage || 0)) / 100)) *
-                        this.selectedAdvanceDiscountSlab?.discountPercentage) / 100) | currency: currency : 'symbol' : '1.2-2'
+                        this.selectedAdvanceDiscountSlab?.discountPercentage) / 100) | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2'
                     }}</div>
                   </div>
                   <div class="d-flex justify-content-between line-height-27px"
                     *ngIf="this.specialDiscountData?.discountPercentage || this.selectedAdvanceDiscountSlab?.discountPercentage">
                     <div class="color-graying">Tax & Services</div>
-                    <div>{{ getPlanTaxAfterDiscount(plan) | currency: currency : 'symbol' : '1.2-2' }}</div>
+                    <div>{{ getPlanTaxAfterDiscount(plan) | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2' }}</div>
                   </div>
                   <div class="d-flex justify-content-between line-height-27px"
                     *ngIf="!this.specialDiscountData?.discountPercentage && !this.selectedAdvanceDiscountSlab?.discountPercentage">
                     <div class="color-graying">Tax & Services</div>
-                    <div>{{ plan.taxPercentageperroom | currency: currency : 'symbol' : '1.2-2' }}</div>
+                    <div>{{ plan.taxPercentageperroom | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2' }}</div>
                   </div>
                   <ng-container *ngIf="selectedAddOns && selectedAddOns.length > 0">
                     <ng-container *ngIf="getSelectedServicesForPlan(plan) as planAddOns">
@@ -396,12 +397,12 @@
                             <span>x {{ addon.quantity }}</span>
                           </div>
                           <div class="plan-add-on-amount">
-                            {{ addon.afterTaxAmount | currency: currency : 'symbol' : '1.2-2' }}
+                            {{ addon.afterTaxAmount | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2' }}
                           </div>
                         </div>
                         <div class="plan-add-ons-total-row">
                           <span>Services Total</span>
-                          <strong>{{ getPlanServicesTotal(plan) | currency: currency : 'symbol' : '1.2-2' }}</strong>
+                          <strong>{{ getPlanServicesTotal(plan) | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2' }}</strong>
                         </div>
                       </div>
                     </ng-container>
@@ -409,12 +410,12 @@
                   <div class="d-flex justify-content-between line-height-27px"
                     *ngIf="!this.specialDiscountData?.discountPercentage && !activeGoogleCenter && !selectedAdvanceDiscountSlab?.discountPercentage">
                     <div class="color-graying font-weight-600">Room Total</div>
-                    <div class="font-weight-600">{{ getPlanRoomTotal(plan) | currency: currency : 'symbol' : '1.2-2' }}</div>
+                    <div class="font-weight-600">{{ getPlanRoomTotal(plan) | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2' }}</div>
                   </div>
                   <div class="d-flex justify-content-between line-height-27px"
                     *ngIf="this.specialDiscountData?.discountPercentage || selectedAdvanceDiscountSlab?.discountPercentage">
                     <div class="color-graying font-weight-600">Room Total</div>
-                    <div class="font-weight-600">{{ getPlanRoomTotal(plan) | currency: currency : 'symbol' : '1.2-2' }}</div>
+                    <div class="font-weight-600">{{ getPlanRoomTotal(plan) | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2' }}</div>
                   </div>
                   <hr *ngIf="!last" style="border: 1px solid #e5e7eb" />
                 </div>
@@ -564,9 +565,9 @@
                             </button>
                           </div>
                         </td>
-                        <td class="add-on-amount-cell" style="text-align: right; vertical-align: middle; padding: 10px 12px">{{ addon.servicePrice | currency: currency : 'symbol' : '1.2-2' }}</td>
-                        <td class="add-on-amount-cell" style="text-align: right; vertical-align: middle; padding: 10px 12px; color: #6b7280">{{ addon.taxAmount | currency: currency : 'symbol' : '1.2-2' }}</td>
-                        <td class="add-on-amount-cell" style="text-align: right; vertical-align: middle; padding: 10px 12px; font-weight: 600">{{ getAddOnRowTotal(addon) | currency: currency : 'symbol' : '1.2-2' }}</td>
+                        <td class="add-on-amount-cell" style="text-align: right; vertical-align: middle; padding: 10px 12px">{{ addon.servicePrice | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2' }}</td>
+                        <td class="add-on-amount-cell" style="text-align: right; vertical-align: middle; padding: 10px 12px; color: #6b7280">{{ addon.taxAmount | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2' }}</td>
+                        <td class="add-on-amount-cell" style="text-align: right; vertical-align: middle; padding: 10px 12px; font-weight: 600">{{ getAddOnRowTotal(addon) | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2' }}</td>
                       </tr>
                     </tbody>
                   </table>
@@ -575,11 +576,11 @@
                 <div *ngIf="selectedAddOns && selectedAddOns.length > 0" class="add-on-totals-footer">
                   <div class="d-flex justify-content-between add-on-total-muted-row">
                     <span class="color-graying">Services Subtotal ({{ selectedAddOns.length }} selected)</span>
-                    <span>{{ getServicesSubtotal() | currency: currency : 'symbol' : '1.2-2' }}</span>
+                    <span>{{ getServicesSubtotal() | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2' }}</span>
                   </div>
                   <div class="d-flex justify-content-between add-on-total-muted-row">
                     <span class="color-graying">Services Tax</span>
-                    <span>{{ getServicesTax() | currency: currency : 'symbol' : '1.2-2' }}</span>
+                    <span>{{ getServicesTax() | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2' }}</span>
                   </div>
                   <div class="add-on-selected-breakdown">
                     <span class="add-on-selected-breakdown-label">Selected services</span>
@@ -587,9 +588,9 @@
                       <span class="add-on-selected-chip" *ngFor="let addon of selectedAddOns">
                         {{ addon.name }}
                         <span *ngIf="isItemWiseAddOn(addon)">
-                          {{ addon.servicePrice | currency: currency : 'symbol' : '1.2-2' }} * {{ getSelectedAddOnQuantity(addon) }} =
+                          {{ addon.servicePrice | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2' }} * {{ getSelectedAddOnQuantity(addon) }} =
                         </span>
-                        <strong>{{ getSelectedAddOnTotal(addon) | currency: currency : 'symbol' : '1.2-2' }}</strong>
+                        <strong>{{ getSelectedAddOnTotal(addon) | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2' }}</strong>
                       </span>
                     </div>
                   </div>
@@ -599,7 +600,7 @@
                       <small>(paid in full now)</small>
                     </span>
                     <span class="add-on-grand-total-amount">
-                      {{ getServicesTotal() | currency: currency : 'symbol' : '1.2-2' }}
+                      {{ getServicesTotal() | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2' }}
                     </span>
                   </div>
                 </div>
@@ -1179,7 +1180,7 @@
 
                     <div *ngIf="activeGoogleCenter">
                       <div style="text-align: end">
-                        {{ getPlanBaseAmount(plan) | currency: currency : 'symbol' : '1.2-2' }}
+                        {{ getPlanBaseAmount(plan) | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2' }}
                       </div>
                       <div
                         style="text-align: end; margin-top: -5px"
@@ -1201,7 +1202,7 @@
                     </div>
                     <div *ngIf="!activeGoogleCenter">
                       <div style="text-align: end">
-                        {{ getPlanBaseAmount(plan) | currency: currency : 'symbol' : '1.2-2' }}
+                        {{ getPlanBaseAmount(plan) | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2' }}
                       </div>
                       <div
                         style="text-align: end; margin-top: -5px"
@@ -1255,7 +1256,7 @@
                        ( (getPlanBaseAmount(plan) *
                           this.specialDiscountData?.discountPercentage) /
                           100
-                      ) | currency: currency : 'symbol' : '1.2-2'
+                      ) | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2'
                       }}
                     </div>
                   </div>
@@ -1271,7 +1272,7 @@
                         (
                           (getPlanBaseAmount(plan) - ((getPlanBaseAmount(plan) * (this.specialDiscountData?.discountPercentage || 0)) / 100)) *
                           (this.selectedAdvanceDiscountSlab?.discountPercentage / 100)
-                        ) | currency: currency : 'symbol' : '1.2-2'
+                        ) | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2'
                       }}
                     </div>
                   </div>
@@ -1283,7 +1284,7 @@
                     <div class="color-graying">Tax & Services</div>
                     <div>
                       <!-- Tax on cascaded-discounted amount: (price - coupon%) × (1 - advance%) × taxPct% -->
-                      {{ getPlanTaxAfterDiscount(plan) | currency: currency : 'symbol' : '1.2-2' }}
+                      {{ getPlanTaxAfterDiscount(plan) | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2' }}
                     </div>
                   </div>
 
@@ -1294,7 +1295,7 @@
                     <div class="color-graying">Tax & Services</div>
 
                     <div>
-                      {{ plan.taxPercentageperroom | currency: currency : 'symbol' : '1.2-2' }}
+                      {{ plan.taxPercentageperroom | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2' }}
                     </div>
                   </div>
                   <ng-container *ngIf="selectedAddOns && selectedAddOns.length > 0">
@@ -1310,12 +1311,12 @@
                             <span>x {{ addon.quantity }}</span>
                           </div>
                           <div class="plan-add-on-amount">
-                            {{ addon.afterTaxAmount | currency: currency : 'symbol' : '1.2-2' }}
+                            {{ addon.afterTaxAmount | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2' }}
                           </div>
                         </div>
                         <div class="plan-add-ons-total-row">
                           <span>Services Total</span>
-                          <strong>{{ getPlanServicesTotal(plan) | currency: currency : 'symbol' : '1.2-2' }}</strong>
+                          <strong>{{ getPlanServicesTotal(plan) | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2' }}</strong>
                         </div>
                       </div>
                     </ng-container>
@@ -1327,7 +1328,7 @@
                   >
                     <div class="color-graying font-weight-600">Total</div>
                     <div class="font-weight-600">
-                      {{ getPlanRoomTotal(plan) | currency: currency : 'symbol' : '1.2-2' }}
+                      {{ getPlanRoomTotal(plan) | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2' }}
                     </div>
                   </div>
                   <!-- Total: advance discount applied (± coupon) -->
@@ -1337,7 +1338,7 @@
                   >
                     <div class="color-graying font-weight-600">Total</div>
                     <div class="font-weight-600">
-                      {{ getPlanRoomTotal(plan) | currency: currency : 'symbol' : '1.2-2' }}
+                      {{ getPlanRoomTotal(plan) | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2' }}
                     </div>
                   </div>
                   <!-- Total: coupon only (no advance discount) -->
@@ -1347,7 +1348,7 @@
                   >
                     <div class="color-graying font-weight-600">Total</div>
                     <div class="font-weight-600">
-                      {{ getPlanRoomTotal(plan) | currency: currency : 'symbol' : '1.2-2' }}
+                      {{ getPlanRoomTotal(plan) | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2' }}
                     </div>
                   </div>
                   <hr *ngIf="!last" style="border: 1px solid #e5e7eb" />
@@ -1512,9 +1513,9 @@
                           </button>
                         </div>
                       </td>
-                      <td class="add-on-amount-cell" style="text-align: right; vertical-align: middle; padding: 8px 10px">{{ addon.servicePrice | currency: currency : 'symbol' : '1.2-2' }}</td>
-                      <td class="add-on-amount-cell" style="text-align: right; vertical-align: middle; padding: 8px 10px; color: #6b7280">{{ addon.taxAmount | currency: currency : 'symbol' : '1.2-2' }}</td>
-                      <td class="add-on-amount-cell" style="text-align: right; vertical-align: middle; padding: 8px 10px; font-weight: 600">{{ getAddOnRowTotal(addon) | currency: currency : 'symbol' : '1.2-2' }}</td>
+                      <td class="add-on-amount-cell" style="text-align: right; vertical-align: middle; padding: 8px 10px">{{ addon.servicePrice | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2' }}</td>
+                      <td class="add-on-amount-cell" style="text-align: right; vertical-align: middle; padding: 8px 10px; color: #6b7280">{{ addon.taxAmount | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2' }}</td>
+                      <td class="add-on-amount-cell" style="text-align: right; vertical-align: middle; padding: 8px 10px; font-weight: 600">{{ getAddOnRowTotal(addon) | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2' }}</td>
                     </tr>
                   </tbody>
                 </table>
@@ -1522,11 +1523,11 @@
               <div *ngIf="selectedAddOns && selectedAddOns.length > 0" class="add-on-totals-footer add-on-totals-footer-mobile">
                 <div class="d-flex justify-content-between add-on-total-muted-row">
                   <span class="color-graying">Services Subtotal</span>
-                  <span>{{ getServicesSubtotal() | currency: currency : 'symbol' : '1.2-2' }}</span>
+                  <span>{{ getServicesSubtotal() | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2' }}</span>
                 </div>
                 <div class="d-flex justify-content-between add-on-total-muted-row">
                   <span class="color-graying">Services Tax</span>
-                  <span>{{ getServicesTax() | currency: currency : 'symbol' : '1.2-2' }}</span>
+                  <span>{{ getServicesTax() | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2' }}</span>
                 </div>
                 <div class="add-on-selected-breakdown">
                   <span class="add-on-selected-breakdown-label">Selected services</span>
@@ -1534,9 +1535,9 @@
                     <span class="add-on-selected-chip" *ngFor="let addon of selectedAddOns">
                       {{ addon.name }}
                       <span *ngIf="isItemWiseAddOn(addon)">
-                        {{ addon.servicePrice | currency: currency : 'symbol' : '1.2-2' }} * {{ getSelectedAddOnQuantity(addon) }} =
+                        {{ addon.servicePrice | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2' }} * {{ getSelectedAddOnQuantity(addon) }} =
                       </span>
-                      <strong>{{ getSelectedAddOnTotal(addon) | currency: currency : 'symbol' : '1.2-2' }}</strong>
+                      <strong>{{ getSelectedAddOnTotal(addon) | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2' }}</strong>
                     </span>
                   </div>
                 </div>
@@ -1546,7 +1547,7 @@
                     <small>(full now)</small>
                   </span>
                   <span class="add-on-grand-total-amount">
-                    {{ getServicesTotal() | currency: currency : 'symbol' : '1.2-2' }}
+                    {{ getServicesTotal() | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2' }}
                   </span>
                 </div>
               </div>
@@ -1563,48 +1564,48 @@
                   <span class="section-number-badge">4</span>
                   <h5 class="headimg-color" style="margin: 0">
                     <img src="media-be/images/payment-sum.svg" alt="" width="18" height="18" style="margin-right: 4px" />
-                    Order Summary
+                    Payment Summary
                   </h5>
                 </div>
                 <div style="padding: 0 12px">
                   <div class="d-flex justify-content-between line-height-27px">
                     <div class="color-graying">{{ getAccommodationChargesLabel() }}</div>
-                    <div style="color: #3b82f6; font-weight: 500">{{ bookingSummaryDetails?.totalPlanPrice | currency: currency : 'symbol' : '1.2-2' }}</div>
+                    <div style="color: #3b82f6; font-weight: 500">{{ bookingSummaryDetails?.totalPlanPrice | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2' }}</div>
                   </div>
                   <div *ngIf="couponDiscountAmount > 0" class="d-flex justify-content-between line-height-27px">
                     <div class="color-graying">Coupon Discount ({{ this.specialDiscountData?.discountPercentage || selectedCouponList?.discountPercentage }}%)</div>
-                    <div style="color: #16a34a; font-weight: 500">-{{ couponDiscountAmount | currency: currency : 'symbol' : '1.2-2' }}</div>
+                    <div style="color: #16a34a; font-weight: 500">-{{ couponDiscountAmount | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2' }}</div>
                   </div>
                   <div *ngIf="advanceDiscountAmount > 0" class="d-flex justify-content-between line-height-27px">
                     <div class="color-graying">Advance Discount ({{ getSelectedAdvanceDiscountPercentage() }}%)</div>
-                    <div style="color: #16a34a; font-weight: 500">-{{ advanceDiscountAmount | currency: currency : 'symbol' : '1.2-2' }}</div>
+                    <div style="color: #16a34a; font-weight: 500">-{{ advanceDiscountAmount | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2' }}</div>
                   </div>
                   <div class="d-flex justify-content-between line-height-27px">
                     <div class="color-graying">Tax &amp; Services</div>
-                    <div style="font-weight: 500">{{ getTotalTax() | currency: currency : 'symbol' : '1.2-2' }}</div>
+                    <div style="font-weight: 500">{{ getTotalTax() | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2' }}</div>
                   </div>
                 </div>
                 <div *ngIf="selectedAddOns && selectedAddOns.length > 0"
                   style="margin: 6px 12px; padding: 10px 12px; background-color: #f0fdfa; border-radius: 8px; border: 1px solid #99f6e4">
                   <div class="d-flex justify-content-between">
                     <div class="color-graying">Add-On Services ({{ selectedAddOns.length }})</div>
-                    <div style="font-weight: 600">{{ getServicesTotal() | currency: currency : 'symbol' : '1.2-2' }}</div>
+                    <div style="font-weight: 600">{{ getServicesTotal() | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2' }}</div>
                   </div>
                   <div style="font-size: 11px; color: #6b7280; margin-top: 2px">Always paid in full</div>
                 </div>
                 <div *ngIf="getDisplayedConvenienceFeeAmount() > 0" style="padding: 0 12px" class="d-flex justify-content-between line-height-27px">
                   <div class="color-graying">Convenience Fee</div>
-                  <div style="font-weight: 500">{{ getDisplayedConvenienceFeeAmount() | currency: currency : 'symbol' : '1.2-2' }}</div>
+                  <div style="font-weight: 500">{{ getDisplayedConvenienceFeeAmount() | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2' }}</div>
                 </div>
                 <div style="padding: 12px; border-top: 2px solid #e5e7eb; margin-top: 8px" class="d-flex justify-content-between">
                   <div class="font-weight-600" style="font-size: 1rem">Grand Total</div>
-                  <div class="font-weight-600" style="font-size: 1rem">{{ getNewGrandTotal() | currency: currency : 'symbol' : '1.2-2' }}</div>
+                  <div class="font-weight-600" style="font-size: 1rem">{{ getNewGrandTotal() | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2' }}</div>
                 </div>
                 <div *ngIf="showPayNow() && hasSelectedAdvancePaymentPlan()"
                   style="margin: 0 12px 14px; padding: 12px; background-color: #fffcdf; border-radius: 8px; border: 1px solid #fef08a">
                   <div class="d-flex justify-content-between" style="margin-bottom: 4px">
                     <div style="font-weight: 700">Pay Now</div>
-                    <div style="font-weight: 700; color: #dc2626">{{ getNewPayNowAmount() | currency: currency : 'symbol' : '1.2-2' }}</div>
+                    <div style="font-weight: 700; color: #dc2626">{{ getNewPayNowAmount() | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2' }}</div>
                   </div>
                   <div style="font-size: 11px; color: #6b7280; margin-bottom: 8px">
                     {{ getSelectedAdvancePaymentPercentage() }}% of rooms + all services + fee

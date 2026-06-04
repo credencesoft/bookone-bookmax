@@ -313,27 +313,27 @@
                     </td>
                     <td>
                       <ng-container *ngIf="!isDayTripBooking(booking); else dayTripTariffDesk">
-                        {{ booking?.roomTariffBeforeDiscount | currency: currency : 'symbol' : '1.2-2' }}
+                        {{ booking?.roomTariffBeforeDiscount | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2' }}
                       </ng-container>
                       <ng-template #dayTripTariffDesk>Day Trip</ng-template>
                     </td>
                     <td>{{ getBookingNightsLabel(booking) }}</td>
                     <td>{{ getBookingRoomCountLabel(booking) }}</td>
-                    <td>{{ booking?.extraPersonCharge | currency: currency : 'symbol' : '1.2-2' }}</td>
-                    <td>{{ booking?.extraChildCharge | currency: currency : 'symbol' : '1.2-2' }}</td>
+                    <td>{{ booking?.extraPersonCharge | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2' }}</td>
+                    <td>{{ booking?.extraChildCharge | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2' }}</td>
                     <td *ngIf="specialDiscountData?.discountPercentage">
                       <ng-container *ngIf="getDisplayedRowCouponDiscount(booking) > 0">
-                        -{{ getDisplayedRowCouponDiscount(booking) | currency: currency : 'symbol' : '1.2-2' }}
+                        -{{ getDisplayedRowCouponDiscount(booking) | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2' }}
                       </ng-container>
                     </td>
                     <td *ngIf="getDisplayedAdvanceDiscountAmount() > 0">
                       <ng-container *ngIf="getDisplayedRowAdvanceDiscount(booking) > 0">
-                        -{{ getDisplayedRowAdvanceDiscount(booking) | currency: currency : 'symbol' : '1.2-2' }}
+                        -{{ getDisplayedRowAdvanceDiscount(booking) | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2' }}
                       </ng-container>
                     </td>
-                    <td>{{ getDisplayedBookingSubtotal(booking) | currency: currency : 'symbol' : '1.2-2' }}</td>
-                    <td>{{ getDisplayedBookingTax(booking) | currency: currency : 'symbol' : '1.2-2' }}</td>
-                    <td>{{ getDisplayedBookingTotal(booking) | currency: currency : 'symbol' : '1.2-2' }}</td>
+                    <td>{{ getDisplayedBookingSubtotal(booking) | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2' }}</td>
+                    <td>{{ getDisplayedBookingTax(booking) | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2' }}</td>
+                    <td>{{ getDisplayedBookingTotal(booking) | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2' }}</td>
                   </tr>
                 </tbody>
               </table>
@@ -343,7 +343,7 @@
                   <div class="d-flex justify-content-between">
                     <div>{{ getAccommodationSubtotalLabel() }}:</div>
                     <div>
-                      {{ getDisplayedRoomSubtotal() | currency: currency : 'symbol' : '1.2-2' }}
+                      {{ getDisplayedRoomSubtotal() | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2' }}
                     </div>
                   </div>
                   <div *ngIf="specialDiscountData?.discountPercentage"
@@ -351,31 +351,31 @@
                     <div>Discounts Applied:<span *ngIf="specialDiscountData?.discountPercentage">(Coupon {{ specialDiscountData.discountPercentage
                     }})%</span></div>
                     <div style="text-align: right">
-                      <span>-{{ getDisplayedCouponDiscountAmount() | currency: currency : 'symbol' : '1.2-2' }}</span>
+                      <span>-{{ getDisplayedCouponDiscountAmount() | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2' }}</span>
                     </div>
                   </div>
                   <div *ngIf="getDisplayedAdvanceDiscountAmount() > 0" class="d-flex justify-content-between"
                     style="margin-top: 5px; color: #16a34a">
                     <div>Advance Discount ({{ advanceDiscountPercentage }}%)</div>
-                    <div>-{{ getDisplayedAdvanceDiscountAmount() | currency: currency : 'symbol' : '1.2-2' }}</div>
+                    <div>-{{ getDisplayedAdvanceDiscountAmount() | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2' }}</div>
                   </div>
                   <div *ngIf="getDisplayedCouponDiscountAmount() > 0 || getDisplayedAdvanceDiscountAmount() > 0" class="d-flex justify-content-between"
                     style="margin-top: 5px; font-weight: 600">
                     <div>Accommodation Total (After All Discounts)</div>
-                    <div>{{ getDisplayedAccommodationAfterDiscounts() | currency: currency : 'symbol' : '1.2-2' }}</div>
+                    <div>{{ getDisplayedAccommodationAfterDiscounts() | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2' }}</div>
                   </div>
                 </div>
                 <div class="footer-borders">
                   <div class="d-flex justify-content-between">
                     <div>Total GST:</div>
                     <div>
-                      {{ getDisplayedRoomTax() | currency: currency : 'symbol' : '1.2-2' }}
+                      {{ getDisplayedRoomTax() | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2' }}
                     </div>
                   </div>
                   <div class="d-flex justify-content-between" *ngIf="serviceChargePercentage" style="margin-top: 5px">
                     <div>Convenience Fee:</div>
                     <div>
-                      {{ getDisplayedConvenienceFee() | currency: currency : 'symbol' : '1.2-2' }}
+                      {{ getDisplayedConvenienceFee() | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2' }}
                     </div>
                   </div>
                 </div>
@@ -400,19 +400,18 @@
                       <tbody>
                         <tr *ngFor="let addon of selectedAddOns" style="border-bottom: 1px solid #f1f5f9">
                           <td style="padding: 5px; text-align: left">{{ addon.name || 'Service' }}</td>
-                          <td style="padding: 5px; text-align: center">{{ getAddOnBasePrice(addon)  | currency: currency : 'symbol' : '1.2-2'}}</td>
+                          <td style="padding: 5px; text-align: center">{{ getAddOnBasePrice(addon)  | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2'}}</td>
                           <td style="padding: 5px; text-align: center">{{ addon.quantity || 1 }}</td>
-                          <td style="padding: 5px; text-align: right">{{ (addon.servicePrice || 0)  | currency: currency : 'symbol' : '1.2-2' }}</td>
-                          <td style="padding: 5px; text-align: right">{{ (addon.taxAmount || 0)  | currency: currency : 'symbol' : '1.2-2' }}</td>
+                          <td style="padding: 5px; text-align: right">{{ (addon.servicePrice || 0)  | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2' }}</td>
+                          <td style="padding: 5px; text-align: right">{{ (addon.taxAmount || 0)  | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2' }}</td>
                           <td style="padding: 5px; text-align: right">{{ ((addon.servicePrice || 0) + (addon.taxAmount
-                            || 0))  | currency: currency : 'symbol' : '1.2-2'}}</td>
+                            || 0))  | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2'}}</td>
                         </tr>
                       </tbody>
                       <tfoot>
                         <tr style="border-top: 1px solid #cbd5e1; background-color: #eff6ff; color: #1465cf">
                           <td colspan="5" style="padding: 8px; text-align: right; font-weight: 700">Services Total</td>
-                          <td style="padding: 8px; text-align: right; font-weight: 700">{{ getServicesTotal() |
-                            currency: currency : 'symbol' : '1.2-2' }}</td>
+                          <td style="padding: 8px; text-align: right; font-weight: 700">{{ getServicesTotal() | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2' }}</td>
                         </tr>
                       </tfoot>
                     </table>
@@ -507,12 +506,12 @@
               <h5>Cancellation Rules</h5>
               <p class="cancellation-rules-subtitle-voucher" *ngIf="cancellationEstimate">
                 Rule is applied on (Booking Amount - Convenience Fee). Total estimated deduction (including non-refundable convenience fee):
-                <strong>{{ cancellationEstimate.deductionAmount | currency: currency : 'symbol' : '1.2-2' }}</strong>
+                <strong>{{ cancellationEstimate.deductionAmount | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2' }}</strong>
                 ({{ cancellationEstimate.chargeLabel }}), refundable:
-                <strong>{{ cancellationEstimate.refundableAmount | currency: currency : 'symbol' : '1.2-2' }}</strong>.
+                <strong>{{ cancellationEstimate.refundableAmount | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2' }}</strong>.
                 <span *ngIf="cancellationEstimate.dueAmount > 0">
                   Additional payable:
-                  <strong>{{ cancellationEstimate.dueAmount | currency: currency : 'symbol' : '1.2-2' }}</strong>.
+                  <strong>{{ cancellationEstimate.dueAmount | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2' }}</strong>.
                 </span>
               </p>
               <div class="cancellation-rule-row-voucher" *ngFor="let rule of cancellationRuleRows">
@@ -791,7 +790,7 @@
                   </div>
                   <div>
                     <ng-container *ngIf="!isDayTripBooking(booking); else dayTripTariffMob">
-                      {{ booking?.roomTariffBeforeDiscount | currency: currency : 'symbol' : '1.2-2' }}
+                      {{ booking?.roomTariffBeforeDiscount | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2' }}
                     </ng-container>
                     <ng-template #dayTripTariffMob>Day Trip</ng-template>
                   </div>
@@ -802,28 +801,28 @@
                 </div>
                 <div class="d-flex justify-content-between">
                   <div>Extra Pax</div>
-                  <div>{{ booking?.extraPersonCharge | currency: currency : 'symbol' : '1.2-2' }}</div>
+                  <div>{{ booking?.extraPersonCharge | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2' }}</div>
                 </div>
                 <div class="d-flex justify-content-between">
                   <div>Extra Child</div>
-                  <div>{{ booking?.extraChildCharge | currency: currency : 'symbol' : '1.2-2' }}</div>
+                  <div>{{ booking?.extraChildCharge | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2' }}</div>
                 </div>
                 <div class="d-flex justify-content-between" *ngIf="getDisplayedRowCouponDiscount(booking) > 0">
                   <div>{{ getDiscountColumnLabel() }}</div>
-                  <div>-{{ getDisplayedRowCouponDiscount(booking) | currency: currency : 'symbol' : '1.2-2' }}</div>
+                  <div>-{{ getDisplayedRowCouponDiscount(booking) | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2' }}</div>
                 </div>
                 <div class="d-flex justify-content-between" *ngIf="getDisplayedRowAdvanceDiscount(booking) > 0">
                   <div>Advance Discount</div>
-                  <div>-{{ getDisplayedRowAdvanceDiscount(booking) | currency: currency : 'symbol' : '1.2-2' }}</div>
+                  <div>-{{ getDisplayedRowAdvanceDiscount(booking) | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2' }}</div>
                 </div>
                 <div class="d-flex justify-content-between">
                   <div>Sub Total</div>
-                  <div>{{ getDisplayedBookingSubtotal(booking) | currency: currency : 'symbol' : '1.2-2' }}</div>
+                  <div>{{ getDisplayedBookingSubtotal(booking) | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2' }}</div>
                 </div>
 
                 <div class="d-flex justify-content-between">
                   <div>Tax</div>
-                  <div>{{ getDisplayedBookingTax(booking) | currency: currency : 'symbol' : '1.2-2' }}</div>
+                  <div>{{ getDisplayedBookingTax(booking) | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2' }}</div>
                 </div>
                 <hr style="
                     border: 1px solid #e5e7eb;
@@ -832,7 +831,7 @@
                   " />
                 <div class="d-flex justify-content-between" style="font-weight: bold">
                   <div>Total Amount</div>
-                  <div>{{ getDisplayedBookingTotal(booking) | currency: currency : 'symbol' : '1.2-2' }}</div>
+                  <div>{{ getDisplayedBookingTotal(booking) | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2' }}</div>
                 </div>
               </ng-container>
             </div>
@@ -844,7 +843,7 @@
               <div class="d-flex justify-content-between">
                 <div>{{ getAccommodationSubtotalLabel() }}:</div>
                 <div>
-                  {{ getDisplayedRoomSubtotal() | currency: currency : 'symbol' : '1.2-2' }}
+                  {{ getDisplayedRoomSubtotal() | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2' }}
                 </div>
               </div>
               <div *ngIf="specialDiscountData?.discountPercentage"
@@ -852,29 +851,29 @@
                 <div>Discounts Applied:<span *ngIf="specialDiscountData?.discountPercentage">Coupon {{ specialDiscountData.discountPercentage
                     }}%</span></div>
                 <div style="text-align: right">
-                  <span>-{{ getDisplayedCouponDiscountAmount() | currency: currency : 'symbol' : '1.2-2' }}</span>
+                  <span>-{{ getDisplayedCouponDiscountAmount() | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2' }}</span>
                 </div>
               </div>
               <div *ngIf="getDisplayedAdvanceDiscountAmount() > 0" class="d-flex justify-content-between"
                 style="margin-top: 5px; color: #16a34a">
                 <div>Advance Discount ({{ advanceDiscountPercentage }}%)</div>
-                <div>-{{ getDisplayedAdvanceDiscountAmount() | currency: currency : 'symbol' : '1.2-2' }}</div>
+                <div>-{{ getDisplayedAdvanceDiscountAmount() | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2' }}</div>
               </div>
               <div *ngIf="getDisplayedCouponDiscountAmount() > 0 || getDisplayedAdvanceDiscountAmount() > 0" class="d-flex justify-content-between"
                 style="margin-top: 5px; font-weight: 600">
                 <div>Accommodation Total (After All Discounts)</div>
-                <div>{{ getDisplayedAccommodationAfterDiscounts() | currency: currency : 'symbol' : '1.2-2' }}</div>
+                <div>{{ getDisplayedAccommodationAfterDiscounts() | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2' }}</div>
               </div>
               <div class="d-flex justify-content-between">
                 <div>Total GST:</div>
                 <div>
-                  {{ getDisplayedRoomTax() | currency: currency : 'symbol' : '1.2-2' }}
+                  {{ getDisplayedRoomTax() | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2' }}
                 </div>
               </div>
               <div class="d-flex justify-content-between" *ngIf="serviceChargePercentage">
                 <div>Convenience Fee:</div>
                 <div>
-                  {{ getDisplayedConvenienceFee() | currency: currency : 'symbol' : '1.2-2' }}
+                  {{ getDisplayedConvenienceFee() | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2' }}
                 </div>
               </div>
               <!-- Add-ons itemised table for mobile/webview -->
@@ -898,21 +897,21 @@
                     <tbody>
                         <tr *ngFor="let addon of selectedAddOns" style="border-bottom: 1px solid #f1f5f9">
                         <td style="padding: 5px; text-align: left">{{ addon.name || 'Service' }}</td>
-                        <td style="padding: 5px; text-align: center">{{ getAddOnBasePrice(addon) | currency: currency :
+                        <td style="padding: 5px; text-align: center">{{ getAddOnBasePrice(addon) | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency :
                           'symbol' : '1.2-2' }}</td>
                         <td style="padding: 5px; text-align: center">{{ addon.quantity || 1 }}</td>
-                        <td style="padding: 5px; text-align: right">{{ (addon.servicePrice || 0) | currency: currency :
+                        <td style="padding: 5px; text-align: right">{{ (addon.servicePrice || 0) | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency :
                           'symbol' : '1.2-2' }}</td>
-                        <td style="padding: 5px; text-align: right">{{ (addon.taxAmount || 0) | currency: currency :
+                        <td style="padding: 5px; text-align: right">{{ (addon.taxAmount || 0) | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency :
                           'symbol' : '1.2-2' }}</td>
                         <td style="padding: 5px; text-align: right">{{ ((addon.servicePrice || 0) + (addon.taxAmount ||
-                          0)) | currency: currency : 'symbol' : '1.2-2' }}</td>
+                          0)) | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2' }}</td>
                       </tr>
                     </tbody>
                     <tfoot>
                       <tr style="border-top: 1px solid #cbd5e1; background-color: #eff6ff; color: #1465cf">
                         <td colspan="5" style="padding: 7px; text-align: right; font-weight: 700">Services Total</td>
-                        <td style="padding: 7px; text-align: right; font-weight: 700">{{ getServicesTotal() | currency:
+                        <td style="padding: 7px; text-align: right; font-weight: 700">{{ getServicesTotal() | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency:
                           currency : 'symbol' : '1.2-2' }}</td>
                       </tr>
                     </tfoot>
@@ -1002,12 +1001,12 @@
             <h5>Cancellation Rules</h5>
             <p class="cancellation-rules-subtitle-voucher" *ngIf="cancellationEstimate">
               Rule is applied on (Booking Amount - Convenience Fee). Total estimated deduction (including non-refundable convenience fee):
-              <strong>{{ cancellationEstimate.deductionAmount | currency: currency : 'symbol' : '1.2-2' }}</strong>
+              <strong>{{ cancellationEstimate.deductionAmount | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2' }}</strong>
               ({{ cancellationEstimate.chargeLabel }}), refundable:
-              <strong>{{ cancellationEstimate.refundableAmount | currency: currency : 'symbol' : '1.2-2' }}</strong>.
+              <strong>{{ cancellationEstimate.refundableAmount | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2' }}</strong>.
               <span *ngIf="cancellationEstimate.dueAmount > 0">
                 Additional payable:
-                <strong>{{ cancellationEstimate.dueAmount | currency: currency : 'symbol' : '1.2-2' }}</strong>.
+                <strong>{{ cancellationEstimate.dueAmount | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2' }}</strong>.
               </span>
             </p>
             <div class="cancellation-rule-row-voucher" *ngFor="let rule of cancellationRuleRows">

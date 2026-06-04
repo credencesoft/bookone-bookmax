@@ -3112,13 +3112,15 @@ export class BookingComponent implements OnInit {
               const rates = room.ratesAndAvailabilityDtos;
               if (!rates || rates.length === 0) return false;
 
-              const isStopSellOBE =
-                rates[0]?.stopSellOBE !== null &&
-                rates[0]?.stopSellOBE !== false;
+              const isStopSellOBE = rates.some((rate: any) =>
+                rate.stopSellOBE !== null &&
+                rate.stopSellOBE !== false
+              );
 
-              const isStopSellOTA =
-                rates[0]?.stopSellOTA !== null &&
-                rates[0]?.stopSellOTA !== false;
+              const isStopSellOTA = rates.some((rate: any) =>
+                rate.stopSellOTA !== null &&
+                rate.stopSellOTA !== false
+              );
 
               return (
                 rates.length === availabilityNightCount &&
@@ -3131,13 +3133,15 @@ export class BookingComponent implements OnInit {
               if (!rates || rates.length !== availabilityNightCount)
                 return true;
 
-              const isStopSellOBE =
-                rates[0]?.stopSellOBE !== null &&
-                rates[0]?.stopSellOBE !== false;
+              const isStopSellOBE = rates.some((rate: any) =>
+                rate.stopSellOBE !== null &&
+                rate.stopSellOBE !== false
+              );
 
-              const isStopSellOTA =
-                rates[0]?.stopSellOTA !== null &&
-                rates[0]?.stopSellOTA !== false;
+              const isStopSellOTA = rates.some((rate: any) =>
+                rate.stopSellOTA !== null &&
+                rate.stopSellOTA !== false
+              );
 
               return isStopSellOBE || isStopSellOTA;
             });

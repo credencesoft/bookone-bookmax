@@ -3173,3 +3173,160 @@ text-align: center;
     font-size: 13px;
   }
 }
+
+
+/* Stop Sell Modal Overlay Styles */
+.stop-sell-backdrop {
+  align-items: center;
+  background: rgba(15, 23, 42, 0.65); /* Elegant semi-transparent dark grey/black backdrop */
+  backdrop-filter: blur(8px); /* Blur behind the modal for premium glassmorphism feel */
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  height: 100%;
+  justify-content: center;
+  left: 0;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 99999; /* Higher than headers/sticky components */
+  animation: fadeInBackdrop 0.3s ease-out;
+}
+
+.stop-sell-modal {
+  background: #ffffff;
+  border-radius: 24px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 40px rgba(239, 68, 68, 0.1);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  max-width: 440px;
+  min-height: 400px; /* Force nice square aspect balance */
+  width: calc(100% - 40px);
+  padding: 40px 32px;
+  position: relative;
+  text-align: center;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  animation: scaleUpModal 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.stop-sell-modal__close-btn {
+  background: transparent;
+  border: 0;
+  color: #94a3b8;
+  cursor: pointer;
+  font-size: 22px;
+  position: absolute;
+  right: 24px;
+  top: 24px;
+  transition: color 0.2s, transform 0.2s;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  &:hover {
+    color: #ef4444;
+    transform: rotate(90deg);
+  }
+}
+
+.stop-sell-modal__body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.stop-sell-modal__icon {
+  align-items: center;
+  background: linear-gradient(135deg, #fee2e2 0%, #fef2f2 100%);
+  border-radius: 50%;
+  color: #ef4444;
+  display: flex;
+  font-size: 42px;
+  height: 90px;
+  justify-content: center;
+  margin-bottom: 24px;
+  width: 90px;
+  box-shadow: 0 10px 20px rgba(239, 68, 68, 0.15);
+  animation: pulseIcon 2s infinite;
+}
+
+.stop-sell-modal__title {
+  color: #1e293b;
+  font-family: 'Poppins', sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin: 0 0 12px;
+}
+
+.stop-sell-modal__message {
+  color: #64748b;
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+  margin: 0 0 28px;
+}
+
+.stop-sell-modal__actions {
+  width: 100%;
+}
+
+.stop-sell-modal__btn {
+  border: 0;
+  border-radius: 12px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  padding: 14px 28px;
+  width: 100%;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.1s, box-shadow 0.2s;
+}
+
+.stop-sell-modal__btn--primary {
+  background: #ef4444;
+  color: #ffffff;
+  box-shadow: 0 8px 16px rgba(239, 68, 68, 0.2);
+  
+  &:hover {
+    background: #dc2626;
+    box-shadow: 0 10px 20px rgba(239, 68, 68, 0.3);
+  }
+  
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+/* Animations */
+@keyframes fadeInBackdrop {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleUpModal {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes pulseIcon {
+  0% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 15px rgba(239, 68, 68, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+  }
+}
+
