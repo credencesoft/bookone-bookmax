@@ -3,7 +3,7 @@ name: Release UAT Booking Engine
 on:
   push:
     branches:
-      - feature/refactor-network
+      - release/uat-new
   workflow_dispatch:
 
 env:
