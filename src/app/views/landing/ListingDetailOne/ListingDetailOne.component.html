@@ -1770,7 +1770,7 @@
   <div class="container-div margin-bottom-40px">
     <div class="website-web-vision">
       <!-- Full Width Photo Gallery Section -->
-      <div class="row margin-top-40px">
+      <div class="row margin-top-40px listing-details-hero-row">
         <div class="col-12">
           <h2 class="hero-heading">{{ businessUser?.name }}</h2>
           <p class="hero-subheading font-weight-bold">
@@ -1780,7 +1780,10 @@
             {{ businessUser.address?.country }}
           </p>
           <!-- web view - Half-grid gallery -->
-          <div class="listing-gallery-grid">
+          <div
+            class="listing-gallery-grid"
+            [ngClass]="getListingGalleryClass()"
+          >
             <div class="listing-gallery-grid__main">
               <img
                 *ngIf="businessUser?.imageList?.length > 0"
@@ -1803,9 +1806,9 @@
                 alt="Gallery image 2"
               />
               <div
-                *ngIf="businessUser?.imageList?.[3]?.url || businessUser?.imageList?.[0]?.url"
+                *ngIf="businessUser?.imageList?.length > 3 && businessUser?.imageList?.[3]?.url"
                 class="listing-gallery-grid__feature-preview"
-                [style.backgroundImage]="'url(' + (businessUser?.imageList?.[3]?.url || businessUser?.imageList[0]?.url) + ')'"
+                [style.backgroundImage]="'url(' + businessUser?.imageList?.[3]?.url + ')'"
                 (click)="openGalleryModal()"
               >
                 <div class="listing-gallery-grid__feature-preview-overlay"></div>
@@ -1825,7 +1828,7 @@
     </div>
 
     <!-- Property Highlights Section - 3 Column Grid -->
-    <div class="margin-top-40px display-flex website-web-vision">
+    <div class="margin-top-40px display-flex website-web-vision listing-details-highlights-row">
       <div class="col-12">
         <div *ngIf="amenitiesHighlights.length > 0 || propertyServiceListData.length > 0">
           <h4 class="aminities-highlights">Property Highlights</h4>
@@ -2311,7 +2314,10 @@
           {{ businessUser.address?.country }}
         </p>
           <!-- mobile view - Half-grid gallery -->
-          <div class="listing-gallery-grid listing-gallery-grid--mobile">
+          <div
+            class="listing-gallery-grid listing-gallery-grid--mobile"
+            [ngClass]="getListingGalleryClass()"
+          >
             <div class="listing-gallery-grid__main">
               <img
                 *ngIf="businessUser?.imageList?.length > 0"
@@ -2334,9 +2340,9 @@
                 alt="Gallery image 2"
               />
               <div
-                *ngIf="businessUser?.imageList?.[3]?.url || businessUser?.imageList?.[0]?.url"
+                *ngIf="businessUser?.imageList?.length > 3 && businessUser?.imageList?.[3]?.url"
                 class="listing-gallery-grid__feature-preview"
-                [style.backgroundImage]="'url(' + (businessUser?.imageList?.[3]?.url || businessUser?.imageList[0]?.url) + ')'"
+                [style.backgroundImage]="'url(' + businessUser?.imageList?.[3]?.url + ')'"
                 (click)="openGalleryModal()"
               >
                 <div class="listing-gallery-grid__feature-preview-overlay"></div>

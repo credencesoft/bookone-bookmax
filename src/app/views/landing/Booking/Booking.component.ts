@@ -2899,7 +2899,7 @@ export class BookingComponent implements OnInit {
     enquiryForm.accountManager = '';
     enquiryForm.consultantPerson = '';
     enquiryForm.noOfRooms = this.isDayTripPlan(plan) ? 1 : Number(plan.selectedRoomnumber);
-    enquiryForm.noOfChildren = plan.children;
+    enquiryForm.noOfChildren = plan.extraCountChild;
     enquiryForm.accommodationType = this.token.getProperty().businessType;
     enquiryForm.status = 'Enquiry';
     enquiryForm.specialNotes = booking.notes || '';
@@ -3112,18 +3112,14 @@ export class BookingComponent implements OnInit {
               const rates = room.ratesAndAvailabilityDtos;
               if (!rates || rates.length === 0) return false;
 
-              const isStopSellOBE =
-                rates[0]?.stopSellOBE !== null &&
-                rates[0]?.stopSellOBE !== false;
-
-              const isStopSellOTA =
-                rates[0]?.stopSellOTA !== null &&
-                rates[0]?.stopSellOTA !== false;
+              const hasStopSell = rates.some((rate: any) =>
+                (rate.stopSellOBE !== null && rate.stopSellOBE !== false) ||
+                (rate.stopSellOTA !== null && rate.stopSellOTA !== false)
+              );
 
               return (
                 rates.length === availabilityNightCount &&
-                !isStopSellOBE &&
-                !isStopSellOTA
+                !hasStopSell
               );
             });
             this.soldOutRooms = sortedRoomsOne.filter((room) => {
@@ -3131,15 +3127,12 @@ export class BookingComponent implements OnInit {
               if (!rates || rates.length !== availabilityNightCount)
                 return true;
 
-              const isStopSellOBE =
-                rates[0]?.stopSellOBE !== null &&
-                rates[0]?.stopSellOBE !== false;
+              const hasStopSell = rates.some((rate: any) =>
+                (rate.stopSellOBE !== null && rate.stopSellOBE !== false) ||
+                (rate.stopSellOTA !== null && rate.stopSellOTA !== false)
+              );
 
-              const isStopSellOTA =
-                rates[0]?.stopSellOTA !== null &&
-                rates[0]?.stopSellOTA !== false;
-
-              return isStopSellOBE || isStopSellOTA;
+              return hasStopSell;
             });
             this.availableRoomIdSet.clear();
             this.availableRoomsOne.forEach((room) => {
@@ -8398,7 +8391,7 @@ export class BookingComponent implements OnInit {
     booking.lastName = this.booking.lastName;
     booking.mobile = this.booking.mobile;
     booking.email = this.booking.email;
-    booking.noOfChildren = plan.childrenAbove5years;
+    booking.noOfChildren = plan.extraCountChild;
     // if(this.groupBookingId){
     //   booking.groupBookingId = this.groupBookingId;
     // }
@@ -8704,7 +8697,7 @@ export class BookingComponent implements OnInit {
     enquiryForm.accountManager = '';
     enquiryForm.consultantPerson = '';
     enquiryForm.noOfRooms = this.isDayTripPlan(plan) ? 1 : Number(plan.selectedRoomnumber);
-    enquiryForm.noOfChildren = plan.children;
+    enquiryForm.noOfChildren = plan.extraCountChild;
     enquiryForm.accommodationType = this.token.getProperty().businessType;
     enquiryForm.status = 'Booked';
     enquiryForm.specialNotes = booking.notes || '';
@@ -11113,7 +11106,7 @@ export class BookingComponent implements OnInit {
     enquiryForm.accountManager = '';
     enquiryForm.consultantPerson = '';
     enquiryForm.noOfRooms = this.isDayTripPlan(plan) ? 1 : Number(plan.selectedRoomnumber);
-    enquiryForm.noOfChildren = plan.children;
+    enquiryForm.noOfChildren = plan.extraCountChild;
     enquiryForm.accommodationType = this.token.getProperty().businessType;
     enquiryForm.status = 'Enquiry';
     enquiryForm.specialNotes = booking.notes || '';
@@ -11212,7 +11205,7 @@ export class BookingComponent implements OnInit {
     this.token.saveToTime(String(checkOutDateTimeOne));
 
     bookingForm.noOfRooms = this.isDayTripPlan(plan) ? 1 : Number(plan.selectedRoomnumber);
-    bookingForm.noOfChildren = plan.children;
+    bookingForm.noOfChildren = plan.extraCountChild;
     bookingForm.propertyId = 107;
     bookingForm.propertyId = this.token.getProperty().id;
     bookingForm.taxDetails = this.token

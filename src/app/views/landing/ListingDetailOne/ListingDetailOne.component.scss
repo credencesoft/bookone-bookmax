@@ -1936,16 +1936,17 @@ h3 .day-trip-badge {
 
 .listing-gallery-grid {
   display: grid;
-  grid-template-columns: 55% 1fr;
-  gap: 8px;
-  margin-top: 18px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 14px;
+  margin-top: 20px;
   align-items: stretch;
-  height: 460px; /* Fixed height so all cells are of equal height */
-  overflow: hidden; /* Ensure no overflow */
+  height: clamp(390px, 33.2vw, 416px);
+  overflow: hidden;
 }
 
 .listing-gallery-grid__main {
   height: 100%;
+  min-height: 0;
   overflow: hidden;
   border-radius: 12px;
 }
@@ -1960,16 +1961,19 @@ h3 .day-trip-badge {
 
 .listing-gallery-grid__stack {
   display: grid;
-  grid-template-columns: 1fr 1fr; /* Two equal columns */
-  grid-template-rows: 1fr 1fr; /* Two equal rows */
-  gap: 8px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+  gap: 14px;
   height: 100%;
+  min-width: 0;
+  min-height: 0;
 }
 
 .listing-gallery-grid__feature-preview {
-  grid-column: span 2; /* Wide image spanning both columns */
+  grid-column: span 2;
   width: 100%;
   height: 100%;
+  min-height: 0;
   background-size: cover;
   background-position: center;
   position: relative;
@@ -1986,6 +1990,7 @@ h3 .day-trip-badge {
 .gallery-image-card--tile {
   width: 100% !important;
   height: 100% !important;
+  min-height: 0;
   object-fit: cover;
   border-radius: 12px;
 }
@@ -1993,6 +1998,7 @@ h3 .day-trip-badge {
 .gallery-image-card {
   transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1), filter 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+  display: block;
 }
 
 .gallery-image-card:hover {
@@ -2004,8 +2010,8 @@ h3 .day-trip-badge {
 .listing-gallery-grid__feature-preview-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(15, 23, 42, 0.5); /* Semi-transparent dark overlay */
-  backdrop-filter: blur(2px);
+  background: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(4px);
   transition: background 0.3s ease, backdrop-filter 0.3s ease;
 }
 
@@ -2021,14 +2027,14 @@ h3 .day-trip-badge {
   transform: translate(-50%, -50%);
   z-index: 2;
   white-space: nowrap;
-  background: rgba(15, 23, 42, 0.75) !important; /* Dark semi-transparent pill */
-  color: #ffffff !important; /* White text */
+  background: rgba(84, 68, 58, 0.72) !important;
+  color: #ffffff !important;
   font-family: "Poppins", sans-serif;
   font-weight: 600;
   font-size: 15px;
-  border-radius: 99px;
-  padding: 12px 24px !important;
-  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border-radius: 10px;
+  padding: 12px 23px !important;
+  border: 1px solid rgba(255, 255, 255, 0.55) !important;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2) !important;
   backdrop-filter: blur(4px);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
@@ -2043,13 +2049,58 @@ h3 .day-trip-badge {
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3) !important;
 }
 
+@media (min-width: 1181px) {
+  .listing-details-hero-row.row,
+  .listing-details-highlights-row {
+    max-width: 1254px;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+
+  .listing-details-hero-row > .col-12,
+  .listing-details-highlights-row > .col-12 {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .listing-gallery-grid--single {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .listing-gallery-grid--single .listing-gallery-grid__stack {
+    display: none;
+  }
+
+  .listing-gallery-grid--two {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+
+  .listing-gallery-grid--two .listing-gallery-grid__stack {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr);
+  }
+
+  .listing-gallery-grid--three {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+
+  .listing-gallery-grid--three .listing-gallery-grid__stack {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: repeat(2, minmax(0, 1fr));
+  }
+
+  .listing-gallery-grid--many .listing-gallery-grid__stack {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-rows: repeat(2, minmax(0, 1fr));
+  }
+}
+
 .gallery-drawer-modal .modal-dialog {
   position: fixed;
-  left: 0;
-  top: 0;
+  inset: 0;
   margin: 0;
-  max-width: 520px;
-  width: 100%;
+  max-width: none;
+  width: 100vw;
   height: 100vh;
 }
 
@@ -2060,38 +2111,107 @@ h3 .day-trip-badge {
 .gallery-drawer-content {
   height: 100vh;
   border: 0;
-  border-radius: 0 28px 28px 0;
+  border-radius: 0;
   overflow: hidden;
-  box-shadow: 18px 0 60px rgba(0, 0, 0, 0.25);
+  background: #fff;
+  box-shadow: none;
 }
 
 .gallery-drawer-modal .modal-header {
-  background: linear-gradient(180deg, #0f172a 0%, #111827 100%);
-  color: #fff;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  min-height: 78px;
+  padding: 0 17px;
+  background: #fff;
+  color: #111827;
+  border-bottom: 1px solid #e5e7eb;
+  align-items: center;
 }
 
 .gallery-drawer-modal .modal-body {
-  background: linear-gradient(180deg, #0f172a 0%, #111827 100%);
+  height: calc(100vh - 78px);
+  padding: 16px;
+  background: #fff;
   overflow-y: auto;
 }
 
 .gallery-drawer-modal .modal-title,
 .gallery-drawer-modal .modal-title i {
-  color: #fff;
+  color: #111827;
+}
+
+.gallery-drawer-modal .modal-title {
+  display: flex;
+  align-items: center;
+  margin: 0;
+  font-family: "Nunito", sans-serif;
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 1.2;
 }
 
 .gallery-drawer-grid {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 14px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 20px 14px;
+  align-items: start;
 }
 
 .gallery-drawer-grid__item .image-gallery-main {
-  width: 100%;
-  height: 180px;
+  width: 100% !important;
+  height: clamp(280px, 23.5vw, 450px) !important;
   object-fit: cover;
   margin-bottom: 0;
+  border-radius: 4px !important;
+  box-shadow: none;
+}
+
+.gallery-drawer-modal .select-mannual {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #000;
+  font-size: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (max-width: 1399px) {
+  .gallery-drawer-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 991px) {
+  .gallery-drawer-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .gallery-drawer-modal .modal-header {
+    min-height: 64px;
+    padding: 0 12px;
+  }
+
+  .gallery-drawer-modal .modal-body {
+    height: calc(100vh - 64px);
+    padding: 12px;
+  }
+
+  .gallery-drawer-modal .modal-title {
+    font-size: 17px;
+  }
+
+  .gallery-drawer-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .gallery-drawer-grid__item .image-gallery-main {
+    height: 260px !important;
+  }
 }
 
 .modal-backdrop.show {
@@ -2334,7 +2454,6 @@ h3 .day-trip-badge {
     margin-bottom: 10px;
 }
 .margin-changes {
-      margin-bottom: 22px;
     margin-left: 20px;
 }
 .booking-summary-dialog .p-dialog-header {
@@ -3411,7 +3530,7 @@ text-align: center;
 
 /* Property name header styling */
 .hero-heading {
-  font-family: "Playfair Display", "Georgia", "Merriweather", serif !important;
+  font-family: "Playfair Display", "Poppins", "Merriweather", serif !important;
   font-weight: 700 !important;
   font-size: 34px !important;
   color: #0f172a !important;
@@ -3421,7 +3540,7 @@ text-align: center;
 
 /* Location and address styling */
 .hero-subheading {
-  font-family: "Poppins", sans-serif !important;
+  font-family: "Nunito", sans-serif !important;
   font-size: 13px !important;
   color: #64748b !important;
   font-weight: 500 !important;
@@ -3617,7 +3736,7 @@ text-align: center;
 /* Clean up input labels */
 .checkAvaCard .label_heading1,
 .checkAvaCard label {
-  font-family: "Poppins", sans-serif !important;
+  font-family: "Nunito", sans-serif !important;
   font-size: 11px !important;
   text-transform: uppercase !important;
   letter-spacing: 0.06em !important;
@@ -3630,7 +3749,7 @@ text-align: center;
 
 /* Date input overrides */
 .date-input {
-  font-family: "Poppins", sans-serif !important;
+  font-family: "Nunito", sans-serif !important;
   font-size: 14px !important;
   font-weight: 500 !important;
   color: #0f172a !important;
@@ -3666,7 +3785,7 @@ text-align: center;
 .checkAvaTime .time-select {
   border: none !important;
   background: transparent !important;
-  font-family: "Poppins", sans-serif !important;
+  font-family: "Nunito", sans-serif !important;
   font-size: 14px !important;
   font-weight: 500 !important;
   color: #0f172a !important;
@@ -3687,7 +3806,7 @@ text-align: center;
 }
 
 .checkAvaRoom .guests_count {
-  font-family: "Poppins", sans-serif !important;
+  font-family: "Nunito", sans-serif !important;
   font-size: 14px !important;
   font-weight: 500 !important;
   color: #0f172a !important;
@@ -3747,13 +3866,14 @@ text-align: center;
   padding: 4px;
   border-radius: 99px;
   border: 1px solid #e2e8f0;
+  font-family: "Nunito", sans-serif;
 }
 
 /* Toggle Individual Pill Button */
 .checkin-mode-toggle__btn {
   background: none;
   border: none;
-  font-family: "Poppins", sans-serif;
+  font-family: "Nunito", sans-serif;
   font-size: 12px;
   font-weight: 600;
   color: #64748b;
