@@ -46,31 +46,51 @@
       <i class="fa-solid fa-xmark"></i>
     </button>
   </div>
-  <div
-    class="date-restriction-popup"
-    *ngIf="showStopSellPopup"
-    role="alert"
-    aria-live="polite"
-    style="border-color: #ef4444; background: linear-gradient(135deg, #fef2f2 0%, #ffffff 100%);"
-  >
-    <div class="date-restriction-popup__icon" style="background: #ef4444;">
-      <i class="fa-solid fa-circle-exclamation"></i>
-    </div>
-    <div class="date-restriction-popup__copy">
-      <h6 style="color: #991b1b; font-family: 'Poppins'; font-size: 15px; font-weight: 600; margin: 0 0 4px;">Reservation Closed</h6>
-      <p style="color: #7f1d1d; font-family: 'Poppins'; font-size: 13px; line-height: 1.5; margin: 0;">
-        Rooms are unavailable on: <strong>{{ blockedDatesMessage }}</strong>. Please adjust your stay dates to proceed with booking.
+  <!-- Centered Modal for Stop Sell / Reservation Closed -->
+  <div class="reservation-closed-overlay" *ngIf="showStopSellPopup">
+    <div class="reservation-closed-modal">
+      <button
+        type="button"
+        class="rc-modal-close-btn"
+        aria-label="Close"
+        (click)="showStopSellPopup = false"
+      >
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <div class="rc-modal-icon-container">
+        <div class="rc-modal-pulse-circle"></div>
+        <div class="rc-modal-icon-bg">
+          <i class="fa-solid fa-calendar-xmark"></i>
+        </div>
+      </div>
+
+      <h3 class="rc-modal-title">Reservation Closed</h3>
+      
+      <p class="rc-modal-description">
+        Rooms are unavailable on the following date(s) during your selected stay:
       </p>
+
+      <div class="rc-modal-dates-box">
+        <span class="rc-date-badge" *ngFor="let date of blockedDatesMessage.split(',')">
+          <i class="fa-regular fa-calendar"></i> {{ date.trim() }}
+        </span>
+      </div>
+
+      <p class="rc-modal-footer-text">
+        Please adjust your check-in or check-out dates to proceed with your booking.
+      </p>
+
+      <div class="rc-modal-actions">
+        <button
+          type="button"
+          class="rc-modal-btn"
+          (click)="showStopSellPopup = false"
+        >
+          Adjust Stay Dates
+        </button>
+      </div>
     </div>
-    <button
-      type="button"
-      class="date-restriction-popup__close"
-      aria-label="Close message"
-      (click)="showStopSellPopup = false"
-      style="color: #ef4444; border: 0; background: transparent; cursor: pointer; font-size: 18px; line-height: 1; padding: 2px;"
-    >
-      <i class="fa-solid fa-xmark"></i>
-    </button>
   </div>
   <div *ngIf="showAllTheOfferList?.length > 0">
     <p-carousel
