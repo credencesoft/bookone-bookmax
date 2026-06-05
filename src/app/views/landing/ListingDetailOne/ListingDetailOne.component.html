@@ -46,6 +46,32 @@
       <i class="fa-solid fa-xmark"></i>
     </button>
   </div>
+  <div
+    class="date-restriction-popup"
+    *ngIf="showStopSellPopup"
+    role="alert"
+    aria-live="polite"
+    style="border-color: #ef4444; background: linear-gradient(135deg, #fef2f2 0%, #ffffff 100%);"
+  >
+    <div class="date-restriction-popup__icon" style="background: #ef4444;">
+      <i class="fa-solid fa-circle-exclamation"></i>
+    </div>
+    <div class="date-restriction-popup__copy">
+      <h6 style="color: #991b1b; font-family: 'Poppins'; font-size: 15px; font-weight: 600; margin: 0 0 4px;">Reservation Closed</h6>
+      <p style="color: #7f1d1d; font-family: 'Poppins'; font-size: 13px; line-height: 1.5; margin: 0;">
+        Rooms are unavailable on: <strong>{{ blockedDatesMessage }}</strong>. Please adjust your stay dates to proceed with booking.
+      </p>
+    </div>
+    <button
+      type="button"
+      class="date-restriction-popup__close"
+      aria-label="Close message"
+      (click)="showStopSellPopup = false"
+      style="color: #ef4444; border: 0; background: transparent; cursor: pointer; font-size: 18px; line-height: 1; padding: 2px;"
+    >
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+  </div>
   <div *ngIf="showAllTheOfferList?.length > 0">
     <p-carousel
       class="carousel-section"

@@ -92,6 +92,8 @@ export class ListingDetailOneComponent implements OnInit {
   showPastDateRestrictionPopup: boolean = false;
   showStopSellPopup: boolean = false;
   stopSellTimeout: any;
+  blockedDatesList: string[] = [];
+  blockedDatesMessage: string = '';
   pastDateRestrictionMessage: string =
     'Past dates are not allowed. Please choose today or a future date.';
   isLoadingProperty : boolean;
@@ -5489,15 +5491,49 @@ onCheckOutClosed(): void {
 
     if (relevantRooms.length === 0) return;
 
-    // Verify if EVERY single relevant room type is stop-selled
-    const allStopSelled = relevantRooms.every(room =>
-      room.ratesAndAvailabilityDtos.some((rate: any) =>
-        (rate.stopSellOTA !== null && rate.stopSellOTA !== false) ||
-        (rate.stopSellOBE !== null && rate.stopSellOBE !== false)
-      )
-    );
+    // Get all unique dates in the selected range
+    const allDatesSet = new Set<string>();
+    relevantRooms.forEach(room => {
+      room.ratesAndAvailabilityDtos.forEach((rate: any) => {
+        if (rate.date) {
+          allDatesSet.add(rate.date);
+        }
+      });
+    });
 
-    if (allStopSelled) {
+    const uniqueDates = Array.from(allDatesSet).sort();
+    const blockedDates: string[] = [];
+
+    uniqueDates.forEach(dateStr => {
+      // Check if EVERY relevant room is unavailable on this date
+      const isUnavailableOnDate = relevantRooms.every(room => {
+        const rateForDate = room.ratesAndAvailabilityDtos.find((r: any) => r.date === dateStr);
+        if (!rateForDate) return true; // if no rate info for this date, consider it unavailable
+
+        const hasStopSell = (rateForDate.stopSellOBE !== null && rateForDate.stopSellOBE !== false) ||
+                            (rateForDate.stopSellOTA !== null && rateForDate.stopSellOTA !== false);
+        const hasNoInventory = rateForDate.noOfAvailable === null || rateForDate.noOfAvailable <= 0;
+
+        return hasStopSell || hasNoInventory;
+      });
+
+      if (isUnavailableOnDate) {
+        // Format the date string beautifully (e.g., "Jun 10")
+        try {
+          const formattedDate = new Date(dateStr).toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric'
+          });
+          blockedDates.push(formattedDate);
+        } catch (e) {
+          blockedDates.push(dateStr);
+        }
+      }
+    });
+
+    if (blockedDates.length > 0) {
+      this.blockedDatesList = blockedDates;
+      this.blockedDatesMessage = blockedDates.join(', ');
       this.showStopSellPopup = true;
       this.selectedPlansSummary = [];
       this.token.saveBookingRoomPrice(null);
@@ -5515,6 +5551,8 @@ onCheckOutClosed(): void {
       }, 45000);
     } else {
       this.showStopSellPopup = false;
+      this.blockedDatesList = [];
+      this.blockedDatesMessage = '';
     }
   }
 
@@ -6483,6 +6521,8 @@ adjustDates() {
 //   this.router.navigate(['/booking']);
 // }
 onBookNow() {
+  sessionStorage.setItem('isTwentyFourHourCheckIn', String(this.isTwentyFourHourCheckIn));
+  sessionStorage.setItem('selectedCheckInTime', this.selectedCheckInTime);
   let currentUrl = window.location.href;
 this.token.savePropertyUrl(currentUrl);
   const selectedAddOns = this.propertyServiceListDataOne

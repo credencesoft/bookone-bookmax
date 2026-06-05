@@ -2047,10 +2047,18 @@ export class BookingComponent implements OnInit {
     //   (data) => {
     //     this.businessUser = data.body;
     this.businessUser = this.token.getProperty();
+    const is24Hour = sessionStorage.getItem('isTwentyFourHourCheckIn') === 'true';
+    const chosenTime = sessionStorage.getItem('selectedCheckInTime') || '12:00';
+
     this.businessUser.businessServiceDtoList.forEach((item) => {
       if (item.name === 'Accommodation') {
-        this.fromTime = item.checkInTime ?? '';
-        this.toTime = item.checkOutTime ?? '';
+        if (is24Hour) {
+          this.fromTime = chosenTime;
+          this.toTime = chosenTime;
+        } else {
+          this.fromTime = item.checkInTime ?? '';
+          this.toTime = item.checkOutTime ?? '';
+        }
         this.channelManagerIntegration = item.cmIntegration;
         this.bookoneActiveData = item.bookoneActive;
       }
@@ -2061,8 +2069,8 @@ export class BookingComponent implements OnInit {
     const accommodation = this.businessUser.businessServiceDtoList.find(
       (item) => item.name === 'Accommodation',
     );
-    const fromTime = accommodation?.checkInTime ?? '12:00';
-    const toTime = accommodation?.checkOutTime ?? '12:00';
+    const fromTime = is24Hour ? chosenTime : (accommodation?.checkInTime ?? '12:00');
+    const toTime = is24Hour ? chosenTime : (accommodation?.checkOutTime ?? '12:00');
 
     const getPropertyTimestamp = (guestDate: string, propertyTime: string) => {
       const [year, month, day] =
@@ -2175,7 +2183,12 @@ export class BookingComponent implements OnInit {
     );
     this.initializeAdvancePaymentPlans();
 
-    if (this.businessServiceDto.checkInTime !== null) {
+    if (is24Hour) {
+      const [hours, minutes] = chosenTime.split(':').map(Number);
+      const chosenTimeMs = (hours * 60 + minutes) * 60 * 1000;
+      this.booking.fromTime = new Date(this.booking.fromDate).getTime() + chosenTimeMs;
+      this.booking.toTime = new Date(this.booking.toDate).getTime() + chosenTimeMs;
+    } else if (this.businessServiceDto.checkInTime !== null) {
       this.booking.fromTime =
         new Date(this.booking.fromDate).getTime() +
         Number(this.businessServiceDto.checkInTime);
@@ -2573,8 +2586,10 @@ export class BookingComponent implements OnInit {
     const accommodation = this.businessUser.businessServiceDtoList.find(
       (item) => item.name === 'Accommodation',
     );
-    const fromTime = accommodation?.checkInTime ?? '12:00';
-    const toTime = accommodation?.checkOutTime ?? '12:00';
+    const is24Hour = sessionStorage.getItem('isTwentyFourHourCheckIn') === 'true';
+    const chosenTime = sessionStorage.getItem('selectedCheckInTime') || '12:00';
+    const fromTime = is24Hour ? chosenTime : (accommodation?.checkInTime ?? '12:00');
+    const toTime = is24Hour ? chosenTime : (accommodation?.checkOutTime ?? '12:00');
 
     const getPropertyTimestamp = (guestDate: string, propertyTime: string) => {
       const [year, month, day] =
@@ -2853,8 +2868,10 @@ export class BookingComponent implements OnInit {
     const accommodation = this.businessUser.businessServiceDtoList.find(
       (item) => item.name === 'Accommodation',
     );
-    const fromTime = accommodation?.checkInTime ?? '12:00';
-    const toTime = accommodation?.checkOutTime ?? '12:00';
+    const is24Hour = sessionStorage.getItem('isTwentyFourHourCheckIn') === 'true';
+    const chosenTime = sessionStorage.getItem('selectedCheckInTime') || '12:00';
+    const fromTime = is24Hour ? chosenTime : (accommodation?.checkInTime ?? '12:00');
+    const toTime = is24Hour ? chosenTime : (accommodation?.checkOutTime ?? '12:00');
 
     const getPropertyTimestamp = (guestDate: string, propertyTime: string) => {
       const [year, month, day] =
@@ -8332,8 +8349,10 @@ export class BookingComponent implements OnInit {
     const accommodation = this.businessUser.businessServiceDtoList.find(
       (item) => item.name === 'Accommodation',
     );
-    const fromTime = accommodation?.checkInTime ?? '12:00';
-    const toTime = accommodation?.checkOutTime ?? '12:00';
+    const is24Hour = sessionStorage.getItem('isTwentyFourHourCheckIn') === 'true';
+    const chosenTime = sessionStorage.getItem('selectedCheckInTime') || '12:00';
+    const fromTime = is24Hour ? chosenTime : (accommodation?.checkInTime ?? '12:00');
+    const toTime = is24Hour ? chosenTime : (accommodation?.checkOutTime ?? '12:00');
 
     const getPropertyTimestamp = (guestDate: string, propertyTime: string) => {
       const [year, month, day] =
@@ -8658,8 +8677,10 @@ export class BookingComponent implements OnInit {
     const accommodation = this.businessUser.businessServiceDtoList.find(
       (item) => item.name === 'Accommodation',
     );
-    const fromTime = accommodation?.checkInTime ?? '12:00';
-    const toTime = accommodation?.checkOutTime ?? '12:00';
+    const is24Hour = sessionStorage.getItem('isTwentyFourHourCheckIn') === 'true';
+    const chosenTime = sessionStorage.getItem('selectedCheckInTime') || '12:00';
+    const fromTime = is24Hour ? chosenTime : (accommodation?.checkInTime ?? '12:00');
+    const toTime = is24Hour ? chosenTime : (accommodation?.checkOutTime ?? '12:00');
 
     const getPropertyTimestamp = (guestDate: string, propertyTime: string) => {
       const [year, month, day] =
@@ -10604,8 +10625,10 @@ export class BookingComponent implements OnInit {
     const accommodation = this.businessUser.businessServiceDtoList.find(
       (item) => item.name === 'Accommodation',
     );
-    const fromTime = accommodation?.checkInTime ?? '12:00';
-    const toTime = accommodation?.checkOutTime ?? '12:00';
+    const is24Hour = sessionStorage.getItem('isTwentyFourHourCheckIn') === 'true';
+    const chosenTime = sessionStorage.getItem('selectedCheckInTime') || '12:00';
+    const fromTime = is24Hour ? chosenTime : (accommodation?.checkInTime ?? '12:00');
+    const toTime = is24Hour ? chosenTime : (accommodation?.checkOutTime ?? '12:00');
 
     const getPropertyTimestamp = (guestDate: string, propertyTime: string) => {
       const [year, month, day] =
@@ -10759,8 +10782,10 @@ export class BookingComponent implements OnInit {
         const accommodation = this.businessUser.businessServiceDtoList.find(
           (item) => item.name === 'Accommodation',
         );
-        const fromTime = accommodation?.checkInTime ?? '12:00';
-        const toTime = accommodation?.checkOutTime ?? '12:00';
+        const is24Hour = sessionStorage.getItem('isTwentyFourHourCheckIn') === 'true';
+        const chosenTime = sessionStorage.getItem('selectedCheckInTime') || '12:00';
+        const fromTime = is24Hour ? chosenTime : (accommodation?.checkInTime ?? '12:00');
+        const toTime = is24Hour ? chosenTime : (accommodation?.checkOutTime ?? '12:00');
 
         const getPropertyTimestamp = (
           guestDate: string,
@@ -11066,8 +11091,10 @@ export class BookingComponent implements OnInit {
     const accommodation = this.businessUser.businessServiceDtoList.find(
       (item) => item.name === 'Accommodation',
     );
-    const fromTime = accommodation?.checkInTime ?? '12:00';
-    const toTime = accommodation?.checkOutTime ?? '12:00';
+    const is24Hour = sessionStorage.getItem('isTwentyFourHourCheckIn') === 'true';
+    const chosenTime = sessionStorage.getItem('selectedCheckInTime') || '12:00';
+    const fromTime = is24Hour ? chosenTime : (accommodation?.checkInTime ?? '12:00');
+    const toTime = is24Hour ? chosenTime : (accommodation?.checkOutTime ?? '12:00');
 
     const getPropertyTimestamp = (guestDate: string, propertyTime: string) => {
       const [year, month, day] =
