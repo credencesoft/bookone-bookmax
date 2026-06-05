@@ -4893,6 +4893,9 @@ onCheckOutClosed(): void {
   //   this.router.navigate(["/blogpost"]);
   // }
   getDiffDate(toDate, fromDate) {
+    if (!toDate || !fromDate) {
+      return;
+    }
     this.enddate = new Date(toDate.year, toDate.month - 1, toDate.day);
 
     this.startDate = new Date(fromDate.year, fromDate.month - 1, fromDate.day);
@@ -7393,6 +7396,7 @@ this.token.savePropertyUrl(currentUrl);
     this.booking.propertyId = this.businessUser.id;
 
           if (
+      this.fromDate &&
       this.fromDate.day != null &&
       this.fromDate.month != null &&
       this.fromDate.year != null
@@ -7411,6 +7415,7 @@ this.token.savePropertyUrl(currentUrl);
       );
     }
         if (
+      this.toDate &&
       this.toDate.day != null &&
       this.toDate.month != null &&
       this.toDate.year != null
@@ -7437,6 +7442,9 @@ this.token.savePropertyUrl(currentUrl);
     this.booking.noOfPersons = this.totalAdults;
     this.booking.noOfChildren = this.totalChildren;
     this.booking.noOfRooms = this.rooms;
+    if (this.fromDate && this.toDate) {
+      this.getDiffDate(this.toDate, this.fromDate);
+    }
     this.booking.noOfNights = this.DiffDate;
     this.token.saveBookingData(this.booking);
     sessionStorage.setItem('bookingSummary', JSON.stringify(this.additionalRooms))
