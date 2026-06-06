@@ -92,6 +92,89 @@
       </div>
     </div>
   </div>
+
+  <!-- Centered Modal for GHC Past Date / Stay Dates Adjusted -->
+  <div class="reservation-closed-overlay" *ngIf="showGhcPastDatePopup">
+    <div class="reservation-closed-modal date-adjusted-modal">
+      <button
+        type="button"
+        class="rc-modal-close-btn"
+        aria-label="Close"
+        (click)="showGhcPastDatePopup = false"
+      >
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <div class="rc-modal-icon-container">
+        <div class="rc-modal-pulse-circle date-adjusted-pulse"></div>
+        <div class="rc-modal-icon-bg date-adjusted-icon">
+          <i class="fa-solid fa-calendar-check"></i>
+        </div>
+      </div>
+
+      <h3 class="rc-modal-title">Stay Dates Adjusted</h3>
+      
+      <p class="rc-modal-description">
+        To offer you the most accurate availability, your check-in date has been updated to today, as reservations for past dates cannot be processed.
+      </p>
+
+      <p class="rc-modal-footer-text">
+        Please review your updated check-in or check-out dates to proceed with your booking.
+      </p>
+
+      <div class="rc-modal-actions">
+        <button
+          type="button"
+          class="rc-modal-btn date-adjusted-btn"
+          (click)="showGhcPastDatePopup = false"
+        >
+          Review Stay Dates
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Centered Modal for Minimum Stay Restriction -->
+  <div class="reservation-closed-overlay" *ngIf="showMinStayPopup">
+    <div class="reservation-closed-modal min-stay-modal">
+      <button
+        type="button"
+        class="rc-modal-close-btn"
+        aria-label="Close"
+        (click)="showMinStayPopup = false"
+      >
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <div class="rc-modal-icon-container">
+        <div class="rc-modal-pulse-circle min-stay-pulse"></div>
+        <div class="rc-modal-icon-bg min-stay-icon">
+          <i class="fa-solid fa-moon"></i>
+        </div>
+      </div>
+
+      <h3 class="rc-modal-title">Minimum Stay Required</h3>
+      
+      <p class="rc-modal-description">
+        The selected dates require a minimum stay of <strong>{{ minStayRequiredNights }} nights</strong> to proceed with a booking.
+      </p>
+
+      <p class="rc-modal-footer-text">
+        Please adjust your stay duration or check-out date to meet this requirement.
+      </p>
+
+      <div class="rc-modal-actions">
+        <button
+          type="button"
+          class="rc-modal-btn min-stay-btn"
+          (click)="showMinStayPopup = false"
+        >
+          Adjust Stay Dates
+        </button>
+      </div>
+    </div>
+  </div>
+
   <div *ngIf="showAllTheOfferList?.length > 0">
     <p-carousel
       class="carousel-section"

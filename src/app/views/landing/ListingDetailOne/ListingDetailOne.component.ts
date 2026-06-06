@@ -90,12 +90,15 @@ interface RoomOne {
 })
 export class ListingDetailOneComponent implements OnInit {
   showPastDateRestrictionPopup: boolean = false;
+  showGhcPastDatePopup: boolean = false;
+  showMinStayPopup: boolean = false;
+  minStayRequiredNights: number = 0;
   showStopSellPopup: boolean = false;
   stopSellTimeout: any;
   blockedDatesList: string[] = [];
   blockedDatesMessage: string = '';
   pastDateRestrictionMessage: string =
-    'Past dates are not allowed. Please choose today or a future date.';
+    'Reservations for past dates cannot be processed. To assist you, your booking dates have been adjusted to start from today.';
   isLoadingProperty : boolean;
   roomLowestPrices: { [roomId: string]: number | null } = {};
   roomLowestPricesBookingEngine: { [roomId: string]: number | null } = {};
@@ -1679,6 +1682,7 @@ if (storedBooking) {
       } else if (this.activeForGoogleHotelCenter == false) {
         this.fetchAndProcessRoomsData();
       }
+      this.checkLengthOfStayRestrictions();
     }, 3000);
     // this.adults = this.adults;
     // this.checkingAvailability();
@@ -2074,11 +2078,25 @@ private isSameDayBookingSearch(): boolean {
       return true;
     }
 
-    return (
+    if (
       Number(this.booking?.noOfNights || 0) > 1 &&
       plan?.onedayPlan === true &&
       !isDayTrip
-    );
+    ) {
+      return true;
+    }
+
+    const nights = Number(this.booking?.noOfNights || this.nights || 0);
+    if (nights > 0) {
+      if (plan?.minimumLengthOfStay > 1 && nights < plan.minimumLengthOfStay) {
+        return true;
+      }
+      if (plan?.maximumLengthOfStay < 999 && nights > plan.maximumLengthOfStay) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   getPlanDisabledMessage(plan: any, room?: any): string {
@@ -2086,7 +2104,63 @@ private isSameDayBookingSearch(): boolean {
       return 'Requires same-day check-in & check-out.';
     }
 
-    return 'Requires exactly a 1-night stay.';
+    if (
+      Number(this.booking?.noOfNights || 0) > 1 &&
+      plan?.onedayPlan === true &&
+      !this.isDayTripPlan(plan, room)
+    ) {
+      return 'Requires exactly a 1-night stay.';
+    }
+
+    const nights = Number(this.booking?.noOfNights || this.nights || 0);
+    if (nights > 0) {
+      if (plan?.minimumLengthOfStay > 1 && nights < plan.minimumLengthOfStay) {
+        return `Requires a minimum stay of ${plan.minimumLengthOfStay} nights.`;
+      }
+      if (plan?.maximumLengthOfStay < 999 && nights > plan.maximumLengthOfStay) {
+        return `Requires a maximum stay of ${plan.maximumLengthOfStay} nights.`;
+      }
+    }
+
+    return 'This plan is not available for selected dates.';
+  }
+
+  checkLengthOfStayRestrictions(): void {
+    const rooms = this.availableRooms || [];
+    if (rooms.length === 0) return;
+
+    const selectedNights = Number(this.booking?.noOfNights || this.nights || 0);
+    if (selectedNights === 0) return;
+
+    let totalPlansCount = 0;
+    let restrictedMinStayCount = 0;
+    const minStays = new Set<number>();
+
+    for (const room of rooms) {
+      if (!room.ratesAndAvailabilityDtos) continue;
+      for (const rate of room.ratesAndAvailabilityDtos) {
+        if (!rate.roomRatePlans) continue;
+        const visiblePlans = this.isPlanVisible(rate.roomRatePlans, room.name, room);
+        if (!visiblePlans) continue;
+        
+        for (const plan of visiblePlans) {
+          totalPlansCount++;
+          const minStay = Number(plan.minimumLengthOfStay || 1);
+          if (minStay > 1 && selectedNights < minStay) {
+            restrictedMinStayCount++;
+            minStays.add(minStay);
+          }
+        }
+      }
+    }
+
+    // Large Popup: Triggered ONLY if every visible plan is restricted AND they all share the same minimum stay
+    if (totalPlansCount > 0 && restrictedMinStayCount === totalPlansCount && minStays.size === 1) {
+      this.minStayRequiredNights = Array.from(minStays)[0];
+      this.showMinStayPopup = true;
+    } else {
+      this.showMinStayPopup = false;
+    }
   }
 
   private updateDayTripCheckoutAvailability(roomList: any[]): void {
@@ -4598,6 +4672,7 @@ if (roomKey) {
             this.checkAvailabilityStatusName = 'Not Available';
           }
           this.oneDayTripShow();
+          this.checkLengthOfStayRestrictions();
           // Logger.log('checkAvailability ' + JSON.stringify(response.body));
         },
         (error) => {
@@ -7343,13 +7418,21 @@ this.token.savePropertyUrl(currentUrl);
       this.checkinDay = today.getDate();
       this.checkinMonth = today.getMonth() + 1;
       this.checkinYear = today.getFullYear();
-      this.showPastDateRestrictionPopup = true;
+      
+      if (this.activeForGoogleHotelCenter) {
+        this.showGhcPastDatePopup = true;
+        setTimeout(() => {
+          this.showGhcPastDatePopup = false;
+          this.changeDetectorRefs.detectChanges();
+        }, 30000);
+      } else {
+        this.showPastDateRestrictionPopup = true;
+        setTimeout(() => {
+          this.showPastDateRestrictionPopup = false;
+          this.changeDetectorRefs.detectChanges();
+        }, 5000);
+      }
       queryUpdated = true;
-
-      setTimeout(() => {
-        this.showPastDateRestrictionPopup = false;
-        this.changeDetectorRefs.detectChanges();
-      }, 5000);
     }
 
     if (!this.nights || Number(this.nights) < 1) {
@@ -7513,6 +7596,7 @@ this.token.savePropertyUrl(currentUrl);
 
           // Trigger stop-sell popup validation
           this.checkAndShowStopSellPopup(roomListOne);
+          this.checkLengthOfStayRestrictions();
           this.SubAvailableRooms = response.body.roomList;
           const queryParams = {
              noOfChildren: this.children,
@@ -8450,6 +8534,7 @@ isRoomTooSmall(room: any): boolean {
               );
           });
           this.shortrooms = response.body.roomList;
+          this.checkLengthOfStayRestrictions();
           let facilities = this.businessUser.propertyServicesList;
           if (
             this.availableRooms !== null &&
