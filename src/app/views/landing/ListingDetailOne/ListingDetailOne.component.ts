@@ -9165,6 +9165,7 @@ onYesClick() {
 
   setCheckInMode(isTwentyFourHour: boolean): void {
     this.isTwentyFourHourCheckIn = isTwentyFourHour;
+    this.roomsAndOccupancy = false;
     if (!isTwentyFourHour) {
       this.selectedCheckInTime = '12:00';
     }

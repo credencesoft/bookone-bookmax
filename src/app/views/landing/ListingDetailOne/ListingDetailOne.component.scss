@@ -3770,6 +3770,8 @@ text-align: center;
   font-size: 14px !important;
   font-weight: 500 !important;
   color: #0f172a !important;
+  display: inline-flex !important;
+  gap: 10px !important;
 }
 
 /* Book Now Button (Dark Teal/Navy Pill) */
@@ -4193,5 +4195,181 @@ ngb-datepicker,
   100% {
     transform: scale(0.85);
     opacity: 0.7;
+  }
+}
+
+/* ==========================================================================
+   Check-in height decrease and switch toggle styling (Desktop & Mobile)
+   ========================================================================== */
+
+/* Toggle Switch Styles (Global, used on both desktop and mobile now) */
+.checkin-switch-container {
+   display: flex;
+   align-items: center;
+   gap: 10px;
+   font-family: "Nunito", sans-serif;
+   -webkit-user-select: none;
+   user-select: none;
+   padding: 4px 12px;
+   border-radius: 99px;
+}
+
+.switch-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #64748b;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.switch-label.is-active {
+  color: var(--secondary, #0b01cc);
+}
+
+.switch-toggle {
+  position: relative;
+  display: inline-block;
+  width: 38px;
+  height: 20px;
+  margin: 0 4px;
+}
+
+.switch-toggle input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.switch-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #cbd5e1;
+  transition: .3s ease;
+  border-radius: 20px;
+}
+
+.switch-slider:before {
+  position: absolute;
+  content: "";
+  height: 14px;
+  width: 14px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: .3s ease;
+  border-radius: 50%;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.15);
+}
+
+input:checked + .switch-slider {
+  background-color: var(--secondary, #0b01cc);;
+}
+
+input:checked + .switch-slider:before {
+  transform: translateX(18px);
+}
+
+/* Custom overrides to prevent Check-in Time & Guest/Room section overlap */
+
+/* 1. Desktop: align Guests & Rooms dropdown to the right when 24h check-in is active to cover the search button instead of check-in time field */
+@media (min-width: 992px) {
+  .has-twenty-four-hour-checkin {
+    .checkAvaRoom {
+      .roomsAndOccupancy {
+        left: auto !important;
+        right: -180px !important;
+      }
+    }
+  }
+}
+
+/* 2. Tablet (between 601px and 991px): align it to the right edge of the card since layout is stacked but container is wide */
+@media (min-width: 601px) and (max-width: 991px) {
+  .has-twenty-four-hour-checkin {
+    .checkAvaRoom {
+      .roomsAndOccupancy {
+        left: auto !important;
+        right: 0 !important;
+      }
+    }
+  }
+}
+
+/* 2. Mobile & Small screens height decreases and alignment fixes */
+@media (max-width: 991px) {
+  .checkAvaTime,
+  .checkAvaRoom {
+    height: 54px !important;
+    padding: 6px 14px !important;
+  }
+
+  .checkAvaTime {
+    .checkin-time-box {
+      display: flex !important;
+      flex-direction: column !important;
+      justify-content: center !important;
+      height: 100% !important;
+
+      label {
+        margin-bottom: 0px !important;
+        font-size: 10px !important;
+        line-height: 1.2 !important;
+      }
+
+      .time-select {
+        font-size: 13px !important;
+        height: 22px !important;
+        line-height: 22px !important;
+      }
+    }
+  }
+
+  .checkAvaRoom {
+    .input-box {
+      padding-top: 2px !important;
+      padding-bottom: 2px !important;
+
+      label.default-color {
+        font-size: 10px !important;
+        margin-bottom: 0px !important;
+        line-height: 1.2 !important;
+      }
+
+      .guests_count {
+        font-size: 13px !important;
+      }
+    }
+
+    .content-centered.checkAvaBed {
+      top: 50% !important;
+      transform: translateY(-50%) !important;
+    }
+  }
+}
+
+/* 3. Smallest screen adjustments (mobile width < 600px): fit Guests & Rooms dropdown on screen */
+@media (max-width: 600px) {
+  .roomsAndOccupancy {
+    width: 100% !important;
+    left: 0 !important;
+    right: 0 !important;
+    margin-top: 56px !important;
+
+    .item.business-text {
+      width: 100% !important;
+      padding: 16px !important;
+    }
+  }
+}
+
+@media (max-width: 360px) {
+  .checkAvaTime,
+  .checkAvaRoom {
+    height: 50px !important;
+    padding: 4px 10px !important;
   }
 }

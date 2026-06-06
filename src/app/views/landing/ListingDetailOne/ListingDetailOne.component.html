@@ -932,27 +932,33 @@
         <div class="website-web-vision">
           <div class="card checkAvaCard">
             <div class="checkin-mode-row">
-              <div class="checkin-mode-toggle" role="group" aria-label="Check-in mode toggle">
-                <button
-                  type="button"
-                  class="checkin-mode-toggle__btn"
+              <div class="checkin-switch-container">
+                <span
+                  class="switch-label"
                   [class.is-active]="!isTwentyFourHourCheckIn"
                   (click)="setCheckInMode(false)"
                 >
                   Standard
-                </button>
-                <button
-                  type="button"
-                  class="checkin-mode-toggle__btn"
+                </span>
+                <label class="switch-toggle">
+                  <input
+                    type="checkbox"
+                    [checked]="isTwentyFourHourCheckIn"
+                    (change)="setCheckInMode(!isTwentyFourHourCheckIn)"
+                  />
+                  <span class="switch-slider"></span>
+                </label>
+                <span
+                  class="switch-label"
                   [class.is-active]="isTwentyFourHourCheckIn"
                   (click)="setCheckInMode(true)"
                 >
                   24h Check-in
-                </button>
+                </span>
               </div>
             </div>
             <div id="checkin">
-              <div class="row d-flex checkAva2 booking-controls-row">
+              <div class="row d-flex checkAva2 booking-controls-row" [class.has-twenty-four-hour-checkin]="isTwentyFourHourCheckIn">
                 <div class="checkAva3">
                   <div id="autocomplete-container">
                     <label
@@ -978,7 +984,7 @@
                         fromDate = validateInput(fromDate, dpFromDate3.value)
                       "
                       required
-                      (click)="datepicker3Web.toggle(); removeSession()"
+                      (click)="datepicker3Web.toggle(); removeSession(); roomsAndOccupancy = false"
                       autocomplete="off"
                     />
 
@@ -1002,7 +1008,7 @@
                   </div>
                   <div
                     class="content-centered"
-                    (click)="datepicker3Web.toggle(); removeSession()"
+                    (click)="datepicker3Web.toggle(); removeSession(); roomsAndOccupancy = false"
                     style="cursor: pointer"
                   >
                     <img
@@ -1045,7 +1051,7 @@
                       "
                       (input)="toDate = validateInput(toDate, dpToDate3.value)"
                       required
-                      (click)="datepicker4Web.toggle(); removeSession()"
+                      (click)="datepicker4Web.toggle(); removeSession(); roomsAndOccupancy = false"
                       autocomplete="off"
                     />
 
@@ -1069,7 +1075,7 @@
                   </div>
                   <div
                     class="content-centered"
-                    (click)="datepicker4Web.toggle(); removeSession()"
+                    (click)="datepicker4Web.toggle(); removeSession(); roomsAndOccupancy = false"
                     style="cursor: pointer"
                   >
                     <img
@@ -1089,6 +1095,8 @@
                       class="time-select"
                       [(ngModel)]="selectedCheckInTime"
                       aria-label="Select check-in time"
+                      (click)="roomsAndOccupancy = false"
+                      (focus)="roomsAndOccupancy = false"
                     >
                       <option *ngFor="let time of availableCheckInTimes" [value]="time">
                         {{ time }}
@@ -1128,19 +1136,14 @@
                       >
                         <span class="guests_count">
                           <span data-adults-count="" class="text-nowrap"
-                            >{{ totalAdults }} adults</span
-                          >
-                          <span data-visible="accommodation">
-                            &nbsp;&nbsp;&nbsp;&nbsp;
-                            <span data-children-count="" class="text-nowrap"
-                              >{{ totalChildren }} children</span
-                            >
+                            >{{ totalAdults }} adults</span>
+                          <span data-visible="accommodation" class="text-nowrap">
+                            <span data-children-count=""
+                              >{{ totalChildren }} children</span>
                           </span>
-                          <span data-visible="accommodation">
-                            &nbsp;&nbsp;&nbsp;&nbsp;
-                            <span data-room-count="" class="text-nowrap"
-                              >{{ rooms }} room</span
-                            >
+                          <span data-visible="accommodation" class="text-nowrap">
+                            <span data-room-count=""
+                              >{{ rooms }} room</span>
                           </span>
                         </span>
                       </label>
@@ -1368,27 +1371,33 @@
           <div>
             <div class="card checkAvaCard">
               <div class="checkin-mode-row checkin-mode-row--mobile">
-                <div class="checkin-mode-toggle" role="group" aria-label="Check-in mode toggle">
-                  <button
-                    type="button"
-                    class="checkin-mode-toggle__btn"
+                <div class="checkin-switch-container">
+                  <span
+                    class="switch-label"
                     [class.is-active]="!isTwentyFourHourCheckIn"
                     (click)="setCheckInMode(false)"
                   >
                     Standard
-                  </button>
-                  <button
-                    type="button"
-                    class="checkin-mode-toggle__btn"
+                  </span>
+                  <label class="switch-toggle">
+                    <input
+                      type="checkbox"
+                      [checked]="isTwentyFourHourCheckIn"
+                      (change)="setCheckInMode(!isTwentyFourHourCheckIn)"
+                    />
+                    <span class="switch-slider"></span>
+                  </label>
+                  <span
+                    class="switch-label"
                     [class.is-active]="isTwentyFourHourCheckIn"
                     (click)="setCheckInMode(true)"
                   >
                     24h Check-in
-                  </button>
+                  </span>
                 </div>
               </div>
               <div id="checkin">
-                <div class="row d-flex checkAva2">
+                <div class="row d-flex checkAva2" [class.has-twenty-four-hour-checkin]="isTwentyFourHourCheckIn">
                   <div class="checkAva3">
                     <div id="autocomplete-container">
                       <label
@@ -1416,7 +1425,7 @@
                           fromDate = validateInput(fromDate, dpFromDate3.value)
                         "
                         required
-                        (click)="datepicker3.toggle(); removeSession()"
+                        (click)="datepicker3.toggle(); removeSession(); roomsAndOccupancy = false"
                         autocomplete="off"
                       />
 
@@ -1440,7 +1449,7 @@
                     </div>
                     <div
                       class="content-centered"
-                      (click)="datepicker3.toggle(); removeSession()"
+                      (click)="datepicker3.toggle(); removeSession(); roomsAndOccupancy = false"
                       style="cursor: pointer"
                     >
                       <img
@@ -1477,7 +1486,7 @@
                           toDate = validateInput(toDate, dpToDate3.value)
                         "
                         required
-                        (click)="datepicker4.toggle(); removeSession()"
+                        (click)="datepicker4.toggle(); removeSession(); roomsAndOccupancy = false"
                         autocomplete="off"
                       />
 
@@ -1501,7 +1510,7 @@
                     </div>
                     <div
                       class="content-centered"
-                      (click)="datepicker4.toggle(); removeSession()"
+                      (click)="datepicker4.toggle(); removeSession(); roomsAndOccupancy = false"
                       style="cursor: pointer"
                     >
                       <img
@@ -1521,6 +1530,8 @@
                       class="time-select"
                       [(ngModel)]="selectedCheckInTime"
                       aria-label="Select check-in time"
+                      (click)="roomsAndOccupancy = false"
+                      (focus)="roomsAndOccupancy = false"
                     >
                       <option *ngFor="let time of availableCheckInTimes" [value]="time">
                         {{ time }}
@@ -1556,21 +1567,16 @@
                             color: #141319 !important;
                           "
                         >
-                          <span class="guests_count">
+                          <span class="guests_count" style="display: inline-flex; gap: 20px;">
                             <span data-adults-count="" class="text-nowrap"
-                              >{{ totalAdults }} adults</span
-                            >
-                            <span data-visible="accommodation">
-                              &nbsp;&nbsp;&nbsp;&nbsp;
-                              <span data-children-count="" class="text-nowrap"
-                                >{{ totalChildren }} children</span
-                              >
+                              >{{ totalAdults }} adults</span>
+                            <span data-visible="accommodation" class="text-nowrap">
+                              <span data-children-count=""
+                                >{{ totalChildren }} children</span>
                             </span>
-                            <span data-visible="accommodation">
-                              &nbsp;&nbsp;&nbsp;&nbsp;
-                              <span data-room-count="" class="text-nowrap"
-                                >{{ rooms }} room</span
-                              >
+                            <span data-visible="accommodation" class="text-nowrap">
+                              <span data-room-count=""
+                                >{{ rooms }} room</span>
                             </span>
                           </span>
                         </label>
