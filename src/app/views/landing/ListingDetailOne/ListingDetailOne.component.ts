@@ -958,6 +958,7 @@ guestDataArray: Array<{
   isLoadingWhatsapp: boolean = false;
   isTwentyFourHourCheckIn = false;
   showTwentyFourHourCheckInToggle = false;
+  showTwentyFourHourBanner = false;
   activeGalleryTab = 'photo';
   selectedCheckInTime = '12:00';
   get availableCheckInTimes(): string[] {
@@ -9292,8 +9293,15 @@ onYesClick() {
     this.showTwentyFourHourCheckInToggle = !!this.businessUser?.businessServiceDtoList?.some(
       (service: any) => service?.anyTimeCheckIn === true || service?.anyTimeCheckIn === 'true'
     );
-    if (!this.showTwentyFourHourCheckInToggle) {
+    if (this.showTwentyFourHourCheckInToggle) {
+      this.isTwentyFourHourCheckIn = true;
+      this.showTwentyFourHourBanner = true;
+      setTimeout(() => {
+        this.showTwentyFourHourBanner = false;
+      }, 45000);
+    } else {
       this.isTwentyFourHourCheckIn = false;
+      this.showTwentyFourHourBanner = false;
     }
   }
 
