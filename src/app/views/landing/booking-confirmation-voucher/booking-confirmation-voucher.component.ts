@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { ChangeDetectorRef, Component } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { HotelBookingService } from 'src/services/hotel-booking.service';
 import { ListingService } from 'src/services/listing.service';
 import { TokenStorage } from 'src/token.storage';
@@ -68,8 +68,10 @@ export class BookingConfirmationVoucherComponent {
     private listingService: ListingService,
     private router: Router,
     private changeDetectorRefs: ChangeDetectorRef,
+    private acRoute: ActivatedRoute,
   ) {
     this.businessUser = this.token.getPropertyData();
+    this.resolveActiveCurrency();
     this.getPropertyDetailsById(this.businessUser.id);
 
     const savedLabel = localStorage.getItem('savedBookingLabel');
@@ -84,6 +86,7 @@ export class BookingConfirmationVoucherComponent {
   }
   }
   ngOnInit() {
+    this.resolveActiveCurrency();
     this.sequenceBookingConfirmation();
 
     const bookingDataDetails = sessionStorage.getItem('bookingSummaryDetails');
@@ -362,7 +365,7 @@ export class BookingConfirmationVoucherComponent {
         });
 
         this.token.saveProperty(this.businessUser);
-        this.currency = this.businessUser.localCurrency.toUpperCase();
+        this.resolveActiveCurrency();
 
         this.businessServiceDto =
           this.businessUser?.businessServiceDtoList.find(
@@ -383,6 +386,37 @@ export class BookingConfirmationVoucherComponent {
       }
     } catch (error) {
       // Handle the error appropriately, if needed.
+    }
+  }
+
+  resolveActiveCurrency() {
+    const isGhc = (this.token.getBookingEngineBoolean() === 'googlehotelcenter');
+
+    let urlCurrency = null;
+    if (this.acRoute && this.acRoute.snapshot && this.acRoute.snapshot.queryParams) {
+      urlCurrency = this.acRoute.snapshot.queryParams['currency'] || this.acRoute.snapshot.queryParams['userCurrency'];
+    }
+
+    const bookingCurrency = this.booking?.currency || (this.token.getBookingData()?.currency);
+    const savedCurrency = sessionStorage.getItem('selected_currency');
+    const localCurrency = this.businessUser?.localCurrency || this.token.getProperty()?.localCurrency;
+
+    if (urlCurrency) {
+      this.currency = urlCurrency.toUpperCase();
+    } else if (savedCurrency) {
+      this.currency = savedCurrency.toUpperCase();
+    } else if (bookingCurrency) {
+      this.currency = bookingCurrency.toUpperCase();
+    } else if (isGhc) {
+      this.currency = 'INR'; // Defaults GHC to INR if no other parameter is specified
+    } else if (localCurrency) {
+      this.currency = localCurrency.toUpperCase();
+    } else {
+      this.currency = 'INR';
+    }
+
+    if (this.booking) {
+      this.booking.currency = this.currency;
     }
   }
 

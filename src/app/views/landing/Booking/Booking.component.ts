@@ -1388,7 +1388,7 @@ export class BookingComponent implements OnInit {
   }
 
   goToConfirmation() {
-    this.router.navigate(['/booking-confirmation']).then(() => {
+    this.router.navigate(['/booking-confirmation'], { queryParamsHandling: 'merge' }).then(() => {
       this.closeModal();
     });
   }
