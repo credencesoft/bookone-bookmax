@@ -2082,6 +2082,16 @@ private isSameDayBookingSearch(): boolean {
 }
 
   isPlanDisabled(plan: any, room?: any): boolean {
+    // 1. Close to Arrival (CTA) Restriction Check
+    if (plan?.status?.toLowerCase() === 'close' && plan?.restriction?.toLowerCase() === 'arrival') {
+      return true;
+    }
+
+    // 2. Close to Departure (CTD) Restriction Check (Pre-computed look-ahead from backend)
+    if (plan?.isCloseToDeparture === true) {
+      return true;
+    }
+
     const isDayTrip = this.isDayTripPlan(plan, room);
     if (isDayTrip && !this.isSameDayBookingSearch()) {
       return true;
@@ -2109,6 +2119,16 @@ private isSameDayBookingSearch(): boolean {
   }
 
   getPlanDisabledMessage(plan: any, room?: any): string {
+    // 1. Close to Arrival (CTA) Warning Message
+    if (plan?.status?.toLowerCase() === 'close' && plan?.restriction?.toLowerCase() === 'arrival') {
+      return 'Check-in is unavailable on this date.';
+    }
+
+    // 2. Close to Departure (CTD) Warning Message
+    if (plan?.isCloseToDeparture === true) {
+      return 'Check-out is unavailable on this date.';
+    }
+
     if (this.isDayTripPlan(plan, room) && !this.isSameDayBookingSearch()) {
       return 'Requires same-day check-in & check-out.';
     }

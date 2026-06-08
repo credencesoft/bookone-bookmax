@@ -3010,7 +3010,40 @@ export class BookingComponent implements OnInit {
     if (!this.availabilityLoaded) {
       return false;
     }
-    return !this.availableRoomIdSet.has(plan.roomId);
+    const room = this.availableRooms?.find((r: any) => r.id === plan.roomId);
+    if (!room) {
+      return true;
+    }
+
+    const matchingRates = room.ratesAndAvailabilityDtos?.filter((rate: any) => {
+      return rate.planCode === plan.planCode || 
+             rate.planCode === plan.planName ||
+             rate.roomRatePlans?.some((p: any) => p.code === plan.planCode || p.code === plan.planName);
+    });
+
+    if (matchingRates && matchingRates.length > 0) {
+      const hasStopSell = matchingRates.some((rate: any) => 
+        (rate.stopSellOBE !== null && rate.stopSellOBE !== false) ||
+        (rate.stopSellOTA !== null && rate.stopSellOTA !== false)
+      );
+      if (hasStopSell) return true;
+
+      const hasNoRooms = matchingRates.some((rate: any) => (rate.noOfAvailable ?? 0) <= 0);
+      if (hasNoRooms) return true;
+
+      return false;
+    }
+
+    const allStopSelled = room.ratesAndAvailabilityDtos?.every((rate: any) => 
+      (rate.stopSellOBE !== null && rate.stopSellOBE !== false) ||
+      (rate.stopSellOTA !== null && rate.stopSellOTA !== false)
+    );
+    if (allStopSelled) return true;
+
+    const noAvailableRooms = room.ratesAndAvailabilityDtos?.every((rate: any) => (rate.noOfAvailable ?? 0) <= 0);
+    if (noAvailableRooms) return true;
+
+    return false;
   }
 
   hasAnySoldOutRoom(): boolean {
@@ -3118,6 +3151,7 @@ export class BookingComponent implements OnInit {
         .subscribe(
           (response) => {
             const roomListOne = response.body.roomList || [];
+            this.availableRooms = roomListOne;
             const availabilityNightCount = this.getAvailabilityNightCount();
             this.updateRoomDayTripLookup(roomListOne);
 
