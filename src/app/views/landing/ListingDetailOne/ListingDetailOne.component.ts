@@ -2015,7 +2015,7 @@ getMinAvailableRooms(ratesList: any[]): number {
   }
   return Math.min(
     ...ratesList
-      .filter(r => r.stopSellOBE === false || r.stopSellOBE === null)
+      .filter(r => r.stopSellOBE !== true)
       .map(r => r.noOfAvailable ?? 0)
   );
 }
@@ -3317,16 +3317,29 @@ getTotalWithoutTax(plan: any): number {
 
 
 onSelectPlanFromSmartCard(plan: any): void {
+  console.log('[DEBUG] onSelectPlanFromSmartCard called with plan:', plan);
   const planCode = plan.planCode;
   // find the rate from availableRooms
   const rate = this.getRateByPlanCodeSmartCard(planCode);
   if (!rate) {
-    console.warn('No matching rate found for planCode:', planCode);
+    console.warn('[DEBUG] No matching rate found for planCode:', planCode);
     return;
+  }
+
+  // If selectedRoom is null, resolve it from availableRooms using the rate
+  if (!this.selectedRoom && this.availableRooms) {
+    const room = this.availableRooms.find(r => 
+      r.ratesAndAvailabilityDtos?.some((rateDto: any) => rateDto.roomId === rate.roomId)
+    );
+    if (room) {
+      this.selectedRoom = room;
+      console.log('[DEBUG] Resolved selectedRoom from rate. Room ID:', room.id, 'Room Name:', room.name);
+    }
   }
 
   // 1. Assign default selection
   const scopedKey = this.getScopedRoomPlanKey(this.selectedRoom, rate, planCode);
+  console.log('[DEBUG] SmartCard scopedKey:', scopedKey, 'selectedRoom:', this.selectedRoom);
   this.selectedRoomsByPlan[scopedKey] = this.rooms;
   this.selectedGuestsByPlan[scopedKey] = {
     adults: this.totalAdults || this.booking.noOfPersons || this.rooms || 1,
@@ -4499,8 +4512,8 @@ if (roomKey) {
           this.availableRooms = this.availableRooms.filter(room =>
             room.ratesAndAvailabilityDtos?.length > 0 &&
             room.ratesAndAvailabilityDtos.every((rate: any) => 
-              (rate.stopSellOBE === null || rate.stopSellOBE === false) &&
-              (rate.stopSellOTA === null || rate.stopSellOTA === false)
+              rate.stopSellOBE !== true &&
+              rate.stopSellOTA !== true
             )
           );
           // Filter sold-out rooms
@@ -4511,8 +4524,8 @@ if (roomKey) {
             return room.ratesAndAvailabilityDtos === null ||
               room.ratesAndAvailabilityDtos.length === 0 ||
               room.ratesAndAvailabilityDtos.some((rate: any) => 
-                (rate.stopSellOBE != null && rate.stopSellOBE !== false) ||
-                (rate.stopSellOTA != null && rate.stopSellOTA !== false)
+                rate.stopSellOBE === true ||
+                rate.stopSellOTA === true
               );
           });
           this.shortrooms = response.body.roomList;
@@ -6315,14 +6328,25 @@ adjustDates() {
   }
 
   navigate() {
-    const hasStopSell = this.shortrooms?.some(room => 
-      room.ratesAndAvailabilityDtos?.some((rate: any) => 
-        (rate.stopSellOTA !== null && rate.stopSellOTA !== false) || 
-        (rate.stopSellOBE !== null && rate.stopSellOBE !== false)
-      )
-    );
+    const hasStopSell = this.selectedPlansSummary?.some((plan: any) => {
+      const room = this.shortrooms?.find((r: any) => r.id === plan.roomId);
+      if (!room) return false;
+      
+      const matchingRates = room.ratesAndAvailabilityDtos?.filter((rate: any) => {
+        return rate.planCode === plan.planCode || 
+               rate.planCode === plan.planName ||
+               rate.roomRatePlans?.some((p: any) => p.code === plan.planCode || p.code === plan.planName);
+      });
+
+      if (matchingRates && matchingRates.length > 0) {
+        return matchingRates.some((rate: any) => rate.stopSellOTA === true || rate.stopSellOBE === true);
+      } else {
+        return room.ratesAndAvailabilityDtos?.every((rate: any) => rate.stopSellOTA === true || rate.stopSellOBE === true);
+      }
+    });
 
     if (hasStopSell) {
+      console.log('[DEBUG] Stop-sell triggered in navigate(). hasStopSell is true. shortrooms:', JSON.parse(JSON.stringify(this.shortrooms || [])));
       this.showStopSellPopup = true;
       window.scrollTo({ top: 0, behavior: 'smooth' });
       
@@ -6388,14 +6412,25 @@ adjustDates() {
 //   this.router.navigate(['/booking']);
 // }
 onBookNow() {
-  const hasStopSell = this.shortrooms?.some(room => 
-    room.ratesAndAvailabilityDtos?.some((rate: any) => 
-      (rate.stopSellOTA !== null && rate.stopSellOTA !== false) || 
-      (rate.stopSellOBE !== null && rate.stopSellOBE !== false)
-    )
-  );
+  const hasStopSell = this.selectedPlansSummary?.some((plan: any) => {
+    const room = this.shortrooms?.find((r: any) => r.id === plan.roomId);
+    if (!room) return false;
+    
+    const matchingRates = room.ratesAndAvailabilityDtos?.filter((rate: any) => {
+      return rate.planCode === plan.planCode || 
+             rate.planCode === plan.planName ||
+             rate.roomRatePlans?.some((p: any) => p.code === plan.planCode || p.code === plan.planName);
+    });
+
+    if (matchingRates && matchingRates.length > 0) {
+      return matchingRates.some((rate: any) => rate.stopSellOTA === true || rate.stopSellOBE === true);
+    } else {
+      return room.ratesAndAvailabilityDtos?.every((rate: any) => rate.stopSellOTA === true || rate.stopSellOBE === true);
+    }
+  });
 
   if (hasStopSell) {
+    console.log('[DEBUG] Stop-sell triggered in onBookNow(). hasStopSell is true. shortrooms:', JSON.parse(JSON.stringify(this.shortrooms || [])));
     this.showStopSellPopup = true;
     window.scrollTo({ top: 0, behavior: 'smooth' });
     
@@ -7357,8 +7392,8 @@ onBookNow() {
                 }
 
                 const hasStopSell = rates.some((rate: any) => 
-                  (rate.stopSellOBE !== null && rate.stopSellOBE !== false) ||
-                  (rate.stopSellOTA !== null && rate.stopSellOTA !== false)
+                  rate.stopSellOBE === true ||
+                  rate.stopSellOTA === true
                 );
                 const hasDayTripRate = this.hasDayTripRate(room);
                 const matchesDateType =
@@ -7409,11 +7444,11 @@ onBookNow() {
               }
 
               const isStopSellOBE = rates.some((rate: any) =>
-                rate.stopSellOBE !== null && rate.stopSellOBE !== false
+                rate.stopSellOBE === true
               );
 
               const isStopSellOTA = rates.some((rate: any) =>
-                rate.stopSellOTA !== null && rate.stopSellOTA !== false
+                rate.stopSellOTA === true
               );
 
               return isStopSellOBE || isStopSellOTA;
@@ -7684,7 +7719,7 @@ onBookNow() {
                     element.noOfAvailable = this.otaAvailableRooms;
                   }
                 });
-                return des2.stopSellOBE !== true && des2.stopSellOBE !== null;
+                return des2.stopSellOBE !== true;
               }
             );
 
@@ -8259,12 +8294,13 @@ checkAndShowStopSellPopup(roomList: any[]): void {
 
   const allStopSelled = relevantRooms.every(room => 
     room.ratesAndAvailabilityDtos.some((rate: any) => 
-      (rate.stopSellOTA !== null && rate.stopSellOTA !== false) || 
-      (rate.stopSellOBE !== null && rate.stopSellOBE !== false)
+      rate.stopSellOTA === true || 
+      rate.stopSellOBE === true
     )
   );
 
   if (allStopSelled) {
+    console.log('[DEBUG] Stop-sell triggered in checkAndShowStopSellPopup(). allStopSelled is true. relevantRooms:', JSON.parse(JSON.stringify(relevantRooms || [])));
     this.showStopSellPopup = true;
     this.selectedPlansSummary = [];
     this.token.saveBookingRoomPrice(null);
@@ -8297,8 +8333,8 @@ isRoomStopSelled(room: any): boolean {
     return false;
   }
   return room.ratesAndAvailabilityDtos.some((rate: any) => 
-    (rate.stopSellOBE !== null && rate.stopSellOBE !== false) ||
-    (rate.stopSellOTA !== null && rate.stopSellOTA !== false)
+    rate.stopSellOBE === true ||
+    rate.stopSellOTA === true
   );
 }
 
@@ -8540,7 +8576,7 @@ isRoomTooSmall(room: any): boolean {
           this.availableRooms?.forEach((des) => {
             const hasAvailableRooms = des?.ratesAndAvailabilityDtos?.some(
               (des2) => {
-                return des2.stopSellOBE !== true && des2.stopSellOBE !== null;
+                return des2.stopSellOBE !== true;
               }
             );
 

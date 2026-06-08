@@ -3113,13 +3113,11 @@ export class BookingComponent implements OnInit {
               if (!rates || rates.length === 0) return false;
 
               const isStopSellOBE = rates.some((rate: any) =>
-                rate.stopSellOBE !== null &&
-                rate.stopSellOBE !== false
+                rate.stopSellOBE === true
               );
 
               const isStopSellOTA = rates.some((rate: any) =>
-                rate.stopSellOTA !== null &&
-                rate.stopSellOTA !== false
+                rate.stopSellOTA === true
               );
 
               return (
@@ -3134,13 +3132,11 @@ export class BookingComponent implements OnInit {
                 return true;
 
               const isStopSellOBE = rates.some((rate: any) =>
-                rate.stopSellOBE !== null &&
-                rate.stopSellOBE !== false
+                rate.stopSellOBE === true
               );
 
               const isStopSellOTA = rates.some((rate: any) =>
-                rate.stopSellOTA !== null &&
-                rate.stopSellOTA !== false
+                rate.stopSellOTA === true
               );
 
               return isStopSellOBE || isStopSellOTA;

@@ -2885,7 +2885,7 @@
             >
               <div class="d-flex justify-content-between flex-wrap-one"
                 *ngIf="room?.id === rates?.roomId &&
-                  r < 1 && (rates?.stopSellOBE === false || rates?.stopSellOBE === null)
+                  r < 1 && rates?.stopSellOBE !== true
                 "
               >
                 <div class="col-12 col-lg-5 spacing-manage">
