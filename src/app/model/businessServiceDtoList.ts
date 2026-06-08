@@ -57,5 +57,6 @@ export class BusinessServiceDtoList {
   bookoneActive: any;
   roomRateOrder: boolean;
   bookingButtonLabelText: string;
+  anyTimeCheckIn?: boolean;
   constructor() {}
 }

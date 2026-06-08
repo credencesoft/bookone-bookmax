@@ -957,12 +957,20 @@ guestDataArray: Array<{
   whatsappNumber = '';
   isLoadingWhatsapp: boolean = false;
   isTwentyFourHourCheckIn = false;
+  showTwentyFourHourCheckInToggle = false;
   activeGalleryTab = 'photo';
   selectedCheckInTime = '12:00';
-  availableCheckInTimes = Array.from({ length: 24 }, (_, hour) =>
-    `${String(hour).padStart(2, '0')}:00`
-  );
-    checkinDate: string;
+  get availableCheckInTimes(): string[] {
+    const allTimes = Array.from({ length: 24 }, (_, hour) =>
+      `${String(hour).padStart(2, '0')}:00`
+    );
+    if (this.isCheckInDateToday()) {
+      const currentHour = new Date().getHours();
+      return allTimes.slice(currentHour);
+    }
+    return allTimes;
+  }
+  checkinDate: string;
   checkoutDate: string;
 isRoomDescriptionExpanded = false;
 descriptionWordLimit = 30;
@@ -1687,6 +1695,7 @@ if (storedBooking) {
     // this.adults = this.adults;
     // this.checkingAvailability();
     //  this.getTotalTaxFee();
+    this.validateSelectedCheckInTime();
     localStorage.removeItem('landingrice');
   }
 
@@ -5010,6 +5019,7 @@ onCheckOutClosed(): void {
       if (data.status === 200) {
         this.businessUser = data.body;
         this.propertyData = this.businessUser;
+        this.checkAnyTimeCheckIn();
         this.accommodationData =
         this.propertyData.businessServiceDtoList?.filter(
             (entry) => entry.name === 'Accommodation'
@@ -5665,6 +5675,7 @@ onCheckOutClosed(): void {
         if (data.status === 200) {
           this.businessUser = data.body;
           this.propertyData = this.businessUser;
+          this.checkAnyTimeCheckIn();
           this.accommodationData = this.propertyData?.businessServiceDtoList?.filter((entry) => entry?.name === 'Accommodation');
           this.roomRateOrderEnabled = this.accommodationData?.some((entry) => entry?.roomRateOrder === true) || false;
           this.accommodationData?.forEach((element) => {
@@ -8248,6 +8259,7 @@ getTotalTaxPrice(): number {
         return; // Prevent past date selection
       }
       this.fromDate = date;
+      this.validateSelectedCheckInTime();
       this.toDate = this.calendar.getNext(date, 'd', 1);
       this.minDateForCheckOut = this.getCheckoutMinDate();
     } else if (type === 'checkout') {
@@ -9253,6 +9265,37 @@ onYesClick() {
     this.roomsAndOccupancy = false;
     if (!isTwentyFourHour) {
       this.selectedCheckInTime = '12:00';
+    }
+  }
+
+  checkAnyTimeCheckIn(): void {
+    this.showTwentyFourHourCheckInToggle = !!this.businessUser?.businessServiceDtoList?.some(
+      (service: any) => service?.anyTimeCheckIn === true || service?.anyTimeCheckIn === 'true'
+    );
+    if (!this.showTwentyFourHourCheckInToggle) {
+      this.isTwentyFourHourCheckIn = false;
+    }
+  }
+
+  isCheckInDateToday(): boolean {
+    if (!this.fromDate) {
+      return false;
+    }
+    const today = new Date();
+    return (
+      this.fromDate.year === today.getFullYear() &&
+      this.fromDate.month === (today.getMonth() + 1) &&
+      this.fromDate.day === today.getDate()
+    );
+  }
+
+  validateSelectedCheckInTime(): void {
+    if (this.isCheckInDateToday()) {
+      const currentHour = new Date().getHours();
+      const selectedHour = parseInt(this.selectedCheckInTime.split(':')[0], 10);
+      if (selectedHour < currentHour) {
+        this.selectedCheckInTime = `${String(currentHour).padStart(2, '0')}:00`;
+      }
     }
   }
 

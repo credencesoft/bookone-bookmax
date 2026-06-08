@@ -1014,7 +1014,7 @@
       <div [ngStyle]="{ 'margin-top': businessUser?.website ? '0px' : '0px' }">
         <div class="website-web-vision">
           <div class="card checkAvaCard">
-            <div class="checkin-mode-row">
+            <div class="checkin-mode-row" *ngIf="showTwentyFourHourCheckInToggle">
               <div class="checkin-switch-container">
                 <span
                   class="switch-label"
@@ -1453,7 +1453,7 @@
         <div class="website-mob-vision">
           <div>
             <div class="card checkAvaCard">
-              <div class="checkin-mode-row checkin-mode-row--mobile">
+              <div class="checkin-mode-row checkin-mode-row--mobile" *ngIf="showTwentyFourHourCheckInToggle">
                 <div class="checkin-switch-container">
                   <span
                     class="switch-label"
