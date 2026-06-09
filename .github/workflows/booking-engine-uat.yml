@@ -3,7 +3,7 @@ name: Release UAT Booking Engine
 on:
   push:
     branches:
-      - feature/refactor-network
+      - release/uat-new
   workflow_dispatch:
 
 env:
@@ -24,7 +24,7 @@ env:
   AWS_REGION: ap-south-1
   AWS_SECRET: bookone_uat_deployment_credentials
 
-  BRANCH: feature/refactor-network
+  BRANCH: release/uat-new
 
 permissions:
   contents: read

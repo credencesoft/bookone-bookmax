@@ -1388,7 +1388,7 @@ export class BookingComponent implements OnInit {
   }
 
   goToConfirmation() {
-    this.router.navigate(['/booking-confirmation']).then(() => {
+    this.router.navigate(['/booking-confirmation'], { queryParamsHandling: 'merge' }).then(() => {
       this.closeModal();
     });
   }
@@ -2047,10 +2047,18 @@ export class BookingComponent implements OnInit {
     //   (data) => {
     //     this.businessUser = data.body;
     this.businessUser = this.token.getProperty();
+    const is24Hour = sessionStorage.getItem('isTwentyFourHourCheckIn') === 'true';
+    const chosenTime = sessionStorage.getItem('selectedCheckInTime') || '12:00';
+
     this.businessUser.businessServiceDtoList.forEach((item) => {
       if (item.name === 'Accommodation') {
-        this.fromTime = item.checkInTime ?? '';
-        this.toTime = item.checkOutTime ?? '';
+        if (is24Hour) {
+          this.fromTime = chosenTime;
+          this.toTime = chosenTime;
+        } else {
+          this.fromTime = item.checkInTime ?? '';
+          this.toTime = item.checkOutTime ?? '';
+        }
         this.channelManagerIntegration = item.cmIntegration;
         this.bookoneActiveData = item.bookoneActive;
       }
@@ -2061,8 +2069,8 @@ export class BookingComponent implements OnInit {
     const accommodation = this.businessUser.businessServiceDtoList.find(
       (item) => item.name === 'Accommodation',
     );
-    const fromTime = accommodation?.checkInTime ?? '12:00';
-    const toTime = accommodation?.checkOutTime ?? '12:00';
+    const fromTime = is24Hour ? chosenTime : (accommodation?.checkInTime ?? '12:00');
+    const toTime = is24Hour ? chosenTime : (accommodation?.checkOutTime ?? '12:00');
 
     const getPropertyTimestamp = (guestDate: string, propertyTime: string) => {
       const [year, month, day] =
@@ -2175,7 +2183,12 @@ export class BookingComponent implements OnInit {
     );
     this.initializeAdvancePaymentPlans();
 
-    if (this.businessServiceDto.checkInTime !== null) {
+    if (is24Hour) {
+      const [hours, minutes] = chosenTime.split(':').map(Number);
+      const chosenTimeMs = (hours * 60 + minutes) * 60 * 1000;
+      this.booking.fromTime = new Date(this.booking.fromDate).getTime() + chosenTimeMs;
+      this.booking.toTime = new Date(this.booking.toDate).getTime() + chosenTimeMs;
+    } else if (this.businessServiceDto.checkInTime !== null) {
       this.booking.fromTime =
         new Date(this.booking.fromDate).getTime() +
         Number(this.businessServiceDto.checkInTime);
@@ -2573,8 +2586,10 @@ export class BookingComponent implements OnInit {
     const accommodation = this.businessUser.businessServiceDtoList.find(
       (item) => item.name === 'Accommodation',
     );
-    const fromTime = accommodation?.checkInTime ?? '12:00';
-    const toTime = accommodation?.checkOutTime ?? '12:00';
+    const is24Hour = sessionStorage.getItem('isTwentyFourHourCheckIn') === 'true';
+    const chosenTime = sessionStorage.getItem('selectedCheckInTime') || '12:00';
+    const fromTime = is24Hour ? chosenTime : (accommodation?.checkInTime ?? '12:00');
+    const toTime = is24Hour ? chosenTime : (accommodation?.checkOutTime ?? '12:00');
 
     const getPropertyTimestamp = (guestDate: string, propertyTime: string) => {
       const [year, month, day] =
@@ -2853,8 +2868,10 @@ export class BookingComponent implements OnInit {
     const accommodation = this.businessUser.businessServiceDtoList.find(
       (item) => item.name === 'Accommodation',
     );
-    const fromTime = accommodation?.checkInTime ?? '12:00';
-    const toTime = accommodation?.checkOutTime ?? '12:00';
+    const is24Hour = sessionStorage.getItem('isTwentyFourHourCheckIn') === 'true';
+    const chosenTime = sessionStorage.getItem('selectedCheckInTime') || '12:00';
+    const fromTime = is24Hour ? chosenTime : (accommodation?.checkInTime ?? '12:00');
+    const toTime = is24Hour ? chosenTime : (accommodation?.checkOutTime ?? '12:00');
 
     const getPropertyTimestamp = (guestDate: string, propertyTime: string) => {
       const [year, month, day] =
@@ -2899,7 +2916,7 @@ export class BookingComponent implements OnInit {
     enquiryForm.accountManager = '';
     enquiryForm.consultantPerson = '';
     enquiryForm.noOfRooms = this.isDayTripPlan(plan) ? 1 : Number(plan.selectedRoomnumber);
-    enquiryForm.noOfChildren = plan.children;
+    enquiryForm.noOfChildren = plan.extraCountChild;
     enquiryForm.accommodationType = this.token.getProperty().businessType;
     enquiryForm.status = 'Enquiry';
     enquiryForm.specialNotes = booking.notes || '';
@@ -2993,7 +3010,40 @@ export class BookingComponent implements OnInit {
     if (!this.availabilityLoaded) {
       return false;
     }
-    return !this.availableRoomIdSet.has(plan.roomId);
+    const room = this.availableRooms?.find((r: any) => r.id === plan.roomId);
+    if (!room) {
+      return true;
+    }
+
+    const matchingRates = room.ratesAndAvailabilityDtos?.filter((rate: any) => {
+      return rate.planCode === plan.planCode || 
+             rate.planCode === plan.planName ||
+             rate.roomRatePlans?.some((p: any) => p.code === plan.planCode || p.code === plan.planName);
+    });
+
+    if (matchingRates && matchingRates.length > 0) {
+      const hasStopSell = matchingRates.some((rate: any) => 
+        (rate.stopSellOBE !== null && rate.stopSellOBE !== false) ||
+        (rate.stopSellOTA !== null && rate.stopSellOTA !== false)
+      );
+      if (hasStopSell) return true;
+
+      const hasNoRooms = matchingRates.some((rate: any) => (rate.noOfAvailable ?? 0) <= 0);
+      if (hasNoRooms) return true;
+
+      return false;
+    }
+
+    const allStopSelled = room.ratesAndAvailabilityDtos?.every((rate: any) => 
+      (rate.stopSellOBE !== null && rate.stopSellOBE !== false) ||
+      (rate.stopSellOTA !== null && rate.stopSellOTA !== false)
+    );
+    if (allStopSelled) return true;
+
+    const noAvailableRooms = room.ratesAndAvailabilityDtos?.every((rate: any) => (rate.noOfAvailable ?? 0) <= 0);
+    if (noAvailableRooms) return true;
+
+    return false;
   }
 
   hasAnySoldOutRoom(): boolean {
@@ -3101,6 +3151,7 @@ export class BookingComponent implements OnInit {
         .subscribe(
           (response) => {
             const roomListOne = response.body.roomList || [];
+            this.availableRooms = roomListOne;
             const availabilityNightCount = this.getAvailabilityNightCount();
             this.updateRoomDayTripLookup(roomListOne);
 
@@ -3112,18 +3163,14 @@ export class BookingComponent implements OnInit {
               const rates = room.ratesAndAvailabilityDtos;
               if (!rates || rates.length === 0) return false;
 
-              const isStopSellOBE = rates.some((rate: any) =>
-                rate.stopSellOBE === true
-              );
-
-              const isStopSellOTA = rates.some((rate: any) =>
-                rate.stopSellOTA === true
+              const hasStopSell = rates.some((rate: any) =>
+                (rate.stopSellOBE !== null && rate.stopSellOBE !== false) ||
+                (rate.stopSellOTA !== null && rate.stopSellOTA !== false)
               );
 
               return (
                 rates.length === availabilityNightCount &&
-                !isStopSellOBE &&
-                !isStopSellOTA
+                !hasStopSell
               );
             });
             this.soldOutRooms = sortedRoomsOne.filter((room) => {
@@ -3131,15 +3178,12 @@ export class BookingComponent implements OnInit {
               if (!rates || rates.length !== availabilityNightCount)
                 return true;
 
-              const isStopSellOBE = rates.some((rate: any) =>
-                rate.stopSellOBE === true
+              const hasStopSell = rates.some((rate: any) =>
+                (rate.stopSellOBE !== null && rate.stopSellOBE !== false) ||
+                (rate.stopSellOTA !== null && rate.stopSellOTA !== false)
               );
 
-              const isStopSellOTA = rates.some((rate: any) =>
-                rate.stopSellOTA === true
-              );
-
-              return isStopSellOBE || isStopSellOTA;
+              return hasStopSell;
             });
             this.availableRoomIdSet.clear();
             this.availableRoomsOne.forEach((room) => {
@@ -8339,8 +8383,10 @@ export class BookingComponent implements OnInit {
     const accommodation = this.businessUser.businessServiceDtoList.find(
       (item) => item.name === 'Accommodation',
     );
-    const fromTime = accommodation?.checkInTime ?? '12:00';
-    const toTime = accommodation?.checkOutTime ?? '12:00';
+    const is24Hour = sessionStorage.getItem('isTwentyFourHourCheckIn') === 'true';
+    const chosenTime = sessionStorage.getItem('selectedCheckInTime') || '12:00';
+    const fromTime = is24Hour ? chosenTime : (accommodation?.checkInTime ?? '12:00');
+    const toTime = is24Hour ? chosenTime : (accommodation?.checkOutTime ?? '12:00');
 
     const getPropertyTimestamp = (guestDate: string, propertyTime: string) => {
       const [year, month, day] =
@@ -8398,7 +8444,7 @@ export class BookingComponent implements OnInit {
     booking.lastName = this.booking.lastName;
     booking.mobile = this.booking.mobile;
     booking.email = this.booking.email;
-    booking.noOfChildren = plan.childrenAbove5years;
+    booking.noOfChildren = plan.extraCountChild;
     // if(this.groupBookingId){
     //   booking.groupBookingId = this.groupBookingId;
     // }
@@ -8665,8 +8711,10 @@ export class BookingComponent implements OnInit {
     const accommodation = this.businessUser.businessServiceDtoList.find(
       (item) => item.name === 'Accommodation',
     );
-    const fromTime = accommodation?.checkInTime ?? '12:00';
-    const toTime = accommodation?.checkOutTime ?? '12:00';
+    const is24Hour = sessionStorage.getItem('isTwentyFourHourCheckIn') === 'true';
+    const chosenTime = sessionStorage.getItem('selectedCheckInTime') || '12:00';
+    const fromTime = is24Hour ? chosenTime : (accommodation?.checkInTime ?? '12:00');
+    const toTime = is24Hour ? chosenTime : (accommodation?.checkOutTime ?? '12:00');
 
     const getPropertyTimestamp = (guestDate: string, propertyTime: string) => {
       const [year, month, day] =
@@ -8704,7 +8752,7 @@ export class BookingComponent implements OnInit {
     enquiryForm.accountManager = '';
     enquiryForm.consultantPerson = '';
     enquiryForm.noOfRooms = this.isDayTripPlan(plan) ? 1 : Number(plan.selectedRoomnumber);
-    enquiryForm.noOfChildren = plan.children;
+    enquiryForm.noOfChildren = plan.extraCountChild;
     enquiryForm.accommodationType = this.token.getProperty().businessType;
     enquiryForm.status = 'Booked';
     enquiryForm.specialNotes = booking.notes || '';
@@ -10611,8 +10659,10 @@ export class BookingComponent implements OnInit {
     const accommodation = this.businessUser.businessServiceDtoList.find(
       (item) => item.name === 'Accommodation',
     );
-    const fromTime = accommodation?.checkInTime ?? '12:00';
-    const toTime = accommodation?.checkOutTime ?? '12:00';
+    const is24Hour = sessionStorage.getItem('isTwentyFourHourCheckIn') === 'true';
+    const chosenTime = sessionStorage.getItem('selectedCheckInTime') || '12:00';
+    const fromTime = is24Hour ? chosenTime : (accommodation?.checkInTime ?? '12:00');
+    const toTime = is24Hour ? chosenTime : (accommodation?.checkOutTime ?? '12:00');
 
     const getPropertyTimestamp = (guestDate: string, propertyTime: string) => {
       const [year, month, day] =
@@ -10766,8 +10816,10 @@ export class BookingComponent implements OnInit {
         const accommodation = this.businessUser.businessServiceDtoList.find(
           (item) => item.name === 'Accommodation',
         );
-        const fromTime = accommodation?.checkInTime ?? '12:00';
-        const toTime = accommodation?.checkOutTime ?? '12:00';
+        const is24Hour = sessionStorage.getItem('isTwentyFourHourCheckIn') === 'true';
+        const chosenTime = sessionStorage.getItem('selectedCheckInTime') || '12:00';
+        const fromTime = is24Hour ? chosenTime : (accommodation?.checkInTime ?? '12:00');
+        const toTime = is24Hour ? chosenTime : (accommodation?.checkOutTime ?? '12:00');
 
         const getPropertyTimestamp = (
           guestDate: string,
@@ -11073,8 +11125,10 @@ export class BookingComponent implements OnInit {
     const accommodation = this.businessUser.businessServiceDtoList.find(
       (item) => item.name === 'Accommodation',
     );
-    const fromTime = accommodation?.checkInTime ?? '12:00';
-    const toTime = accommodation?.checkOutTime ?? '12:00';
+    const is24Hour = sessionStorage.getItem('isTwentyFourHourCheckIn') === 'true';
+    const chosenTime = sessionStorage.getItem('selectedCheckInTime') || '12:00';
+    const fromTime = is24Hour ? chosenTime : (accommodation?.checkInTime ?? '12:00');
+    const toTime = is24Hour ? chosenTime : (accommodation?.checkOutTime ?? '12:00');
 
     const getPropertyTimestamp = (guestDate: string, propertyTime: string) => {
       const [year, month, day] =
@@ -11113,7 +11167,7 @@ export class BookingComponent implements OnInit {
     enquiryForm.accountManager = '';
     enquiryForm.consultantPerson = '';
     enquiryForm.noOfRooms = this.isDayTripPlan(plan) ? 1 : Number(plan.selectedRoomnumber);
-    enquiryForm.noOfChildren = plan.children;
+    enquiryForm.noOfChildren = plan.extraCountChild;
     enquiryForm.accommodationType = this.token.getProperty().businessType;
     enquiryForm.status = 'Enquiry';
     enquiryForm.specialNotes = booking.notes || '';
@@ -11212,7 +11266,7 @@ export class BookingComponent implements OnInit {
     this.token.saveToTime(String(checkOutDateTimeOne));
 
     bookingForm.noOfRooms = this.isDayTripPlan(plan) ? 1 : Number(plan.selectedRoomnumber);
-    bookingForm.noOfChildren = plan.children;
+    bookingForm.noOfChildren = plan.extraCountChild;
     bookingForm.propertyId = 107;
     bookingForm.propertyId = this.token.getProperty().id;
     bookingForm.taxDetails = this.token

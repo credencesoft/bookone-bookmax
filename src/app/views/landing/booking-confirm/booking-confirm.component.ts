@@ -1440,7 +1440,7 @@ const tokenToTime = this.combinedDateToTime;
 
 
         this.token.saveProperty(this.businessUser);
-        this.currency = this.businessUser.localCurrency.toUpperCase();
+        this.resolveActiveCurrency();
 
         this.businessServiceDto = this.businessUser?.businessServiceDtoList.find(
           (data) => data.name === this.businessUser.businessType
@@ -1493,6 +1493,40 @@ const tokenToTime = this.combinedDateToTime;
   calculateServiceHours (){
     this.accommodationService = this.businessUser.businessServiceDtoList.filter(service => service.name === "Accommodation");
     // console.log(" this.accommodationService" + JSON.stringify( this.accommodationService))
+  }
+
+  resolveActiveCurrency() {
+    const isGhc = (this.token.getBookingEngineBoolean() === 'googlehotelcenter') || (this.url === 'googlehotelcenter') || (this.activeGoogleCenter === true);
+
+    let urlCurrency = null;
+    if (this.acRoute && this.acRoute.snapshot && this.acRoute.snapshot.queryParams) {
+      urlCurrency = this.acRoute.snapshot.queryParams['currency'] || this.acRoute.snapshot.queryParams['userCurrency'];
+    }
+
+    const bookingCurrency = this.booking?.currency || this.bookingData?.currency || (this.token.getBookingData()?.currency);
+    const savedCurrency = sessionStorage.getItem('selected_currency');
+    const localCurrency = this.businessUser?.localCurrency || this.propertyDetails?.localCurrency || this.token.getProperty()?.localCurrency;
+
+    if (urlCurrency) {
+      this.currency = urlCurrency.toUpperCase();
+    } else if (savedCurrency) {
+      this.currency = savedCurrency.toUpperCase();
+    } else if (bookingCurrency) {
+      this.currency = bookingCurrency.toUpperCase();
+    } else if (isGhc) {
+      this.currency = 'INR'; // Defaults GHC to INR if no other parameter is specified
+    } else if (localCurrency) {
+      this.currency = localCurrency.toUpperCase();
+    } else {
+      this.currency = 'INR';
+    }
+
+    if (this.booking) {
+      this.booking.currency = this.currency;
+    }
+    if (this.bookingData) {
+      this.bookingData.currency = this.currency;
+    }
   }
    changeTheme(primary?: string, secondary?: string, tertiary?: string) {
   // Default colors if none are passed

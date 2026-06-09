@@ -27,7 +27,7 @@ background-color: #f5f5f5;
 }
 
 .label_heading1 {
-  padding-left: 0.625rem;
+  // padding-left: .625rem;
   font-size: 15px;
 }
 .checkAva4 {
@@ -505,7 +505,7 @@ width: auto;
     font-family: "Poppins";
     border: none;
     padding: 7px 19px;
-    border-radius: 7px;
+    border-radius: 15px !important;
     width:20%;
 }
 .Whatsapp-btn {
@@ -1917,10 +1917,311 @@ h3 .day-trip-badge {
   height: 100vh;
 }
 .see-more {
-  background-color: var(--tertiary) !important;;
-  color: #000;
+  background: rgba(11, 77, 117, 0.88) !important;
+  color: #ffffff !important;
   font-family: "Poppins";
   font-weight: 500;
+  border-radius: 999px;
+  padding: 10px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 14px 28px rgba(11, 77, 117, 0.24);
+  backdrop-filter: blur(8px);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.see-more:hover {
+  transform: scale(1.03);
+  box-shadow: 0 18px 34px rgba(11, 77, 117, 0.28);
+}
+
+.listing-gallery-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 14px;
+  margin-top: 20px;
+  align-items: stretch;
+  height: clamp(390px, 33.2vw, 416px);
+  overflow: hidden;
+}
+
+.listing-gallery-grid__main {
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+.listing-gallery-grid__main .main-img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover;
+  display: block;
+  border-radius: 12px;
+}
+
+.listing-gallery-grid__stack {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+}
+
+.listing-gallery-grid__feature-preview {
+  grid-column: span 2;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.listing-gallery-grid__feature-preview:hover {
+  transform: scale(1.025);
+}
+
+.gallery-image-card--tile {
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 0;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.gallery-image-card {
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1), filter 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+  display: block;
+}
+
+.gallery-image-card:hover {
+  transform: scale(1.025);
+  box-shadow: 0 16px 36px rgba(15, 23, 42, 0.15);
+  filter: saturate(1.04);
+}
+
+.listing-gallery-grid__feature-preview-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(4px);
+  transition: background 0.3s ease, backdrop-filter 0.3s ease;
+}
+
+.listing-gallery-grid__feature-preview:hover .listing-gallery-grid__feature-preview-overlay {
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(4px);
+}
+
+.listing-gallery-grid__see-all-btn {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  white-space: nowrap;
+  background: rgba(84, 68, 58, 0.72) !important;
+  color: #ffffff !important;
+  font-family: "Poppins", sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  border-radius: 10px;
+  padding: 12px 23px !important;
+  border: 1px solid rgba(255, 255, 255, 0.55) !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2) !important;
+  backdrop-filter: blur(4px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.listing-gallery-grid__see-all-btn:hover {
+  transform: translate(-50%, -50%) scale(1.05) !important;
+  background: rgba(15, 23, 42, 0.9) !important;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3) !important;
+}
+
+.listing-gallery-grid--single {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.listing-gallery-grid--single .listing-gallery-grid__stack {
+  display: none;
+}
+
+.listing-gallery-grid--two {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
+.listing-gallery-grid--two .listing-gallery-grid__stack {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
+}
+
+.listing-gallery-grid--three {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
+.listing-gallery-grid--three .listing-gallery-grid__stack {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+}
+
+.listing-gallery-grid--many .listing-gallery-grid__stack {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+}
+
+@media (min-width: 1024px) {
+  .listing-details-hero-row.row {
+    max-width: 100% !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+
+  .listing-details-highlights-row {
+    max-width: 1254px;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+
+  .listing-details-hero-row > .col-12,
+  .listing-details-highlights-row > .col-12 {
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
+
+
+// .gallery-drawer-modal .modal-dialog {
+//   position: fixed;
+//   inset: 0;
+//   margin: 0;
+//   max-width: none;
+//   width: 100vw;
+//   height: 100vh;
+// }
+
+.gallery-drawer-dialog {
+  transform: none !important;
+}
+
+.gallery-drawer-content {
+  height: 100vh;
+  border: 0;
+  border-radius: 0;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: none;
+}
+
+// .gallery-drawer-modal .modal-header {
+//   min-height: 78px;
+//   padding: 0 17px;
+//   background: #fff;
+//   color: #111827;
+//   border-bottom: 1px solid #e5e7eb;
+//   align-items: center;
+// }
+
+// .gallery-drawer-modal .modal-body {
+//   height: calc(100vh - 78px);
+//   padding: 16px;
+//   background: #fff;
+//   overflow-y: auto;
+// }
+
+// .gallery-drawer-modal .modal-title,
+// .gallery-drawer-modal .modal-title i {
+//   color: #111827;
+// }
+
+// .gallery-drawer-modal .modal-title {
+//   display: flex;
+//   align-items: center;
+//   margin: 0;
+//   font-family: "Poppins", sans-serif;
+//   font-size: 20px;
+//   font-weight: 500;
+//   line-height: 1.2;
+// }
+
+.gallery-drawer-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 20px 14px;
+  align-items: start;
+}
+
+.gallery-drawer-grid__item .image-gallery-main {
+  width: 100% !important;
+  height: clamp(280px, 23.5vw, 450px) !important;
+  object-fit: cover;
+  margin-bottom: 0;
+  border-radius: 4px !important;
+  box-shadow: none;
+}
+
+// .gallery-drawer-modal .select-mannual {
+//   width: 40px;
+//   height: 40px;
+//   padding: 0;
+//   border: 0;
+//   background: transparent;
+//   color: #000;
+//   font-size: 22px;
+//   display: inline-flex;
+//   align-items: center;
+//   justify-content: center;
+// }
+
+@media (max-width: 1399px) {
+  .gallery-drawer-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 991px) {
+  .gallery-drawer-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  // .gallery-drawer-modal .modal-header {
+  //   min-height: 64px;
+  //   padding: 0 12px;
+  // }
+
+  // .gallery-drawer-modal .modal-body {
+  //   height: calc(100vh - 64px);
+  //   padding: 12px;
+  // }
+
+  // .gallery-drawer-modal .modal-title {
+  //   font-size: 17px;
+  // }
+
+  .gallery-drawer-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .gallery-drawer-grid__item .image-gallery-main {
+    height: 260px !important;
+  }
+}
+
+.modal-backdrop.show {
+  opacity: 0.72 !important;
 }
 .roomDescription {
   text-align: justify;
@@ -2159,7 +2460,6 @@ h3 .day-trip-badge {
     margin-bottom: 10px;
 }
 .margin-changes {
-      margin-bottom: 22px;
     margin-left: 20px;
 }
 .booking-summary-dialog .p-dialog-header {
@@ -2231,7 +2531,7 @@ h3 .day-trip-badge {
           transform: rotate(360deg)
         }
       }
-@media (max-width: 1180px) {
+@media (max-width: 1023px) {
   .website-web-vision {
     display: none;
   }
@@ -2359,8 +2659,22 @@ h3 .day-trip-badge {
     margin-left: 5px;
   }
 
-  .main-img {
-    height: 400px;
+  .listing-gallery-grid {
+    height: clamp(260px, 30vw, 380px);
+    gap: 12px;
+  }
+
+  .listing-gallery-grid__main {
+    border-radius: 12px;
+  }
+
+  .listing-gallery-grid__stack {
+    gap: 12px;
+  }
+
+  .listing-gallery-grid__see-all-btn {
+    font-size: 13px;
+    padding: 10px 18px !important;
   }
   .modal-fullscreen-gallery {
     min-width: 100% !important;
@@ -2390,7 +2704,7 @@ h3 .day-trip-badge {
   transition: transform 0.3s ease-in-out;
 }
 
-@media (min-width: 601px) and  (max-width: 1180px){
+@media (min-width: 601px) and (max-width: 1023px){
 .checkAva6 {
     width: 50%;
     padding-left: 10px;
@@ -2537,12 +2851,15 @@ text-align: center;
 }
 }
 
-@media (max-width: 600px) {
 .checkout-datepicker + ngb-datepicker.dropdown-menu,
-.checkout-datepicker ~ .dropdown-menu {
+.checkout-datepicker ~ .dropdown-menu,
+.checkout-datepicker + ngb-datepicker,
+.checkout-datepicker ~ ngb-datepicker {
     left: auto !important;
     right: 0 !important;
 }
+
+@media (max-width: 600px) {
 .mobile-plan-header {
     flex-wrap: wrap;
     align-items: flex-start !important;
@@ -2688,12 +3005,26 @@ text-align: center;
     width: 160px;
     height: 94px;
     object-fit: cover;
-        object-fit: cover;
 }
-    .main-img {
-        height: 303px;
-        object-fit: cover;
-    }
+
+  .listing-gallery-grid {
+    height: clamp(180px, 45vw, 250px);
+    gap: 8px;
+  }
+
+  .listing-gallery-grid__main {
+    border-radius: 8px;
+  }
+
+  .listing-gallery-grid__stack {
+    gap: 8px;
+  }
+
+  .listing-gallery-grid__see-all-btn {
+    font-size: 12px;
+    padding: 8px 14px !important;
+    border-radius: 8px;
+  }
     .gallery-thumbs {
         width: 140px;
     }
@@ -2751,7 +3082,7 @@ text-align: center;
 
 
 
-@media (min-width: 1181px){
+@media (min-width: 1024px){
 .terms-container {
     margin-bottom: 68px !important;
 }
@@ -2774,7 +3105,7 @@ text-align: center;
   }
 }
 
-@media (min-width: 1181px) and (max-width: 1299px) {
+@media (min-width: 1024px) and (max-width: 1299px) {
   .font-size-13px {
       font-size: 13px;
 }
@@ -3150,7 +3481,7 @@ text-align: center;
   white-space: nowrap;
 }
 
-@media (max-width: 1180px) {
+@media (max-width: 1023px) {
   .cancellation-rules-card {
     padding: 16px;
     margin-bottom: 14px;
@@ -3174,143 +3505,677 @@ text-align: center;
   }
 }
 
+/* ==========================================================================
+   HOTEL PROPERTY PAGE DESIGN RE-STYLING (ANTIGRAVITY CUSTOMS)
+   ========================================================================== */
 
-/* Stop Sell Modal Overlay Styles */
-.stop-sell-backdrop {
-  align-items: center;
-  background: rgba(15, 23, 42, 0.65); /* Elegant semi-transparent dark grey/black backdrop */
-  backdrop-filter: blur(8px); /* Blur behind the modal for premium glassmorphism feel */
-  -webkit-backdrop-filter: blur(8px);
-  display: flex;
-  height: 100%;
-  justify-content: center;
-  left: 0;
-  position: fixed;
-  top: 0;
-  width: 100%;
-  z-index: 99999; /* Higher than headers/sticky components */
-  animation: fadeInBackdrop 0.3s ease-out;
+/* Property name header styling */
+.hero-heading {
+  font-family: "Playfair Display", "Poppins", "Merriweather", serif !important;
+  font-weight: 700 !important;
+  font-size: 34px !important;
+  color: #0f172a !important;
+  margin-bottom: 6px !important;
+  letter-spacing: -0.01em !important;
 }
 
-.stop-sell-modal {
-  background: #ffffff;
-  border-radius: 24px;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 40px rgba(239, 68, 68, 0.1);
-  box-sizing: border-box;
+/* Location and address styling */
+.hero-subheading {
+  font-family: "Nunito", sans-serif !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  margin-top: 4px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+}
+
+/* Gallery Navigation Tabs styling */
+.gallery-tabs {
+  display: flex;
+  gap: 24px;
+  border-bottom: 1px solid #e2e8f0;
+  margin-top: 24px;
+  margin-bottom: 16px;
+  width: 100%;
+}
+
+.gallery-tab-btn {
+  background: none;
+  border: none;
+  font-family: "Poppins", sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: #64748b;
+  padding: 8px 4px 12px 4px;
+  position: relative;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.gallery-tab-btn:hover {
+  color: #0f172a;
+}
+
+.gallery-tab-btn.is-active {
+  color: #0b4d75; /* Brand teal/navy */
+  font-weight: 600;
+}
+
+.gallery-tab-btn.is-active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background-color: #0b4d75;
+  border-radius: 99px;
+}
+
+/* 360 Virtual Tour Container styling */
+.listing-gallery-360-container {
+  height: 460px;
+  width: 100%;
+  border-radius: 12px;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 18px;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+}
+
+.listing-gallery-360-overlay {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle, rgba(15, 23, 42, 0.35) 0%, rgba(15, 23, 42, 0.75) 100%);
+  backdrop-filter: blur(4px);
+}
+
+.listing-gallery-360-content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  color: #ffffff;
+  max-width: 480px;
+  padding: 32px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
   display: flex;
   flex-direction: column;
-  max-width: 440px;
-  min-height: 400px; /* Force nice square aspect balance */
-  width: calc(100% - 40px);
-  padding: 40px 32px;
-  position: relative;
-  text-align: center;
-  border: 1px solid rgba(239, 68, 68, 0.2);
-  animation: scaleUpModal 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  align-items: center;
+  gap: 16px;
 }
 
-.stop-sell-modal__close-btn {
-  background: transparent;
-  border: 0;
-  color: #94a3b8;
+.listing-gallery-360-badge {
+  background: #0b4d75;
+  color: #ffffff;
+  padding: 6px 14px;
+  border-radius: 99px;
+  font-family: "Poppins", sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.listing-gallery-360-content h3 {
+  font-family: "Playfair Display", serif;
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.listing-gallery-360-content p {
+  font-family: "Poppins", sans-serif;
+  font-size: 13px;
+  color: #f1f5f9;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.btn-360-explore {
+  background: #ffffff !important;
+  color: #0b4d75 !important;
+  font-family: "Poppins", sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  padding: 12px 28px !important;
+  border-radius: 99px !important;
+  border: none !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
   cursor: pointer;
-  font-size: 22px;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-360-explore:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.25);
+  background: #f8fafc !important;
+}
+
+/* Rounded White Booking Card styling */
+.checkAvaCard {
+  background-color: #ffffff !important;
+  border-radius: 20px !important;
+  border: 1px solid #f1f5f9 !important;
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.06) !important;
+  padding: 60px 24px 24px 24px !important; /* Extra top padding to clear the top-right toggle */
+  margin-top: 30px !important;
+  margin-bottom: 24px !important;
+  position: relative !important;
+  width: 100% !important;
+}
+
+/* Horizontal booking row */
+.booking-controls-row {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
+  width: 100% !important;
+  margin: 0 !important;
+  padding-top: 0px !important; /* Clear extra spacing as card has 60px top padding */
+}
+
+/* Individual field wrappers inside horizontal row */
+.checkAva3,
+.checkAva6,
+.checkAvaTime,
+.checkAvaRoom {
+  background-color: #f8fafc !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 12px !important;
+  padding: 10px 16px !important;
+  margin: 0 !important;
+  flex: 1 1 0% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  height: 68px !important;
+  position: relative !important;
+}
+
+.checkAvaRoom {
+  flex: 1.5 1 0% !important; /* Give more space for Guests & Rooms */
+}
+
+// /* Date input overrides */
+// .date-input {
+//   font-family: "Nunito", sans-serif !important;
+//   font-size: 14px !important;
+//   font-weight: 500 !important;
+//   color: #0f172a !important;
+//   border: none !important;
+//   background: transparent !important;
+//   padding: 0 !important;
+//   margin: 0 !important;
+//   width: 100% !important;
+//   height: auto !important;
+//   box-shadow: none !important;
+// }
+
+/* Calendar icons inside fields positioning */
+.checkAva3 .content-centered,
+.checkAva6 .content-centered {
   position: absolute;
-  right: 24px;
-  top: 24px;
-  transition: color 0.2s, transform 0.2s;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+/* Check-in time selector dropdown design */
+.checkAvaTime .time-select {
+  border: none !important;
+  background: transparent !important;
+  font-family: "Poppins", sans-serif !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  color: #0f172a !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  width: 100% !important;
+  outline: none !important;
+  cursor: pointer;
+}
+
+/* Guests & Rooms inner padding resets */
+.checkAvaRoom .input-box {
+  background: transparent !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: none !important;
+  cursor: pointer;
+}
+
+.checkAvaRoom .guests_count {
+  font-family: "Nunito", sans-serif !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  color: #0f172a !important;
+  display: inline-flex !important;
+  gap: 10px !important;
+}
+
+/* Book Now Button (Dark Teal/Navy Pill) */
+.checkavaialabilyy-btn {
+  color: #ffffff !important; /* White text */
+  font-family: "Poppins", sans-serif !important;
+  font-weight: 600 !important;
+  font-size: 15px !important;
+  border: none !important;
+  padding: 0 32px !important;
+  border-radius: 15px !important;
+  height: 52px !important;
+  width: auto !important;
+  min-width: 160px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  box-shadow: 0 8px 24px rgba(11, 77, 117, 0.25) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  cursor: pointer !important;
+}
+
+.checkavaialabilyy-btn:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 12px 30px rgba(11, 77, 117, 0.35) !important;
+}
+
+/* Top-Right Standard / 24h Check-in toggle row */
+.checkin-mode-row {
+  position: absolute;
+  top: 14px !important;
+  right: 24px !important;
+  z-index: 5;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Toggle Pill Container */
+.checkin-mode-toggle {
+  display: inline-flex;
+  background-color: #f1f5f9;
   padding: 4px;
+  border-radius: 99px;
+  border: 1px solid #e2e8f0;
+  font-family: "Nunito", sans-serif;
+}
+
+/* Toggle Individual Pill Button */
+.checkin-mode-toggle__btn {
+  background: none;
+  border: none;
+  font-family: "Nunito", sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748b;
+  padding: 6px 16px;
+  border-radius: 99px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.checkin-mode-toggle__btn.is-active {
+  background-color: #ffffff;
+  color: #0b4d75;
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.05);
+}
+
+/* Reset separator line styling from old layout */
+.checkAvaCard div[style*="border-right"] {
+  display: none !important;
+}
+
+/* Mobile responsive fixes for the horizontal booking card */
+@media (max-width: 991px) {
+  .checkAvaCard {
+    padding: 16px !important;
+  }
+
+  .booking-controls-row {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 12px !important;
+    padding-top: 0px !important; /* Reset padding since toggle is relative */
+  }
+
+  .checkAva2 {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 12px !important;
+    margin-right: 0 !important;
+    margin-left: -2px !important;
+  }
+
+  .checkin-mode-row {
+    position: relative !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    justify-content: center !important;
+    margin-bottom: 16px !important;
+    z-index: 5;
+    display: flex !important;
+  }
+
+  .checkin-mode-toggle {
+    width: 100%;
+  }
+
+  .checkin-mode-toggle__btn {
+    flex: 1;
+    text-align: center;
+  }
+
+  .checkAva3,
+  .checkAva6 {
+    width: calc(50% - 6px) !important;
+    flex: 0 0 calc(50% - 6px) !important;
+    padding: 9px 4px !important;
+  }
+
+  .checkAvaTime,
+  .checkAvaRoom {
+    width: 100% !important;
+    flex: none !important;
+  }
+
+  .checkavaialabilyy-btn {
+    width: 100% !important;
+    height: 56px !important;
+  }
+}
+
+/* Datepicker calendar popup font matching */
+ngb-datepicker,
+.ngb-dp-header,
+.ngb-dp-weekdays,
+.ngb-dp-weekday,
+.ngb-dp-months,
+.ngb-dp-month,
+.ngb-dp-navigation-select,
+.ngb-dp-day {
+  font-family: "Poppins", sans-serif !important;
+}
+
+/* Extra small screens adjustments (below 360px) */
+@media (max-width: 360px) {
+  .checkAvaCard {
+    padding: 10px !important;
+  }
+
+  .checkAva2 {
+    gap: 8px !important;
+  }
+
+  .checkAva3,
+  .checkAva6 {
+    width: calc(50% - 4px) !important;
+    flex: 0 0 calc(50% - 4px) !important;
+    padding: 6px 8px !important;
+    height: 58px !important;
+  }
+
+  .label_heading1 {
+    font-size: 11px !important;
+  }
+
+  .date-input {
+    font-size: 11px !important;
+    margin-top: -8px !important;
+  }
+
+  .checkAva3 .content-centered,
+  .checkAva6 .content-centered {
+    right: 8px !important;
+  }
+
+  .checkAva3 .content-centered img,
+  .checkAva6 .content-centered img {
+    width: 16px !important;
+    height: 16px !important;
+  }
+
+  .checkin-mode-toggle__btn {
+    font-size: 11px !important;
+    padding: 6px 8px !important;
+  }
+}
+
+/* Photo gallery slider styles */
+.gallery-slider-image {
+  width: 100%;
+  height: 480px;
+  object-fit: cover;
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  transition: transform 0.3s ease;
+
+  &:hover {
+    transform: scale(1.01);
+  }
+}
+
+@media (max-width: 991px) {
+  .gallery-slider-image {
+    height: 360px;
+  }
+}
+
+@media (max-width: 768px) {
+  .gallery-slider-image {
+    height: 280px;
+  }
+}
+
+/* ==========================================================================
+   Reservation Closed Centered Modal Overlay Design
+   ========================================================================== */
+.reservation-closed-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000; /* Must sit above everything else */
+  padding: 16px;
+  animation: fadeInOverlay 0.3s ease-out;
+}
+
+.reservation-closed-modal {
+  background: #ffffff;
+  border-radius: 28px;
+  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.3);
+  max-width: 500px;
+  width: 100%;
+  padding: 40px 32px 32px;
+  position: relative;
+  text-align: center;
+  overflow: hidden;
+  animation: scaleInModal 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  border: 1px solid rgba(239, 68, 68, 0.1);
+}
+
+/* Close Button (X) */
+.rc-modal-close-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: #f1f5f9;
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  color: #64748b;
   display: flex;
   align-items: center;
   justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 16px;
   
   &:hover {
-    color: #ef4444;
+    background: #e2e8f0;
+    color: #1e293b;
     transform: rotate(90deg);
   }
 }
 
-.stop-sell-modal__body {
+/* Modal Icon Section */
+.rc-modal-icon-container {
+  position: relative;
+  width: 84px;
+  height: 84px;
+  margin: 0 auto 24px;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100%;
 }
 
-.stop-sell-modal__icon {
-  align-items: center;
-  background: linear-gradient(135deg, #fee2e2 0%, #fef2f2 100%);
+.rc-modal-icon-bg {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: #ffffff;
+  font-size: 36px;
+  width: 72px;
+  height: 72px;
   border-radius: 50%;
-  color: #ef4444;
   display: flex;
-  font-size: 42px;
-  height: 90px;
+  align-items: center;
   justify-content: center;
-  margin-bottom: 24px;
-  width: 90px;
-  box-shadow: 0 10px 20px rgba(239, 68, 68, 0.15);
-  animation: pulseIcon 2s infinite;
+  box-shadow: 0 10px 25px rgba(239, 68, 68, 0.4);
+  z-index: 2;
 }
 
-.stop-sell-modal__title {
+.rc-modal-pulse-circle {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: rgba(239, 68, 68, 0.15);
+  animation: rcPulse 2s infinite ease-in-out;
+  z-index: 1;
+}
+
+/* Title & Description */
+.rc-modal-title {
   color: #1e293b;
   font-family: 'Poppins', sans-serif;
   font-size: 24px;
   font-weight: 700;
-  letter-spacing: -0.02em;
   margin: 0 0 12px;
+  letter-spacing: -0.5px;
 }
 
-.stop-sell-modal__message {
+.rc-modal-description {
   color: #64748b;
-  font-family: 'Inter', sans-serif;
-  font-size: 15px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
   line-height: 1.6;
+  margin: 0 0 20px;
+}
+
+/* Blocked Dates list container */
+.rc-modal-dates-box {
+  background: #fef2f2;
+  border: 1px dashed #fca5a5;
+  border-radius: 16px;
+  padding: 16px;
+  margin: 0 0 24px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  max-height: 140px;
+  overflow-y: auto;
+}
+
+.rc-date-badge {
+  background: #ffffff;
+  color: #b91c1c;
+  border: 1px solid #fee2e2;
+  padding: 6px 12px;
+  border-radius: 99px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 2px 4px rgba(239, 68, 68, 0.04);
+}
+
+.rc-modal-footer-text {
+  color: #475569;
+  font-family: 'Poppins', sans-serif;
+  font-size: 13px;
+  line-height: 1.5;
   margin: 0 0 28px;
 }
 
-.stop-sell-modal__actions {
-  width: 100%;
+/* Actions Section */
+.rc-modal-actions {
+  display: flex;
+  justify-content: center;
 }
 
-.stop-sell-modal__btn {
-  border: 0;
-  border-radius: 12px;
-  font-family: 'Poppins', sans-serif;
-  font-size: 16px;
-  font-weight: 600;
-  padding: 14px 28px;
-  width: 100%;
-  cursor: pointer;
-  transition: background-color 0.2s, transform 0.1s, box-shadow 0.2s;
-}
-
-.stop-sell-modal__btn--primary {
-  background: #ef4444;
+.rc-modal-btn {
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
   color: #ffffff;
-  box-shadow: 0 8px 16px rgba(239, 68, 68, 0.2);
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  padding: 14px 40px;
+  border: none;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 10px 20px rgba(15, 23, 42, 0.15);
   
   &:hover {
-    background: #dc2626;
-    box-shadow: 0 10px 20px rgba(239, 68, 68, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px rgba(15, 23, 42, 0.25);
+    background: linear-gradient(135deg, #0f172a 0%, #020617 100%);
   }
-  
+
   &:active {
-    transform: scale(0.98);
+    transform: translateY(0);
   }
 }
 
 /* Animations */
-@keyframes fadeInBackdrop {
+@keyframes fadeInOverlay {
   from { opacity: 0; }
   to { opacity: 1; }
 }
 
-@keyframes scaleUpModal {
+@keyframes scaleInModal {
   from {
     opacity: 0;
-    transform: scale(0.9);
+    transform: scale(0.92);
   }
   to {
     opacity: 1;
@@ -3318,15 +4183,245 @@ text-align: center;
   }
 }
 
-@keyframes pulseIcon {
+@keyframes rcPulse {
   0% {
-    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+    transform: scale(0.85);
+    opacity: 0.7;
   }
-  70% {
-    box-shadow: 0 0 0 15px rgba(239, 68, 68, 0);
+  50% {
+    transform: scale(1.1);
+    opacity: 0.2;
   }
   100% {
-    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+    transform: scale(0.85);
+    opacity: 0.7;
   }
 }
 
+/* ==========================================================================
+   Check-in height decrease and switch toggle styling (Desktop & Mobile)
+   ========================================================================== */
+
+/* Toggle Switch Styles (Global, used on both desktop and mobile now) */
+.checkin-switch-container {
+   display: flex;
+   align-items: center;
+   gap: 10px;
+   font-family: "Nunito", sans-serif;
+   -webkit-user-select: none;
+   user-select: none;
+   padding: 4px 12px;
+   border-radius: 99px;
+}
+
+.switch-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #64748b;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.switch-label.is-active {
+  color: var(--secondary, #0b01cc);
+}
+
+.switch-toggle {
+  position: relative;
+  display: inline-block;
+  width: 38px;
+  height: 20px;
+  margin: 0 4px;
+}
+
+.switch-toggle input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.switch-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #cbd5e1;
+  transition: .3s ease;
+  border-radius: 20px;
+}
+
+.switch-slider:before {
+  position: absolute;
+  content: "";
+  height: 14px;
+  width: 14px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: .3s ease;
+  border-radius: 50%;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.15);
+}
+
+input:checked + .switch-slider {
+  background-color: var(--secondary, #0b01cc);;
+}
+
+input:checked + .switch-slider:before {
+  transform: translateX(18px);
+}
+
+/* Custom overrides to prevent Check-in Time & Guest/Room section overlap */
+
+/* 1. Desktop: align Guests & Rooms dropdown to the right when 24h check-in is active to cover the search button instead of check-in time field */
+@media (min-width: 992px) {
+  .has-twenty-four-hour-checkin {
+    .checkAvaRoom {
+      .roomsAndOccupancy {
+        left: auto !important;
+        right: -180px !important;
+      }
+    }
+  }
+}
+
+/* 2. Tablet (between 601px and 991px): align it to the right edge of the card since layout is stacked but container is wide */
+@media (min-width: 601px) and (max-width: 991px) {
+  .has-twenty-four-hour-checkin {
+    .checkAvaRoom {
+      .roomsAndOccupancy {
+        left: auto !important;
+        right: 0 !important;
+      }
+    }
+  }
+}
+
+/* 2. Mobile & Small screens height decreases and alignment fixes */
+@media (max-width: 991px) {
+  .checkAvaTime,
+  .checkAvaRoom {
+    height: 54px !important;
+    padding: 6px 14px !important;
+  }
+
+  .checkAvaTime {
+    .checkin-time-box {
+      display: flex !important;
+      flex-direction: column !important;
+      justify-content: center !important;
+      height: 100% !important;
+
+      label {
+        margin-bottom: 0px !important;
+        font-size: 10px !important;
+        line-height: 1.2 !important;
+      }
+
+      .time-select {
+        font-size: 13px !important;
+        height: 22px !important;
+        line-height: 22px !important;
+      }
+    }
+  }
+
+  .checkAvaRoom {
+    .input-box {
+      padding-top: 2px !important;
+      padding-bottom: 2px !important;
+
+      label.default-color {
+        font-size: 10px !important;
+        margin-bottom: 0px !important;
+        line-height: 1.2 !important;
+      }
+
+      .guests_count {
+        font-size: 13px !important;
+      }
+    }
+
+    .content-centered.checkAvaBed {
+      top: 50% !important;
+      transform: translateY(-50%) !important;
+    }
+  }
+}
+
+/* 3. Smallest screen adjustments (mobile width < 600px): fit Guests & Rooms dropdown on screen */
+@media (max-width: 600px) {
+  .roomsAndOccupancy {
+    width: 100% !important;
+    left: 0 !important;
+    right: 0 !important;
+    margin-top: 56px !important;
+
+    .item.business-text {
+      width: 100% !important;
+      padding: 16px !important;
+    }
+  }
+}
+
+@media (max-width: 360px) {
+  .checkAvaTime,
+  .checkAvaRoom {
+    height: 50px !important;
+    padding: 4px 10px !important;
+  }
+}
+
+/* ==========================================================================
+   Date Adjusted Centered Modal Design Overrides (Blue Theme)
+   ========================================================================== */
+.date-adjusted-modal {
+  border: 1px solid rgba(59, 130, 246, 0.1) !important;
+}
+
+.date-adjusted-icon {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%) !important;
+  box-shadow: 0 10px 25px rgba(59, 130, 246, 0.4) !important;
+}
+
+.date-adjusted-pulse {
+  background: rgba(59, 130, 246, 0.15) !important;
+}
+
+.date-adjusted-btn {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
+  box-shadow: 0 10px 20px rgba(37, 99, 235, 0.15) !important;
+  
+  &:hover {
+    background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%) !important;
+    box-shadow: 0 12px 24px rgba(37, 99, 235, 0.25) !important;
+  }
+}
+
+/* ==========================================================================
+   Minimum Stay Centered Modal Design Overrides (Amber Warning Theme)
+   ========================================================================== */
+.min-stay-modal {
+  border: 1px solid rgba(245, 158, 11, 0.1) !important;
+}
+
+.min-stay-icon {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
+  box-shadow: 0 10px 25px rgba(245, 158, 11, 0.4) !important;
+}
+
+.min-stay-pulse {
+  background: rgba(245, 158, 11, 0.15) !important;
+}
+
+.min-stay-btn {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
+  box-shadow: 0 10px 20px rgba(245, 158, 11, 0.15) !important;
+  
+  &:hover {
+    background: linear-gradient(135deg, #d97706 0%, #b45309 100%) !important;
+    box-shadow: 0 12px 24px rgba(245, 158, 11, 0.25) !important;
+  }
+}

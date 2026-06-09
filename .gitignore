@@ -102,3 +102,6 @@ Thumbs.db
 package-lock.json
 
 src/environments/environment.ts
+.vscode
+.antigravitycli
+.claude

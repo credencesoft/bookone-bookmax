@@ -89,13 +89,16 @@ interface RoomOne {
   encapsulation: ViewEncapsulation.None,
 })
 export class ListingDetailOneComponent implements OnInit {
-  showStopSellPopup: boolean = false;
-  stopSellMessage: string = 'We are sorry, but some of your selected dates are currently unavailable due to high demand or seasonal maintenance. Please adjust your check-in or check-out dates.';
-  stopSellTimeout: any;
-
   showPastDateRestrictionPopup: boolean = false;
+  showGhcPastDatePopup: boolean = false;
+  showMinStayPopup: boolean = false;
+  minStayRequiredNights: number = 0;
+  showStopSellPopup: boolean = false;
+  stopSellTimeout: any;
+  blockedDatesList: string[] = [];
+  blockedDatesMessage: string = '';
   pastDateRestrictionMessage: string =
-    'Past dates are not allowed. Please choose today or a future date.';
+    'Reservations for past dates cannot be processed. To assist you, your booking dates have been adjusted to start from today.';
   isLoadingProperty : boolean;
   roomLowestPrices: { [roomId: string]: number | null } = {};
   roomLowestPricesBookingEngine: { [roomId: string]: number | null } = {};
@@ -953,7 +956,22 @@ guestDataArray: Array<{
   showWhatsappPopup = false;
   whatsappNumber = '';
   isLoadingWhatsapp: boolean = false;
-    checkinDate: string;
+  isTwentyFourHourCheckIn = false;
+  showTwentyFourHourCheckInToggle = false;
+  showTwentyFourHourBanner = false;
+  activeGalleryTab = 'photo';
+  selectedCheckInTime = '12:00';
+  get availableCheckInTimes(): string[] {
+    const allTimes = Array.from({ length: 24 }, (_, hour) =>
+      `${String(hour).padStart(2, '0')}:00`
+    );
+    if (this.isCheckInDateToday()) {
+      const currentHour = new Date().getHours();
+      return allTimes.slice(currentHour);
+    }
+    return allTimes;
+  }
+  checkinDate: string;
   checkoutDate: string;
 isRoomDescriptionExpanded = false;
 descriptionWordLimit = 30;
@@ -1075,6 +1093,7 @@ if (params['Children'] !== undefined) {
     checkin.setDate(checkin.getDate() + nights);
     this.checkoutDate = `${checkin.getFullYear()}-${('0' + (checkin.getMonth() + 1)).slice(-2)}-${('0' + checkin.getDate()).slice(-2)}`;
   }
+
 }
            if (params['bookingEngine'] !== undefined) {
         this.urlLocation = params['bookingEngine'];
@@ -1615,7 +1634,7 @@ if (storedBooking) {
     });
 
         this.accommodationData?.forEach((element) => {
-          this.smartRecommendationsBoolean = element.smartRecommendation === true || element.smartRecommendation === 'true';
+          this.smartRecommendationsBoolean = element.smartRecommendation;
         });
     }
 
@@ -1672,10 +1691,12 @@ if (storedBooking) {
       } else if (this.activeForGoogleHotelCenter == false) {
         this.fetchAndProcessRoomsData();
       }
+      this.checkLengthOfStayRestrictions();
     }, 3000);
     // this.adults = this.adults;
     // this.checkingAvailability();
     //  this.getTotalTaxFee();
+    this.validateSelectedCheckInTime();
     localStorage.removeItem('landingrice');
   }
 
@@ -2015,7 +2036,7 @@ getMinAvailableRooms(ratesList: any[]): number {
   }
   return Math.min(
     ...ratesList
-      .filter(r => r.stopSellOBE !== true)
+      .filter(r => r.stopSellOBE === false || r.stopSellOBE === null)
       .map(r => r.noOfAvailable ?? 0)
   );
 }
@@ -2062,24 +2083,114 @@ private isSameDayBookingSearch(): boolean {
 }
 
   isPlanDisabled(plan: any, room?: any): boolean {
+    // 1. Close to Arrival (CTA) Restriction Check
+    if (plan?.status?.toLowerCase() === 'close' && plan?.restriction?.toLowerCase() === 'arrival') {
+      return true;
+    }
+
+    // 2. Close to Departure (CTD) Restriction Check (Pre-computed look-ahead from backend)
+    if (plan?.isCloseToDeparture === true) {
+      return true;
+    }
+
     const isDayTrip = this.isDayTripPlan(plan, room);
     if (isDayTrip && !this.isSameDayBookingSearch()) {
       return true;
     }
 
-    return (
+    if (
       Number(this.booking?.noOfNights || 0) > 1 &&
       plan?.onedayPlan === true &&
       !isDayTrip
-    );
+    ) {
+      return true;
+    }
+
+    const nights = Number(this.booking?.noOfNights || this.nights || 0);
+    if (nights > 0) {
+      if (plan?.minimumLengthOfStay > 1 && nights < plan.minimumLengthOfStay) {
+        return true;
+      }
+      if (plan?.maximumLengthOfStay < 999 && nights > plan.maximumLengthOfStay) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   getPlanDisabledMessage(plan: any, room?: any): string {
+    // 1. Close to Arrival (CTA) Warning Message
+    if (plan?.status?.toLowerCase() === 'close' && plan?.restriction?.toLowerCase() === 'arrival') {
+      return 'Check-in is unavailable on this date.';
+    }
+
+    // 2. Close to Departure (CTD) Warning Message
+    if (plan?.isCloseToDeparture === true) {
+      return 'Check-out is unavailable on this date.';
+    }
+
     if (this.isDayTripPlan(plan, room) && !this.isSameDayBookingSearch()) {
       return 'Requires same-day check-in & check-out.';
     }
 
-    return 'Requires exactly a 1-night stay.';
+    if (
+      Number(this.booking?.noOfNights || 0) > 1 &&
+      plan?.onedayPlan === true &&
+      !this.isDayTripPlan(plan, room)
+    ) {
+      return 'Requires exactly a 1-night stay.';
+    }
+
+    const nights = Number(this.booking?.noOfNights || this.nights || 0);
+    if (nights > 0) {
+      if (plan?.minimumLengthOfStay > 1 && nights < plan.minimumLengthOfStay) {
+        return `Requires a minimum stay of ${plan.minimumLengthOfStay} nights.`;
+      }
+      if (plan?.maximumLengthOfStay < 999 && nights > plan.maximumLengthOfStay) {
+        return `Requires a maximum stay of ${plan.maximumLengthOfStay} nights.`;
+      }
+    }
+
+    return 'This plan is not available for selected dates.';
+  }
+
+  checkLengthOfStayRestrictions(): void {
+    const rooms = this.availableRooms || [];
+    if (rooms.length === 0) return;
+
+    const selectedNights = Number(this.booking?.noOfNights || this.nights || 0);
+    if (selectedNights === 0) return;
+
+    let totalPlansCount = 0;
+    let restrictedMinStayCount = 0;
+    const minStays = new Set<number>();
+
+    for (const room of rooms) {
+      if (!room.ratesAndAvailabilityDtos) continue;
+      for (const rate of room.ratesAndAvailabilityDtos) {
+        if (!rate.roomRatePlans) continue;
+        const visiblePlans = this.isPlanVisible(rate.roomRatePlans, room.name, room);
+        if (!visiblePlans) continue;
+        
+        for (const plan of visiblePlans) {
+          totalPlansCount++;
+          const minStay = Number(plan.minimumLengthOfStay || 1);
+          if (minStay > 1 && selectedNights < minStay) {
+            restrictedMinStayCount++;
+            minStays.add(minStay);
+          }
+        }
+      }
+    }
+
+    // Large Popup: Triggered ONLY if every visible plan is restricted AND they all share the same minimum stay
+    if (totalPlansCount > 0 && restrictedMinStayCount === totalPlansCount && minStays.size === 1) {
+      this.minStayRequiredNights = Array.from(minStays)[0];
+      this.showMinStayPopup = true;
+    } else {
+      this.showMinStayPopup = false;
+    }
   }
 
   private updateDayTripCheckoutAvailability(roomList: any[]): void {
@@ -2240,6 +2351,24 @@ onRoomSelect(roomIdentifier: string | number, planCode: string, count: number | 
 
   closeGalleryModal() {
     $(`#${this.galleryModalRef.nativeElement.id}`).modal('hide');
+  }
+
+  getListingGalleryClass(): string {
+    const imageCount: number = this.businessUser?.imageList?.length ?? 0;
+
+    if (imageCount <= 1) {
+      return 'listing-gallery-grid--single';
+    }
+
+    if (imageCount === 2) {
+      return 'listing-gallery-grid--two';
+    }
+
+    if (imageCount === 3) {
+      return 'listing-gallery-grid--three';
+    }
+
+    return 'listing-gallery-grid--many';
   }
 
   openCarouselModal(index: number, fromGallery: boolean = false) {
@@ -2707,7 +2836,6 @@ resetLastChangedAge(planCode: string, room?: any) {
 }
 
   onPlanSelect(planCode: string, rates: any, roomContext?: any) {
-    console.log('plan selected value is',this.selectedRoomsByPlan);
     const roomId = roomContext?.id ?? rates?.roomId;
     const roomName = roomContext?.name ?? rates?.roomName ?? '';
     const plan = rates?.roomRatePlans?.find((p) => p.code === planCode && rates?.roomId === roomId);
@@ -2779,14 +2907,18 @@ resetLastChangedAge(planCode: string, room?: any) {
       : (this.selectedRoomsByPlan[scopedRoomKey] || 0);
     const selectedGuests = this.selectedGuestsByPlan[scopedRoomKey] || this.selectedGuestsByPlan[planCode] || { adults: 0, children: 0 };
     const childAges = (this.childAgesByPlan[scopedRoomKey] || this.childAgesByPlan[planCode] || []).map(a => Number(a));
-    const below5Count = childAges.filter(a => !isNaN(a) && (plan?.childAgeLimit && plan.childAgeLimit > 0 ? a < plan.childAgeLimit : a <= 5)).length;
-    const above5Count = childAges.filter(a => !isNaN(a) && (plan?.childAgeLimit && plan.childAgeLimit > 0 ? a >= plan.childAgeLimit : a > 5)).length;
+    const below5Count = childAges.filter(a => !isNaN(a) && a <= 5).length;
+    const above5Count = childAges.filter(a => !isNaN(a) && a > 5).length;
 
     // Reset
     this.extraAdultCharge = 0;
     this.extraChildrenCharge = 0;
     this.extraAdultCount = 0;
     this.extraChildCount = 0;
+
+    let chargedAsAdultCount = 0;
+    let chargedAsChildCount = 0;
+
     if ((plan.maximumOccupancy + plan.noOfChildren) * selectedRooms > selectedGuests?.adults + above5Count ||
       (plan.maximumOccupancy + plan.noOfChildren) * selectedRooms === selectedGuests?.adults + above5Count) {
       const savedGuestArray = sessionStorage.getItem('guestDataArray');
@@ -2821,28 +2953,40 @@ resetLastChangedAge(planCode: string, room?: any) {
         if (plan.code === ele1.code) {
           const totalMinAdults = ele1.minimumOccupancy * selectedRooms;
           const totalMinChildren = selectedGuests.adults < (ele1.minimumOccupancy * selectedRooms) ? (ele1.minimumOccupancy * selectedRooms) - selectedGuests.adults : plan.noOfChildren;
+          
+          const ageLimit = plan?.childAgeLimit && plan.childAgeLimit > 0 ? plan.childAgeLimit : 0;
+          const chargeableChildren = childAges.filter(a => a !== null && a !== undefined && !isNaN(a) && a > 5);
+          const chargeableCount = chargeableChildren.length;
+
+          // Sort chargeable children such that children >= ageLimit come first
+          const sortedChargeableChildren = [...chargeableChildren].sort((a, b) => {
+            const aAbove = ageLimit > 0 && a >= ageLimit;
+            const bAbove = ageLimit > 0 && b >= ageLimit;
+            if (aAbove && !bAbove) return -1;
+            if (!aAbove && bAbove) return 1;
+            return 0;
+          });
+
+          const extraChildrenCount = chargeableCount > totalMinChildren ? chargeableCount - totalMinChildren : 0;
+          const chargedChildren = sortedChargeableChildren.slice(0, extraChildrenCount);
+          chargedAsAdultCount = chargedChildren.filter(age => ageLimit > 0 && age >= ageLimit).length;
+          chargedAsChildCount = chargedChildren.filter(age => !(ageLimit > 0 && age >= ageLimit)).length;
+
+          const extraChildrenCharge = (chargedAsAdultCount * (ele1.extraChargePerPerson || 0)) + (chargedAsChildCount * (ele1.extraChargePerChild || 0));
+
+          const extraAdults =
+            selectedGuests.adults > totalMinAdults
+              ? selectedGuests.adults - totalMinAdults
+              : 0;
+
           if (selectedRooms > 1) {
-            const singleRoomCountOccupancyAdult = ele1.minimumOccupancy * 1;
-
-            const singleRoomCountOccupancyChild = ele1.noOfChildren * 1;
-
             const totalIncludedAdults = ele1.minimumOccupancy * selectedRooms;
-
-
-            const totalIncludedChildren =
-              selectedGuests.adults < totalIncludedAdults
-                ? totalIncludedAdults - selectedGuests.adults
-                : 0;
-
             const totalExtraAdults =
               selectedGuests.adults > totalIncludedAdults
                 ? selectedGuests.adults - totalIncludedAdults
                 : 0;
 
-            const totalExtraChildren =
-              above5Count > totalIncludedChildren
-                ? above5Count - totalIncludedChildren
-                : 0;
+            const totalExtraChildren = extraChildrenCount;
 
             this.singleextraAdults =
               totalExtraAdults > 0 ? totalExtraAdults / selectedRooms : 0;
@@ -2850,17 +2994,10 @@ resetLastChangedAge(planCode: string, room?: any) {
             this.singleextraChild =
               totalExtraChildren > 0 ? totalExtraChildren / selectedRooms : 0;
 
+          } else {
+            this.singleextraAdults = extraAdults;
+            this.singleextraChild = extraChildrenCount;
           }
-
-
-          const extraAdults =
-            selectedGuests.adults > totalMinAdults
-              ? selectedGuests.adults - totalMinAdults
-              : 0;
-          const extraChildren =
-            above5Count > totalMinChildren
-              ? above5Count - totalMinChildren
-              : 0;
 
           this.extraAdultCount = extraAdults;
           this.extraAdultCharge = extraAdults * ele1.extraChargePerPerson;
@@ -2874,21 +3011,16 @@ resetLastChangedAge(planCode: string, room?: any) {
 
 
 
-          this.extraChildCount = extraChildren;
+          this.extraChildCount = extraChildrenCount;
           if (this.extraChildCount > 0) {
             this.singleextraChildChargeBookOne = ele1.extraChargePerChild;
           } else {
             this.singleextraChildChargeBookOne = 0;
           }
           this.singleextraChildCount = this.singleextraChild;
-          this.singleextraChildrenCharge = this.singleextraChild * ele1.extraChargePerChild;
-          // if(this.singleextraChild > 0) {
-          //   this.singleextraChildrenCharge = ele1.extraChargePerChild;
-          // } else {
-          //   this.singleextraChildrenCharge = 0;
-          // }
+          this.singleextraChildrenCharge = selectedRooms > 1 ? extraChildrenCharge / selectedRooms : extraChildrenCharge;
 
-          this.extraChildrenCharge = extraChildren * ele1.extraChargePerChild;
+          this.extraChildrenCharge = extraChildrenCharge;
         }
       });
 
@@ -2912,15 +3044,34 @@ resetLastChangedAge(planCode: string, room?: any) {
                 this.extraAdultCount || 0,
                 this.extraChildCount || 0,
                 this.singleextraAdults,
-                this.singleextraChild
+                this.singleextraChild,
+                chargedAsAdultCount,
+                chargedAsChildCount
               )
             : [];
 
         if (isDayTrip) {
+          const ageLimit = plan?.childAgeLimit && plan.childAgeLimit > 0 ? plan.childAgeLimit : 0;
+          const dayTripAdultRate = plan.extraChargePerPerson || this.getDayTripPlanAmount(plan) || 0;
+          const dayTripChildRate = plan.extraChargePerChild || 0;
+
+          let dayTripChildCharge = 0;
+          let dtChargedAsAdult = 0;
+          let dtChargedAsChild = 0;
+
+          childAges.forEach(age => {
+            if (age === null || age === undefined || isNaN(age)) return;
+            if (ageLimit > 0 && age >= ageLimit) {
+              dayTripChildCharge += dayTripAdultRate;
+              dtChargedAsAdult++;
+            } else if (age > 5) {
+              dayTripChildCharge += dayTripChildRate;
+              dtChargedAsChild++;
+            }
+          });
+
           const dayTripAdultCharge =
             this.getDayTripPlanAmount(plan) * Number(selectedGuests?.adults || 0);
-          const dayTripChildCharge =
-            Number(plan?.extraChargePerChild || 0) * Number(this.getChildCount(planCode, roomContext) || 0);
 
           this.extraAdultCount = Number(selectedGuests?.adults || 0);
           this.extraChildCount = Number(selectedGuests?.children || this.getChildCount(planCode, roomContext) || 0);
@@ -2928,6 +3079,9 @@ resetLastChangedAge(planCode: string, room?: any) {
           this.extraChildrenCharge = dayTripChildCharge;
           this.actualroompriceCharge = this.getDayTripPlanAmount(plan);
           this.roomPricePerPlan = dayTripAdultCharge + dayTripChildCharge;
+
+          chargedAsAdultCount = dtChargedAsAdult;
+          chargedAsChildCount = dtChargedAsChild;
         } else if (datewiseBreakdown.length) {
           this.roomPricePerPlan = datewiseBreakdown.reduce(
             (sum: number, night: any) => sum + Number(night?.subtotal || 0),
@@ -3115,6 +3269,8 @@ resetLastChangedAge(planCode: string, room?: any) {
           planCodeName,
           childrenAbove5years,
           childrenBelow5years,
+          chargedAsAdultCount,
+          chargedAsChildCount,
           planDescription,
           dailyRates: datewiseBreakdown,
           dayTrip: isDayTrip,
@@ -3317,29 +3473,16 @@ getTotalWithoutTax(plan: any): number {
 
 
 onSelectPlanFromSmartCard(plan: any): void {
-  console.log('[DEBUG] onSelectPlanFromSmartCard called with plan:', plan);
   const planCode = plan.planCode;
   // find the rate from availableRooms
   const rate = this.getRateByPlanCodeSmartCard(planCode);
   if (!rate) {
-    console.warn('[DEBUG] No matching rate found for planCode:', planCode);
+    console.warn('No matching rate found for planCode:', planCode);
     return;
-  }
-
-  // If selectedRoom is null, resolve it from availableRooms using the rate
-  if (!this.selectedRoom && this.availableRooms) {
-    const room = this.availableRooms.find(r => 
-      r.ratesAndAvailabilityDtos?.some((rateDto: any) => rateDto.roomId === rate.roomId)
-    );
-    if (room) {
-      this.selectedRoom = room;
-      console.log('[DEBUG] Resolved selectedRoom from rate. Room ID:', room.id, 'Room Name:', room.name);
-    }
   }
 
   // 1. Assign default selection
   const scopedKey = this.getScopedRoomPlanKey(this.selectedRoom, rate, planCode);
-  console.log('[DEBUG] SmartCard scopedKey:', scopedKey, 'selectedRoom:', this.selectedRoom);
   this.selectedRoomsByPlan[scopedKey] = this.rooms;
   this.selectedGuestsByPlan[scopedKey] = {
     adults: this.totalAdults || this.booking.noOfPersons || this.rooms || 1,
@@ -3468,7 +3611,9 @@ getPlanDatewiseBreakdown(
   totalExtraAdults: number,
   totalExtraChildren: number,
   singleRoomExtraAdults: number,
-  singleRoomExtraChildren: number
+  singleRoomExtraChildren: number,
+  chargedAsAdultCount?: number,
+  chargedAsChildCount?: number
 ): any[] {
   return this.getRatesForRoomPlan(roomId, planCode)
     .map((rate: any) => {
@@ -3482,10 +3627,26 @@ getPlanDatewiseBreakdown(
         selectedRooms > 1
           ? Number((singleRoomExtraAdults * (matchedPlan.extraChargePerPerson || 0)).toFixed(2))
           : Number((totalExtraAdults * (matchedPlan.extraChargePerPerson || 0)).toFixed(2));
-      const extraChildCharge =
-        selectedRooms > 1
-          ? Number((singleRoomExtraChildren * (matchedPlan.extraChargePerChild || 0)).toFixed(2))
-          : Number((totalExtraChildren * (matchedPlan.extraChargePerChild || 0)).toFixed(2));
+      
+      // Calculate extra child charge based on age limits if counts are provided
+      let extraChildCharge = 0;
+      if (chargedAsAdultCount !== undefined && chargedAsChildCount !== undefined) {
+        const adultRate = matchedPlan.extraChargePerPerson || 0;
+        const childRate = matchedPlan.extraChargePerChild || 0;
+        if (selectedRooms > 1) {
+          const singleAdultCount = chargedAsAdultCount / selectedRooms;
+          const singleChildCount = chargedAsChildCount / selectedRooms;
+          extraChildCharge = Number(((singleAdultCount * adultRate) + (singleChildCount * childRate)).toFixed(2));
+        } else {
+          extraChildCharge = Number(((chargedAsAdultCount * adultRate) + (chargedAsChildCount * childRate)).toFixed(2));
+        }
+      } else {
+        extraChildCharge =
+          selectedRooms > 1
+            ? Number((singleRoomExtraChildren * (matchedPlan.extraChargePerChild || 0)).toFixed(2))
+            : Number((totalExtraChildren * (matchedPlan.extraChargePerChild || 0)).toFixed(2));
+      }
+
       const subtotal =
         selectedRooms > 1
           ? Number(((roomPrice + extraAdultCharge + extraChildCharge) * selectedRooms).toFixed(2))
@@ -4507,25 +4668,24 @@ if (roomKey) {
         (response) => {
           this.loaderHotelBooking = false;
           this.updateDayTripCheckoutAvailability(response?.body?.roomList || []);
-          this.checkAndShowStopSellPopup(response?.body?.roomList || []);
           this.availableRooms = this.getFilteredDataBasedOnRoomRateOrder(response?.body?.roomList);
           this.availableRooms = this.availableRooms.filter(room =>
             room.ratesAndAvailabilityDtos?.length > 0 &&
-            room.ratesAndAvailabilityDtos.every((rate: any) => 
-              rate.stopSellOBE !== true &&
-              rate.stopSellOTA !== true
+            room.ratesAndAvailabilityDtos.every((rate: any) =>
+              (rate.stopSellOBE === null || rate.stopSellOBE === false) &&
+              (rate.stopSellOTA === null || rate.stopSellOTA === false)
             )
           );
-          // Filter sold-out rooms
+    // Filter sold-out rooms
           this.soldOutRooms = response.body.roomList.filter(room => {
             if (this.isRoomTooSmall(room)) {
               return false;
             }
             return room.ratesAndAvailabilityDtos === null ||
               room.ratesAndAvailabilityDtos.length === 0 ||
-              room.ratesAndAvailabilityDtos.some((rate: any) => 
-                rate.stopSellOBE === true ||
-                rate.stopSellOTA === true
+              room.ratesAndAvailabilityDtos.some((rate: any) =>
+                (rate.stopSellOBE !== null && rate.stopSellOBE !== false) ||
+                (rate.stopSellOTA !== null && rate.stopSellOTA !== false)
               );
           });
           this.shortrooms = response.body.roomList;
@@ -4542,6 +4702,7 @@ if (roomKey) {
             this.checkAvailabilityStatusName = 'Not Available';
           }
           this.oneDayTripShow();
+          this.checkLengthOfStayRestrictions();
           // Logger.log('checkAvailability ' + JSON.stringify(response.body));
         },
         (error) => {
@@ -4837,6 +4998,9 @@ onCheckOutClosed(): void {
   //   this.router.navigate(["/blogpost"]);
   // }
   getDiffDate(toDate, fromDate) {
+    if (!toDate || !fromDate) {
+      return;
+    }
     this.enddate = new Date(toDate.year, toDate.month - 1, toDate.day);
 
     this.startDate = new Date(fromDate.year, fromDate.month - 1, fromDate.day);
@@ -4876,17 +5040,18 @@ onCheckOutClosed(): void {
       if (data.status === 200) {
         this.businessUser = data.body;
         this.propertyData = this.businessUser;
+        this.checkAnyTimeCheckIn();
         this.accommodationData =
         this.propertyData.businessServiceDtoList?.filter(
             (entry) => entry.name === 'Accommodation'
         );
         this.accommodationData?.forEach((element) => {
-          this.smartRecommendationsBoolean = element.smartRecommendation === true || element.smartRecommendation === 'true';
+          this.smartRecommendationsBoolean = element.smartRecommendation;
         });
         this.isLoadingProperty = false;
         this.generateAndSetSchema();
         this.getOfferList(this.businessUser.seoFriendlyName);
-        // this.getGoogleReview(this.businessUser.id);
+        this.getGoogleReview(this.businessUser.id);
         this.showStaticContent = true;
         this.policies = this.businessUser.businessServiceDtoList.filter(
           (ele) => ele.name === 'Accommodation'
@@ -5423,6 +5588,83 @@ onCheckOutClosed(): void {
     }
   }
 
+  checkAndShowStopSellPopup(roomList: any[]): void {
+    if (!roomList || roomList.length === 0) return;
+
+    // Filter out rooms that are too small or have no rates at all
+    const relevantRooms = roomList.filter(room =>
+      !this.isRoomTooSmall(room) &&
+      room.ratesAndAvailabilityDtos &&
+      room.ratesAndAvailabilityDtos.length > 0
+    );
+
+    if (relevantRooms.length === 0) return;
+
+    // Get all unique dates in the selected range
+    const allDatesSet = new Set<string>();
+    relevantRooms.forEach(room => {
+      room.ratesAndAvailabilityDtos.forEach((rate: any) => {
+        if (rate.date) {
+          allDatesSet.add(rate.date);
+        }
+      });
+    });
+
+    const uniqueDates = Array.from(allDatesSet).sort();
+    const blockedDates: string[] = [];
+
+    uniqueDates.forEach(dateStr => {
+      // Check if EVERY relevant room is unavailable on this date
+      const isUnavailableOnDate = relevantRooms.every(room => {
+        const rateForDate = room.ratesAndAvailabilityDtos.find((r: any) => r.date === dateStr);
+        if (!rateForDate) return true; // if no rate info for this date, consider it unavailable
+
+        const hasStopSell = (rateForDate.stopSellOBE !== null && rateForDate.stopSellOBE !== false) ||
+                            (rateForDate.stopSellOTA !== null && rateForDate.stopSellOTA !== false);
+        const hasNoInventory = rateForDate.noOfAvailable === null || rateForDate.noOfAvailable <= 0;
+
+        return hasStopSell || hasNoInventory;
+      });
+
+      if (isUnavailableOnDate) {
+        // Format the date string beautifully (e.g., "Jun 10")
+        try {
+          const formattedDate = new Date(dateStr).toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric'
+          });
+          blockedDates.push(formattedDate);
+        } catch (e) {
+          blockedDates.push(dateStr);
+        }
+      }
+    });
+
+    if (blockedDates.length > 0) {
+      this.blockedDatesList = blockedDates;
+      this.blockedDatesMessage = blockedDates.join(', ');
+      this.showStopSellPopup = true;
+      this.selectedPlansSummary = [];
+      this.token.saveBookingRoomPrice(null);
+      sessionStorage.removeItem('bookingSummaryDetails');
+      sessionStorage.removeItem('bookingSummary');
+      this.changeDetectorRefs.detectChanges();
+
+      if (this.stopSellTimeout) {
+        clearTimeout(this.stopSellTimeout);
+      }
+
+      this.stopSellTimeout = setTimeout(() => {
+        this.showStopSellPopup = false;
+        this.changeDetectorRefs.detectChanges();
+      }, 45000);
+    } else {
+      this.showStopSellPopup = false;
+      this.blockedDatesList = [];
+      this.blockedDatesMessage = '';
+    }
+  }
+
  getBookingUnitLabel(room?: Room | null) {
     try{
       if(room?.businessProductName?.trim() === 'Accommodation'){
@@ -5454,12 +5696,13 @@ onCheckOutClosed(): void {
         if (data.status === 200) {
           this.businessUser = data.body;
           this.propertyData = this.businessUser;
+          this.checkAnyTimeCheckIn();
           this.accommodationData = this.propertyData?.businessServiceDtoList?.filter((entry) => entry?.name === 'Accommodation');
           this.roomRateOrderEnabled = this.accommodationData?.some((entry) => entry?.roomRateOrder === true) || false;
           this.accommodationData?.forEach((element) => {
-            this.smartRecommendationsBoolean = element.smartRecommendation === true || element.smartRecommendation === 'true';
+            this.smartRecommendationsBoolean = element.smartRecommendation;
           });
-          // this.getGoogleReview(this.businessUser.id);
+          this.getGoogleReview(this.businessUser.id);
           this.showStaticContent = true;
           // this.businessUser.businessServiceDtoList.filter(ele =>
           //   )
@@ -6328,40 +6571,16 @@ adjustDates() {
   }
 
   navigate() {
-    const hasStopSell = this.selectedPlansSummary?.some((plan: any) => {
-      const room = this.shortrooms?.find((r: any) => r.id === plan.roomId);
-      if (!room) return false;
-      
-      const matchingRates = room.ratesAndAvailabilityDtos?.filter((rate: any) => {
-        return rate.planCode === plan.planCode || 
-               rate.planCode === plan.planName ||
-               rate.roomRatePlans?.some((p: any) => p.code === plan.planCode || p.code === plan.planName);
-      });
-
-      if (matchingRates && matchingRates.length > 0) {
-        return matchingRates.some((rate: any) => rate.stopSellOTA === true || rate.stopSellOBE === true);
-      } else {
-        return room.ratesAndAvailabilityDtos?.every((rate: any) => rate.stopSellOTA === true || rate.stopSellOBE === true);
-      }
-    });
-
-    if (hasStopSell) {
-      console.log('[DEBUG] Stop-sell triggered in navigate(). hasStopSell is true. shortrooms:', JSON.parse(JSON.stringify(this.shortrooms || [])));
-      this.showStopSellPopup = true;
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-      
-      if (this.stopSellTimeout) {
-        clearTimeout(this.stopSellTimeout);
-      }
-      this.stopSellTimeout = setTimeout(() => {
-        this.showStopSellPopup = false;
-        this.changeDetectorRefs.detectChanges();
-      }, 45000);
-      return;
-    }
-
+    // if (
+    //     serviceList.length > 0 &&
+    //     serviceList !== undefined &&
+    //     serviceList !== null
+    //   ) {
+    //     this.router.navigate(["/add-service"]);
+    //   } else {
     this.token.saveBookingRoomPrice(this.booking.roomPrice);
     this.router.navigate(['/booking']);
+    // }
   }
 // onBookNow() {
 //   const selectedAddOns = this.propertyServiceListDataOne
@@ -6412,40 +6631,10 @@ adjustDates() {
 //   this.router.navigate(['/booking']);
 // }
 onBookNow() {
-  const hasStopSell = this.selectedPlansSummary?.some((plan: any) => {
-    const room = this.shortrooms?.find((r: any) => r.id === plan.roomId);
-    if (!room) return false;
-    
-    const matchingRates = room.ratesAndAvailabilityDtos?.filter((rate: any) => {
-      return rate.planCode === plan.planCode || 
-             rate.planCode === plan.planName ||
-             rate.roomRatePlans?.some((p: any) => p.code === plan.planCode || p.code === plan.planName);
-    });
-
-    if (matchingRates && matchingRates.length > 0) {
-      return matchingRates.some((rate: any) => rate.stopSellOTA === true || rate.stopSellOBE === true);
-    } else {
-      return room.ratesAndAvailabilityDtos?.every((rate: any) => rate.stopSellOTA === true || rate.stopSellOBE === true);
-    }
-  });
-
-  if (hasStopSell) {
-    console.log('[DEBUG] Stop-sell triggered in onBookNow(). hasStopSell is true. shortrooms:', JSON.parse(JSON.stringify(this.shortrooms || [])));
-    this.showStopSellPopup = true;
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    
-    if (this.stopSellTimeout) {
-      clearTimeout(this.stopSellTimeout);
-    }
-    this.stopSellTimeout = setTimeout(() => {
-      this.showStopSellPopup = false;
-      this.changeDetectorRefs.detectChanges();
-    }, 45000);
-    return;
-  }
-
+  sessionStorage.setItem('isTwentyFourHourCheckIn', String(this.isTwentyFourHourCheckIn));
+  sessionStorage.setItem('selectedCheckInTime', this.selectedCheckInTime);
   let currentUrl = window.location.href;
-  this.token.savePropertyUrl(currentUrl);
+this.token.savePropertyUrl(currentUrl);
   const selectedAddOns = this.propertyServiceListDataOne
     .filter(item => this.selectedFacilityNames.includes(item.name));
   this.syncSelectedAddOnsToCheckoutState(selectedAddOns);
@@ -7261,13 +7450,21 @@ onBookNow() {
       this.checkinDay = today.getDate();
       this.checkinMonth = today.getMonth() + 1;
       this.checkinYear = today.getFullYear();
-      this.showPastDateRestrictionPopup = true;
+      
+      if (this.activeForGoogleHotelCenter) {
+        this.showGhcPastDatePopup = true;
+        setTimeout(() => {
+          this.showGhcPastDatePopup = false;
+          this.changeDetectorRefs.detectChanges();
+        }, 30000);
+      } else {
+        this.showPastDateRestrictionPopup = true;
+        setTimeout(() => {
+          this.showPastDateRestrictionPopup = false;
+          this.changeDetectorRefs.detectChanges();
+        }, 5000);
+      }
       queryUpdated = true;
-
-      setTimeout(() => {
-        this.showPastDateRestrictionPopup = false;
-        this.changeDetectorRefs.detectChanges();
-      }, 5000);
     }
 
     if (!this.nights || Number(this.nights) < 1) {
@@ -7314,6 +7511,7 @@ onBookNow() {
     this.booking.propertyId = this.businessUser.id;
 
           if (
+      this.fromDate &&
       this.fromDate.day != null &&
       this.fromDate.month != null &&
       this.fromDate.year != null
@@ -7332,6 +7530,7 @@ onBookNow() {
       );
     }
         if (
+      this.toDate &&
       this.toDate.day != null &&
       this.toDate.month != null &&
       this.toDate.year != null
@@ -7358,6 +7557,9 @@ onBookNow() {
     this.booking.noOfPersons = this.totalAdults;
     this.booking.noOfChildren = this.totalChildren;
     this.booking.noOfRooms = this.rooms;
+    if (this.fromDate && this.toDate) {
+      this.getDiffDate(this.toDate, this.fromDate);
+    }
     this.booking.noOfNights = this.DiffDate;
     this.token.saveBookingData(this.booking);
     sessionStorage.setItem('bookingSummary', JSON.stringify(this.additionalRooms))
@@ -7376,7 +7578,6 @@ onBookNow() {
           this.loaderHotelBooking = false;
 
           const roomListOne = response?.body?.roomList || [];
-          this.checkAndShowStopSellPopup(roomListOne);
           this.updateDayTripCheckoutAvailability(roomListOne);
           const sortedRoomsOne = this.getFilteredDataBasedOnRoomRateOrder(roomListOne);
           const isSameDaySearch = this.isSameDayBookingSearch();
@@ -7384,75 +7585,50 @@ onBookNow() {
             ? 1
             : Number(this.booking.noOfNights || 0);
 
+          // For Available Rooms
           this.availableRooms = sortedRoomsOne.filter(room => {
-                const rates = room.ratesAndAvailabilityDtos;
+            const rates = room.ratesAndAvailabilityDtos;
+            if (!rates || rates.length === 0) return false;
 
-                if (!rates || rates.length === 0) {
-                  return false;
-                }
+            const hasStopSell = rates.some((rate: any) =>
+              (rate.stopSellOBE !== null && rate.stopSellOBE !== false) ||
+              (rate.stopSellOTA !== null && rate.stopSellOTA !== false)
+            );
+            const hasDayTripRate = this.hasDayTripRate(room);
+            const matchesDateType = rates.length === availabilityNightCount || hasDayTripRate;
+            const matchesDayTripSearch = !isSameDaySearch || hasDayTripRate;
 
-                const hasStopSell = rates.some((rate: any) => 
-                  rate.stopSellOBE === true ||
-                  rate.stopSellOTA === true
-                );
-                const hasDayTripRate = this.hasDayTripRate(room);
-                const matchesDateType =
-                  rates.length === availabilityNightCount || hasDayTripRate;
-                const matchesDayTripSearch =
-                  !isSameDaySearch || hasDayTripRate;
+            return matchesDateType && matchesDayTripSearch && !hasStopSell;
+          });
 
-                return (
-                  matchesDateType &&
-                  matchesDayTripSearch &&
-                  !hasStopSell
-                );
-              });
+          if(this.activeForGoogleHotelCenter === true) {
+            this.getAvailableRoomsForGHC(this.availableRooms);
+          }
 
-        //   this.availableRooms = this.availableRooms.filter(room =>
-        //   room.ratesAndAvailabilityDtos?.length > 0 &&
-        //   (room.ratesAndAvailabilityDtos[0]?.stopSellOBE === null || room.ratesAndAvailabilityDtos[0]?.stopSellOBE === false) &&
-        //   (room.ratesAndAvailabilityDtos[0]?.stopSellOTA === null || room.ratesAndAvailabilityDtos[0]?.stopSellOTA === false)
-        // );
-
-                if(this.activeForGoogleHotelCenter === true) {
-          this.getAvailableRoomsForGHC(this.availableRooms);
-        }
-    // Filter sold-out rooms
-          // this.soldOutRooms = response.body.roomList.filter(room =>
-          //   room.ratesAndAvailabilityDtos === null ||
-          //   (room.ratesAndAvailabilityDtos[0]?.stopSellOBE != null && room.ratesAndAvailabilityDtos[0]?.stopSellOBE !== false) ||
-          //   (room.ratesAndAvailabilityDtos[0]?.stopSellOTA != null && room.ratesAndAvailabilityDtos[0]?.stopSellOTA !== false)
-          // );
+          // For Sold Out Rooms
           this.soldOutRooms = sortedRoomsOne.filter(room => {
-              if (this.isRoomTooSmall(room)) {
-                return false;
-              }
-              const rates = room.ratesAndAvailabilityDtos;
+            if (this.isRoomTooSmall(room)) return false;
+            const rates = room.ratesAndAvailabilityDtos;
 
-              const hasDayTripRate = this.hasDayTripRate(room);
-              const matchesDateType =
-                rates?.length === availabilityNightCount || hasDayTripRate;
-              const matchesDayTripSearch =
-                !isSameDaySearch || hasDayTripRate;
+            const hasDayTripRate = this.hasDayTripRate(room);
+            const matchesDateType = rates?.length === availabilityNightCount || hasDayTripRate;
+            const matchesDayTripSearch = !isSameDaySearch || hasDayTripRate;
 
-              if (isSameDaySearch && (!matchesDateType || !matchesDayTripSearch)) {
-                return false;
-              }
+            if (isSameDaySearch && (!matchesDateType || !matchesDayTripSearch)) return false;
+            if (!rates || !matchesDateType) return true;
 
-              if (!rates || !matchesDateType) {
-                return true;
-              }
+            // Check all rates in range for stop-sells
+            const hasStopSell = rates.some((rate: any) =>
+              (rate.stopSellOBE !== null && rate.stopSellOBE !== false) ||
+              (rate.stopSellOTA !== null && rate.stopSellOTA !== false)
+            );
 
-              const isStopSellOBE = rates.some((rate: any) =>
-                rate.stopSellOBE === true
-              );
+            return hasStopSell;
+          });
 
-              const isStopSellOTA = rates.some((rate: any) =>
-                rate.stopSellOTA === true
-              );
-
-              return isStopSellOBE || isStopSellOTA;
-            });
+          // Trigger stop-sell popup validation
+          this.checkAndShowStopSellPopup(roomListOne);
+          this.checkLengthOfStayRestrictions();
           this.SubAvailableRooms = response.body.roomList;
           const queryParams = {
              noOfChildren: this.children,
@@ -7464,59 +7640,61 @@ onBookNow() {
 
           const roomList = response.body.roomList;
 
-          if (this.smartRecommendationsBoolean === true || this.smartRecommendationsBoolean === 'true') {
+          if (this.smartRecommendationsBoolean) {
             this.hotelBookingService.getRecommendations(queryParams, roomList).subscribe({
-            next: (res) => {
-              this.smartLoading = false;
-              this.smartRecommendations = res;
+              next: (res) => {
+                this.smartLoading = false;
+                this.smartRecommendations = res;
                 this.categories = [];
-['bestFitOptions', 'luxuryOptions', 'comfortOptions', 'budgetOptions'].forEach(cat => {
-          if (this.smartRecommendations?.[cat]) {
-            this.smartRecommendations[cat].forEach((room: any) => {
-              room.plans.sort((a: any, b: any) => a.totalPrice - b.totalPrice);
+                ['bestFitOptions', 'luxuryOptions', 'comfortOptions', 'budgetOptions'].forEach(cat => {
+                  if (this.smartRecommendations?.[cat]) {
+                    this.smartRecommendations[cat].forEach((room: any) => {
+                      room.plans.sort((a: any, b: any) => a.totalPrice - b.totalPrice);
+                    });
+                  }
+                });
+
+                // Build and sort categories
+                const tempCategories: { key: string; label: string; minPrice: number }[] = [];
+
+                if (this.smartRecommendations?.bestFitOptions?.length) {
+                  tempCategories.push({
+                    key: 'bestFitOptions',
+                    label: 'Best-Fit',
+                    minPrice: this.getCategoryMinPrice(this.smartRecommendations.bestFitOptions)
+                  });
+                }
+                if (this.smartRecommendations?.luxuryOptions?.length) {
+                  tempCategories.push({
+                    key: 'luxuryOptions',
+                    label: 'Luxury',
+                    minPrice: this.getCategoryMinPrice(this.smartRecommendations.luxuryOptions)
+                  });
+                }
+                if (this.smartRecommendations?.comfortOptions?.length) {
+                  tempCategories.push({
+                    key: 'comfortOptions',
+                    label: 'Comfort',
+                    minPrice: this.getCategoryMinPrice(this.smartRecommendations.comfortOptions)
+                  });
+                }
+                if (this.smartRecommendations?.budgetOptions?.length) {
+                  tempCategories.push({
+                    key: 'budgetOptions',
+                    label: 'Budget',
+                    minPrice: this.getCategoryMinPrice(this.smartRecommendations.budgetOptions)
+                  });
+                }
+                this.changeDetectorRefs.detectChanges();
+                this.categories = tempCategories.sort((a, b) => b.minPrice - a.minPrice);
+              },
+              error: (err) => {
+                this.smartLoading = false;
+                Logger.log('Error fetching recommendations: ' + err);
+              }
             });
-          }
-        });
-
-        // Build and sort categories
-        const tempCategories: { key: string; label: string; minPrice: number }[] = [];
-
-        if (this.smartRecommendations?.bestFitOptions?.length) {
-          tempCategories.push({
-            key: 'bestFitOptions',
-            label: 'Best-Fit',
-            minPrice: this.getCategoryMinPrice(this.smartRecommendations.bestFitOptions)
-          });
-        }
-        if (this.smartRecommendations?.luxuryOptions?.length) {
-          tempCategories.push({
-            key: 'luxuryOptions',
-            label: 'Luxury',
-            minPrice: this.getCategoryMinPrice(this.smartRecommendations.luxuryOptions)
-          });
-        }
-        if (this.smartRecommendations?.comfortOptions?.length) {
-          tempCategories.push({
-            key: 'comfortOptions',
-            label: 'Comfort',
-            minPrice: this.getCategoryMinPrice(this.smartRecommendations.comfortOptions)
-          });
-        }
-        if (this.smartRecommendations?.budgetOptions?.length) {
-          tempCategories.push({
-            key: 'budgetOptions',
-            label: 'Budget',
-            minPrice: this.getCategoryMinPrice(this.smartRecommendations.budgetOptions)
-          });
-        }
-        this.changeDetectorRefs.detectChanges();
-        this.categories = tempCategories.sort((a, b) => b.minPrice - a.minPrice);
-            },
-            error: (err) => {
-               this.smartLoading = false;
-              console.error('Error fetching recommendations:', err);
-            }
-          });
+          } else {
+            this.smartLoading = false;
           }
 
 
@@ -7719,7 +7897,7 @@ onBookNow() {
                     element.noOfAvailable = this.otaAvailableRooms;
                   }
                 });
-                return des2.stopSellOBE !== true;
+                return des2.stopSellOBE !== true && des2.stopSellOBE !== null;
               }
             );
 
@@ -8102,6 +8280,7 @@ getTotalTaxPrice(): number {
         return; // Prevent past date selection
       }
       this.fromDate = date;
+      this.validateSelectedCheckInTime();
       this.toDate = this.calendar.getNext(date, 'd', 1);
       this.minDateForCheckOut = this.getCheckoutMinDate();
     } else if (type === 'checkout') {
@@ -8281,63 +8460,6 @@ hasVisiblePlans(room: any): boolean {
   });
 }
 
-checkAndShowStopSellPopup(roomList: any[]): void {
-  if (!roomList || roomList.length === 0) return;
-
-  const relevantRooms = roomList.filter(room => 
-    !this.isRoomTooSmall(room) && 
-    room.ratesAndAvailabilityDtos && 
-    room.ratesAndAvailabilityDtos.length > 0
-  );
-
-  if (relevantRooms.length === 0) return;
-
-  const allStopSelled = relevantRooms.every(room => 
-    room.ratesAndAvailabilityDtos.some((rate: any) => 
-      rate.stopSellOTA === true || 
-      rate.stopSellOBE === true
-    )
-  );
-
-  if (allStopSelled) {
-    console.log('[DEBUG] Stop-sell triggered in checkAndShowStopSellPopup(). allStopSelled is true. relevantRooms:', JSON.parse(JSON.stringify(relevantRooms || [])));
-    this.showStopSellPopup = true;
-    this.selectedPlansSummary = [];
-    this.token.saveBookingRoomPrice(null);
-    sessionStorage.removeItem('bookingSummaryDetails');
-    sessionStorage.removeItem('bookingSummary');
-    this.changeDetectorRefs.detectChanges();
-    
-    if (this.stopSellTimeout) {
-      clearTimeout(this.stopSellTimeout);
-    }
-    
-    this.stopSellTimeout = setTimeout(() => {
-      this.showStopSellPopup = false;
-      this.changeDetectorRefs.detectChanges();
-    }, 45000);
-  } else {
-    this.showStopSellPopup = false;
-  }
-}
-
-closeStopSellPopup() {
-  this.showStopSellPopup = false;
-  if (this.stopSellTimeout) {
-    clearTimeout(this.stopSellTimeout);
-  }
-}
-
-isRoomStopSelled(room: any): boolean {
-  if (!room || !room.ratesAndAvailabilityDtos || room.ratesAndAvailabilityDtos.length === 0) {
-    return false;
-  }
-  return room.ratesAndAvailabilityDtos.some((rate: any) => 
-    rate.stopSellOBE === true ||
-    rate.stopSellOTA === true
-  );
-}
-
 isRoomTooSmall(room: any): boolean {
   if (!room) return false;
   if (!isPlatformBrowser(this.platformId)) {
@@ -8421,31 +8543,31 @@ isRoomTooSmall(room: any): boolean {
         (response) => {
           this.loaderHotelBooking = false;
           this.updateDayTripCheckoutAvailability(response?.body?.roomList || []);
-          this.checkAndShowStopSellPopup(response?.body?.roomList || []);
           this.availableRooms = this.getFilteredDataBasedOnRoomRateOrder(response?.body?.roomList);
                     this.availableRooms = this.availableRooms.filter(room =>
-                      room.ratesAndAvailabilityDtos?.length > 0 &&
-                      room.ratesAndAvailabilityDtos.every((rate: any) => 
-                        (rate.stopSellOBE === null || rate.stopSellOBE === false) &&
-                        (rate.stopSellOTA === null || rate.stopSellOTA === false)
-                      )
-                    );
-                    if(this.activeForGoogleHotelCenter === true) {
-                      this.getAvailableRoomsForGHC(this.availableRooms);
-                    }
-                    // Filter sold-out rooms
-                    this.soldOutRooms = response.body.roomList.filter(room => {
-                      if (this.isRoomTooSmall(room)) {
-                        return false;
-                      }
-                      return room.ratesAndAvailabilityDtos === null ||
-                        room.ratesAndAvailabilityDtos.length === 0 ||
-                        room.ratesAndAvailabilityDtos.some((rate: any) => 
-                          (rate.stopSellOBE != null && rate.stopSellOBE !== false) ||
-                          (rate.stopSellOTA != null && rate.stopSellOTA !== false)
-                        );
-                    });
+            room.ratesAndAvailabilityDtos?.length > 0 &&
+            room.ratesAndAvailabilityDtos.every((rate: any) =>
+              (rate.stopSellOBE === null || rate.stopSellOBE === false) &&
+              (rate.stopSellOTA === null || rate.stopSellOTA === false)
+            )
+          );
+        if(this.activeForGoogleHotelCenter === true) {
+          this.getAvailableRoomsForGHC(this.availableRooms);
+        }
+    // Filter sold-out rooms
+          this.soldOutRooms = response.body.roomList.filter(room => {
+            if (this.isRoomTooSmall(room)) {
+              return false;
+            }
+            return room.ratesAndAvailabilityDtos === null ||
+              room.ratesAndAvailabilityDtos.length === 0 ||
+              room.ratesAndAvailabilityDtos.some((rate: any) =>
+                (rate.stopSellOBE !== null && rate.stopSellOBE !== false) ||
+                (rate.stopSellOTA !== null && rate.stopSellOTA !== false)
+              );
+          });
           this.shortrooms = response.body.roomList;
+          this.checkLengthOfStayRestrictions();
           let facilities = this.businessUser.propertyServicesList;
           if (
             this.availableRooms !== null &&
@@ -8576,7 +8698,7 @@ isRoomTooSmall(room: any): boolean {
           this.availableRooms?.forEach((des) => {
             const hasAvailableRooms = des?.ratesAndAvailabilityDtos?.some(
               (des2) => {
-                return des2.stopSellOBE !== true;
+                return des2.stopSellOBE !== true && des2.stopSellOBE !== null;
               }
             );
 
@@ -9157,6 +9279,52 @@ onYesClick() {
 
     this.token.saveSelectedServices(normalizedAddOns);
     this.token.saveServiceData(normalizedAddOns);
+  }
+
+  setCheckInMode(isTwentyFourHour: boolean): void {
+    this.isTwentyFourHourCheckIn = isTwentyFourHour;
+    this.roomsAndOccupancy = false;
+    if (!isTwentyFourHour) {
+      this.selectedCheckInTime = '12:00';
+    }
+  }
+
+  checkAnyTimeCheckIn(): void {
+    this.showTwentyFourHourCheckInToggle = !!this.businessUser?.businessServiceDtoList?.some(
+      (service: any) => service?.anyTimeCheckIn === true || service?.anyTimeCheckIn === 'true'
+    );
+    if (this.showTwentyFourHourCheckInToggle) {
+      this.isTwentyFourHourCheckIn = true;
+      this.showTwentyFourHourBanner = true;
+      setTimeout(() => {
+        this.showTwentyFourHourBanner = false;
+      }, 45000);
+    } else {
+      this.isTwentyFourHourCheckIn = false;
+      this.showTwentyFourHourBanner = false;
+    }
+  }
+
+  isCheckInDateToday(): boolean {
+    if (!this.fromDate) {
+      return false;
+    }
+    const today = new Date();
+    return (
+      this.fromDate.year === today.getFullYear() &&
+      this.fromDate.month === (today.getMonth() + 1) &&
+      this.fromDate.day === today.getDate()
+    );
+  }
+
+  validateSelectedCheckInTime(): void {
+    if (this.isCheckInDateToday()) {
+      const currentHour = new Date().getHours();
+      const selectedHour = parseInt(this.selectedCheckInTime.split(':')[0], 10);
+      if (selectedHour < currentHour) {
+        this.selectedCheckInTime = `${String(currentHour).padStart(2, '0')}:00`;
+      }
+    }
   }
 
   setCurrencyAndLocalization() {

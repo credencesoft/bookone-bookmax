@@ -125,7 +125,7 @@
       *ngIf="businessUser?.logoUrl"
       style="display: flex; align-items: center"
     >
-    <a [href]="businessUser?.website" target="_blank">
+    <a [href]="formatUrl(businessUser?.website)" target="_blank">
         <img
           class="logo-image"
           [src]="businessUser?.logoUrl"
@@ -198,6 +198,14 @@
 
     <!-- Right Section: Book Now Button -->
     <div style="display: flex; gap: 10px; align-items: center">
+      <!-- <button
+        type="button"
+        class="copy-url-btn desktop-copy-url-btn"
+        (click)="copyPageUrl()"
+      >
+        <i class="fa-solid fa-link"></i>
+        Copy URL
+      </button> -->
       <div>
         <a
         *ngIf="websiteUrlBookingEngine"
@@ -307,7 +315,7 @@
         *ngIf="businessUser?.logoUrl"
         style="display: flex; align-items: center"
       >
-      <a [href]="businessUser?.website" target="_blank">
+      <a [href]="formatUrl(businessUser?.website)" target="_blank">
         <img
           class="logo-image"
           [src]="businessUser?.logoUrl"
@@ -320,6 +328,13 @@
     </div>
 
     <div class="d-flex" style="gap: 12px; align-items: center;">
+      <!-- <button
+        type="button"
+        class="copy-url-btn mobile-copy-url-btn"
+        (click)="copyPageUrl()"
+      >
+        <i class="fa-solid fa-link"></i>
+      </button> -->
       <div>
         <a
           *ngIf="!websiteUrlBookingEngine"
