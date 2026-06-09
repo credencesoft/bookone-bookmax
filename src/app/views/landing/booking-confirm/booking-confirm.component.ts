@@ -4101,45 +4101,6 @@ getUpdatedReservationNumber(value: string): string {
                 });
               }
 
-  resolveActiveCurrency() {
-    if (!this.exchangeRates) {
-      this.currency = (this.businessUser && this.businessUser.localCurrency) ? this.businessUser.localCurrency.toUpperCase() : 'INR';
-      return;
-    }
-
-    const queryCurrency = this.acRoute.snapshot.queryParams['currency'] || this.acRoute.snapshot.queryParams['userCurrency'];
-    if (queryCurrency) {
-      this.currency = queryCurrency.toUpperCase();
-      try {
-        sessionStorage.setItem('selected_currency', this.currency);
-      } catch (e) {
-        console.error('Error writing to sessionStorage selected_currency:', e);
-      }
-      return;
-    }
-
-    const queryCountry = this.acRoute.snapshot.queryParams['country'];
-    if (queryCountry) {
-      const countryCurrency = this.getCurrencyFromCountry(queryCountry);
-      if (countryCurrency) {
-        this.currency = countryCurrency;
-        try {
-          sessionStorage.setItem('selected_currency', this.currency);
-        } catch (e) {
-          console.error('Error writing to sessionStorage selected_currency:', e);
-        }
-        return;
-      }
-    }
-
-    const savedCurrency = sessionStorage.getItem('selected_currency');
-    if (savedCurrency) {
-      this.currency = savedCurrency.toUpperCase();
-    } else {
-      this.currency = (this.businessUser && this.businessUser.localCurrency) ? this.businessUser.localCurrency.toUpperCase() : 'INR';
-    }
-  }
-
   getCurrencyFromCountry(country: string): string {
     const mapping = {
       'US': 'USD',
