@@ -3229,20 +3229,7 @@
                     *ngIf="rates.roomRatePlans.length > 0"
                     [class.disabled-room]="shouldDisableRoomImageClick(room)"
                   >
-                    <div [innerHTML]="roomDescriptionPreview(room)"></div>
-                    <span
-                      *ngIf="
-                        room?.description?.split(' ').length >
-                        descriptionWordLimit
-                      "
-                      class="view-more d-flex justify-content-end"
-                      (click)="togglePanel(room, i)"
-                    >
-                      View More
-                    </span>
-                  </div>
-                   <div class="roomDescription"
-                      [innerHTML]="room.description">
+                    <div class="roomDescription" [innerHTML]="room.description"></div>
                   </div>
                   <div class="d-block">
                     <div
