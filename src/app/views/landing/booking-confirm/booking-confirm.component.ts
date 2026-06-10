@@ -1642,6 +1642,19 @@ const tokenToTime = this.combinedDateToTime;
         }
       });
   }
+  isBookingCancelled(): boolean {
+    if (!Array.isArray(this.bookingsResponseList) || this.bookingsResponseList.length === 0) {
+      return false;
+    }
+    return this.bookingsResponseList.some((booking: any) => {
+      const status = (booking?.bookingStatus || booking?.status || '')
+        .toString()
+        .trim()
+        .toUpperCase();
+      return status === 'CANCELLED';
+    });
+  }
+
   updateEnquiryStatusToBooked() {
   const enquiryResponseListStr = sessionStorage.getItem('EnquiryResponseList');
 

@@ -25,6 +25,7 @@
       <div
         class="d-flex"
         style="align-items: center; gap: 30px; margin-top: 20px"
+        *ngIf="!isBookingCancelled()"
       >
         <div class="col-6 text-left mb-4 font-change">
           <span
@@ -112,6 +113,100 @@
           </div>
         </div>
         </div>
+      </div>
+
+      <div
+        class="d-flex"
+        style="align-items: center; gap: 30px; margin-top: 20px"
+        *ngIf="isBookingCancelled()"
+      >
+        <div class="col-6 text-left mb-4 font-change">
+          <span
+            style="
+              font-weight: 600 !important;
+              color: #ef4444 !important;
+              font-size: 35px !important;
+            "
+            >Booking Cancelled</span
+          >
+          <div
+            class="mb-0"
+            style="
+              font-weight: 600 !important;
+              color: #dc2626 !important;
+              font-size: 19px !important;
+              margin-top: -5px;
+            "
+          >
+            A refund has been initiated.
+          </div>
+          <div style="color: #615d5d; font-weight: 600; font-size: 13px">
+            This reservation has been successfully cancelled. The refund will be processed and credited to your original payment method within 5-7 business days.
+          </div>
+          <div style="display: flex; gap: 20px;margin-top: 20px;">
+             <div
+            class="card"
+            style="
+              text-align: center;
+              background-color: #fef2f2;
+              padding: 26px 19px;
+              border: 1px solid #fee2e2;
+            "
+          >
+            <div class="mb-2">
+              <span class="highlight-text" style="color: #991b1b !important;">Current Status</span>
+            </div>
+            <div class="mb-0">
+              <span class="status-badge status-cancelled" style="font-size: 13px; background-color: #ef4444;"
+                >Cancelled</span
+              >
+            </div>
+          </div>
+          <div
+            class="card"
+            style="
+              text-align: center;
+              background-color: #fef2f2;
+              padding: 26px 19px;
+              border: 1px solid #fee2e2;
+            "
+          >
+            <div class="mb-2">
+              <span class="highlight-text" style="color: #991b1b !important;">Refund Status</span>
+            </div>
+            <div class="mb-0">
+              <span class="status-badge" style="font-size: 13px; background-color: #dc2626;"
+                >Initiated</span
+              >
+            </div>
+          </div>
+          <div
+            class="card"
+            style="
+              text-align: center;
+              background-color: #fef2f2;
+              padding: 26px 19px;
+              border: 1px solid #fee2e2;
+            "
+          >
+            <div class="mb-2">
+              <span class="highlight-text" style="color: #991b1b !important;"
+                >Booking ID
+                </span>
+            </div>
+            <div class="mb-0" style="text-align: left" *ngFor="let booking of bookingsResponseList; let last = last">
+              <span *ngIf="booking?.groupBookingId && last">
+                <b id="copyTexttwo">{{ booking?.groupBookingId }}</b></span
+              >
+
+              <span *ngIf="!booking?.groupBookingId">
+                <b id="copyTexttwo">{{ getUpdatedReservationNumber(booking.propertyReservationNumber) }}</b>
+                <span *ngIf="!last">, </span><br/>
+              </span>
+            </div>
+          </div>
+        </div>
+        </div>
 
         <div style="justify-content: center; display: flex; gap: 20px">
 
@@ -156,7 +251,7 @@
       Need Assistance?
     </button>
 
-        <button class="saveCopy" (click)="onGenerateVouchers()">
+        <button class="saveCopy" (click)="onGenerateVouchers()" *ngIf="!isBookingCancelled()">
           <i class="fa-solid fa-download" style="margin-right: 4px"></i>Save a
           Copy
         </button>
@@ -526,6 +621,7 @@
       <div
         class="d-flex"
         style="align-items: center; margin-top: 20px; flex-wrap: wrap;"
+        *ngIf="!isBookingCancelled()"
       >
         <div class="col-12 text-left  font-change">
           <span
@@ -613,6 +709,96 @@
 
         </div>
       </div>
+
+      <div
+        class="d-flex"
+        style="align-items: center; margin-top: 20px; flex-wrap: wrap;"
+        *ngIf="isBookingCancelled()"
+      >
+        <div class="col-12 text-left  font-change">
+          <span
+            style="
+              font-weight: 600 !important;
+              color: #ef4444 !important;
+              font-size: 35px !important;
+            "
+            >Booking Cancelled</span
+          >
+          <div
+            class="mb-0"
+            style="
+              font-weight: 600 !important;
+              color: #dc2626 !important;
+              font-size: 19px !important;
+              margin-top: -5px;
+            "
+          >
+            A refund has been initiated.
+          </div>
+          <div style="color: #615d5d; font-weight: 600; font-size: 13px; margin-bottom: 15px;">
+            This reservation has been successfully cancelled. The refund will be processed and credited to your original payment method within 5-7 business days.
+          </div>
+          <div class="hotel-card-unique d-flex flex-row" style="flex-wrap: wrap;" *ngIf="businessUser?.name">
+            <!-- Right Side: Image -->
+            <div *ngIf="businessUser?.imageList?.length > 0" class="flex-shrink-0" style=" width: 100%; height: 100%;">
+              <img [src]="businessUser?.imageList[0]?.url" >
+            </div>
+            <!-- Left Side: Text Content -->
+            <div class="hotel-card-unique-body flex-fill">
+              <h3 class="hotel-card-unique-title">{{ businessUser?.name }}</h3>
+              <p class="hotel-card-unique-location">
+                <i class="bi bi-geo-alt-fill"></i> {{ businessUser.address?.streetName }},
+          {{ businessUser.address?.city }}, {{ businessUser.address?.state }},
+          {{ businessUser.address?.country }}
+              </p>
+              <div class="hotel-card-unique-text" *ngIf="businessUser.businessDescription">
+              <p [innerHTML]="getTrimmedDescription(businessUser.businessDescription)" style=" text-align: justify;">
+                {{ businessUser.businessDescription }}
+              </p>
+          </div>
+            </div>
+
+
+          </div>
+        </div>
+
+        <div style="width: 100%;">
+
+          <div class="card" style="
+              text-align: center;
+              background-color: #fef2f2;
+              padding: 15px 15px;
+              border: 1px solid #fee2e2;
+            ">
+            <div class="d-flex justify-content-between" >
+              <div>
+                <div class="mb-1 highlight-text" style="color: #991b1b !important;">Booking ID:</div>
+                <div *ngFor="let booking of bookingsResponseList; let last = last"><span *ngIf="booking?.groupBookingId && last">
+                <b id="copyTexttwo">{{ booking?.groupBookingId }}</b></span
+              >
+
+              <span *ngIf="!booking?.groupBookingId">
+                <b id="copyTexttwo">{{ getUpdatedReservationNumber(booking.propertyReservationNumber) }}</b>
+                <span *ngIf="!last">, </span><br/>
+              </span>
+              </div>
+
+              </div>
+              <div>
+                  <div class="mb-1 highlight-text" style="color: #991b1b !important;">Current Status</div>
+                  <div> <span class="status-badge status-cancelled" style="font-size: 13px; background-color: #ef4444;"
+                >Cancelled</span
+              >
+               <span class="status-badge" style="font-size: 13px; background-color: #dc2626;"
+                >Initiated</span
+              ></div>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
       <div
         style="
           display: flex;
@@ -625,7 +811,7 @@
           <i class="fa-solid fa-phone" style="margin-right: 4px"></i>Need
           Assistance?
         </button>
-        <button class="saveCopy" (click)="onGenerateVouchers()">
+        <button class="saveCopy" (click)="onGenerateVouchers()" *ngIf="!isBookingCancelled()">
           <i class="fa-solid fa-download" style="margin-right: 4px"></i>Save a
           Copy
         </button>
