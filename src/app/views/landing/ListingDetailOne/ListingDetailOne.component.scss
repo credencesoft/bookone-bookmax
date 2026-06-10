@@ -2115,12 +2115,27 @@ h3 .day-trip-badge {
 }
 
 .gallery-drawer-content {
+  display: flex;
+  flex-direction: column;
   height: 100vh;
   border: 0;
   border-radius: 0;
   overflow: hidden;
   background: #fff;
   box-shadow: none;
+}
+
+.gallery-drawer-content .modal-body {
+  flex: 1;
+  overflow-y: auto !important;
+  padding: 16px 16px 60px 16px; /* Extra bottom padding so you can scroll past the last row of images */
+  background: #fff;
+}
+
+@media (max-width: 600px) {
+  .gallery-drawer-content .modal-body {
+    padding: 12px 12px 40px 12px;
+  }
 }
 
 // .gallery-drawer-modal .modal-header {

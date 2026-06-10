@@ -14,6 +14,7 @@ import {
   PLATFORM_ID,
   Inject,
   Optional,
+  HostListener,
 } from '@angular/core';
 import { CurrencyService } from 'src/app/services/currency.service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -2351,6 +2352,60 @@ onRoomSelect(roomIdentifier: string | number, planCode: string, count: number | 
 
   closeGalleryModal() {
     $(`#${this.galleryModalRef.nativeElement.id}`).modal('hide');
+  }
+
+  @HostListener('window:keydown', ['$event'])
+  handleKeyDown(event: KeyboardEvent) {
+    if (isPlatformBrowser(this.platformId)) {
+      // 1. ESCAPE key to close/go back
+      if (event.key === 'Escape') {
+        const carouselOpen = $('#carouselModal').hasClass('show');
+        const galleryOpen = $('#galleryModal').hasClass('show');
+        
+        if (carouselOpen) {
+          this.closeCarouselModal();
+          event.preventDefault();
+        } else if (galleryOpen) {
+          this.closeGalleryModal();
+          event.preventDefault();
+        } else if (this.sliderPopupVisible) {
+          this.sliderPopupVisible = false;
+          event.preventDefault();
+        }
+      }
+
+      // 2. Keyboard Navigation for Carousel Modal
+      if ($('#carouselModal').hasClass('show')) {
+        if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
+          this.nextImage();
+          event.preventDefault();
+        } else if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') {
+          this.prevImage();
+          event.preventDefault();
+        }
+      }
+
+      // 3. Scroll Support for Gallery Modal
+      if ($('#galleryModal').hasClass('show')) {
+        const galleryModalBody = document.querySelector('#galleryModal .modal-body');
+        if (galleryModalBody) {
+          const scrollAmount = 100;
+          if (event.key === 'ArrowDown') {
+            galleryModalBody.scrollTop += scrollAmount;
+            event.preventDefault();
+          } else if (event.key === 'ArrowUp') {
+            galleryModalBody.scrollTop -= scrollAmount;
+            event.preventDefault();
+          } else if (event.key === 'PageDown') {
+            galleryModalBody.scrollTop += scrollAmount * 4;
+            event.preventDefault();
+          } else if (event.key === 'PageUp') {
+            galleryModalBody.scrollTop -= scrollAmount * 4;
+            event.preventDefault();
+          }
+        }
+      }
+    }
   }
 
   getListingGalleryClass(): string {
