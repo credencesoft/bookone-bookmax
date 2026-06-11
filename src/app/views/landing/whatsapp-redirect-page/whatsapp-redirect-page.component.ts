@@ -524,4 +524,28 @@ onGenerateVouchers() {
         }
       }
 
+  isBookingCancelled(): boolean {
+    if (!this.booking) {
+      return false;
+    }
+    const bookingAny = this.booking as any;
+    const status = (bookingAny?.bookingStatus || bookingAny?.status || '')
+      .toString()
+      .trim()
+      .toUpperCase();
+    return status === 'CANCELLED';
+  }
+
+  isBookingPending(): boolean {
+    if (!this.booking) {
+      return false;
+    }
+    const bookingAny = this.booking as any;
+    const status = (bookingAny?.bookingStatus || bookingAny?.status || '')
+      .toString()
+      .trim()
+      .toUpperCase();
+    return status === 'PENDING';
+  }
+
 }

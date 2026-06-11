@@ -1174,7 +1174,8 @@ export class BookingComponent implements OnInit {
     this.hotelBookingService.checkBookingStatus(enquiry.enquiryId).subscribe({
       next: (res) => {
         if (res?.bookingId) {
-          this.handleBookingSuccess(enquiry, res.bookingId);
+          const updatedEnquiry = { ...enquiry, ...res };
+          this.handleBookingSuccess(updatedEnquiry, res.bookingId);
         }
       },
       error: (err) => {
@@ -1244,6 +1245,7 @@ export class BookingComponent implements OnInit {
         next: (booking) => {
           if (booking) {
             resolvedBookings.push(booking);
+            this.bookingsResponseList = [...resolvedBookings];
           }
         },
         error: (error) => {
@@ -1251,6 +1253,7 @@ export class BookingComponent implements OnInit {
         },
         complete: () => {
           if (resolvedBookings.length === uniqueBookingIds.length) {
+            this.bookingsResponseList = [...resolvedBookings];
             sessionStorage.setItem(
               'bookingsResponseList',
               JSON.stringify(resolvedBookings),
@@ -1423,6 +1426,50 @@ export class BookingComponent implements OnInit {
   goToConfirmation() {
     this.router.navigate(['/booking-confirmation'], { queryParamsHandling: 'merge' }).then(() => {
       this.closeModal();
+    });
+  }
+
+  isBookingCancelled(): boolean {
+    const list = (Array.isArray(this.bookingsResponseList) && this.bookingsResponseList.length > 0)
+      ? this.bookingsResponseList
+      : this.bookedEnquiries;
+    if (!Array.isArray(list) || list.length === 0) return false;
+    return list.some((item: any) => {
+      const status = (item?.bookingStatus || item?.status || '').toString().trim().toUpperCase();
+      return status === 'CANCELLED';
+    });
+  }
+
+  isBookingPending(): boolean {
+    const list = (Array.isArray(this.bookingsResponseList) && this.bookingsResponseList.length > 0)
+      ? this.bookingsResponseList
+      : this.bookedEnquiries;
+    if (!Array.isArray(list) || list.length === 0) return false;
+    return list.some((item: any) => {
+      const status = (item?.bookingStatus || item?.status || '').toString().trim().toUpperCase();
+      return status === 'PENDING';
+    });
+  }
+
+  isBookingVoid(): boolean {
+    const list = (Array.isArray(this.bookingsResponseList) && this.bookingsResponseList.length > 0)
+      ? this.bookingsResponseList
+      : this.bookedEnquiries;
+    if (!Array.isArray(list) || list.length === 0) return false;
+    return list.some((item: any) => {
+      const status = (item?.bookingStatus || item?.status || '').toString().trim().toUpperCase();
+      return status === 'VOID';
+    });
+  }
+
+  isBookingEnquiry(): boolean {
+    const list = (Array.isArray(this.bookingsResponseList) && this.bookingsResponseList.length > 0)
+      ? this.bookingsResponseList
+      : this.bookedEnquiries;
+    if (!Array.isArray(list) || list.length === 0) return false;
+    return list.some((item: any) => {
+      const status = (item?.bookingStatus || item?.status || '').toString().trim().toUpperCase();
+      return status === 'ENQUIRY';
     });
   }
 

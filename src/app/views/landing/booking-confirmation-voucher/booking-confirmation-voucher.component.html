@@ -22,7 +22,7 @@
         </div>
 
         <div class="d-flex" style="align-items: center; gap: 30px; margin-top: 20px">
-          <div class="col-6 text-left mb-4 font-change" *ngIf="!isBookingCancelled() && !isBookingPending()">
+          <div class="col-6 text-left mb-4 font-change" *ngIf="!isBookingCancelled() && !isBookingPending() && bookingsResponseList?.length > 0">
             <span style="
                 font-weight: 600 !important;
                 color: #000 !important;
@@ -645,7 +645,7 @@
                 email, please check your spam or promotions folder.
               </li>
             </ul>
-            <div class="cancellation-rules-card-voucher" *ngIf="cancellationRuleRows?.length">
+            <div class="cancellation-rules-card-voucher" *ngIf="cancellationRuleRows?.length && !isBookingCancelled() && !isBookingPending()">
               <h5>Cancellation Rules</h5>
               <p class="cancellation-rules-subtitle-voucher" *ngIf="cancellationEstimate">
                 Rule is applied on (Booking Amount - Convenience Fee). Total estimated deduction (including non-refundable convenience fee):
@@ -663,7 +663,7 @@
               </div>
             </div>
             <div *ngFor="let bServiceDtoList of policies; let i = index">
-              <div *ngIf="bServiceDtoList?.policy">
+              <div *ngIf="bServiceDtoList?.policy && !isBookingCancelled() && !isBookingPending()">
                 <div class="property-rules" *ngIf="policies">
                   Property rules:
                 </div>
@@ -699,7 +699,7 @@
           </div>
         </div>
 
-        <div class="d-flex" style="align-items: center; margin-top: 20px; flex-wrap: wrap" *ngIf="!isBookingCancelled() && !isBookingPending()">
+        <div class="d-flex" style="align-items: center; margin-top: 20px; flex-wrap: wrap" *ngIf="!isBookingCancelled() && !isBookingPending() && bookingsResponseList?.length > 0">
           <div class="col-12 text-left font-change">
             <span style="
                 font-weight: 600 !important;
@@ -776,9 +776,12 @@
                   </div>
                 </div>
                 <div>
-                  <div class="mb-1 highlight-text">Current Status</div>
-                  <div>
+                  <div class="mb-1 highlight-text" style="text-align: left;">Current Status</div>
+                  <div class="mb-2" style="text-align: left;">
                     <span class="status-badge status-enquiry" style="font-size: 13px">Confirmed</span>
+                  </div>
+                  <div class="mb-1 highlight-text" style="text-align: left;">Payment Status</div>
+                  <div style="text-align: left;">
                     <span class="status-badge" [ngClass]="{
                                                       'status-paid': isPaid,
                                                       'status-partial': !isPaid
@@ -867,9 +870,12 @@
                   </div>
                 </div>
                 <div>
-                  <div class="mb-1 highlight-text" style="color: #92400e !important;">Current Status</div>
-                  <div>
+                  <div class="mb-1 highlight-text" style="color: #92400e !important; text-align: left;">Current Status</div>
+                  <div class="mb-2" style="text-align: left;">
                     <span class="status-badge" style="font-size: 13px; background-color: #f59e0b; color: white;">Pending</span>
+                  </div>
+                  <div class="mb-1 highlight-text" style="color: #92400e !important; text-align: left;">Payment Status</div>
+                  <div style="text-align: left;">
                     <span class="status-badge" style="font-size: 13px; background-color: #d97706; color: white;">Pending</span>
                   </div>
                 </div>
@@ -954,10 +960,13 @@
                   </div>
                 </div>
                 <div>
-                  <div class="mb-1 highlight-text" style="color: #991b1b !important;">Current Status</div>
-                  <div>
+                  <div class="mb-1 highlight-text" style="color: #991b1b !important; text-align: left;">Current Status</div>
+                  <div class="mb-2" style="text-align: left;">
                     <span class="status-badge status-cancelled" style="font-size: 13px; background-color: #ef4444; margin-right: 5px;">Cancelled</span>
-                    <span class="status-badge" style="font-size: 13px; background-color: #dc2626;">Initiated</span>
+                  </div>
+                  <div class="mb-1 highlight-text" style="color: #991b1b !important; text-align: left;">Refund Status</div>
+                  <div style="text-align: left;">
+                    <span class="status-badge" style="font-size: 13px; background-color: #dc2626; color: white;">Initiated</span>
                   </div>
                 </div>
               </div>
@@ -1314,7 +1323,7 @@
               please check your spam or promotions folder.
             </li>
           </ul>
-          <div class="cancellation-rules-card-voucher" *ngIf="cancellationRuleRows?.length">
+          <div class="cancellation-rules-card-voucher" *ngIf="cancellationRuleRows?.length && !isBookingCancelled() && !isBookingPending()">
             <h5>Cancellation Rules</h5>
             <p class="cancellation-rules-subtitle-voucher" *ngIf="cancellationEstimate">
               Rule is applied on (Booking Amount - Convenience Fee). Total estimated deduction (including non-refundable convenience fee):
@@ -1332,7 +1341,7 @@
             </div>
           </div>
           <div *ngFor="let bServiceDtoList of policies; let i = index">
-            <div *ngIf="bServiceDtoList?.policy">
+            <div *ngIf="bServiceDtoList?.policy && !isBookingCancelled() && !isBookingPending()">
               <div class="property-rules" *ngIf="policies">Property rules:</div>
 
               <div style="padding: 20px">
