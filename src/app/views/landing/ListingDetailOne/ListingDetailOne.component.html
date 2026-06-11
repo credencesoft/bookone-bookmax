@@ -3095,7 +3095,7 @@
                       (click)="togglePanel(room, i)"
                       *ngIf="!room.imageList || room.imageList.length === 0"
                       src="https://themissionneighbourhood.com/images/no-image.png"
-                      class="w-100"
+                      class="w-100 gallery-image-card"
                       style="
                         aspect-ratio: 4/3;
                         object-fit: cover;
@@ -3114,7 +3114,7 @@
                       "
                       [src]="room.imageList[0].url"
                       alt="Hotel Room"
-                      class="w-100"
+                      class="w-100 gallery-image-card"
                       style="
                         aspect-ratio: 4/3;
                         object-fit: cover;
@@ -3132,7 +3132,6 @@
                       "
                       id="carouselExampleIndicators"
                       class="carousel slide"
-                      data-ride="carousel"
                       style="cursor: pointer;"
                     >
                       <div class="carousel-inner img_size_room">
@@ -3143,7 +3142,7 @@
                         >
                           <img
                             [src]="image.url"
-                            class="w-100"
+                            class="w-100 gallery-image-card"
                             alt="Slide {{ i }}"
                             style="
                               aspect-ratio: 4/3;
@@ -3229,17 +3228,7 @@
                     *ngIf="rates.roomRatePlans.length > 0"
                     [class.disabled-room]="shouldDisableRoomImageClick(room)"
                   >
-                    <div [innerHTML]="roomDescriptionPreview(room)"></div>
-                    <span
-                      *ngIf="
-                        room?.description?.split(' ').length >
-                        descriptionWordLimit
-                      "
-                      class="view-more d-flex justify-content-end"
-                      (click)="togglePanel(room, i)"
-                    >
-                      View More
-                    </span>
+                    <div class="roomDescription" [innerHTML]="room.description"></div>
                   </div>
                   <div class="d-block">
                     <div
@@ -4643,7 +4632,7 @@
     <!-- Property description section ends -->
 
     <!-- property review -->
-    <!-- <div class="margin-top-30px">
+    <div class="margin-top-30px" *ngIf="reviews && reviews.length > 0">
     <div class="guest-slider">
       <div class="row">
         <div class="col-md-3">
@@ -4757,7 +4746,7 @@
                       </div>
                       <p class="gs-text">
                         {{
-                          expandedReviews[reviewIndex] ||
+                          expandedReviews[reviewIndex + 3] ||
                           review.text.split(" ").length <= 8
                             ? review.text
                             : review.text.split(" ").slice(0, 8).join(" ") +
@@ -4771,10 +4760,10 @@
                         <ng-container *ngIf="review.text.split(' ').length > 8">
                           <a
                             href="javascript:void(0)"
-                            (click)="toggleReviewText(reviewIndex)"
+                            (click)="toggleReviewText(reviewIndex + 3)"
                           >
                             {{
-                              expandedReviews[reviewIndex]
+                              expandedReviews[reviewIndex + 3]
                                 ? "View Less"
                                 : "View More"
                             }}
@@ -4797,7 +4786,7 @@
         </div>
       </div>
     </div>
-  </div> -->
+  </div>
       </div>
     </div>
     <!-- property review ends-->

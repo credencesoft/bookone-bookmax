@@ -1078,6 +1078,40 @@ export class BookingComponent implements OnInit {
       return false;
     }
 
+    const propId = this.businessUser?.id || this.token.getProperty()?.id || this.booking?.propertyId;
+    if (propId) {
+      this.hotelBookingService.getSubscriptions(propId).subscribe({
+        next: (res) => {
+          const subscriptions = res?.body || [];
+          const isBookOneActive = subscriptions.some(
+            (ele: any) => ele.name === 'BookOne Subscription'
+          );
+          if (isBookOneActive) {
+            console.log('BookOne Subscription active, redirecting to booking-confirm.');
+            this.closeModal();
+            const queryParams = {
+              businessUser: JSON.stringify(this.businessUser),
+              payment: JSON.stringify(this.payment),
+              booking: JSON.stringify(this.booking),
+              addServiceList: JSON.stringify(this.savedServices || [])
+            };
+            this.router.navigate(['/booking-confirm'], { queryParams });
+          } else {
+            this.setupBackendPollingState();
+          }
+        },
+        error: (err) => {
+          console.error('Error checking subscriptions for redirect, falling back to standard polling:', err);
+          this.setupBackendPollingState();
+        }
+      });
+    } else {
+      this.setupBackendPollingState();
+    }
+    return true;
+  }
+
+  private setupBackendPollingState() {
     sessionStorage.removeItem('bookingsResponseList');
     this.bookedEnquiries = [];
     this.bookingsResponseList = [];
@@ -1092,7 +1126,6 @@ export class BookingComponent implements OnInit {
     this.aiMessage = this.STEP_MESSAGES.bookingProcessing;
     this.animateProgressTo(85);
     this.startBookingPolling();
-    return true;
   }
 
   private startBookingPolling() {

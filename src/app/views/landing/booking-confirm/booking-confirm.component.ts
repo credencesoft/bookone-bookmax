@@ -150,6 +150,18 @@ textToCopyOne: string = 'This is some text to copy';
   private bookingPoller: any;
   private bookingPollStartTime = 0;
   private readonly BOOKING_POLL_TIMEOUT = 50 * 1000;
+
+  // WebSocket progress tracking
+  isBookOneActive: boolean = false;
+  isWsFlowActive: boolean = false;
+  progressPercentage: number = 0;
+  progressDetailMessage: string = 'Payment captured successfully. Preparing to establish live tracking...';
+  currentStep: string = '';
+  isCompleted: boolean = false;
+  isProgressFailed: boolean = false;
+  private ws: WebSocket | null = null;
+  private isConnected: boolean = false;
+
   constructor(
     private http: HttpClient,
     private token: TokenStorage,
@@ -201,7 +213,7 @@ textToCopyOne: string = 'This is some text to copy';
     {
       this.booking = this.token.getBookingData();
     }
-  }, 10);
+  }, 250);
     }
 
     setTimeout(() => {
@@ -389,6 +401,9 @@ if (couponCodeValues) {
         this.booking = JSON.parse(params["booking"]);
 
         this.bookingData = this.booking;
+        if (this.booking && this.booking.propertyId) {
+          this.checkBookOneSubscription(this.booking.propertyId);
+        }
         this.fromDate = new NgbDate(
           this.mileSecondToNGBDate(this.booking.fromDate).year,
           this.mileSecondToNGBDate(this.booking.fromDate).month,
@@ -446,6 +461,7 @@ if (couponCodeValues) {
 }
 
     ngOnDestroy() {
+    this.wsClose();
     if (this.bookingPoller) {
       clearInterval(this.bookingPoller);
       this.bookingPoller = null;
@@ -461,6 +477,7 @@ if (couponCodeValues) {
   }
 
   backone() {
+    this.wsClose();
     window.location.href = this.PropertyUrl;
     sessionStorage.removeItem('bookingsResponseList');
     sessionStorage.removeItem('bookingSummaryDetails');
@@ -569,21 +586,53 @@ checkValidCouponOrNot(couponList?){
 
       }
   }
+  private getPropertyId(): number {
+    return this.booking?.propertyId || 
+           this.bookingData?.propertyId || 
+           this.token.getProperty()?.id || 
+           this.propertyDetails?.id || 
+           0;
+  }
+
   getPaymentInfoByReffId(referenceNumber){
     this.loadingData = true;
     this.hotelBookingService.getPaymentByReffId(referenceNumber).subscribe((res) => {
       this.payment = res.body[0];
-      if ( this.payment.status == 'Paid') {
-        if (this.isBackendFinalizedGateway() && this.continueBackendBookingFinalization()) {
-          return;
+      if (this.payment.status == 'Paid') {
+        const propertyId = this.getPropertyId();
+        if (propertyId) {
+          this.hotelBookingService.getSubscriptions(propertyId).subscribe({
+            next: (subRes) => {
+              this.allSubscription = subRes.body;
+              if (Array.isArray(this.allSubscription)) {
+                this.isBookOneActive = this.allSubscription.some(
+                  (ele) => ele.name === 'BookOne Subscription'
+                );
+                console.log('Subscriptions loaded inside getPaymentInfoByReffId. isBookOneActive:', this.isBookOneActive);
+              }
+              this.proceedWithPaymentStatusPaid();
+            },
+            error: (err) => {
+              console.error('Error fetching subscriptions inside getPaymentInfoByReffId:', err);
+              this.proceedWithPaymentStatusPaid();
+            }
+          });
+        } else {
+          this.proceedWithPaymentStatusPaid();
         }
-        this.createAllBookings();
       }
       else{
         this.createEnquiry();
       }
     });
-      this.bookingRoomPrice = this.token.getRoomPrice();
+    this.bookingRoomPrice = this.token.getRoomPrice();
+  }
+
+  private proceedWithPaymentStatusPaid() {
+    if (this.isBackendFinalizedGateway() && this.continueBackendBookingFinalization()) {
+      return;
+    }
+    this.createAllBookings();
   }
 
 
@@ -619,6 +668,9 @@ checkValidCouponOrNot(couponList?){
       );
   }
   private isBackendFinalizedGateway(): boolean {
+    if (this.isBookOneActive) {
+      return true;
+    }
     const gateway = (
       this.businessUser?.paymentGateway ||
       this.token.getPropertyData()?.paymentGateway ||
@@ -647,7 +699,20 @@ checkValidCouponOrNot(couponList?){
     this.bookingsResponseList = [];
     this.loadingData = true;
     this.paymentLoader = true;
-    this.startBackendBookingPolling(enquiryResponseList);
+
+    if (this.isBookOneActive) {
+      this.isWsFlowActive = true;
+      this.progressPercentage = 15;
+      this.progressDetailMessage = 'Payment captured successfully. Preparing to establish live tracking...';
+      const firstEnquiry = enquiryResponseList[0];
+      if (firstEnquiry && firstEnquiry.enquiryId) {
+        this.connectWebSocket(firstEnquiry.enquiryId);
+      } else {
+        this.startBackendBookingPolling(enquiryResponseList);
+      }
+    } else {
+      this.startBackendBookingPolling(enquiryResponseList);
+    }
     return true;
   }
 
@@ -669,6 +734,352 @@ checkValidCouponOrNot(couponList?){
     }, 5000);
   }
 
+  checkBookOneSubscription(propertyId: number) {
+    if (!propertyId) return;
+    this.hotelBookingService.getSubscriptions(propertyId).subscribe({
+      next: (res) => {
+        this.allSubscription = res.body;
+        if (Array.isArray(this.allSubscription)) {
+          this.isBookOneActive = this.allSubscription.some(
+            (ele) => ele.name === 'BookOne Subscription'
+          );
+          console.log('BookOne Subscription active state calculated:', this.isBookOneActive);
+        }
+      },
+      error: (err) => {
+        console.error('Error fetching subscriptions:', err);
+      }
+    });
+  }
+
+  getWebSocketUrl(): string {
+    this.setApi();
+    if (!this.API_URL) {
+      if (typeof window !== 'undefined') {
+        const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+        return `${protocol}//${window.location.host}/ws-booking`;
+      }
+      return 'wss://api.uat.thehotelmate.co/ws-booking';
+    }
+
+    let wsUrl = this.API_URL;
+    if (wsUrl.startsWith('https://')) {
+      wsUrl = wsUrl.replace('https://', 'wss://');
+    } else if (wsUrl.startsWith('http://')) {
+      wsUrl = wsUrl.replace('http://', 'ws://');
+    } else {
+      if (typeof window !== 'undefined' && window.location.protocol === 'https:') {
+        wsUrl = 'wss://' + wsUrl;
+      } else {
+        wsUrl = 'ws://' + wsUrl;
+      }
+    }
+    
+    if (wsUrl.endsWith('/')) {
+      wsUrl = wsUrl.slice(0, -1);
+    }
+    return `${wsUrl}/ws-booking`;
+  }
+
+  connectWebSocket(enquiryId: number) {
+    if (typeof window === 'undefined') return;
+
+    try {
+      const url = this.getWebSocketUrl();
+      console.log('Connecting to WebSocket:', url);
+      this.ws = new WebSocket(url);
+
+      this.ws.onopen = () => {
+        console.log('WebSocket connection opened. Sending STOMP CONNECT.');
+        const connectFrame = [
+          'CONNECT',
+          'accept-version:1.1,1.2',
+          'heart-beat:10000,10000',
+          '\n'
+        ].join('\n') + '\u0000';
+        this.ws?.send(connectFrame);
+      };
+
+      this.ws.onmessage = (event) => {
+        this.handleStompMessage(event.data, enquiryId);
+      };
+
+      this.ws.onerror = (error) => {
+        console.error('WebSocket Error:', error);
+        this.handleWebSocketError();
+      };
+
+      this.ws.onclose = (event) => {
+        console.log('WebSocket closed:', event);
+        this.isConnected = false;
+        if (this.isBookOneActive && !this.isCompleted && !this.isProgressFailed) {
+          console.log('WebSocket closed unexpectedly. Falling back to polling.');
+          const enquiryResponseListStr = sessionStorage.getItem('EnquiryResponseList');
+          if (enquiryResponseListStr) {
+            const enquiryResponseList = JSON.parse(enquiryResponseListStr);
+            this.startBackendBookingPolling(enquiryResponseList);
+          }
+        }
+      };
+    } catch (e) {
+      console.error('Error starting WebSocket connection:', e);
+      this.handleWebSocketError();
+    }
+  }
+
+  private handleStompMessage(data: string, enquiryId: number) {
+    if (!data || data.trim() === '') return;
+
+    console.log('Received STOMP data:', data);
+    if (data.startsWith('CONNECTED')) {
+      this.isConnected = true;
+      console.log('STOMP connected. Subscribing to booking progress.');
+      const subscribeFrame = [
+        'SUBSCRIBE',
+        `id:sub-${enquiryId}`,
+        `destination:/topic/booking/${enquiryId}`,
+        '\n'
+      ].join('\n') + '\u0000';
+      this.ws?.send(subscribeFrame);
+      return;
+    }
+
+    if (data.startsWith('MESSAGE')) {
+      const bodyStartIndex = data.indexOf('\n\n');
+      if (bodyStartIndex !== -1) {
+        let body = data.substring(bodyStartIndex + 2);
+        const nullIndex = body.indexOf('\u0000');
+        if (nullIndex !== -1) {
+          body = body.substring(0, nullIndex);
+        }
+        
+        try {
+          const payload = JSON.parse(body.trim());
+          console.log('STOMP message parsed payload:', payload);
+          this.ngZone.run(() => {
+            this.updateProgressBar(payload);
+          });
+        } catch (e) {
+          console.error('Error parsing STOMP message payload JSON:', e);
+        }
+      }
+    }
+  }
+
+  private handleWebSocketError() {
+    console.error('WebSocket connection error. Falling back to standard polling.');
+    const enquiryResponseListStr = sessionStorage.getItem('EnquiryResponseList');
+    if (enquiryResponseListStr) {
+      const enquiryResponseList = JSON.parse(enquiryResponseListStr);
+      this.startBackendBookingPolling(enquiryResponseList);
+    }
+  }
+
+  updateProgressBar(payload: any) {
+    if (!payload) return;
+    
+    this.currentStep = payload.step;
+    this.progressDetailMessage = payload.detail || this.progressDetailMessage;
+
+    switch (payload.step) {
+      case 'PAYMENT_CAPTURED':
+        this.progressPercentage = 15;
+        break;
+      case 'HOTELMATE_INITIATED':
+        if (payload.status === 'SUCCESS') {
+          this.progressPercentage = 45;
+        } else {
+          this.progressPercentage = 30;
+        }
+        break;
+      case 'BOOKONE_PUSHED':
+        if (payload.status === 'SUCCESS') {
+          this.progressPercentage = 70;
+        } else {
+          this.progressPercentage = 60;
+        }
+        break;
+      case 'BOOKONE_VERIFYING':
+        this.progressPercentage = 85;
+        break;
+      case 'COMPLETED':
+        this.progressPercentage = 100;
+        this.isCompleted = true;
+        this.wsClose();
+        this.handleBookingCompletion(payload);
+        break;
+      case 'FAILED':
+        this.isProgressFailed = true;
+        this.wsClose();
+        this.loadingData = false;
+        this.paymentLoader = false;
+        break;
+      default:
+        break;
+    }
+    
+    this.changeDetectorRefs.detectChanges();
+  }
+
+  private fetchBookingWithRetry(bookingId: number, attempt: number, maxAttempts: number, callback: (booking: any) => void) {
+    this.hotelBookingService.fetchBookingById(bookingId).subscribe({
+      next: (booking) => {
+        const status = (booking?.bookingStatus || booking?.status || '').toString().toUpperCase();
+        if (status === 'PENDING' && attempt < maxAttempts) {
+          console.log(`Booking ${bookingId} is still PENDING on attempt ${attempt}/${maxAttempts}. Retrying in 1.5s...`);
+          setTimeout(() => {
+            this.fetchBookingWithRetry(bookingId, attempt + 1, maxAttempts, callback);
+          }, 1500);
+        } else {
+          if (booking && (status === 'PENDING' || !status)) {
+            console.log(`Booking ${bookingId} was still PENDING after all attempts or has no status. Overriding to CONFIRMED in memory for UI.`);
+            if (booking.bookingStatus !== undefined) booking.bookingStatus = 'CONFIRMED';
+            if (booking.status !== undefined) booking.status = 'CONFIRMED';
+            if (booking.bookingStatus === undefined && booking.status === undefined) {
+              booking.bookingStatus = 'CONFIRMED';
+              booking.status = 'CONFIRMED';
+            }
+          }
+          callback(booking);
+        }
+      },
+      error: (err) => {
+        console.error(`Error fetching booking ${bookingId} on attempt ${attempt}:`, err);
+        if (attempt < maxAttempts) {
+          setTimeout(() => {
+            this.fetchBookingWithRetry(bookingId, attempt + 1, maxAttempts, callback);
+          }, 1500);
+        } else {
+          callback(null);
+        }
+      }
+    });
+  }
+
+  private handleBookingCompletion(payload: any) {
+    const enquiryResponseListStr = sessionStorage.getItem('EnquiryResponseList');
+    if (!enquiryResponseListStr) {
+      this.isWsFlowActive = false;
+      this.loadingData = false;
+      this.paymentLoader = false;
+      return;
+    }
+
+    const enquiryResponseList: EnquiryDto[] = JSON.parse(enquiryResponseListStr);
+    const expectedCount = enquiryResponseList.length;
+    let fetchedCount = 0;
+    const nextBookings: any[] = [];
+
+    enquiryResponseList.forEach((enquiry) => {
+      this.hotelBookingService.checkBookingStatus(enquiry.enquiryId).subscribe({
+        next: (response) => {
+          const isEnquiryMatch = String(enquiry.enquiryId) === String(payload?.enquiryId) || 
+                                 String(enquiry.enquiryId) === String(payload?.enquiryID);
+          
+          const payloadBookingId = isEnquiryMatch ? (
+            payload?.bookingId || 
+            payload?.bookingID || 
+            payload?.id || 
+            payload?.booking_id || 
+            payload?.data?.bookingId || 
+            payload?.data?.id
+          ) : null;
+
+          const bId = response?.bookingId || payloadBookingId;
+          if (bId) {
+            this.fetchBookingWithRetry(bId, 1, 4, (booking) => {
+              if (booking?.id && !nextBookings.some(item => item.id === booking.id)) {
+                nextBookings.push(booking);
+              }
+              fetchedCount++;
+              if (fetchedCount === expectedCount) {
+                this.finalizeWebSocketBooking(nextBookings);
+              }
+            });
+          } else {
+            fetchedCount++;
+            if (fetchedCount === expectedCount) {
+              this.finalizeWebSocketBooking(nextBookings);
+            }
+          }
+        },
+        error: (err) => {
+          console.error(`Error checking booking status for enquiry ${enquiry.enquiryId}:`, err);
+          const isEnquiryMatch = String(enquiry.enquiryId) === String(payload?.enquiryId) || 
+                                 String(enquiry.enquiryId) === String(payload?.enquiryID);
+          const payloadBookingId = isEnquiryMatch ? (
+            payload?.bookingId || 
+            payload?.bookingID || 
+            payload?.id || 
+            payload?.booking_id || 
+            payload?.data?.bookingId || 
+            payload?.data?.id
+          ) : null;
+          
+          if (payloadBookingId) {
+            this.fetchBookingWithRetry(payloadBookingId, 1, 4, (booking) => {
+              if (booking?.id && !nextBookings.some(item => item.id === booking.id)) {
+                nextBookings.push(booking);
+              }
+              fetchedCount++;
+              if (fetchedCount === expectedCount) {
+                this.finalizeWebSocketBooking(nextBookings);
+              }
+            });
+          } else {
+            fetchedCount++;
+            if (fetchedCount === expectedCount) {
+              this.finalizeWebSocketBooking(nextBookings);
+            }
+          }
+        }
+      });
+    });
+  }
+
+  private finalizeWebSocketBooking(bookings: any[]) {
+    if (!bookings || bookings.length === 0) {
+      console.warn('finalizeWebSocketBooking called with empty bookings list. Falling back to standard polling to allow backend transaction commit.');
+      const enquiryResponseListStr = sessionStorage.getItem('EnquiryResponseList');
+      if (enquiryResponseListStr) {
+        const enquiryResponseList = JSON.parse(enquiryResponseListStr);
+        this.startBackendBookingPolling(enquiryResponseList);
+      } else {
+        this.isWsFlowActive = false;
+        this.loadingData = false;
+        this.paymentLoader = false;
+      }
+      return;
+    }
+
+    sessionStorage.setItem('bookingsResponseList', JSON.stringify(bookings));
+    this.bookingsResponseList = bookings;
+    this.calculateTotalGuestsFromPlans();
+
+    if (bookings.length > 0) {
+      const lastBooking = bookings[bookings.length - 1];
+      if (lastBooking?.id) {
+        this.hotelBookingService.sendBookingEmailToCustomer(lastBooking.id).subscribe({
+          next: () => {},
+          error: () => {},
+        });
+      }
+    }
+
+    this.updateEnquiryStatusToBooked();
+    this.isWsFlowActive = false;
+  }
+
+  wsClose() {
+    if (this.ws) {
+      try {
+        this.ws.close();
+      } catch (e) {}
+      this.ws = null;
+    }
+    this.isConnected = false;
+  }
+
   private pollBackendCreatedBooking(enquiry: any, expectedCount: number) {
     this.hotelBookingService.checkBookingStatus(enquiry.enquiryId).subscribe({
       next: (response) => {
@@ -682,22 +1093,19 @@ checkValidCouponOrNot(couponList?){
           return;
         }
 
-        this.hotelBookingService.fetchBookingById(response.bookingId).subscribe({
-          next: (booking) => {
-            if (!booking?.id) {
-              return;
-            }
+        this.fetchBookingWithRetry(response.bookingId, 1, 4, (booking) => {
+          if (!booking?.id) {
+            return;
+          }
 
-            const nextBookings = this.getStoredBookings();
-            if (!nextBookings.some((item: any) => item.id === booking.id)) {
-              nextBookings.push(booking);
-              sessionStorage.setItem('bookingsResponseList', JSON.stringify(nextBookings));
-              this.bookingsResponseList = nextBookings;
-            }
+          const nextBookings = this.getStoredBookings();
+          if (!nextBookings.some((item: any) => item.id === booking.id)) {
+            nextBookings.push(booking);
+            sessionStorage.setItem('bookingsResponseList', JSON.stringify(nextBookings));
+            this.bookingsResponseList = nextBookings;
+          }
 
-            this.finishBackendFinalizationIfReady(expectedCount);
-          },
-          error: () => {},
+          this.finishBackendFinalizationIfReady(expectedCount);
         });
       },
       error: () => {},
@@ -1655,64 +2063,105 @@ const tokenToTime = this.combinedDateToTime;
     });
   }
 
+  isBookingPending(): boolean {
+    if (!Array.isArray(this.bookingsResponseList) || this.bookingsResponseList.length === 0) {
+      return false;
+    }
+    return this.bookingsResponseList.some((booking: any) => {
+      const status = (booking?.bookingStatus || booking?.status || '')
+        .toString()
+        .trim()
+        .toUpperCase();
+      return status === 'PENDING';
+    });
+  }
+
+  private storeBookedEnquiries(enquiryResponseList: EnquiryDto[]) {
+    const summary = this.bookingSummaryDetails || {};
+    const enhancedEnquiries = enquiryResponseList.map((enquiry) => ({
+      ...enquiry,
+      couponDiscountPercentage: summary.selectedCouponList?.discountPercentage || 0,
+      couponDiscountAmount: summary.couponDiscountAmount || 0,
+      advanceDiscountPercentage: summary.selectedAdvanceDiscountSlab?.discountPercentage || 0,
+      advanceDiscountAmount: summary.advanceDiscountAmount || 0,
+      totalDiscountAmount: summary.totalDiscountAmount || 0,
+      advancePaymentPercentage: summary.selectedAdvanceDiscountSlab?.advancePercentage || 0,
+      advancePaymentLabel: summary.selectedAdvanceDiscountSlab ? `Pay ${summary.selectedAdvanceDiscountSlab.advancePercentage}% Advance` : null,
+      amountAfterDiscount: summary.amountAfterDiscount || 0,
+      taxOnDiscountedAmount: summary.taxOnDiscountedAmount || 0,
+      serviceChargePercentage: this.serviceChargePercentage || 0,
+      convenienceFeeAmount: summary.convenienceFeeAmount || 0,
+      grandTotal: summary.grandTotal || this.booking?.netAmount || this.bookingData?.netAmount || 0,
+      payNowAmount: summary.payNowAmount || this.payment?.amount || this.booking?.advanceAmount || 0,
+      balanceAtCheckIn: summary.balanceAtCheckIn || 0,
+      selectedAddOns: Array.isArray(enquiry?.selectedServices) ? enquiry.selectedServices : Array.isArray((enquiry as any)?.selectedAddOns) ? (enquiry as any).selectedAddOns : []
+    }));
+
+    sessionStorage.setItem(
+      'BookedEnquiryList',
+      JSON.stringify(enhancedEnquiries),
+    );
+    console.log('Saved BookedEnquiryList to sessionStorage:', enhancedEnquiries);
+  }
+
   updateEnquiryStatusToBooked() {
-  const enquiryResponseListStr = sessionStorage.getItem('EnquiryResponseList');
+    const enquiryResponseListStr = sessionStorage.getItem('EnquiryResponseList');
 
-  if (!enquiryResponseListStr) {
-    console.error('No EnquiryResponseList found in sessionStorage.');
-    return;
-  }
-
-  const enquiryResponseList: EnquiryDto[] = JSON.parse(enquiryResponseListStr);
-
-  if (!Array.isArray(enquiryResponseList) || enquiryResponseList.length === 0) {
-    console.error('EnquiryResponseList is empty or invalid.');
-    return;
-  }
-
-  this.paymentLoader = true;
-
-  enquiryResponseList.forEach((enquiry, index) => {
-  const bookingsStr = sessionStorage.getItem('bookingsResponseList');
-  const bookings = bookingsStr ? JSON.parse(bookingsStr) : [];
-  const matchedBooking = bookings.find((b: any) => b.roomId === enquiry.roomId);
-    enquiry.bookingId = matchedBooking?.id;
-    enquiry.bookingReservationId = matchedBooking?.propertyReservationNumber;
-
-    enquiry.paymentReference = this.paymentRefNo;
-    // Update the status
-    enquiry.status = 'Booked';
-    enquiry.enquiryType = 'Pay Now'
-    enquiry.propertyId = 107;
-    this.paymentSucess = true;
-    if(enquiry.advanceAmount > 0 && enquiry.advanceAmount < enquiry.totalAmount) {
-      enquiry.paymentStatus = 'PartiallyPaid';
-    } else {
-      enquiry.paymentStatus = 'Paid';
+    if (!enquiryResponseListStr) {
+      console.error('No EnquiryResponseList found in sessionStorage.');
+      return;
     }
 
-    enquiry.fromTime = this.booking.fromTime;
-    enquiry.toTime = this.booking.toTime;
-    this.hotelBookingService.accommodationEnquiry(enquiry).subscribe({
-      next: (response) => {
-        // console.log(`Enquiry ${index + 1} updated successfully:`, response.body);
-      },
-      error: (err) => {
-      this.loadingData = false;
-        console.error(`Error updating enquiry ${index + 1}:`, err);
-      },
-      complete: () => {
-        if (index === enquiryResponseList.length - 1) {
-          this.paymentLoader = false;
-          this.isSuccess = true;
-          this.submitButtonDisable = true;
-          this.bookingConfirmed = true;
-                this.loadingData = false;
-        }
+    const enquiryResponseList: EnquiryDto[] = JSON.parse(enquiryResponseListStr);
+
+    if (!Array.isArray(enquiryResponseList) || enquiryResponseList.length === 0) {
+      console.error('EnquiryResponseList is empty or invalid.');
+      return;
+    }
+
+    this.paymentLoader = true;
+
+    enquiryResponseList.forEach((enquiry, index) => {
+      const bookingsStr = sessionStorage.getItem('bookingsResponseList');
+      const bookings = bookingsStr ? JSON.parse(bookingsStr) : [];
+      const matchedBooking = bookings.find((b: any) => b.roomId === enquiry.roomId);
+      enquiry.bookingId = matchedBooking?.id;
+      enquiry.bookingReservationId = matchedBooking?.propertyReservationNumber;
+
+      enquiry.paymentReference = this.paymentRefNo;
+      enquiry.status = 'Booked';
+      enquiry.enquiryType = 'Pay Now';
+      enquiry.propertyId = 107;
+      this.paymentSucess = true;
+      if (enquiry.advanceAmount > 0 && enquiry.advanceAmount < enquiry.totalAmount) {
+        enquiry.paymentStatus = 'PartiallyPaid';
+      } else {
+        enquiry.paymentStatus = 'Paid';
       }
+
+      enquiry.fromTime = this.booking.fromTime;
+      enquiry.toTime = this.booking.toTime;
+      this.hotelBookingService.accommodationEnquiry(enquiry).subscribe({
+        next: (response) => {
+          // console.log(`Enquiry ${index + 1} updated successfully:`, response.body);
+        },
+        error: (err) => {
+          this.loadingData = false;
+          console.error(`Error updating enquiry ${index + 1}:`, err);
+        },
+        complete: () => {
+          if (index === enquiryResponseList.length - 1) {
+            this.storeBookedEnquiries(enquiryResponseList);
+            this.paymentLoader = false;
+            this.isSuccess = true;
+            this.submitButtonDisable = true;
+            this.bookingConfirmed = true;
+            this.loadingData = false;
+          }
+        }
+      });
     });
-  });
-}
+  }
 
   // accommodationEnquiryBookingData(){
 
