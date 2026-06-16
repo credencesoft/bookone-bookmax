@@ -7419,6 +7419,14 @@ this.token.savePropertyUrl(currentUrl);
       this.toDate.year
     );
   }
+  formatNgbDateToDdMmYyyy(date: any): string {
+    if (!date) {
+      return '';
+    }
+    const day = Number(date.day) < 10 ? `0${date.day}` : `${date.day}`;
+    const month = Number(date.month) < 10 ? `0${date.month}` : `${date.month}`;
+    return `${day}-${month}-${date.year}`;
+  }
   getDateFormatYearMonthDay(
     day12: number,
     month12: number,
