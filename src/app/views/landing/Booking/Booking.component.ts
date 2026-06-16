@@ -2002,7 +2002,18 @@ export class BookingComponent implements OnInit {
     }
   }
   mileSecondToNGBDate(date: string) {
-    const dsd = new Date(date);
+    if (date && typeof date === 'string') {
+      const parts = date.split('-');
+      if (parts.length === 3 && parts[0].length === 4) {
+        const year = parseInt(parts[0], 10);
+        const month = parseInt(parts[1], 10);
+        const day = parseInt(parts[2], 10);
+        if (!isNaN(year) && !isNaN(month) && !isNaN(day)) {
+          return { year: year, month: month, day: day };
+        }
+      }
+    }
+    const dsd = typeof date === 'string' ? new Date(date.replace(/-/g, '/')) : new Date(date);
     const year = dsd.getFullYear();
     const day = dsd.getDate();
     const month = dsd.getMonth() + 1;
