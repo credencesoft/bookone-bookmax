@@ -1017,6 +1017,8 @@ expandedPlans: { [key: string]: boolean } = {};
         this.acRoute.queryParams.subscribe((params) => {
       if (params['hotelID'] !== undefined) {
         this.hotelID = params['hotelID'];
+      } else if (params['hotelId'] !== undefined) {
+        this.hotelID = params['hotelId'];
       }
 
       if (params['checkinDay'] !== undefined) {
@@ -1112,7 +1114,7 @@ if (params['Children'] !== undefined) {
       );
       this.token.saveLandingPrice(this.landingrice);
 
-      if (!params['hotelID'] && !params['BookingEngine']) {
+      if (!params['hotelID'] && !params['hotelId'] && !params['BookingEngine']) {
         this.getDynamicNameFromUrl(this.currentUrl);
       }
               if (params['utm_medium'] !== undefined) {
@@ -1266,7 +1268,7 @@ this.token.savePropertyUrl(currentUrl);
     if (savedBooking) {
       try {
         const data = JSON.parse(savedBooking);
-        const currentHotelID = this.acRoute.snapshot.queryParams['hotelID'];
+        const currentHotelID = this.acRoute.snapshot.queryParams['hotelID'] || this.acRoute.snapshot.queryParams['hotelId'];
         const currentSlug = this.acRoute.snapshot.params['detail'];
 
         let isMatch = false;
@@ -1448,7 +1450,8 @@ this.token.savePropertyUrl(currentUrl);
     }
     this.routerone.params.subscribe((params) => {
       let uriId = this.routerone.snapshot.params['id'];
-      if (uriId != undefined && uriId != null && uriId == 'GoogleHotelCenter') {
+      let uriDetail = this.routerone.snapshot.params['detail'];
+      if ((uriId != undefined && uriId != null && uriId == 'GoogleHotelCenter') || (uriDetail != undefined && uriDetail != null && uriDetail == 'GoogleHotelCenter')) {
         this.activeForGoogleHotelCenter = true;
       } else {
         this.activeForGoogleHotelCenter = false;
@@ -1883,7 +1886,7 @@ restoreGuestSelectionsFromSummary() {
 
   try {
     const parsedSummary = JSON.parse(savedSummary);
-    const currentHotelID = this.acRoute.snapshot.queryParams['hotelID'];
+    const currentHotelID = this.acRoute.snapshot.queryParams['hotelID'] || this.acRoute.snapshot.queryParams['hotelId'];
     const currentSlug = this.acRoute.snapshot.params['detail'];
 
     let isMatch = false;
