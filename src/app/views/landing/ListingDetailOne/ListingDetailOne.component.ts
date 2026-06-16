@@ -1189,9 +1189,9 @@ this.token.savePropertyUrl(currentUrl);
         this.propertyId = this.hotelID;
       }
        if(this.checkinDay && this.checkinMonth && this.checkinYear) {
-                  let dateString =
-          this.checkinYear + '-' + this.checkinMonth + '-' + this.checkinDay;
-        let checkedinday = new Date(dateString);
+        let checkedinday = (this.checkinYear && this.checkinMonth && this.checkinDay)
+          ? new Date(Number(this.checkinYear), Number(this.checkinMonth) - 1, Number(this.checkinDay))
+          : new Date();
 
         let checkedOutday = new Date(checkedinday);
         let day = Number(checkedOutday.getDate()) + Number(this.nights);
@@ -1392,9 +1392,9 @@ this.token.savePropertyUrl(currentUrl);
       this.taxPercentage = this.booking.taxPercentage;
     } else {
       if(this.checkinDay && this.checkinMonth && this.checkinYear) {
-                  let dateString =
-          this.checkinYear + '-' + this.checkinMonth + '-' + this.checkinDay;
-        let checkedinday = new Date(dateString);
+        let checkedinday = (this.checkinYear && this.checkinMonth && this.checkinDay)
+          ? new Date(Number(this.checkinYear), Number(this.checkinMonth) - 1, Number(this.checkinDay))
+          : new Date();
 
         let checkedOutday = new Date(checkedinday);
         let day = Number(checkedOutday.getDate()) + Number(this.nights);
@@ -5207,9 +5207,9 @@ onCheckOutClosed(): void {
 
         this.selectHotelBooking = true;
 
-        let dateString =
-          this.checkinYear + '-' + this.checkinMonth + '-' + this.checkinDay;
-        let checkedinday = new Date(dateString);
+        let checkedinday = (this.checkinYear && this.checkinMonth && this.checkinDay)
+          ? new Date(Number(this.checkinYear), Number(this.checkinMonth) - 1, Number(this.checkinDay))
+          : new Date();
 
         let checkedOutday = new Date(checkedinday);
         let day = Number(checkedOutday.getDate()) + Number(this.nights);
@@ -7580,7 +7580,7 @@ this.token.savePropertyUrl(currentUrl);
       let currentDate = new Date();
       this.booking.fromDate = this.getDateFormatYearMonthDay(
         currentDate.getDate(),
-        currentDate.getMonth(),
+        currentDate.getMonth() + 1,
         currentDate.getFullYear()
       );
     }
@@ -7600,7 +7600,7 @@ this.token.savePropertyUrl(currentUrl);
       currentDate.setDate(currentDate.getDate() + 1);
       this.booking.toDate = this.getDateFormatYearMonthDay(
         currentDate.getDate(),
-        currentDate.getMonth(),
+        currentDate.getMonth() + 1,
         currentDate.getFullYear()
       );
     }
