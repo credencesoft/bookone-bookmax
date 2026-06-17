@@ -50,8 +50,8 @@ export class ListingService {
     return this.http.get<any>(environment.apiUrlPromotion+ '/api/campaign/runCampaign/'+campaignId+'/businessLeadId/'+businessServiceId , { observe: 'response' });
    }
    getGoogleReview(propertyId: number) {
-    return this.http.get<any>(this.API_URL + '/api/thm/getGoogleReviews?PropertyId=' + propertyId, { observe: 'response' });
-  }
+    return this.http.get<any>('https://api.uat.thehotelmate.co/api/review/property/' + propertyId, { observe: 'response' });
+   }
   // findProductsByBusinessServiceId(businessServiceId: number) {
   //   return this.http.get<ProductGroup[]>(this.API_URL + '/api/thm/getProductList/' + businessServiceId, { observe: 'response' });
   // }
@@ -236,7 +236,7 @@ export class ListingService {
   getAllReview(propertyId: number) {
     this.setApi();
     return this.http.get<GoogleReview[]>(
-      this.API_URL + '/api/thm/getGoogleReviews?PropertyId=' + propertyId,
+      'https://api.uat.thehotelmate.co/api/review/property/' + propertyId,
       { observe: 'response' }
     );
   }

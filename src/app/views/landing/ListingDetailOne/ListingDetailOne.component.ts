@@ -1114,7 +1114,7 @@ if (params['Children'] !== undefined) {
       );
       this.token.saveLandingPrice(this.landingrice);
 
-      if (!params['hotelID'] && !params['BookingEngine']) {
+      if (!params['hotelID'] && !params['hotelId'] && !params['BookingEngine']) {
         this.getDynamicNameFromUrl(this.currentUrl);
       }
               if (params['utm_medium'] !== undefined) {
@@ -1191,9 +1191,7 @@ this.token.savePropertyUrl(currentUrl);
         this.propertyId = this.hotelID;
       }
        if(this.checkinDay && this.checkinMonth && this.checkinYear) {
-        let checkedinday = (this.checkinYear && this.checkinMonth && this.checkinDay)
-          ? new Date(Number(this.checkinYear), Number(this.checkinMonth) - 1, Number(this.checkinDay))
-          : new Date();
+        let checkedinday = new Date(Number(this.checkinYear), Number(this.checkinMonth) - 1, Number(this.checkinDay));
 
         let checkedOutday = new Date(checkedinday);
         let day = Number(checkedOutday.getDate()) + Number(this.nights);
@@ -1394,9 +1392,7 @@ this.token.savePropertyUrl(currentUrl);
       this.taxPercentage = this.booking.taxPercentage;
     } else {
       if(this.checkinDay && this.checkinMonth && this.checkinYear) {
-        let checkedinday = (this.checkinYear && this.checkinMonth && this.checkinDay)
-          ? new Date(Number(this.checkinYear), Number(this.checkinMonth) - 1, Number(this.checkinDay))
-          : new Date();
+        let checkedinday = new Date(Number(this.checkinYear), Number(this.checkinMonth) - 1, Number(this.checkinDay));
 
         let checkedOutday = new Date(checkedinday);
         let day = Number(checkedOutday.getDate()) + Number(this.nights);
@@ -1455,10 +1451,7 @@ this.token.savePropertyUrl(currentUrl);
     this.routerone.params.subscribe((params) => {
       let uriId = this.routerone.snapshot.params['id'];
       let uriDetail = this.routerone.snapshot.params['detail'];
-      if (
-        (uriId != undefined && uriId != null && uriId == 'GoogleHotelCenter') ||
-        (uriDetail != undefined && uriDetail != null && uriDetail == 'GoogleHotelCenter')
-      ) {
+      if ((uriId != undefined && uriId != null && uriId == 'GoogleHotelCenter') || (uriDetail != undefined && uriDetail != null && uriDetail == 'GoogleHotelCenter')) {
         this.activeForGoogleHotelCenter = true;
       } else {
         this.activeForGoogleHotelCenter = false;
@@ -5224,9 +5217,7 @@ onCheckOutClosed(): void {
 
         this.selectHotelBooking = true;
 
-        let checkedinday = (this.checkinYear && this.checkinMonth && this.checkinDay)
-          ? new Date(Number(this.checkinYear), Number(this.checkinMonth) - 1, Number(this.checkinDay))
-          : new Date();
+        let checkedinday = new Date(Number(this.checkinYear), Number(this.checkinMonth) - 1, Number(this.checkinDay));
 
         let checkedOutday = new Date(checkedinday);
         let day = Number(checkedOutday.getDate()) + Number(this.nights);
@@ -6160,8 +6151,20 @@ onCheckOutClosed(): void {
   getGoogleReview(id) {
     this.listingService.getGoogleReview(id).subscribe((response) => {
       this.googleReviews = response.body;
-      // this.cdrf.detectChanges();
-      // this.chunkReviews();
+      if (this.googleReviews && this.googleReviews.length > 0) {
+        this.reviews = this.googleReviews.map((r: any) => {
+          return {
+            stars: Math.round(r.rating || 5),
+            text: r.reviewText || '',
+            name: r.reviewerName || r.customerName || 'Guest'
+          };
+        });
+        this.isReviewFound = true;
+      } else {
+        this.reviews = [];
+        this.isReviewFound = false;
+      }
+      this.changeDetectorRefs.detectChanges();
     });
   }
   getCustomerReview(id) {
@@ -6506,9 +6509,10 @@ onCheckOutClosed(): void {
     return matchedAmounts;
   }
 
-  // toggleReviewText(index: number): void {
-  //   this.expandedReviews[index] = !this.expandedReviews[index];
-  // }
+  toggleReviewText(index: number): void {
+    this.expandedReviews[index] = !this.expandedReviews[index];
+    this.changeDetectorRefs.detectChanges();
+  }
   // const = document.getElementsByClassName('booking-summary')[0];
   // if(bookingSummaryElement) {
   //   bookingSummaryElement.scrollIntoView();

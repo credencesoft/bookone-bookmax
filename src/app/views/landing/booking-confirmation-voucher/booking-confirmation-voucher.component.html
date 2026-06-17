@@ -22,7 +22,7 @@
         </div>
 
         <div class="d-flex" style="align-items: center; gap: 30px; margin-top: 20px">
-          <div class="col-6 text-left mb-4 font-change">
+          <div class="col-6 text-left mb-4 font-change" *ngIf="!isBookingCancelled() && !isBookingPending() && bookingsResponseList?.length > 0">
             <span style="
                 font-weight: 600 !important;
                 color: #000 !important;
@@ -96,6 +96,148 @@
             </div>
           </div>
 
+          <div class="col-6 text-left mb-4 font-change" *ngIf="isBookingPending()">
+            <span style="
+                font-weight: 600 !important;
+                color: #f59e0b !important;
+                font-size: 35px !important;
+              ">Booking Pending</span>
+            <div class="mb-0" style="
+                font-weight: 600 !important;
+                color: #d97706 !important;
+                font-size: 19px !important;
+                margin-top: -5px;
+              ">
+              Your booking is under review.
+            </div>
+            <div style="color: #615d5d; font-weight: 600; font-size: 13px">
+              We are currently processing your reservation. We will send an update to your email and WhatsApp once the booking is fully confirmed.
+            </div>
+            <div style="display: flex; gap: 20px; margin-top: 20px">
+              <div class="card" style="
+                  text-align: center;
+                  background-color: #fef3c7;
+                  padding: 26px 19px;
+                  border: 1px solid #fde68a;
+                ">
+                <div class="mb-2">
+                  <span class="highlight-text" style="color: #92400e !important;">Current Status</span>
+                </div>
+                <div class="mb-0">
+                  <span class="status-badge" style="font-size: 13px; background-color: #f59e0b; color: white;">Pending</span>
+                </div>
+              </div>
+              <div class="card" style="
+                  text-align: center;
+                  background-color: #fef3c7;
+                  padding: 26px 19px;
+                  border: 1px solid #fde68a;
+                ">
+                <div class="mb-2">
+                  <span class="highlight-text" style="color: #92400e !important;">Payment Status</span>
+                </div>
+                <div class="mb-0">
+                  <span class="status-badge" style="font-size: 13px; background-color: #d97706; color: white;">Pending</span>
+                </div>
+              </div>
+              <div class="card" style="
+                  text-align: center;
+                  background-color: #fef3c7;
+                  padding: 26px 19px;
+                  border: 1px solid #fde68a;
+                ">
+                <div class="mb-2">
+                  <span class="highlight-text" style="color: #92400e !important;">Booking ID </span>
+                </div>
+                <div class="mb-0" style="text-align: left"
+                  *ngFor="let booking of bookingsResponseList; let last = last">
+                  <span *ngIf="booking?.groupBookingId && last">
+                    <b id="copyTexttwo" style="color: #92400e !important;">{{ booking?.groupBookingId }}</b></span>
+
+                  <span *ngIf="!booking?.groupBookingId">
+                    <b id="copyTexttwo" style="color: #92400e !important;">{{
+                      getUpdatedReservationNumber(
+                      booking?.propertyReservationNumber
+                      )
+                      }}</b>
+                    <span *ngIf="!last" style="color: #92400e !important;">, </span><br />
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-6 text-left mb-4 font-change" *ngIf="isBookingCancelled()">
+            <span style="
+                font-weight: 600 !important;
+                color: #ef4444 !important;
+                font-size: 35px !important;
+              ">Booking Cancelled</span>
+            <div class="mb-0" style="
+                font-weight: 600 !important;
+                color: #dc2626 !important;
+                font-size: 19px !important;
+                margin-top: -5px;
+              ">
+              A refund has been initiated.
+            </div>
+            <div style="color: #615d5d; font-weight: 600; font-size: 13px">
+              This reservation has been successfully cancelled. The refund will be processed and credited to your original payment method within 5-7 business days.
+            </div>
+            <div style="display: flex; gap: 20px; margin-top: 20px">
+              <div class="card" style="
+                  text-align: center;
+                  background-color: #fef2f2;
+                  padding: 26px 19px;
+                  border: 1px solid #fee2e2;
+                ">
+                <div class="mb-2">
+                  <span class="highlight-text" style="color: #991b1b !important;">Current Status</span>
+                </div>
+                <div class="mb-0">
+                  <span class="status-badge status-cancelled" style="font-size: 13px; background-color: #ef4444;">Cancelled</span>
+                </div>
+              </div>
+              <div class="card" style="
+                  text-align: center;
+                  background-color: #fef2f2;
+                  padding: 26px 19px;
+                  border: 1px solid #fee2e2;
+                ">
+                <div class="mb-2">
+                  <span class="highlight-text" style="color: #991b1b !important;">Refund Status</span>
+                </div>
+                <div class="mb-0">
+                  <span class="status-badge" style="font-size: 13px; background-color: #dc2626;">Initiated</span>
+                </div>
+              </div>
+              <div class="card" style="
+                  text-align: center;
+                  background-color: #fef2f2;
+                  padding: 26px 19px;
+                  border: 1px solid #fee2e2;
+                ">
+                <div class="mb-2">
+                  <span class="highlight-text" style="color: #991b1b !important;">Booking ID </span>
+                </div>
+                <div class="mb-0" style="text-align: left"
+                  *ngFor="let booking of bookingsResponseList; let last = last">
+                  <span *ngIf="booking?.groupBookingId && last">
+                    <b id="copyTexttwo">{{ booking?.groupBookingId }}</b></span>
+
+                  <span *ngIf="!booking?.groupBookingId">
+                    <b id="copyTexttwo">{{
+                      getUpdatedReservationNumber(
+                      booking?.propertyReservationNumber
+                      )
+                      }}</b>
+                    <span *ngIf="!last">, </span><br />
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div style="justify-content: center; display: flex; gap: 20px">
             <div class="d-flex justify-content-center align-items-center">
               <div class="hotel-card-unique d-flex flex-row" *ngIf="businessUser?.name">
@@ -141,7 +283,7 @@
             Need Assistance?
           </button>
 
-          <button class="saveCopy" (click)="onGenerateVouchers()">
+          <button class="saveCopy" (click)="onGenerateVouchers()" *ngIf="!isBookingCancelled() && !isBookingPending()">
             <i class="fa-solid fa-download" style="margin-right: 4px"></i>Save a
             Copy
           </button>
@@ -503,7 +645,7 @@
                 email, please check your spam or promotions folder.
               </li>
             </ul>
-            <div class="cancellation-rules-card-voucher" *ngIf="cancellationRuleRows?.length">
+            <div class="cancellation-rules-card-voucher" *ngIf="cancellationRuleRows?.length && !isBookingCancelled() && !isBookingPending()">
               <h5>Cancellation Rules</h5>
               <p class="cancellation-rules-subtitle-voucher" *ngIf="cancellationEstimate">
                 Rule is applied on (Booking Amount - Convenience Fee). Total estimated deduction (including non-refundable convenience fee):
@@ -521,7 +663,7 @@
               </div>
             </div>
             <div *ngFor="let bServiceDtoList of policies; let i = index">
-              <div *ngIf="bServiceDtoList?.policy">
+              <div *ngIf="bServiceDtoList?.policy && !isBookingCancelled() && !isBookingPending()">
                 <div class="property-rules" *ngIf="policies">
                   Property rules:
                 </div>
@@ -557,7 +699,7 @@
           </div>
         </div>
 
-        <div class="d-flex" style="align-items: center; margin-top: 20px; flex-wrap: wrap">
+        <div class="d-flex" style="align-items: center; margin-top: 20px; flex-wrap: wrap" *ngIf="!isBookingCancelled() && !isBookingPending() && bookingsResponseList?.length > 0">
           <div class="col-12 text-left font-change">
             <span style="
                 font-weight: 600 !important;
@@ -634,14 +776,197 @@
                   </div>
                 </div>
                 <div>
-                  <div class="mb-1 highlight-text">Current Status</div>
-                  <div>
+                  <div class="mb-1 highlight-text" style="text-align: left;">Current Status</div>
+                  <div class="mb-2" style="text-align: left;">
                     <span class="status-badge status-enquiry" style="font-size: 13px">Confirmed</span>
+                  </div>
+                  <div class="mb-1 highlight-text" style="text-align: left;">Payment Status</div>
+                  <div style="text-align: left;">
                     <span class="status-badge" [ngClass]="{
                                                       'status-paid': isPaid,
                                                       'status-partial': !isPaid
                                                     }" style="font-size: 13px">
                       {{ isPaid ? 'Paid' : 'Partially Paid' }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="d-flex" style="align-items: center; margin-top: 20px; flex-wrap: wrap" *ngIf="isBookingPending()">
+          <div class="col-12 text-left font-change">
+            <span style="
+                font-weight: 600 !important;
+                color: #f59e0b !important;
+                font-size: 35px !important;
+              ">Booking Pending</span>
+            <div class="mb-0" style="
+                font-weight: 600 !important;
+                color: #d97706 !important;
+                font-size: 19px !important;
+                margin-top: -5px;
+              ">
+              Your booking is under review.
+            </div>
+            <div style="color: #615d5d; font-weight: 600; font-size: 13px; margin-bottom: 15px;">
+              We are currently processing your reservation. We will send an update to your email and WhatsApp once the booking is fully confirmed.
+            </div>
+            <div class="hotel-card-unique d-flex flex-row" style="flex-wrap: wrap" *ngIf="businessUser?.name">
+              <!-- Right Side: Image -->
+              <div *ngIf="businessUser?.imageList?.length > 0" class="flex-shrink-0" style="width: 100%; height: 100%">
+                <img [src]="businessUser?.imageList[0]?.url" />
+              </div>
+              <!-- Left Side: Text Content -->
+              <div class="hotel-card-unique-body flex-fill">
+                <h3 class="hotel-card-unique-title">
+                  {{ businessUser?.name }}
+                </h3>
+                <p class="hotel-card-unique-location">
+                  <i class="bi bi-geo-alt-fill"></i>
+                  {{ businessUser.address?.streetName }},
+                  {{ businessUser.address?.city }},
+                  {{ businessUser.address?.state }},
+                  {{ businessUser.address?.country }}
+                </p>
+                <div class="hotel-card-unique-text" *ngIf="businessUser.businessDescription">
+                  <p [innerHTML]="
+                      getTrimmedDescription(businessUser.businessDescription)
+                    " style="text-align: justify">
+                    {{ businessUser.businessDescription }}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div style="width: 100%">
+            <div class="card" style="
+                text-align: center;
+                background-color: #fef3c7;
+                padding: 15px 15px;
+                border: 1px solid #fde68a;
+              ">
+              <div class="d-flex justify-content-between">
+                <div>
+                  <div class="mb-1 highlight-text" style="color: #92400e !important;">Booking ID:</div>
+                  <div *ngFor="
+                      let booking of bookingsResponseList;
+                      let last = last
+                    ">
+                    <span *ngIf="booking?.groupBookingId && last">
+                      <b id="copyTexttwo" style="color: #92400e !important;">{{
+                        booking?.groupBookingId
+                        }}</b></span>
+
+                    <span *ngIf="!booking?.groupBookingId">
+                      <b id="copyTexttwo" style="color: #92400e !important;">{{
+                        getUpdatedReservationNumber(
+                        booking?.propertyReservationNumber
+                        )
+                        }}</b>
+                      <span *ngIf="!last" style="color: #92400e !important;">, </span><br />
+                    </span>
+                  </div>
+                </div>
+                <div>
+                  <div class="mb-1 highlight-text" style="color: #92400e !important; text-align: left;">Current Status</div>
+                  <div class="mb-2" style="text-align: left;">
+                    <span class="status-badge" style="font-size: 13px; background-color: #f59e0b; color: white;">Pending</span>
+                  </div>
+                  <div class="mb-1 highlight-text" style="color: #92400e !important; text-align: left;">Payment Status</div>
+                  <div style="text-align: left;">
+                    <span class="status-badge" style="font-size: 13px; background-color: #d97706; color: white;">Pending</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="d-flex" style="align-items: center; margin-top: 20px; flex-wrap: wrap" *ngIf="isBookingCancelled()">
+          <div class="col-12 text-left font-change">
+            <span style="
+                font-weight: 600 !important;
+                color: #ef4444 !important;
+                font-size: 35px !important;
+              ">Booking Cancelled</span>
+            <div class="mb-0" style="
+                font-weight: 600 !important;
+                color: #dc2626 !important;
+                font-size: 19px !important;
+                margin-top: -5px;
+              ">
+              A refund has been initiated.
+            </div>
+            <div style="color: #615d5d; font-weight: 600; font-size: 13px; margin-bottom: 15px;">
+              This reservation has been successfully cancelled. The refund will be processed and credited to your original payment method within 5-7 business days.
+            </div>
+            <div class="hotel-card-unique d-flex flex-row" style="flex-wrap: wrap" *ngIf="businessUser?.name">
+              <!-- Right Side: Image -->
+              <div *ngIf="businessUser?.imageList?.length > 0" class="flex-shrink-0" style="width: 100%; height: 100%">
+                <img [src]="businessUser?.imageList[0]?.url" />
+              </div>
+              <!-- Left Side: Text Content -->
+              <div class="hotel-card-unique-body flex-fill">
+                <h3 class="hotel-card-unique-title">
+                  {{ businessUser?.name }}
+                </h3>
+                <p class="hotel-card-unique-location">
+                  <i class="bi bi-geo-alt-fill"></i>
+                  {{ businessUser.address?.streetName }},
+                  {{ businessUser.address?.city }},
+                  {{ businessUser.address?.state }},
+                  {{ businessUser.address?.country }}
+                </p>
+                <div class="hotel-card-unique-text" *ngIf="businessUser.businessDescription">
+                  <p [innerHTML]="
+                      getTrimmedDescription(businessUser.businessDescription)
+                    " style="text-align: justify">
+                    {{ businessUser.businessDescription }}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div style="width: 100%">
+            <div class="card" style="
+                text-align: center;
+                background-color: #fef2f2;
+                padding: 15px 15px;
+                border: 1px solid #fee2e2;
+              ">
+              <div class="d-flex justify-content-between">
+                <div>
+                  <div class="mb-1 highlight-text" style="color: #991b1b !important;">Booking ID:</div>
+                  <div *ngFor="
+                      let booking of bookingsResponseList;
+                      let last = last
+                    ">
+                    <span *ngIf="booking?.groupBookingId && last">
+                      <b id="copyTexttwo">{{
+                        booking?.groupBookingId
+                        }}</b></span>
+
+                    <span *ngIf="!booking?.groupBookingId">
+                      <b id="copyTexttwo">{{
+                        getUpdatedReservationNumber(
+                        booking?.propertyReservationNumber
+                        )
+                        }}</b>
+                      <span *ngIf="!last">, </span><br />
+                    </span>
+                  </div>
+                </div>
+                <div>
+                  <div class="mb-1 highlight-text" style="color: #991b1b !important; text-align: left;">Current Status</div>
+                  <div class="mb-2" style="text-align: left;">
+                    <span class="status-badge status-cancelled" style="font-size: 13px; background-color: #ef4444; margin-right: 5px;">Cancelled</span>
+                  </div>
+                  <div class="mb-1 highlight-text" style="color: #991b1b !important; text-align: left;">Refund Status</div>
+                  <div style="text-align: left;">
+                    <span class="status-badge" style="font-size: 13px; background-color: #dc2626; color: white;">Initiated</span>
                   </div>
                 </div>
               </div>
@@ -658,7 +983,7 @@
             <i class="fa-solid fa-phone" style="margin-right: 4px"></i>Need
             Assistance?
           </button>
-          <button class="saveCopy" (click)="onGenerateVouchers()">
+          <button class="saveCopy" (click)="onGenerateVouchers()" *ngIf="!isBookingCancelled() && !isBookingPending()">
             <i class="fa-solid fa-download" style="margin-right: 4px"></i>Save a
             Copy
           </button>
@@ -998,7 +1323,7 @@
               please check your spam or promotions folder.
             </li>
           </ul>
-          <div class="cancellation-rules-card-voucher" *ngIf="cancellationRuleRows?.length">
+          <div class="cancellation-rules-card-voucher" *ngIf="cancellationRuleRows?.length && !isBookingCancelled() && !isBookingPending()">
             <h5>Cancellation Rules</h5>
             <p class="cancellation-rules-subtitle-voucher" *ngIf="cancellationEstimate">
               Rule is applied on (Booking Amount - Convenience Fee). Total estimated deduction (including non-refundable convenience fee):
@@ -1016,7 +1341,7 @@
             </div>
           </div>
           <div *ngFor="let bServiceDtoList of policies; let i = index">
-            <div *ngIf="bServiceDtoList?.policy">
+            <div *ngIf="bServiceDtoList?.policy && !isBookingCancelled() && !isBookingPending()">
               <div class="property-rules" *ngIf="policies">Property rules:</div>
 
               <div style="padding: 20px">

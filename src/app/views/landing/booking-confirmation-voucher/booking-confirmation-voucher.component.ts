@@ -614,6 +614,32 @@ export class BookingConfirmationVoucherComponent {
     return bookingStatus !== 'ENQUIRY' && bookingStatus !== 'PENDING';
   }
 
+  isBookingCancelled(): boolean {
+    if (!Array.isArray(this.bookingsResponseList) || this.bookingsResponseList.length === 0) {
+      return false;
+    }
+    return this.bookingsResponseList.some((booking: any) => {
+      const status = (booking?.bookingStatus || booking?.status || '')
+        .toString()
+        .trim()
+        .toUpperCase();
+      return status === 'CANCELLED';
+    });
+  }
+
+  isBookingPending(): boolean {
+    if (!Array.isArray(this.bookingsResponseList) || this.bookingsResponseList.length === 0) {
+      return false;
+    }
+    return this.bookingsResponseList.some((booking: any) => {
+      const status = (booking?.bookingStatus || booking?.status || '')
+        .toString()
+        .trim()
+        .toUpperCase();
+      return status === 'PENDING';
+    });
+  }
+
   private getSelectedAddOnsFromPersistedState(): any[] {
     const tokenSelectedServices = this.getSelectedAddOnsFromToken();
     if (tokenSelectedServices.length > 0) {
