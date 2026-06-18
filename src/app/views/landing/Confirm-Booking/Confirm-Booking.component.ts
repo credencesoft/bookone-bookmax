@@ -1040,7 +1040,8 @@ export class ConfirmBookingComponent implements OnInit {
       'GB': 'GBP',
       'EU': 'EUR',
       'CA': 'CAD',
-      'BD': 'BDT'
+      'BD': 'BDT',
+      'GH': 'GHS'
     };
     return mapping[country.toUpperCase()] || null;
   }
