@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Location } from '@angular/common';
 import { TokenStorage } from 'src/token.storage';
 import { BusinessUser } from 'src/app/model/user';
+import { HotelBookingService } from 'src/services/hotel-booking.service';
 
 @Component({
   selector: 'app-Header-Listingdetailsone',
@@ -35,6 +36,7 @@ export class HeaderListingdetailsoneComponent implements OnInit {
   dynamicPropertyId: number;
   dynamicSource: any;
   externalSite: string;
+  hasWhatsappEnquirySubscription: boolean = false;
 
   // gotopropertydetail() {
   //   let PropertyUrl = this.token.getPropertyUrl();
@@ -59,10 +61,12 @@ export class HeaderListingdetailsoneComponent implements OnInit {
     private location: Location,
     private token:TokenStorage,
     private acRoute: ActivatedRoute,
+    private hotelBookingService: HotelBookingService
   ) {
     // this.propertydetails = this.token.getProperty();
     // //console.log("propertydata="+ JSON.stringify(this.propertydetails))
    this.checkBookingEngineFlag();
+   this.getPropertySubscription();
   setInterval(() => {
     this.checkBookingEngineFlag();
         this.website = this.businessUser?.website;
@@ -186,7 +190,7 @@ formatUrl(url: string): string {
     : 'https://' + url;
 }
       getWhatsappShareUrlOne(): string {
-        if (this.businessUser.id !== 3469 && this.businessUser.id !== 701 && this.businessUser.id !== 1909 && this.businessUser.id !== 3468 && this.businessUser?.id !== 2614 && this.businessUser?.id !== 3526 && this.businessUser?.id !== 3530 && this.businessUser?.id !== 3531 ) {
+        if (this.hasWhatsappEnquirySubscription !== true) {
               const baseUrl = 'https://api.whatsapp.com/send';
     const phoneNumber = '919004126958';
     this.dynamicText = this.businessUser.name;
@@ -244,6 +248,23 @@ formatUrl(url: string): string {
     );
         }
   }
+
+  getPropertySubscription(){
+  const propertyId = this.token.getProperty().id;
+  if (propertyId) {
+    this.hotelBookingService.getSubscriptions(Number(propertyId)).subscribe({
+      next: (subRes) => {
+        const subscriptions = subRes.body ?? [];
+        this.hasWhatsappEnquirySubscription = subscriptions.some(
+          (sub: any) => sub.name === 'Property WhatsApp Enquiry'
+        );
+      },
+      error: (err) => {
+        console.error('Error fetching subscriptions:', err);
+      }
+    });
+  }
+}
   toggleListItems() {
     this.showListItems = !this.showListItems;
   }
