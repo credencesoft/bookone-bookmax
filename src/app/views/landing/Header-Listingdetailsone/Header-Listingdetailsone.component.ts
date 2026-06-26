@@ -250,7 +250,7 @@ formatUrl(url: string): string {
   }
 
   getPropertySubscription(){
-  const propertyId = this.token.getProperty().id;
+  const propertyId = this.token.getProperty()?.id;
   if (propertyId) {
     this.hotelBookingService.getSubscriptions(Number(propertyId)).subscribe({
       next: (subRes) => {
