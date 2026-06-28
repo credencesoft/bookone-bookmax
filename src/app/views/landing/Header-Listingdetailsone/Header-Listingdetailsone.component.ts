@@ -66,7 +66,6 @@ export class HeaderListingdetailsoneComponent implements OnInit {
     // this.propertydetails = this.token.getProperty();
     // //console.log("propertydata="+ JSON.stringify(this.propertydetails))
    this.checkBookingEngineFlag();
-   this.getPropertySubscription();
   setInterval(() => {
     this.checkBookingEngineFlag();
         this.website = this.businessUser?.website;
@@ -105,7 +104,7 @@ export class HeaderListingdetailsoneComponent implements OnInit {
  }
   ngOnInit() {
     this.website = this.businessUser?.website;
-
+    this.getPropertySubscription();
     //console.log('new link is',this.website);
   }
 checkBookingEngineFlag(): void {
