@@ -1,3 +1,2 @@
-Sitemap: https://bookonepms.com/sitemap.xml
-User-agent:*
-Disallow:
+User-agent: *
+Disallow: /

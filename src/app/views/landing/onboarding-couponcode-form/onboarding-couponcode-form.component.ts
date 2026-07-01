@@ -140,7 +140,7 @@ getBusinessLeadById(){
   this.metaService.updateTag({ name: "title", content: title });
   this.metaService.updateTag({ name: "keywords", content: keywords });
   this.metaService.updateTag({ name: "description", content: description });
-  this.metaService.updateTag({ name: "robots", content: "index,follow" });
+  this.metaService.updateTag({ name: "robots", content: "noindex,nofollow" });
   // fb
 
   this.metaService.updateTag({ property: 'og:title', content: ogTitle });

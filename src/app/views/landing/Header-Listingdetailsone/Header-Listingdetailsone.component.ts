@@ -37,6 +37,7 @@ export class HeaderListingdetailsoneComponent implements OnInit {
   dynamicSource: any;
   externalSite: string;
   hasWhatsappEnquirySubscription: boolean = false;
+  subscriptionFetched: boolean = false;
 
   // gotopropertydetail() {
   //   let PropertyUrl = this.token.getPropertyUrl();
@@ -66,7 +67,6 @@ export class HeaderListingdetailsoneComponent implements OnInit {
     // this.propertydetails = this.token.getProperty();
     // //console.log("propertydata="+ JSON.stringify(this.propertydetails))
    this.checkBookingEngineFlag();
-   this.getPropertySubscription();
   setInterval(() => {
     this.checkBookingEngineFlag();
         this.website = this.businessUser?.website;
@@ -75,7 +75,11 @@ export class HeaderListingdetailsoneComponent implements OnInit {
       });
       if (this.businessUser != null ) {
         this.showheader = true
+      
+      if (!this.subscriptionFetched && this.businessUser.id) {
+        this.getPropertySubscription();
       }
+    }
   }, 1000);
     this.PropertyUrl = this.token.getPropertyUrl();
     //console.log("property url:" + this.PropertyUrl)
@@ -88,30 +92,32 @@ export class HeaderListingdetailsoneComponent implements OnInit {
       });
       if (this.businessUser != null ) {
         this.showheader = true
-      }
-                }, 1000);
+      } 
+    }, 1000);
 
    }
  ngAfterViewInit() {
-                    this.acRoute.queryParams.subscribe((params) => {
-                if (params['bookingEngine'] !== undefined) {
-                  this.urlLocation = params['bookingEngine'];
-                  let websitebookingURL = 'true';
-                  this.websiteUrlBookingEngine = true;
-                  sessionStorage.setItem('BookingEngine', 'true');
-                }
+    this.acRoute.queryParams.subscribe((params) => {
+      if (params['bookingEngine'] !== undefined) {
+        this.urlLocation = params['bookingEngine'];
+        let websitebookingURL = 'true';
+        this.websiteUrlBookingEngine = true;
+        sessionStorage.setItem('BookingEngine', 'true');
+      }
     });
-
+    this.getPropertySubscription();
  }
+ 
   ngOnInit() {
     this.website = this.businessUser?.website;
-
     //console.log('new link is',this.website);
   }
-checkBookingEngineFlag(): void {
-  const bookingEngineFlag = sessionStorage.getItem('BookingEngine');
-  this.websiteUrlBookingEngine = bookingEngineFlag === 'true';
-}
+  
+  checkBookingEngineFlag(): void {
+    const bookingEngineFlag = sessionStorage.getItem('BookingEngine');
+    this.websiteUrlBookingEngine = bookingEngineFlag === 'true';
+  }
+  
   getFormattedNumber(): string {
     const rawNumber = this.websiteUrlBookingEngine
       ? this.businessUser?.mobile
@@ -134,22 +140,21 @@ checkBookingEngineFlag(): void {
     this.showListingDetails = !this.showListingDetails;
     this.isdone = true;
     this.website = this.businessUser?.website;
-  this.businessUser?.socialMediaLinks.forEach(element => {
-    this.socialmedialist=element
-  });
+    this.businessUser?.socialMediaLinks.forEach(element => {
+      this.socialmedialist=element
+    });
     this.propertyname = this.businessUser?.seoFriendlyName;
     this.logoUrl=this.businessUser?.logoUrl;
     //console.log(this.logoUrl);
     //console.log('new link is',this.website);
     //console.log('new link is hello world',this.socialmedialist);
     //console.log('new link is',this.propertyname);
-
-
   }
+  
   openWhatsapp() {
-  const url = this.getWhatsappShareUrl();
-  window.open(url, '_blank'); // opens WhatsApp link in new tab/app
-}
+    const url = this.getWhatsappShareUrl();
+    window.open(url, '_blank'); // opens WhatsApp link in new tab/app
+  }
 
   copyPageUrl(): void {
     if (typeof window === 'undefined' || !window.location?.href) {
@@ -164,7 +169,8 @@ checkBookingEngineFlag(): void {
 
     window.prompt('Copy this page URL:', currentUrl);
   }
-    getWhatsappShareUrl(): string {
+  
+  getWhatsappShareUrl(): string {
     const baseUrl = 'https://api.whatsapp.com/send';
     this.dynamicText = this.businessUser.name;
     const phoneNumber = this.businessUser.mobile;
@@ -183,97 +189,104 @@ checkBookingEngineFlag(): void {
       baseUrl + '?phone=' + phoneNumber + '&text=' + encodeURIComponent(message)
     );
   }
-formatUrl(url: string): string {
-  if (!url) return '';
-  return url.startsWith('http://') || url.startsWith('https://')
-    ? url
-    : 'https://' + url;
-}
-      getWhatsappShareUrlOne(): string {
-        if (this.hasWhatsappEnquirySubscription !== true) {
-              const baseUrl = 'https://api.whatsapp.com/send';
-    const phoneNumber = '919004126958';
-    this.dynamicText = this.businessUser.name;
-    this.dynamicPropertyId = this.businessUser.id;
-    this.dynamicCity = this.businessUser?.address?.city;
-    this.dynamicStreetName = this.businessUser.address?.streetName;
-    this.dynamicLocality = this.businessUser.address?.locality;
-    this.dynamicStreetNumber = this.businessUser.address?.streetNumber;
-    this.dynamicCountryName = this.businessUser.address?.country;
-    this.externalSite = 'WebSite';
-    // The recipient's phone number (optional)
-    const message =
-      '*This is an Enquiry from :* The HotelMate Website' +
-      '\nHotel Name: ' +
-      this.dynamicText +
-      ',' +
-      '\nProperty Id: ' +
-      this.dynamicPropertyId +
-      ',' +
-      '\nexternalSite: ' +
-      this.externalSite +
-      ',' +
-      '\nAddress: ' +
-      this.dynamicStreetNumber +
-      ',' +
-      this.dynamicStreetName +
-      ',' +
-      this.dynamicLocality +
-      ',' +
-      this.dynamicCity +
-      ',' +
-      this.dynamicCountryName; // The dynamic text you want to include
+  
+  formatUrl(url: string): string {
+    if (!url) return '';
+    return url.startsWith('http://') || url.startsWith('https://')
+      ? url
+      : 'https://' + url;
+  }
+  
+  getWhatsappShareUrlOne(): string {
+    if (this.hasWhatsappEnquirySubscription !== true) {
+      const baseUrl = 'https://api.whatsapp.com/send';
+      const phoneNumber = '919004126958';
+      this.dynamicText = this.businessUser.name;
+      this.dynamicPropertyId = this.businessUser.id;
+      this.dynamicCity = this.businessUser?.address?.city;
+      this.dynamicStreetName = this.businessUser.address?.streetName;
+      this.dynamicLocality = this.businessUser.address?.locality;
+      this.dynamicStreetNumber = this.businessUser.address?.streetNumber;
+      this.dynamicCountryName = this.businessUser.address?.country;
+      this.externalSite = 'WebSite';
+      // The recipient's phone number (optional)
+      const message =
+        '*This is an Enquiry from :* The HotelMate Website' +
+        '\nHotel Name: ' +
+        this.dynamicText +
+        ',' +
+        '\nProperty Id: ' +
+        this.dynamicPropertyId +
+        ',' +
+        '\nexternalSite: ' +
+        this.externalSite +
+        ',' +
+        '\nAddress: ' +
+        this.dynamicStreetNumber +
+        ',' +
+        this.dynamicStreetName +
+        ',' +
+        this.dynamicLocality +
+        ',' +
+        this.dynamicCity +
+        ',' +
+        this.dynamicCountryName; // The dynamic text you want to include
 
-    return (
-      baseUrl + '?phone=' + phoneNumber + '&text=' + encodeURIComponent(message)
-    );
-        }
-        else {
-              const baseUrl = 'https://api.whatsapp.com/send';
-    this.dynamicText = this.businessUser.name;
-    const phoneNumber = this.businessUser.mobile;
-    this.dynamicPropertyId = this.businessUser.id;
-    this.dynamicCity = this.businessUser?.address?.city;
-    this.dynamicStreetName = this.businessUser.address?.streetName;
-    this.dynamicLocality = this.businessUser.address?.locality;
-    this.dynamicStreetNumber = this.businessUser.address?.streetNumber;
-    this.dynamicCountryName = this.businessUser.address?.country;
-    this.externalSite = 'WebSite';
-    // The recipient's phone number (optional)
-    const message =
-      '*This is an Enquiry from :* Your Website'
+      return (
+        baseUrl + '?phone=' + phoneNumber + '&text=' + encodeURIComponent(message)
+      );
+    }
+    else {
+      const baseUrl = 'https://api.whatsapp.com/send';
+      this.dynamicText = this.businessUser.name;
+      const phoneNumber = this.businessUser.mobile;
+      this.dynamicPropertyId = this.businessUser.id;
+      this.dynamicCity = this.businessUser?.address?.city;
+      this.dynamicStreetName = this.businessUser.address?.streetName;
+      this.dynamicLocality = this.businessUser.address?.locality;
+      this.dynamicStreetNumber = this.businessUser.address?.streetNumber;
+      this.dynamicCountryName = this.businessUser.address?.country;
+      this.externalSite = 'WebSite';
+      // The recipient's phone number (optional)
+      const message =
+        '*This is an Enquiry from :* Your Website'
 
-    return (
-      baseUrl + '?phone=' + phoneNumber + '&text=' + encodeURIComponent(message)
-    );
-        }
+      return (
+        baseUrl + '?phone=' + phoneNumber + '&text=' + encodeURIComponent(message)
+      );
+    }
   }
 
   getPropertySubscription(){
-  const propertyId = this.token.getProperty().id;
-  if (propertyId) {
-    this.hotelBookingService.getSubscriptions(Number(propertyId)).subscribe({
-      next: (subRes) => {
-        const subscriptions = subRes.body ?? [];
-        this.hasWhatsappEnquirySubscription = subscriptions.some(
-          (sub: any) => sub.name === 'Property WhatsApp Enquiry'
-        );
-      },
-      error: (err) => {
-        console.error('Error fetching subscriptions:', err);
-      }
-    });
+    // Fallback order: token storage first, then input businessUser ID
+    const propertyId = this.token.getProperty()?.id || this.businessUser?.id;
+    if (propertyId) {
+      this.subscriptionFetched = true;
+      this.hotelBookingService.getSubscriptions(Number(propertyId)).subscribe({
+        next: (subRes: any) => {
+          // Safe check: handle direct array response or HttpResponse body response
+          const subscriptions = Array.isArray(subRes) ? subRes : (subRes?.body ?? []);
+          this.hasWhatsappEnquirySubscription = subscriptions.some(
+            (sub: any) => sub.name === 'Property WhatsApp Enquiry'
+          );
+        },
+        error: (err) => {
+          console.error('Error fetching subscriptions:', err);
+        }
+      });
+    }
   }
-}
+  
   toggleListItems() {
     this.showListItems = !this.showListItems;
   }
 
   scrollToAccommodation(event: MouseEvent) {
- // Prevent the event from bubbling up
- event.stopPropagation();
+    // Prevent the event from bubbling up
+    event.stopPropagation();
     this.onBookNowClick.emit(); // Emit the event when the button is clicked
   }
+  
   navigate(){
 
   }
