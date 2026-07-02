@@ -169,6 +169,14 @@ margin-bottom: 10px;
   font-weight: bold;
 }
 
+.booking-status-message {
+  max-width: 620px;
+  margin: 0 auto;
+  line-height: 1.6;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
 .status-badge {
     border-radius: 20px;
     padding: 5px 20px;

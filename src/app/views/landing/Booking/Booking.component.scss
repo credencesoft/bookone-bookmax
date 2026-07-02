@@ -4975,6 +4975,14 @@ p-dialog .p-dialog-header .p-dialog-title {
   opacity: 0.9;
 }
 
+.booking-status-message {
+  max-width: 620px;
+  margin: 0 auto;
+  line-height: 1.6;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
 /* Final Views Styling */
 .final-view {
   animation: viewSlideUp 0.6s cubic-bezier(0.23, 1, 0.32, 1) both;
