@@ -11187,14 +11187,28 @@ export class BookingComponent implements OnInit {
 
     if (!bookingSummary || !bookingSummary.selectedPlansSummary?.length) {
       console.error('No valid booking summary found.');
+      this.isEnquiryDisabled = false;
       return;
     }
 
     const bookingList = bookingSummary.selectedPlansSummary;
 
-    for (let i = 0; i < bookingList.length; i++) {
-      const _booking = bookingList[i];
-      await this.submitForm(_booking, bookingList);
+    try {
+      let allSuccess = true;
+      for (let i = 0; i < bookingList.length; i++) {
+        const _booking = bookingList[i];
+        const success = await this.submitForm(_booking, bookingList);
+        if (!success) {
+          allSuccess = false;
+          break;
+        }
+      }
+      if (!allSuccess) {
+        this.isEnquiryDisabled = false;
+      }
+    } catch (error) {
+      console.error('Error creating enquiries:', error);
+      this.isEnquiryDisabled = false;
     }
   }
 
@@ -11466,7 +11480,7 @@ export class BookingComponent implements OnInit {
         .toPromise();
       if (response) {
         this.paymentLoader = false;
-        this.submitFormMobileBizzApp(enquiryForm);
+        this.submitFormMobileBizzApp(enquiryForm, response.body);
         enquiryForm.checkOutDate = this.datePipe.transform(
           enquiryForm.checkInDate,
           'dd-MM-yyyy',
@@ -11519,12 +11533,17 @@ export class BookingComponent implements OnInit {
     return false;
   }
 
-  async submitFormMobileBizzApp(enquiryForm) {
+  async submitFormMobileBizzApp(enquiryForm, responseBody?: any) {
     enquiryForm.propertyId = this.token?.getProperty()?.id;
     try {
-      const response: HttpResponse<EnquiryDto> = await this.hotelBookingService
-        .accommodationEnquiry(enquiryForm)
-        .toPromise();
+      let response: any = null;
+      if (responseBody) {
+        response = { body: responseBody };
+      } else {
+        response = await this.hotelBookingService
+          .accommodationEnquiry(enquiryForm)
+          .toPromise();
+      }
       if (response) {
         this.paymentLoader = false;
         enquiryForm.checkInDate = this.datePipe.transform(
