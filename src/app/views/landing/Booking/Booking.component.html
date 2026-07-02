@@ -63,30 +63,32 @@
         />
 
         <button
-          (click)="selectedCoupon(coupon)"
+          (click)="openGetCouponModal(coupon)"
           [disabled]="storedActualNetAmount <= coupon.minimumOrderAmount"
           style="
-            background-color: #4caf50;
+            background-color: #2563eb;
             color: white;
             border: none;
             border-radius: 5px;
             padding: 8px 16px;
             cursor: pointer;
             font-size: 14px;
+            font-weight: 600;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.2s;
           "
           [ngStyle]="{
             'background-color':
               storedActualNetAmount <= coupon.minimumOrderAmount
                 ? '#d3d3d3'
-                : '#4CAF50',
+                : '#2563eb',
             cursor:
               storedActualNetAmount <= coupon.minimumOrderAmount
                 ? 'not-allowed'
                 : 'pointer'
           }"
         >
-          Apply
+          Get Coupon
         </button>
       </div>
     </div>
@@ -104,6 +106,137 @@
       </div>
     </ng-template>
   </p-dialog>
+
+  <p-dialog
+    header="Get Coupon Code"
+    [(visible)]="visibleGetCouponModal"
+    [modal]="true"
+    [responsive]="true"
+    [style]="{ width: '450px', 'max-width': '95vw', 'border-radius': '12px' }"
+    class="dialogSection"
+  >
+    <div style="padding: 15px; font-family: 'Inter', sans-serif;">
+      <p style="color: #64748b; font-size: 14px; margin-bottom: 20px; line-height: 1.5;">
+        Please enter your details to receive your exclusive unique coupon code via WhatsApp.
+      </p>
+
+      <div style="margin-bottom: 16px;">
+        <label style="display: block; font-weight: 600; font-size: 13px; color: #334155; margin-bottom: 6px;">Guest Name</label>
+        <input
+          type="text"
+          [(ngModel)]="guestCouponName"
+          placeholder="Enter your full name"
+          style="
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 14px;
+            box-sizing: border-box;
+            outline: none;
+            transition: border-color 0.2s;
+          "
+          onfocus="this.style.borderColor='#3b82f6'"
+          onblur="this.style.borderColor='#cbd5e1'"
+        />
+      </div>
+
+      <div style="margin-bottom: 20px;">
+        <label style="display: block; font-weight: 600; font-size: 13px; color: #334155; margin-bottom: 6px;">WhatsApp Number</label>
+        <input
+          type="text"
+          [(ngModel)]="guestCouponPhone"
+          placeholder="e.g. +64210000000 or +919876543210"
+          style="
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 14px;
+            box-sizing: border-box;
+            outline: none;
+            transition: border-color 0.2s;
+          "
+          onfocus="this.style.borderColor='#3b82f6'"
+          onblur="this.style.borderColor='#cbd5e1'"
+        />
+      </div>
+
+      <!-- Messages -->
+      <div *ngIf="guestCouponError" style="background-color: #fef2f2; border: 1px solid #fca5a5; color: #991b1b; padding: 10px 12px; border-radius: 8px; font-size: 13px; margin-bottom: 16px;">
+        {{ guestCouponError }}
+      </div>
+
+      <div *ngIf="guestCouponSuccess" style="background-color: #f0fdf4; border: 1px solid #86efac; color: #166534; padding: 10px 12px; border-radius: 8px; font-size: 13px; margin-bottom: 16px;">
+        {{ guestCouponSuccess }}
+      </div>
+
+      <!-- Action Buttons -->
+      <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 24px;">
+        <button
+          (click)="visibleGetCouponModal = false"
+          [disabled]="guestCouponLoading"
+          style="
+            padding: 10px 18px;
+            background-color: #f1f5f9;
+            color: #475569;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+          "
+          onmouseover="this.style.backgroundColor='#e2e8f0'"
+          onmouseout="this.style.backgroundColor='#f1f5f9'"
+        >
+          Cancel
+        </button>
+        <button
+          (click)="generateAndApplyCoupon()"
+          [disabled]="guestCouponLoading || generatedGuestCouponCode"
+          style="
+            padding: 10px 18px;
+            background-color: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
+            transition: background-color 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+          "
+          onmouseover="this.style.backgroundColor='#1d4ed8'"
+          onmouseout="this.style.backgroundColor='#2563eb'"
+          [ngStyle]="{
+            'opacity': (guestCouponLoading || generatedGuestCouponCode) ? '0.6' : '1',
+            'cursor': (guestCouponLoading || generatedGuestCouponCode) ? 'not-allowed' : 'pointer'
+          }"
+        >
+          <span *ngIf="guestCouponLoading" class="spinner" style="
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+          "></span>
+          {{ guestCouponLoading ? 'Generating...' : (generatedGuestCouponCode ? 'Coupon Applied' : 'Get & Apply Coupon') }}
+        </button>
+      </div>
+    </div>
+  </p-dialog>
+
+  <style>
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
 
   <div
     *ngIf="showingSuccessMessage"

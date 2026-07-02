@@ -206,9 +206,10 @@
                   <div class="applycoupon spin-trigger-wrap">
                     <button
                       class="apply-coupon-btn spin-now-btn"
-                      (click)="openSpinWheel(product, couponSection)"
+                      (click)="openGetCouponModal(product)"
+                      style="background-color: #2563eb; color: white;"
                     >
-                      Spin Now
+                      Get Coupon
                     </button>
                   </div>
                 </div>
@@ -218,6 +219,289 @@
         </div>
       </ng-template>
     </p-carousel>
+
+    <p-dialog
+      [(visible)]="visibleGetCouponModal"
+      [modal]="true"
+      [responsive]="true"
+      [showHeader]="false"
+      [style]="{ width: '480px', 'max-width': '95vw', 'border-radius': '16px', 'overflow': 'hidden', 'border': 'none', 'box-shadow': '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)' }"
+      class="dialogSection professional-coupon-dialog"
+    >
+      <!-- Premium Custom Modal Container -->
+      <div style="font-family: 'Inter', sans-serif; background-color: #ffffff; overflow: hidden; position: relative;">
+        
+        <!-- Dynamic Gradient Header Banner pulling from property configurations -->
+        <div 
+          style="padding: 28px 24px; position: relative; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 12px; border-bottom: 4px solid; background: linear-gradient(135deg, var(--primary, #232A45) 0%, var(--secondary, #0B01CC) 100%);"
+          [style.border-bottom-color]="businessUser?.secondaryColor || 'var(--secondary, #0B01CC)'"
+          [style.color]="getContrastColor(businessUser?.primaryColor)"
+        >
+          <!-- Close Button with Dynamic Contrast -->
+          <button 
+            (click)="visibleGetCouponModal = false"
+            class="close-btn-custom"
+            [style.color]="getContrastColor(businessUser?.primaryColor)"
+            [style.background]="getContrastColor(businessUser?.primaryColor) === '#ffffff' ? 'rgba(255, 255, 255, 0.15)' : 'rgba(15, 23, 42, 0.08)'"
+            style="position: absolute; top: 16px; right: 16px; border: none; width: 32px; height: 32px; border-radius: 50%; font-size: 18px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px);"
+            aria-label="Close"
+          >
+            &times;
+          </button>
+
+          <!-- SVG Gift/Coupon Icon with Glow -->
+          <div 
+            [style.background]="getContrastColor(businessUser?.primaryColor) === '#ffffff' ? 'rgba(255, 255, 255, 0.2)' : 'rgba(15, 23, 42, 0.1)'"
+            style="width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(6px); box-shadow: 0 8px 16px rgba(0,0,0,0.15); animation: pulseGlow 2s infinite alternate;"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" [style.color]="getContrastColor(businessUser?.primaryColor)">
+              <path d="M19 12V5a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v7"></path>
+              <path d="M5 12a2 2 0 0 1-2 2v3a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-3a2 2 0 0 1-2-2"></path>
+              <circle cx="12" cy="12" r="2"></circle>
+              <path d="M12 5v2"></path>
+              <path d="M12 17v2"></path>
+            </svg>
+          </div>
+
+          <div>
+            <h3 [style.color]="getContrastColor(businessUser?.primaryColor)" style="margin: 0; font-size: 20px; font-weight: 700; letter-spacing: -0.025em; text-shadow: 0 1px 2px rgba(0,0,0,0.1);">
+              Unlock Special Offer
+            </h3>
+            <p [style.color]="getContrastColor(businessUser?.primaryColor)" style="margin: 4px 0 0; font-size: 13px; opacity: 0.9; font-weight: 400; max-width: 340px; line-height: 1.4;">
+              Enter your details to receive an exclusive coupon code instantly via WhatsApp
+            </p>
+          </div>
+        </div>
+
+        <!-- Form Body -->
+        <div style="padding: 24px; background-color: #fcfcfd;">
+          
+          <!-- Guest Name Field -->
+          <div style="margin-bottom: 20px;">
+            <label style="display: flex; align-items: center; gap: 6px; font-weight: 600; font-size: 13px; color: #475569; margin-bottom: 8px;">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--primary, #232A45);">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+              Guest Name
+            </label>
+            <div style="position: relative;">
+              <input
+                type="text"
+                [(ngModel)]="guestCouponName"
+                placeholder="Enter your full name"
+                class="input-field-custom"
+                style="
+                  width: 100%;
+                  padding: 12px 16px;
+                  border: 1.5px solid #e2e8f0;
+                  border-radius: 10px;
+                  font-size: 14px;
+                  font-weight: 500;
+                  color: #1e293b;
+                  box-sizing: border-box;
+                  outline: none;
+                  background-color: white;
+                  transition: all 0.2s ease-in-out;
+                  box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+                "
+                [style.border-color]="guestCouponName ? 'var(--primary, #232A45)' : '#e2e8f0'"
+              />
+            </div>
+          </div>
+
+          <!-- WhatsApp Number Field -->
+          <div style="margin-bottom: 24px;">
+            <label style="display: flex; align-items: center; gap: 6px; font-weight: 600; font-size: 13px; color: #475569; margin-bottom: 8px;">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #25d366;">
+                <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+              </svg>
+              WhatsApp Number
+            </label>
+            <div style="position: relative;">
+              <input
+                type="text"
+                [(ngModel)]="guestCouponPhone"
+                placeholder="e.g. +64210000000 or +919876543210"
+                class="input-field-custom"
+                style="
+                  width: 100%;
+                  padding: 12px 16px;
+                  border: 1.5px solid #e2e8f0;
+                  border-radius: 10px;
+                  font-size: 14px;
+                  font-weight: 500;
+                  color: #1e293b;
+                  box-sizing: border-box;
+                  outline: none;
+                  background-color: white;
+                  transition: all 0.2s ease-in-out;
+                  box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+                "
+                [style.border-color]="guestCouponPhone ? 'var(--primary, #232A45)' : '#e2e8f0'"
+              />
+            </div>
+          </div>
+
+          <!-- Error Feedback -->
+          <div *ngIf="guestCouponError" style="
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            background-color: #fef2f2;
+            border: 1.5px solid #fee2e2;
+            color: #991b1b;
+            padding: 12px 14px;
+            border-radius: 10px;
+            font-size: 13px;
+            margin-bottom: 20px;
+            line-height: 1.4;
+            animation: slideInDown 0.3s ease;
+          ">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; margin-top: 1px;">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+            <span>{{ guestCouponError }}</span>
+          </div>
+
+          <!-- Success Feedback -->
+          <div *ngIf="guestCouponSuccess" style="
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            background-color: #f0fdf4;
+            border: 1.5px solid #dcfce7;
+            color: #166534;
+            padding: 12px 14px;
+            border-radius: 10px;
+            font-size: 13px;
+            margin-bottom: 20px;
+            line-height: 1.4;
+            animation: slideInDown 0.3s ease;
+          ">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; margin-top: 1px; color: #22c55e;">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+              <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
+            <span>{{ guestCouponSuccess }}</span>
+          </div>
+
+          <!-- Buttons Group -->
+          <div style="display: flex; gap: 12px; margin-top: 8px;">
+            <button
+              (click)="visibleGetCouponModal = false"
+              [disabled]="guestCouponLoading"
+              class="cancel-btn-custom"
+              style="
+                flex: 1;
+                padding: 12px 18px;
+                background-color: #f1f5f9;
+                color: #475569;
+                border: 1.5px solid #e2e8f0;
+                border-radius: 10px;
+                font-size: 14px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.2s ease;
+              "
+            >
+              Cancel
+            </button>
+            
+            <button
+              (click)="generateAndApplyCoupon()"
+              [disabled]="guestCouponLoading || generatedGuestCouponCode"
+              class="submit-btn-custom"
+              style="
+                flex: 2;
+                padding: 12px 18px;
+                border: none;
+                border-radius: 10px;
+                font-size: 14px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.2s ease;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 8px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+                background: linear-gradient(135deg, var(--primary, #232A45) 0%, var(--secondary, #0B01CC) 100%);
+              "
+              [style.color]="getContrastColor(businessUser?.primaryColor)"
+              [ngStyle]="{
+                'opacity': (guestCouponLoading || generatedGuestCouponCode) ? '0.7' : '1',
+                'cursor': (guestCouponLoading || generatedGuestCouponCode) ? 'not-allowed' : 'pointer',
+                'box-shadow': (guestCouponLoading || generatedGuestCouponCode) ? 'none' : '0 4px 12px rgba(0, 0, 0, 0.1)'
+              }"
+            >
+              <span *ngIf="guestCouponLoading" class="spinner-custom"></span>
+              
+              <svg *ngIf="!guestCouponLoading && generatedGuestCouponCode" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" [style.color]="getContrastColor(businessUser?.primaryColor)">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+
+              <svg *ngIf="!guestCouponLoading && !generatedGuestCouponCode" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" [style.color]="getContrastColor(businessUser?.primaryColor)">
+                <line x1="22" y1="2" x2="11" y2="13"></line>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+              </svg>
+              
+              <span>{{ guestCouponLoading ? 'Generating...' : (generatedGuestCouponCode ? 'Coupon Applied!' : 'Get & Apply Coupon') }}</span>
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </p-dialog>
+
+    <style>
+      @keyframes pulseGlow {
+        0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4); }
+        100% { transform: scale(1.04); box-shadow: 0 0 12px 6px rgba(255, 255, 255, 0.2); }
+      }
+      @keyframes slideInDown {
+        0% { transform: translateY(-8px); opacity: 0; }
+        100% { transform: translateY(0); opacity: 1; }
+      }
+      .spinner-custom {
+        display: inline-block;
+        width: 14px;
+        height: 14px;
+        border: 2px solid rgba(255, 255, 255, 0.35);
+        border-radius: 50%;
+        border-top-color: #ffffff;
+        animation: spin-custom-anim 0.8s linear infinite;
+        flex-shrink: 0;
+      }
+      @keyframes spin-custom-anim {
+        to { transform: rotate(360deg); }
+      }
+      .close-btn-custom {
+        transition: all 0.2s ease-in-out;
+      }
+      .close-btn-custom:hover {
+        transform: scale(1.1);
+        filter: brightness(1.2);
+      }
+      .input-field-custom:focus {
+        border-color: var(--primary, #232A45) !important;
+        box-shadow: 0 0 0 3px rgba(35, 42, 69, 0.15) !important;
+      }
+      .cancel-btn-custom:hover {
+        background-color: #e2e8f0 !important;
+        color: #1e293b !important;
+      }
+      .submit-btn-custom {
+        transition: all 0.2s ease-in-out;
+      }
+      .submit-btn-custom:hover:not(:disabled) {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15) !important;
+        filter: brightness(1.1);
+      }
+    </style>
   </div>
 
   <div class="spin-wheel-overlay" *ngIf="spinWheelOpen" (click)="closeSpinWheel()"></div>

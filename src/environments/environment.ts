@@ -10,7 +10,7 @@ export const environment = {
   hdfcAPIUrl:'https://payment.bookone.io',
   apiScheduler: 'https://scheduler.uat.bookone.io',
   apiUrlAddress: 'https://api.uat.bookone.io/api-address',
-  apiUrlPromotion: 'https://api.bookonelocal.in/promotion-api',
+  apiUrlPromotion: 'https://api.uat.bookone.io/promotion',
   apiLms: 'https://api.uat.bookone.io/lms',
   channelIntegration:'https://api.bookonelocal.in/channel-integration',
   apiUrlBookone: 'https://api.bookonelocal.in/api-bookone',

@@ -49,7 +49,7 @@ import { DomSanitizer, Meta, SafeUrl, Title } from '@angular/platform-browser';
 // import { TriggerEventService } from 'src/app/services/trigger-event.service';
 import { FormControl, FormGroup, NgForm, Validators } from '@angular/forms';
 import { environment } from 'src/environments/environment';
-import { API_URL_NZ } from 'src/app/app.component';
+import { API_URL_NZ, API_URL_PROMOTION } from 'src/app/app.component';
 import { ScrollBar } from '@ng-bootstrap/ng-bootstrap/util/scrollbar';
 // import { ScrollDirective } from '../scroll.directive';
 // import { BlogPostService } from 'src/app/services/blog-post.service';
@@ -179,6 +179,14 @@ export class ListingDetailOneComponent implements OnInit {
   isCardVisible: boolean;
   couponApplied: boolean;
   couponSuccessApplied: boolean = false;
+  visibleGetCouponModal: boolean = false;
+  guestCouponName: string = '';
+  guestCouponPhone: string = '';
+  currentOfferIdForCoupon: any = null;
+  generatedGuestCouponCode: string = '';
+  guestCouponError: string = '';
+  guestCouponSuccess: string = '';
+  guestCouponLoading: boolean = false;
   showSuccessContent: boolean = false;
   isAfterCheckAvilability: boolean;
   primaryColorProperty: any;
@@ -4911,7 +4919,20 @@ onCheckOutClosed(): void {
   //     '--third-gradient',
   //     'linear-gradient( 180deg, ' + primary + ', ' + secondary + ')'
   //   );
-  // }
+  getContrastColor(hexColor?: string): string {
+    if (!hexColor) return '#ffffff';
+    let color = hexColor.replace('#', '');
+    if (color.length === 3) {
+      color = color.split('').map(c => c + c).join('');
+    }
+    if (color.length !== 6) return '#ffffff';
+    const r = parseInt(color.substring(0, 2), 16);
+    const g = parseInt(color.substring(2, 4), 16);
+    const b = parseInt(color.substring(4, 6), 16);
+    const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
+    return (yiq >= 128) ? '#0f172a' : '#ffffff';
+  }
+
   changeTheme(primary?: string, secondary?: string, tertiary?: string) {
   // Default colors if none are passed
   const defaultPrimary = "#232A45";   // blue
@@ -8976,6 +8997,90 @@ onCouponInputChange(event: string) {
   sessionStorage.removeItem('selectPromo');
   this.enteredCoupon = '';
 }
+
+  openGetCouponModal(coupon: any) {
+    this.currentOfferIdForCoupon = coupon.id;
+    this.guestCouponName = '';
+    this.guestCouponPhone = '';
+    this.generatedGuestCouponCode = '';
+    this.guestCouponError = '';
+    this.guestCouponSuccess = '';
+    this.guestCouponLoading = false;
+    this.visibleGetCouponModal = true;
+  }
+
+  generateAndApplyCoupon() {
+    if (!this.guestCouponName || !this.guestCouponName.trim()) {
+      this.guestCouponError = 'Guest Name is required';
+      return;
+    }
+    if (!this.guestCouponPhone || !this.guestCouponPhone.trim()) {
+      this.guestCouponError = 'WhatsApp Number is required';
+      return;
+    }
+
+    this.guestCouponLoading = true;
+    this.guestCouponError = '';
+    this.guestCouponSuccess = '';
+
+    const payload = {
+      businessOfferId: this.currentOfferIdForCoupon,
+      guestName: this.guestCouponName.trim(),
+      whatsappNumber: this.guestCouponPhone.trim()
+    };
+
+    const url = `${API_URL_PROMOTION}/api/guest-promotion/request`;
+    this.http.post<any>(url, payload).subscribe(
+      (response: any) => {
+        this.guestCouponLoading = false;
+        if (response && response.generatedCoupon) {
+          this.generatedGuestCouponCode = response.generatedCoupon;
+          this.guestCouponSuccess = `Coupon generated successfully: ${response.generatedCoupon}! Sent to WhatsApp.`;
+          
+          const allOffers = this.showAllTheOfferList?.length ? this.showAllTheOfferList : this.offersList;
+          const originalOffer = allOffers?.find((o: any) => o.id === this.currentOfferIdForCoupon);
+          if (originalOffer) {
+            const guestCouponObject = {
+              ...originalOffer,
+              couponCode: response.generatedCoupon
+            };
+
+            this.selectedPromotion = true;
+            this.selectedPromotionCouponData = guestCouponObject;
+            this.couponApplied = true;
+            this.couponSuccessApplied = true;
+            this.showSuccessContent = true;
+
+            sessionStorage.setItem('selectedPromoData', JSON.stringify(guestCouponObject));
+            sessionStorage.setItem('selectPromo', 'true');
+            localStorage.setItem('selectedPromoData', JSON.stringify(guestCouponObject));
+            localStorage.setItem('selectPromo', 'true');
+
+            this.enteredCoupon = response.generatedCoupon;
+            this.validCouponCode = response.generatedCoupon;
+            this.specialDiscountData = guestCouponObject;
+            this.specialDiscountPercentage = guestCouponObject.discountPercentage;
+            this.promoSelected = true;
+          }
+
+          setTimeout(() => {
+            this.visibleGetCouponModal = false;
+          }, 3000);
+        } else {
+          this.guestCouponError = 'Failed to generate coupon. Please try again.';
+        }
+      },
+      (error) => {
+        this.guestCouponLoading = false;
+        console.error('Error generating guest coupon:', error);
+        if (error && error.error && typeof error.error === 'string') {
+          this.guestCouponError = error.error;
+        } else {
+          this.guestCouponError = 'An error occurred while generating your coupon. Please try again.';
+        }
+      }
+    );
+  }
 
   openSpinWheel(product: any, couponSection: HTMLElement) {
     this.showBookingSummary = false
