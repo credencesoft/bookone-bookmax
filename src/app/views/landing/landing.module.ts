@@ -125,6 +125,7 @@ import { WhatsappRedirectPageComponent } from './whatsapp-redirect-page/whatsapp
 import { WhatappPaylaterTemplateComponent } from './whatapp-paylater-template/whatapp-paylater-template.component';
 import { ErrorpageComponent } from './errorpage/errorpage.component';
 import { CheckoutRazorpayComponent } from './checkout-razorpay/checkout-razorpay.component';
+import { CheckoutHdfcComponent } from './checkout-hdfc/checkout-hdfc.component';
 import { TermsAndConditionComponent } from './terms-and-condition/terms-and-condition.component';
 import { CancellationPolicyComponent } from './cancellation-policy/cancellation-policy.component';
 import { AboutUsComponent } from './about-us/about-us.component';
@@ -213,6 +214,7 @@ import { BookingConfirmationVoucherComponent } from './booking-confirmation-vouc
     NotificationHandlingComponent,
     HeaderWhiteComponent,
     CheckoutRazorpayComponent,
+    CheckoutHdfcComponent,
     IntroNineComponent,
     LandingV9Component,
 EnquiryComponent,

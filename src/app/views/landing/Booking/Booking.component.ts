@@ -8061,7 +8061,7 @@ export class BookingComponent implements OnInit {
   paymentIntentHdfc(payment: Payment) {
     this.paymentLoader = true;
 
-    this.hotelBookingService.paymentIntent(payment).subscribe((response) => {
+    this.hotelBookingService.paymentIntentHdfc(payment).subscribe((response) => {
       this.paymentLoader = false;
       if (response.status === 200) {
         this.payment = response.body;

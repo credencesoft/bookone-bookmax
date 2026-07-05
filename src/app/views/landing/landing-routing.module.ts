@@ -49,6 +49,7 @@ import { WhatappPaylaterTemplateComponent } from './whatapp-paylater-template/wh
 import { CheckoutPhonepeComponentComponent } from './CheckoutPhonepeComponent/CheckoutPhonepeComponent.component';
 import { ErrorpageComponent } from './errorpage/errorpage.component';
 import { CheckoutRazorpayComponent } from './checkout-razorpay/checkout-razorpay.component';
+import { CheckoutHdfcComponent } from './checkout-hdfc/checkout-hdfc.component';
 import { CancellationPolicyComponent } from './cancellation-policy/cancellation-policy.component';
 import { TermsAndConditionComponent } from './terms-and-condition/terms-and-condition.component';
 import { AboutUsComponent } from './about-us/about-us.component';
@@ -269,6 +270,10 @@ const routes: Routes = [
     {
     path:'checkout-rayzorpay',
     component:CheckoutRazorpayComponent,
+  },
+  {
+    path: 'checkout-hdfc',
+    component: CheckoutHdfcComponent,
   },
   {
     path: ":detail",
