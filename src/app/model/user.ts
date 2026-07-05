@@ -74,6 +74,7 @@ export class BusinessUser {
   paymentGatewayApiKey: string;
   paymentGatewayApiToken: string;
   paymentGatewayPublicKey: string;
+  paymentGatewayCallbackUrl: string;
   priceFortNight: number;
   priceMonthly: number;
   pricePerNight: number;

@@ -7,7 +7,7 @@ export const environment = {
   accessToken:'q0iVR3edz6GByDVpTdYxTwOsL2yhXA2aApPWKw_7mYk',
   nzAPIUrl: 'https://api.uat.thehotelmate.co',
   inAPIUrl: 'https://api.uat.thehotelmate.co',
-  hdfcAPIUrl:'https://payment.bookone.io',
+  hdfcAPIUrl:'https://hdfc.payment.uat.bookone.io',
   apiScheduler: 'https://scheduler.uat.bookone.io',
   apiUrlAddress: 'https://api.uat.bookone.io/api-address',
   apiUrlPromotion: 'https://api.uat.bookone.io/promotion',
