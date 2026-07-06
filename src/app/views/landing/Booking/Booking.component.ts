@@ -1570,27 +1570,27 @@ export class BookingComponent implements OnInit {
   }
 
   showPayNow(): boolean {
-    if (this.bookoneActiveData === false) {
-      return false;
-    }
-    if (this.bookoneActiveData === false) {
-      const from = new Date(this.booking.fromDate);
-      const to = new Date(this.booking.toDate);
+    // if (this.bookoneActiveData === false) {
+    //   return false;
+    // }
+    // if (this.bookoneActiveData === false) {
+    //   const from = new Date(this.booking.fromDate);
+    //   const to = new Date(this.booking.toDate);
 
-      const today = new Date();
-      today.setHours(0, 0, 0, 0); // normalize time to midnight
+    //   const today = new Date();
+    //   today.setHours(0, 0, 0, 0); // normalize time to midnight
 
-      // FIXED END: Jan 31, 2026
-      const jan31_2026 = new Date(2026, 0, 31); // Jan=0
+    //   // FIXED END: Jan 31, 2026
+    //   const jan31_2026 = new Date(2026, 0, 31); // Jan=0
 
-      // Restriction check: both dates between TODAY → Jan 31, 2026
-      const isRestricted =
-        from >= today && from <= jan31_2026 && to >= today && to <= jan31_2026;
+    //   // Restriction check: both dates between TODAY → Jan 31, 2026
+    //   const isRestricted =
+    //     from >= today && from <= jan31_2026 && to >= today && to <= jan31_2026;
 
-      if (isRestricted) {
-        return false;
-      }
-    }
+    //   if (isRestricted) {
+    //     return false;
+    //   }
+    // }
 
     if (this.channelManagerIntegration) return true;
 
