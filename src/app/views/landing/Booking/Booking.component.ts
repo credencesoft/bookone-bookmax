@@ -12391,9 +12391,95 @@ sendWhatsappMessageToPropertyOwner() {
 
 
 
-  private getPhonePattern(): RegExp {
-    return /^[0-9]{6,15}$/;
+  getPhoneValidationRules(): { min: number; max: number; pattern: RegExp; message: string; placeholder: string } {
+    const code = this.countryCode;
+    const countryName = (this.selectedCountry || '').toLowerCase();
+
+    // India (+91)
+    if (code === '+91' || countryName.includes('india')) {
+      return { min: 10, max: 10, pattern: /^[0-9]{10}$/, message: 'Enter a valid 10-digit phone number', placeholder: 'Enter 10-digit phone number' };
+    }
+    // US / Canada (+1)
+    if (code === '+1' || countryName.includes('united states') || countryName.includes('canada')) {
+      return { min: 10, max: 10, pattern: /^[0-9]{10}$/, message: 'Enter a valid 10-digit phone number', placeholder: 'Enter 10-digit phone number' };
+    }
+    // Australia (+61)
+    if (code === '+61' || countryName.includes('austrilia') || countryName.includes('australia')) {
+      return { min: 9, max: 9, pattern: /^[0-9]{9}$/, message: 'Enter a valid 9-digit phone number', placeholder: 'Enter 9-digit phone number' };
+    }
+    // UK (+44)
+    if (code === '+44' || countryName.includes('united kingdom')) {
+      return { min: 10, max: 10, pattern: /^[0-9]{10}$/, message: 'Enter a valid 10-digit phone number', placeholder: 'Enter 10-digit phone number' };
+    }
+    // Bangladesh (+88)
+    if (code === '+88' || countryName.includes('bangladesh')) {
+      return { min: 10, max: 10, pattern: /^[0-9]{10}$/, message: 'Enter a valid 10-digit phone number', placeholder: 'Enter 10-digit phone number' };
+    }
+    // South Africa (+27)
+    if (code === '+27' || countryName.includes('south africa')) {
+      return { min: 9, max: 9, pattern: /^[0-9]{9}$/, message: 'Enter a valid 9-digit phone number', placeholder: 'Enter 9-digit phone number' };
+    }
+    // UAE (+971)
+    if (code === '+971' || countryName.includes('united arab emirates')) {
+      return { min: 9, max: 9, pattern: /^[0-9]{9}$/, message: 'Enter a valid 9-digit phone number', placeholder: 'Enter 9-digit phone number' };
+    }
+    // Sri Lanka (+94)
+    if (code === '+94' || countryName.includes('sri lanka')) {
+      return { min: 9, max: 9, pattern: /^[0-9]{9}$/, message: 'Enter a valid 9-digit phone number', placeholder: 'Enter 9-digit phone number' };
+    }
+    // Thailand (+66)
+    if (code === '+66' || countryName.includes('thailand')) {
+      return { min: 9, max: 9, pattern: /^[0-9]{9}$/, message: 'Enter a valid 9-digit phone number', placeholder: 'Enter 9-digit phone number' };
+    }
+    // Spain (+34)
+    if (code === '+34' || countryName.includes('spain')) {
+      return { min: 9, max: 9, pattern: /^[0-9]{9}$/, message: 'Enter a valid 9-digit phone number', placeholder: 'Enter 9-digit phone number' };
+    }
+    // France (+33)
+    if (code === '+33' || countryName.includes('france')) {
+      return { min: 9, max: 9, pattern: /^[0-9]{9}$/, message: 'Enter a valid 9-digit phone number', placeholder: 'Enter 9-digit phone number' };
+    }
+    // Germany (+49)
+    if (code === '+49' || countryName.includes('germany')) {
+      return { min: 10, max: 11, pattern: /^[0-9]{10,11}$/, message: 'Enter a valid 10 to 11-digit phone number', placeholder: 'Enter 10 to 11-digit phone number' };
+    }
+    // Italy (+39)
+    if (code === '+39' || countryName.includes('italy')) {
+      return { min: 10, max: 10, pattern: /^[0-9]{10}$/, message: 'Enter a valid 10-digit phone number', placeholder: 'Enter 10-digit phone number' };
+    }
+    // Fiji (+679)
+    if (code === '+679' || countryName.includes('fiji')) {
+      return { min: 7, max: 7, pattern: /^[0-9]{7}$/, message: 'Enter a valid 7-digit phone number', placeholder: 'Enter 7-digit phone number' };
+    }
+    // New Zealand (+64)
+    if (code === '+64' || countryName.includes('new zeland') || countryName.includes('new zealand')) {
+      return { min: 8, max: 10, pattern: /^[0-9]{8,10}$/, message: 'Enter a valid 8 to 10-digit phone number', placeholder: 'Enter 8 to 10-digit phone number' };
+    }
+    // Africa (+236)
+    if (code === '+236' || countryName.includes('africa')) {
+      return { min: 8, max: 8, pattern: /^[0-9]{8}$/, message: 'Enter a valid 8-digit phone number', placeholder: 'Enter 8-digit phone number' };
+    }
+
+    // Default fallback
+    return { min: 6, max: 15, pattern: /^[0-9]{6,15}$/, message: 'Enter a valid phone number (6-15 digits)', placeholder: 'Enter valid digits number' };
   }
+
+  get maxPhoneLength(): number {
+    return this.getPhoneValidationRules().max;
+  }
+
+  getPhoneValidationMessage(): string {
+    return this.getPhoneValidationRules().message;
+  }
+
+  getPhonePlaceholder(): string {
+    return this.getPhoneValidationRules().placeholder;
+  }
+
+  private getPhonePattern(): RegExp {
+    return this.getPhoneValidationRules().pattern;
+  }
+
 
   private normalizeCountrySearchValue(value: string): string {
     return (value || '')
