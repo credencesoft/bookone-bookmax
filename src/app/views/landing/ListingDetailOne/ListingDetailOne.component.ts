@@ -5133,7 +5133,6 @@ onCheckOutClosed(): void {
         this.businessUser.propertyServicesList.forEach((ele) => {
           if (ele.id == null || ele.id == undefined) {
             this.propertyServicesNoId.push(ele);
-            return;
           }
 
           if (Number(ele.servicePrice) === 0 || ele.servicePrice == null) {
@@ -5769,11 +5768,6 @@ onCheckOutClosed(): void {
           this.showStaticContent = true;
           // this.businessUser.businessServiceDtoList.filter(ele =>
           //   )
-          this.businessUser.propertyServicesList.forEach((ele) => {
-            if (ele.id != null && ele.id != undefined) {
-              this.propertyServiceListData.push(ele);
-            }
-          });
 
           this.policies = this.businessUser.businessServiceDtoList.filter(
             (ele) => ele.name === 'Accommodation'
@@ -5852,6 +5846,10 @@ onCheckOutClosed(): void {
 
           // ✅ Separate non-paid and paid services
           this.businessUser.propertyServicesList.forEach((ele) => {
+            if (ele.id == null || ele.id == undefined) {
+              this.propertyServicesNoId.push(ele);
+            }
+
             if (Number(ele.servicePrice) === 0 || ele.servicePrice == null) {
               this.amenitiesHighlights.push(ele);
               this.propertyServiceListData.push(ele);
