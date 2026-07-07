@@ -11327,7 +11327,8 @@ export class BookingComponent implements OnInit {
     bookingForm.firstName = booking.firstName;
     bookingForm.lastName = booking.lastName;
     bookingForm.email = booking.email;
-    bookingForm.mobile = booking.mobile;
+    bookingForm.phone = booking.mobile;
+    bookingForm.mobile = this.token.getProperty().whatsApp || this.token.getProperty().mobile;
     bookingForm.fromDate = this.getPayloadCheckInDate(plan, booking.fromDate);
     bookingForm.toDate = this.getPayloadCheckoutDate(
       plan,
@@ -11350,9 +11351,6 @@ export class BookingComponent implements OnInit {
     bookingForm.promotionName = booking.promotionName;
     bookingForm.discountAmount = booking.discountAmount;
     bookingForm.beforeTaxAmount = this.getPlanBaseAmount(plan);
-
-    bookingForm.mobile =
-      this.token.getProperty().whatsApp || this.token.getProperty().mobile;
 
     bookingForm.roomName = plan.roomName;
     bookingForm.roomRatePlanName = plan.planCodeName;

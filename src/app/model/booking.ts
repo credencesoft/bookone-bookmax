@@ -11,6 +11,7 @@ export class Booking {
   email: string;
   customerDtoList: any[];
   mobile: string;
+  phone: string;
   groupBookingId: any;
   noOfChildrenUnder5years: any;
   checkInDateStr: string;
