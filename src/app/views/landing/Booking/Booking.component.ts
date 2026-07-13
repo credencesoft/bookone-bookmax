@@ -2910,7 +2910,13 @@ export class BookingComponent implements OnInit {
     }
     enquiryForm.payableAmount = planTotalAmount;
     enquiryForm.roomName = plan.roomName;
-    enquiryForm.extraPersonCharge = this.getPlanStayAdultExtraCharge(plan);
+    enquiryForm.extraPersonCharge = (plan.extraChargePerPerson || 0) * (plan.extraCountAdult || 0) * this.getPlanPayloadNights(plan);
+    console.log('Extra Person Charge Calculation:', {
+      extraChargePerPerson: plan.extraChargePerPerson,
+      extraCountAdult: plan.extraCountAdult,
+      nights: this.getPlanPayloadNights(plan),
+      calculatedExtraPersonCharge: enquiryForm.extraPersonCharge
+    });
     enquiryForm.extraChildCharge = this.getPlanStayChildExtraCharge(plan);
     enquiryForm.noOfExtraChild = plan.extraCountChild;
     const bookingEngineFlag = sessionStorage.getItem('BookingEngine');

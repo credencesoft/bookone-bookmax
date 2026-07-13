@@ -3305,6 +3305,7 @@ resetLastChangedAge(planCode: string, room?: any) {
           SingleDayextraPersonChildCountAmount,
           singleextraAdultCharges,
           singleextraAdultChargeBookOne,
+          extraChargePerPerson: singleextraAdultChargeBookOne,
           singleextraChildrenChargeBookOne,
           singleextraChildrenCharges,
           SingleDayextraPersonAdultCountAmount,
