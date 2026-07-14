@@ -2986,8 +2986,20 @@ export class BookingComponent implements OnInit {
     }
     enquiryForm.payableAmount = planTotalAmount;
     enquiryForm.roomName = plan.roomName;
-    enquiryForm.extraPersonCharge = this.getPlanStayAdultExtraCharge(plan);
-    enquiryForm.extraChildCharge = this.getPlanStayChildExtraCharge(plan);
+    enquiryForm.extraPersonCharge = (plan?.extraPersonAdultCountAmount || plan?.SingleDayextraPersonAdultCountAmount || 0) * this.getPlanPayloadNights(plan);
+    console.log('Extra Person Charge Calculation:', {
+      extraPersonAdultCountAmount: plan?.extraPersonAdultCountAmount,
+      SingleDayextraPersonAdultCountAmount: plan?.SingleDayextraPersonAdultCountAmount,
+      nights: this.getPlanPayloadNights(plan),
+      calculatedExtraPersonCharge: enquiryForm.extraPersonCharge
+    });
+    enquiryForm.extraChildCharge = (plan?.extraPersonChildCountAmount || plan?.SingleDayextraPersonChildCountAmount || 0) * this.getPlanPayloadNights(plan);
+    console.log('Extra Child Charge Calculation:', {
+      extraPersonChildCountAmount: plan?.extraPersonChildCountAmount,
+      SingleDayextraPersonChildCountAmount: plan?.SingleDayextraPersonChildCountAmount,
+      nights: this.getPlanPayloadNights(plan),
+      calculatedExtraChildCharge: enquiryForm.extraChildCharge
+    });
     enquiryForm.noOfExtraChild = plan.extraCountChild;
     const bookingEngineFlag = sessionStorage.getItem('BookingEngine');
     this.websiteUrlBookingEngine = bookingEngineFlag === 'true';
@@ -8627,8 +8639,8 @@ export class BookingComponent implements OnInit {
     booking.dayTrip = this.isDayTripRoom(plan);
     booking.discountPercentage = 0;
     booking.discountAmount = 0;
-    booking.extraChildCharge = this.getPlanStayChildExtraCharge(plan);
-    booking.extraPersonCharge = this.getPlanStayAdultExtraCharge(plan);
+    booking.extraChildCharge = (plan?.extraPersonChildCountAmount || plan?.SingleDayextraPersonChildCountAmount || 0) * this.getPlanPayloadNights(plan);
+    booking.extraPersonCharge = (plan?.extraPersonAdultCountAmount || plan?.SingleDayextraPersonAdultCountAmount || 0) * this.getPlanPayloadNights(plan);
     booking.roomTariffBeforeDiscount =
       this.getPlanRoomTariffBeforeDiscountPayloadValue(plan).toFixed(2);
     booking.totalAmount = (this.getPlanBaseAmount(plan) + plan.taxPercentageperroom).toFixed(2);
@@ -8833,8 +8845,8 @@ export class BookingComponent implements OnInit {
     enquiryForm.dayTrip = this.isDayTripRoom(plan);
     enquiryForm.payableAmount = plan.price + plan.taxPercentageperroom;
     enquiryForm.roomName = plan.roomName;
-    enquiryForm.extraPersonCharge = this.getPlanStayAdultExtraCharge(plan);
-    enquiryForm.extraChildCharge = this.getPlanStayChildExtraCharge(plan);
+    enquiryForm.extraPersonCharge = (plan?.extraPersonAdultCountAmount || plan?.SingleDayextraPersonAdultCountAmount || 0) * this.getPlanPayloadNights(plan);
+    enquiryForm.extraChildCharge = (plan?.extraPersonChildCountAmount || plan?.SingleDayextraPersonChildCountAmount || 0) * this.getPlanPayloadNights(plan);
     enquiryForm.noOfExtraChild = plan.extraCountChild;
     const bookingEngineFlag = sessionStorage.getItem('BookingEngine');
     this.websiteUrlBookingEngine = bookingEngineFlag === 'true';
@@ -11260,8 +11272,8 @@ export class BookingComponent implements OnInit {
     }
     enquiryForm.payableAmount = plan.price + plan.taxPercentageperroom;
     enquiryForm.roomName = plan.roomName;
-    enquiryForm.extraPersonCharge = this.getPlanStayAdultExtraCharge(plan);
-    enquiryForm.extraChildCharge = this.getPlanStayChildExtraCharge(plan);
+    enquiryForm.extraPersonCharge = (plan?.extraPersonAdultCountAmount || plan?.SingleDayextraPersonAdultCountAmount || 0) * this.getPlanPayloadNights(plan);
+    enquiryForm.extraChildCharge = (plan?.extraPersonChildCountAmount || plan?.SingleDayextraPersonChildCountAmount || 0) * this.getPlanPayloadNights(plan);
     enquiryForm.noOfExtraChild = plan.extraCountChild;
     const bookingEngineFlag = sessionStorage.getItem('BookingEngine');
     this.websiteUrlBookingEngine = bookingEngineFlag === 'true';
@@ -11403,7 +11415,8 @@ export class BookingComponent implements OnInit {
     bookingForm.firstName = booking.firstName;
     bookingForm.lastName = booking.lastName;
     bookingForm.email = booking.email;
-    bookingForm.mobile = booking.mobile;
+    bookingForm.phone = booking.mobile;
+    bookingForm.mobile = this.token.getProperty().whatsApp || this.token.getProperty().mobile;
     bookingForm.fromDate = this.getPayloadCheckInDate(plan, booking.fromDate);
     bookingForm.toDate = this.getPayloadCheckoutDate(
       plan,
@@ -11415,8 +11428,8 @@ export class BookingComponent implements OnInit {
     bookingForm.roomId = plan.roomId;
     bookingForm.payableAmount = this.getPlanBaseAmount(plan) + plan.taxPercentageperroom;
     bookingForm.roomName = plan.roomName;
-    bookingForm.extraPersonCharge = this.getPlanStayAdultExtraCharge(plan);
-    bookingForm.extraChildCharge = this.getPlanStayChildExtraCharge(plan);
+    bookingForm.extraPersonCharge = (plan?.extraPersonAdultCountAmount || plan?.SingleDayextraPersonAdultCountAmount || 0) * this.getPlanPayloadNights(plan);
+    bookingForm.extraChildCharge = (plan?.extraPersonChildCountAmount || plan?.SingleDayextraPersonChildCountAmount || 0) * this.getPlanPayloadNights(plan);
     bookingForm.noOfExtraChild = plan.extraCountChild;
 
     bookingForm.roomPrice = this.getPlanRoomPricePayloadValue(plan);
@@ -11426,9 +11439,6 @@ export class BookingComponent implements OnInit {
     bookingForm.promotionName = booking.promotionName;
     bookingForm.discountAmount = booking.discountAmount;
     bookingForm.beforeTaxAmount = this.getPlanBaseAmount(plan);
-
-    bookingForm.mobile =
-      this.token.getProperty().whatsApp || this.token.getProperty().mobile;
 
     bookingForm.roomName = plan.roomName;
     bookingForm.roomRatePlanName = plan.planCodeName;

@@ -3361,6 +3361,7 @@ resetLastChangedAge(planCode: string, room?: any) {
           SingleDayextraPersonChildCountAmount,
           singleextraAdultCharges,
           singleextraAdultChargeBookOne,
+          extraChargePerPerson: singleextraAdultChargeBookOne,
           singleextraChildrenChargeBookOne,
           singleextraChildrenCharges,
           SingleDayextraPersonAdultCountAmount,
@@ -8578,6 +8579,17 @@ isPlanVisible(filteredPlans: any[], roomName: string, room?: any) {
         (plan: any) => plan.name?.trim().toLowerCase() !== 'economy'
       )
     : filteredPlans;
+
+  // Filter out plans that are not available on all nights of the selected stay period
+  if (room?.ratesAndAvailabilityDtos && room.ratesAndAvailabilityDtos.length > 0) {
+    const totalNights = room.ratesAndAvailabilityDtos.length;
+    plans = plans.filter((plan: any) => {
+      const occurrences = room.ratesAndAvailabilityDtos.filter((rate: any) =>
+        rate?.roomRatePlans?.some((p: any) => p.code === plan.code)
+      ).length;
+      return occurrences === totalNights;
+    });
+  }
 
   // Apply minimum & maximum occupancy filtering based on the search query:
   // ONLY run filtering in the browser to avoid SSR (Server Side Rendering) issues and allow search engines to see all plans
