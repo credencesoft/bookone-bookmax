@@ -4440,3 +4440,7 @@ input:checked + .switch-slider:before {
     box-shadow: 0 12px 24px rgba(245, 158, 11, 0.25) !important;
   }
 }
+
+.country-item-hover:hover {
+  background-color: #f1f5f9 !important;
+}

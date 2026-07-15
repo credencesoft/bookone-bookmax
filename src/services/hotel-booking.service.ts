@@ -307,7 +307,7 @@ fetchBookingById(bookingId: number) {
   }
   paymentIntentHdfc(paymentDetails: Payment) {
     return this.http.post<Payment>(
-      API_URL_IO  + '/hdfc/api/hdfc/paymentIntent',
+      API_URL_IO  + '/api/hdfc/paymentIntent',
       paymentDetails,
       { observe: 'response' }
     );

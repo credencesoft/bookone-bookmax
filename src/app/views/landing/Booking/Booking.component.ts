@@ -30,6 +30,7 @@ import {
   API_URL_NZ,
   EMAIL_Expression,
   SMS_NUMBER,
+  API_URL_PROMOTION,
 } from 'src/app/app.component';
 import {
   HttpClient,
@@ -111,6 +112,14 @@ export class BookingComponent implements OnInit {
   howingReceiptData: any;
   showingSuccessMessage: boolean = false;
   appliedCoupon: number;
+  visibleGetCouponModal: boolean = false;
+  guestCouponName: string = '';
+  guestCouponPhone: string = '';
+  currentOfferIdForCoupon: any = null;
+  generatedGuestCouponCode: string = '';
+  guestCouponError: string = '';
+  guestCouponSuccess: string = '';
+  guestCouponLoading: boolean = false;
   grandTotalAmount: number;
   actualTaxAmount: number;
 
@@ -1823,6 +1832,73 @@ export class BookingComponent implements OnInit {
       console.error('Error in checkValidCouponOrNot : ', error);
     }
   }
+  openGetCouponModal(coupon: any) {
+    this.currentOfferIdForCoupon = coupon.id;
+    this.guestCouponName = '';
+    this.guestCouponPhone = '';
+    this.generatedGuestCouponCode = '';
+    this.guestCouponError = '';
+    this.guestCouponSuccess = '';
+    this.guestCouponLoading = false;
+    this.visibleGetCouponModal = true;
+  }
+
+  generateAndApplyCoupon() {
+    if (!this.guestCouponName || !this.guestCouponName.trim()) {
+      this.guestCouponError = 'Guest Name is required';
+      return;
+    }
+    if (!this.guestCouponPhone || !this.guestCouponPhone.trim()) {
+      this.guestCouponError = 'WhatsApp Number is required';
+      return;
+    }
+
+    this.guestCouponLoading = true;
+    this.guestCouponError = '';
+    this.guestCouponSuccess = '';
+
+    const payload = {
+      businessOfferId: this.currentOfferIdForCoupon,
+      guestName: this.guestCouponName.trim(),
+      whatsappNumber: this.guestCouponPhone.trim()
+    };
+
+    const url = `${API_URL_PROMOTION}/api/guest-promotion/request`;
+    this.http.post<any>(url, payload).subscribe(
+      (response) => {
+        this.guestCouponLoading = false;
+        if (response && response.generatedCoupon) {
+          this.generatedGuestCouponCode = response.generatedCoupon;
+          this.guestCouponSuccess = `Coupon generated successfully: ${response.generatedCoupon}! A WhatsApp message has been sent to you.`;
+          
+          const originalCoupon = this.promocodeListChip.find(c => c.id === this.currentOfferIdForCoupon);
+          if (originalCoupon) {
+            const guestCouponObject = {
+              ...originalCoupon,
+              couponCode: response.generatedCoupon
+            };
+            this.selectedCoupon(guestCouponObject);
+          }
+          
+          setTimeout(() => {
+            this.visibleGetCouponModal = false;
+          }, 3000);
+        } else {
+          this.guestCouponError = 'Failed to generate coupon. Please try again.';
+        }
+      },
+      (error) => {
+        this.guestCouponLoading = false;
+        console.error('Error generating guest coupon:', error);
+        if (error && error.error && typeof error.error === 'string') {
+          this.guestCouponError = error.error;
+        } else {
+          this.guestCouponError = 'An error occurred while generating your coupon. Please try again.';
+        }
+      }
+    );
+  }
+
   // Used For handled to set the selected coupon
   selectedCoupon(coupon?) {
     try {
@@ -7997,7 +8073,7 @@ export class BookingComponent implements OnInit {
   paymentIntentHdfc(payment: Payment) {
     this.paymentLoader = true;
 
-    this.hotelBookingService.paymentIntent(payment).subscribe((response) => {
+    this.hotelBookingService.paymentIntentHdfc(payment).subscribe((response) => {
       this.paymentLoader = false;
       if (response.status === 200) {
         this.payment = response.body;
