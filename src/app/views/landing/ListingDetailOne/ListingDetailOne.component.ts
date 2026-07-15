@@ -1773,12 +1773,39 @@ getTotalAdults(): number {
   return this.selectedPlansSummary.reduce((sum, plan) => sum + (plan.adults || 0), 0);
 }
 
+  isPlanWithinDateRange(plan: any): boolean {
+    if (!plan) return false;
+    const todayStr = new Date().toISOString().split('T')[0];
+    const checkInDate = this.booking?.fromDate || todayStr;
+    const checkOutDate = this.booking?.toDate;
+
+    // Check-in must be within [effectiveDate, expiryDate]
+    if (plan.expiryDate && checkInDate > plan.expiryDate) {
+      return false;
+    }
+    if (plan.effectiveDate && checkInDate < plan.effectiveDate) {
+      return false;
+    }
+
+    // Check-out (last night of stay) must not exceed expiryDate
+    if (checkOutDate && plan.expiryDate) {
+      const lastNight = this.addDaysToDateString(checkOutDate, -1);
+      if (lastNight > plan.expiryDate) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   getFilteredPlans(plans: any[], room?: any) {
     try {
       if (!plans) return [];
       let filtered = this.websiteUrlBookingEngine
         ? plans.filter(p => p?.name?.trim().toLowerCase() !== 'economy')
         : plans;
+
+      // Filter by plan validity (effective date to expiry date)
+      filtered = filtered.filter((plan: any) => this.isPlanWithinDateRange(plan));
 
       if (isPlatformBrowser(this.platformId)) {
         const searchAdults = Number(this.booking?.noOfPersons || this.adults || 1);
