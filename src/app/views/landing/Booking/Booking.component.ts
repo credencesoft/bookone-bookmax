@@ -11485,6 +11485,17 @@ export class BookingComponent implements OnInit {
     //this.applyAdvancePlanToBooking(bookingForm);
     this.saveEnquiryTHM(bookingForm);
     try {
+      try {
+        const tokenEnquiryForm = new EnquiryDto();
+        Object.assign(tokenEnquiryForm, enquiryForm);
+        tokenEnquiryForm.propertyId = this.token?.getProperty()?.id || enquiryForm.propertyId;
+        this.hotelBookingService.accommodationEnquiry(tokenEnquiryForm).toPromise().catch(err => {
+          console.error('Error calling token accommodationEnquiry:', err);
+        });
+      } catch (tokenErr) {
+        console.error('Error creating token enquiry:', tokenErr);
+      }
+
       const response: HttpResponse<EnquiryDto> = await this.hotelBookingService
         .accommodationEnquiry(enquiryForm)
         .toPromise();
@@ -11543,8 +11554,10 @@ export class BookingComponent implements OnInit {
     return false;
   }
 
-  async submitFormMobileBizzApp(enquiryForm, responseBody?: any) {
-    enquiryForm.propertyId = this.token?.getProperty()?.id;
+  async submitFormMobileBizzApp(enquiryForm, responseBody?: any, propertyId?: any) {
+    const propId = propertyId || this.token?.getProperty()?.id;
+    enquiryForm.propertyId = propId;
+    enquiryForm.bookingPropertyId = propId;
     try {
       let response: any = null;
       if (responseBody) {
