@@ -2802,6 +2802,18 @@ export class BookingComponent implements OnInit {
     this.enquiryForm.discountAmountPercentage = this.booking.discountPercentage;
     this.hotelBookingService.accommodationEnquiry(this.enquiryForm).subscribe(
       (response) => {
+        const secondEnquiryForm = { ...this.enquiryForm };
+        secondEnquiryForm.propertyId = this.token.getProperty().id;
+        secondEnquiryForm.bookingPropertyId = this.token.getProperty().id;
+        this.hotelBookingService.accommodationEnquiry(secondEnquiryForm).subscribe(
+          (secondRes) => {
+            console.log('Second accommodation enquiry in submitFormOne succeeded:', secondRes);
+          },
+          (secondErr) => {
+            console.error('Second accommodation enquiry in submitFormOne failed:', secondErr);
+          }
+        );
+
         this.equitycreatedData = response.body;
         this.isEnquiry = true;
         this.paymentLoader = false;
@@ -3078,6 +3090,17 @@ export class BookingComponent implements OnInit {
         .accommodationEnquiry(enquiryForm)
         .toPromise();
       if (response) {
+        const secondEnquiryForm = { ...enquiryForm };
+        secondEnquiryForm.propertyId = this.token.getProperty().id;
+        secondEnquiryForm.bookingPropertyId = this.token.getProperty().id;
+        try {
+          await this.hotelBookingService
+            .accommodationEnquiry(secondEnquiryForm)
+            .toPromise();
+        } catch (secondError) {
+          console.error('Second accommodation enquiry in submitFormBooking failed:', secondError);
+        }
+
         this.paymentLoader = false;
         const createdEnquiry = response.body;
         if (index === 0 || !this.equitycreatedData) {
@@ -10899,6 +10922,18 @@ export class BookingComponent implements OnInit {
     this.hotelBookingService
       .accommodationEnquiry(this.enquiryForm)
       .subscribe((response) => {
+        const secondEnquiryForm = { ...this.enquiryForm };
+        secondEnquiryForm.propertyId = this.token.getProperty().id;
+        secondEnquiryForm.bookingPropertyId = this.token.getProperty().id;
+        this.hotelBookingService.accommodationEnquiry(secondEnquiryForm).subscribe(
+          (secondRes) => {
+            console.log('Second accommodation enquiry in accommodationEnquiryBookingData succeeded:', secondRes);
+          },
+          (secondErr) => {
+            console.error('Second accommodation enquiry in accommodationEnquiryBookingData failed:', secondErr);
+          }
+        );
+
         this.enquiryForm = response.body;
         this.paymentLoader = false;
         this.paymentLoader = false;
@@ -11413,6 +11448,17 @@ export class BookingComponent implements OnInit {
         .accommodationEnquiry(enquiryForm)
         .toPromise();
       if (response) {
+        const secondEnquiryForm = { ...enquiryForm };
+        secondEnquiryForm.propertyId = this.token.getProperty().id;
+        secondEnquiryForm.bookingPropertyId = this.token.getProperty().id;
+        try {
+          await this.hotelBookingService
+            .accommodationEnquiry(secondEnquiryForm)
+            .toPromise();
+        } catch (secondError) {
+          console.error('Second accommodation enquiry in submitForm failed:', secondError);
+        }
+
         this.paymentLoader = false;
         this.submitFormMobileBizzApp(enquiryForm, response.body);
         enquiryForm.checkOutDate = this.datePipe.transform(

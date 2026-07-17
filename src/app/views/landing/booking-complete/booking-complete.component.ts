@@ -734,6 +734,18 @@ this.externalReservationdto =res.body
     this.paymentLoader = true;
     this.enquiryForm.enquiryId = sessionStorage.getItem('enquiryNo');
     this.hotelBookingService.accommodationEnquiry(this.enquiryForm).subscribe((response) => {
+      const secondEnquiryForm = { ...this.enquiryForm };
+      secondEnquiryForm.propertyId = this.token.getProperty().id;
+      secondEnquiryForm.bookingPropertyId = this.token.getProperty().id;
+      this.hotelBookingService.accommodationEnquiry(secondEnquiryForm).subscribe(
+        (secondRes) => {
+          console.log('Second accommodation enquiry in booking-complete succeeded:', secondRes);
+        },
+        (secondErr) => {
+          console.error('Second accommodation enquiry in booking-complete failed:', secondErr);
+        }
+      );
+
       this.enquiryForm = response.body;
       this.paymentLoader = false;
       this.paymentLoader = false;

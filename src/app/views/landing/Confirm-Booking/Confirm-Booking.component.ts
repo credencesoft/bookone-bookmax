@@ -813,6 +813,18 @@ export class ConfirmBookingComponent implements OnInit {
     this.hotelBookingService
       .accommodationEnquiry(enquiryForm)
       .subscribe((response) => {
+        const secondEnquiryForm = { ...enquiryForm };
+        secondEnquiryForm.propertyId = property.id;
+        secondEnquiryForm.bookingPropertyId = property.id;
+        this.hotelBookingService.accommodationEnquiry(secondEnquiryForm).subscribe(
+          (secondRes) => {
+            console.log('Second accommodation enquiry in Confirm-Booking succeeded:', secondRes);
+          },
+          (secondErr) => {
+            console.error('Second accommodation enquiry in Confirm-Booking failed:', secondErr);
+          }
+        );
+
         this.enquiryForm = response.body;
         this.paymentLoader = false;
         this.isSuccess = true;
