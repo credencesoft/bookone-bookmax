@@ -1725,12 +1725,39 @@ getTotalAdults(): number {
   return this.selectedPlansSummary.reduce((sum, plan) => sum + (plan.adults || 0), 0);
 }
 
+  isPlanWithinDateRange(plan: any): boolean {
+    if (!plan) return false;
+    const todayStr = new Date().toISOString().split('T')[0];
+    const checkInDate = this.booking?.fromDate || todayStr;
+    const checkOutDate = this.booking?.toDate;
+
+    // Check-in must be within [effectiveDate, expiryDate]
+    if (plan.expiryDate && checkInDate > plan.expiryDate) {
+      return false;
+    }
+    if (plan.effectiveDate && checkInDate < plan.effectiveDate) {
+      return false;
+    }
+
+    // Check-out (last night of stay) must not exceed expiryDate
+    if (checkOutDate && plan.expiryDate) {
+      const lastNight = this.addDaysToDateString(checkOutDate, -1);
+      if (lastNight > plan.expiryDate) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   getFilteredPlans(plans: any[], room?: any) {
     try {
       if (!plans) return [];
       let filtered = this.websiteUrlBookingEngine
         ? plans.filter(p => p?.name?.trim().toLowerCase() !== 'economy')
         : plans;
+
+      // Filter by plan validity (effective date to expiry date)
+      filtered = filtered.filter((plan: any) => this.isPlanWithinDateRange(plan));
 
       if (isPlatformBrowser(this.platformId)) {
         const searchAdults = Number(this.booking?.noOfPersons || this.adults || 1);
@@ -3313,6 +3340,7 @@ resetLastChangedAge(planCode: string, room?: any) {
           SingleDayextraPersonChildCountAmount,
           singleextraAdultCharges,
           singleextraAdultChargeBookOne,
+          extraChargePerPerson: singleextraAdultChargeBookOne,
           singleextraChildrenChargeBookOne,
           singleextraChildrenCharges,
           SingleDayextraPersonAdultCountAmount,
@@ -5154,7 +5182,6 @@ onCheckOutClosed(): void {
         this.businessUser.propertyServicesList.forEach((ele) => {
           if (ele.id == null || ele.id == undefined) {
             this.propertyServicesNoId.push(ele);
-            return;
           }
 
           if (Number(ele.servicePrice) === 0 || ele.servicePrice == null) {
@@ -5790,11 +5817,6 @@ onCheckOutClosed(): void {
           this.showStaticContent = true;
           // this.businessUser.businessServiceDtoList.filter(ele =>
           //   )
-          this.businessUser.propertyServicesList.forEach((ele) => {
-            if (ele.id != null && ele.id != undefined) {
-              this.propertyServiceListData.push(ele);
-            }
-          });
 
           this.policies = this.businessUser.businessServiceDtoList.filter(
             (ele) => ele.name === 'Accommodation'
@@ -5873,6 +5895,10 @@ onCheckOutClosed(): void {
 
           // ✅ Separate non-paid and paid services
           this.businessUser.propertyServicesList.forEach((ele) => {
+            if (ele.id == null || ele.id == undefined) {
+              this.propertyServicesNoId.push(ele);
+            }
+
             if (Number(ele.servicePrice) === 0 || ele.servicePrice == null) {
               this.amenitiesHighlights.push(ele);
               this.propertyServiceListData.push(ele);
@@ -8532,6 +8558,20 @@ isPlanVisible(filteredPlans: any[], roomName: string, room?: any) {
         (plan: any) => plan.name?.trim().toLowerCase() !== 'economy'
       )
     : filteredPlans;
+
+  // Filter by plan validity (effective date to expiry date)
+  plans = plans.filter((plan: any) => this.isPlanWithinDateRange(plan));
+
+  // Filter out plans that are not available on all nights of the selected stay period
+  if (room?.ratesAndAvailabilityDtos && room.ratesAndAvailabilityDtos.length > 0) {
+    const totalNights = room.ratesAndAvailabilityDtos.length;
+    plans = plans.filter((plan: any) => {
+      const occurrences = room.ratesAndAvailabilityDtos.filter((rate: any) =>
+        rate?.roomRatePlans?.some((p: any) => p.code === plan.code)
+      ).length;
+      return occurrences === totalNights;
+    });
+  }
 
   // Apply minimum & maximum occupancy filtering based on the search query:
   // ONLY run filtering in the browser to avoid SSR (Server Side Rendering) issues and allow search engines to see all plans

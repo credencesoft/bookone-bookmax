@@ -30,7 +30,6 @@ import {
   API_URL_NZ,
   EMAIL_Expression,
   SMS_NUMBER,
-  API_URL_PROMOTION,
 } from 'src/app/app.component';
 import {
   HttpClient,
@@ -112,14 +111,6 @@ export class BookingComponent implements OnInit {
   howingReceiptData: any;
   showingSuccessMessage: boolean = false;
   appliedCoupon: number;
-  visibleGetCouponModal: boolean = false;
-  guestCouponName: string = '';
-  guestCouponPhone: string = '';
-  currentOfferIdForCoupon: any = null;
-  generatedGuestCouponCode: string = '';
-  guestCouponError: string = '';
-  guestCouponSuccess: string = '';
-  guestCouponLoading: boolean = false;
   grandTotalAmount: number;
   actualTaxAmount: number;
 
@@ -1579,27 +1570,27 @@ export class BookingComponent implements OnInit {
   }
 
   showPayNow(): boolean {
-    if (this.bookoneActiveData === false) {
-      return false;
-    }
-    if (this.bookoneActiveData === false) {
-      const from = new Date(this.booking.fromDate);
-      const to = new Date(this.booking.toDate);
+    // if (this.bookoneActiveData === false) {
+    //   return false;
+    // }
+    // if (this.bookoneActiveData === false) {
+    //   const from = new Date(this.booking.fromDate);
+    //   const to = new Date(this.booking.toDate);
 
-      const today = new Date();
-      today.setHours(0, 0, 0, 0); // normalize time to midnight
+    //   const today = new Date();
+    //   today.setHours(0, 0, 0, 0); // normalize time to midnight
 
-      // FIXED END: Jan 31, 2026
-      const jan31_2026 = new Date(2026, 0, 31); // Jan=0
+    //   // FIXED END: Jan 31, 2026
+    //   const jan31_2026 = new Date(2026, 0, 31); // Jan=0
 
-      // Restriction check: both dates between TODAY → Jan 31, 2026
-      const isRestricted =
-        from >= today && from <= jan31_2026 && to >= today && to <= jan31_2026;
+    //   // Restriction check: both dates between TODAY → Jan 31, 2026
+    //   const isRestricted =
+    //     from >= today && from <= jan31_2026 && to >= today && to <= jan31_2026;
 
-      if (isRestricted) {
-        return false;
-      }
-    }
+    //   if (isRestricted) {
+    //     return false;
+    //   }
+    // }
 
     if (this.channelManagerIntegration) return true;
 
@@ -1832,73 +1823,6 @@ export class BookingComponent implements OnInit {
       console.error('Error in checkValidCouponOrNot : ', error);
     }
   }
-  openGetCouponModal(coupon: any) {
-    this.currentOfferIdForCoupon = coupon.id;
-    this.guestCouponName = '';
-    this.guestCouponPhone = '';
-    this.generatedGuestCouponCode = '';
-    this.guestCouponError = '';
-    this.guestCouponSuccess = '';
-    this.guestCouponLoading = false;
-    this.visibleGetCouponModal = true;
-  }
-
-  generateAndApplyCoupon() {
-    if (!this.guestCouponName || !this.guestCouponName.trim()) {
-      this.guestCouponError = 'Guest Name is required';
-      return;
-    }
-    if (!this.guestCouponPhone || !this.guestCouponPhone.trim()) {
-      this.guestCouponError = 'WhatsApp Number is required';
-      return;
-    }
-
-    this.guestCouponLoading = true;
-    this.guestCouponError = '';
-    this.guestCouponSuccess = '';
-
-    const payload = {
-      businessOfferId: this.currentOfferIdForCoupon,
-      guestName: this.guestCouponName.trim(),
-      whatsappNumber: this.guestCouponPhone.trim()
-    };
-
-    const url = `${API_URL_PROMOTION}/api/guest-promotion/request`;
-    this.http.post<any>(url, payload).subscribe(
-      (response) => {
-        this.guestCouponLoading = false;
-        if (response && response.generatedCoupon) {
-          this.generatedGuestCouponCode = response.generatedCoupon;
-          this.guestCouponSuccess = `Coupon generated successfully: ${response.generatedCoupon}! A WhatsApp message has been sent to you.`;
-          
-          const originalCoupon = this.promocodeListChip.find(c => c.id === this.currentOfferIdForCoupon);
-          if (originalCoupon) {
-            const guestCouponObject = {
-              ...originalCoupon,
-              couponCode: response.generatedCoupon
-            };
-            this.selectedCoupon(guestCouponObject);
-          }
-          
-          setTimeout(() => {
-            this.visibleGetCouponModal = false;
-          }, 3000);
-        } else {
-          this.guestCouponError = 'Failed to generate coupon. Please try again.';
-        }
-      },
-      (error) => {
-        this.guestCouponLoading = false;
-        console.error('Error generating guest coupon:', error);
-        if (error && error.error && typeof error.error === 'string') {
-          this.guestCouponError = error.error;
-        } else {
-          this.guestCouponError = 'An error occurred while generating your coupon. Please try again.';
-        }
-      }
-    );
-  }
-
   // Used For handled to set the selected coupon
   selectedCoupon(coupon?) {
     try {
@@ -2986,8 +2910,20 @@ export class BookingComponent implements OnInit {
     }
     enquiryForm.payableAmount = planTotalAmount;
     enquiryForm.roomName = plan.roomName;
-    enquiryForm.extraPersonCharge = this.getPlanStayAdultExtraCharge(plan);
-    enquiryForm.extraChildCharge = this.getPlanStayChildExtraCharge(plan);
+    enquiryForm.extraPersonCharge = (plan?.extraPersonAdultCountAmount || plan?.SingleDayextraPersonAdultCountAmount || 0) * this.getPlanPayloadNights(plan);
+    console.log('Extra Person Charge Calculation:', {
+      extraPersonAdultCountAmount: plan?.extraPersonAdultCountAmount,
+      SingleDayextraPersonAdultCountAmount: plan?.SingleDayextraPersonAdultCountAmount,
+      nights: this.getPlanPayloadNights(plan),
+      calculatedExtraPersonCharge: enquiryForm.extraPersonCharge
+    });
+    enquiryForm.extraChildCharge = (plan?.extraPersonChildCountAmount || plan?.SingleDayextraPersonChildCountAmount || 0) * this.getPlanPayloadNights(plan);
+    console.log('Extra Child Charge Calculation:', {
+      extraPersonChildCountAmount: plan?.extraPersonChildCountAmount,
+      SingleDayextraPersonChildCountAmount: plan?.SingleDayextraPersonChildCountAmount,
+      nights: this.getPlanPayloadNights(plan),
+      calculatedExtraChildCharge: enquiryForm.extraChildCharge
+    });
     enquiryForm.noOfExtraChild = plan.extraCountChild;
     const bookingEngineFlag = sessionStorage.getItem('BookingEngine');
     this.websiteUrlBookingEngine = bookingEngineFlag === 'true';
@@ -8061,7 +7997,7 @@ export class BookingComponent implements OnInit {
   paymentIntentHdfc(payment: Payment) {
     this.paymentLoader = true;
 
-    this.hotelBookingService.paymentIntentHdfc(payment).subscribe((response) => {
+    this.hotelBookingService.paymentIntent(payment).subscribe((response) => {
       this.paymentLoader = false;
       if (response.status === 200) {
         this.payment = response.body;
@@ -8627,8 +8563,8 @@ export class BookingComponent implements OnInit {
     booking.dayTrip = this.isDayTripRoom(plan);
     booking.discountPercentage = 0;
     booking.discountAmount = 0;
-    booking.extraChildCharge = this.getPlanStayChildExtraCharge(plan);
-    booking.extraPersonCharge = this.getPlanStayAdultExtraCharge(plan);
+    booking.extraChildCharge = (plan?.extraPersonChildCountAmount || plan?.SingleDayextraPersonChildCountAmount || 0) * this.getPlanPayloadNights(plan);
+    booking.extraPersonCharge = (plan?.extraPersonAdultCountAmount || plan?.SingleDayextraPersonAdultCountAmount || 0) * this.getPlanPayloadNights(plan);
     booking.roomTariffBeforeDiscount =
       this.getPlanRoomTariffBeforeDiscountPayloadValue(plan).toFixed(2);
     booking.totalAmount = (this.getPlanBaseAmount(plan) + plan.taxPercentageperroom).toFixed(2);
@@ -8833,8 +8769,8 @@ export class BookingComponent implements OnInit {
     enquiryForm.dayTrip = this.isDayTripRoom(plan);
     enquiryForm.payableAmount = plan.price + plan.taxPercentageperroom;
     enquiryForm.roomName = plan.roomName;
-    enquiryForm.extraPersonCharge = this.getPlanStayAdultExtraCharge(plan);
-    enquiryForm.extraChildCharge = this.getPlanStayChildExtraCharge(plan);
+    enquiryForm.extraPersonCharge = (plan?.extraPersonAdultCountAmount || plan?.SingleDayextraPersonAdultCountAmount || 0) * this.getPlanPayloadNights(plan);
+    enquiryForm.extraChildCharge = (plan?.extraPersonChildCountAmount || plan?.SingleDayextraPersonChildCountAmount || 0) * this.getPlanPayloadNights(plan);
     enquiryForm.noOfExtraChild = plan.extraCountChild;
     const bookingEngineFlag = sessionStorage.getItem('BookingEngine');
     this.websiteUrlBookingEngine = bookingEngineFlag === 'true';
@@ -11260,8 +11196,8 @@ export class BookingComponent implements OnInit {
     }
     enquiryForm.payableAmount = plan.price + plan.taxPercentageperroom;
     enquiryForm.roomName = plan.roomName;
-    enquiryForm.extraPersonCharge = this.getPlanStayAdultExtraCharge(plan);
-    enquiryForm.extraChildCharge = this.getPlanStayChildExtraCharge(plan);
+    enquiryForm.extraPersonCharge = (plan?.extraPersonAdultCountAmount || plan?.SingleDayextraPersonAdultCountAmount || 0) * this.getPlanPayloadNights(plan);
+    enquiryForm.extraChildCharge = (plan?.extraPersonChildCountAmount || plan?.SingleDayextraPersonChildCountAmount || 0) * this.getPlanPayloadNights(plan);
     enquiryForm.noOfExtraChild = plan.extraCountChild;
     const bookingEngineFlag = sessionStorage.getItem('BookingEngine');
     this.websiteUrlBookingEngine = bookingEngineFlag === 'true';
@@ -11403,7 +11339,8 @@ export class BookingComponent implements OnInit {
     bookingForm.firstName = booking.firstName;
     bookingForm.lastName = booking.lastName;
     bookingForm.email = booking.email;
-    bookingForm.mobile = booking.mobile;
+    bookingForm.phone = booking.mobile;
+    bookingForm.mobile = this.token.getProperty().whatsApp || this.token.getProperty().mobile;
     bookingForm.fromDate = this.getPayloadCheckInDate(plan, booking.fromDate);
     bookingForm.toDate = this.getPayloadCheckoutDate(
       plan,
@@ -11415,8 +11352,8 @@ export class BookingComponent implements OnInit {
     bookingForm.roomId = plan.roomId;
     bookingForm.payableAmount = this.getPlanBaseAmount(plan) + plan.taxPercentageperroom;
     bookingForm.roomName = plan.roomName;
-    bookingForm.extraPersonCharge = this.getPlanStayAdultExtraCharge(plan);
-    bookingForm.extraChildCharge = this.getPlanStayChildExtraCharge(plan);
+    bookingForm.extraPersonCharge = (plan?.extraPersonAdultCountAmount || plan?.SingleDayextraPersonAdultCountAmount || 0) * this.getPlanPayloadNights(plan);
+    bookingForm.extraChildCharge = (plan?.extraPersonChildCountAmount || plan?.SingleDayextraPersonChildCountAmount || 0) * this.getPlanPayloadNights(plan);
     bookingForm.noOfExtraChild = plan.extraCountChild;
 
     bookingForm.roomPrice = this.getPlanRoomPricePayloadValue(plan);
@@ -11426,9 +11363,6 @@ export class BookingComponent implements OnInit {
     bookingForm.promotionName = booking.promotionName;
     bookingForm.discountAmount = booking.discountAmount;
     bookingForm.beforeTaxAmount = this.getPlanBaseAmount(plan);
-
-    bookingForm.mobile =
-      this.token.getProperty().whatsApp || this.token.getProperty().mobile;
 
     bookingForm.roomName = plan.roomName;
     bookingForm.roomRatePlanName = plan.planCodeName;
@@ -11475,6 +11409,17 @@ export class BookingComponent implements OnInit {
     //this.applyAdvancePlanToBooking(bookingForm);
     this.saveEnquiryTHM(bookingForm);
     try {
+      try {
+        const tokenEnquiryForm = new EnquiryDto();
+        Object.assign(tokenEnquiryForm, enquiryForm);
+        tokenEnquiryForm.propertyId = this.token?.getProperty()?.id || enquiryForm.propertyId;
+        this.hotelBookingService.accommodationEnquiry(tokenEnquiryForm).toPromise().catch(err => {
+          console.error('Error calling token accommodationEnquiry:', err);
+        });
+      } catch (tokenErr) {
+        console.error('Error creating token enquiry:', tokenErr);
+      }
+
       const response: HttpResponse<EnquiryDto> = await this.hotelBookingService
         .accommodationEnquiry(enquiryForm)
         .toPromise();
@@ -11533,8 +11478,10 @@ export class BookingComponent implements OnInit {
     return false;
   }
 
-  async submitFormMobileBizzApp(enquiryForm, responseBody?: any) {
-    enquiryForm.propertyId = this.token?.getProperty()?.id;
+  async submitFormMobileBizzApp(enquiryForm, responseBody?: any, propertyId?: any) {
+    const propId = propertyId || this.token?.getProperty()?.id;
+    enquiryForm.propertyId = propId;
+    enquiryForm.bookingPropertyId = propId;
     try {
       let response: any = null;
       if (responseBody) {
@@ -12391,9 +12338,95 @@ sendWhatsappMessageToPropertyOwner() {
 
 
 
-  private getPhonePattern(): RegExp {
-    return /^[0-9]{6,15}$/;
+  getPhoneValidationRules(): { min: number; max: number; pattern: RegExp; message: string; placeholder: string } {
+    const code = this.countryCode;
+    const countryName = (this.selectedCountry || '').toLowerCase();
+
+    // India (+91)
+    if (code === '+91' || countryName.includes('india')) {
+      return { min: 10, max: 10, pattern: /^[0-9]{10}$/, message: 'Enter a valid 10-digit phone number', placeholder: 'Enter 10-digit phone number' };
+    }
+    // US / Canada (+1)
+    if (code === '+1' || countryName.includes('united states') || countryName.includes('canada')) {
+      return { min: 10, max: 10, pattern: /^[0-9]{10}$/, message: 'Enter a valid 10-digit phone number', placeholder: 'Enter 10-digit phone number' };
+    }
+    // Australia (+61)
+    if (code === '+61' || countryName.includes('austrilia') || countryName.includes('australia')) {
+      return { min: 9, max: 9, pattern: /^[0-9]{9}$/, message: 'Enter a valid 9-digit phone number', placeholder: 'Enter 9-digit phone number' };
+    }
+    // UK (+44)
+    if (code === '+44' || countryName.includes('united kingdom')) {
+      return { min: 10, max: 10, pattern: /^[0-9]{10}$/, message: 'Enter a valid 10-digit phone number', placeholder: 'Enter 10-digit phone number' };
+    }
+    // Bangladesh (+88)
+    if (code === '+88' || countryName.includes('bangladesh')) {
+      return { min: 10, max: 10, pattern: /^[0-9]{10}$/, message: 'Enter a valid 10-digit phone number', placeholder: 'Enter 10-digit phone number' };
+    }
+    // South Africa (+27)
+    if (code === '+27' || countryName.includes('south africa')) {
+      return { min: 9, max: 9, pattern: /^[0-9]{9}$/, message: 'Enter a valid 9-digit phone number', placeholder: 'Enter 9-digit phone number' };
+    }
+    // UAE (+971)
+    if (code === '+971' || countryName.includes('united arab emirates')) {
+      return { min: 9, max: 9, pattern: /^[0-9]{9}$/, message: 'Enter a valid 9-digit phone number', placeholder: 'Enter 9-digit phone number' };
+    }
+    // Sri Lanka (+94)
+    if (code === '+94' || countryName.includes('sri lanka')) {
+      return { min: 9, max: 9, pattern: /^[0-9]{9}$/, message: 'Enter a valid 9-digit phone number', placeholder: 'Enter 9-digit phone number' };
+    }
+    // Thailand (+66)
+    if (code === '+66' || countryName.includes('thailand')) {
+      return { min: 9, max: 9, pattern: /^[0-9]{9}$/, message: 'Enter a valid 9-digit phone number', placeholder: 'Enter 9-digit phone number' };
+    }
+    // Spain (+34)
+    if (code === '+34' || countryName.includes('spain')) {
+      return { min: 9, max: 9, pattern: /^[0-9]{9}$/, message: 'Enter a valid 9-digit phone number', placeholder: 'Enter 9-digit phone number' };
+    }
+    // France (+33)
+    if (code === '+33' || countryName.includes('france')) {
+      return { min: 9, max: 9, pattern: /^[0-9]{9}$/, message: 'Enter a valid 9-digit phone number', placeholder: 'Enter 9-digit phone number' };
+    }
+    // Germany (+49)
+    if (code === '+49' || countryName.includes('germany')) {
+      return { min: 10, max: 11, pattern: /^[0-9]{10,11}$/, message: 'Enter a valid 10 to 11-digit phone number', placeholder: 'Enter 10 to 11-digit phone number' };
+    }
+    // Italy (+39)
+    if (code === '+39' || countryName.includes('italy')) {
+      return { min: 10, max: 10, pattern: /^[0-9]{10}$/, message: 'Enter a valid 10-digit phone number', placeholder: 'Enter 10-digit phone number' };
+    }
+    // Fiji (+679)
+    if (code === '+679' || countryName.includes('fiji')) {
+      return { min: 7, max: 7, pattern: /^[0-9]{7}$/, message: 'Enter a valid 7-digit phone number', placeholder: 'Enter 7-digit phone number' };
+    }
+    // New Zealand (+64)
+    if (code === '+64' || countryName.includes('new zeland') || countryName.includes('new zealand')) {
+      return { min: 8, max: 10, pattern: /^[0-9]{8,10}$/, message: 'Enter a valid 8 to 10-digit phone number', placeholder: 'Enter 8 to 10-digit phone number' };
+    }
+    // Africa (+236)
+    if (code === '+236' || countryName.includes('africa')) {
+      return { min: 8, max: 8, pattern: /^[0-9]{8}$/, message: 'Enter a valid 8-digit phone number', placeholder: 'Enter 8-digit phone number' };
+    }
+
+    // Default fallback
+    return { min: 6, max: 15, pattern: /^[0-9]{6,15}$/, message: 'Enter a valid phone number (6-15 digits)', placeholder: 'Enter valid digits number' };
   }
+
+  get maxPhoneLength(): number {
+    return this.getPhoneValidationRules().max;
+  }
+
+  getPhoneValidationMessage(): string {
+    return this.getPhoneValidationRules().message;
+  }
+
+  getPhonePlaceholder(): string {
+    return this.getPhoneValidationRules().placeholder;
+  }
+
+  private getPhonePattern(): RegExp {
+    return this.getPhoneValidationRules().pattern;
+  }
+
 
   private normalizeCountrySearchValue(value: string): string {
     return (value || '')
