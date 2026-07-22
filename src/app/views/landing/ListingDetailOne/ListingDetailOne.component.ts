@@ -49,7 +49,7 @@ import { DomSanitizer, Meta, SafeUrl, Title } from '@angular/platform-browser';
 // import { TriggerEventService } from 'src/app/services/trigger-event.service';
 import { FormControl, FormGroup, NgForm, Validators } from '@angular/forms';
 import { environment } from 'src/environments/environment';
-import { API_URL_NZ, API_URL_PROMOTION } from 'src/app/app.component';
+import { API_URL_NZ } from 'src/app/app.component';
 import { ScrollBar } from '@ng-bootstrap/ng-bootstrap/util/scrollbar';
 // import { ScrollDirective } from '../scroll.directive';
 // import { BlogPostService } from 'src/app/services/blog-post.service';
@@ -179,63 +179,7 @@ export class ListingDetailOneComponent implements OnInit {
   isCardVisible: boolean;
   couponApplied: boolean;
   couponSuccessApplied: boolean = false;
-  visibleGetCouponModal: boolean = false;
-  guestCouponName: string = '';
-  guestCouponPhone: string = '';
-  currentOfferIdForCoupon: any = null;
-  generatedGuestCouponCode: string = '';
-  guestCouponError: string = '';
-  guestCouponSuccess: string = '';
-  guestCouponLoading: boolean = false;
   showSuccessContent: boolean = false;
-
-  // Country Code Dropdown and Validation Properties
-  countriesForCoupon = [
-    { name: 'India', code: '+91', flag: '🇮🇳', length: 10 },
-    { name: 'New Zealand', code: '+64', flag: '🇳🇿', minLength: 8, maxLength: 11 },
-    { name: 'Australia', code: '+61', flag: '🇦🇺', minLength: 9, maxLength: 10 },
-    { name: 'United Kingdom', code: '+44', flag: '🇬🇧', minLength: 10, maxLength: 11 },
-    { name: 'United States', code: '+1', flag: '🇺🇸', length: 10 },
-    { name: 'Canada', code: '+1', flag: '🇨🇦', length: 10 },
-    { name: 'Bangladesh', code: '+880', flag: '🇧🇩', length: 10 },
-    { name: 'Sri Lanka', code: '+94', flag: '🇱🇰', length: 9 },
-    { name: 'United Arab Emirates', code: '+971', flag: '🇦🇪', length: 9 },
-    { name: 'Singapore', code: '+65', flag: '🇸🇬', length: 8 },
-    { name: 'Malaysia', code: '+60', flag: '🇲🇾', minLength: 9, maxLength: 10 },
-    { name: 'South Africa', code: '+27', flag: '🇿🇦', length: 9 }
-  ];
-  selectedCountryForCoupon: any = { name: 'India', code: '+91', flag: '🇮🇳', length: 10 };
-  countrySearchQuery: string = '';
-  showCountryDropdown: boolean = false;
-  guestCouponPhoneNo: string = '';
-
-  get filteredCountriesForCoupon() {
-    if (!this.countrySearchQuery) {
-      return this.countriesForCoupon;
-    }
-    const q = this.countrySearchQuery.toLowerCase();
-    return this.countriesForCoupon.filter(c => 
-      c.name.toLowerCase().includes(q) || 
-      c.code.includes(q)
-    );
-  }
-
-  selectCountryForCoupon(country: any) {
-    this.selectedCountryForCoupon = country;
-    this.showCountryDropdown = false;
-    this.countrySearchQuery = '';
-    this.guestCouponError = '';
-  }
-
-  toggleCountryDropdown() {
-    this.showCountryDropdown = !this.showCountryDropdown;
-  }
-
-  onPhoneInput(event: any) {
-    // Sanitize input to digits only
-    this.guestCouponPhoneNo = this.guestCouponPhoneNo.replace(/\D/g, '');
-    this.guestCouponError = '';
-  }
   isAfterCheckAvilability: boolean;
   primaryColorProperty: any;
   privateCouponPresent: any[];
@@ -4995,20 +4939,7 @@ onCheckOutClosed(): void {
   //     '--third-gradient',
   //     'linear-gradient( 180deg, ' + primary + ', ' + secondary + ')'
   //   );
-  getContrastColor(hexColor?: string): string {
-    if (!hexColor) return '#ffffff';
-    let color = hexColor.replace('#', '');
-    if (color.length === 3) {
-      color = color.split('').map(c => c + c).join('');
-    }
-    if (color.length !== 6) return '#ffffff';
-    const r = parseInt(color.substring(0, 2), 16);
-    const g = parseInt(color.substring(2, 4), 16);
-    const b = parseInt(color.substring(4, 6), 16);
-    const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
-    return (yiq >= 128) ? '#0f172a' : '#ffffff';
-  }
-
+  // }
   changeTheme(primary?: string, secondary?: string, tertiary?: string) {
   // Default colors if none are passed
   const defaultPrimary = "#232A45";   // blue
@@ -8607,6 +8538,9 @@ isPlanVisible(filteredPlans: any[], roomName: string, room?: any) {
       )
     : filteredPlans;
 
+  // Filter by plan validity (effective date to expiry date)
+  plans = plans.filter((plan: any) => this.isPlanWithinDateRange(plan));
+
   // Filter out plans that are not available on all nights of the selected stay period
   if (room?.ratesAndAvailabilityDtos && room.ratesAndAvailabilityDtos.length > 0) {
     const totalNights = room.ratesAndAvailabilityDtos.length;
@@ -9082,175 +9016,6 @@ onCouponInputChange(event: string) {
   sessionStorage.removeItem('selectPromo');
   this.enteredCoupon = '';
 }
-
-  openGetCouponModal(coupon: any) {
-    this.currentOfferIdForCoupon = coupon.id;
-    this.guestCouponName = '';
-    this.guestCouponPhone = '';
-    this.guestCouponPhoneNo = '';
-    
-    // Fallback logic sequence:
-    // 1. URL Query Parameters -> 2. Session/Local Storage -> 3. Property Address Country -> 4. Default to India (+91)
-    let countryToMatch = '';
-    
-    try {
-      // 1. Check URL parameters
-      const urlCountry = this.acRoute.snapshot.queryParams['country'] ||
-                         this.acRoute.snapshot.queryParams['user_country'] ||
-                         this.acRoute.snapshot.queryParams['userCountry'] ||
-                         this.acRoute.snapshot.queryParams['user_country_code'] ||
-                         this.acRoute.snapshot.queryParams['userCountryCode'];
-                         
-      if (urlCountry) {
-        countryToMatch = urlCountry;
-      } else {
-        // 2. Check storage
-        const storageCountry = sessionStorage.getItem('country') || localStorage.getItem('country');
-        if (storageCountry) {
-          countryToMatch = storageCountry;
-        } else {
-          // 3. Check property address country config
-          const propertyCountry = this.businessUser?.address?.country || (this.businessUser as any)?.country;
-          if (propertyCountry) {
-            countryToMatch = propertyCountry;
-          }
-        }
-      }
-      
-      if (countryToMatch) {
-        const qLower = countryToMatch.toLowerCase().trim();
-        const matched = this.countriesForCoupon.find(c => 
-          c.name.toLowerCase().includes(qLower) || 
-          qLower.includes(c.name.toLowerCase()) || 
-          (qLower === 'nz' && c.name === 'New Zealand') ||
-          (qLower === 'in' && c.name === 'India') ||
-          (qLower === 'uk' && c.name === 'United Kingdom') ||
-          (qLower === 'us' && c.name === 'United States') ||
-          (qLower === 'ca' && c.name === 'Canada') ||
-          (qLower === 'au' && c.name === 'Australia')
-        );
-        if (matched) {
-          this.selectedCountryForCoupon = matched;
-        } else {
-          // Default to India if matched country isn't in supported lists
-          this.selectedCountryForCoupon = this.countriesForCoupon[0];
-        }
-      } else {
-        // 4. Fallback to India (+91)
-        this.selectedCountryForCoupon = this.countriesForCoupon[0];
-      }
-    } catch (e) {
-      console.error('Error in country resolution fallback sequence: ', e);
-      this.selectedCountryForCoupon = this.countriesForCoupon[0];
-    }
-
-    this.countrySearchQuery = '';
-    this.showCountryDropdown = false;
-    this.generatedGuestCouponCode = '';
-    this.guestCouponError = '';
-    this.guestCouponSuccess = '';
-    this.guestCouponLoading = false;
-    this.visibleGetCouponModal = true;
-  }
-
-  generateAndApplyCoupon() {
-    if (!this.guestCouponName || !this.guestCouponName.trim()) {
-      this.guestCouponError = 'Guest Name is required';
-      return;
-    }
-    if (!this.guestCouponPhoneNo || !this.guestCouponPhoneNo.trim()) {
-      this.guestCouponError = 'WhatsApp Number is required';
-      return;
-    }
-
-    // Dynamic country validation
-    const num = this.guestCouponPhoneNo.trim().replace(/\D/g, '');
-    const country = this.selectedCountryForCoupon;
-    let isValid = false;
-    let expectedFormat = '';
-
-    if (country.length) {
-      isValid = num.length === country.length;
-      expectedFormat = `${country.length} digits`;
-    } else if (country.minLength && country.maxLength) {
-      isValid = num.length >= country.minLength && num.length <= country.maxLength;
-      expectedFormat = `${country.minLength}-${country.maxLength} digits`;
-    } else {
-      isValid = num.length >= 7 && num.length <= 15;
-      expectedFormat = '7-15 digits';
-    }
-
-    if (!isValid) {
-      this.guestCouponError = `Invalid phone number for ${country.name}. Must be exactly ${expectedFormat}.`;
-      return;
-    }
-
-    this.guestCouponLoading = true;
-    this.guestCouponError = '';
-    this.guestCouponSuccess = '';
-
-    // Form absolute WhatsApp number with country code (e.g. +919876543210)
-    const finalWhatsAppNumber = country.code + num;
-    this.guestCouponPhone = finalWhatsAppNumber;
-
-    const payload = {
-      businessOfferId: this.currentOfferIdForCoupon,
-      guestName: this.guestCouponName.trim(),
-      whatsappNumber: finalWhatsAppNumber
-    };
-
-    const url = `${API_URL_PROMOTION}/api/guest-promotion/request`;
-    this.http.post<any>(url, payload).subscribe(
-      (response: any) => {
-        this.guestCouponLoading = false;
-        if (response && response.generatedCoupon) {
-          this.generatedGuestCouponCode = response.generatedCoupon;
-          this.guestCouponSuccess = `Coupon generated successfully: ${response.generatedCoupon}! Sent to WhatsApp.`;
-          
-          const allOffers = this.showAllTheOfferList?.length ? this.showAllTheOfferList : this.offersList;
-          const originalOffer = allOffers?.find((o: any) => o.id === this.currentOfferIdForCoupon);
-          if (originalOffer) {
-            const guestCouponObject = {
-              ...originalOffer,
-              couponCode: response.generatedCoupon
-            };
-
-            this.selectedPromotion = true;
-            this.selectedPromotionCouponData = guestCouponObject;
-            this.couponApplied = true;
-            this.couponSuccessApplied = true;
-            this.showSuccessContent = true;
-
-            sessionStorage.setItem('selectedPromoData', JSON.stringify(guestCouponObject));
-            sessionStorage.setItem('selectPromo', 'true');
-            localStorage.setItem('selectedPromoData', JSON.stringify(guestCouponObject));
-            localStorage.setItem('selectPromo', 'true');
-
-            this.enteredCoupon = response.generatedCoupon;
-            this.validCouponCode = response.generatedCoupon;
-            this.specialDiscountData = guestCouponObject;
-            this.specialDiscountPercentage = guestCouponObject.discountPercentage;
-            this.promoSelected = true;
-          }
-
-          setTimeout(() => {
-            this.visibleGetCouponModal = false;
-          }, 3000);
-        } else {
-          this.guestCouponError = 'Failed to generate coupon. Please try again.';
-        }
-      },
-      (error) => {
-        this.guestCouponLoading = false;
-        console.error('Error generating guest coupon:', error);
-        if (error && error.error && typeof error.error === 'string') {
-          this.guestCouponError = error.error;
-        } else {
-          this.guestCouponError = 'An error occurred while generating your coupon. Please try again.';
-        }
-      }
-    );
-  }
 
   openSpinWheel(product: any, couponSection: HTMLElement) {
     this.showBookingSummary = false
