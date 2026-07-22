@@ -208,6 +208,7 @@ export class ListingDetailOneComponent implements OnInit {
   countrySearchQuery: string = '';
   showCountryDropdown: boolean = false;
   guestCouponPhoneNo: string = '';
+  guestCouponGenerated: boolean = false;
 
   get filteredCountriesForCoupon() {
     if (!this.countrySearchQuery) {
@@ -9252,8 +9253,105 @@ onCouponInputChange(event: string) {
     );
   }
 
+  showPayNow(): boolean {
+    const propertyData: any = this.token.getProperty() || this.businessUser || {};
+    const accommodationData = propertyData.businessServiceDtoList?.filter(
+      (entry: any) => entry.name === 'Accommodation'
+    );
+    const hasPayLater = accommodationData?.some((a: any) => a.payLater);
+    if (hasPayLater) {
+      return false;
+    }
+    const propertyUrl = this.token.getPropertyUrl();
+    const isBookingEngine = propertyUrl?.includes('bookingEngine') || this.bookingengineurl === 'true';
+    if (isBookingEngine) {
+      return this.businessUser?.paymentGateway != null;
+    }
+    if (!this.value) {
+      return false;
+    }
+    
+    if (this.booking && this.booking.fromDate && this.booking.createdDate) {
+      const fromDateTimestamp = new Date(this.booking.fromDate).getTime();
+      const createdDateTimestamp = new Date(this.booking.createdDate).getTime();
+      const hoursDifference = (fromDateTimestamp - createdDateTimestamp) / (1000 * 60 * 60);
+      return hoursDifference >= 24 && this.businessUser?.paymentGateway != null;
+    }
+    return this.businessUser?.paymentGateway != null;
+  }
+
+  isEnquiryOnly(): boolean {
+    return this.showPayNow() === false && this.showPayLater() === false;
+  }
+
   openSpinWheel(product: any, couponSection: HTMLElement) {
-    this.showBookingSummary = false
+    if (this.isEnquiryOnly()) {
+      return;
+    }
+    this.showBookingSummary = false;
+
+    // Reset guest coupon fields for spin wheel inline flow
+    this.currentOfferIdForCoupon = product?.id;
+    this.guestCouponName = '';
+    this.guestCouponPhone = '';
+    this.guestCouponPhoneNo = '';
+    this.generatedGuestCouponCode = '';
+    this.guestCouponError = '';
+    this.guestCouponSuccess = '';
+    this.guestCouponLoading = false;
+    this.guestCouponGenerated = false;
+
+    // Resolve country fallback sequence
+    let countryToMatch = '';
+    try {
+      const urlCountry = this.acRoute.snapshot.queryParams['country'] ||
+                         this.acRoute.snapshot.queryParams['user_country'] ||
+                         this.acRoute.snapshot.queryParams['userCountry'] ||
+                         this.acRoute.snapshot.queryParams['user_country_code'] ||
+                         this.acRoute.snapshot.queryParams['userCountryCode'];
+                         
+      if (urlCountry) {
+        countryToMatch = urlCountry;
+      } else {
+        const storageCountry = sessionStorage.getItem('country') || localStorage.getItem('country');
+        if (storageCountry) {
+          countryToMatch = storageCountry;
+        } else {
+          const propertyCountry = this.businessUser?.address?.country || (this.businessUser as any)?.country;
+          if (propertyCountry) {
+            countryToMatch = propertyCountry;
+          }
+        }
+      }
+      
+      if (countryToMatch) {
+        const qLower = countryToMatch.toLowerCase().trim();
+        const matched = this.countriesForCoupon.find(c => 
+          c.name.toLowerCase().includes(qLower) || 
+          qLower.includes(c.name.toLowerCase()) || 
+          (qLower === 'nz' && c.name === 'New Zealand') ||
+          (qLower === 'in' && c.name === 'India') ||
+          (qLower === 'uk' && c.name === 'United Kingdom') ||
+          (qLower === 'us' && c.name === 'United States') ||
+          (qLower === 'ca' && c.name === 'Canada') ||
+          (qLower === 'au' && c.name === 'Australia')
+        );
+        if (matched) {
+          this.selectedCountryForCoupon = matched;
+        } else {
+          this.selectedCountryForCoupon = this.countriesForCoupon[0];
+        }
+      } else {
+        this.selectedCountryForCoupon = this.countriesForCoupon[0];
+      }
+    } catch (e) {
+      console.error('Error in country resolution fallback sequence: ', e);
+      this.selectedCountryForCoupon = this.countriesForCoupon[0];
+    }
+
+    this.countrySearchQuery = '';
+    this.showCountryDropdown = false;
+
     const validOfferList = this.checkValidCouponOrNot(this.showAllTheOfferList?.length ? this.showAllTheOfferList : this.offersList) || [];
     const offersWithCode = validOfferList.filter((offer: any) => offer?.couponCode && Number(offer?.discountPercentage) > 0);
 
@@ -9295,6 +9393,119 @@ onCouponInputChange(event: string) {
     this.spinWheelCouponSection = couponSection;
     this.spinWheelResult = null;
     this.spinWheelOpen = true;
+  }
+
+  submitSpinWheelPromotion() {
+    if (!this.guestCouponName || !this.guestCouponName.trim()) {
+      this.guestCouponError = 'Guest Name is required';
+      return;
+    }
+    if (!this.guestCouponPhoneNo || !this.guestCouponPhoneNo.trim()) {
+      this.guestCouponError = 'WhatsApp Number is required';
+      return;
+    }
+
+    // Dynamic country validation
+    const num = this.guestCouponPhoneNo.trim().replace(/\D/g, '');
+    const country = this.selectedCountryForCoupon;
+    let isValid = false;
+    let expectedFormat = '';
+
+    if (country.length) {
+      isValid = num.length === country.length;
+      expectedFormat = `${country.length} digits`;
+    } else if (country.minLength && country.maxLength) {
+      isValid = num.length >= country.minLength && num.length <= country.maxLength;
+      expectedFormat = `${country.minLength}-${country.maxLength} digits`;
+    } else {
+      isValid = num.length >= 7 && num.length <= 15;
+      expectedFormat = '7-15 digits';
+    }
+
+    if (!isValid) {
+      this.guestCouponError = `Invalid phone number for ${country.name}. Must be exactly ${expectedFormat}.`;
+      return;
+    }
+
+    this.guestCouponLoading = true;
+    this.guestCouponError = '';
+    this.guestCouponSuccess = '';
+
+    const finalWhatsAppNumber = country.code + num;
+    this.guestCouponPhone = finalWhatsAppNumber;
+
+    const wonOffer = this.spinWheelResult?.offer;
+    const offerId = wonOffer?.id || this.currentOfferIdForCoupon;
+
+    const payload = {
+      businessOfferId: offerId,
+      guestName: this.guestCouponName.trim(),
+      whatsappNumber: finalWhatsAppNumber
+    };
+
+    const url = `${API_URL_PROMOTION}/api/guest-promotion/request`;
+    this.http.post<any>(url, payload).subscribe(
+      (response: any) => {
+        this.guestCouponLoading = false;
+        if (response && response.generatedCoupon) {
+          this.generatedGuestCouponCode = response.generatedCoupon;
+          this.guestCouponSuccess = `Coupon ${response.generatedCoupon} generated successfully! Sent to WhatsApp.`;
+          this.guestCouponGenerated = true;
+
+          const guestCouponObject = {
+            ...wonOffer,
+            couponCode: response.generatedCoupon
+          };
+
+          this.selectedPromotion = true;
+          this.selectedPromotionCouponData = guestCouponObject;
+          this.couponApplied = true;
+          this.couponSuccessApplied = true;
+          this.showSuccessContent = true;
+
+          sessionStorage.setItem('selectedPromoData', JSON.stringify(guestCouponObject));
+          sessionStorage.setItem('selectPromo', 'true');
+          localStorage.setItem('selectedPromoData', JSON.stringify(guestCouponObject));
+          localStorage.setItem('selectPromo', 'true');
+
+          this.enteredCoupon = response.generatedCoupon;
+          this.validCouponCode = response.generatedCoupon;
+          this.specialDiscountData = guestCouponObject;
+          this.specialDiscountPercentage = guestCouponObject.discountPercentage;
+          this.promoSelected = true;
+        } else {
+          this.guestCouponError = 'Failed to generate coupon. Please try again.';
+        }
+      },
+      (error) => {
+        this.guestCouponLoading = false;
+        console.error('Error generating guest coupon:', error);
+        if (error && error.error && typeof error.error === 'string') {
+          this.guestCouponError = error.error;
+        } else if (error && error.error && typeof error.error.message === 'string') {
+          this.guestCouponError = error.error.message;
+        } else {
+          this.guestCouponError = 'An error occurred while generating your coupon. Please try again.';
+        }
+      }
+    );
+  }
+
+  claimGuestPromotion() {
+    this.showBookingSummary = true;
+    this.spinWheelOpen = false;
+    this.spinWheelResult = null;
+    this.guestCouponGenerated = false;
+
+    setTimeout(() => {
+      const offerSection = document.getElementById('accmdOne');
+      if (offerSection) {
+        offerSection.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start'
+        });
+      }
+    }, 300);
   }
 
   closeSpinWheel() {
