@@ -6054,6 +6054,21 @@ onCheckOutClosed(): void {
           this.lng = parseFloat(this.businessUser.longitude);
 
           this.loader = false;
+
+          // Clean one-time log for landing page state
+          const isPayNow = this.showPayNow();
+          const isPayLater = this.showPayLater();
+          let bookingMode = 'Enquiry Now';
+          if (isPayNow) {
+            bookingMode = 'Pay Now';
+          } else if (isPayLater) {
+            bookingMode = 'Pay Later';
+          }
+          console.log(
+            `%c[Antigravity Landing Page Log] Banner/Promotions Show: ${isPayNow} | Booking Mode: ${bookingMode}`,
+            'background: #10b981; color: white; padding: 6px 12px; border-radius: 4px; font-weight: bold; font-family: sans-serif;'
+          );
+
           this.changeDetectorRefs.detectChanges();
         } else {
         }
@@ -6134,16 +6149,28 @@ onCheckOutClosed(): void {
 
   checkValidCouponOrNot(couponList?) {
     try {
-      const currentDate = new Date();
       const validCoupons = [];
+      
+      // Determine target start/end dates from selected booking parameters or fallback to today
+      const bookingFrom = this.booking?.fromDate ? new Date(this.booking.fromDate) : new Date();
+      const bookingTo = this.booking?.toDate ? new Date(this.booking.toDate) : new Date();
+      
+      // Normalize times to make date-only comparisons reliable
+      bookingFrom.setHours(0, 0, 0, 0);
+      bookingTo.setHours(23, 59, 59, 999);
+
       couponList.forEach((coupon) => {
         if (coupon.startDate && coupon.endDate && coupon.discountPercentage) {
           const startDate = new Date(coupon.startDate);
           const endDate = new Date(coupon.endDate);
-          // Check if the current date is within the start and end date
+          
+          startDate.setHours(0, 0, 0, 0);
+          endDate.setHours(23, 59, 59, 999);
+
+          // Check if the guest's entire booking stay falls within the promotion date range
           if (
-            currentDate >= startDate &&
-            currentDate <= endDate &&
+            bookingFrom >= startDate &&
+            bookingTo <= endDate &&
             coupon.discountPercentage != 100
           ) {
             validCoupons.push(coupon);
@@ -6204,17 +6231,34 @@ onCheckOutClosed(): void {
     }
   }
   showPayLater(): boolean {
+    // const bookoneActive = (this.businessUser as any)?.bookoneActive;
+    // if (bookoneActive === false) {
+    //   return false;
+    // }
+
+    const propertyData: any = this.token.getProperty() || this.businessUser || {};
+    const accommodationData = propertyData.businessServiceDtoList?.filter(
+      (entry: any) => entry.name === 'Accommodation'
+    );
+
+    const hasPayLater = accommodationData?.some((a: any) => a.payLater);
+    if (hasPayLater) return true;
+    const cmIntegration = accommodationData?.some((a: any) => a.cmIntegration);
+    if (cmIntegration) return false;
+    if (!cmIntegration && !this.value) return false;
+    const propertyUrl = this.token.getPropertyUrl();
+    const isBookingEngine = propertyUrl?.includes('bookingEngine');
+    if (isBookingEngine) return false;
+
     const fromDateTimestamp = new Date(this.booking.fromDate).getTime();
     const createdDateTimestamp = new Date(this.booking.createdDate).getTime();
     const hoursDifference =
       (fromDateTimestamp - createdDateTimestamp) / (1000 * 60 * 60);
-    if (hoursDifference < 48) {
-      return true;
-    }
 
-    if (hoursDifference >= 48 && this.businessUser.paymentGateway == null) {
+    if (hoursDifference < 24) return true;
+
+    if (hoursDifference >= 24 && this.businessUser?.paymentGateway == null)
       return true;
-    }
 
     return false;
   }
@@ -9261,30 +9305,25 @@ onCouponInputChange(event: string) {
     const accommodationData = propertyData.businessServiceDtoList?.filter(
       (entry: any) => entry.name === 'Accommodation'
     );
+    const cmIntegration = accommodationData?.some((a: any) => a.cmIntegration);
+    if (cmIntegration) return true;
+
     const hasPayLater = accommodationData?.some((a: any) => a.payLater);
-    if (hasPayLater) {
-      return false;
-    }
+    if (hasPayLater) return false;
     const propertyUrl = this.token.getPropertyUrl();
-    const isBookingEngine = propertyUrl?.includes('bookingEngine') || this.bookingengineurl === 'true';
-    if (isBookingEngine) {
-      return this.businessUser?.paymentGateway != null;
-    }
-    if (!this.value) {
-      return false;
-    }
-    
-    if (this.booking && this.booking.fromDate && this.booking.createdDate) {
-      const fromDateTimestamp = new Date(this.booking.fromDate).getTime();
-      const createdDateTimestamp = new Date(this.booking.createdDate).getTime();
-      const hoursDifference = (fromDateTimestamp - createdDateTimestamp) / (1000 * 60 * 60);
-      return hoursDifference >= 24 && this.businessUser?.paymentGateway != null;
-    }
-    return this.businessUser?.paymentGateway != null;
+    const isBookingEngine = propertyUrl?.includes('bookingEngine');
+    if (isBookingEngine) return this.businessUser?.paymentGateway != null;
+    if (!cmIntegration && !this.value) return false;
+    const fromDateTimestamp = new Date(this.booking.fromDate).getTime();
+    const createdDateTimestamp = new Date(this.booking.createdDate).getTime();
+    const hoursDifference =
+      (fromDateTimestamp - createdDateTimestamp) / (1000 * 60 * 60);
+
+    return hoursDifference >= 24 && this.businessUser?.paymentGateway != null;
   }
 
   isEnquiryOnly(): boolean {
-    return this.showPayNow() === false && this.showPayLater() === false;
+    return !this.value;
   }
 
   isPayLaterProperty(): boolean {
@@ -9292,18 +9331,12 @@ onCouponInputChange(event: string) {
     const accommodationData = propertyData.businessServiceDtoList?.filter(
       (entry: any) => entry.name === 'Accommodation'
     );
-    const hasPayLater = accommodationData?.some((a: any) => a.payLater);
-    if (hasPayLater) {
-      return true;
-    }
-    if (this.businessUser?.paymentGateway == null) {
-      return true;
-    }
-    return false;
+    const accommodationService = accommodationData?.[0];
+    return accommodationService ? (accommodationService.payLater === true) : false;
   }
 
   shouldShowPromotions(): boolean {
-    return !this.isEnquiryOnly() && !this.isPayLaterProperty();
+    return this.showPayNow();
   }
 
   openSpinWheel(product: any, couponSection: HTMLElement) {
@@ -9334,16 +9367,6 @@ onCouponInputChange(event: string) {
                          
       if (urlCountry) {
         countryToMatch = urlCountry;
-      } else {
-        const storageCountry = sessionStorage.getItem('country') || localStorage.getItem('country');
-        if (storageCountry) {
-          countryToMatch = storageCountry;
-        } else {
-          const propertyCountry = this.businessUser?.address?.country || (this.businessUser as any)?.country;
-          if (propertyCountry) {
-            countryToMatch = propertyCountry;
-          }
-        }
       }
       
       if (countryToMatch) {

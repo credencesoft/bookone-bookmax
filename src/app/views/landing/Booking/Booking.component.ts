@@ -745,6 +745,32 @@ export class BookingComponent implements OnInit {
     // Phase 4: Initialize Add-ons from sessionStorage
     this.initializeAddOnServices();
 
+    // One-time detailed checkout diagnostic log
+    const accService = this.accommodationData?.[0] || {};
+    const hasPayNow = this.showPayNow();
+    const hasPayLater = this.showPayLater();
+    let finalButton = 'Enquiry Now';
+    if (hasPayNow) {
+      finalButton = 'Pay Now';
+    } else if (hasPayLater) {
+      finalButton = 'Pay Later';
+    }
+
+    console.log(
+      `%c[Antigravity Booking Page Diagnostic]\n` +
+      `-----------------------------------------\n` +
+      `Active Checkout Button : ${finalButton}\n` +
+      `-----------------------------------------\n` +
+      `websiteinstantBooking  : ${accService.websiteinstantBooking}\n` +
+      `instantBooking         : ${accService.instantBooking}\n` +
+      `payLater               : ${accService.payLater}\n` +
+      `bookoneActive          : ${accService.bookoneActive}\n` +
+      `paymentGateway         : ${this.businessUser?.paymentGateway || 'None (null)'}\n` +
+      `bookingengineurl param : ${this.bookingengineurl === 'true' ? 'true' : 'false (or undefined)'}\n` +
+      `-----------------------------------------`,
+      'background: #3b82f6; color: white; padding: 10px; border-radius: 4px; font-weight: bold; font-family: monospace; line-height: 1.5;'
+    );
+
     this.token.clearBookingDataObj();
   }
 
@@ -1593,28 +1619,6 @@ export class BookingComponent implements OnInit {
   }
 
   showPayNow(): boolean {
-    // if (this.bookoneActiveData === false) {
-    //   return false;
-    // }
-    // if (this.bookoneActiveData === false) {
-    //   const from = new Date(this.booking.fromDate);
-    //   const to = new Date(this.booking.toDate);
-
-    //   const today = new Date();
-    //   today.setHours(0, 0, 0, 0); // normalize time to midnight
-
-    //   // FIXED END: Jan 31, 2026
-    //   const jan31_2026 = new Date(2026, 0, 31); // Jan=0
-
-    //   // Restriction check: both dates between TODAY → Jan 31, 2026
-    //   const isRestricted =
-    //     from >= today && from <= jan31_2026 && to >= today && to <= jan31_2026;
-
-    //   if (isRestricted) {
-    //     return false;
-    //   }
-    // }
-
     if (this.channelManagerIntegration) return true;
 
     this.propertyData = this.token.getProperty();
@@ -1636,27 +1640,9 @@ export class BookingComponent implements OnInit {
   }
 
   showPayLater(): boolean {
-    if (this.bookoneActiveData === false) {
-      return false;
-    }
-    if (this.bookoneActiveData === false) {
-      const from = new Date(this.booking.fromDate);
-      const to = new Date(this.booking.toDate);
-
-      const today = new Date();
-      today.setHours(0, 0, 0, 0); // normalize time to midnight
-
-      // FIXED END: Jan 31, 2026
-      const jan31_2026 = new Date(2026, 0, 31); // Jan=0
-
-      // Restriction check: both dates between TODAY → Jan 31, 2026
-      const isRestricted =
-        from >= today && from <= jan31_2026 && to >= today && to <= jan31_2026;
-
-      if (isRestricted) {
-        return false;
-      }
-    }
+    // if (this.bookoneActiveData === false) {
+    //   return false;
+    // }
 
     this.propertyData = this.token.getProperty();
     this.accommodationData = this.propertyData.businessServiceDtoList?.filter(
@@ -11497,17 +11483,26 @@ export class BookingComponent implements OnInit {
       bookingForm.totalAmount = Number(plan.finalPrice.toFixed(2));
     }
     //this.applyAdvancePlanToBooking(bookingForm);
-    this.saveEnquiryTHM(bookingForm);
+    try {
+      const thmResponse = await this.hotelBookingService.saveEnquireTHM(bookingForm).toPromise();
+      if (thmResponse && thmResponse.status === 200) {
+        this.thmEnquiryDataList = thmResponse.body;
+        if (this.thmEnquiryDataList) {
+          const currentEnquiry = this.token.getEnquiryData() || new EnquiryDto();
+          Object.assign(currentEnquiry, this.thmEnquiryDataList);
+          this.token.saveEnquiryData(currentEnquiry);
+        }
+      }
+    } catch (thmErr) {
+    }
     try {
       try {
         const tokenEnquiryForm = new EnquiryDto();
         Object.assign(tokenEnquiryForm, enquiryForm);
         tokenEnquiryForm.propertyId = this.token?.getProperty()?.id || enquiryForm.propertyId;
         this.hotelBookingService.accommodationEnquiry(tokenEnquiryForm).toPromise().catch(err => {
-          console.error('Error calling token accommodationEnquiry:', err);
         });
       } catch (tokenErr) {
-        console.error('Error creating token enquiry:', tokenErr);
       }
 
       const response: HttpResponse<EnquiryDto> = await this.hotelBookingService
@@ -11524,7 +11519,12 @@ export class BookingComponent implements OnInit {
           enquiryForm.checkInDate,
           'dd-MM-yyyy',
         );
-        this.equitycreatedData = response.body;
+        const mergedEnquiry = new EnquiryDto();
+        Object.assign(mergedEnquiry, response.body);
+        if (this.thmEnquiryDataList) {
+          Object.assign(mergedEnquiry, this.thmEnquiryDataList);
+        }
+        this.equitycreatedData = mergedEnquiry;
         enquiryForm.enquiryId = this.equitycreatedData.enquiryId;
         const existingEnquirysStr = sessionStorage.getItem(
           'EnquiryResponseList',
@@ -11542,10 +11542,13 @@ export class BookingComponent implements OnInit {
         this.isSuccess = true;
         this.submitButtonDisable = true;
         this.bookingConfirmed = true;
-        this.enquiryNo = 'THM-' + response.body.enquiryId;
+        const thmRef = (this.thmEnquiryDataList as any)?.enquiryReference || (this.thmEnquiryDataList as any)?.propertyReservationNumber;
+        const lmsId = response.body.enquiryId;
+        const resolvedRef = (thmRef && lmsId && thmRef !== lmsId) ? `${thmRef} (${lmsId})` : (thmRef || lmsId);
+        this.enquiryNo = 'THM-' + resolvedRef;
 
         // Send notifications
-        this.propertyenquiryemails(enquiryForm);
+        // this.propertyenquiryemails(enquiryForm);
         // this.hotelBookingService.emailEnquire(enquiryForm).subscribe(
         //   () => {
         //     this.paymentLoader = false;
@@ -11555,14 +11558,13 @@ export class BookingComponent implements OnInit {
         //     this.paymentLoader = false;
         //   }
         // );
-        this.sendenquirytoproperty();
-        this.sendWhatsappMessageToCustomer();
-        this.sendWhatsappMessageToPropertyOwner();
+        // this.sendenquirytoproperty();
+        // this.sendWhatsappMessageToCustomer();
+        // this.sendWhatsappMessageToPropertyOwner();
         this.router.navigate(['/confirm']);
         return true;
       }
     } catch (e) {
-      console.error('Submit failed', e);
     }
 
     return false;
@@ -11591,34 +11593,43 @@ export class BookingComponent implements OnInit {
           this.booking?.toDate,
           'dd-MM-yyyy',
         );
-        this.equitycreatedData = response.body;
+        const mergedEnquiry = new EnquiryDto();
+        Object.assign(mergedEnquiry, response.body);
+        if (this.thmEnquiryDataList) {
+          Object.assign(mergedEnquiry, this.thmEnquiryDataList);
+        }
+        this.equitycreatedData = mergedEnquiry;
         this.token.saveEnquiryData(this.equitycreatedData);
         this.isEnquiry = true;
         this.isSuccess = true;
         this.submitButtonDisable = true;
         this.bookingConfirmed = true;
-        this.enquiryNo = 'THM-' + response.body.enquiryId;
+        const thmRef = (this.thmEnquiryDataList as any)?.enquiryReference || (this.thmEnquiryDataList as any)?.propertyReservationNumber;
+        const lmsId = response.body.enquiryId;
+        const resolvedRef = (thmRef && lmsId && thmRef !== lmsId) ? `${thmRef} (${lmsId})` : (thmRef || lmsId);
+        this.enquiryNo = 'THM-' + resolvedRef;
         enquiryForm.taxAmount = this.equitycreatedData.taxAmount.toFixed(2);
         enquiryForm.totalAmount = this.equitycreatedData.totalAmount.toFixed(2);
         enquiryForm.payableAmount =
           this.equitycreatedData.payableAmount.toFixed(2);
         // Send notifications
-        this.propertyenquiryemails(enquiryForm);
-        this.hotelBookingService.emailEnquireToMail(enquiryForm).subscribe(
-          () => {
-            this.paymentLoader = false;
-            this.router.navigate(['/confirm']);
-          },
-          () => {
-            this.paymentLoader = false;
-          },
-        );
+        // this.propertyenquiryemails(enquiryForm);
+        // this.hotelBookingService.emailEnquireToMail(enquiryForm).subscribe(
+        //   () => {
+        //     this.paymentLoader = false;
+        //     this.router.navigate(['/confirm']);
+        //   },
+        //   () => {
+        //     this.paymentLoader = false;
+        //   },
+        // );
+        this.paymentLoader = false;
+        this.router.navigate(['/confirm']);
         // this.sendWhatsappMessageToCustomer();
         // this.sendWhatsappMessageToPropertyOwner();
         return true;
       }
     } catch (e) {
-      console.error('Submit failed', e);
     }
 
     return false;
@@ -11630,15 +11641,11 @@ export class BookingComponent implements OnInit {
       .subscribe((response) => {
         if (response.status === 200) {
           this.thmEnquiryDataList = response.body;
-          const thmData = sessionStorage.getItem('EnquiryTHMList');
-          // const existingEnquiriesThm = thmData ? JSON.parse(thmData) : [];
-
-          // existingEnquiriesThm.push(this.thmEnquiryDataList);
-
-          // sessionStorage.setItem(
-          //   'EnquiryTHMList',
-          //   JSON.stringify(existingEnquiriesThm)
-          // );
+          if (this.thmEnquiryDataList) {
+            const currentEnquiry = this.token.getEnquiryData() || new EnquiryDto();
+            Object.assign(currentEnquiry, this.thmEnquiryDataList);
+            this.token.saveEnquiryData(currentEnquiry);
+          }
         }
       });
   }
@@ -12573,8 +12580,6 @@ sendWhatsappMessageToPropertyOwner() {
   private getDefaultCountry(): CountryListInterFace {
     const preferredCountry =
       this.token.getCountry() ||
-      this.propertyData?.address?.country ||
-      this.token.getProperty()?.address?.country ||
       'India';
 
     return (
