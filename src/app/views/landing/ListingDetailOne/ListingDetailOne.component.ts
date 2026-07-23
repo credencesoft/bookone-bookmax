@@ -191,18 +191,21 @@ export class ListingDetailOneComponent implements OnInit {
 
   // Country Code Dropdown and Validation Properties
   countriesForCoupon = [
-    { name: 'India', code: '+91', flag: '🇮🇳', length: 10 },
-    { name: 'New Zealand', code: '+64', flag: '🇳🇿', minLength: 8, maxLength: 11 },
-    { name: 'Australia', code: '+61', flag: '🇦🇺', minLength: 9, maxLength: 10 },
-    { name: 'United Kingdom', code: '+44', flag: '🇬🇧', minLength: 10, maxLength: 11 },
-    { name: 'United States', code: '+1', flag: '🇺🇸', length: 10 },
-    { name: 'Canada', code: '+1', flag: '🇨🇦', length: 10 },
-    { name: 'Bangladesh', code: '+880', flag: '🇧🇩', length: 10 },
-    { name: 'Sri Lanka', code: '+94', flag: '🇱🇰', length: 9 },
-    { name: 'United Arab Emirates', code: '+971', flag: '🇦🇪', length: 9 },
-    { name: 'Singapore', code: '+65', flag: '🇸🇬', length: 8 },
-    { name: 'Malaysia', code: '+60', flag: '🇲🇾', minLength: 9, maxLength: 10 },
-    { name: 'South Africa', code: '+27', flag: '🇿🇦', length: 9 }
+    { name: 'India', code: '+91', flag: '🇮🇳', length: 10, isoCode: 'IN', currency: 'INR' },
+    { name: 'New Zealand', code: '+64', flag: '🇳🇿', minLength: 8, maxLength: 10, isoCode: 'NZ', currency: 'NZD' },
+    { name: 'Australia', code: '+61', flag: '🇦🇺', length: 9, isoCode: 'AU', currency: 'AUD' },
+    { name: 'United Kingdom', code: '+44', flag: '🇬🇧', length: 10, isoCode: 'GB', currency: 'GBP' },
+    { name: 'United States', code: '+1', flag: '🇺🇸', length: 10, isoCode: 'US', currency: 'USD' },
+    { name: 'Canada', code: '+1', flag: '🇨🇦', length: 10, isoCode: 'CA', currency: 'CAD' },
+    { name: 'Japan', code: '+81', flag: '🇯🇵', length: 10, isoCode: 'JP', currency: 'JPY' },
+    { name: 'Germany', code: '+49', flag: '🇩🇪', minLength: 10, maxLength: 11, isoCode: 'DE', currency: 'EUR' },
+    { name: 'France', code: '+33', flag: '🇫🇷', length: 9, isoCode: 'FR', currency: 'EUR' },
+    { name: 'Bangladesh', code: '+880', flag: '🇧🇩', length: 10, isoCode: 'BD', currency: 'BDT' },
+    { name: 'Sri Lanka', code: '+94', flag: '🇱🇰', length: 9, isoCode: 'LK', currency: 'LKR' },
+    { name: 'United Arab Emirates', code: '+971', flag: '🇦🇪', length: 9, isoCode: 'AE', currency: 'AED' },
+    { name: 'Singapore', code: '+65', flag: '🇸🇬', length: 8, isoCode: 'SG', currency: 'SGD' },
+    { name: 'Malaysia', code: '+60', flag: '🇲🇾', minLength: 9, maxLength: 10, isoCode: 'MY', currency: 'MYR' },
+    { name: 'South Africa', code: '+27', flag: '🇿🇦', length: 9, isoCode: 'ZA', currency: 'ZAR' }
   ];
   selectedCountryForCoupon: any = { name: 'India', code: '+91', flag: '🇮🇳', length: 10 };
   countrySearchQuery: string = '';
@@ -9284,8 +9287,27 @@ onCouponInputChange(event: string) {
     return this.showPayNow() === false && this.showPayLater() === false;
   }
 
+  isPayLaterProperty(): boolean {
+    const propertyData: any = this.token.getProperty() || this.businessUser || {};
+    const accommodationData = propertyData.businessServiceDtoList?.filter(
+      (entry: any) => entry.name === 'Accommodation'
+    );
+    const hasPayLater = accommodationData?.some((a: any) => a.payLater);
+    if (hasPayLater) {
+      return true;
+    }
+    if (this.businessUser?.paymentGateway == null) {
+      return true;
+    }
+    return false;
+  }
+
+  shouldShowPromotions(): boolean {
+    return !this.isEnquiryOnly() && !this.isPayLaterProperty();
+  }
+
   openSpinWheel(product: any, couponSection: HTMLElement) {
-    if (this.isEnquiryOnly()) {
+    if (!this.shouldShowPromotions()) {
       return;
     }
     this.showBookingSummary = false;
@@ -9326,16 +9348,35 @@ onCouponInputChange(event: string) {
       
       if (countryToMatch) {
         const qLower = countryToMatch.toLowerCase().trim();
-        const matched = this.countriesForCoupon.find(c => 
-          c.name.toLowerCase().includes(qLower) || 
-          qLower.includes(c.name.toLowerCase()) || 
-          (qLower === 'nz' && c.name === 'New Zealand') ||
-          (qLower === 'in' && c.name === 'India') ||
-          (qLower === 'uk' && c.name === 'United Kingdom') ||
-          (qLower === 'us' && c.name === 'United States') ||
-          (qLower === 'ca' && c.name === 'Canada') ||
-          (qLower === 'au' && c.name === 'Australia')
+        
+        // 1. Exact ISO Code check (e.g. 'us', 'in', 'jp', 'nz', 'gb'), exact name, or currency
+        let matched = this.countriesForCoupon.find(c => 
+          (c.isoCode && c.isoCode.toLowerCase() === qLower) || 
+          c.name.toLowerCase() === qLower ||
+          (c.currency && c.currency.toLowerCase() === qLower)
         );
+
+        // 2. Fallback to substring matching only if query length > 2 (prevents short 'us' matching 'australia')
+        if (!matched && qLower.length > 2) {
+          matched = this.countriesForCoupon.find(c => 
+            c.name.toLowerCase().includes(qLower) || 
+            qLower.includes(c.name.toLowerCase())
+          );
+        }
+
+        // 3. Fallbacks for standard 2-letter codes
+        if (!matched) {
+          if (qLower === 'nz') matched = this.countriesForCoupon.find(c => c.name === 'New Zealand');
+          else if (qLower === 'in') matched = this.countriesForCoupon.find(c => c.name === 'India');
+          else if (qLower === 'uk' || qLower === 'gb') matched = this.countriesForCoupon.find(c => c.name === 'United Kingdom');
+          else if (qLower === 'us') matched = this.countriesForCoupon.find(c => c.name === 'United States');
+          else if (qLower === 'ca') matched = this.countriesForCoupon.find(c => c.name === 'Canada');
+          else if (qLower === 'au') matched = this.countriesForCoupon.find(c => c.name === 'Australia');
+          else if (qLower === 'jp') matched = this.countriesForCoupon.find(c => c.name === 'Japan');
+          else if (qLower === 'de') matched = this.countriesForCoupon.find(c => c.name === 'Germany');
+          else if (qLower === 'fr') matched = this.countriesForCoupon.find(c => c.name === 'France');
+        }
+
         if (matched) {
           this.selectedCountryForCoupon = matched;
         } else {
@@ -9454,7 +9495,9 @@ onCouponInputChange(event: string) {
 
           const guestCouponObject = {
             ...wonOffer,
-            couponCode: response.generatedCoupon
+            couponCode: response.generatedCoupon,
+            guestName: this.guestCouponName.trim(),
+            whatsappNumber: finalWhatsAppNumber
           };
 
           this.selectedPromotion = true;

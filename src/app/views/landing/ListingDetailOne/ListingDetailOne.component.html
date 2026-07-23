@@ -175,7 +175,7 @@
     </div>
   </div>
 
-  <div *ngIf="showAllTheOfferList?.length > 0 && !isEnquiryOnly()">
+  <div *ngIf="showAllTheOfferList?.length > 0 && shouldShowPromotions()">
     <p-carousel
       class="carousel-section"
       [value]="showAllTheOfferList"
@@ -954,7 +954,7 @@
             *ngIf="selectedPlansSummary.length > 0"
           />
 
-          <div class="spin-win-card" *ngIf="showAllTheOfferList?.length > 0 && !isEnquiryOnly()">
+          <div class="spin-win-card" *ngIf="showAllTheOfferList?.length > 0 && shouldShowPromotions()">
             <div class="spin-left">
               <div class="icon-circle">
                 <i class="fa-solid fa-trophy"></i>
@@ -970,7 +970,7 @@
             </button>
           </div>
 
-          <div *ngIf="!activeForGoogleHotelCenter">
+          <div *ngIf="!activeForGoogleHotelCenter && shouldShowPromotions()">
             <small class="special-code"
               >Have a coupon code?
               <span class="special-code-One"
@@ -982,7 +982,7 @@
               errorMessagePrivate
             }}</small>
           </div>
-          <div class="special-sectionOne" *ngIf="!activeForGoogleHotelCenter">
+          <div class="special-sectionOne" *ngIf="!activeForGoogleHotelCenter && shouldShowPromotions()">
             <div style="width: 100%">
               <input
                 class="input-coupon"
@@ -1030,7 +1030,7 @@
               </button>
             </div>
           </div>
-          <small class="message-coupon" *ngIf="promoSelected"
+          <small class="message-coupon" *ngIf="promoSelected && shouldShowPromotions()"
             >Coupon {{ this.specialDiscountData.couponCode }} Applied
             Successfully!</small
           >
@@ -4523,7 +4523,7 @@
             *ngIf="selectedPlansSummary.length > 0"
           />
 
-          <div class="spin-win-card" *ngIf="showAllTheOfferList?.length > 0 && !isEnquiryOnly()">
+          <div class="spin-win-card" *ngIf="showAllTheOfferList?.length > 0 && shouldShowPromotions()">
             <div class="spin-left">
               <div class="icon-circle">
                 <i class="fa-solid fa-trophy"></i>
@@ -4538,7 +4538,7 @@
               Spin Now
             </button>
           </div>
-          <div>
+          <div *ngIf="shouldShowPromotions()">
             <small class="special-code"
               >Have a coupon code?
               <span class="special-code-One"
@@ -4550,7 +4550,7 @@
               errorMessagePrivate
             }}</small>
           </div>
-          <div class="special-sectionOne">
+          <div class="special-sectionOne" *ngIf="shouldShowPromotions()">
             <div style="width: 100%">
               <input
                 class="input-coupon"
@@ -4598,7 +4598,7 @@
               </button>
             </div>
           </div>
-          <small class="message-coupon" *ngIf="promoSelected"
+          <small class="message-coupon" *ngIf="promoSelected && shouldShowPromotions()"
             >Coupon {{ this.specialDiscountData.couponCode }} Applied
             Successfully!</small
           >

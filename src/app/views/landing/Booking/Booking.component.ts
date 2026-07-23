@@ -634,6 +634,20 @@ export class BookingComponent implements OnInit {
       if (parsed.discountPercentage) {
         this.specialDiscountPercentage = parsed.discountPercentage;
       }
+      if (parsed.guestName && (!this.booking.firstName || !this.booking.firstName.trim())) {
+        const nameParts = parsed.guestName.trim().split(/\s+/);
+        if (nameParts.length > 1) {
+          this.booking.firstName = nameParts[0];
+          this.booking.lastName = nameParts.slice(1).join(' ');
+        } else {
+          this.booking.firstName = parsed.guestName;
+          this.booking.lastName = '';
+        }
+      }
+      if (parsed.whatsappNumber) {
+        this.booking.mobile = parsed.whatsappNumber;
+        this.setMobileNumberByCode(parsed.whatsappNumber);
+      }
     }
     const bookingSummaryStr = sessionStorage.getItem('bookingSummaryDetails');
     const bookingSummary = bookingSummaryStr
