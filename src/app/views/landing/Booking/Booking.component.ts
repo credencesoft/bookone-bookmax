@@ -12671,6 +12671,10 @@ sendWhatsappMessageToPropertyOwner() {
     this.countryCode = selectedCountry?.countryCode || '';
     this.syncBookingMobile();
 
+    if (this.selectedCountry) {
+      this.token.saveCountry(this.selectedCountry);
+    }
+
     if (this.phoneWithoutCode) {
       this.validateMobile();
     }

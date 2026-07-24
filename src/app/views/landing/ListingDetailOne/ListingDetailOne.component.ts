@@ -5858,6 +5858,9 @@ onCheckOutClosed(): void {
       (data) => {
         if (data.status === 200) {
           this.businessUser = data.body;
+          if (this.businessUser?.address?.country) {
+            this.token.saveCountry(this.businessUser.address.country);
+          }
           this.propertyData = this.businessUser;
           this.checkAnyTimeCheckIn();
           this.accommodationData = this.propertyData?.businessServiceDtoList?.filter((entry) => entry?.name === 'Accommodation');
