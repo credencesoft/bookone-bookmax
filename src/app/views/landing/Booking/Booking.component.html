@@ -758,7 +758,9 @@
                       class="form-control"
                       placeholder="Any special requests or preferences (not binding on the hotel)..."
                       id="notes"
-                      >{{ booking.notes }}</textarea
+                      name="notes"
+                      [(ngModel)]="booking.notes"
+                    ></textarea
                     >
                   </div>
                 </div>
@@ -1768,7 +1770,9 @@
                       class="form-control"
                       placeholder="Any special requests or preferences (not binding on the hotel)..."
                       id="notes"
-                      >{{ booking.notes }}</textarea
+                      name="notes"
+                      [(ngModel)]="booking.notes"
+                    ></textarea
                     >
                   </div>
 
