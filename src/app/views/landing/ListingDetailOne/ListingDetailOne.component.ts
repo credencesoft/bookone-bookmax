@@ -6980,7 +6980,7 @@ this.token.savePropertyUrl(currentUrl);
     sessionStorage.setItem('bookingSummaryDetails', JSON.stringify(bookingData));
 
     // Phase 4: Store selected add-ons for Booking component and LMS enquiry snapshot
-    sessionStorage.setItem('addOnServices', JSON.stringify(selectedAddOns));
+    sessionStorage.setItem('addOnServices', JSON.stringify(this.addOnServices));
   } else if(this.specialDiscountData && !this.activeForGoogleHotelCenter){
     if (this.specialDiscountData) {
   this.selectedPlansSummary = this.selectedPlansSummary.map(plan => {
