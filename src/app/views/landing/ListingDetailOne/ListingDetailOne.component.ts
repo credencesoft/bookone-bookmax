@@ -8658,6 +8658,8 @@ isPlanVisible(filteredPlans: any[], roomName: string, room?: any) {
       )
     : filteredPlans;
 
+  // Filter by plan validity (effective date to expiry date)
+  plans = plans.filter((plan: any) => this.isPlanWithinDateRange(plan));
   // Filter out plans that are not available on all nights of the selected stay period
   if (room?.ratesAndAvailabilityDtos && room.ratesAndAvailabilityDtos.length > 0) {
     const totalNights = room.ratesAndAvailabilityDtos.length;
