@@ -1627,23 +1627,11 @@ export class BookingComponent implements OnInit {
     );
     const hasPayLater = this.accommodationData?.some((a) => a.payLater);
     if (hasPayLater) return false;
-    const propertyUrl = this.token.getPropertyUrl();
-    const isBookingEngine = propertyUrl?.includes('bookingEngine');
-    if (isBookingEngine) return this.businessUser.paymentGateway != null;
-    if (!this.channelManagerIntegration && !this.value) return false;
-    const fromDateTimestamp = new Date(this.booking.fromDate).getTime();
-    const createdDateTimestamp = new Date(this.booking.createdDate).getTime();
-    const hoursDifference =
-      (fromDateTimestamp - createdDateTimestamp) / (1000 * 60 * 60);
 
-    return hoursDifference >= 24 && this.businessUser.paymentGateway != null;
+    return this.value === true && this.businessUser?.paymentGateway != null;
   }
 
   showPayLater(): boolean {
-    // if (this.bookoneActiveData === false) {
-    //   return false;
-    // }
-
     this.propertyData = this.token.getProperty();
     this.accommodationData = this.propertyData.businessServiceDtoList?.filter(
       (entry) => entry.name === 'Accommodation',
@@ -1651,21 +1639,6 @@ export class BookingComponent implements OnInit {
 
     const hasPayLater = this.accommodationData?.some((a) => a.payLater);
     if (hasPayLater) return true;
-    if (this.channelManagerIntegration) return false;
-    if (!this.channelManagerIntegration && !this.value) return false;
-    const propertyUrl = this.token.getPropertyUrl();
-    const isBookingEngine = propertyUrl?.includes('bookingEngine');
-    if (isBookingEngine) return false;
-
-    const fromDateTimestamp = new Date(this.booking.fromDate).getTime();
-    const createdDateTimestamp = new Date(this.booking.createdDate).getTime();
-    const hoursDifference =
-      (fromDateTimestamp - createdDateTimestamp) / (1000 * 60 * 60);
-
-    if (hoursDifference < 24) return true;
-
-    if (hoursDifference >= 24 && this.businessUser.paymentGateway == null)
-      return true;
 
     return false;
   }

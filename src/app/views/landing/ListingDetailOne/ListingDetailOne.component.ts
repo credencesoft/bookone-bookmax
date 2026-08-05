@@ -6246,22 +6246,6 @@ onCheckOutClosed(): void {
 
     const hasPayLater = accommodationData?.some((a: any) => a.payLater);
     if (hasPayLater) return true;
-    const cmIntegration = accommodationData?.some((a: any) => a.cmIntegration);
-    if (cmIntegration) return false;
-    if (!cmIntegration && !this.value) return false;
-    const propertyUrl = this.token.getPropertyUrl();
-    const isBookingEngine = propertyUrl?.includes('bookingEngine');
-    if (isBookingEngine) return false;
-
-    const fromDateTimestamp = new Date(this.booking.fromDate).getTime();
-    const createdDateTimestamp = new Date(this.booking.createdDate).getTime();
-    const hoursDifference =
-      (fromDateTimestamp - createdDateTimestamp) / (1000 * 60 * 60);
-
-    if (hoursDifference < 24) return true;
-
-    if (hoursDifference >= 24 && this.businessUser?.paymentGateway == null)
-      return true;
 
     return false;
   }
@@ -9315,16 +9299,8 @@ onCouponInputChange(event: string) {
 
     const hasPayLater = accommodationData?.some((a: any) => a.payLater);
     if (hasPayLater) return false;
-    const propertyUrl = this.token.getPropertyUrl();
-    const isBookingEngine = propertyUrl?.includes('bookingEngine');
-    if (isBookingEngine) return this.businessUser?.paymentGateway != null;
-    if (!cmIntegration && !this.value) return false;
-    const fromDateTimestamp = new Date(this.booking.fromDate).getTime();
-    const createdDateTimestamp = new Date(this.booking.createdDate).getTime();
-    const hoursDifference =
-      (fromDateTimestamp - createdDateTimestamp) / (1000 * 60 * 60);
 
-    return hoursDifference >= 24 && this.businessUser?.paymentGateway != null;
+    return this.value === true && this.businessUser?.paymentGateway != null;
   }
 
   isEnquiryOnly(): boolean {
