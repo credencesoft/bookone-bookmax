@@ -56,8 +56,7 @@
                   "maximumError": "70kb"
                 }
               ],
-              "deployUrl": "/bookone-",
-              "outputHashing": "all"
+              "outputHashing": "none"
             },
             "development": {
               "buildOptimizer": false,
