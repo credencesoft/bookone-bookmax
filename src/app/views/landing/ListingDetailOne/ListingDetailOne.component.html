@@ -3306,27 +3306,37 @@
                     "
                   >
                     <!-- Top Badge -->
+                    <!-- Case 1: Has Discount (Alternates between Discount and Availability) -->
                     <div
-                      *ngIf="
-                        getMinAvailableRooms(room.ratesAndAvailabilityDtos) <= 5
-                      "
+                      *ngIf="getRoomDiscountPercentage(room, rates) > 0"
                       style="z-index: 1"
-                      class="position-absolute top-0 start-0 m-2 px-3 py-1 last-rooms rounded-pill small"
+                      class="position-absolute top-0 start-0 m-2 room-badge-container rounded-pill small"
                     >
-                      Last
-                      {{
-                        getMinAvailableRooms(room.ratesAndAvailabilityDtos)
-                      }}
-                      {{ getBookingUnitLabel(room) }}(s)
+                      <span class="badge-layer badge-discount-layer">
+                        {{ getRoomDiscountPercentage(room, rates) }}% OFF
+                      </span>
+                      <span class="badge-layer badge-availability-layer">
+                        <ng-container *ngIf="getMinAvailableRooms(room.ratesAndAvailabilityDtos) <= 5">
+                          Last {{ getMinAvailableRooms(room.ratesAndAvailabilityDtos) }} {{ getBookingUnitLabel(room) }}(s)
+                        </ng-container>
+                        <ng-container *ngIf="getMinAvailableRooms(room.ratesAndAvailabilityDtos) > 5">
+                          Fast-selling
+                        </ng-container>
+                      </span>
                     </div>
+
+                    <!-- Case 2: No Discount (Only Availability - Blinks Slowly) -->
                     <div
-                      *ngIf="
-                        getMinAvailableRooms(room.ratesAndAvailabilityDtos) > 5
-                      "
+                      *ngIf="getRoomDiscountPercentage(room, rates) <= 0"
                       style="z-index: 1"
-                      class="position-absolute top-0 start-0 m-2 px-3 py-1 last-rooms rounded-pill small"
+                      class="position-absolute top-0 start-0 m-2 px-3 py-1 last-rooms rounded-pill small blink-slow"
                     >
-                      Fast-selling
+                      <ng-container *ngIf="getMinAvailableRooms(room.ratesAndAvailabilityDtos) <= 5">
+                        Last {{ getMinAvailableRooms(room.ratesAndAvailabilityDtos) }} {{ getBookingUnitLabel(room) }}(s)
+                      </ng-container>
+                      <ng-container *ngIf="getMinAvailableRooms(room.ratesAndAvailabilityDtos) > 5">
+                        Fast-selling
+                      </ng-container>
                     </div>
                     <!-- Room Image -->
                     <!-- Fallback image if imageList is empty or undefined -->

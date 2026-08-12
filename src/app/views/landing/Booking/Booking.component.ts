@@ -13247,7 +13247,44 @@ sendWhatsappMessageToPropertyOwner() {
   }
 
   getVisibleAddOnServices(): any[] {
-    return this.filterDayTripIneligibleAddOns(this.addOnServices || []);
+    let services = this.filterDayTripIneligibleAddOns(this.addOnServices || []);
+    return this.filterServicesByPax(services);
+  }
+
+  filterServicesByPax(services: any[]): any[] {
+    if (!services) return [];
+    
+    const adultCount = Number(this.adults || this.booking?.noOfPersons || 0);
+    const childCount = Number(this.children || this.booking?.noOfChildren || 0) + 
+                       Number(this.booking?.noOfChildrenUnder5years || 0) +
+                       Number(this.totalPlanChildren || 0) +
+                       Number(this.totalPlanChildrenAboveAgeLimit || 0) +
+                       Number(this.totalPlanChildrenBelowAgeLimit || 0);
+
+    // If only adults are chosen (no children)
+    if (adultCount > 0 && childCount === 0) {
+      return services.filter(service => {
+        // Filter out services that are ONLY applicable to children
+        if (service.applicableToChild === true && service.applicableToAdult === false) {
+          return false;
+        }
+        return true;
+      });
+    }
+
+    // If only children are chosen (no adults)
+    if (childCount > 0 && adultCount === 0) {
+      return services.filter(service => {
+        // Filter out services that are ONLY applicable to adults
+        if (service.applicableToAdult === true && service.applicableToChild === false) {
+          return false;
+        }
+        return true;
+      });
+    }
+
+    // If both are chosen or none are explicitly specified, show all
+    return services;
   }
 
   hasVisibleAddOnServices(): boolean {
@@ -13568,11 +13605,33 @@ sendWhatsappMessageToPropertyOwner() {
         return this.isFirstSelectedPlan(plan) ? this.getSelectedAddOnQuantity(addon) : 0;
       case 'perpax':
       case 'pernight':
-        return Math.max(1, this.toSafeAmount(plan?.adults || this.booking?.noOfPersons || 1));
+        return this.getAddOnPaxCountForPlan(addon, plan);
       case 'perroom':
       default:
         return this.getPlanRoomCount(plan);
     }
+  }
+
+  private getAddOnPaxCountForPlan(addon: any, plan: any): number {
+    let count = 0;
+    const isAdultApplicable = addon?.applicableToAdult !== false;
+    const isChildApplicable = addon?.applicableToChild === true;
+
+    if (isAdultApplicable) {
+      count += this.toSafeAmount(plan?.adults || this.booking?.noOfPersons || 0);
+    }
+    if (isChildApplicable) {
+      const planChildren = Number(plan?.children || plan?.extraCountChild || 0) > 0
+        ? Number(plan?.children || plan?.extraCountChild || 0)
+        : (Number(plan?.childrenAbove5years || 0) + Number(plan?.childrenBelow5years || 0));
+      
+      const globalChildren = Number(this.children || this.booking?.noOfChildren || 0) + 
+                             Number(this.booking?.noOfChildrenUnder5years || 0);
+
+      count += planChildren > 0 ? planChildren : globalChildren;
+    }
+
+    return count > 0 ? count : 1;
   }
 
   private getAddOnTotalMultiplier(addon: any): number {
@@ -13583,11 +13642,33 @@ sendWhatsappMessageToPropertyOwner() {
         return this.getSelectedAddOnQuantity(addon);
       case 'perpax':
       case 'pernight':
-        return this.getTotalSelectedAdultsCount();
+        return this.getTotalSelectedPaxCount(addon);
       case 'perroom':
       default:
         return this.getTotalSelectedRoomCount();
     }
+  }
+
+  private getTotalSelectedPaxCount(addon: any): number {
+    let count = 0;
+    const isAdultApplicable = addon?.applicableToAdult !== false;
+    const isChildApplicable = addon?.applicableToChild === true;
+
+    if (isAdultApplicable) {
+      count += this.getTotalSelectedAdultsCount();
+    }
+    if (isChildApplicable) {
+      const totalPlanChildrenCount = Number(this.totalPlanChildren || 0) > 0
+        ? Number(this.totalPlanChildren)
+        : (Number(this.totalPlanChildrenAboveAgeLimit || 0) + Number(this.totalPlanChildrenBelowAgeLimit || 0));
+
+      const globalChildrenCount = Number(this.children || this.booking?.noOfChildren || 0) + 
+                                   Number(this.booking?.noOfChildrenUnder5years || 0);
+
+      count += totalPlanChildrenCount > 0 ? totalPlanChildrenCount : globalChildrenCount;
+    }
+
+    return count > 0 ? count : 1;
   }
 
   private getAddOnDisplayQuantity(addon: any, plan: any): number {
@@ -13689,6 +13770,13 @@ sendWhatsappMessageToPropertyOwner() {
       const beforeTaxAmount = this.toSafeAmount(servicePrice * multiplier);
       const totalTaxAmount = this.toSafeAmount(taxAmount * multiplier);
 
+      let applicableFor = 'Both';
+      if (service.applicableToAdult !== false && service.applicableToChild === false) {
+        applicableFor = 'Adult';
+      } else if (service.applicableToChild === true && service.applicableToAdult === false) {
+        applicableFor = 'Child';
+      }
+
       services.push({
         ...service,
         quantity,
@@ -13700,6 +13788,8 @@ sendWhatsappMessageToPropertyOwner() {
         afterTaxAmount: this.toSafeAmount(beforeTaxAmount + totalTaxAmount),
         netAmount: this.toSafeAmount(beforeTaxAmount + totalTaxAmount),
         sourceChannel: service?.sourceChannel ?? this.booking?.externalSite ?? 'BookMax',
+        applicableFor,
+        notes: (service?.notes || '') + ` (Applicable for ${applicableFor})`,
       });
 
       return services;
@@ -13723,6 +13813,13 @@ sendWhatsappMessageToPropertyOwner() {
       const totalTaxAmount = this.toSafeAmount(taxAmount * multiplier);
       const afterTaxAmount = this.toSafeAmount(beforeTaxAmount + totalTaxAmount);
 
+      let applicableFor = 'Both';
+      if (service.applicableToAdult !== false && service.applicableToChild === false) {
+        applicableFor = 'Adult';
+      } else if (service.applicableToChild === true && service.applicableToAdult === false) {
+        applicableFor = 'Child';
+      }
+
       services.push({
         ...service,
         quantity,
@@ -13739,6 +13836,8 @@ sendWhatsappMessageToPropertyOwner() {
         afterTaxAmount,
         netAmount: afterTaxAmount,
         sourceChannel: service?.sourceChannel ?? this.booking?.externalSite ?? 'BookMax',
+        applicableFor,
+        notes: (service?.notes || '') + ` (Applicable for ${applicableFor})`,
       });
 
       return services;
