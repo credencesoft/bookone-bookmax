@@ -500,25 +500,30 @@
                     <div class="color-graying">Tax & Services</div>
                     <div>{{ plan.taxPercentageperroom | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2' }}</div>
                   </div>
-                  <ng-container *ngIf="selectedAddOns && selectedAddOns.length > 0">
+                   <ng-container *ngIf="selectedAddOns && selectedAddOns.length > 0">
                     <ng-container *ngIf="getSelectedServicesForPlan(plan) as planAddOns">
-                      <div *ngIf="planAddOns.length > 0" class="plan-add-ons-summary">
-                        <div class="plan-add-ons-heading">
-                          <span>Add-On Services</span>
-                          <small>{{ planAddOns.length }} selected</small>
+                      <div *ngIf="planAddOns.length > 0" class="plan-add-ons-summary" style="margin-top: 10px; margin-bottom: 12px; padding: 10px; background: #f8fafc; border-radius: 6px; border: 1px solid #e2e8f0;">
+                        <div class="plan-add-ons-heading" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 6px; margin-bottom: 8px;">
+                          <span style="font-weight: 600; font-size: 12px; color: #475569; text-transform: uppercase; letter-spacing: 0.05em;">Add-On Services</span>
+                          <small style="color: #64748b; font-weight: 500;">{{ planAddOns.length }} selected</small>
                         </div>
-                        <div class="plan-add-on-row" *ngFor="let addon of planAddOns">
-                          <div class="plan-add-on-name">
-                            {{ addon.name }}
-                            <span>x {{ addon.quantity }}</span>
+                        <div class="plan-add-on-row" *ngFor="let addon of planAddOns" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px;">
+                          <div class="plan-add-on-name" style="display: flex; flex-direction: column; gap: 2px;">
+                            <div style="font-weight: 500; font-size: 13px; color: #1e293b;">
+                              {{ addon.name }}
+                              <span style="color: #64748b; font-weight: 400; font-size: 11px; margin-left: 4px;">x{{ addon.quantity }}</span>
+                            </div>
+                            <div *ngIf="addon.notes" style="font-size: 11px; color: #64748b; font-weight: 400; font-style: italic;">
+                              {{ addon.notes }}
+                            </div>
                           </div>
-                          <div class="plan-add-on-amount">
+                          <div class="plan-add-on-amount" style="font-weight: 600; font-size: 13px; color: #0f172a;">
                             {{ addon.afterTaxAmount | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2' }}
                           </div>
                         </div>
-                        <div class="plan-add-ons-total-row">
-                          <span>Services Total</span>
-                          <strong>{{ getPlanServicesTotal(plan) | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2' }}</strong>
+                        <div class="plan-add-ons-total-row" style="display: flex; justify-content: space-between; align-items: center; border-top: 1px dashed #cbd5e1; padding-top: 6px; margin-top: 8px;">
+                          <span style="font-size: 12px; font-weight: 500; color: #475569;">Services Total</span>
+                          <strong style="font-size: 13px; font-weight: 700; color: #0f172a;">{{ getPlanServicesTotal(plan) | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2' }}</strong>
                         </div>
                       </div>
                     </ng-container>
@@ -1425,25 +1430,30 @@
                       {{ plan.taxPercentageperroom | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2' }}
                     </div>
                   </div>
-                  <ng-container *ngIf="selectedAddOns && selectedAddOns.length > 0">
+                   <ng-container *ngIf="selectedAddOns && selectedAddOns.length > 0">
                     <ng-container *ngIf="getSelectedServicesForPlan(plan) as planAddOns">
-                      <div *ngIf="planAddOns.length > 0" class="plan-add-ons-summary">
-                        <div class="plan-add-ons-heading">
-                          <span>Add-On Services</span>
-                          <small>{{ planAddOns.length }} selected</small>
+                      <div *ngIf="planAddOns.length > 0" class="plan-add-ons-summary" style="margin-top: 10px; margin-bottom: 12px; padding: 10px; background: #f8fafc; border-radius: 6px; border: 1px solid #e2e8f0;">
+                        <div class="plan-add-ons-heading" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 6px; margin-bottom: 8px;">
+                          <span style="font-weight: 600; font-size: 12px; color: #475569; text-transform: uppercase; letter-spacing: 0.05em;">Add-On Services</span>
+                          <small style="color: #64748b; font-weight: 500;">{{ planAddOns.length }} selected</small>
                         </div>
-                        <div class="plan-add-on-row" *ngFor="let addon of planAddOns">
-                          <div class="plan-add-on-name">
-                            {{ addon.name }}
-                            <span>x {{ addon.quantity }}</span>
+                        <div class="plan-add-on-row" *ngFor="let addon of planAddOns" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px;">
+                          <div class="plan-add-on-name" style="display: flex; flex-direction: column; gap: 2px;">
+                            <div style="font-weight: 500; font-size: 13px; color: #1e293b;">
+                              {{ addon.name }}
+                              <span style="color: #64748b; font-weight: 400; font-size: 11px; margin-left: 4px;">x{{ addon.quantity }}</span>
+                            </div>
+                            <div *ngIf="addon.notes" style="font-size: 11px; color: #64748b; font-weight: 400; font-style: italic;">
+                              {{ addon.notes }}
+                            </div>
                           </div>
-                          <div class="plan-add-on-amount">
+                          <div class="plan-add-on-amount" style="font-weight: 600; font-size: 13px; color: #0f172a;">
                             {{ addon.afterTaxAmount | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2' }}
                           </div>
                         </div>
-                        <div class="plan-add-ons-total-row">
-                          <span>Services Total</span>
-                          <strong>{{ getPlanServicesTotal(plan) | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2' }}</strong>
+                        <div class="plan-add-ons-total-row" style="display: flex; justify-content: space-between; align-items: center; border-top: 1px dashed #cbd5e1; padding-top: 6px; margin-top: 8px;">
+                          <span style="font-size: 12px; font-weight: 500; color: #475569;">Services Total</span>
+                          <strong style="font-size: 13px; font-weight: 700; color: #0f172a;">{{ getPlanServicesTotal(plan) | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency: currency : 'symbol' : '1.2-2' }}</strong>
                         </div>
                       </div>
                     </ng-container>

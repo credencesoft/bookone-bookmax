@@ -61,5 +61,12 @@ export class PropertyServiceDTO {
   paymentReference?: string;
   sourceChannel?: string;
 
+  adultTaxPrice?: number;
+  adultServicePrice?: number;
+  adultPriceTotal?: number;
+  childTaxPrice?: number;
+  childServicePrice?: number;
+  childPriceTotal?: number;
+
   constructor() {}
 }

@@ -13692,26 +13692,16 @@ sendWhatsappMessageToPropertyOwner() {
   // }
 
   private getPlanServicesSubtotal(plan: any): number {
+    const planServices = this.getSelectedServicesForPlan(plan);
     return this.toSafeAmount(
-      (this.selectedAddOns || []).reduce(
-        (sum, addon) =>
-          sum +
-          this.toSafeAmount(addon?.servicePrice) *
-            this.getAddOnPlanMultiplier(addon, plan),
-        0,
-      ),
+      planServices.reduce((sum, s) => sum + this.toSafeAmount(s.beforeTaxAmount), 0)
     );
   }
 
   private getPlanServicesTax(plan: any): number {
+    const planServices = this.getSelectedServicesForPlan(plan);
     return this.toSafeAmount(
-      (this.selectedAddOns || []).reduce(
-        (sum, addon) =>
-          sum +
-          this.toSafeAmount(addon?.taxAmount) *
-            this.getAddOnPlanMultiplier(addon, plan),
-        0,
-      ),
+      planServices.reduce((sum, s) => sum + this.toSafeAmount(s.taxAmount), 0)
     );
   }
 
@@ -13754,43 +13744,129 @@ sendWhatsappMessageToPropertyOwner() {
     );
   }
 
+  private getAdultPaxCountForPlan(plan: any): number {
+    return this.toSafeAmount(plan?.adults || this.booking?.noOfPersons || 0);
+  }
+
+  private getChildPaxCountForPlan(plan: any): number {
+    const planChildren = Number(plan?.children || plan?.extraCountChild || 0) > 0
+      ? Number(plan?.children || plan?.extraCountChild || 0)
+      : (Number(plan?.childrenAbove5years || 0) + Number(plan?.childrenBelow5years || 0));
+    
+    const globalChildren = Number(this.children || this.booking?.noOfChildren || 0) + 
+                           Number(this.booking?.noOfChildrenUnder5years || 0);
+
+    return planChildren > 0 ? planChildren : globalChildren;
+  }
+
   getSelectedServicesForPlan(plan: any): any[] {
     return (this.selectedAddOns || []).reduce((services, service) => {
-      const servicePrice = this.toSafeAmount(
-        service?.servicePrice ?? service?.beforeTaxAmount ?? service?.unitPrice,
-      );
-      const taxAmount = this.toSafeAmount(service?.taxAmount);
-      const multiplier = this.getAddOnPlanMultiplier(service, plan);
+      const chargeBasis = this.getAddOnChargeBasis(service);
+      const isPerPaxOrNight = ['perpax', 'pernight'].includes(chargeBasis);
+      
+      const isAdultApplicable = service.applicableToAdult !== false;
+      const isChildApplicable = service.applicableToChild === true;
 
-      if (multiplier <= 0) {
-        return services;
+      const adultCount = this.getAdultPaxCountForPlan(plan);
+      const childCount = this.getChildPaxCountForPlan(plan);
+
+      // If both are applicable, perpax/pernight, and both counts > 0 -> SPLIT
+      if (isPerPaxOrNight && isAdultApplicable && isChildApplicable && adultCount > 0 && childCount > 0) {
+        // 1. Adult part
+        const adultServicePrice = this.toSafeAmount(service?.adultServicePrice ?? service?.servicePrice ?? service?.beforeTaxAmount ?? service?.unitPrice);
+        const adultTaxPrice = this.toSafeAmount(service?.adultTaxPrice ?? service?.taxAmount ?? 0);
+        const adultMultiplier = adultCount;
+        const adultBeforeTax = this.toSafeAmount(adultServicePrice * adultMultiplier);
+        const adultTax = this.toSafeAmount(adultTaxPrice * adultMultiplier);
+        
+        services.push({
+          ...service,
+          name: `${service.name} | Adult`,
+          quantity: adultCount,
+          count: adultCount,
+          unitPrice: adultServicePrice,
+          servicePrice: adultServicePrice,
+          beforeTaxAmount: adultBeforeTax,
+          taxAmount: adultTax,
+          afterTaxAmount: this.toSafeAmount(adultBeforeTax + adultTax),
+          netAmount: this.toSafeAmount(adultBeforeTax + adultTax),
+          sourceChannel: service?.sourceChannel ?? this.booking?.externalSite ?? 'BookMax',
+          applicableFor: 'Adult',
+          notes: `${service?.notes || ''} (Adults: ${adultCount} x ${adultServicePrice})`.trim(),
+        });
+
+        // 2. Child part
+        const childServicePrice = this.toSafeAmount(service?.childServicePrice ?? service?.servicePrice ?? service?.beforeTaxAmount ?? service?.unitPrice);
+        const childTaxPrice = this.toSafeAmount(service?.childTaxPrice ?? service?.taxAmount ?? 0);
+        const childMultiplier = childCount;
+        const childBeforeTax = this.toSafeAmount(childServicePrice * childMultiplier);
+        const childTax = this.toSafeAmount(childTaxPrice * childMultiplier);
+
+        services.push({
+          ...service,
+          name: `${service.name} | Child`,
+          quantity: childCount,
+          count: childCount,
+          unitPrice: childServicePrice,
+          servicePrice: childServicePrice,
+          beforeTaxAmount: childBeforeTax,
+          taxAmount: childTax,
+          afterTaxAmount: this.toSafeAmount(childBeforeTax + childTax),
+          netAmount: this.toSafeAmount(childBeforeTax + childTax),
+          sourceChannel: service?.sourceChannel ?? this.booking?.externalSite ?? 'BookMax',
+          applicableFor: 'Child',
+          notes: `${service?.notes || ''} (Children: ${childCount} x ${childServicePrice})`.trim(),
+        });
+      } else {
+        // Single object (either only adult, only child, or not perpax/pernight)
+        let multiplier = this.getAddOnPlanMultiplier(service, plan);
+        if (multiplier <= 0) {
+          return services;
+        }
+
+        let useChildPrices = isChildApplicable && !isAdultApplicable;
+        if (isPerPaxOrNight && isAdultApplicable && isChildApplicable && adultCount === 0 && childCount > 0) {
+          useChildPrices = true;
+        }
+
+        const servicePrice = useChildPrices
+          ? this.toSafeAmount(service?.childServicePrice ?? service?.servicePrice ?? service?.beforeTaxAmount ?? service?.unitPrice)
+          : this.toSafeAmount(service?.adultServicePrice ?? service?.servicePrice ?? service?.beforeTaxAmount ?? service?.unitPrice);
+
+        const taxAmount = useChildPrices
+          ? this.toSafeAmount(service?.childTaxPrice ?? service?.taxAmount ?? 0)
+          : this.toSafeAmount(service?.adultTaxPrice ?? service?.taxAmount ?? 0);
+
+        const beforeTaxAmount = this.toSafeAmount(servicePrice * multiplier);
+        const totalTaxAmount = this.toSafeAmount(taxAmount * multiplier);
+        const quantity = this.getAddOnDisplayQuantity(service, plan);
+
+        let applicableFor = 'Both';
+        if (isAdultApplicable && !isChildApplicable) {
+          applicableFor = 'Adult';
+        } else if (isChildApplicable && !isAdultApplicable) {
+          applicableFor = 'Child';
+        }
+
+        const noteDetail = isPerPaxOrNight
+          ? `(Count: ${multiplier} x Price: ${servicePrice})`
+          : `(Price: ${servicePrice})`;
+
+        services.push({
+          ...service,
+          quantity,
+          count: quantity,
+          unitPrice: servicePrice,
+          servicePrice,
+          beforeTaxAmount,
+          taxAmount: totalTaxAmount,
+          afterTaxAmount: this.toSafeAmount(beforeTaxAmount + totalTaxAmount),
+          netAmount: this.toSafeAmount(beforeTaxAmount + totalTaxAmount),
+          sourceChannel: service?.sourceChannel ?? this.booking?.externalSite ?? 'BookMax',
+          applicableFor,
+          notes: `${service?.notes || ''} ${noteDetail}`.trim(),
+        });
       }
-
-      const quantity = this.getAddOnDisplayQuantity(service, plan);
-      const beforeTaxAmount = this.toSafeAmount(servicePrice * multiplier);
-      const totalTaxAmount = this.toSafeAmount(taxAmount * multiplier);
-
-      let applicableFor = 'Both';
-      if (service.applicableToAdult !== false && service.applicableToChild === false) {
-        applicableFor = 'Adult';
-      } else if (service.applicableToChild === true && service.applicableToAdult === false) {
-        applicableFor = 'Child';
-      }
-
-      services.push({
-        ...service,
-        quantity,
-        count: quantity,
-        unitPrice: servicePrice,
-        servicePrice,
-        beforeTaxAmount,
-        taxAmount: totalTaxAmount,
-        afterTaxAmount: this.toSafeAmount(beforeTaxAmount + totalTaxAmount),
-        netAmount: this.toSafeAmount(beforeTaxAmount + totalTaxAmount),
-        sourceChannel: service?.sourceChannel ?? this.booking?.externalSite ?? 'BookMax',
-        applicableFor,
-        notes: (service?.notes || '') + ` (Applicable for ${applicableFor})`,
-      });
 
       return services;
     }, []);
@@ -13798,75 +13874,156 @@ sendWhatsappMessageToPropertyOwner() {
 
   private getSelectedServicePayloadForPlan(plan: any): any[] {
     return (this.selectedAddOns || []).reduce((services, service) => {
-      const servicePrice = this.toSafeAmount(
-        service?.servicePrice ?? service?.beforeTaxAmount ?? service?.unitPrice,
-      );
-      const taxAmount = this.toSafeAmount(service?.taxAmount);
-      const multiplier = this.getAddOnPlanMultiplier(service, plan);
+      const chargeBasis = this.getAddOnChargeBasis(service);
+      const isPerPaxOrNight = ['perpax', 'pernight'].includes(chargeBasis);
+      
+      const isAdultApplicable = service.applicableToAdult !== false;
+      const isChildApplicable = service.applicableToChild === true;
 
-      if (multiplier <= 0) {
-        return services;
+      const adultCount = this.getAdultPaxCountForPlan(plan);
+      const childCount = this.getChildPaxCountForPlan(plan);
+
+      // If both are applicable, perpax/pernight, and both counts > 0 -> SPLIT
+      if (isPerPaxOrNight && isAdultApplicable && isChildApplicable && adultCount > 0 && childCount > 0) {
+        // 1. Adult part
+        const adultServicePrice = this.toSafeAmount(service?.adultServicePrice ?? service?.servicePrice ?? service?.beforeTaxAmount ?? service?.unitPrice);
+        const adultTaxPrice = this.toSafeAmount(service?.adultTaxPrice ?? service?.taxAmount ?? 0);
+        const adultMultiplier = adultCount;
+        const adultBeforeTax = this.toSafeAmount(adultServicePrice * adultMultiplier);
+        const adultTax = this.toSafeAmount(adultTaxPrice * adultMultiplier);
+        const adultAfterTax = this.toSafeAmount(adultBeforeTax + adultTax);
+
+        services.push({
+          ...service,
+          name: `${service.name} | Adult`,
+          quantity: adultCount,
+          count: adultCount,
+          quantityApplied: adultCount,
+          roomSequence: 1,
+          roomId: plan?.roomId,
+          roomName: plan?.roomName,
+          roomRatePlanName: plan?.planCodeName,
+          unitPrice: adultServicePrice,
+          servicePrice: adultServicePrice,
+          beforeTaxAmount: adultBeforeTax,
+          taxAmount: adultTax,
+          afterTaxAmount: adultAfterTax,
+          netAmount: adultAfterTax,
+          sourceChannel: service?.sourceChannel ?? this.booking?.externalSite ?? 'BookMax',
+          applicableFor: 'Adult',
+          notes: `${service?.notes || ''} (Adults: ${adultCount} x ${adultServicePrice})`.trim(),
+        });
+
+        // 2. Child part
+        const childServicePrice = this.toSafeAmount(service?.childServicePrice ?? service?.servicePrice ?? service?.beforeTaxAmount ?? service?.unitPrice);
+        const childTaxPrice = this.toSafeAmount(service?.childTaxPrice ?? service?.taxAmount ?? 0);
+        const childMultiplier = childCount;
+        const childBeforeTax = this.toSafeAmount(childServicePrice * childMultiplier);
+        const childTax = this.toSafeAmount(childTaxPrice * childMultiplier);
+        const childAfterTax = this.toSafeAmount(childBeforeTax + childTax);
+
+        services.push({
+          ...service,
+          name: `${service.name} | Child`,
+          quantity: childCount,
+          count: childCount,
+          quantityApplied: childCount,
+          roomSequence: 1,
+          roomId: plan?.roomId,
+          roomName: plan?.roomName,
+          roomRatePlanName: plan?.planCodeName,
+          unitPrice: childServicePrice,
+          servicePrice: childServicePrice,
+          beforeTaxAmount: childBeforeTax,
+          taxAmount: childTax,
+          afterTaxAmount: childAfterTax,
+          netAmount: childAfterTax,
+          sourceChannel: service?.sourceChannel ?? this.booking?.externalSite ?? 'BookMax',
+          applicableFor: 'Child',
+          notes: `${service?.notes || ''} (Children: ${childCount} x ${childServicePrice})`.trim(),
+        });
+      } else {
+        // Single object
+        let multiplier = this.getAddOnPlanMultiplier(service, plan);
+        if (multiplier <= 0) {
+          return services;
+        }
+
+        let useChildPrices = isChildApplicable && !isAdultApplicable;
+        if (isPerPaxOrNight && isAdultApplicable && isChildApplicable && adultCount === 0 && childCount > 0) {
+          useChildPrices = true;
+        }
+
+        const servicePrice = useChildPrices
+          ? this.toSafeAmount(service?.childServicePrice ?? service?.servicePrice ?? service?.beforeTaxAmount ?? service?.unitPrice)
+          : this.toSafeAmount(service?.adultServicePrice ?? service?.servicePrice ?? service?.beforeTaxAmount ?? service?.unitPrice);
+
+        const taxAmount = useChildPrices
+          ? this.toSafeAmount(service?.childTaxPrice ?? service?.taxAmount ?? 0)
+          : this.toSafeAmount(service?.adultTaxPrice ?? service?.taxAmount ?? 0);
+
+        const beforeTaxAmount = this.toSafeAmount(servicePrice * multiplier);
+        const totalTaxAmount = this.toSafeAmount(taxAmount * multiplier);
+        const afterTaxAmount = this.toSafeAmount(beforeTaxAmount + totalTaxAmount);
+        const quantity = this.getAddOnDisplayQuantity(service, plan);
+
+        let applicableFor = 'Both';
+        if (isAdultApplicable && !isChildApplicable) {
+          applicableFor = 'Adult';
+        } else if (isChildApplicable && !isAdultApplicable) {
+          applicableFor = 'Child';
+        }
+
+        const noteDetail = isPerPaxOrNight
+          ? `(Count: ${multiplier} x Price: ${servicePrice})`
+          : `(Price: ${servicePrice})`;
+
+        services.push({
+          ...service,
+          quantity,
+          count: quantity,
+          quantityApplied: quantity,
+          roomSequence: 1,
+          roomId: plan?.roomId,
+          roomName: plan?.roomName,
+          roomRatePlanName: plan?.planCodeName,
+          unitPrice: servicePrice,
+          servicePrice,
+          beforeTaxAmount,
+          taxAmount: totalTaxAmount,
+          afterTaxAmount,
+          netAmount: afterTaxAmount,
+          sourceChannel: service?.sourceChannel ?? this.booking?.externalSite ?? 'BookMax',
+          applicableFor,
+          notes: `${service?.notes || ''} ${noteDetail}`.trim(),
+        });
       }
-
-      const quantity = this.getAddOnDisplayQuantity(service, plan);
-      const beforeTaxAmount = this.toSafeAmount(servicePrice * multiplier);
-      const totalTaxAmount = this.toSafeAmount(taxAmount * multiplier);
-      const afterTaxAmount = this.toSafeAmount(beforeTaxAmount + totalTaxAmount);
-
-      let applicableFor = 'Both';
-      if (service.applicableToAdult !== false && service.applicableToChild === false) {
-        applicableFor = 'Adult';
-      } else if (service.applicableToChild === true && service.applicableToAdult === false) {
-        applicableFor = 'Child';
-      }
-
-      services.push({
-        ...service,
-        quantity,
-        count: quantity,
-        quantityApplied: quantity,
-        roomSequence: 1,
-        roomId: plan?.roomId,
-        roomName: plan?.roomName,
-        roomRatePlanName: plan?.planCodeName,
-        unitPrice: servicePrice,
-        servicePrice,
-        beforeTaxAmount,
-        taxAmount: totalTaxAmount,
-        afterTaxAmount,
-        netAmount: afterTaxAmount,
-        sourceChannel: service?.sourceChannel ?? this.booking?.externalSite ?? 'BookMax',
-        applicableFor,
-        notes: (service?.notes || '') + ` (Applicable for ${applicableFor})`,
-      });
 
       return services;
     }, []);
   }
 
-  /** Sum of servicePrice for all selected add-ons across all selected rooms (before tax) */
   getServicesSubtotal(): number {
+    if (!this.selectedRooms || this.selectedRooms.length === 0) {
+      return 0;
+    }
     return this.toSafeAmount(
-      (this.selectedAddOns || []).reduce(
-        (sum, addon) =>
-          sum +
-          this.toSafeAmount(addon?.servicePrice) *
-            this.getAddOnTotalMultiplier(addon),
-        0,
-      ),
+      this.selectedRooms.reduce((sum, plan) => {
+        const planServices = this.getSelectedServicesForPlan(plan);
+        return sum + planServices.reduce((subSum, s) => subSum + this.toSafeAmount(s.beforeTaxAmount), 0);
+      }, 0)
     );
   }
 
-  /** Sum of taxAmount for all selected add-ons across all selected rooms */
   getServicesTax(): number {
+    if (!this.selectedRooms || this.selectedRooms.length === 0) {
+      return 0;
+    }
     return this.toSafeAmount(
-      (this.selectedAddOns || []).reduce(
-        (sum, addon) =>
-          sum +
-          this.toSafeAmount(addon?.taxAmount) *
-            this.getAddOnTotalMultiplier(addon),
-        0,
-      ),
+      this.selectedRooms.reduce((sum, plan) => {
+        const planServices = this.getSelectedServicesForPlan(plan);
+        return sum + planServices.reduce((subSum, s) => subSum + this.toSafeAmount(s.taxAmount), 0);
+      }, 0)
     );
   }
 
