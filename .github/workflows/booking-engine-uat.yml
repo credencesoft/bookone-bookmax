@@ -24,7 +24,7 @@ env:
   AWS_REGION: ap-south-1
   AWS_SECRET: bookone_uat_deployment_credentials
 
-  BRANCH: release/uat-new
+  BRANCH: feature/property-service-genre
 
 permissions:
   contents: read
