@@ -4011,6 +4011,34 @@ getRoomPlanDisplayAmount(room: any, plan: any): number {
   return totalAmount;
 }
 
+getRoomDiscountPercentage(room: any, rates: any): number {
+  const roomOnlyPrice = Number(room?.roomOnlyPrice) || 0;
+  if (!roomOnlyPrice || !rates?.roomRatePlans || rates.roomRatePlans.length === 0) {
+    return 0;
+  }
+
+  const visiblePlans = this.isPlanVisible(rates.roomRatePlans, room.name, room);
+  if (!visiblePlans || visiblePlans.length === 0) {
+    return 0;
+  }
+
+  let minPlanPrice = Infinity;
+  for (const plan of visiblePlans) {
+    const planPrice = this.getRoomPlanDisplayAmount(room, plan);
+    if (planPrice > 0 && planPrice < minPlanPrice) {
+      minPlanPrice = planPrice;
+    }
+  }
+
+  if (minPlanPrice < roomOnlyPrice) {
+    const discount = ((roomOnlyPrice - minPlanPrice) / roomOnlyPrice) * 100;
+    return discount > 0 ? Math.round(discount) : 0;
+  }
+
+  return 0;
+}
+
+
 getRoomPlanPriceLabel(room: any, plan: any): string {
   if (this.isDayTripPlan(plan, room)) {
     return 'single day + taxes';
