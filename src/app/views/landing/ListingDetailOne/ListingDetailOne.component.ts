@@ -5264,7 +5264,11 @@ onCheckOutClosed(): void {
             this.propertyServicesNoId.push(ele);
           }
 
-          if (Number(ele.servicePrice) === 0 || ele.servicePrice == null) {
+          const isFree = (Number(ele.servicePrice) === 0 || ele.servicePrice == null) &&
+                         (Number(ele.adultServicePrice) === 0 || ele.adultServicePrice == null) &&
+                         (Number(ele.childServicePrice) === 0 || ele.childServicePrice == null);
+
+          if (isFree) {
             this.amenitiesHighlights.push(ele);
             this.propertyServiceListData.push(ele);  // Backward compatibility
           } else {
@@ -5982,7 +5986,11 @@ onCheckOutClosed(): void {
               this.propertyServicesNoId.push(ele);
             }
 
-            if (Number(ele.servicePrice) === 0 || ele.servicePrice == null) {
+            const isFree = (Number(ele.servicePrice) === 0 || ele.servicePrice == null) &&
+                           (Number(ele.adultServicePrice) === 0 || ele.adultServicePrice == null) &&
+                           (Number(ele.childServicePrice) === 0 || ele.childServicePrice == null);
+
+            if (isFree) {
               this.amenitiesHighlights.push(ele);
               this.propertyServiceListData.push(ele);
             } else {

@@ -648,7 +648,8 @@
                               <div style="font-weight: 600; color: #111827; display: flex; align-items: center; gap: 6px;">
                                 <span>{{ addon.name }}</span>
                                 <div class="badge badge-pill badge-light mr-1" *ngIf="addon.applicableToAdult !== false" style="background-color: #e0f2fe; color: #0369a1; font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: 600; line-height: 1;">Adult</div>
-                                <div class="badge badge-pill badge-light" *ngIf="addon.applicableToChild" style="background-color: #fef3c7; color: #d97706; font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: 600; line-height: 1;">Child</div>
+                                <div class="badge badge-pill badge-light mr-1" *ngIf="addon.applicableToChild" style="background-color: #fef3c7; color: #d97706; font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: 600; line-height: 1;">Child</div>
+                                <div class="badge badge-pill badge-light" *ngIf="addon.chargeBasis" style="background-color: #f1f5f9; color: #475569; font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: 600; line-height: 1;">{{ getFriendlyChargeBasis(addon) }}</div>
                               </div>
                               <div *ngIf="addon.description" class="add-on-description-wrap">
                                 <div
@@ -695,8 +696,8 @@
                             </button>
                           </div>
                         </td>
-                        <td class="add-on-amount-cell" style="text-align: right; vertical-align: middle; padding: 10px 12px">{{ addon.servicePrice | currency: currency : 'symbol' : '1.2-2' }}</td>
-                        <td class="add-on-amount-cell" style="text-align: right; vertical-align: middle; padding: 10px 12px; color: #6b7280">{{ addon.taxAmount | currency: currency : 'symbol' : '1.2-2' }}</td>
+                        <td class="add-on-amount-cell" style="text-align: right; vertical-align: middle; padding: 10px 12px">{{ getAddOnCalculatedUnitPriceSum(addon) | currency: currency : 'symbol' : '1.2-2' }}</td>
+                        <td class="add-on-amount-cell" style="text-align: right; vertical-align: middle; padding: 10px 12px; color: #6b7280">{{ getAddOnCalculatedTaxPriceSum(addon) | currency: currency : 'symbol' : '1.2-2' }}</td>
                         <td class="add-on-amount-cell" style="text-align: right; vertical-align: middle; padding: 10px 12px; font-weight: 600">{{ getAddOnRowTotal(addon) | currency: currency : 'symbol' : '1.2-2' }}</td>
                       </tr>
                     </tbody>
@@ -715,12 +716,17 @@
                   <div class="add-on-selected-breakdown">
                     <span class="add-on-selected-breakdown-label">Selected services</span>
                     <div class="add-on-selected-chip-list">
-                      <span class="add-on-selected-chip" *ngFor="let addon of selectedAddOns">
-                        {{ addon.name }}
-                        <span *ngIf="isItemWiseAddOn(addon)">
-                          {{ addon.servicePrice | currency: currency : 'symbol' : '1.2-2' }} * {{ getSelectedAddOnQuantity(addon) }} =
-                        </span>
-                        <strong>{{ getSelectedAddOnTotal(addon) | currency: currency : 'symbol' : '1.2-2' }}</strong>
+                      <span class="add-on-selected-chip" *ngFor="let service of getAllSelectedServicesBreakdown()" style="display: inline-flex; align-items: center; justify-content: space-between; width: 100%; padding: 8px 12px; background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; margin-bottom: 6px; box-sizing: border-box;">
+                        <div class="d-flex flex-column" style="gap: 2px; text-align: left;">
+                          <div style="font-weight: 600; color: #1e293b;">
+                            {{ service.name }}
+                            <span style="font-size: 11px; color: #64748b; font-weight: 500; margin-left: 4px;">x{{ service.quantity }}</span>
+                          </div>
+                          <div *ngIf="service.notes" style="font-size: 11px; color: #64748b; font-style: italic; font-weight: 400;">
+                            {{ service.notes }}
+                          </div>
+                        </div>
+                        <strong style="margin-left: auto; padding-left: 12px; font-weight: 700; color: #0f172a; font-size: 13px;">{{ service.afterTaxAmount | currency: currency : 'symbol' : '1.2-2' }}</strong>
                       </span>
                     </div>
                   </div>
@@ -1612,7 +1618,8 @@
                              <div style="font-weight: 600; color: #111827; display: flex; align-items: center; gap: 6px;">
                                <span>{{ addon.name }}</span>
                                <div class="badge badge-pill badge-light mr-1" *ngIf="addon.applicableToAdult !== false" style="background-color: #e0f2fe; color: #0369a1; font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: 600; line-height: 1;">Adult</div>
-                               <div class="badge badge-pill badge-light" *ngIf="addon.applicableToChild" style="background-color: #fef3c7; color: #d97706; font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: 600; line-height: 1;">Child</div>
+                               <div class="badge badge-pill badge-light mr-1" *ngIf="addon.applicableToChild" style="background-color: #fef3c7; color: #d97706; font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: 600; line-height: 1;">Child</div>
+                               <div class="badge badge-pill badge-light" *ngIf="addon.chargeBasis" style="background-color: #f1f5f9; color: #475569; font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: 600; line-height: 1;">{{ getFriendlyChargeBasis(addon) }}</div>
                              </div>
                             <div *ngIf="addon.description" class="add-on-description-wrap">
                               <div
@@ -1659,8 +1666,8 @@
                           </button>
                         </div>
                       </td>
-                      <td class="add-on-amount-cell" style="text-align: right; vertical-align: middle; padding: 8px 10px">{{ addon.servicePrice | currency: currency : 'symbol' : '1.2-2' }}</td>
-                      <td class="add-on-amount-cell" style="text-align: right; vertical-align: middle; padding: 8px 10px; color: #6b7280">{{ addon.taxAmount | currency: currency : 'symbol' : '1.2-2' }}</td>
+                      <td class="add-on-amount-cell" style="text-align: right; vertical-align: middle; padding: 8px 10px">{{ getAddOnCalculatedUnitPriceSum(addon) | currency: currency : 'symbol' : '1.2-2' }}</td>
+                      <td class="add-on-amount-cell" style="text-align: right; vertical-align: middle; padding: 8px 10px; color: #6b7280">{{ getAddOnCalculatedTaxPriceSum(addon) | currency: currency : 'symbol' : '1.2-2' }}</td>
                       <td class="add-on-amount-cell" style="text-align: right; vertical-align: middle; padding: 8px 10px; font-weight: 600">{{ getAddOnRowTotal(addon) | currency: currency : 'symbol' : '1.2-2' }}</td>
                     </tr>
                   </tbody>
@@ -1675,18 +1682,23 @@
                   <span class="color-graying">Services Tax</span>
                   <span>{{ getServicesTax() | currency: currency : 'symbol' : '1.2-2' }}</span>
                 </div>
-                <div class="add-on-selected-breakdown">
-                  <span class="add-on-selected-breakdown-label">Selected services</span>
-                  <div class="add-on-selected-chip-list">
-                    <span class="add-on-selected-chip" *ngFor="let addon of selectedAddOns">
-                      {{ addon.name }}
-                      <span *ngIf="isItemWiseAddOn(addon)">
-                        {{ addon.servicePrice | currency: currency : 'symbol' : '1.2-2' }} * {{ getSelectedAddOnQuantity(addon) }} =
-                      </span>
-                      <strong>{{ getSelectedAddOnTotal(addon) | currency: currency : 'symbol' : '1.2-2' }}</strong>
-                    </span>
-                  </div>
-                </div>
+                 <div class="add-on-selected-breakdown">
+                   <span class="add-on-selected-breakdown-label">Selected services</span>
+                   <div class="add-on-selected-chip-list">
+                     <span class="add-on-selected-chip" *ngFor="let service of getAllSelectedServicesBreakdown()" style="display: inline-flex; align-items: center; justify-content: space-between; width: 100%; padding: 8px 12px; background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; margin-bottom: 6px; box-sizing: border-box;">
+                       <div class="d-flex flex-column" style="gap: 2px; text-align: left;">
+                         <div style="font-weight: 600; color: #1e293b;">
+                           {{ service.name }}
+                           <span style="font-size: 11px; color: #64748b; font-weight: 500; margin-left: 4px;">x{{ service.quantity }}</span>
+                         </div>
+                         <div *ngIf="service.notes" style="font-size: 11px; color: #64748b; font-style: italic; font-weight: 400;">
+                           {{ service.notes }}
+                         </div>
+                       </div>
+                       <strong style="margin-left: auto; padding-left: 12px; font-weight: 700; color: #0f172a; font-size: 12px;">{{ service.afterTaxAmount | currency: currency : 'symbol' : '1.2-2' }}</strong>
+                     </span>
+                   </div>
+                 </div>
                 <div class="add-on-grand-total-row">
                   <span class="add-on-grand-total-label">
                     Services Total

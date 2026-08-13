@@ -13423,14 +13423,207 @@ sendWhatsappMessageToPropertyOwner() {
     );
   }
 
+  getAddOnDisplayUnitPrice(addon: any): number {
+    const isAdultApplicable = addon?.applicableToAdult !== false;
+    const isChildApplicable = addon?.applicableToChild === true;
+
+    if (isAdultApplicable && !isChildApplicable) {
+      return this.toSafeAmount(addon?.adultServicePrice ?? addon?.servicePrice);
+    } else if (isChildApplicable && !isAdultApplicable) {
+      return this.toSafeAmount(addon?.childServicePrice ?? addon?.servicePrice);
+    } else {
+      return this.toSafeAmount(addon?.adultServicePrice || addon?.servicePrice || addon?.childServicePrice || 0);
+    }
+  }
+
+  getAddOnDisplayTaxPrice(addon: any): number {
+    const isAdultApplicable = addon?.applicableToAdult !== false;
+    const isChildApplicable = addon?.applicableToChild === true;
+
+    if (isAdultApplicable && !isChildApplicable) {
+      return this.toSafeAmount(addon?.adultTaxPrice ?? addon?.taxAmount ?? 0);
+    } else if (isChildApplicable && !isAdultApplicable) {
+      return this.toSafeAmount(addon?.childTaxPrice ?? addon?.taxAmount ?? 0);
+    } else {
+      return this.toSafeAmount(addon?.adultTaxPrice || addon?.taxAmount || addon?.childTaxPrice || 0);
+    }
+  }
+
   getAddOnRowTotal(addon: any): number {
-    const servicePrice = this.toSafeAmount(
-      addon?.servicePrice ?? addon?.beforeTaxAmount ?? addon?.unitPrice,
-    );
-    const taxAmount = this.toSafeAmount(addon?.taxAmount);
+    const plans =
+      this.bookingSummaryDetails?.selectedPlansSummary ||
+      this.selectedPlansSummary ||
+      [];
+    
+    let total = 0;
+    plans.forEach(plan => {
+      const chargeBasis = this.getAddOnChargeBasis(addon);
+      const isPerPaxOrNight = ['perpax', 'pernight'].includes(chargeBasis);
+      const isAdultApplicable = addon?.applicableToAdult !== false;
+      const isChildApplicable = addon?.applicableToChild === true;
+      const adultCount = this.getAdultPaxCountForPlan(plan);
+      const childCount = this.getChildPaxCountForPlan(plan);
+
+      if (isPerPaxOrNight && isAdultApplicable && isChildApplicable && adultCount > 0 && childCount > 0) {
+        const adultServicePrice = this.toSafeAmount(addon?.adultServicePrice ?? addon?.servicePrice ?? addon?.beforeTaxAmount ?? addon?.unitPrice);
+        const adultTaxPrice = this.toSafeAmount(addon?.adultTaxPrice ?? addon?.taxAmount ?? 0);
+        const childServicePrice = this.toSafeAmount(addon?.childServicePrice ?? addon?.servicePrice ?? addon?.beforeTaxAmount ?? addon?.unitPrice);
+        const childTaxPrice = this.toSafeAmount(addon?.childTaxPrice ?? addon?.taxAmount ?? 0);
+
+        total += this.toSafeAmount((adultServicePrice + adultTaxPrice) * adultCount);
+        total += this.toSafeAmount((childServicePrice + childTaxPrice) * childCount);
+      } else {
+        const multiplier = this.getAddOnPlanMultiplier(addon, plan);
+        let useChildPrices = isChildApplicable && !isAdultApplicable;
+        if (isPerPaxOrNight && isAdultApplicable && isChildApplicable && adultCount === 0 && childCount > 0) {
+          useChildPrices = true;
+        }
+        const servicePrice = useChildPrices
+          ? this.toSafeAmount(addon?.childServicePrice ?? addon?.servicePrice ?? addon?.beforeTaxAmount ?? addon?.unitPrice)
+          : this.toSafeAmount(addon?.adultServicePrice ?? addon?.servicePrice ?? addon?.beforeTaxAmount ?? addon?.unitPrice);
+        const taxAmount = useChildPrices
+          ? this.toSafeAmount(addon?.childTaxPrice ?? addon?.taxAmount ?? 0)
+          : this.toSafeAmount(addon?.adultTaxPrice ?? addon?.taxAmount ?? 0);
+
+        total += this.toSafeAmount((servicePrice + taxAmount) * multiplier);
+      }
+    });
+
+    if (total > 0) {
+      return total;
+    }
+
+    const servicePrice = this.getAddOnDisplayUnitPrice(addon);
+    const taxAmount = this.getAddOnDisplayTaxPrice(addon);
     const quantity = this.isItemWiseAddOn(addon) ? this.getSelectedAddOnQuantity(addon) : 1;
 
     return this.toSafeAmount((servicePrice + taxAmount) * quantity);
+  }
+
+  getFriendlyChargeBasis(addon: any): string {
+    const basis = (addon?.chargeBasis || '').toLowerCase().trim();
+    if (basis === 'perpax' || basis === 'perpaxwise') return 'Pax-wise';
+    if (basis === 'pernight' || basis === 'pernightwise') return 'Nightly-wise';
+    if (basis === 'perbooking' || basis === 'booking-wise') return 'Booking-wise';
+    if (basis === 'perroom' || basis === 'room-wise') return 'Room-wise';
+    if (basis === 'peritem' || basis === 'item-wise') return 'Item-wise';
+    
+    return addon?.chargeBasis || '';
+  }
+
+  getAllSelectedServicesBreakdown(): any[] {
+    const plans =
+      this.bookingSummaryDetails?.selectedPlansSummary ||
+      this.selectedPlansSummary ||
+      [];
+    
+    const serviceMap = new Map<string, any>();
+    plans.forEach(plan => {
+      const planServices = this.getSelectedServicesForPlan(plan);
+      planServices.forEach(s => {
+        const key = s.name;
+        const existing = serviceMap.get(key);
+        if (existing) {
+          existing.quantity += s.quantity;
+          existing.beforeTaxAmount += s.beforeTaxAmount;
+          existing.taxAmount += s.taxAmount;
+          existing.afterTaxAmount += s.afterTaxAmount;
+          existing.netAmount += s.netAmount;
+        } else {
+          serviceMap.set(key, { ...s });
+        }
+      });
+    });
+
+    return Array.from(serviceMap.values());
+  }
+
+  getAddOnCalculatedUnitPriceSum(addon: any): number {
+    const plans =
+      this.bookingSummaryDetails?.selectedPlansSummary ||
+      this.selectedPlansSummary ||
+      [];
+    
+    let total = 0;
+    plans.forEach(plan => {
+      const chargeBasis = this.getAddOnChargeBasis(addon);
+      const isPerPaxOrNight = ['perpax', 'pernight'].includes(chargeBasis);
+      const isAdultApplicable = addon?.applicableToAdult !== false;
+      const isChildApplicable = addon?.applicableToChild === true;
+      const adultCount = this.getAdultPaxCountForPlan(plan);
+      const childCount = this.getChildPaxCountForPlan(plan);
+
+      if (isPerPaxOrNight && isAdultApplicable && isChildApplicable && adultCount > 0 && childCount > 0) {
+        const adultServicePrice = this.toSafeAmount(addon?.adultServicePrice ?? addon?.servicePrice ?? addon?.beforeTaxAmount ?? addon?.unitPrice);
+        const childServicePrice = this.toSafeAmount(addon?.childServicePrice ?? addon?.servicePrice ?? addon?.beforeTaxAmount ?? addon?.unitPrice);
+
+        total += this.toSafeAmount(adultServicePrice * adultCount);
+        total += this.toSafeAmount(childServicePrice * childCount);
+      } else {
+        const multiplier = this.getAddOnPlanMultiplier(addon, plan);
+        let useChildPrices = isChildApplicable && !isAdultApplicable;
+        if (isPerPaxOrNight && isAdultApplicable && isChildApplicable && adultCount === 0 && childCount > 0) {
+          useChildPrices = true;
+        }
+        const servicePrice = useChildPrices
+          ? this.toSafeAmount(addon?.childServicePrice ?? addon?.servicePrice ?? addon?.beforeTaxAmount ?? addon?.unitPrice)
+          : this.toSafeAmount(addon?.adultServicePrice ?? addon?.servicePrice ?? addon?.beforeTaxAmount ?? addon?.unitPrice);
+
+        total += this.toSafeAmount(servicePrice * multiplier);
+      }
+    });
+
+    if (total > 0) {
+      return total;
+    }
+
+    const servicePrice = this.getAddOnDisplayUnitPrice(addon);
+    const quantity = this.isItemWiseAddOn(addon) ? this.getSelectedAddOnQuantity(addon) : 1;
+    return this.toSafeAmount(servicePrice * quantity);
+  }
+
+  getAddOnCalculatedTaxPriceSum(addon: any): number {
+    const plans =
+      this.bookingSummaryDetails?.selectedPlansSummary ||
+      this.selectedPlansSummary ||
+      [];
+    
+    let total = 0;
+    plans.forEach(plan => {
+      const chargeBasis = this.getAddOnChargeBasis(addon);
+      const isPerPaxOrNight = ['perpax', 'pernight'].includes(chargeBasis);
+      const isAdultApplicable = addon?.applicableToAdult !== false;
+      const isChildApplicable = addon?.applicableToChild === true;
+      const adultCount = this.getAdultPaxCountForPlan(plan);
+      const childCount = this.getChildPaxCountForPlan(plan);
+
+      if (isPerPaxOrNight && isAdultApplicable && isChildApplicable && adultCount > 0 && childCount > 0) {
+        const adultTaxPrice = this.toSafeAmount(addon?.adultTaxPrice ?? addon?.taxAmount ?? 0);
+        const childTaxPrice = this.toSafeAmount(addon?.childTaxPrice ?? addon?.taxAmount ?? 0);
+
+        total += this.toSafeAmount(adultTaxPrice * adultCount);
+        total += this.toSafeAmount(childTaxPrice * childCount);
+      } else {
+        const multiplier = this.getAddOnPlanMultiplier(addon, plan);
+        let useChildPrices = isChildApplicable && !isAdultApplicable;
+        if (isPerPaxOrNight && isAdultApplicable && isChildApplicable && adultCount === 0 && childCount > 0) {
+          useChildPrices = true;
+        }
+        const taxAmount = useChildPrices
+          ? this.toSafeAmount(addon?.childTaxPrice ?? addon?.taxAmount ?? 0)
+          : this.toSafeAmount(addon?.adultTaxPrice ?? addon?.taxAmount ?? 0);
+
+        total += this.toSafeAmount(taxAmount * multiplier);
+      }
+    });
+
+    if (total > 0) {
+      return total;
+    }
+
+    const taxAmount = this.getAddOnDisplayTaxPrice(addon);
+    const quantity = this.isItemWiseAddOn(addon) ? this.getSelectedAddOnQuantity(addon) : 1;
+    return this.toSafeAmount(taxAmount * quantity);
   }
 
   // getSelectedAddOnQuantity(addon: any): number {
@@ -13497,13 +13690,7 @@ sendWhatsappMessageToPropertyOwner() {
   }
 
   getSelectedAddOnTotal(addon: any): number {
-    const servicePrice = this.toSafeAmount(
-      addon?.servicePrice ?? addon?.beforeTaxAmount ?? addon?.unitPrice,
-    );
-    const taxAmount = this.toSafeAmount(addon?.taxAmount);
-    const multiplier = this.getAddOnTotalMultiplier(addon);
-
-    return this.toSafeAmount((servicePrice + taxAmount) * multiplier);
+    return this.getAddOnRowTotal(addon);
   }
 
   private isFirstSelectedPlan(plan: any): boolean {
