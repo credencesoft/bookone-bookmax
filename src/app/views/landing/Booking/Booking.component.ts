@@ -14004,11 +14004,15 @@ sendWhatsappMessageToPropertyOwner() {
   }
 
   getServicesSubtotal(): number {
-    if (!this.selectedRooms || this.selectedRooms.length === 0) {
+    const plans =
+      this.bookingSummaryDetails?.selectedPlansSummary ||
+      this.selectedPlansSummary ||
+      [];
+    if (!plans || plans.length === 0) {
       return 0;
     }
     return this.toSafeAmount(
-      this.selectedRooms.reduce((sum, plan) => {
+      plans.reduce((sum, plan) => {
         const planServices = this.getSelectedServicesForPlan(plan);
         return sum + planServices.reduce((subSum, s) => subSum + this.toSafeAmount(s.beforeTaxAmount), 0);
       }, 0)
@@ -14016,11 +14020,15 @@ sendWhatsappMessageToPropertyOwner() {
   }
 
   getServicesTax(): number {
-    if (!this.selectedRooms || this.selectedRooms.length === 0) {
+    const plans =
+      this.bookingSummaryDetails?.selectedPlansSummary ||
+      this.selectedPlansSummary ||
+      [];
+    if (!plans || plans.length === 0) {
       return 0;
     }
     return this.toSafeAmount(
-      this.selectedRooms.reduce((sum, plan) => {
+      plans.reduce((sum, plan) => {
         const planServices = this.getSelectedServicesForPlan(plan);
         return sum + planServices.reduce((subSum, s) => subSum + this.toSafeAmount(s.taxAmount), 0);
       }, 0)
