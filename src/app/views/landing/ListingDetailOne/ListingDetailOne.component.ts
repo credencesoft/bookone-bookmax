@@ -5260,13 +5260,13 @@ onCheckOutClosed(): void {
         this.propertyServicesNoId = [];
 
         this.businessUser.propertyServicesList.forEach((ele) => {
-          if (ele.id == null || ele.id == undefined) {
-            this.propertyServicesNoId.push(ele);
-          }
-
           const isFree = (Number(ele.servicePrice) === 0 || ele.servicePrice == null) &&
                          (Number(ele.adultServicePrice) === 0 || ele.adultServicePrice == null) &&
                          (Number(ele.childServicePrice) === 0 || ele.childServicePrice == null);
+
+          if ((ele.id == null || ele.id == undefined) && isFree) {
+            this.propertyServicesNoId.push(ele);
+          }
 
           if (isFree) {
             this.amenitiesHighlights.push(ele);
@@ -5982,13 +5982,13 @@ onCheckOutClosed(): void {
 
           // ✅ Separate non-paid and paid services
           this.businessUser.propertyServicesList.forEach((ele) => {
-            if (ele.id == null || ele.id == undefined) {
-              this.propertyServicesNoId.push(ele);
-            }
-
             const isFree = (Number(ele.servicePrice) === 0 || ele.servicePrice == null) &&
                            (Number(ele.adultServicePrice) === 0 || ele.adultServicePrice == null) &&
                            (Number(ele.childServicePrice) === 0 || ele.childServicePrice == null);
+
+            if ((ele.id == null || ele.id == undefined) && isFree) {
+              this.propertyServicesNoId.push(ele);
+            }
 
             if (isFree) {
               this.amenitiesHighlights.push(ele);
