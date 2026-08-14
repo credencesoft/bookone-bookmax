@@ -30,6 +30,7 @@ import {
   API_URL_NZ,
   EMAIL_Expression,
   SMS_NUMBER,
+  API_URL_PROMOTION,
 } from 'src/app/app.component';
 import {
   HttpClient,
@@ -111,6 +112,14 @@ export class BookingComponent implements OnInit {
   howingReceiptData: any;
   showingSuccessMessage: boolean = false;
   appliedCoupon: number;
+  visibleGetCouponModal: boolean = false;
+  guestCouponName: string = '';
+  guestCouponPhone: string = '';
+  currentOfferIdForCoupon: any = null;
+  generatedGuestCouponCode: string = '';
+  guestCouponError: string = '';
+  guestCouponSuccess: string = '';
+  guestCouponLoading: boolean = false;
   grandTotalAmount: number;
   actualTaxAmount: number;
 
@@ -625,6 +634,20 @@ export class BookingComponent implements OnInit {
       if (parsed.discountPercentage) {
         this.specialDiscountPercentage = parsed.discountPercentage;
       }
+      if (parsed.guestName && (!this.booking.firstName || !this.booking.firstName.trim())) {
+        const nameParts = parsed.guestName.trim().split(/\s+/);
+        if (nameParts.length > 1) {
+          this.booking.firstName = nameParts[0];
+          this.booking.lastName = nameParts.slice(1).join(' ');
+        } else {
+          this.booking.firstName = parsed.guestName;
+          this.booking.lastName = '';
+        }
+      }
+      if (parsed.whatsappNumber) {
+        this.booking.mobile = parsed.whatsappNumber;
+        this.setMobileNumberByCode(parsed.whatsappNumber);
+      }
     }
     const bookingSummaryStr = sessionStorage.getItem('bookingSummaryDetails');
     const bookingSummary = bookingSummaryStr
@@ -721,6 +744,32 @@ export class BookingComponent implements OnInit {
 
     // Phase 4: Initialize Add-ons from sessionStorage
     this.initializeAddOnServices();
+
+    // One-time detailed checkout diagnostic log
+    const accService = this.accommodationData?.[0] || {};
+    const hasPayNow = this.showPayNow();
+    const hasPayLater = this.showPayLater();
+    let finalButton = 'Enquiry Now';
+    if (hasPayNow) {
+      finalButton = 'Pay Now';
+    } else if (hasPayLater) {
+      finalButton = 'Pay Later';
+    }
+
+    console.log(
+      `%c[Antigravity Booking Page Diagnostic]\n` +
+      `-----------------------------------------\n` +
+      `Active Checkout Button : ${finalButton}\n` +
+      `-----------------------------------------\n` +
+      `websiteinstantBooking  : ${accService.websiteinstantBooking}\n` +
+      `instantBooking         : ${accService.instantBooking}\n` +
+      `payLater               : ${accService.payLater}\n` +
+      `bookoneActive          : ${accService.bookoneActive}\n` +
+      `paymentGateway         : ${this.businessUser?.paymentGateway || 'None (null)'}\n` +
+      `bookingengineurl param : ${this.bookingengineurl === 'true' ? 'true' : 'false (or undefined)'}\n` +
+      `-----------------------------------------`,
+      'background: #3b82f6; color: white; padding: 10px; border-radius: 4px; font-weight: bold; font-family: monospace; line-height: 1.5;'
+    );
 
     this.token.clearBookingDataObj();
   }
@@ -1570,28 +1619,6 @@ export class BookingComponent implements OnInit {
   }
 
   showPayNow(): boolean {
-    // if (this.bookoneActiveData === false) {
-    //   return false;
-    // }
-    // if (this.bookoneActiveData === false) {
-    //   const from = new Date(this.booking.fromDate);
-    //   const to = new Date(this.booking.toDate);
-
-    //   const today = new Date();
-    //   today.setHours(0, 0, 0, 0); // normalize time to midnight
-
-    //   // FIXED END: Jan 31, 2026
-    //   const jan31_2026 = new Date(2026, 0, 31); // Jan=0
-
-    //   // Restriction check: both dates between TODAY → Jan 31, 2026
-    //   const isRestricted =
-    //     from >= today && from <= jan31_2026 && to >= today && to <= jan31_2026;
-
-    //   if (isRestricted) {
-    //     return false;
-    //   }
-    // }
-
     if (this.channelManagerIntegration) return true;
 
     this.propertyData = this.token.getProperty();
@@ -1600,41 +1627,11 @@ export class BookingComponent implements OnInit {
     );
     const hasPayLater = this.accommodationData?.some((a) => a.payLater);
     if (hasPayLater) return false;
-    const propertyUrl = this.token.getPropertyUrl();
-    const isBookingEngine = propertyUrl?.includes('bookingEngine');
-    if (isBookingEngine) return this.businessUser.paymentGateway != null;
-    if (!this.channelManagerIntegration && !this.value) return false;
-    const fromDateTimestamp = new Date(this.booking.fromDate).getTime();
-    const createdDateTimestamp = new Date(this.booking.createdDate).getTime();
-    const hoursDifference =
-      (fromDateTimestamp - createdDateTimestamp) / (1000 * 60 * 60);
 
-    return hoursDifference >= 24 && this.businessUser.paymentGateway != null;
+    return this.value === true && this.businessUser?.paymentGateway != null;
   }
 
   showPayLater(): boolean {
-    if (this.bookoneActiveData === false) {
-      return false;
-    }
-    if (this.bookoneActiveData === false) {
-      const from = new Date(this.booking.fromDate);
-      const to = new Date(this.booking.toDate);
-
-      const today = new Date();
-      today.setHours(0, 0, 0, 0); // normalize time to midnight
-
-      // FIXED END: Jan 31, 2026
-      const jan31_2026 = new Date(2026, 0, 31); // Jan=0
-
-      // Restriction check: both dates between TODAY → Jan 31, 2026
-      const isRestricted =
-        from >= today && from <= jan31_2026 && to >= today && to <= jan31_2026;
-
-      if (isRestricted) {
-        return false;
-      }
-    }
-
     this.propertyData = this.token.getProperty();
     this.accommodationData = this.propertyData.businessServiceDtoList?.filter(
       (entry) => entry.name === 'Accommodation',
@@ -1642,21 +1639,6 @@ export class BookingComponent implements OnInit {
 
     const hasPayLater = this.accommodationData?.some((a) => a.payLater);
     if (hasPayLater) return true;
-    if (this.channelManagerIntegration) return false;
-    if (!this.channelManagerIntegration && !this.value) return false;
-    const propertyUrl = this.token.getPropertyUrl();
-    const isBookingEngine = propertyUrl?.includes('bookingEngine');
-    if (isBookingEngine) return false;
-
-    const fromDateTimestamp = new Date(this.booking.fromDate).getTime();
-    const createdDateTimestamp = new Date(this.booking.createdDate).getTime();
-    const hoursDifference =
-      (fromDateTimestamp - createdDateTimestamp) / (1000 * 60 * 60);
-
-    if (hoursDifference < 24) return true;
-
-    if (hoursDifference >= 24 && this.businessUser.paymentGateway == null)
-      return true;
 
     return false;
   }
@@ -1823,6 +1805,73 @@ export class BookingComponent implements OnInit {
       console.error('Error in checkValidCouponOrNot : ', error);
     }
   }
+  openGetCouponModal(coupon: any) {
+    this.currentOfferIdForCoupon = coupon.id;
+    this.guestCouponName = '';
+    this.guestCouponPhone = '';
+    this.generatedGuestCouponCode = '';
+    this.guestCouponError = '';
+    this.guestCouponSuccess = '';
+    this.guestCouponLoading = false;
+    this.visibleGetCouponModal = true;
+  }
+
+  generateAndApplyCoupon() {
+    if (!this.guestCouponName || !this.guestCouponName.trim()) {
+      this.guestCouponError = 'Guest Name is required';
+      return;
+    }
+    if (!this.guestCouponPhone || !this.guestCouponPhone.trim()) {
+      this.guestCouponError = 'WhatsApp Number is required';
+      return;
+    }
+
+    this.guestCouponLoading = true;
+    this.guestCouponError = '';
+    this.guestCouponSuccess = '';
+
+    const payload = {
+      businessOfferId: this.currentOfferIdForCoupon,
+      guestName: this.guestCouponName.trim(),
+      whatsappNumber: this.guestCouponPhone.trim()
+    };
+
+    const url = `${API_URL_PROMOTION}/api/guest-promotion/request`;
+    this.http.post<any>(url, payload).subscribe(
+      (response) => {
+        this.guestCouponLoading = false;
+        if (response && response.generatedCoupon) {
+          this.generatedGuestCouponCode = response.generatedCoupon;
+          this.guestCouponSuccess = `Coupon generated successfully: ${response.generatedCoupon}! A WhatsApp message has been sent to you.`;
+          
+          const originalCoupon = this.promocodeListChip.find(c => c.id === this.currentOfferIdForCoupon);
+          if (originalCoupon) {
+            const guestCouponObject = {
+              ...originalCoupon,
+              couponCode: response.generatedCoupon
+            };
+            this.selectedCoupon(guestCouponObject);
+          }
+          
+          setTimeout(() => {
+            this.visibleGetCouponModal = false;
+          }, 3000);
+        } else {
+          this.guestCouponError = 'Failed to generate coupon. Please try again.';
+        }
+      },
+      (error) => {
+        this.guestCouponLoading = false;
+        console.error('Error generating guest coupon:', error);
+        if (error && error.error && typeof error.error === 'string') {
+          this.guestCouponError = error.error;
+        } else {
+          this.guestCouponError = 'An error occurred while generating your coupon. Please try again.';
+        }
+      }
+    );
+  }
+
   // Used For handled to set the selected coupon
   selectedCoupon(coupon?) {
     try {
@@ -7997,7 +8046,7 @@ export class BookingComponent implements OnInit {
   paymentIntentHdfc(payment: Payment) {
     this.paymentLoader = true;
 
-    this.hotelBookingService.paymentIntent(payment).subscribe((response) => {
+    this.hotelBookingService.paymentIntentHdfc(payment).subscribe((response) => {
       this.paymentLoader = false;
       if (response.status === 200) {
         this.payment = response.body;
@@ -11407,17 +11456,26 @@ export class BookingComponent implements OnInit {
       bookingForm.totalAmount = Number(plan.finalPrice.toFixed(2));
     }
     //this.applyAdvancePlanToBooking(bookingForm);
-    this.saveEnquiryTHM(bookingForm);
+    try {
+      const thmResponse = await this.hotelBookingService.saveEnquireTHM(bookingForm).toPromise();
+      if (thmResponse && thmResponse.status === 200) {
+        this.thmEnquiryDataList = thmResponse.body;
+        if (this.thmEnquiryDataList) {
+          const currentEnquiry = this.token.getEnquiryData() || new EnquiryDto();
+          Object.assign(currentEnquiry, this.thmEnquiryDataList);
+          this.token.saveEnquiryData(currentEnquiry);
+        }
+      }
+    } catch (thmErr) {
+    }
     try {
       try {
         const tokenEnquiryForm = new EnquiryDto();
         Object.assign(tokenEnquiryForm, enquiryForm);
         tokenEnquiryForm.propertyId = this.token?.getProperty()?.id || enquiryForm.propertyId;
         this.hotelBookingService.accommodationEnquiry(tokenEnquiryForm).toPromise().catch(err => {
-          console.error('Error calling token accommodationEnquiry:', err);
         });
       } catch (tokenErr) {
-        console.error('Error creating token enquiry:', tokenErr);
       }
 
       const response: HttpResponse<EnquiryDto> = await this.hotelBookingService
@@ -11434,7 +11492,12 @@ export class BookingComponent implements OnInit {
           enquiryForm.checkInDate,
           'dd-MM-yyyy',
         );
-        this.equitycreatedData = response.body;
+        const mergedEnquiry = new EnquiryDto();
+        Object.assign(mergedEnquiry, response.body);
+        if (this.thmEnquiryDataList) {
+          Object.assign(mergedEnquiry, this.thmEnquiryDataList);
+        }
+        this.equitycreatedData = mergedEnquiry;
         enquiryForm.enquiryId = this.equitycreatedData.enquiryId;
         const existingEnquirysStr = sessionStorage.getItem(
           'EnquiryResponseList',
@@ -11452,10 +11515,13 @@ export class BookingComponent implements OnInit {
         this.isSuccess = true;
         this.submitButtonDisable = true;
         this.bookingConfirmed = true;
-        this.enquiryNo = 'THM-' + response.body.enquiryId;
+        const thmRef = (this.thmEnquiryDataList as any)?.enquiryReference || (this.thmEnquiryDataList as any)?.propertyReservationNumber;
+        const lmsId = response.body.enquiryId;
+        const resolvedRef = (thmRef && lmsId && thmRef !== lmsId) ? `${thmRef} (${lmsId})` : (thmRef || lmsId);
+        this.enquiryNo = 'THM-' + resolvedRef;
 
         // Send notifications
-        this.propertyenquiryemails(enquiryForm);
+        // this.propertyenquiryemails(enquiryForm);
         // this.hotelBookingService.emailEnquire(enquiryForm).subscribe(
         //   () => {
         //     this.paymentLoader = false;
@@ -11465,14 +11531,13 @@ export class BookingComponent implements OnInit {
         //     this.paymentLoader = false;
         //   }
         // );
-        this.sendenquirytoproperty();
-        this.sendWhatsappMessageToCustomer();
-        this.sendWhatsappMessageToPropertyOwner();
+        // this.sendenquirytoproperty();
+        // this.sendWhatsappMessageToCustomer();
+        // this.sendWhatsappMessageToPropertyOwner();
         this.router.navigate(['/confirm']);
         return true;
       }
     } catch (e) {
-      console.error('Submit failed', e);
     }
 
     return false;
@@ -11501,34 +11566,43 @@ export class BookingComponent implements OnInit {
           this.booking?.toDate,
           'dd-MM-yyyy',
         );
-        this.equitycreatedData = response.body;
+        const mergedEnquiry = new EnquiryDto();
+        Object.assign(mergedEnquiry, response.body);
+        if (this.thmEnquiryDataList) {
+          Object.assign(mergedEnquiry, this.thmEnquiryDataList);
+        }
+        this.equitycreatedData = mergedEnquiry;
         this.token.saveEnquiryData(this.equitycreatedData);
         this.isEnquiry = true;
         this.isSuccess = true;
         this.submitButtonDisable = true;
         this.bookingConfirmed = true;
-        this.enquiryNo = 'THM-' + response.body.enquiryId;
+        const thmRef = (this.thmEnquiryDataList as any)?.enquiryReference || (this.thmEnquiryDataList as any)?.propertyReservationNumber;
+        const lmsId = response.body.enquiryId;
+        const resolvedRef = (thmRef && lmsId && thmRef !== lmsId) ? `${thmRef} (${lmsId})` : (thmRef || lmsId);
+        this.enquiryNo = 'THM-' + resolvedRef;
         enquiryForm.taxAmount = this.equitycreatedData.taxAmount.toFixed(2);
         enquiryForm.totalAmount = this.equitycreatedData.totalAmount.toFixed(2);
         enquiryForm.payableAmount =
           this.equitycreatedData.payableAmount.toFixed(2);
         // Send notifications
-        this.propertyenquiryemails(enquiryForm);
-        this.hotelBookingService.emailEnquireToMail(enquiryForm).subscribe(
-          () => {
-            this.paymentLoader = false;
-            this.router.navigate(['/confirm']);
-          },
-          () => {
-            this.paymentLoader = false;
-          },
-        );
+        // this.propertyenquiryemails(enquiryForm);
+        // this.hotelBookingService.emailEnquireToMail(enquiryForm).subscribe(
+        //   () => {
+        //     this.paymentLoader = false;
+        //     this.router.navigate(['/confirm']);
+        //   },
+        //   () => {
+        //     this.paymentLoader = false;
+        //   },
+        // );
+        this.paymentLoader = false;
+        this.router.navigate(['/confirm']);
         // this.sendWhatsappMessageToCustomer();
         // this.sendWhatsappMessageToPropertyOwner();
         return true;
       }
     } catch (e) {
-      console.error('Submit failed', e);
     }
 
     return false;
@@ -11540,15 +11614,11 @@ export class BookingComponent implements OnInit {
       .subscribe((response) => {
         if (response.status === 200) {
           this.thmEnquiryDataList = response.body;
-          const thmData = sessionStorage.getItem('EnquiryTHMList');
-          // const existingEnquiriesThm = thmData ? JSON.parse(thmData) : [];
-
-          // existingEnquiriesThm.push(this.thmEnquiryDataList);
-
-          // sessionStorage.setItem(
-          //   'EnquiryTHMList',
-          //   JSON.stringify(existingEnquiriesThm)
-          // );
+          if (this.thmEnquiryDataList) {
+            const currentEnquiry = this.token.getEnquiryData() || new EnquiryDto();
+            Object.assign(currentEnquiry, this.thmEnquiryDataList);
+            this.token.saveEnquiryData(currentEnquiry);
+          }
         }
       });
   }
@@ -12483,8 +12553,6 @@ sendWhatsappMessageToPropertyOwner() {
   private getDefaultCountry(): CountryListInterFace {
     const preferredCountry =
       this.token.getCountry() ||
-      this.propertyData?.address?.country ||
-      this.token.getProperty()?.address?.country ||
       'India';
 
     return (
@@ -12575,6 +12643,10 @@ sendWhatsappMessageToPropertyOwner() {
     this.selectedCountry = selectedCountry?.value || '';
     this.countryCode = selectedCountry?.countryCode || '';
     this.syncBookingMobile();
+
+    if (this.selectedCountry) {
+      this.token.saveCountry(this.selectedCountry);
+    }
 
     if (this.phoneWithoutCode) {
       this.validateMobile();
@@ -13175,7 +13247,44 @@ sendWhatsappMessageToPropertyOwner() {
   }
 
   getVisibleAddOnServices(): any[] {
-    return this.filterDayTripIneligibleAddOns(this.addOnServices || []);
+    let services = this.filterDayTripIneligibleAddOns(this.addOnServices || []);
+    return this.filterServicesByPax(services);
+  }
+
+  filterServicesByPax(services: any[]): any[] {
+    if (!services) return [];
+    
+    const adultCount = Number(this.adults || this.booking?.noOfPersons || 0);
+    const childCount = Number(this.children || this.booking?.noOfChildren || 0) + 
+                       Number(this.booking?.noOfChildrenUnder5years || 0) +
+                       Number(this.totalPlanChildren || 0) +
+                       Number(this.totalPlanChildrenAboveAgeLimit || 0) +
+                       Number(this.totalPlanChildrenBelowAgeLimit || 0);
+
+    // If only adults are chosen (no children)
+    if (adultCount > 0 && childCount === 0) {
+      return services.filter(service => {
+        // Filter out services that are ONLY applicable to children
+        if (service.applicableToChild === true && service.applicableToAdult === false) {
+          return false;
+        }
+        return true;
+      });
+    }
+
+    // If only children are chosen (no adults)
+    if (childCount > 0 && adultCount === 0) {
+      return services.filter(service => {
+        // Filter out services that are ONLY applicable to adults
+        if (service.applicableToAdult === true && service.applicableToChild === false) {
+          return false;
+        }
+        return true;
+      });
+    }
+
+    // If both are chosen or none are explicitly specified, show all
+    return services;
   }
 
   hasVisibleAddOnServices(): boolean {
@@ -13314,14 +13423,207 @@ sendWhatsappMessageToPropertyOwner() {
     );
   }
 
+  getAddOnDisplayUnitPrice(addon: any): number {
+    const isAdultApplicable = addon?.applicableToAdult !== false;
+    const isChildApplicable = addon?.applicableToChild === true;
+
+    if (isAdultApplicable && !isChildApplicable) {
+      return this.toSafeAmount(addon?.adultServicePrice ?? addon?.servicePrice);
+    } else if (isChildApplicable && !isAdultApplicable) {
+      return this.toSafeAmount(addon?.childServicePrice ?? addon?.servicePrice);
+    } else {
+      return this.toSafeAmount(addon?.adultServicePrice || addon?.servicePrice || addon?.childServicePrice || 0);
+    }
+  }
+
+  getAddOnDisplayTaxPrice(addon: any): number {
+    const isAdultApplicable = addon?.applicableToAdult !== false;
+    const isChildApplicable = addon?.applicableToChild === true;
+
+    if (isAdultApplicable && !isChildApplicable) {
+      return this.toSafeAmount(addon?.adultTaxPrice ?? addon?.taxAmount ?? 0);
+    } else if (isChildApplicable && !isAdultApplicable) {
+      return this.toSafeAmount(addon?.childTaxPrice ?? addon?.taxAmount ?? 0);
+    } else {
+      return this.toSafeAmount(addon?.adultTaxPrice || addon?.taxAmount || addon?.childTaxPrice || 0);
+    }
+  }
+
   getAddOnRowTotal(addon: any): number {
-    const servicePrice = this.toSafeAmount(
-      addon?.servicePrice ?? addon?.beforeTaxAmount ?? addon?.unitPrice,
-    );
-    const taxAmount = this.toSafeAmount(addon?.taxAmount);
+    const plans =
+      this.bookingSummaryDetails?.selectedPlansSummary ||
+      this.selectedPlansSummary ||
+      [];
+    
+    let total = 0;
+    plans.forEach(plan => {
+      const chargeBasis = this.getAddOnChargeBasis(addon);
+      const isPerPaxOrNight = ['perpax', 'pernight'].includes(chargeBasis);
+      const isAdultApplicable = addon?.applicableToAdult !== false;
+      const isChildApplicable = addon?.applicableToChild === true;
+      const adultCount = this.getAdultPaxCountForPlan(plan);
+      const childCount = this.getChildPaxCountForPlan(plan);
+
+      if (isPerPaxOrNight && isAdultApplicable && isChildApplicable && adultCount > 0 && childCount > 0) {
+        const adultServicePrice = this.toSafeAmount(addon?.adultServicePrice ?? addon?.servicePrice ?? addon?.beforeTaxAmount ?? addon?.unitPrice);
+        const adultTaxPrice = this.toSafeAmount(addon?.adultTaxPrice ?? addon?.taxAmount ?? 0);
+        const childServicePrice = this.toSafeAmount(addon?.childServicePrice ?? addon?.servicePrice ?? addon?.beforeTaxAmount ?? addon?.unitPrice);
+        const childTaxPrice = this.toSafeAmount(addon?.childTaxPrice ?? addon?.taxAmount ?? 0);
+
+        total += this.toSafeAmount((adultServicePrice + adultTaxPrice) * adultCount);
+        total += this.toSafeAmount((childServicePrice + childTaxPrice) * childCount);
+      } else {
+        const multiplier = this.getAddOnPlanMultiplier(addon, plan);
+        let useChildPrices = isChildApplicable && !isAdultApplicable;
+        if (isPerPaxOrNight && isAdultApplicable && isChildApplicable && adultCount === 0 && childCount > 0) {
+          useChildPrices = true;
+        }
+        const servicePrice = useChildPrices
+          ? this.toSafeAmount(addon?.childServicePrice ?? addon?.servicePrice ?? addon?.beforeTaxAmount ?? addon?.unitPrice)
+          : this.toSafeAmount(addon?.adultServicePrice ?? addon?.servicePrice ?? addon?.beforeTaxAmount ?? addon?.unitPrice);
+        const taxAmount = useChildPrices
+          ? this.toSafeAmount(addon?.childTaxPrice ?? addon?.taxAmount ?? 0)
+          : this.toSafeAmount(addon?.adultTaxPrice ?? addon?.taxAmount ?? 0);
+
+        total += this.toSafeAmount((servicePrice + taxAmount) * multiplier);
+      }
+    });
+
+    if (total > 0) {
+      return total;
+    }
+
+    const servicePrice = this.getAddOnDisplayUnitPrice(addon);
+    const taxAmount = this.getAddOnDisplayTaxPrice(addon);
     const quantity = this.isItemWiseAddOn(addon) ? this.getSelectedAddOnQuantity(addon) : 1;
 
     return this.toSafeAmount((servicePrice + taxAmount) * quantity);
+  }
+
+  getFriendlyChargeBasis(addon: any): string {
+    const basis = (addon?.chargeBasis || '').toLowerCase().trim();
+    if (basis === 'perpax' || basis === 'perpaxwise') return 'Pax-wise';
+    if (basis === 'pernight' || basis === 'pernightwise') return 'Nightly-wise';
+    if (basis === 'perbooking' || basis === 'booking-wise') return 'Booking-wise';
+    if (basis === 'perroom' || basis === 'room-wise') return 'Room-wise';
+    if (basis === 'peritem' || basis === 'item-wise') return 'Item-wise';
+    
+    return addon?.chargeBasis || '';
+  }
+
+  getAllSelectedServicesBreakdown(): any[] {
+    const plans =
+      this.bookingSummaryDetails?.selectedPlansSummary ||
+      this.selectedPlansSummary ||
+      [];
+    
+    const serviceMap = new Map<string, any>();
+    plans.forEach(plan => {
+      const planServices = this.getSelectedServicesForPlan(plan);
+      planServices.forEach(s => {
+        const key = s.name;
+        const existing = serviceMap.get(key);
+        if (existing) {
+          existing.quantity += s.quantity;
+          existing.beforeTaxAmount += s.beforeTaxAmount;
+          existing.taxAmount += s.taxAmount;
+          existing.afterTaxAmount += s.afterTaxAmount;
+          existing.netAmount += s.netAmount;
+        } else {
+          serviceMap.set(key, { ...s });
+        }
+      });
+    });
+
+    return Array.from(serviceMap.values());
+  }
+
+  getAddOnCalculatedUnitPriceSum(addon: any): number {
+    const plans =
+      this.bookingSummaryDetails?.selectedPlansSummary ||
+      this.selectedPlansSummary ||
+      [];
+    
+    let total = 0;
+    plans.forEach(plan => {
+      const chargeBasis = this.getAddOnChargeBasis(addon);
+      const isPerPaxOrNight = ['perpax', 'pernight'].includes(chargeBasis);
+      const isAdultApplicable = addon?.applicableToAdult !== false;
+      const isChildApplicable = addon?.applicableToChild === true;
+      const adultCount = this.getAdultPaxCountForPlan(plan);
+      const childCount = this.getChildPaxCountForPlan(plan);
+
+      if (isPerPaxOrNight && isAdultApplicable && isChildApplicable && adultCount > 0 && childCount > 0) {
+        const adultServicePrice = this.toSafeAmount(addon?.adultServicePrice ?? addon?.servicePrice ?? addon?.beforeTaxAmount ?? addon?.unitPrice);
+        const childServicePrice = this.toSafeAmount(addon?.childServicePrice ?? addon?.servicePrice ?? addon?.beforeTaxAmount ?? addon?.unitPrice);
+
+        total += this.toSafeAmount(adultServicePrice * adultCount);
+        total += this.toSafeAmount(childServicePrice * childCount);
+      } else {
+        const multiplier = this.getAddOnPlanMultiplier(addon, plan);
+        let useChildPrices = isChildApplicable && !isAdultApplicable;
+        if (isPerPaxOrNight && isAdultApplicable && isChildApplicable && adultCount === 0 && childCount > 0) {
+          useChildPrices = true;
+        }
+        const servicePrice = useChildPrices
+          ? this.toSafeAmount(addon?.childServicePrice ?? addon?.servicePrice ?? addon?.beforeTaxAmount ?? addon?.unitPrice)
+          : this.toSafeAmount(addon?.adultServicePrice ?? addon?.servicePrice ?? addon?.beforeTaxAmount ?? addon?.unitPrice);
+
+        total += this.toSafeAmount(servicePrice * multiplier);
+      }
+    });
+
+    if (total > 0) {
+      return total;
+    }
+
+    const servicePrice = this.getAddOnDisplayUnitPrice(addon);
+    const quantity = this.isItemWiseAddOn(addon) ? this.getSelectedAddOnQuantity(addon) : 1;
+    return this.toSafeAmount(servicePrice * quantity);
+  }
+
+  getAddOnCalculatedTaxPriceSum(addon: any): number {
+    const plans =
+      this.bookingSummaryDetails?.selectedPlansSummary ||
+      this.selectedPlansSummary ||
+      [];
+    
+    let total = 0;
+    plans.forEach(plan => {
+      const chargeBasis = this.getAddOnChargeBasis(addon);
+      const isPerPaxOrNight = ['perpax', 'pernight'].includes(chargeBasis);
+      const isAdultApplicable = addon?.applicableToAdult !== false;
+      const isChildApplicable = addon?.applicableToChild === true;
+      const adultCount = this.getAdultPaxCountForPlan(plan);
+      const childCount = this.getChildPaxCountForPlan(plan);
+
+      if (isPerPaxOrNight && isAdultApplicable && isChildApplicable && adultCount > 0 && childCount > 0) {
+        const adultTaxPrice = this.toSafeAmount(addon?.adultTaxPrice ?? addon?.taxAmount ?? 0);
+        const childTaxPrice = this.toSafeAmount(addon?.childTaxPrice ?? addon?.taxAmount ?? 0);
+
+        total += this.toSafeAmount(adultTaxPrice * adultCount);
+        total += this.toSafeAmount(childTaxPrice * childCount);
+      } else {
+        const multiplier = this.getAddOnPlanMultiplier(addon, plan);
+        let useChildPrices = isChildApplicable && !isAdultApplicable;
+        if (isPerPaxOrNight && isAdultApplicable && isChildApplicable && adultCount === 0 && childCount > 0) {
+          useChildPrices = true;
+        }
+        const taxAmount = useChildPrices
+          ? this.toSafeAmount(addon?.childTaxPrice ?? addon?.taxAmount ?? 0)
+          : this.toSafeAmount(addon?.adultTaxPrice ?? addon?.taxAmount ?? 0);
+
+        total += this.toSafeAmount(taxAmount * multiplier);
+      }
+    });
+
+    if (total > 0) {
+      return total;
+    }
+
+    const taxAmount = this.getAddOnDisplayTaxPrice(addon);
+    const quantity = this.isItemWiseAddOn(addon) ? this.getSelectedAddOnQuantity(addon) : 1;
+    return this.toSafeAmount(taxAmount * quantity);
   }
 
   // getSelectedAddOnQuantity(addon: any): number {
@@ -13388,13 +13690,7 @@ sendWhatsappMessageToPropertyOwner() {
   }
 
   getSelectedAddOnTotal(addon: any): number {
-    const servicePrice = this.toSafeAmount(
-      addon?.servicePrice ?? addon?.beforeTaxAmount ?? addon?.unitPrice,
-    );
-    const taxAmount = this.toSafeAmount(addon?.taxAmount);
-    const multiplier = this.getAddOnTotalMultiplier(addon);
-
-    return this.toSafeAmount((servicePrice + taxAmount) * multiplier);
+    return this.getAddOnRowTotal(addon);
   }
 
   private isFirstSelectedPlan(plan: any): boolean {
@@ -13496,11 +13792,33 @@ sendWhatsappMessageToPropertyOwner() {
         return this.isFirstSelectedPlan(plan) ? this.getSelectedAddOnQuantity(addon) : 0;
       case 'perpax':
       case 'pernight':
-        return Math.max(1, this.toSafeAmount(plan?.adults || this.booking?.noOfPersons || 1));
+        return this.getAddOnPaxCountForPlan(addon, plan);
       case 'perroom':
       default:
         return this.getPlanRoomCount(plan);
     }
+  }
+
+  private getAddOnPaxCountForPlan(addon: any, plan: any): number {
+    let count = 0;
+    const isAdultApplicable = addon?.applicableToAdult !== false;
+    const isChildApplicable = addon?.applicableToChild === true;
+
+    if (isAdultApplicable) {
+      count += this.toSafeAmount(plan?.adults || this.booking?.noOfPersons || 0);
+    }
+    if (isChildApplicable) {
+      const planChildren = Number(plan?.children || plan?.extraCountChild || 0) > 0
+        ? Number(plan?.children || plan?.extraCountChild || 0)
+        : (Number(plan?.childrenAbove5years || 0) + Number(plan?.childrenBelow5years || 0));
+      
+      const globalChildren = Number(this.children || this.booking?.noOfChildren || 0) + 
+                             Number(this.booking?.noOfChildrenUnder5years || 0);
+
+      count += planChildren > 0 ? planChildren : globalChildren;
+    }
+
+    return count > 0 ? count : 1;
   }
 
   private getAddOnTotalMultiplier(addon: any): number {
@@ -13511,11 +13829,33 @@ sendWhatsappMessageToPropertyOwner() {
         return this.getSelectedAddOnQuantity(addon);
       case 'perpax':
       case 'pernight':
-        return this.getTotalSelectedAdultsCount();
+        return this.getTotalSelectedPaxCount(addon);
       case 'perroom':
       default:
         return this.getTotalSelectedRoomCount();
     }
+  }
+
+  private getTotalSelectedPaxCount(addon: any): number {
+    let count = 0;
+    const isAdultApplicable = addon?.applicableToAdult !== false;
+    const isChildApplicable = addon?.applicableToChild === true;
+
+    if (isAdultApplicable) {
+      count += this.getTotalSelectedAdultsCount();
+    }
+    if (isChildApplicable) {
+      const totalPlanChildrenCount = Number(this.totalPlanChildren || 0) > 0
+        ? Number(this.totalPlanChildren)
+        : (Number(this.totalPlanChildrenAboveAgeLimit || 0) + Number(this.totalPlanChildrenBelowAgeLimit || 0));
+
+      const globalChildrenCount = Number(this.children || this.booking?.noOfChildren || 0) + 
+                                   Number(this.booking?.noOfChildrenUnder5years || 0);
+
+      count += totalPlanChildrenCount > 0 ? totalPlanChildrenCount : globalChildrenCount;
+    }
+
+    return count > 0 ? count : 1;
   }
 
   private getAddOnDisplayQuantity(addon: any, plan: any): number {
@@ -13539,26 +13879,16 @@ sendWhatsappMessageToPropertyOwner() {
   // }
 
   private getPlanServicesSubtotal(plan: any): number {
+    const planServices = this.getSelectedServicesForPlan(plan);
     return this.toSafeAmount(
-      (this.selectedAddOns || []).reduce(
-        (sum, addon) =>
-          sum +
-          this.toSafeAmount(addon?.servicePrice) *
-            this.getAddOnPlanMultiplier(addon, plan),
-        0,
-      ),
+      planServices.reduce((sum, s) => sum + this.toSafeAmount(s.beforeTaxAmount), 0)
     );
   }
 
   private getPlanServicesTax(plan: any): number {
+    const planServices = this.getSelectedServicesForPlan(plan);
     return this.toSafeAmount(
-      (this.selectedAddOns || []).reduce(
-        (sum, addon) =>
-          sum +
-          this.toSafeAmount(addon?.taxAmount) *
-            this.getAddOnPlanMultiplier(addon, plan),
-        0,
-      ),
+      planServices.reduce((sum, s) => sum + this.toSafeAmount(s.taxAmount), 0)
     );
   }
 
@@ -13601,34 +13931,129 @@ sendWhatsappMessageToPropertyOwner() {
     );
   }
 
+  private getAdultPaxCountForPlan(plan: any): number {
+    return this.toSafeAmount(plan?.adults || this.booking?.noOfPersons || 0);
+  }
+
+  private getChildPaxCountForPlan(plan: any): number {
+    const planChildren = Number(plan?.children || plan?.extraCountChild || 0) > 0
+      ? Number(plan?.children || plan?.extraCountChild || 0)
+      : (Number(plan?.childrenAbove5years || 0) + Number(plan?.childrenBelow5years || 0));
+    
+    const globalChildren = Number(this.children || this.booking?.noOfChildren || 0) + 
+                           Number(this.booking?.noOfChildrenUnder5years || 0);
+
+    return planChildren > 0 ? planChildren : globalChildren;
+  }
+
   getSelectedServicesForPlan(plan: any): any[] {
     return (this.selectedAddOns || []).reduce((services, service) => {
-      const servicePrice = this.toSafeAmount(
-        service?.servicePrice ?? service?.beforeTaxAmount ?? service?.unitPrice,
-      );
-      const taxAmount = this.toSafeAmount(service?.taxAmount);
-      const multiplier = this.getAddOnPlanMultiplier(service, plan);
+      const chargeBasis = this.getAddOnChargeBasis(service);
+      const isPerPaxOrNight = ['perpax', 'pernight'].includes(chargeBasis);
+      
+      const isAdultApplicable = service.applicableToAdult !== false;
+      const isChildApplicable = service.applicableToChild === true;
 
-      if (multiplier <= 0) {
-        return services;
+      const adultCount = this.getAdultPaxCountForPlan(plan);
+      const childCount = this.getChildPaxCountForPlan(plan);
+
+      // If both are applicable, perpax/pernight, and both counts > 0 -> SPLIT
+      if (isPerPaxOrNight && isAdultApplicable && isChildApplicable && adultCount > 0 && childCount > 0) {
+        // 1. Adult part
+        const adultServicePrice = this.toSafeAmount(service?.adultServicePrice ?? service?.servicePrice ?? service?.beforeTaxAmount ?? service?.unitPrice);
+        const adultTaxPrice = this.toSafeAmount(service?.adultTaxPrice ?? service?.taxAmount ?? 0);
+        const adultMultiplier = adultCount;
+        const adultBeforeTax = this.toSafeAmount(adultServicePrice * adultMultiplier);
+        const adultTax = this.toSafeAmount(adultTaxPrice * adultMultiplier);
+        
+        services.push({
+          ...service,
+          name: `${service.name} | Adult`,
+          quantity: adultCount,
+          count: adultCount,
+          unitPrice: adultServicePrice,
+          servicePrice: adultServicePrice,
+          beforeTaxAmount: adultBeforeTax,
+          taxAmount: adultTax,
+          afterTaxAmount: this.toSafeAmount(adultBeforeTax + adultTax),
+          netAmount: this.toSafeAmount(adultBeforeTax + adultTax),
+          sourceChannel: service?.sourceChannel ?? this.booking?.externalSite ?? 'BookMax',
+          applicableFor: 'Adult',
+          notes: `${service?.notes || ''} (Adults: ${adultCount} x ${adultServicePrice})`.trim(),
+        });
+
+        // 2. Child part
+        const childServicePrice = this.toSafeAmount(service?.childServicePrice ?? service?.servicePrice ?? service?.beforeTaxAmount ?? service?.unitPrice);
+        const childTaxPrice = this.toSafeAmount(service?.childTaxPrice ?? service?.taxAmount ?? 0);
+        const childMultiplier = childCount;
+        const childBeforeTax = this.toSafeAmount(childServicePrice * childMultiplier);
+        const childTax = this.toSafeAmount(childTaxPrice * childMultiplier);
+
+        services.push({
+          ...service,
+          name: `${service.name} | Child`,
+          quantity: childCount,
+          count: childCount,
+          unitPrice: childServicePrice,
+          servicePrice: childServicePrice,
+          beforeTaxAmount: childBeforeTax,
+          taxAmount: childTax,
+          afterTaxAmount: this.toSafeAmount(childBeforeTax + childTax),
+          netAmount: this.toSafeAmount(childBeforeTax + childTax),
+          sourceChannel: service?.sourceChannel ?? this.booking?.externalSite ?? 'BookMax',
+          applicableFor: 'Child',
+          notes: `${service?.notes || ''} (Children: ${childCount} x ${childServicePrice})`.trim(),
+        });
+      } else {
+        // Single object (either only adult, only child, or not perpax/pernight)
+        let multiplier = this.getAddOnPlanMultiplier(service, plan);
+        if (multiplier <= 0) {
+          return services;
+        }
+
+        let useChildPrices = isChildApplicable && !isAdultApplicable;
+        if (isPerPaxOrNight && isAdultApplicable && isChildApplicable && adultCount === 0 && childCount > 0) {
+          useChildPrices = true;
+        }
+
+        const servicePrice = useChildPrices
+          ? this.toSafeAmount(service?.childServicePrice ?? service?.servicePrice ?? service?.beforeTaxAmount ?? service?.unitPrice)
+          : this.toSafeAmount(service?.adultServicePrice ?? service?.servicePrice ?? service?.beforeTaxAmount ?? service?.unitPrice);
+
+        const taxAmount = useChildPrices
+          ? this.toSafeAmount(service?.childTaxPrice ?? service?.taxAmount ?? 0)
+          : this.toSafeAmount(service?.adultTaxPrice ?? service?.taxAmount ?? 0);
+
+        const beforeTaxAmount = this.toSafeAmount(servicePrice * multiplier);
+        const totalTaxAmount = this.toSafeAmount(taxAmount * multiplier);
+        const quantity = this.getAddOnDisplayQuantity(service, plan);
+
+        let applicableFor = 'Both';
+        if (isAdultApplicable && !isChildApplicable) {
+          applicableFor = 'Adult';
+        } else if (isChildApplicable && !isAdultApplicable) {
+          applicableFor = 'Child';
+        }
+
+        const noteDetail = isPerPaxOrNight
+          ? `(Count: ${multiplier} x Price: ${servicePrice})`
+          : `(Price: ${servicePrice})`;
+
+        services.push({
+          ...service,
+          quantity,
+          count: quantity,
+          unitPrice: servicePrice,
+          servicePrice,
+          beforeTaxAmount,
+          taxAmount: totalTaxAmount,
+          afterTaxAmount: this.toSafeAmount(beforeTaxAmount + totalTaxAmount),
+          netAmount: this.toSafeAmount(beforeTaxAmount + totalTaxAmount),
+          sourceChannel: service?.sourceChannel ?? this.booking?.externalSite ?? 'BookMax',
+          applicableFor,
+          notes: `${service?.notes || ''} ${noteDetail}`.trim(),
+        });
       }
-
-      const quantity = this.getAddOnDisplayQuantity(service, plan);
-      const beforeTaxAmount = this.toSafeAmount(servicePrice * multiplier);
-      const totalTaxAmount = this.toSafeAmount(taxAmount * multiplier);
-
-      services.push({
-        ...service,
-        quantity,
-        count: quantity,
-        unitPrice: servicePrice,
-        servicePrice,
-        beforeTaxAmount,
-        taxAmount: totalTaxAmount,
-        afterTaxAmount: this.toSafeAmount(beforeTaxAmount + totalTaxAmount),
-        netAmount: this.toSafeAmount(beforeTaxAmount + totalTaxAmount),
-        sourceChannel: service?.sourceChannel ?? this.booking?.externalSite ?? 'BookMax',
-      });
 
       return services;
     }, []);
@@ -13636,66 +14061,164 @@ sendWhatsappMessageToPropertyOwner() {
 
   private getSelectedServicePayloadForPlan(plan: any): any[] {
     return (this.selectedAddOns || []).reduce((services, service) => {
-      const servicePrice = this.toSafeAmount(
-        service?.servicePrice ?? service?.beforeTaxAmount ?? service?.unitPrice,
-      );
-      const taxAmount = this.toSafeAmount(service?.taxAmount);
-      const multiplier = this.getAddOnPlanMultiplier(service, plan);
+      const chargeBasis = this.getAddOnChargeBasis(service);
+      const isPerPaxOrNight = ['perpax', 'pernight'].includes(chargeBasis);
+      
+      const isAdultApplicable = service.applicableToAdult !== false;
+      const isChildApplicable = service.applicableToChild === true;
 
-      if (multiplier <= 0) {
-        return services;
+      const adultCount = this.getAdultPaxCountForPlan(plan);
+      const childCount = this.getChildPaxCountForPlan(plan);
+
+      // If both are applicable, perpax/pernight, and both counts > 0 -> SPLIT
+      if (isPerPaxOrNight && isAdultApplicable && isChildApplicable && adultCount > 0 && childCount > 0) {
+        // 1. Adult part
+        const adultServicePrice = this.toSafeAmount(service?.adultServicePrice ?? service?.servicePrice ?? service?.beforeTaxAmount ?? service?.unitPrice);
+        const adultTaxPrice = this.toSafeAmount(service?.adultTaxPrice ?? service?.taxAmount ?? 0);
+        const adultMultiplier = adultCount;
+        const adultBeforeTax = this.toSafeAmount(adultServicePrice * adultMultiplier);
+        const adultTax = this.toSafeAmount(adultTaxPrice * adultMultiplier);
+        const adultAfterTax = this.toSafeAmount(adultBeforeTax + adultTax);
+
+        services.push({
+          ...service,
+          name: `${service.name} | Adult`,
+          quantity: adultCount,
+          count: adultCount,
+          quantityApplied: adultCount,
+          roomSequence: 1,
+          roomId: plan?.roomId,
+          roomName: plan?.roomName,
+          roomRatePlanName: plan?.planCodeName,
+          unitPrice: adultServicePrice,
+          servicePrice: adultServicePrice,
+          beforeTaxAmount: adultBeforeTax,
+          taxAmount: adultTax,
+          afterTaxAmount: adultAfterTax,
+          netAmount: adultAfterTax,
+          sourceChannel: service?.sourceChannel ?? this.booking?.externalSite ?? 'BookMax',
+          applicableFor: 'Adult',
+          notes: `${service?.notes || ''} (Adults: ${adultCount} x ${adultServicePrice})`.trim(),
+        });
+
+        // 2. Child part
+        const childServicePrice = this.toSafeAmount(service?.childServicePrice ?? service?.servicePrice ?? service?.beforeTaxAmount ?? service?.unitPrice);
+        const childTaxPrice = this.toSafeAmount(service?.childTaxPrice ?? service?.taxAmount ?? 0);
+        const childMultiplier = childCount;
+        const childBeforeTax = this.toSafeAmount(childServicePrice * childMultiplier);
+        const childTax = this.toSafeAmount(childTaxPrice * childMultiplier);
+        const childAfterTax = this.toSafeAmount(childBeforeTax + childTax);
+
+        services.push({
+          ...service,
+          name: `${service.name} | Child`,
+          quantity: childCount,
+          count: childCount,
+          quantityApplied: childCount,
+          roomSequence: 1,
+          roomId: plan?.roomId,
+          roomName: plan?.roomName,
+          roomRatePlanName: plan?.planCodeName,
+          unitPrice: childServicePrice,
+          servicePrice: childServicePrice,
+          beforeTaxAmount: childBeforeTax,
+          taxAmount: childTax,
+          afterTaxAmount: childAfterTax,
+          netAmount: childAfterTax,
+          sourceChannel: service?.sourceChannel ?? this.booking?.externalSite ?? 'BookMax',
+          applicableFor: 'Child',
+          notes: `${service?.notes || ''} (Children: ${childCount} x ${childServicePrice})`.trim(),
+        });
+      } else {
+        // Single object
+        let multiplier = this.getAddOnPlanMultiplier(service, plan);
+        if (multiplier <= 0) {
+          return services;
+        }
+
+        let useChildPrices = isChildApplicable && !isAdultApplicable;
+        if (isPerPaxOrNight && isAdultApplicable && isChildApplicable && adultCount === 0 && childCount > 0) {
+          useChildPrices = true;
+        }
+
+        const servicePrice = useChildPrices
+          ? this.toSafeAmount(service?.childServicePrice ?? service?.servicePrice ?? service?.beforeTaxAmount ?? service?.unitPrice)
+          : this.toSafeAmount(service?.adultServicePrice ?? service?.servicePrice ?? service?.beforeTaxAmount ?? service?.unitPrice);
+
+        const taxAmount = useChildPrices
+          ? this.toSafeAmount(service?.childTaxPrice ?? service?.taxAmount ?? 0)
+          : this.toSafeAmount(service?.adultTaxPrice ?? service?.taxAmount ?? 0);
+
+        const beforeTaxAmount = this.toSafeAmount(servicePrice * multiplier);
+        const totalTaxAmount = this.toSafeAmount(taxAmount * multiplier);
+        const afterTaxAmount = this.toSafeAmount(beforeTaxAmount + totalTaxAmount);
+        const quantity = this.getAddOnDisplayQuantity(service, plan);
+
+        let applicableFor = 'Both';
+        if (isAdultApplicable && !isChildApplicable) {
+          applicableFor = 'Adult';
+        } else if (isChildApplicable && !isAdultApplicable) {
+          applicableFor = 'Child';
+        }
+
+        const noteDetail = isPerPaxOrNight
+          ? `(Count: ${multiplier} x Price: ${servicePrice})`
+          : `(Price: ${servicePrice})`;
+
+        services.push({
+          ...service,
+          quantity,
+          count: quantity,
+          quantityApplied: quantity,
+          roomSequence: 1,
+          roomId: plan?.roomId,
+          roomName: plan?.roomName,
+          roomRatePlanName: plan?.planCodeName,
+          unitPrice: servicePrice,
+          servicePrice,
+          beforeTaxAmount,
+          taxAmount: totalTaxAmount,
+          afterTaxAmount,
+          netAmount: afterTaxAmount,
+          sourceChannel: service?.sourceChannel ?? this.booking?.externalSite ?? 'BookMax',
+          applicableFor,
+          notes: `${service?.notes || ''} ${noteDetail}`.trim(),
+        });
       }
-
-      const quantity = this.getAddOnDisplayQuantity(service, plan);
-      const beforeTaxAmount = this.toSafeAmount(servicePrice * multiplier);
-      const totalTaxAmount = this.toSafeAmount(taxAmount * multiplier);
-      const afterTaxAmount = this.toSafeAmount(beforeTaxAmount + totalTaxAmount);
-
-      services.push({
-        ...service,
-        quantity,
-        count: quantity,
-        quantityApplied: quantity,
-        roomSequence: 1,
-        roomId: plan?.roomId,
-        roomName: plan?.roomName,
-        roomRatePlanName: plan?.planCodeName,
-        unitPrice: servicePrice,
-        servicePrice,
-        beforeTaxAmount,
-        taxAmount: totalTaxAmount,
-        afterTaxAmount,
-        netAmount: afterTaxAmount,
-        sourceChannel: service?.sourceChannel ?? this.booking?.externalSite ?? 'BookMax',
-      });
 
       return services;
     }, []);
   }
 
-  /** Sum of servicePrice for all selected add-ons across all selected rooms (before tax) */
   getServicesSubtotal(): number {
+    const plans =
+      this.bookingSummaryDetails?.selectedPlansSummary ||
+      this.selectedPlansSummary ||
+      [];
+    if (!plans || plans.length === 0) {
+      return 0;
+    }
     return this.toSafeAmount(
-      (this.selectedAddOns || []).reduce(
-        (sum, addon) =>
-          sum +
-          this.toSafeAmount(addon?.servicePrice) *
-            this.getAddOnTotalMultiplier(addon),
-        0,
-      ),
+      plans.reduce((sum, plan) => {
+        const planServices = this.getSelectedServicesForPlan(plan);
+        return sum + planServices.reduce((subSum, s) => subSum + this.toSafeAmount(s.beforeTaxAmount), 0);
+      }, 0)
     );
   }
 
-  /** Sum of taxAmount for all selected add-ons across all selected rooms */
   getServicesTax(): number {
+    const plans =
+      this.bookingSummaryDetails?.selectedPlansSummary ||
+      this.selectedPlansSummary ||
+      [];
+    if (!plans || plans.length === 0) {
+      return 0;
+    }
     return this.toSafeAmount(
-      (this.selectedAddOns || []).reduce(
-        (sum, addon) =>
-          sum +
-          this.toSafeAmount(addon?.taxAmount) *
-            this.getAddOnTotalMultiplier(addon),
-        0,
-      ),
+      plans.reduce((sum, plan) => {
+        const planServices = this.getSelectedServicesForPlan(plan);
+        return sum + planServices.reduce((subSum, s) => subSum + this.toSafeAmount(s.taxAmount), 0);
+      }, 0)
     );
   }
 

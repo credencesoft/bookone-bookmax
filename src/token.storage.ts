@@ -236,11 +236,11 @@ export class TokenStorage {
       }
     }
   public saveCountry(Country:any) {
-  localStorage.removeItem(COUNTRY);
-    if (Country !== null || Country !== undefined) {
-    localStorage.setItem(COUNTRY, Country);
+    localStorage.removeItem(COUNTRY);
+    if (Country && Country !== 'null' && Country !== 'undefined' && Country !== '{}') {
+      localStorage.setItem(COUNTRY, Country);
     } else {
-    localStorage.setItem(COUNTRY,  '{}');
+      localStorage.setItem(COUNTRY, 'India');
     }
   }
   public getProperty(): BusinessUser {

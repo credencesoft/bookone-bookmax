@@ -54,6 +54,15 @@ export class BookingVoucherComponent {
     this.businessUser = new BusinessUser();
     this.propertyDetails = this.token.getProperty();
     this.booking = this.token.getEnquiryData();
+    if (this.booking) {
+      const thmRef = this.booking.enquiryReference || this.booking.propertyReservationNumber;
+      const lmsId = this.booking.enquiryId;
+      if (thmRef && lmsId && thmRef !== lmsId) {
+        this.booking.enquiryId = `${thmRef} (${lmsId})`;
+      } else if (thmRef) {
+        this.booking.enquiryId = thmRef;
+      }
+    }
     this.savedServices = this.token.getSelectedServices();
     this.resolveActiveCurrency();
     this.storedPromo = localStorage.getItem('selectPromo');
@@ -63,7 +72,6 @@ export class BookingVoucherComponent {
       );
       this.selectedPromo = selectedPromoData;
       // this.businessOfferDto = selectedPromoData
-      console.log(selectedPromoData);
     } else {
       this.getOfferDetails();
     }
@@ -76,13 +84,11 @@ export class BookingVoucherComponent {
       this.booking?.bookingPropertyId != undefined
     ) {
       this.getPropertyDetailsById(this.booking.bookingPropertyId);
-      console.log('this.booking.proprtyId', this.booking.bookingPropertyId);
     }
     const bookingDataDetails = sessionStorage.getItem('bookingSummaryDetails');
     if (bookingDataDetails) {
       this.bookingSummaryDetails = JSON.parse(bookingDataDetails);
       this.calculateTotalGuestsFromPlans();
-      console.log('bookingSummaryDetails', this.bookingSummaryDetails);
     }
 
     const bookingsResponseList = sessionStorage.getItem('EnquiryResponseList');
@@ -93,14 +99,12 @@ export class BookingVoucherComponent {
     0
   );
       this.calculateTotalGuestsFromPlans();
-      console.log('EnquiryResponseList', this.bookingsResponseList);
     }
           setInterval(() => {
     this.checkBookingEngineFlag();
   }, 10);
 
    const savedLabel = localStorage.getItem('savedBookingLabel');
-    console.log('savedLabel data is',savedLabel);
     if (savedLabel) {
     try {
       const parsedData = JSON.parse(savedLabel);
@@ -317,9 +321,6 @@ getTrimmedDescription(description: string): string {
       this.propertyDetails?.businessServiceDtoList.filter(
         (service) => service.name === 'Accommodation'
       );
-    console.log(
-      ' this.accommodationService' + JSON.stringify(this.accommodationService)
-    );
   }
   getOfferDetails() {
     this.hotelBookingService

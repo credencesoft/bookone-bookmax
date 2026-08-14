@@ -23,7 +23,8 @@ export class CountryList {
     { value: 'Sri Lanka', viewValue: 'Sri Lanka',countryCode:'+94' },
     { value: 'Thailand', viewValue: 'Thailand',countryCode:'+66' },
     { value: 'United Arab Emirates', viewValue: 'United Arab Emirates',countryCode:'+971' },
-    { value: 'United States', viewValue: 'United States', countryCode: '+1' }
+    { value: 'United States', viewValue: 'United States', countryCode: '+1' },
+    { value: 'Japan', viewValue: 'Japan', countryCode: '+81' }
   ];
 
   constructor() {

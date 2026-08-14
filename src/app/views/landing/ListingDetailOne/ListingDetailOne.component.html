@@ -175,7 +175,7 @@
     </div>
   </div>
 
-  <div *ngIf="showAllTheOfferList?.length > 0">
+  <div *ngIf="showAllTheOfferList?.length > 0 && shouldShowPromotions()">
     <p-carousel
       class="carousel-section"
       [value]="showAllTheOfferList"
@@ -206,7 +206,8 @@
                   <div class="applycoupon spin-trigger-wrap">
                     <button
                       class="apply-coupon-btn spin-now-btn"
-                      (click)="openSpinWheel(product, couponSection)"
+                      (click)="openSpinWheel(product, null)"
+                      style="background-color: #2563eb; color: white;"
                     >
                       Spin Now
                     </button>
@@ -218,6 +219,55 @@
         </div>
       </ng-template>
     </p-carousel>
+
+
+
+    <style>
+      @keyframes pulseGlow {
+        0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4); }
+        100% { transform: scale(1.04); box-shadow: 0 0 12px 6px rgba(255, 255, 255, 0.2); }
+      }
+      @keyframes slideInDown {
+        0% { transform: translateY(-8px); opacity: 0; }
+        100% { transform: translateY(0); opacity: 1; }
+      }
+      .spinner-custom {
+        display: inline-block;
+        width: 14px;
+        height: 14px;
+        border: 2px solid rgba(255, 255, 255, 0.35);
+        border-radius: 50%;
+        border-top-color: #ffffff;
+        animation: spin-custom-anim 0.8s linear infinite;
+        flex-shrink: 0;
+      }
+      @keyframes spin-custom-anim {
+        to { transform: rotate(360deg); }
+      }
+      .close-btn-custom {
+        transition: all 0.2s ease-in-out;
+      }
+      .close-btn-custom:hover {
+        transform: scale(1.1);
+        filter: brightness(1.2);
+      }
+      .input-field-custom:focus {
+        border-color: var(--primary, #232A45) !important;
+        box-shadow: 0 0 0 3px rgba(35, 42, 69, 0.15) !important;
+      }
+      .cancel-btn-custom:hover {
+        background-color: #e2e8f0 !important;
+        color: #1e293b !important;
+      }
+      .submit-btn-custom {
+        transition: all 0.2s ease-in-out;
+      }
+      .submit-btn-custom:hover:not(:disabled) {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15) !important;
+        filter: brightness(1.1);
+      }
+    </style>
   </div>
 
   <div class="spin-wheel-overlay" *ngIf="spinWheelOpen" (click)="closeSpinWheel()"></div>
@@ -276,22 +326,213 @@
 
         <div class="spin-result-card" *ngIf="spinWheelResult.type === 'offer'">
           <div class="spin-result-discount">{{ spinWheelResult.offer.discountPercentage }}% OFF</div>
-          <div class="spin-result-code">{{ spinWheelResult.offer.couponCode }}</div>
+          <div class="spin-result-code" style="opacity: 0.8; font-size: 14px; margin-top: 5px;">
+            {{ guestCouponGenerated ? spinWheelResult.offer.couponCode : 'Spin & Claim Your Code' }}
+          </div>
+        </div>
+
+        <!-- Inline Guest Promotion Form inside the same Spin Wheel modal, below the result -->
+        <div class="spin-result-form" *ngIf="spinWheelResult.type === 'offer'" style="width: min(100%, 360px); margin: 0 auto; text-align: left; gap: 14px; display: flex; flex-direction: column;">
+          
+          <div *ngIf="!guestCouponGenerated">
+            <!-- Guest Name Field -->
+            <div style="display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px;">
+              <label style="font-size: 11px; font-weight: 600; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;">Guest Name</label>
+              <input
+                type="text"
+                [(ngModel)]="guestCouponName"
+                placeholder="Enter your name"
+                style="
+                  width: 100%;
+                  height: 40px;
+                  padding: 0 12px;
+                  border: 1.5px solid rgba(255, 255, 255, 0.15);
+                  border-radius: 8px;
+                  font-size: 13.5px;
+                  font-weight: 500;
+                  color: #ffffff;
+                  background-color: rgba(15, 23, 42, 0.4);
+                  box-sizing: border-box;
+                  outline: none;
+                  transition: all 0.2s ease-in-out;
+                "
+              />
+            </div>
+
+            <!-- WhatsApp Phone Field -->
+            <div style="display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px;">
+              <label style="font-size: 11px; font-weight: 600; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;">WhatsApp Number</label>
+              <div style="display: flex; gap: 8px; position: relative;">
+                
+                <!-- Dropdown Trigger Button -->
+                <div style="position: relative; flex-shrink: 0;">
+                  <button
+                    type="button"
+                    (click)="toggleCountryDropdown()"
+                    style="
+                      display: flex;
+                      align-items: center;
+                      gap: 6px;
+                      height: 40px;
+                      padding: 0 8px;
+                      border: 1.5px solid rgba(255, 255, 255, 0.15);
+                      border-radius: 8px;
+                      background-color: rgba(15, 23, 42, 0.4);
+                      font-size: 13.5px;
+                      font-weight: 600;
+                      color: #ffffff;
+                      cursor: pointer;
+                      outline: none;
+                    "
+                  >
+                    <span style="font-size: 16px;">{{ selectedCountryForCoupon.flag }}</span>
+                    <span>{{ selectedCountryForCoupon.code }}</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: #cbd5e1; transition: transform 0.2s;" [style.transform]="showCountryDropdown ? 'rotate(180deg)' : 'none'">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </button>
+
+                  <!-- Float Dropdown Menu -->
+                  <div
+                    *ngIf="showCountryDropdown"
+                    style="
+                      position: absolute;
+                      top: 46px;
+                      left: 0;
+                      width: 260px;
+                      max-height: 200px;
+                      background-color: #1e293b;
+                      border: 1px solid rgba(255, 255, 255, 0.15);
+                      border-radius: 10px;
+                      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.5);
+                      z-index: 1090;
+                      display: flex;
+                      flex-direction: column;
+                      overflow: hidden;
+                      text-align: left;
+                    "
+                  >
+                    <!-- Search Box -->
+                    <div style="padding: 6px 8px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); background-color: #0f172a; display: flex; align-items: center; gap: 6px;">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: #94a3b8; flex-shrink: 0;">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                      </svg>
+                      <input
+                        type="text"
+                        [(ngModel)]="countrySearchQuery"
+                        placeholder="Search country..."
+                        style="
+                          width: 100%;
+                          border: none;
+                          background: transparent;
+                          font-size: 12px;
+                          color: #ffffff;
+                          outline: none;
+                        "
+                        (click)="$event.stopPropagation()"
+                      />
+                    </div>
+
+                    <!-- Scrollable List -->
+                    <div style="overflow-y: auto; flex: 1; padding: 4px 0;">
+                      <div
+                        *ngFor="let c of filteredCountriesForCoupon"
+                        (click)="selectCountryForCoupon(c); $event.stopPropagation()"
+                        style="
+                          display: flex;
+                          align-items: center;
+                          justify-content: space-between;
+                          padding: 6px 10px;
+                          cursor: pointer;
+                          transition: background-color 0.15s ease;
+                        "
+                        [style.background-color]="selectedCountryForCoupon.code === c.code && selectedCountryForCoupon.name === c.name ? 'rgba(255, 255, 255, 0.1)' : 'transparent'"
+                      >
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                          <span style="font-size: 15px;">{{ c.flag }}</span>
+                          <span style="font-size: 12.5px; font-weight: 500; color: #cbd5e1;">{{ c.name }}</span>
+                        </div>
+                        <span style="font-size: 11px; font-weight: 600; color: #94a3b8;">{{ c.code }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Phone Input -->
+                <input
+                  type="text"
+                  [(ngModel)]="guestCouponPhoneNo"
+                  (input)="onPhoneInput($event)"
+                  [placeholder]="selectedCountryForCoupon.length ? 'e.g. ' + ('9876543210'.substring(0, selectedCountryForCoupon.length)) : 'Enter phone number'"
+                  style="
+                    flex: 1;
+                    height: 40px;
+                    padding: 0 12px;
+                    border: 1.5px solid rgba(255, 255, 255, 0.15);
+                    border-radius: 8px;
+                    font-size: 13.5px;
+                    font-weight: 500;
+                    color: #ffffff;
+                    background-color: rgba(15, 23, 42, 0.4);
+                    box-sizing: border-box;
+                    outline: none;
+                    transition: all 0.2s ease-in-out;
+                  "
+                />
+              </div>
+            </div>
+
+            <!-- Error message inline -->
+            <div *ngIf="guestCouponError" style="color: #ef4444; font-size: 12.5px; font-weight: 500; margin-bottom: 12px; display: flex; align-items: flex-start; gap: 6px; text-align: left;">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; margin-top: 2px;">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                <line x1="12" y1="9" x2="12" y2="13"></line>
+                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+              </svg>
+              <span>{{ guestCouponError }}</span>
+            </div>
+
+            <!-- Submit button -->
+            <button
+              class="spin-action-btn"
+              type="button"
+              style="width: 100%; margin-top: 8px; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 14px;"
+              [disabled]="guestCouponLoading"
+              (click)="submitSpinWheelPromotion()"
+            >
+              <span *ngIf="guestCouponLoading" style="border: 2px solid #fff; border-top: 2px solid transparent; border-radius: 50%; width: 14px; height: 14px; display: inline-block; animation: spinConfettiDrop 1s linear infinite;"></span>
+              <span>{{ guestCouponLoading ? 'Generating...' : 'Get & Apply Coupon' }}</span>
+            </button>
+          </div>
+
+          <!-- Successful Coupon Generation State -->
+          <div *ngIf="guestCouponGenerated" style="text-align: center; width: 100%;">
+            <div style="color: #22c55e; font-size: 13.5px; font-weight: 600; margin-bottom: 16px; padding: 10px; background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.2); border-radius: 10px; text-align: left;">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: #22c55e; margin-bottom: 4px; display: inline-block;">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              <div style="margin-top: 4px; display: inline-block; margin-left: 6px;">{{ guestCouponSuccess }}</div>
+            </div>
+
+            <!-- Claim button -->
+            <button
+              class="spin-action-btn"
+              type="button"
+              style="width: 100%; background: #22c55e; border-color: #22c55e; box-shadow: 0 4px 14px rgba(34, 197, 94, 0.4); font-size: 14px;"
+              (click)="claimGuestPromotion()"
+            >
+              Claim & Apply Discount
+            </button>
+          </div>
+
         </div>
 
         <button
           class="spin-action-btn"
           type="button"
-          *ngIf="spinWheelResult.type === 'offer'"
-          (click)="claimSpinCoupon()"
-        >
-          Apply {{ spinWheelResult.offer.discountPercentage }}% Discount
-        </button>
-
-        <button
-          class="spin-action-btn"
-          type="button"
           *ngIf="spinWheelResult.type === 'retry'"
+          style="margin-top: 14px;"
           (click)="resetSpinResult()"
         >
           TRY AGAIN
@@ -713,7 +954,7 @@
             *ngIf="selectedPlansSummary.length > 0"
           />
 
-          <div class="spin-win-card" *ngIf="showAllTheOfferList?.length > 0">
+          <div class="spin-win-card" *ngIf="showAllTheOfferList?.length > 0 && shouldShowPromotions()">
             <div class="spin-left">
               <div class="icon-circle">
                 <i class="fa-solid fa-trophy"></i>
@@ -729,7 +970,7 @@
             </button>
           </div>
 
-          <div *ngIf="!activeForGoogleHotelCenter">
+          <div *ngIf="!activeForGoogleHotelCenter && shouldShowPromotions()">
             <small class="special-code"
               >Have a coupon code?
               <span class="special-code-One"
@@ -741,7 +982,7 @@
               errorMessagePrivate
             }}</small>
           </div>
-          <div class="special-sectionOne" *ngIf="!activeForGoogleHotelCenter">
+          <div class="special-sectionOne" *ngIf="!activeForGoogleHotelCenter && shouldShowPromotions()">
             <div style="width: 100%">
               <input
                 class="input-coupon"
@@ -789,7 +1030,7 @@
               </button>
             </div>
           </div>
-          <small class="message-coupon" *ngIf="promoSelected"
+          <small class="message-coupon" *ngIf="promoSelected && shouldShowPromotions()"
             >Coupon {{ this.specialDiscountData.couponCode }} Applied
             Successfully!</small
           >
@@ -3065,27 +3306,37 @@
                     "
                   >
                     <!-- Top Badge -->
+                    <!-- Case 1: Has Discount (Alternates between Discount and Availability) -->
                     <div
-                      *ngIf="
-                        getMinAvailableRooms(room.ratesAndAvailabilityDtos) <= 5
-                      "
+                      *ngIf="getRoomDiscountPercentage(room, rates) > 0"
                       style="z-index: 1"
-                      class="position-absolute top-0 start-0 m-2 px-3 py-1 last-rooms rounded-pill small"
+                      class="position-absolute top-0 start-0 m-2 room-badge-container rounded-pill small"
                     >
-                      Last
-                      {{
-                        getMinAvailableRooms(room.ratesAndAvailabilityDtos)
-                      }}
-                      {{ getBookingUnitLabel(room) }}(s)
+                      <span class="badge-layer badge-discount-layer">
+                        {{ getRoomDiscountPercentage(room, rates) }}% OFF
+                      </span>
+                      <span class="badge-layer badge-availability-layer">
+                        <ng-container *ngIf="getMinAvailableRooms(room.ratesAndAvailabilityDtos) <= 5">
+                          Last {{ getMinAvailableRooms(room.ratesAndAvailabilityDtos) }} {{ getBookingUnitLabel(room) }}(s)
+                        </ng-container>
+                        <ng-container *ngIf="getMinAvailableRooms(room.ratesAndAvailabilityDtos) > 5">
+                          Fast-selling
+                        </ng-container>
+                      </span>
                     </div>
+
+                    <!-- Case 2: No Discount (Only Availability - Blinks Slowly) -->
                     <div
-                      *ngIf="
-                        getMinAvailableRooms(room.ratesAndAvailabilityDtos) > 5
-                      "
+                      *ngIf="getRoomDiscountPercentage(room, rates) <= 0"
                       style="z-index: 1"
-                      class="position-absolute top-0 start-0 m-2 px-3 py-1 last-rooms rounded-pill small"
+                      class="position-absolute top-0 start-0 m-2 px-3 py-1 last-rooms rounded-pill small blink-slow"
                     >
-                      Fast-selling
+                      <ng-container *ngIf="getMinAvailableRooms(room.ratesAndAvailabilityDtos) <= 5">
+                        Last {{ getMinAvailableRooms(room.ratesAndAvailabilityDtos) }} {{ getBookingUnitLabel(room) }}(s)
+                      </ng-container>
+                      <ng-container *ngIf="getMinAvailableRooms(room.ratesAndAvailabilityDtos) > 5">
+                        Fast-selling
+                      </ng-container>
                     </div>
                     <!-- Room Image -->
                     <!-- Fallback image if imageList is empty or undefined -->
@@ -4282,7 +4533,7 @@
             *ngIf="selectedPlansSummary.length > 0"
           />
 
-          <div class="spin-win-card" *ngIf="showAllTheOfferList?.length > 0">
+          <div class="spin-win-card" *ngIf="showAllTheOfferList?.length > 0 && shouldShowPromotions()">
             <div class="spin-left">
               <div class="icon-circle">
                 <i class="fa-solid fa-trophy"></i>
@@ -4297,7 +4548,7 @@
               Spin Now
             </button>
           </div>
-          <div>
+          <div *ngIf="shouldShowPromotions()">
             <small class="special-code"
               >Have a coupon code?
               <span class="special-code-One"
@@ -4309,7 +4560,7 @@
               errorMessagePrivate
             }}</small>
           </div>
-          <div class="special-sectionOne">
+          <div class="special-sectionOne" *ngIf="shouldShowPromotions()">
             <div style="width: 100%">
               <input
                 class="input-coupon"
@@ -4357,7 +4608,7 @@
               </button>
             </div>
           </div>
-          <small class="message-coupon" *ngIf="promoSelected"
+          <small class="message-coupon" *ngIf="promoSelected && shouldShowPromotions()"
             >Coupon {{ this.specialDiscountData.couponCode }} Applied
             Successfully!</small
           >
