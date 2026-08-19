@@ -2319,7 +2319,7 @@ export class BookingComponent implements OnInit {
       this.booking.discountAmount +
       this.totalServiceCost;
     this.businessServiceDto = this.businessUser.businessServiceDtoList.find(
-      (data) => data.name === 'Accommodation',
+      (data) => data.name === 'Accommodation' || data.name === 'Accomodation' || data.name === 'Room',
     );
     this.initializeAdvancePaymentPlans();
 
@@ -13470,13 +13470,18 @@ sendWhatsappMessageToPropertyOwner() {
         const childServicePrice = this.toSafeAmount(addon?.childServicePrice ?? addon?.servicePrice ?? addon?.beforeTaxAmount ?? addon?.unitPrice);
         const childTaxPrice = this.toSafeAmount(addon?.childTaxPrice ?? addon?.taxAmount ?? 0);
 
+        const childAboveCount = this.getChildAbovePaxCountForPlan(plan);
+
         total += this.toSafeAmount((adultServicePrice + adultTaxPrice) * adultCount);
-        total += this.toSafeAmount((childServicePrice + childTaxPrice) * childCount);
+        total += this.toSafeAmount((childServicePrice + childTaxPrice) * childAboveCount);
       } else {
-        const multiplier = this.getAddOnPlanMultiplier(addon, plan);
+        let multiplier = this.getAddOnPlanMultiplier(addon, plan);
         let useChildPrices = isChildApplicable && !isAdultApplicable;
         if (isPerPaxOrNight && isAdultApplicable && isChildApplicable && adultCount === 0 && childCount > 0) {
           useChildPrices = true;
+        }
+        if (useChildPrices && isPerPaxOrNight) {
+          multiplier = this.getChildAbovePaxCountForPlan(plan);
         }
         const servicePrice = useChildPrices
           ? this.toSafeAmount(addon?.childServicePrice ?? addon?.servicePrice ?? addon?.beforeTaxAmount ?? addon?.unitPrice)
@@ -13557,13 +13562,18 @@ sendWhatsappMessageToPropertyOwner() {
         const adultServicePrice = this.toSafeAmount(addon?.adultServicePrice ?? addon?.servicePrice ?? addon?.beforeTaxAmount ?? addon?.unitPrice);
         const childServicePrice = this.toSafeAmount(addon?.childServicePrice ?? addon?.servicePrice ?? addon?.beforeTaxAmount ?? addon?.unitPrice);
 
+        const childAboveCount = this.getChildAbovePaxCountForPlan(plan);
+
         total += this.toSafeAmount(adultServicePrice * adultCount);
-        total += this.toSafeAmount(childServicePrice * childCount);
+        total += this.toSafeAmount(childServicePrice * childAboveCount);
       } else {
-        const multiplier = this.getAddOnPlanMultiplier(addon, plan);
+        let multiplier = this.getAddOnPlanMultiplier(addon, plan);
         let useChildPrices = isChildApplicable && !isAdultApplicable;
         if (isPerPaxOrNight && isAdultApplicable && isChildApplicable && adultCount === 0 && childCount > 0) {
           useChildPrices = true;
+        }
+        if (useChildPrices && isPerPaxOrNight) {
+          multiplier = this.getChildAbovePaxCountForPlan(plan);
         }
         const servicePrice = useChildPrices
           ? this.toSafeAmount(addon?.childServicePrice ?? addon?.servicePrice ?? addon?.beforeTaxAmount ?? addon?.unitPrice)
@@ -13601,13 +13611,18 @@ sendWhatsappMessageToPropertyOwner() {
         const adultTaxPrice = this.toSafeAmount(addon?.adultTaxPrice ?? addon?.taxAmount ?? 0);
         const childTaxPrice = this.toSafeAmount(addon?.childTaxPrice ?? addon?.taxAmount ?? 0);
 
+        const childAboveCount = this.getChildAbovePaxCountForPlan(plan);
+
         total += this.toSafeAmount(adultTaxPrice * adultCount);
-        total += this.toSafeAmount(childTaxPrice * childCount);
+        total += this.toSafeAmount(childTaxPrice * childAboveCount);
       } else {
-        const multiplier = this.getAddOnPlanMultiplier(addon, plan);
+        let multiplier = this.getAddOnPlanMultiplier(addon, plan);
         let useChildPrices = isChildApplicable && !isAdultApplicable;
         if (isPerPaxOrNight && isAdultApplicable && isChildApplicable && adultCount === 0 && childCount > 0) {
           useChildPrices = true;
+        }
+        if (useChildPrices && isPerPaxOrNight) {
+          multiplier = this.getChildAbovePaxCountForPlan(plan);
         }
         const taxAmount = useChildPrices
           ? this.toSafeAmount(addon?.childTaxPrice ?? addon?.taxAmount ?? 0)
@@ -13810,10 +13825,9 @@ sendWhatsappMessageToPropertyOwner() {
     if (isChildApplicable) {
       const planChildren = Number(plan?.children || plan?.extraCountChild || 0) > 0
         ? Number(plan?.children || plan?.extraCountChild || 0)
-        : (Number(plan?.childrenAbove5years || 0) + Number(plan?.childrenBelow5years || 0));
+        : Number(plan?.childrenAbove5years || 0);
       
-      const globalChildren = Number(this.children || this.booking?.noOfChildren || 0) + 
-                             Number(this.booking?.noOfChildrenUnder5years || 0);
+      const globalChildren = Number(this.children || this.booking?.noOfChildren || 0);
 
       count += planChildren > 0 ? planChildren : globalChildren;
     }
@@ -13847,10 +13861,9 @@ sendWhatsappMessageToPropertyOwner() {
     if (isChildApplicable) {
       const totalPlanChildrenCount = Number(this.totalPlanChildren || 0) > 0
         ? Number(this.totalPlanChildren)
-        : (Number(this.totalPlanChildrenAboveAgeLimit || 0) + Number(this.totalPlanChildrenBelowAgeLimit || 0));
+        : Number(this.totalPlanChildrenAboveAgeLimit || 0);
 
-      const globalChildrenCount = Number(this.children || this.booking?.noOfChildren || 0) + 
-                                   Number(this.booking?.noOfChildrenUnder5years || 0);
+      const globalChildrenCount = Number(this.children || this.booking?.noOfChildren || 0);
 
       count += totalPlanChildrenCount > 0 ? totalPlanChildrenCount : globalChildrenCount;
     }
@@ -13946,6 +13959,26 @@ sendWhatsappMessageToPropertyOwner() {
     return planChildren > 0 ? planChildren : globalChildren;
   }
 
+  private getChildAbovePaxCountForPlan(plan: any): number {
+    if (plan?.childrenAbove5years !== undefined) {
+      return Number(plan.childrenAbove5years || 0);
+    }
+    const planChildrenAbove = Number(plan?.children || plan?.extraCountChild || 0) > 0
+      ? Number(plan?.children || plan?.extraCountChild || 0)
+      : Number(plan?.childrenAbove5years || 0);
+    const globalChildrenAbove = Number(this.children || this.booking?.noOfChildren || 0);
+    return planChildrenAbove > 0 ? planChildrenAbove : globalChildrenAbove;
+  }
+
+  private getChildBelowPaxCountForPlan(plan: any): number {
+    if (plan?.childrenBelow5years !== undefined) {
+      return Number(plan.childrenBelow5years || 0);
+    }
+    const planChildrenBelow = Number(plan?.childrenBelow5years || 0);
+    const globalChildrenBelow = Number(this.booking?.noOfChildrenUnder5years || 0);
+    return planChildrenBelow > 0 ? planChildrenBelow : globalChildrenBelow;
+  }
+
   getSelectedServicesForPlan(plan: any): any[] {
     return (this.selectedAddOns || []).reduce((services, service) => {
       const chargeBasis = this.getAddOnChargeBasis(service);
@@ -13983,9 +14016,12 @@ sendWhatsappMessageToPropertyOwner() {
         });
 
         // 2. Child part
+        const childAboveCount = this.getChildAbovePaxCountForPlan(plan);
+        const childBelowCount = this.getChildBelowPaxCountForPlan(plan);
+
         const childServicePrice = this.toSafeAmount(service?.childServicePrice ?? service?.servicePrice ?? service?.beforeTaxAmount ?? service?.unitPrice);
         const childTaxPrice = this.toSafeAmount(service?.childTaxPrice ?? service?.taxAmount ?? 0);
-        const childMultiplier = childCount;
+        const childMultiplier = childAboveCount;
         const childBeforeTax = this.toSafeAmount(childServicePrice * childMultiplier);
         const childTax = this.toSafeAmount(childTaxPrice * childMultiplier);
 
@@ -14002,18 +14038,22 @@ sendWhatsappMessageToPropertyOwner() {
           netAmount: this.toSafeAmount(childBeforeTax + childTax),
           sourceChannel: service?.sourceChannel ?? this.booking?.externalSite ?? 'BookMax',
           applicableFor: 'Child',
-          notes: `${service?.notes || ''} (Children: ${childCount} x ${childServicePrice})`.trim(),
+          notes: `${service?.notes || ''} (Children Above Limit: ${childAboveCount} x ${childServicePrice}, Children Below Limit: ${childBelowCount} x 0)`.trim(),
         });
       } else {
         // Single object (either only adult, only child, or not perpax/pernight)
         let multiplier = this.getAddOnPlanMultiplier(service, plan);
-        if (multiplier <= 0) {
-          return services;
-        }
-
         let useChildPrices = isChildApplicable && !isAdultApplicable;
         if (isPerPaxOrNight && isAdultApplicable && isChildApplicable && adultCount === 0 && childCount > 0) {
           useChildPrices = true;
+        }
+
+        if (useChildPrices && isPerPaxOrNight) {
+          multiplier = this.getChildAbovePaxCountForPlan(plan);
+        }
+
+        if (multiplier <= 0) {
+          return services;
         }
 
         const servicePrice = useChildPrices
