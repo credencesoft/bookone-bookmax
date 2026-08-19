@@ -992,7 +992,56 @@ guestSelectionErrors: { [planCode: string]: string } = {};
 isPanelOpenOne = false;
   isOpen = false;
 childAgesByPlan: { [planCode: string]: (number | null)[] } = {};
-ageOptions = Array.from({ length: 17 }, (_, i) => i + 1);
+get ageOptions(): number[] {
+  const min = this.businessServiceDto?.childMinAge ?? 1;
+  const max = this.businessServiceDto?.childMaxAge ?? 17;
+  return Array.from({ length: max - min + 1 }, (_, i) => i + min);
+}
+get roomLabel(): string {
+  const buttonLabel = this.businessServiceDto?.bookingButtonLabelText;
+  if (buttonLabel && buttonLabel.trim() !== '' && buttonLabel.toLowerCase() !== 'accommodation') {
+    return buttonLabel;
+  }
+  const businessType = this.businessUser?.businessType;
+  if (businessType && businessType.trim() !== '' && businessType.toLowerCase() !== 'accommodation') {
+    return businessType;
+  }
+  const productName = this.businessServiceDto?.businessProductName;
+  if (productName && productName.trim() !== '' && productName.toLowerCase() !== 'accommodation') {
+    return productName;
+  }
+  const serviceName = this.businessServiceDto?.businessServiceName || this.businessServiceDto?.name;
+  if (serviceName && serviceName.toLowerCase() !== 'accommodation') {
+    return serviceName;
+  }
+  return 'Room';
+}
+get maxAdultsAllowedPerRoom(): number {
+  const label = this.roomLabel?.toLowerCase();
+  const isCustomUnit = label && label !== 'room' && label !== 'accommodation';
+  
+  if (isCustomUnit && this.shortrooms && this.shortrooms.length > 0) {
+    return this.shortrooms.reduce((max, r) => Math.max(max, Number(r.maximumOccupancy || 4)), 4);
+  }
+  
+  return 30;
+}
+getMaxAdultLimitForBhk(index: number): number {
+  const label = this.roomLabel?.toLowerCase();
+  const isCustomUnit = label && label !== 'room' && label !== 'accommodation';
+
+  if (isCustomUnit && this.shortrooms && this.shortrooms.length > 0) {
+    const sortedBhkMaxOccupancies = [...this.shortrooms]
+      .map(r => Number(r.maximumOccupancy || 4))
+      .sort((a, b) => b - a);
+
+    if (index < sortedBhkMaxOccupancies.length) {
+      return sortedBhkMaxOccupancies[index];
+    }
+    return sortedBhkMaxOccupancies[sortedBhkMaxOccupancies.length - 1];
+  }
+  return 4;
+}
   singleextraAdultCount: number;
   singleextraAdultCharge: number;
   singleextraChildCount: number;
@@ -2854,11 +2903,12 @@ onChildAgeChange(planCode: string, plan: any, room?: any) {
 
   const adults = this.selectedGuestsByPlan[scopedRoomKey]?.adults || 0;
 
-  const above5Count = ages.filter(a => a !== null && (plan?.childAgeLimit && plan.childAgeLimit > 0 ? a >= plan.childAgeLimit : a > 5)).length;
-  const under5Count = ages.filter(a => a !== null && (plan?.childAgeLimit && plan.childAgeLimit > 0 ? a < plan.childAgeLimit : a <= 5)).length;
+  const freeThreshold = this.businessServiceDto?.childMinAge ?? 5;
+  const above5Count = ages.filter(a => a !== null && (plan?.childAgeLimit && plan.childAgeLimit > 0 ? a >= plan.childAgeLimit : a > freeThreshold)).length;
+  const under5Count = ages.filter(a => a !== null && (plan?.childAgeLimit && plan.childAgeLimit > 0 ? a < plan.childAgeLimit : a <= freeThreshold)).length;
 
   const under5Limit = 2 * selectedRooms;
-  const ageLimitText = plan?.childAgeLimit && plan.childAgeLimit > 0 ? `${plan.childAgeLimit} years` : '5 years';
+  const ageLimitText = plan?.childAgeLimit && plan.childAgeLimit > 0 ? `${plan.childAgeLimit} years` : `${freeThreshold} years`;
 
   if (under5Count > under5Limit) {
     this.showTemporaryError(
@@ -3048,8 +3098,9 @@ resetLastChangedAge(planCode: string, room?: any) {
       : (this.selectedRoomsByPlan[scopedRoomKey] || 0);
     const selectedGuests = this.selectedGuestsByPlan[scopedRoomKey] || this.selectedGuestsByPlan[planCode] || { adults: 0, children: 0 };
     const childAges = (this.childAgesByPlan[scopedRoomKey] || this.childAgesByPlan[planCode] || []).map(a => Number(a));
-    const below5Count = childAges.filter(a => !isNaN(a) && a <= 5).length;
-    const above5Count = childAges.filter(a => !isNaN(a) && a > 5).length;
+    const freeThreshold = this.businessServiceDto?.childMinAge ?? 5;
+    const below5Count = childAges.filter(a => !isNaN(a) && a <= freeThreshold).length;
+    const above5Count = childAges.filter(a => !isNaN(a) && a > freeThreshold).length;
 
     // Reset
     this.extraAdultCharge = 0;
@@ -3096,7 +3147,7 @@ resetLastChangedAge(planCode: string, room?: any) {
           const totalMinChildren = selectedGuests.adults < (ele1.minimumOccupancy * selectedRooms) ? (ele1.minimumOccupancy * selectedRooms) - selectedGuests.adults : plan.noOfChildren;
           
           const ageLimit = plan?.childAgeLimit && plan.childAgeLimit > 0 ? plan.childAgeLimit : 0;
-          const chargeableChildren = childAges.filter(a => a !== null && a !== undefined && !isNaN(a) && a > 5);
+          const chargeableChildren = childAges.filter(a => a !== null && a !== undefined && !isNaN(a) && a > freeThreshold);
           const chargeableCount = chargeableChildren.length;
 
           // Sort chargeable children such that children >= ageLimit come first
@@ -3205,7 +3256,7 @@ resetLastChangedAge(planCode: string, room?: any) {
             if (ageLimit > 0 && age >= ageLimit) {
               dayTripChildCharge += dayTripAdultRate;
               dtChargedAsAdult++;
-            } else if (age > 5) {
+            } else if (age > freeThreshold) {
               dayTripChildCharge += dayTripChildRate;
               dtChargedAsChild++;
             }
@@ -8698,13 +8749,30 @@ isPlanVisible(filteredPlans: any[], roomName: string, room?: any) {
     const searchRooms = Number(this.booking?.noOfRooms || this.rooms || 1);
 
     if (searchAdults > 0 && searchRooms > 0) {
-      const requiredPerRoom = Math.ceil(searchAdults / searchRooms);
-      plans = plans.filter((plan: any) => {
-        const planMax = Number(plan?.maximumOccupancy ?? room?.maximumOccupancy ?? 2);
-        
-        // A plan is visible if its maxOccupancy can fit the required room's share
-        return planMax >= requiredPerRoom;
-      });
+      // Calculate total combined maximum occupancy of all available rooms/BHKs
+      const totalAvailableCapacity = (this.availableRooms || []).reduce((sum, r) => {
+        const roomMax = Number(r?.maximumOccupancy || 0);
+        const maxPlanOcc = (r?.ratesAndAvailabilityDtos?.[0]?.roomRatePlans || []).reduce((max: number, p: any) => {
+          return Math.max(max, Number(p?.maximumOccupancy || 0));
+        }, 0);
+        return sum + Math.max(roomMax, maxPlanOcc);
+      }, 0);
+
+      const label = this.roomLabel?.toLowerCase();
+      const isCustomUnit = label && label !== 'room' && label !== 'accommodation';
+
+      // If it is a custom unit (BHK, Villa, etc.), bypass strict requiredPerRoom filtering
+      // as long as total guests are within the overall capacity.
+      if (isCustomUnit && searchAdults <= totalAvailableCapacity) {
+        // Keep all plans visible for BHK / Villa
+      } else {
+        // Otherwise, fall back to standard requiredPerRoom filtering
+        const requiredPerRoom = Math.ceil(searchAdults / searchRooms);
+        plans = plans.filter((plan: any) => {
+          const planMax = Number(plan?.maximumOccupancy ?? room?.maximumOccupancy ?? 2);
+          return planMax >= requiredPerRoom;
+        });
+      }
     }
   }
 

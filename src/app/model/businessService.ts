@@ -58,6 +58,8 @@ export class BusinessService {
   gstNumber: string;
   phoneNumber: string;
   includeService: boolean;
+  childMinAge?: number;
+  childMaxAge?: number;
 
   constructor() {}
 }

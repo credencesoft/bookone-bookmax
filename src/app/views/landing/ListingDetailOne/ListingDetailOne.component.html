@@ -1433,7 +1433,7 @@
                       <label
                         class="default-color"
                         style="margin-bottom: 0px !important"
-                        >Guests & Rooms</label
+                        >Guests & {{ roomLabel }}s</label
                       >
                       <br />
                       <label
@@ -1454,7 +1454,7 @@
                           </span>
                           <span data-visible="accommodation" class="text-nowrap">
                             <span data-room-count=""
-                              >{{ rooms }} room</span>
+                              >{{ rooms }} {{ roomLabel === 'Room' ? (rooms > 1 ? 'rooms' : 'room') : roomLabel }}</span>
                           </span>
                         </span>
                       </label>
@@ -1484,7 +1484,7 @@
                             class="d-flex text-center justify-content-between align-items-center"
                           >
                             <div class="col">
-                              <div class="font-weight-bold mb-2">Room</div>
+                              <div class="font-weight-bold mb-2">{{ roomLabel }}</div>
                               <div>1</div>
                             </div>
 
@@ -1509,7 +1509,7 @@
                                   (click)="
                                     adults = adults + 1; saveRoomSummary()
                                   "
-                                  [disabled]="adults >= 4"
+                                  [disabled]="adults >= getMaxAdultLimitForBhk(0)"
                                 >
                                   +
                                 </button>
@@ -1555,7 +1555,7 @@
                             class="d-flex text-center justify-content-between align-items-center"
                           >
                             <div class="col">
-                              <div class="font-weight-bold mb-2">Room</div>
+                              <div class="font-weight-bold mb-2">{{ roomLabel }}</div>
                               <div>{{ i + 2 }}</div>
                             </div>
 
@@ -1582,7 +1582,7 @@
                                     room.adults = room.adults + 1;
                                     saveRoomSummary()
                                   "
-                                  [disabled]="room.adults >= 4"
+                                  [disabled]="room.adults >= getMaxAdultLimitForBhk(i + 1)"
                                 >
                                   +
                                 </button>
@@ -1636,7 +1636,7 @@
                               class="color-text font-weight-bold cursor-pointer"
                               (click)="addRoom()"
                               *ngIf="rooms < 30"
-                              >+ Add Room</a
+                              >+ Add {{ roomLabel }}</a
                             >
                           </div>
 
@@ -1646,7 +1646,7 @@
                               aria-hidden="true"
                             ></i>
                             <span>
-                              Please select the number of rooms and assign
+                              Please select the number of {{ roomLabel === 'Room' ? 'rooms' : roomLabel + 's' }} and assign
                               guests accordingly.
                             </span>
                           </div>
@@ -1851,7 +1851,7 @@
                         <label
                           class="default-color"
                           style="margin-bottom: 0px !important"
-                          >Guests & Rooms</label
+                          >Guests & {{ roomLabel }}s</label
                         >
                         <br />
                         <label
@@ -1872,7 +1872,7 @@
                             </span>
                             <span data-visible="accommodation" class="text-nowrap">
                               <span data-room-count=""
-                                >{{ rooms }} room</span>
+                                >{{ rooms }} {{ roomLabel === 'Room' ? (rooms > 1 ? 'rooms' : 'room') : roomLabel }}</span>
                             </span>
                           </span>
                         </label>
@@ -1906,7 +1906,7 @@
                               class="d-flex text-center justify-content-between align-items-center"
                             >
                               <div class="col">
-                                <div class="font-weight-bold mb-2">Room</div>
+                                <div class="font-weight-bold mb-2">{{ roomLabel }}</div>
                                 <div>1</div>
                               </div>
 
@@ -1931,7 +1931,7 @@
                                     (click)="
                                       adults = adults + 1; saveRoomSummary()
                                     "
-                                    [disabled]="adults >= 4"
+                                    [disabled]="adults >= getMaxAdultLimitForBhk(0)"
                                   >
                                     +
                                   </button>
@@ -1979,7 +1979,7 @@
                               class="d-flex text-center justify-content-between align-items-center"
                             >
                               <div class="col">
-                                <div class="font-weight-bold mb-2">Room</div>
+                                <div class="font-weight-bold mb-2">{{ roomLabel }}</div>
                                 <div>{{ i + 2 }}</div>
                               </div>
 
@@ -2006,7 +2006,7 @@
                                       room.adults = room.adults + 1;
                                       saveRoomSummary()
                                     "
-                                    [disabled]="room.adults >= 4"
+                                    [disabled]="room.adults >= getMaxAdultLimitForBhk(i + 1)"
                                   >
                                     +
                                   </button>
@@ -2062,7 +2062,7 @@
                                 class="color-text font-weight-bold cursor-pointer"
                                 (click)="addRoom()"
                                 *ngIf="rooms < 30"
-                                >+ Add Room</a
+                                >+ Add {{ roomLabel }}</a
                               >
                             </div>
 
@@ -2072,7 +2072,7 @@
                                 aria-hidden="true"
                               ></i>
                               <span>
-                                Please select the number of rooms and assign
+                                Please select the number of {{ roomLabel === 'Room' ? 'rooms' : roomLabel + 's' }} and assign
                                 guests accordingly.
                               </span>
                             </div>
