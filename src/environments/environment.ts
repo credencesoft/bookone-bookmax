@@ -16,7 +16,7 @@ export const environment = {
   apiUrlBookone: 'https://api.bookonelocal.in/api-bookone',
   parentOrganisationId: 1,
   dashboardUrl: 'https://app.bookonelocal.in',
-  apiUrl: "http://localhost:8080",
+  apiUrl: "https://api.uat.thehotelmate.co",
   apiUrlOne: "https://api.bookonelocal.in/api-bookone",
   recommendedUrl: "https://contentai.thehotelmate.co",
   razorPay: 'https://razorpay.bookonepms.com',
