@@ -993,9 +993,8 @@ isPanelOpenOne = false;
   isOpen = false;
 childAgesByPlan: { [planCode: string]: (number | null)[] } = {};
 get ageOptions(): number[] {
-  const min = this.businessServiceDto?.childMinAge ?? 1;
   const max = this.businessServiceDto?.childMaxAge ?? 17;
-  return Array.from({ length: max - min + 1 }, (_, i) => i + min);
+  return Array.from({ length: max + 1 }, (_, i) => i);
 }
 get roomLabel(): string {
   const buttonLabel = this.businessServiceDto?.bookingButtonLabelText;
