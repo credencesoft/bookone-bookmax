@@ -253,6 +253,7 @@ export class ListingDetailOneComponent implements OnInit {
   showBookingSummary: boolean = false;
   soldOutRooms: any;
   paramsroomId: any;
+  paramsPlanCode: any;
   specialDiscountPercentage: any;
   specialDiscountData: any;
   smartLoading: boolean = true;
@@ -1165,6 +1166,12 @@ if (params['numAdults'] !== undefined) {
 
 if (params['roomId'] !== undefined) {
   this.paramsroomId = Number(params['roomId']);
+}
+
+if (params['planCode'] !== undefined) {
+  this.paramsPlanCode = params['planCode'];
+} else if (params['ratePlan'] !== undefined) {
+  this.paramsPlanCode = params['ratePlan'];
 }
 
 if (params['Children'] !== undefined) {
@@ -7990,7 +7997,7 @@ this.token.savePropertyUrl(currentUrl);
             return matchesDateType && matchesDayTripSearch && !hasStopSell;
           });
 
-          if(this.activeForGoogleHotelCenter === true) {
+          if(this.activeForGoogleHotelCenter === true || this.paramsroomId !== undefined) {
             this.getAvailableRoomsForGHC(this.availableRooms);
           }
 
@@ -8987,7 +8994,7 @@ isRoomTooSmall(room: any): boolean {
               (rate.stopSellOTA === null || rate.stopSellOTA === false)
             )
           );
-        if(this.activeForGoogleHotelCenter === true) {
+        if(this.activeForGoogleHotelCenter === true || this.paramsroomId !== undefined) {
           this.getAvailableRoomsForGHC(this.availableRooms);
         }
     // Filter sold-out rooms
@@ -9219,42 +9226,50 @@ isRoomTooSmall(room: any): boolean {
   }
 
 getAvailableRoomsForGHC(availableRooms: any[]) {
+  let selected = false;
   availableRooms.forEach((room) => {
-    room?.ratesAndAvailabilityDtos?.forEach((rate) => {
-      rate?.roomRatePlans?.forEach((plan) => {
-        if (plan.code === 'GHC' && room.id === Number(this.paramsroomId)) {
-
-          plan?.otaPlanList?.forEach((otaPlan) => {
-              const planCode = plan.code;
-
-              // 1. Assign default selection
-              const scopedKey = this.getRoomPlanSelectionKey(room.id, planCode);
-              this.selectedRoomsByPlan[scopedKey] = 1;
-              this.selectedGuestsByPlan[scopedKey] = {
-                adults: this.adults,
-                children: this.childno,
-              };
-
-              // 2. Trigger plan selection
-              this.onPlanSelect(plan.code, rate, room);
-              this.isPanelOpen = false;
-              // 3. Scroll to the plan card — even if it's already in view
-              setTimeout(() => {
-                const el = document.getElementById('plan-' + planCode);
-                if (el) {
-                  el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-
-                  // Optionally add a highlight effect
-                  el.classList.add('scroll-highlight');
-                  // setTimeout(() => {
-                  //   el.classList.remove('scroll-highlight');
-                  // }, 3000);
-                }
-              }, 100); // slight delay ensures DOM updates
-          });
+    if (selected) return;
+    if (room.id === Number(this.paramsroomId)) {
+      room?.ratesAndAvailabilityDtos?.forEach((rate) => {
+        if (selected) return;
+        
+        let targetPlan = null;
+        let targetPlanCode = this.paramsPlanCode;
+        
+        if (targetPlanCode) {
+          targetPlan = rate?.roomRatePlans?.find((p) => 
+            p.code?.toLowerCase() === String(targetPlanCode).toLowerCase() || 
+            p.planName?.toLowerCase() === String(targetPlanCode).toLowerCase()
+          );
+        } else if (this.activeForGoogleHotelCenter) {
+          targetPlan = rate?.roomRatePlans?.find((p) => p.code === 'GHC');
+        } else {
+          targetPlan = rate?.roomRatePlans?.[0];
+        }
+        
+        if (targetPlan) {
+          const planCode = targetPlan.code;
+          const scopedKey = this.getRoomPlanSelectionKey(room.id, planCode);
+          this.selectedRoomsByPlan[scopedKey] = 1;
+          this.selectedGuestsByPlan[scopedKey] = {
+            adults: this.adults,
+            children: this.childno,
+          };
+          
+          this.onPlanSelect(planCode, rate, room);
+          this.isPanelOpen = false;
+          selected = true;
+          
+          setTimeout(() => {
+            const el = document.getElementById('plan-' + planCode);
+            if (el) {
+              el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              el.classList.add('scroll-highlight');
+            }
+          }, 100);
         }
       });
-    });
+    }
   });
 }
 
