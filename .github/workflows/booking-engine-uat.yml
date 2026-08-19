@@ -3,7 +3,7 @@ name: Release UAT Booking Engine
 on:
   push:
     branches:
-      - release/uat-new
+      - feature/room-filter
   workflow_dispatch:
 
 env:
@@ -24,7 +24,7 @@ env:
   AWS_REGION: ap-south-1
   AWS_SECRET: bookone_uat_deployment_credentials
 
-  BRANCH: feature/property-service-genre
+  BRANCH: feature/room-filter
 
 permissions:
   contents: read
