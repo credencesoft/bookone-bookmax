@@ -216,7 +216,7 @@
 }
 
 .add-on-services-table-mobile {
-  min-width: 560px !important;
+  min-width: 100% !important;
 }
 
 .add-on-service-col {
@@ -502,7 +502,7 @@
 
 @media (max-width: 767px) {
   .add-on-services-table {
-    min-width: 560px;
+    min-width: 100%;
   }
 
   .add-on-services-table-mobile .add-on-service-col {

@@ -58,5 +58,7 @@ export class BusinessServiceDtoList {
   roomRateOrder: boolean;
   bookingButtonLabelText: string;
   anyTimeCheckIn?: boolean;
+  childMinAge?: number;
+  childMaxAge?: number;
   constructor() {}
 }
