@@ -1254,7 +1254,12 @@
     >
       <div [ngStyle]="{ 'margin-top': businessUser?.website ? '0px' : '0px' }">
         <div class="website-web-vision">
-          <div class="card checkAvaCard">
+          <div 
+            class="card checkAvaCard"
+            [style.max-width]="!showRoomsAndGuestsFilter ? '65%' : '100%'"
+            [style.margin-left]="!showRoomsAndGuestsFilter ? 'auto' : 'unset'"
+            [style.margin-right]="!showRoomsAndGuestsFilter ? 'auto' : 'unset'"
+          >
             <div class="checkin-mode-row" *ngIf="showTwentyFourHourBanner" style="border: none !important; margin-bottom: 15px;">
               <div style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border: 1px solid #bbf7d0; border-radius: 10px; padding: 12px 16px; display: flex; align-items: flex-start; gap: 10px; width: 100%; box-shadow: 0 2px 4px rgba(22, 163, 74, 0.05);">
                 <i class="fa-solid fa-clock" style="color: #16a34a; font-size: 16px; margin-top: 2px;"></i>
@@ -1269,7 +1274,11 @@
               </div>
             </div>
             <div id="checkin">
-              <div class="row d-flex checkAva2 booking-controls-row" [class.has-twenty-four-hour-checkin]="isTwentyFourHourCheckIn">
+              <div 
+                class="row d-flex checkAva2 booking-controls-row" 
+                [class.has-twenty-four-hour-checkin]="isTwentyFourHourCheckIn"
+                [style.justify-content]="!showRoomsAndGuestsFilter ? 'center' : 'unset'"
+              >
                 <div class="checkAva3">
                   <div id="autocomplete-container">
                     <label
@@ -1416,6 +1425,7 @@
                   </div>
                 </div>
                 <div
+                  *ngIf="showRoomsAndGuestsFilter"
                   class="main-search-input-item checkAvaRoom"
                   style="padding: 0px; padding-left: 13px"
                 >
@@ -1845,6 +1855,7 @@
                   </div>
                 </div>
                 <div
+                  *ngIf="showRoomsAndGuestsFilter"
                   class="main-search-input-item checkAvaRoom"
                   style="padding: 0px; padding-left: 13px"
                   >

@@ -1025,6 +1025,10 @@ get roomLabel(): string {
   }
   return label;
 }
+get showRoomsAndGuestsFilter(): boolean {
+  const label = this.roomLabel?.toLowerCase();
+  return label === 'room' || label === 'accommodation' || label === 'accomodation';
+}
 get maxAdultsAllowedPerRoom(): number {
   const label = this.roomLabel?.toLowerCase();
   const isCustomUnit = label && label !== 'room' && label !== 'accommodation' && label !== 'accomodation';
@@ -2180,13 +2184,16 @@ showSliderPopup() {
 }
 
 getMinAvailableRooms(ratesList: any[]): number {
-  if (!ratesList || ratesList.length === 0) {
-    return 0;
-  }
+  if (!ratesList || ratesList.length === 0) return 0;
   return Math.min(
     ...ratesList
       .filter(r => r.stopSellOBE === false || r.stopSellOBE === null)
-      .map(r => r.noOfAvailable ?? 0)
+      .map(r => {
+        const computedAvailable = Math.max(0, (r.totalNoRooms ?? 0) - (r.noOfBooked ?? 0));
+        return (r.noOfAvailable !== undefined && r.noOfAvailable !== null && r.noOfAvailable > 0)
+          ? r.noOfAvailable
+          : computedAvailable;
+      })
   );
 }
 
@@ -7949,10 +7956,10 @@ this.token.savePropertyUrl(currentUrl);
 
 
 
-    this.booking.noOfRooms = this.noOfrooms;
-    this.booking.noOfPersons = this.totalAdults;
-    this.booking.noOfChildren = this.totalChildren;
-    this.booking.noOfRooms = this.rooms;
+    const showRoomsAndGuests = this.showRoomsAndGuestsFilter;
+    this.booking.noOfRooms = showRoomsAndGuests ? this.rooms : 1;
+    this.booking.noOfPersons = showRoomsAndGuests ? this.totalAdults : 1;
+    this.booking.noOfChildren = showRoomsAndGuests ? this.totalChildren : 0;
     if (this.fromDate && this.toDate) {
       this.getDiffDate(this.toDate, this.fromDate);
     }
@@ -8027,11 +8034,11 @@ this.token.savePropertyUrl(currentUrl);
           this.checkLengthOfStayRestrictions();
           this.SubAvailableRooms = response.body.roomList;
           const queryParams = {
-             noOfChildren: this.children,
+             noOfChildren: this.booking.noOfChildren,
              noOfAdults: this.booking.noOfPersons,
             checkInDate: this.booking.fromDate,
             checkOutDate: this.booking.toDate,
-            noOfRooms: this.rooms,
+            noOfRooms: this.booking.noOfRooms,
           };
 
           const roomList = response.body.roomList;
@@ -8967,10 +8974,10 @@ isRoomTooSmall(room: any): boolean {
 
 
 
-    this.booking.noOfRooms = this.noOfrooms;
-    this.booking.noOfPersons = this.adults;
-    this.booking.noOfChildren = this.children;
-    this.booking.noOfRooms = this.rooms;
+    const showRoomsAndGuests = this.showRoomsAndGuestsFilter;
+    this.booking.noOfRooms = showRoomsAndGuests ? this.rooms : 1;
+    this.booking.noOfPersons = showRoomsAndGuests ? this.adults : 1;
+    this.booking.noOfChildren = showRoomsAndGuests ? this.children : 0;
     // this.token.saveBookingData(this.booking);
     // Logger.log('checkAvailability submit' + JSON.stringify(this.booking));
 
