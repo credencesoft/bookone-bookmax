@@ -3539,10 +3539,11 @@ resetLastChangedAge(planCode: string, room?: any) {
         const taxPercentageperroom = Number(this.taxTotalSingle.toFixed(2));
 
 
+        const matchedRoom: any = this.availableRooms?.find((r: any) => r.id === roomId);
         const summaryEntry = {
           roomName,
           actualRoomPrice,
-          isEnquire: roomContext?.isEnquire ?? rates?.isEnquire ?? false,
+          isEnquire: matchedRoom?.isEnquire ?? matchedRoom?.enquire ?? roomContext?.isEnquire ?? rates?.isEnquire ?? false,
           extraPersonChildCountAmount,
           extraPersonAdultCountAmount,
           SingleDayextraPersonChildCountAmount,
