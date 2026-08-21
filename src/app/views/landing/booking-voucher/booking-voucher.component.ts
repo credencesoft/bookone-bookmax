@@ -112,6 +112,7 @@ export class BookingVoucherComponent {
     } catch (e) {
       console.error("Error parsing token", e);
     }
+    this.calculateTotalGuestsFromPlans();
   }
   }
 
@@ -266,25 +267,25 @@ getTrimmedDescription(description: string): string {
       this.bookingSummaryDetails?.selectedPlansSummary?.reduce(
         (sum, plan) => sum + (plan.adults || 0),
         0
-      );
+      ) || this.booking?.noOfPerson || 0;
 
     this.totalPlanChildren =
       this.bookingSummaryDetails?.selectedPlansSummary?.reduce(
         (sum, plan) => sum + (plan.children || 0),
         0
-      );
+      ) || this.booking?.noOfChildren || 0;
 
     this.totalPlanChildrenAboveAgeLimit =
       this.bookingSummaryDetails?.selectedPlansSummary?.reduce(
         (sum, plan) => sum + (plan.childrenAbove5years || 0),
         0
-      );
+      ) || 0;
 
     this.totalPlanChildrenBelowAgeLimit =
       this.bookingSummaryDetails?.selectedPlansSummary?.reduce(
         (sum, plan) => sum + (plan.childrenBelow5years || 0),
         0
-      );
+      ) || 0;
   }
   copyText() {
     // Find the element
