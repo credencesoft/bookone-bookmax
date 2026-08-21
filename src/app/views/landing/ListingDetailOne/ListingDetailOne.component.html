@@ -1239,7 +1239,7 @@
             [disabled]="!isBookingAllowed()"
             (click)="onBookNow()"
           >
-            Book Now
+            {{ getBookingButtonText() }}
           </button>
         </div>
         </div>
@@ -4853,7 +4853,7 @@
             [disabled]="!isBookingAllowed()"
             (click)="onBookNow()"
           >
-            Book Now
+            {{ getBookingButtonText() }}
           </button>
         </div>
       </div>

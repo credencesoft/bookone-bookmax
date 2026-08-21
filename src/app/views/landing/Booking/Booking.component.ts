@@ -428,6 +428,28 @@ export class BookingComponent implements OnInit {
     return Array.from(typesSet);
   }
 
+  getAddOnIcon(addon: any): string {
+    if (!addon) return 'fa-solid fa-bell-concierge';
+    const rawType = addon.serviceType ? addon.serviceType.toString().trim() : '';
+    const name = (addon.name || '').toLowerCase();
+    
+    if (rawType === 'Food & Drinks' || name.includes('food') || name.includes('meal') || name.includes('breakfast') || name.includes('lunch') || name.includes('dinner') || name.includes('tea') || name.includes('coffee') || name.includes('drink')) {
+      return 'fa-solid fa-utensils';
+    } else if (rawType === 'Transport' || name.includes('cab') || name.includes('car') || name.includes('taxi') || name.includes('pick') || name.includes('drop') || name.includes('airport') || name.includes('travel') || name.includes('transport') || name.includes('rental')) {
+      return 'fa-solid fa-car';
+    } else if (rawType === 'Spa & Wellness' || name.includes('spa') || name.includes('massage') || name.includes('wellness') || name.includes('sauna') || name.includes('jacuzzi')) {
+      return 'fa-solid fa-spa';
+    } else if (rawType === 'Activities' || name.includes('guide') || name.includes('tour') || name.includes('safari') || name.includes('trek') || name.includes('activity') || name.includes('sport') || name.includes('entry') || name.includes('ticket') || name.includes('game') || name.includes('sightseeing')) {
+      return 'fa-solid fa-person-hiking';
+    } else if (name.includes('wifi') || name.includes('internet')) {
+      return 'fa-solid fa-wifi';
+    } else if (name.includes('laundry') || name.includes('wash') || name.includes('dry clean')) {
+      return 'fa-solid fa-shirt';
+    } else {
+      return 'fa-solid fa-bell-concierge';
+    }
+  }
+
   getResolvedRoomLabel(): string {
     // 1. Check savedBookingLabel from localStorage
     const savedLabel = localStorage.getItem('savedBookingLabel');

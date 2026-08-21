@@ -707,9 +707,12 @@
                              [style.color]="isAddOnSelected(addon) ? '#ffffff' : 'transparent'">✓</div>
                             <img *ngIf="addon.imageUrl || addon.logoUrl" 
                                  [src]="addon.imageUrl || addon.logoUrl" 
-                                 style="width: 28px; height: 28px; border-radius: 50%; object-fit: cover; flex-shrink: 0; border: 1px solid #e5e7eb;" />
+                                 style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover; flex-shrink: 0; border: 1px solid #e5e7eb;" />
                             <div *ngIf="!addon.imageUrl && !addon.logoUrl" 
-                                 style="width: 28px; height: 28px; border-radius: 50%; background-color: #ffffff; border: 1px solid #e5e7eb; flex-shrink: 0;"></div>
+                                 style="width: 36px; height: 36px; border-radius: 50%; background-color: #f8fafc; border: 1px solid #e5e7eb; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #64748b; line-height: 1; padding: 2px; box-sizing: border-box;">
+                              <i [class]="getAddOnIcon(addon)" style="font-size: 11px; margin-bottom: 2px;"></i>
+                              <span style="font-size: 5px; font-weight: 700; text-transform: uppercase; text-align: center; white-space: nowrap;">No Image</span>
+                            </div>
                             <div class="add-on-service-copy" style="flex-grow: 1;">
                               <div style="font-weight: 600; color: #111827; display: flex; flex-wrap: wrap; align-items: center; gap: 6px;">
                                 <span>{{ addon.name }}</span>
@@ -1748,9 +1751,12 @@
                             [style.color]="isAddOnSelected(addon) ? '#ffffff' : 'transparent'">✓</div>
                            <img *ngIf="addon.imageUrl || addon.logoUrl" 
                                 [src]="addon.imageUrl || addon.logoUrl" 
-                                style="width: 28px; height: 28px; border-radius: 50%; object-fit: cover; flex-shrink: 0; border: 1px solid #e5e7eb;" />
+                                style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover; flex-shrink: 0; border: 1px solid #e5e7eb;" />
                            <div *ngIf="!addon.imageUrl && !addon.logoUrl" 
-                                style="width: 28px; height: 28px; border-radius: 50%; background-color: #ffffff; border: 1px solid #e5e7eb; flex-shrink: 0;"></div>
+                                style="width: 36px; height: 36px; border-radius: 50%; background-color: #f8fafc; border: 1px solid #e5e7eb; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #64748b; line-height: 1; padding: 2px; box-sizing: border-box;">
+                             <i [class]="getAddOnIcon(addon)" style="font-size: 11px; margin-bottom: 2px;"></i>
+                             <span style="font-size: 5px; font-weight: 700; text-transform: uppercase; text-align: center; white-space: nowrap;">No Image</span>
+                           </div>
                            <div class="add-on-service-copy" style="flex-grow: 1;">
                              <div style="font-weight: 600; color: #111827; display: flex; flex-wrap: wrap; align-items: center; gap: 6px;">
                                <span>{{ addon.name }}</span>

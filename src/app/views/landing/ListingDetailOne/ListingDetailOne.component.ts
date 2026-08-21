@@ -2185,6 +2185,37 @@ showSliderPopup() {
   return selectedRooms >= this.rooms;
 }
 
+getBookingButtonText(): string {
+  if (!this.isBookingAllowed()) {
+    return 'Book Now';
+  }
+
+  const hasEnquiryRoom = this.selectedPlansSummary?.some(plan => plan.isEnquire === true);
+  if (hasEnquiryRoom) {
+    return 'Enquiry Now';
+  }
+
+  const propertyData: any = this.token.getProperty() || this.businessUser || {};
+  const accommodationData = propertyData.businessServiceDtoList?.filter(
+    (entry: any) => entry.name === 'Accommodation'
+  );
+  const cmIntegration = accommodationData?.some((a: any) => a.cmIntegration);
+  if (cmIntegration) {
+    return 'Pay Now';
+  }
+
+  const hasPayLater = accommodationData?.some((a: any) => a.payLater);
+  if (hasPayLater) {
+    return 'Pay Later';
+  }
+
+  if (this.value === true && this.businessUser?.paymentGateway != null) {
+    return 'Pay Now';
+  }
+
+  return 'Enquiry Now';
+}
+
 getMinAvailableRooms(ratesList: any[]): number {
   if (!ratesList || ratesList.length === 0) return 0;
   return Math.min(
