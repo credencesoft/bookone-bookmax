@@ -428,18 +428,65 @@ export class BookingComponent implements OnInit {
     return Array.from(typesSet);
   }
 
-  isNonRoomProperty(): boolean {
-    const label = (this.roomLabel || '').trim().toLowerCase();
-    const businessType = (this.businessUser?.businessType || this.token?.getProperty()?.businessType || '').trim().toLowerCase();
-    
-    const isRoomOrAccommodationLabel = label === 'room' || label === 'accommodation' || label.includes('bhk');
-    const isRoomOrAccommodationType = businessType === 'room' || businessType === 'accommodation' || businessType.includes('bhk');
-    
-    if (!label && !businessType) {
-      return false;
+  getResolvedRoomLabel(): string {
+    // 1. Check savedBookingLabel from localStorage
+    const savedLabel = localStorage.getItem('savedBookingLabel');
+    if (savedLabel) {
+      try {
+        const parsedData = JSON.parse(savedLabel);
+        if (parsedData.label && parsedData.label.trim() !== '') {
+          return parsedData.label;
+        }
+      } catch (e) {
+        console.error("Error parsing token", e);
+      }
     }
+
+    // 2. Fall back to bookingButtonLabelText
+    const buttonLabel = this.businessServiceDto?.bookingButtonLabelText;
+    if (buttonLabel && buttonLabel.trim() !== '') {
+      return buttonLabel;
+    }
+
+    // 3. Fall back to businessType
+    const businessType = this.businessUser?.businessType;
+    if (businessType && businessType.trim() !== '') {
+      return businessType;
+    }
+
+    // 4. Fall back to businessProductName
+    const productName = this.businessServiceDto?.businessProductName;
+    if (productName && productName.trim() !== '') {
+      return productName;
+    }
+
+    // 5. Fall back to businessServiceName or name
+    const serviceName = this.businessServiceDto?.businessServiceName || this.businessServiceDto?.name;
+    if (serviceName && serviceName.trim() !== '') {
+      return serviceName;
+    }
+
+    return 'Room';
+  }
+
+  isNonRoomProperty(): boolean {
+    const label = this.getResolvedRoomLabel().trim().toLowerCase();
     
-    return !isRoomOrAccommodationLabel && !isRoomOrAccommodationType;
+    // Normalize "accommodation" or "accomodation" to "room" (matching listing page getter)
+    const normalizedLabel = (label.includes('accommodation') || label.includes('accomodation')) ? 'room' : label;
+    
+    const isRoomOrAccommodation = normalizedLabel === 'room';
+    const isNonRoom = !isRoomOrAccommodation;
+    
+    console.log('[isNonRoomProperty Debug]:', {
+      resolvedRoomLabel: this.getResolvedRoomLabel(),
+      normalizedLabel,
+      isRoomOrAccommodation,
+      isNonRoomPropertyResult: isNonRoom,
+      resolvedTypeClassification: isNonRoom ? 'Non-Accommodation' : 'Accommodation/Room'
+    });
+    
+    return isNonRoom;
   }
 
   getFilteredAddOnServices(): any[] {

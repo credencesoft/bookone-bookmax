@@ -1020,6 +1020,14 @@ get roomLabel(): string {
   }
 
   const trimmedLabel = label.trim().toLowerCase();
+  const isRoomOrAccommodationLabel = trimmedLabel === 'room' || trimmedLabel === 'accommodation' || trimmedLabel === 'accomodation';
+  
+  console.log('[roomLabel Listing Debug]:', {
+    rawLabelResult: label,
+    isRoomOrAccommodationLabel,
+    resolvedClassification: !isRoomOrAccommodationLabel ? 'Non-Accommodation' : 'Accommodation/Room'
+  });
+
   if (trimmedLabel.includes('accommodation') || trimmedLabel.includes('accomodation')) {
     return 'Room';
   }
