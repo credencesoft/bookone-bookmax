@@ -395,6 +395,64 @@ export class BookingComponent implements OnInit {
   totalAddOnsAmount: number = 0;                // Subtotal before tax
   totalAddOnsTax: number = 0;                   // Tax on add-ons
   totalAddOnsDiscount: number = 0;              // Discount on add-ons
+  selectedServiceTypeFilter: string = 'All';
+
+  getAvailableAddOnServiceTypes(): string[] {
+    const typesSet = new Set<string>();
+    const services = this.filterDayTripIneligibleAddOns(this.addOnServices || []);
+    const paxesFiltered = this.filterServicesByPax(services);
+    
+    paxesFiltered.forEach(addon => {
+      let rawType = addon.serviceType ? addon.serviceType.toString().trim() : '';
+      if (!rawType) {
+        const name = (addon.name || '').toLowerCase();
+        if (name.includes('food') || name.includes('meal') || name.includes('breakfast') || name.includes('lunch') || name.includes('dinner') || name.includes('tea') || name.includes('coffee') || name.includes('drink') || name.includes('cooking') || name.includes('kitchen')) {
+          addon.serviceType = 'Food & Drinks';
+          rawType = 'Food & Drinks';
+        } else if (name.includes('cab') || name.includes('car') || name.includes('taxi') || name.includes('pick') || name.includes('drop') || name.includes('airport') || name.includes('travel') || name.includes('transport') || name.includes('rental')) {
+          addon.serviceType = 'Transport';
+          rawType = 'Transport';
+        } else if (name.includes('spa') || name.includes('massage') || name.includes('wellness') || name.includes('sauna') || name.includes('jacuzzi')) {
+          addon.serviceType = 'Spa & Wellness';
+          rawType = 'Spa & Wellness';
+        } else if (name.includes('guide') || name.includes('tour') || name.includes('safari') || name.includes('trek') || name.includes('activity') || name.includes('sport') || name.includes('entry') || name.includes('ticket') || name.includes('game') || name.includes('sightseeing')) {
+          addon.serviceType = 'Activities';
+          rawType = 'Activities';
+        } else {
+          addon.serviceType = 'Extras';
+          rawType = 'Extras';
+        }
+      }
+      typesSet.add(rawType);
+    });
+    return Array.from(typesSet);
+  }
+
+  isNonRoomProperty(): boolean {
+    const label = (this.roomLabel || '').trim().toLowerCase();
+    const businessType = (this.businessUser?.businessType || this.token?.getProperty()?.businessType || '').trim().toLowerCase();
+    
+    const isRoomOrAccommodationLabel = label === 'room' || label === 'accommodation' || label.includes('bhk');
+    const isRoomOrAccommodationType = businessType === 'room' || businessType === 'accommodation' || businessType.includes('bhk');
+    
+    if (!label && !businessType) {
+      return false;
+    }
+    
+    return !isRoomOrAccommodationLabel && !isRoomOrAccommodationType;
+  }
+
+  getFilteredAddOnServices(): any[] {
+    const visibleServices = this.getVisibleAddOnServices();
+    if (this.selectedServiceTypeFilter === 'All') {
+      return visibleServices;
+    }
+    return visibleServices.filter(addon => {
+      const type = addon.serviceType ? addon.serviceType.toString().trim() : 'Extras';
+      return type === this.selectedServiceTypeFilter;
+    });
+  }
+
   private readonly enableCalculationDebug = false;
 
   constructor(
@@ -13110,6 +13168,9 @@ sendWhatsappMessageToPropertyOwner() {
     if (this.isDayTripRoomWiseAddOn(service)) {
       return;
     }
+    if (this.isAddOnDisabled(service)) {
+      return;
+    }
 
     const serviceKey = this.getAddOnSelectionKey(service);
     const index = this.selectedAddOns.findIndex(
@@ -13150,6 +13211,37 @@ sendWhatsappMessageToPropertyOwner() {
     return this.selectedAddOns.some(
       (selectedService) => this.getAddOnSelectionKey(selectedService) === serviceKey,
     );
+  }
+
+  /**
+   * Check if service should be disabled because another service of the same serviceType is already selected
+   */
+  isAddOnDisabled(addon: any): boolean {
+    if (!addon || !addon.serviceType) {
+      return false;
+    }
+    
+    // For Room or Accommodation properties, we allow choosing multiple same service types.
+    // They are only restricted if it is a non-room property.
+    if (!this.isNonRoomProperty()) {
+      return false;
+    }
+
+    const type = addon.serviceType.toString().trim().toLowerCase();
+    if (type === 'accommodation' || type === 'room' || type === 'business service accommodation' || type === 'businessserviceaccommodation') {
+      return false;
+    }
+    // If this specific addon is already selected, it is not disabled (allow deselection)
+    if (this.isAddOnSelected(addon)) {
+      return false;
+    }
+    // Check if there is any other selected addon that has the same serviceType
+    return this.selectedAddOns.some(selected => {
+      if (!selected || !selected.serviceType) {
+        return false;
+      }
+      return selected.serviceType.toString().trim().toLowerCase() === type;
+    });
   }
 
   private getSelectedAddOn(service: any): any | undefined {
