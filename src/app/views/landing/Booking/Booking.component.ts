@@ -1724,6 +1724,9 @@ export class BookingComponent implements OnInit {
   }
 
   showPayNow(): boolean {
+    const hasEnquiryRoom = this.bookingSummaryDetails?.selectedPlansSummary?.some(plan => plan.isEnquire === true);
+    if (hasEnquiryRoom) return false;
+
     if (this.channelManagerIntegration) return true;
 
     this.propertyData = this.token.getProperty();
@@ -1737,6 +1740,9 @@ export class BookingComponent implements OnInit {
   }
 
   showPayLater(): boolean {
+    const hasEnquiryRoom = this.bookingSummaryDetails?.selectedPlansSummary?.some(plan => plan.isEnquire === true);
+    if (hasEnquiryRoom) return false;
+
     this.propertyData = this.token.getProperty();
     this.accommodationData = this.propertyData.businessServiceDtoList?.filter(
       (entry) => entry.name === 'Accommodation',
@@ -13260,10 +13266,48 @@ sendWhatsappMessageToPropertyOwner() {
     );
   }
 
+  isPropertyEnquiryOnly(): boolean {
+    if (this.channelManagerIntegration) return false;
+    const propertyData: any = this.token.getProperty() || this.businessUser || {};
+    const accommodationData = propertyData.businessServiceDtoList?.filter(
+      (entry: any) => entry.name === 'Accommodation'
+    );
+    const hasPayLater = accommodationData?.some((a: any) => a.payLater);
+    const hasPayNow = this.value === true && this.businessUser?.paymentGateway != null;
+    const result = !hasPayNow && !hasPayLater;
+    
+    console.log('[Enquiry Debug - isPropertyEnquiryOnly]:', {
+      result,
+      hasPayNow,
+      hasPayLater,
+      thisValue: this.value,
+      paymentGateway: this.businessUser?.paymentGateway
+    });
+    
+    return result;
+  }
+
+  isRoomEnquiryOnly(): boolean {
+    const selectedPlans = this.bookingSummaryDetails?.selectedPlansSummary || [];
+    const result = selectedPlans.some(plan => plan.isEnquire === true);
+    
+    console.log('[Enquiry Debug - isRoomEnquiryOnly]:', {
+      result,
+      selectedPlansCount: selectedPlans.length,
+      plansWithEnquire: selectedPlans.map(p => ({ name: p.roomName, isEnquire: p.isEnquire }))
+    });
+    
+    return result;
+  }
+
   /**
    * Check if service should be disabled because another service of the same serviceType is already selected
    */
   isAddOnDisabled(addon: any): boolean {
+    if (this.isPropertyEnquiryOnly() || this.isRoomEnquiryOnly()) {
+      return true;
+    }
+
     if (!addon || !addon.serviceType) {
       return false;
     }

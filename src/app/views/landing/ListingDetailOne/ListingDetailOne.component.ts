@@ -1021,12 +1021,6 @@ get roomLabel(): string {
 
   const trimmedLabel = label.trim().toLowerCase();
   const isRoomOrAccommodationLabel = trimmedLabel === 'room' || trimmedLabel === 'accommodation' || trimmedLabel === 'accomodation';
-  
-  console.log('[roomLabel Listing Debug]:', {
-    rawLabelResult: label,
-    isRoomOrAccommodationLabel,
-    resolvedClassification: !isRoomOrAccommodationLabel ? 'Non-Accommodation' : 'Accommodation/Room'
-  });
 
   if (trimmedLabel.includes('accommodation') || trimmedLabel.includes('accomodation')) {
     return 'Room';
@@ -3548,6 +3542,7 @@ resetLastChangedAge(planCode: string, room?: any) {
         const summaryEntry = {
           roomName,
           actualRoomPrice,
+          isEnquire: roomContext?.isEnquire ?? rates?.isEnquire ?? false,
           extraPersonChildCountAmount,
           extraPersonAdultCountAmount,
           SingleDayextraPersonChildCountAmount,
