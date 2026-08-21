@@ -395,6 +395,111 @@ export class BookingComponent implements OnInit {
   totalAddOnsAmount: number = 0;                // Subtotal before tax
   totalAddOnsTax: number = 0;                   // Tax on add-ons
   totalAddOnsDiscount: number = 0;              // Discount on add-ons
+  selectedServiceTypeFilter: string = 'All';
+
+  getAvailableAddOnServiceTypes(): string[] {
+    const typesSet = new Set<string>();
+    const services = this.filterDayTripIneligibleAddOns(this.addOnServices || []);
+    const paxesFiltered = this.filterServicesByPax(services);
+    
+    paxesFiltered.forEach(addon => {
+      let rawType = addon.serviceType ? addon.serviceType.toString().trim() : '';
+      if (!rawType) {
+        const name = (addon.name || '').toLowerCase();
+        if (name.includes('food') || name.includes('meal') || name.includes('breakfast') || name.includes('lunch') || name.includes('dinner') || name.includes('tea') || name.includes('coffee') || name.includes('drink') || name.includes('cooking') || name.includes('kitchen')) {
+          addon.serviceType = 'Food & Drinks';
+          rawType = 'Food & Drinks';
+        } else if (name.includes('cab') || name.includes('car') || name.includes('taxi') || name.includes('pick') || name.includes('drop') || name.includes('airport') || name.includes('travel') || name.includes('transport') || name.includes('rental')) {
+          addon.serviceType = 'Transport';
+          rawType = 'Transport';
+        } else if (name.includes('spa') || name.includes('massage') || name.includes('wellness') || name.includes('sauna') || name.includes('jacuzzi')) {
+          addon.serviceType = 'Spa & Wellness';
+          rawType = 'Spa & Wellness';
+        } else if (name.includes('guide') || name.includes('tour') || name.includes('safari') || name.includes('trek') || name.includes('activity') || name.includes('sport') || name.includes('entry') || name.includes('ticket') || name.includes('game') || name.includes('sightseeing')) {
+          addon.serviceType = 'Activities';
+          rawType = 'Activities';
+        } else {
+          addon.serviceType = 'Extras';
+          rawType = 'Extras';
+        }
+      }
+      typesSet.add(rawType);
+    });
+    return Array.from(typesSet);
+  }
+
+  getResolvedRoomLabel(): string {
+    // 1. Check savedBookingLabel from localStorage
+    const savedLabel = localStorage.getItem('savedBookingLabel');
+    if (savedLabel) {
+      try {
+        const parsedData = JSON.parse(savedLabel);
+        if (parsedData.label && parsedData.label.trim() !== '') {
+          return parsedData.label;
+        }
+      } catch (e) {
+        console.error("Error parsing token", e);
+      }
+    }
+
+    // 2. Fall back to bookingButtonLabelText
+    const buttonLabel = this.businessServiceDto?.bookingButtonLabelText;
+    if (buttonLabel && buttonLabel.trim() !== '') {
+      return buttonLabel;
+    }
+
+    // 3. Fall back to businessType
+    const businessType = this.businessUser?.businessType;
+    if (businessType && businessType.trim() !== '') {
+      return businessType;
+    }
+
+    // 4. Fall back to businessProductName
+    const productName = this.businessServiceDto?.businessProductName;
+    if (productName && productName.trim() !== '') {
+      return productName;
+    }
+
+    // 5. Fall back to businessServiceName or name
+    const serviceName = this.businessServiceDto?.businessServiceName || this.businessServiceDto?.name;
+    if (serviceName && serviceName.trim() !== '') {
+      return serviceName;
+    }
+
+    return 'Room';
+  }
+
+  isNonRoomProperty(): boolean {
+    const label = this.getResolvedRoomLabel().trim().toLowerCase();
+    
+    // Normalize "accommodation" or "accomodation" to "room" (matching listing page getter)
+    const normalizedLabel = (label.includes('accommodation') || label.includes('accomodation')) ? 'room' : label;
+    
+    const isRoomOrAccommodation = normalizedLabel === 'room';
+    const isNonRoom = !isRoomOrAccommodation;
+    
+    console.log('[isNonRoomProperty Debug]:', {
+      resolvedRoomLabel: this.getResolvedRoomLabel(),
+      normalizedLabel,
+      isRoomOrAccommodation,
+      isNonRoomPropertyResult: isNonRoom,
+      resolvedTypeClassification: isNonRoom ? 'Non-Accommodation' : 'Accommodation/Room'
+    });
+    
+    return isNonRoom;
+  }
+
+  getFilteredAddOnServices(): any[] {
+    const visibleServices = this.getVisibleAddOnServices();
+    if (this.selectedServiceTypeFilter === 'All') {
+      return visibleServices;
+    }
+    return visibleServices.filter(addon => {
+      const type = addon.serviceType ? addon.serviceType.toString().trim() : 'Extras';
+      return type === this.selectedServiceTypeFilter;
+    });
+  }
+
   private readonly enableCalculationDebug = false;
 
   constructor(
@@ -1619,6 +1724,9 @@ export class BookingComponent implements OnInit {
   }
 
   showPayNow(): boolean {
+    const hasEnquiryRoom = this.bookingSummaryDetails?.selectedPlansSummary?.some(plan => plan.isEnquire === true);
+    if (hasEnquiryRoom) return false;
+
     if (this.channelManagerIntegration) return true;
 
     this.propertyData = this.token.getProperty();
@@ -1632,6 +1740,9 @@ export class BookingComponent implements OnInit {
   }
 
   showPayLater(): boolean {
+    const hasEnquiryRoom = this.bookingSummaryDetails?.selectedPlansSummary?.some(plan => plan.isEnquire === true);
+    if (hasEnquiryRoom) return false;
+
     this.propertyData = this.token.getProperty();
     this.accommodationData = this.propertyData.businessServiceDtoList?.filter(
       (entry) => entry.name === 'Accommodation',
@@ -2319,7 +2430,7 @@ export class BookingComponent implements OnInit {
       this.booking.discountAmount +
       this.totalServiceCost;
     this.businessServiceDto = this.businessUser.businessServiceDtoList.find(
-      (data) => data.name === 'Accommodation',
+      (data) => data.name === 'Accommodation' || data.name === 'Accomodation' || data.name === 'Room',
     );
     this.initializeAdvancePaymentPlans();
 
@@ -13110,6 +13221,9 @@ sendWhatsappMessageToPropertyOwner() {
     if (this.isDayTripRoomWiseAddOn(service)) {
       return;
     }
+    if (this.isAddOnDisabled(service)) {
+      return;
+    }
 
     const serviceKey = this.getAddOnSelectionKey(service);
     const index = this.selectedAddOns.findIndex(
@@ -13150,6 +13264,75 @@ sendWhatsappMessageToPropertyOwner() {
     return this.selectedAddOns.some(
       (selectedService) => this.getAddOnSelectionKey(selectedService) === serviceKey,
     );
+  }
+
+  isPropertyEnquiryOnly(): boolean {
+    if (this.channelManagerIntegration) return false;
+    const propertyData: any = this.token.getProperty() || this.businessUser || {};
+    const accommodationData = propertyData.businessServiceDtoList?.filter(
+      (entry: any) => entry.name === 'Accommodation'
+    );
+    const hasPayLater = accommodationData?.some((a: any) => a.payLater);
+    const hasPayNow = this.value === true && this.businessUser?.paymentGateway != null;
+    const result = !hasPayNow && !hasPayLater;
+    
+    console.log('[Enquiry Debug - isPropertyEnquiryOnly]:', {
+      result,
+      hasPayNow,
+      hasPayLater,
+      thisValue: this.value,
+      paymentGateway: this.businessUser?.paymentGateway
+    });
+    
+    return result;
+  }
+
+  isRoomEnquiryOnly(): boolean {
+    const selectedPlans = this.bookingSummaryDetails?.selectedPlansSummary || [];
+    const result = selectedPlans.some(plan => plan.isEnquire === true);
+    
+    console.log('[Enquiry Debug - isRoomEnquiryOnly]:', {
+      result,
+      selectedPlansCount: selectedPlans.length,
+      plansWithEnquire: selectedPlans.map(p => ({ name: p.roomName, isEnquire: p.isEnquire }))
+    });
+    
+    return result;
+  }
+
+  /**
+   * Check if service should be disabled because another service of the same serviceType is already selected
+   */
+  isAddOnDisabled(addon: any): boolean {
+    if (this.isPropertyEnquiryOnly() || this.isRoomEnquiryOnly()) {
+      return true;
+    }
+
+    if (!addon || !addon.serviceType) {
+      return false;
+    }
+    
+    // For Room or Accommodation properties, we allow choosing multiple same service types.
+    // They are only restricted if it is a non-room property.
+    if (!this.isNonRoomProperty()) {
+      return false;
+    }
+
+    const type = addon.serviceType.toString().trim().toLowerCase();
+    if (type === 'accommodation' || type === 'room' || type === 'business service accommodation' || type === 'businessserviceaccommodation') {
+      return false;
+    }
+    // If this specific addon is already selected, it is not disabled (allow deselection)
+    if (this.isAddOnSelected(addon)) {
+      return false;
+    }
+    // Check if there is any other selected addon that has the same serviceType
+    return this.selectedAddOns.some(selected => {
+      if (!selected || !selected.serviceType) {
+        return false;
+      }
+      return selected.serviceType.toString().trim().toLowerCase() === type;
+    });
   }
 
   private getSelectedAddOn(service: any): any | undefined {
@@ -13470,13 +13653,18 @@ sendWhatsappMessageToPropertyOwner() {
         const childServicePrice = this.toSafeAmount(addon?.childServicePrice ?? addon?.servicePrice ?? addon?.beforeTaxAmount ?? addon?.unitPrice);
         const childTaxPrice = this.toSafeAmount(addon?.childTaxPrice ?? addon?.taxAmount ?? 0);
 
+        const childAboveCount = this.getChildAbovePaxCountForPlan(plan);
+
         total += this.toSafeAmount((adultServicePrice + adultTaxPrice) * adultCount);
-        total += this.toSafeAmount((childServicePrice + childTaxPrice) * childCount);
+        total += this.toSafeAmount((childServicePrice + childTaxPrice) * childAboveCount);
       } else {
-        const multiplier = this.getAddOnPlanMultiplier(addon, plan);
+        let multiplier = this.getAddOnPlanMultiplier(addon, plan);
         let useChildPrices = isChildApplicable && !isAdultApplicable;
         if (isPerPaxOrNight && isAdultApplicable && isChildApplicable && adultCount === 0 && childCount > 0) {
           useChildPrices = true;
+        }
+        if (useChildPrices && isPerPaxOrNight) {
+          multiplier = this.getChildAbovePaxCountForPlan(plan);
         }
         const servicePrice = useChildPrices
           ? this.toSafeAmount(addon?.childServicePrice ?? addon?.servicePrice ?? addon?.beforeTaxAmount ?? addon?.unitPrice)
@@ -13557,13 +13745,18 @@ sendWhatsappMessageToPropertyOwner() {
         const adultServicePrice = this.toSafeAmount(addon?.adultServicePrice ?? addon?.servicePrice ?? addon?.beforeTaxAmount ?? addon?.unitPrice);
         const childServicePrice = this.toSafeAmount(addon?.childServicePrice ?? addon?.servicePrice ?? addon?.beforeTaxAmount ?? addon?.unitPrice);
 
+        const childAboveCount = this.getChildAbovePaxCountForPlan(plan);
+
         total += this.toSafeAmount(adultServicePrice * adultCount);
-        total += this.toSafeAmount(childServicePrice * childCount);
+        total += this.toSafeAmount(childServicePrice * childAboveCount);
       } else {
-        const multiplier = this.getAddOnPlanMultiplier(addon, plan);
+        let multiplier = this.getAddOnPlanMultiplier(addon, plan);
         let useChildPrices = isChildApplicable && !isAdultApplicable;
         if (isPerPaxOrNight && isAdultApplicable && isChildApplicable && adultCount === 0 && childCount > 0) {
           useChildPrices = true;
+        }
+        if (useChildPrices && isPerPaxOrNight) {
+          multiplier = this.getChildAbovePaxCountForPlan(plan);
         }
         const servicePrice = useChildPrices
           ? this.toSafeAmount(addon?.childServicePrice ?? addon?.servicePrice ?? addon?.beforeTaxAmount ?? addon?.unitPrice)
@@ -13601,13 +13794,18 @@ sendWhatsappMessageToPropertyOwner() {
         const adultTaxPrice = this.toSafeAmount(addon?.adultTaxPrice ?? addon?.taxAmount ?? 0);
         const childTaxPrice = this.toSafeAmount(addon?.childTaxPrice ?? addon?.taxAmount ?? 0);
 
+        const childAboveCount = this.getChildAbovePaxCountForPlan(plan);
+
         total += this.toSafeAmount(adultTaxPrice * adultCount);
-        total += this.toSafeAmount(childTaxPrice * childCount);
+        total += this.toSafeAmount(childTaxPrice * childAboveCount);
       } else {
-        const multiplier = this.getAddOnPlanMultiplier(addon, plan);
+        let multiplier = this.getAddOnPlanMultiplier(addon, plan);
         let useChildPrices = isChildApplicable && !isAdultApplicable;
         if (isPerPaxOrNight && isAdultApplicable && isChildApplicable && adultCount === 0 && childCount > 0) {
           useChildPrices = true;
+        }
+        if (useChildPrices && isPerPaxOrNight) {
+          multiplier = this.getChildAbovePaxCountForPlan(plan);
         }
         const taxAmount = useChildPrices
           ? this.toSafeAmount(addon?.childTaxPrice ?? addon?.taxAmount ?? 0)
@@ -13810,10 +14008,9 @@ sendWhatsappMessageToPropertyOwner() {
     if (isChildApplicable) {
       const planChildren = Number(plan?.children || plan?.extraCountChild || 0) > 0
         ? Number(plan?.children || plan?.extraCountChild || 0)
-        : (Number(plan?.childrenAbove5years || 0) + Number(plan?.childrenBelow5years || 0));
+        : Number(plan?.childrenAbove5years || 0);
       
-      const globalChildren = Number(this.children || this.booking?.noOfChildren || 0) + 
-                             Number(this.booking?.noOfChildrenUnder5years || 0);
+      const globalChildren = Number(this.children || this.booking?.noOfChildren || 0);
 
       count += planChildren > 0 ? planChildren : globalChildren;
     }
@@ -13847,10 +14044,9 @@ sendWhatsappMessageToPropertyOwner() {
     if (isChildApplicable) {
       const totalPlanChildrenCount = Number(this.totalPlanChildren || 0) > 0
         ? Number(this.totalPlanChildren)
-        : (Number(this.totalPlanChildrenAboveAgeLimit || 0) + Number(this.totalPlanChildrenBelowAgeLimit || 0));
+        : Number(this.totalPlanChildrenAboveAgeLimit || 0);
 
-      const globalChildrenCount = Number(this.children || this.booking?.noOfChildren || 0) + 
-                                   Number(this.booking?.noOfChildrenUnder5years || 0);
+      const globalChildrenCount = Number(this.children || this.booking?.noOfChildren || 0);
 
       count += totalPlanChildrenCount > 0 ? totalPlanChildrenCount : globalChildrenCount;
     }
@@ -13946,6 +14142,26 @@ sendWhatsappMessageToPropertyOwner() {
     return planChildren > 0 ? planChildren : globalChildren;
   }
 
+  private getChildAbovePaxCountForPlan(plan: any): number {
+    if (plan?.childrenAbove5years !== undefined) {
+      return Number(plan.childrenAbove5years || 0);
+    }
+    const planChildrenAbove = Number(plan?.children || plan?.extraCountChild || 0) > 0
+      ? Number(plan?.children || plan?.extraCountChild || 0)
+      : Number(plan?.childrenAbove5years || 0);
+    const globalChildrenAbove = Number(this.children || this.booking?.noOfChildren || 0);
+    return planChildrenAbove > 0 ? planChildrenAbove : globalChildrenAbove;
+  }
+
+  private getChildBelowPaxCountForPlan(plan: any): number {
+    if (plan?.childrenBelow5years !== undefined) {
+      return Number(plan.childrenBelow5years || 0);
+    }
+    const planChildrenBelow = Number(plan?.childrenBelow5years || 0);
+    const globalChildrenBelow = Number(this.booking?.noOfChildrenUnder5years || 0);
+    return planChildrenBelow > 0 ? planChildrenBelow : globalChildrenBelow;
+  }
+
   getSelectedServicesForPlan(plan: any): any[] {
     return (this.selectedAddOns || []).reduce((services, service) => {
       const chargeBasis = this.getAddOnChargeBasis(service);
@@ -13983,9 +14199,12 @@ sendWhatsappMessageToPropertyOwner() {
         });
 
         // 2. Child part
+        const childAboveCount = this.getChildAbovePaxCountForPlan(plan);
+        const childBelowCount = this.getChildBelowPaxCountForPlan(plan);
+
         const childServicePrice = this.toSafeAmount(service?.childServicePrice ?? service?.servicePrice ?? service?.beforeTaxAmount ?? service?.unitPrice);
         const childTaxPrice = this.toSafeAmount(service?.childTaxPrice ?? service?.taxAmount ?? 0);
-        const childMultiplier = childCount;
+        const childMultiplier = childAboveCount;
         const childBeforeTax = this.toSafeAmount(childServicePrice * childMultiplier);
         const childTax = this.toSafeAmount(childTaxPrice * childMultiplier);
 
@@ -14002,18 +14221,22 @@ sendWhatsappMessageToPropertyOwner() {
           netAmount: this.toSafeAmount(childBeforeTax + childTax),
           sourceChannel: service?.sourceChannel ?? this.booking?.externalSite ?? 'BookMax',
           applicableFor: 'Child',
-          notes: `${service?.notes || ''} (Children: ${childCount} x ${childServicePrice})`.trim(),
+          notes: `${service?.notes || ''} (Children Above Limit: ${childAboveCount} x ${childServicePrice}, Children Below Limit: ${childBelowCount} x 0)`.trim(),
         });
       } else {
         // Single object (either only adult, only child, or not perpax/pernight)
         let multiplier = this.getAddOnPlanMultiplier(service, plan);
-        if (multiplier <= 0) {
-          return services;
-        }
-
         let useChildPrices = isChildApplicable && !isAdultApplicable;
         if (isPerPaxOrNight && isAdultApplicable && isChildApplicable && adultCount === 0 && childCount > 0) {
           useChildPrices = true;
+        }
+
+        if (useChildPrices && isPerPaxOrNight) {
+          multiplier = this.getChildAbovePaxCountForPlan(plan);
+        }
+
+        if (multiplier <= 0) {
+          return services;
         }
 
         const servicePrice = useChildPrices

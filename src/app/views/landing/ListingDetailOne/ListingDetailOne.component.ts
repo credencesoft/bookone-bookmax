@@ -253,6 +253,7 @@ export class ListingDetailOneComponent implements OnInit {
   showBookingSummary: boolean = false;
   soldOutRooms: any;
   paramsroomId: any;
+  paramsPlanCode: any;
   specialDiscountPercentage: any;
   specialDiscountData: any;
   smartLoading: boolean = true;
@@ -992,7 +993,70 @@ guestSelectionErrors: { [planCode: string]: string } = {};
 isPanelOpenOne = false;
   isOpen = false;
 childAgesByPlan: { [planCode: string]: (number | null)[] } = {};
-ageOptions = Array.from({ length: 17 }, (_, i) => i + 1);
+get ageOptions(): number[] {
+  const max = this.businessServiceDto?.childMaxAge ?? 17;
+  return Array.from({ length: max + 1 }, (_, i) => i);
+}
+get roomLabel(): string {
+  let label = 'Room';
+  const buttonLabel = this.businessServiceDto?.bookingButtonLabelText;
+  if (buttonLabel && buttonLabel.trim() !== '') {
+    label = buttonLabel;
+  } else {
+    const businessType = this.businessUser?.businessType;
+    if (businessType && businessType.trim() !== '') {
+      label = businessType;
+    } else {
+      const productName = this.businessServiceDto?.businessProductName;
+      if (productName && productName.trim() !== '') {
+        label = productName;
+      } else {
+        const serviceName = this.businessServiceDto?.businessServiceName || this.businessServiceDto?.name;
+        if (serviceName && serviceName.trim() !== '') {
+          label = serviceName;
+        }
+      }
+    }
+  }
+
+  const trimmedLabel = label.trim().toLowerCase();
+  const isRoomOrAccommodationLabel = trimmedLabel === 'room' || trimmedLabel === 'accommodation' || trimmedLabel === 'accomodation';
+
+  if (trimmedLabel.includes('accommodation') || trimmedLabel.includes('accomodation')) {
+    return 'Room';
+  }
+  return label;
+}
+get showRoomsAndGuestsFilter(): boolean {
+  const label = this.roomLabel?.toLowerCase();
+  return label === 'room' || label === 'accommodation' || label === 'accomodation';
+}
+get maxAdultsAllowedPerRoom(): number {
+  const label = this.roomLabel?.toLowerCase();
+  const isCustomUnit = label && label !== 'room' && label !== 'accommodation' && label !== 'accomodation';
+  
+  if (isCustomUnit && this.shortrooms && this.shortrooms.length > 0) {
+    return this.shortrooms.reduce((max, r) => Math.max(max, Number(r.maximumOccupancy || 4)), 4);
+  }
+  
+  return 30;
+}
+getMaxAdultLimitForBhk(index: number): number {
+  const label = this.roomLabel?.toLowerCase();
+  const isCustomUnit = label && label !== 'room' && label !== 'accommodation' && label !== 'accomodation';
+
+  if (isCustomUnit && this.shortrooms && this.shortrooms.length > 0) {
+    const sortedBhkMaxOccupancies = [...this.shortrooms]
+      .map(r => Number(r.maximumOccupancy || 4))
+      .sort((a, b) => b - a);
+
+    if (index < sortedBhkMaxOccupancies.length) {
+      return sortedBhkMaxOccupancies[index];
+    }
+    return sortedBhkMaxOccupancies[sortedBhkMaxOccupancies.length - 1];
+  }
+  return 4;
+}
   singleextraAdultCount: number;
   singleextraAdultCharge: number;
   singleextraChildCount: number;
@@ -1110,6 +1174,12 @@ if (params['roomId'] !== undefined) {
   this.paramsroomId = Number(params['roomId']);
 }
 
+if (params['planCode'] !== undefined) {
+  this.paramsPlanCode = params['planCode'];
+} else if (params['ratePlan'] !== undefined) {
+  this.paramsPlanCode = params['ratePlan'];
+}
+
 if (params['Children'] !== undefined) {
   this.childno = Number(params['Children']);
   this.children = Number(params['Children']);
@@ -1213,15 +1283,11 @@ this.token.savePropertyUrl(currentUrl);
     // this.updateTag();
     this.token.clearwebsitebookingURL();
     // this.token.saveSelectedServices(this.selectedServices);
-    const savedRooms = sessionStorage.getItem('bookingSummary');
-  if (savedRooms) {
-    try {
-      this.additionalRooms = JSON.parse(savedRooms);
-    } catch (e) {
-      console.error('Invalid bookingSummary data', e);
-      this.additionalRooms = [];
-    }
-  }
+  // Always start with fresh defaults on load/refresh (1 room/BHK, 1 adult)
+  sessionStorage.removeItem('bookingSummary');
+  this.additionalRooms = [];
+  this.rooms = 1;
+  this.noOfrooms = 1;
     this.bookingMinDate = calendar.getToday();
     this.bookingengineurl = this.token.getwebsitebookingURL();
     sessionStorage.removeItem('enquiryNo');
@@ -1442,7 +1508,8 @@ this.token.savePropertyUrl(currentUrl);
           this.children = totalChildren - additionalChildren;
         }
       }
-      this.rooms = this.booking.noOfRooms;
+      this.rooms = 1 + (this.additionalRooms ? this.additionalRooms.length : 0);
+      this.booking.noOfRooms = this.rooms;
       // if(this.rooms === Number(CurrentRoomCout)){
       //   this.rooms = this.booking.noOfRooms;
       // } else {
@@ -2035,8 +2102,9 @@ restoreGuestSelectionsFromSummary() {
 
 
   calculateRoomSummary(): void {
-  this.rooms = 1 + this.additionalRooms.length;
-}
+    this.rooms = 1 + this.additionalRooms.length;
+    this.noOfrooms = this.rooms;
+  }
 bookingSummaryView(){
   if (!this.showBookingSummary) {
     // Validation 1: Ensure at least one plan/room is selected
@@ -2118,13 +2186,16 @@ showSliderPopup() {
 }
 
 getMinAvailableRooms(ratesList: any[]): number {
-  if (!ratesList || ratesList.length === 0) {
-    return 0;
-  }
+  if (!ratesList || ratesList.length === 0) return 0;
   return Math.min(
     ...ratesList
       .filter(r => r.stopSellOBE === false || r.stopSellOBE === null)
-      .map(r => r.noOfAvailable ?? 0)
+      .map(r => {
+        const computedAvailable = Math.max(0, (r.totalNoRooms ?? 0) - (r.noOfBooked ?? 0));
+        return (r.noOfAvailable !== undefined && r.noOfAvailable !== null && r.noOfAvailable > 0)
+          ? r.noOfAvailable
+          : computedAvailable;
+      })
   );
 }
 
@@ -2854,11 +2925,12 @@ onChildAgeChange(planCode: string, plan: any, room?: any) {
 
   const adults = this.selectedGuestsByPlan[scopedRoomKey]?.adults || 0;
 
-  const above5Count = ages.filter(a => a !== null && (plan?.childAgeLimit && plan.childAgeLimit > 0 ? a >= plan.childAgeLimit : a > 5)).length;
-  const under5Count = ages.filter(a => a !== null && (plan?.childAgeLimit && plan.childAgeLimit > 0 ? a < plan.childAgeLimit : a <= 5)).length;
+  const freeThreshold = this.getFreeChildThreshold();
+  const above5Count = ages.filter(a => a !== null && (plan?.childAgeLimit && plan.childAgeLimit > 0 ? a >= plan.childAgeLimit : a > freeThreshold)).length;
+  const under5Count = ages.filter(a => a !== null && (plan?.childAgeLimit && plan.childAgeLimit > 0 ? a < plan.childAgeLimit : a <= freeThreshold)).length;
 
   const under5Limit = 2 * selectedRooms;
-  const ageLimitText = plan?.childAgeLimit && plan.childAgeLimit > 0 ? `${plan.childAgeLimit} years` : '5 years';
+  const ageLimitText = plan?.childAgeLimit && plan.childAgeLimit > 0 ? `${plan.childAgeLimit} years` : `${freeThreshold} years`;
 
   if (under5Count > under5Limit) {
     this.showTemporaryError(
@@ -2908,11 +2980,82 @@ resetLastChangedAge(planCode: string, room?: any) {
   const lastIndex = this.childAgesByPlan[scopedRoomKey]?.length - 1;
   this.childAgesByPlan[scopedRoomKey][lastIndex] = null;
 }
+  canAddRoom(): boolean {
+    let maxRooms = 30;
+    const label = this.roomLabel?.toLowerCase();
+    const isBhkOrVilla = label && label !== 'room' && label !== 'accommodation';
+
+    if (isBhkOrVilla) {
+      if (this.shortrooms && this.shortrooms.length > 0) {
+        maxRooms = this.shortrooms.length;
+      } else if (this.availableRooms && this.availableRooms.length > 0) {
+        maxRooms = this.availableRooms.length;
+      }
+    }
+    return this.rooms < maxRooms;
+  }
   addRoom() {
-    if (this.rooms >= 30) return; // max 30 rooms total
+    if (!this.canAddRoom()) return;
     this.additionalRooms.push({ adults: 1, children: 0 });
     this.rooms++;
     this.noOfrooms = this.rooms;
+  }
+  getBhkBlockGuestsForRoom(room: any): { adults: number; children: number } {
+    const bhkBlocks = [
+      { adults: Number(this.adults || 1), children: Number(this.children || 0) },
+      ...(this.additionalRooms || []).map(r => ({ adults: Number(r.adults || 1), children: Number(r.children || 0) }))
+    ];
+    if (bhkBlocks.length === 0) {
+      return { adults: Number(this.totalAdults || 1), children: Number(this.totalChildren || 0) };
+    }
+    const maxOccupancy = Number(room?.maximumOccupancy || room?.room?.maximumOccupancy || 0);
+    let bestBlock = bhkBlocks[0];
+    let minDiff = Math.abs(Number(bhkBlocks[0].adults + bhkBlocks[0].children) - maxOccupancy);
+
+    for (let i = 1; i < bhkBlocks.length; i++) {
+      const totalGuestsInBlock = Number(bhkBlocks[i].adults + bhkBlocks[i].children);
+      const diff = Math.abs(totalGuestsInBlock - maxOccupancy);
+      if (diff < minDiff) {
+        minDiff = diff;
+        bestBlock = bhkBlocks[i];
+      }
+    }
+    return bestBlock;
+  }
+  getUnassignedGuests(excludeScopedRoomKey?: string): { adults: number; children: number } {
+    let assignedAdults = 0;
+    let assignedChildren = 0;
+
+    for (const key of Object.keys(this.selectedGuestsByPlan)) {
+      if (key === excludeScopedRoomKey) continue;
+      if (this.selectedRoomsByPlan[key] > 0) {
+        assignedAdults += Number(this.selectedGuestsByPlan[key]?.adults || 0);
+        assignedChildren += Number(this.selectedGuestsByPlan[key]?.children || 0);
+      }
+    }
+
+    const remainingAdults = Math.max(0, Number(this.totalAdults || 1) - assignedAdults);
+    const remainingChildren = Math.max(0, Number(this.totalChildren || 0) - assignedChildren);
+
+    return { adults: remainingAdults, children: remainingChildren };
+  }
+  getFreeChildThreshold(): number {
+    if (this.businessServiceDto?.childMinAge !== undefined && this.businessServiceDto?.childMinAge !== null) {
+      return this.businessServiceDto.childMinAge;
+    }
+    const accommodationService = this.businessUser?.businessServiceDtoList?.find(ele => ele.name === 'Accommodation' || ele.name === 'Accomodation' || ele.name === 'Room');
+    if (accommodationService?.childMinAge !== undefined && accommodationService?.childMinAge !== null) {
+      return accommodationService.childMinAge;
+    }
+    const propService = this.propertyData?.businessServiceDtoList?.find(ele => ele.name === 'Accommodation' || ele.name === 'Accomodation' || ele.name === 'Room');
+    if (propService?.childMinAge !== undefined && propService?.childMinAge !== null) {
+      return propService.childMinAge;
+    }
+    const propDetailService = this.propertyDetail?.businessServiceDtoList?.find(ele => ele.name === 'Accommodation' || ele.name === 'Accomodation' || ele.name === 'Room');
+    if (propDetailService?.childMinAge !== undefined && propDetailService?.childMinAge !== null) {
+      return propDetailService.childMinAge;
+    }
+    return 5;
   }
   onMouseEnter() {
     clearTimeout(this.popupTimeout);
@@ -3023,9 +3166,20 @@ resetLastChangedAge(planCode: string, room?: any) {
     } else {
       if (currentSelectedRooms > 0) {
         if (!this.selectedGuestsByPlan[scopedRoomKey]) {
+          const label = this.roomLabel?.toLowerCase();
+          const isBhkOrVilla = label && label !== 'room' && label !== 'accommodation';
+          const defaultGuests = isBhkOrVilla
+            ? this.getBhkBlockGuestsForRoom(roomContext || rates)
+            : { adults: this.totalAdults || 1, children: this.totalChildren || 0 };
+
+          const maxOccupancyForPlan = Number(plan?.maximumOccupancy || roomContext?.maximumOccupancy || rates?.room?.maximumOccupancy || 30);
+          const unassigned = this.getUnassignedGuests(scopedRoomKey);
+          const targetAdults = Math.min(defaultGuests.adults, unassigned.adults);
+          const targetChildren = Math.min(defaultGuests.children, unassigned.children);
+
           this.selectedGuestsByPlan[scopedRoomKey] = {
-            adults: Math.max(currentSelectedRooms, this.totalAdults || 1),
-            children: this.totalChildren || 0
+            adults: Math.max(currentSelectedRooms, Math.min(maxOccupancyForPlan, targetAdults > 0 ? targetAdults : 1)),
+            children: targetChildren
           };
         }
         if (!this.childAgesByPlan[scopedRoomKey]) {
@@ -3048,8 +3202,9 @@ resetLastChangedAge(planCode: string, room?: any) {
       : (this.selectedRoomsByPlan[scopedRoomKey] || 0);
     const selectedGuests = this.selectedGuestsByPlan[scopedRoomKey] || this.selectedGuestsByPlan[planCode] || { adults: 0, children: 0 };
     const childAges = (this.childAgesByPlan[scopedRoomKey] || this.childAgesByPlan[planCode] || []).map(a => Number(a));
-    const below5Count = childAges.filter(a => !isNaN(a) && a <= 5).length;
-    const above5Count = childAges.filter(a => !isNaN(a) && a > 5).length;
+    const freeThreshold = this.getFreeChildThreshold();
+    const below5Count = childAges.filter(a => !isNaN(a) && a <= freeThreshold).length;
+    const above5Count = childAges.filter(a => !isNaN(a) && a > freeThreshold).length;
 
     // Reset
     this.extraAdultCharge = 0;
@@ -3096,7 +3251,7 @@ resetLastChangedAge(planCode: string, room?: any) {
           const totalMinChildren = selectedGuests.adults < (ele1.minimumOccupancy * selectedRooms) ? (ele1.minimumOccupancy * selectedRooms) - selectedGuests.adults : plan.noOfChildren;
           
           const ageLimit = plan?.childAgeLimit && plan.childAgeLimit > 0 ? plan.childAgeLimit : 0;
-          const chargeableChildren = childAges.filter(a => a !== null && a !== undefined && !isNaN(a) && a > 5);
+          const chargeableChildren = childAges.filter(a => a !== null && a !== undefined && !isNaN(a) && a > freeThreshold);
           const chargeableCount = chargeableChildren.length;
 
           // Sort chargeable children such that children >= ageLimit come first
@@ -3205,7 +3360,7 @@ resetLastChangedAge(planCode: string, room?: any) {
             if (ageLimit > 0 && age >= ageLimit) {
               dayTripChildCharge += dayTripAdultRate;
               dtChargedAsAdult++;
-            } else if (age > 5) {
+            } else if (age > freeThreshold) {
               dayTripChildCharge += dayTripChildRate;
               dtChargedAsChild++;
             }
@@ -3384,9 +3539,11 @@ resetLastChangedAge(planCode: string, room?: any) {
         const taxPercentageperroom = Number(this.taxTotalSingle.toFixed(2));
 
 
+        const matchedRoom: any = this.availableRooms?.find((r: any) => r.id === roomId);
         const summaryEntry = {
           roomName,
           actualRoomPrice,
+          isEnquire: matchedRoom?.isEnquire ?? matchedRoom?.enquire ?? roomContext?.isEnquire ?? rates?.isEnquire ?? false,
           extraPersonChildCountAmount,
           extraPersonAdultCountAmount,
           SingleDayextraPersonChildCountAmount,
@@ -7803,10 +7960,10 @@ this.token.savePropertyUrl(currentUrl);
 
 
 
-    this.booking.noOfRooms = this.noOfrooms;
-    this.booking.noOfPersons = this.totalAdults;
-    this.booking.noOfChildren = this.totalChildren;
-    this.booking.noOfRooms = this.rooms;
+    const showRoomsAndGuests = this.showRoomsAndGuestsFilter;
+    this.booking.noOfRooms = showRoomsAndGuests ? this.rooms : 1;
+    this.booking.noOfPersons = showRoomsAndGuests ? this.totalAdults : 1;
+    this.booking.noOfChildren = showRoomsAndGuests ? this.totalChildren : 0;
     if (this.fromDate && this.toDate) {
       this.getDiffDate(this.toDate, this.fromDate);
     }
@@ -7851,7 +8008,7 @@ this.token.savePropertyUrl(currentUrl);
             return matchesDateType && matchesDayTripSearch && !hasStopSell;
           });
 
-          if(this.activeForGoogleHotelCenter === true) {
+          if(this.activeForGoogleHotelCenter === true || this.paramsroomId !== undefined) {
             this.getAvailableRoomsForGHC(this.availableRooms);
           }
 
@@ -7881,11 +8038,11 @@ this.token.savePropertyUrl(currentUrl);
           this.checkLengthOfStayRestrictions();
           this.SubAvailableRooms = response.body.roomList;
           const queryParams = {
-             noOfChildren: this.children,
+             noOfChildren: this.booking.noOfChildren,
              noOfAdults: this.booking.noOfPersons,
             checkInDate: this.booking.fromDate,
             checkOutDate: this.booking.toDate,
-            noOfRooms: this.rooms,
+            noOfRooms: this.booking.noOfRooms,
           };
 
           const roomList = response.body.roomList;
@@ -8698,13 +8855,30 @@ isPlanVisible(filteredPlans: any[], roomName: string, room?: any) {
     const searchRooms = Number(this.booking?.noOfRooms || this.rooms || 1);
 
     if (searchAdults > 0 && searchRooms > 0) {
-      const requiredPerRoom = Math.ceil(searchAdults / searchRooms);
-      plans = plans.filter((plan: any) => {
-        const planMax = Number(plan?.maximumOccupancy ?? room?.maximumOccupancy ?? 2);
-        
-        // A plan is visible if its maxOccupancy can fit the required room's share
-        return planMax >= requiredPerRoom;
-      });
+      // Calculate total combined maximum occupancy of all available rooms/BHKs
+      const totalAvailableCapacity = (this.availableRooms || []).reduce((sum, r) => {
+        const roomMax = Number(r?.maximumOccupancy || 0);
+        const maxPlanOcc = (r?.ratesAndAvailabilityDtos?.[0]?.roomRatePlans || []).reduce((max: number, p: any) => {
+          return Math.max(max, Number(p?.maximumOccupancy || 0));
+        }, 0);
+        return sum + Math.max(roomMax, maxPlanOcc);
+      }, 0);
+
+      const label = this.roomLabel?.toLowerCase();
+      const isCustomUnit = label && label !== 'room' && label !== 'accommodation';
+
+      // If it is a custom unit (BHK, Villa, etc.), bypass strict requiredPerRoom filtering
+      // as long as total guests are within the overall capacity.
+      if (isCustomUnit && searchAdults <= totalAvailableCapacity) {
+        // Keep all plans visible for BHK / Villa
+      } else {
+        // Otherwise, fall back to standard requiredPerRoom filtering
+        const requiredPerRoom = Math.ceil(searchAdults / searchRooms);
+        plans = plans.filter((plan: any) => {
+          const planMax = Number(plan?.maximumOccupancy ?? room?.maximumOccupancy ?? 2);
+          return planMax >= requiredPerRoom;
+        });
+      }
     }
   }
 
@@ -8731,6 +8905,23 @@ isRoomTooSmall(room: any): boolean {
   const searchAdults = Number(this.booking?.noOfPersons || this.adults || 1);
   const searchRooms = Number(this.booking?.noOfRooms || this.rooms || 1);
   if (searchAdults > 0 && searchRooms > 0) {
+    const label = this.roomLabel?.toLowerCase();
+    const isCustomUnit = label && label !== 'room' && label !== 'accommodation';
+
+    if (isCustomUnit) {
+      const totalAvailableCapacity = (this.availableRooms || []).reduce((sum, r) => {
+        const roomMax = Number(r?.maximumOccupancy || 0);
+        const maxPlanOcc = (r?.ratesAndAvailabilityDtos?.[0]?.roomRatePlans || []).reduce((max: number, p: any) => {
+          return Math.max(max, Number(p?.maximumOccupancy || 0));
+        }, 0);
+        return sum + Math.max(roomMax, maxPlanOcc);
+      }, 0);
+
+      if (searchAdults <= totalAvailableCapacity) {
+        return false;
+      }
+    }
+
     const requiredPerRoom = Math.ceil(searchAdults / searchRooms);
     
     // Check if the room's maximum occupancy is less than requiredPerRoom
@@ -8787,10 +8978,10 @@ isRoomTooSmall(room: any): boolean {
 
 
 
-    this.booking.noOfRooms = this.noOfrooms;
-    this.booking.noOfPersons = this.adults;
-    this.booking.noOfChildren = this.children;
-    this.booking.noOfRooms = this.rooms;
+    const showRoomsAndGuests = this.showRoomsAndGuestsFilter;
+    this.booking.noOfRooms = showRoomsAndGuests ? this.rooms : 1;
+    this.booking.noOfPersons = showRoomsAndGuests ? this.adults : 1;
+    this.booking.noOfChildren = showRoomsAndGuests ? this.children : 0;
     // this.token.saveBookingData(this.booking);
     // Logger.log('checkAvailability submit' + JSON.stringify(this.booking));
 
@@ -8814,7 +9005,7 @@ isRoomTooSmall(room: any): boolean {
               (rate.stopSellOTA === null || rate.stopSellOTA === false)
             )
           );
-        if(this.activeForGoogleHotelCenter === true) {
+        if(this.activeForGoogleHotelCenter === true || this.paramsroomId !== undefined) {
           this.getAvailableRoomsForGHC(this.availableRooms);
         }
     // Filter sold-out rooms
@@ -9046,42 +9237,50 @@ isRoomTooSmall(room: any): boolean {
   }
 
 getAvailableRoomsForGHC(availableRooms: any[]) {
+  let selected = false;
   availableRooms.forEach((room) => {
-    room?.ratesAndAvailabilityDtos?.forEach((rate) => {
-      rate?.roomRatePlans?.forEach((plan) => {
-        if (plan.code === 'GHC' && room.id === Number(this.paramsroomId)) {
-
-          plan?.otaPlanList?.forEach((otaPlan) => {
-              const planCode = plan.code;
-
-              // 1. Assign default selection
-              const scopedKey = this.getRoomPlanSelectionKey(room.id, planCode);
-              this.selectedRoomsByPlan[scopedKey] = 1;
-              this.selectedGuestsByPlan[scopedKey] = {
-                adults: this.adults,
-                children: this.childno,
-              };
-
-              // 2. Trigger plan selection
-              this.onPlanSelect(plan.code, rate, room);
-              this.isPanelOpen = false;
-              // 3. Scroll to the plan card — even if it's already in view
-              setTimeout(() => {
-                const el = document.getElementById('plan-' + planCode);
-                if (el) {
-                  el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-
-                  // Optionally add a highlight effect
-                  el.classList.add('scroll-highlight');
-                  // setTimeout(() => {
-                  //   el.classList.remove('scroll-highlight');
-                  // }, 3000);
-                }
-              }, 100); // slight delay ensures DOM updates
-          });
+    if (selected) return;
+    if (room.id === Number(this.paramsroomId)) {
+      room?.ratesAndAvailabilityDtos?.forEach((rate) => {
+        if (selected) return;
+        
+        let targetPlan = null;
+        let targetPlanCode = this.paramsPlanCode;
+        
+        if (targetPlanCode) {
+          targetPlan = rate?.roomRatePlans?.find((p) => 
+            p.code?.toLowerCase() === String(targetPlanCode).toLowerCase() || 
+            p.planName?.toLowerCase() === String(targetPlanCode).toLowerCase()
+          );
+        } else if (this.activeForGoogleHotelCenter) {
+          targetPlan = rate?.roomRatePlans?.find((p) => p.code === 'GHC');
+        } else {
+          targetPlan = rate?.roomRatePlans?.[0];
+        }
+        
+        if (targetPlan) {
+          const planCode = targetPlan.code;
+          const scopedKey = this.getRoomPlanSelectionKey(room.id, planCode);
+          this.selectedRoomsByPlan[scopedKey] = 1;
+          this.selectedGuestsByPlan[scopedKey] = {
+            adults: this.adults,
+            children: this.childno,
+          };
+          
+          this.onPlanSelect(planCode, rate, room);
+          this.isPanelOpen = false;
+          selected = true;
+          
+          setTimeout(() => {
+            const el = document.getElementById('plan-' + planCode);
+            if (el) {
+              el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              el.classList.add('scroll-highlight');
+            }
+          }, 100);
         }
       });
-    });
+    }
   });
 }
 
