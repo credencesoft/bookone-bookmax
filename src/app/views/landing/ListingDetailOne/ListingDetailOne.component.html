@@ -1239,7 +1239,7 @@
             [disabled]="!isBookingAllowed()"
             (click)="onBookNow()"
           >
-            Book Now
+            {{ getBookingButtonText() }}
           </button>
         </div>
         </div>
@@ -3333,6 +3333,14 @@
                       cursor: pointer;
                     "
                   >
+                    <!-- Enquiry Badge (Top Right) -->
+                    <div
+                      *ngIf="room?.isEnquire"
+                      style="z-index: 1; top: 10px; right: 10px;"
+                      class="position-absolute px-3 py-1 bg-warning text-dark rounded-pill small font-weight-bold"
+                    >
+                      Enquiry
+                    </div>
                     <!-- Top Badge -->
                     <!-- Case 1: Has Discount (Alternates between Discount and Availability) -->
                     <div
@@ -4845,7 +4853,7 @@
             [disabled]="!isBookingAllowed()"
             (click)="onBookNow()"
           >
-            Book Now
+            {{ getBookingButtonText() }}
           </button>
         </div>
       </div>

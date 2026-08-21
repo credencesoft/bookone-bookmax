@@ -395,6 +395,133 @@ export class BookingComponent implements OnInit {
   totalAddOnsAmount: number = 0;                // Subtotal before tax
   totalAddOnsTax: number = 0;                   // Tax on add-ons
   totalAddOnsDiscount: number = 0;              // Discount on add-ons
+  selectedServiceTypeFilter: string = 'All';
+
+  getAvailableAddOnServiceTypes(): string[] {
+    const typesSet = new Set<string>();
+    const services = this.filterDayTripIneligibleAddOns(this.addOnServices || []);
+    const paxesFiltered = this.filterServicesByPax(services);
+    
+    paxesFiltered.forEach(addon => {
+      let rawType = addon.serviceType ? addon.serviceType.toString().trim() : '';
+      if (!rawType) {
+        const name = (addon.name || '').toLowerCase();
+        if (name.includes('food') || name.includes('meal') || name.includes('breakfast') || name.includes('lunch') || name.includes('dinner') || name.includes('tea') || name.includes('coffee') || name.includes('drink') || name.includes('cooking') || name.includes('kitchen')) {
+          addon.serviceType = 'Food & Drinks';
+          rawType = 'Food & Drinks';
+        } else if (name.includes('cab') || name.includes('car') || name.includes('taxi') || name.includes('pick') || name.includes('drop') || name.includes('airport') || name.includes('travel') || name.includes('transport') || name.includes('rental')) {
+          addon.serviceType = 'Transport';
+          rawType = 'Transport';
+        } else if (name.includes('spa') || name.includes('massage') || name.includes('wellness') || name.includes('sauna') || name.includes('jacuzzi')) {
+          addon.serviceType = 'Spa & Wellness';
+          rawType = 'Spa & Wellness';
+        } else if (name.includes('guide') || name.includes('tour') || name.includes('safari') || name.includes('trek') || name.includes('activity') || name.includes('sport') || name.includes('entry') || name.includes('ticket') || name.includes('game') || name.includes('sightseeing')) {
+          addon.serviceType = 'Activities';
+          rawType = 'Activities';
+        } else {
+          addon.serviceType = 'Extras';
+          rawType = 'Extras';
+        }
+      }
+      typesSet.add(rawType);
+    });
+    return Array.from(typesSet);
+  }
+
+  getAddOnIcon(addon: any): string {
+    if (!addon) return 'fa-solid fa-bell-concierge';
+    const rawType = addon.serviceType ? addon.serviceType.toString().trim() : '';
+    const name = (addon.name || '').toLowerCase();
+    
+    if (rawType === 'Food & Drinks' || name.includes('food') || name.includes('meal') || name.includes('breakfast') || name.includes('lunch') || name.includes('dinner') || name.includes('tea') || name.includes('coffee') || name.includes('drink')) {
+      return 'fa-solid fa-utensils';
+    } else if (rawType === 'Transport' || name.includes('cab') || name.includes('car') || name.includes('taxi') || name.includes('pick') || name.includes('drop') || name.includes('airport') || name.includes('travel') || name.includes('transport') || name.includes('rental')) {
+      return 'fa-solid fa-car';
+    } else if (rawType === 'Spa & Wellness' || name.includes('spa') || name.includes('massage') || name.includes('wellness') || name.includes('sauna') || name.includes('jacuzzi')) {
+      return 'fa-solid fa-spa';
+    } else if (rawType === 'Activities' || name.includes('guide') || name.includes('tour') || name.includes('safari') || name.includes('trek') || name.includes('activity') || name.includes('sport') || name.includes('entry') || name.includes('ticket') || name.includes('game') || name.includes('sightseeing')) {
+      return 'fa-solid fa-person-hiking';
+    } else if (name.includes('wifi') || name.includes('internet')) {
+      return 'fa-solid fa-wifi';
+    } else if (name.includes('laundry') || name.includes('wash') || name.includes('dry clean')) {
+      return 'fa-solid fa-shirt';
+    } else {
+      return 'fa-solid fa-bell-concierge';
+    }
+  }
+
+  getResolvedRoomLabel(): string {
+    // 1. Check savedBookingLabel from localStorage
+    const savedLabel = localStorage.getItem('savedBookingLabel');
+    if (savedLabel) {
+      try {
+        const parsedData = JSON.parse(savedLabel);
+        if (parsedData.label && parsedData.label.trim() !== '') {
+          return parsedData.label;
+        }
+      } catch (e) {
+        console.error("Error parsing token", e);
+      }
+    }
+
+    // 2. Fall back to bookingButtonLabelText
+    const buttonLabel = this.businessServiceDto?.bookingButtonLabelText;
+    if (buttonLabel && buttonLabel.trim() !== '') {
+      return buttonLabel;
+    }
+
+    // 3. Fall back to businessType
+    const businessType = this.businessUser?.businessType;
+    if (businessType && businessType.trim() !== '') {
+      return businessType;
+    }
+
+    // 4. Fall back to businessProductName
+    const productName = this.businessServiceDto?.businessProductName;
+    if (productName && productName.trim() !== '') {
+      return productName;
+    }
+
+    // 5. Fall back to businessServiceName or name
+    const serviceName = this.businessServiceDto?.businessServiceName || this.businessServiceDto?.name;
+    if (serviceName && serviceName.trim() !== '') {
+      return serviceName;
+    }
+
+    return 'Room';
+  }
+
+  isNonRoomProperty(): boolean {
+    const label = this.getResolvedRoomLabel().trim().toLowerCase();
+    
+    // Normalize "accommodation" or "accomodation" to "room" (matching listing page getter)
+    const normalizedLabel = (label.includes('accommodation') || label.includes('accomodation')) ? 'room' : label;
+    
+    const isRoomOrAccommodation = normalizedLabel === 'room';
+    const isNonRoom = !isRoomOrAccommodation;
+    
+    console.log('[isNonRoomProperty Debug]:', {
+      resolvedRoomLabel: this.getResolvedRoomLabel(),
+      normalizedLabel,
+      isRoomOrAccommodation,
+      isNonRoomPropertyResult: isNonRoom,
+      resolvedTypeClassification: isNonRoom ? 'Non-Accommodation' : 'Accommodation/Room'
+    });
+    
+    return isNonRoom;
+  }
+
+  getFilteredAddOnServices(): any[] {
+    const visibleServices = this.getVisibleAddOnServices();
+    if (this.selectedServiceTypeFilter === 'All') {
+      return visibleServices;
+    }
+    return visibleServices.filter(addon => {
+      const type = addon.serviceType ? addon.serviceType.toString().trim() : 'Extras';
+      return type === this.selectedServiceTypeFilter;
+    });
+  }
+
   private readonly enableCalculationDebug = false;
 
   constructor(
@@ -1619,6 +1746,9 @@ export class BookingComponent implements OnInit {
   }
 
   showPayNow(): boolean {
+    const hasEnquiryRoom = this.bookingSummaryDetails?.selectedPlansSummary?.some(plan => plan.isEnquire === true);
+    if (hasEnquiryRoom) return false;
+
     if (this.channelManagerIntegration) return true;
 
     this.propertyData = this.token.getProperty();
@@ -1632,6 +1762,9 @@ export class BookingComponent implements OnInit {
   }
 
   showPayLater(): boolean {
+    const hasEnquiryRoom = this.bookingSummaryDetails?.selectedPlansSummary?.some(plan => plan.isEnquire === true);
+    if (hasEnquiryRoom) return false;
+
     this.propertyData = this.token.getProperty();
     this.accommodationData = this.propertyData.businessServiceDtoList?.filter(
       (entry) => entry.name === 'Accommodation',
@@ -13110,6 +13243,9 @@ sendWhatsappMessageToPropertyOwner() {
     if (this.isDayTripRoomWiseAddOn(service)) {
       return;
     }
+    if (this.isAddOnDisabled(service)) {
+      return;
+    }
 
     const serviceKey = this.getAddOnSelectionKey(service);
     const index = this.selectedAddOns.findIndex(
@@ -13150,6 +13286,75 @@ sendWhatsappMessageToPropertyOwner() {
     return this.selectedAddOns.some(
       (selectedService) => this.getAddOnSelectionKey(selectedService) === serviceKey,
     );
+  }
+
+  isPropertyEnquiryOnly(): boolean {
+    if (this.channelManagerIntegration) return false;
+    const propertyData: any = this.token.getProperty() || this.businessUser || {};
+    const accommodationData = propertyData.businessServiceDtoList?.filter(
+      (entry: any) => entry.name === 'Accommodation'
+    );
+    const hasPayLater = accommodationData?.some((a: any) => a.payLater);
+    const hasPayNow = this.value === true && this.businessUser?.paymentGateway != null;
+    const result = !hasPayNow && !hasPayLater;
+    
+    console.log('[Enquiry Debug - isPropertyEnquiryOnly]:', {
+      result,
+      hasPayNow,
+      hasPayLater,
+      thisValue: this.value,
+      paymentGateway: this.businessUser?.paymentGateway
+    });
+    
+    return result;
+  }
+
+  isRoomEnquiryOnly(): boolean {
+    const selectedPlans = this.bookingSummaryDetails?.selectedPlansSummary || [];
+    const result = selectedPlans.some(plan => plan.isEnquire === true);
+    
+    console.log('[Enquiry Debug - isRoomEnquiryOnly]:', {
+      result,
+      selectedPlansCount: selectedPlans.length,
+      plansWithEnquire: selectedPlans.map(p => ({ name: p.roomName, isEnquire: p.isEnquire }))
+    });
+    
+    return result;
+  }
+
+  /**
+   * Check if service should be disabled because another service of the same serviceType is already selected
+   */
+  isAddOnDisabled(addon: any): boolean {
+    if (this.isPropertyEnquiryOnly() || this.isRoomEnquiryOnly()) {
+      return true;
+    }
+
+    if (!addon || !addon.serviceType) {
+      return false;
+    }
+    
+    // For Room or Accommodation properties, we allow choosing multiple same service types.
+    // They are only restricted if it is a non-room property.
+    if (!this.isNonRoomProperty()) {
+      return false;
+    }
+
+    const type = addon.serviceType.toString().trim().toLowerCase();
+    if (type === 'accommodation' || type === 'room' || type === 'business service accommodation' || type === 'businessserviceaccommodation') {
+      return false;
+    }
+    // If this specific addon is already selected, it is not disabled (allow deselection)
+    if (this.isAddOnSelected(addon)) {
+      return false;
+    }
+    // Check if there is any other selected addon that has the same serviceType
+    return this.selectedAddOns.some(selected => {
+      if (!selected || !selected.serviceType) {
+        return false;
+      }
+      return selected.serviceType.toString().trim().toLowerCase() === type;
+    });
   }
 
   private getSelectedAddOn(service: any): any | undefined {
