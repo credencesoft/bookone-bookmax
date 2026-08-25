@@ -856,12 +856,13 @@
                         [(ngModel)]="booking.firstName"
                         #firstName="ngModel"
                         required
+                        placeholder="Add First Name"
                       />
                       <span
                         class="text-danger small"
                         *ngIf="
-                          (firstName.touched || orderForm.submitted) &&
-                          firstName.errors?.required
+                          (firstName.touched || orderForm.submitted || firstNameHasError) &&
+                          (!booking.firstName || booking.firstName.trim() === '')
                         "
                       >
                         First Name is required
@@ -880,12 +881,13 @@
                         [(ngModel)]="booking.lastName"
                         #lastName="ngModel"
                         required
+                        placeholder="Add Last Name"
                       />
                       <span
                         class="text-danger small"
                         *ngIf="
-                          (lastName.touched || orderForm.submitted) &&
-                          lastName.errors?.required
+                          (lastName.touched || orderForm.submitted || lastNameHasError) &&
+                          (!booking.lastName || booking.lastName.trim() === '')
                         "
                       >
                         Last Name is required
@@ -1962,12 +1964,13 @@
                         [(ngModel)]="booking.firstName"
                         #firstName="ngModel"
                         required
+                        placeholder="Add First Name"
                       />
                       <span
                         class="text-danger small"
                         *ngIf="
-                          (firstName.touched || orderForm.submitted) &&
-                          firstName.errors?.required
+                          (firstName.touched || orderForm.submitted || firstNameHasError) &&
+                          (!booking.firstName || booking.firstName.trim() === '')
                         "
                       >
                         First Name is required
@@ -1986,12 +1989,13 @@
                         [(ngModel)]="booking.lastName"
                         #lastName="ngModel"
                         required
+                        placeholder="Add Last Name"
                       />
                       <span
                         class="text-danger small"
                         *ngIf="
-                          (lastName.touched || orderForm.submitted) &&
-                          lastName.errors?.required
+                          (lastName.touched || orderForm.submitted || lastNameHasError) &&
+                          (!booking.lastName || booking.lastName.trim() === '')
                         "
                       >
                         Last Name is required
