@@ -199,6 +199,8 @@ export class BookingComponent implements OnInit {
 
   ngbDate: any;
   mobileHasError: boolean = false;
+  firstNameHasError: boolean = false;
+  lastNameHasError: boolean = false;
   countryCode: string = '';
   phoneWithoutCode: string = '';
   selectedCountry: string = '';
@@ -2751,14 +2753,12 @@ export class BookingComponent implements OnInit {
 
   validateFrom() {
     this.syncBookingMobile();
+    this.firstNameHasError = !this.booking.firstName || !this.booking.firstName.trim();
+    this.lastNameHasError = !this.booking.lastName || !this.booking.lastName.trim();
     if (
       EMAIL_Expression.test(this.booking.email) === true &&
-      this.booking.firstName != null &&
-      this.booking.firstName != undefined &&
-      this.booking.firstName != '' &&
-      this.booking.lastName != null &&
-      this.booking.lastName != undefined &&
-      this.booking.lastName != '' &&
+      !this.firstNameHasError &&
+      !this.lastNameHasError &&
       // this.booking.mobile != null &&
       // this.booking.mobile != undefined &&
       // this.booking.mobile != '' &&
@@ -12800,8 +12800,11 @@ sendWhatsappMessageToPropertyOwner() {
       this.mobileHasError = true;
     }
 
+    this.firstNameHasError = !this.booking.firstName || !this.booking.firstName.trim();
+    this.lastNameHasError = !this.booking.lastName || !this.booking.lastName.trim();
+
     this.syncBookingMobile();
-    return !this.mobileHasError;
+    return !this.mobileHasError && !this.firstNameHasError && !this.lastNameHasError;
   }
 
   setMobileNumberByCode(phoneNumber: string): void {
