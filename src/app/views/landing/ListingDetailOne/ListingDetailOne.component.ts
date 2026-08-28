@@ -7061,6 +7061,11 @@ adjustDates() {
 //   this.router.navigate(['/booking']);
 // }
 onBookNow() {
+  this.booking.noOfRooms = this.rooms || this.noOfrooms || 1;
+  this.booking.noOfPersons = this.totalAdults || this.adults || 1;
+  this.booking.noOfChildren = this.totalChildren || this.children || 0;
+  this.token.saveBookingData(this.booking);
+
   sessionStorage.setItem('isTwentyFourHourCheckIn', String(this.isTwentyFourHourCheckIn));
   sessionStorage.setItem('selectedCheckInTime', this.selectedCheckInTime);
   let currentUrl = window.location.href;
@@ -7992,9 +7997,9 @@ this.token.savePropertyUrl(currentUrl);
 
 
     const showRoomsAndGuests = this.showRoomsAndGuestsFilter;
-    this.booking.noOfRooms = showRoomsAndGuests ? this.rooms : 1;
-    this.booking.noOfPersons = showRoomsAndGuests ? this.totalAdults : 1;
-    this.booking.noOfChildren = showRoomsAndGuests ? this.totalChildren : 0;
+    this.booking.noOfRooms = showRoomsAndGuests ? this.rooms : (this.rooms || 1);
+    this.booking.noOfPersons = showRoomsAndGuests ? this.totalAdults : (this.totalAdults || this.adults || 1);
+    this.booking.noOfChildren = showRoomsAndGuests ? this.totalChildren : (this.totalChildren || this.children || 0);
     if (this.fromDate && this.toDate) {
       this.getDiffDate(this.toDate, this.fromDate);
     }
@@ -9010,9 +9015,9 @@ isRoomTooSmall(room: any): boolean {
 
 
     const showRoomsAndGuests = this.showRoomsAndGuestsFilter;
-    this.booking.noOfRooms = showRoomsAndGuests ? this.rooms : 1;
-    this.booking.noOfPersons = showRoomsAndGuests ? this.adults : 1;
-    this.booking.noOfChildren = showRoomsAndGuests ? this.children : 0;
+    this.booking.noOfRooms = showRoomsAndGuests ? this.rooms : (this.noOfrooms || 1);
+    this.booking.noOfPersons = showRoomsAndGuests ? this.adults : (this.adults || 1);
+    this.booking.noOfChildren = showRoomsAndGuests ? this.children : (this.children || 0);
     // this.token.saveBookingData(this.booking);
     // Logger.log('checkAvailability submit' + JSON.stringify(this.booking));
 

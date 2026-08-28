@@ -502,13 +502,7 @@ export class BookingComponent implements OnInit {
     const isRoomOrAccommodation = normalizedLabel === 'room';
     const isNonRoom = !isRoomOrAccommodation;
     
-    console.log('[isNonRoomProperty Debug]:', {
-      resolvedRoomLabel: this.getResolvedRoomLabel(),
-      normalizedLabel,
-      isRoomOrAccommodation,
-      isNonRoomPropertyResult: isNonRoom,
-      resolvedTypeClassification: isNonRoom ? 'Non-Accommodation' : 'Accommodation/Room'
-    });
+
     
     return isNonRoom;
   }
@@ -610,6 +604,19 @@ export class BookingComponent implements OnInit {
     if (this.token.getBookingData() !== null) {
       this.bookingData = this.token.getBookingData();
       this.booking = this.bookingData;
+      if (this.booking) {
+        if (this.totalPlanChildren > 0) {
+          this.booking.noOfChildren = this.totalPlanChildren;
+        }
+        if (this.totalPlanAdults > 0) {
+          this.booking.noOfPersons = this.totalPlanAdults;
+        }
+      }
+      console.log('%c[BOOKING PAGE LOAD] RETRIEVED SEARCH STATE:', 'background: #3b82f6; color: #fff; font-weight: bold; padding: 4px 8px; border-radius: 4px;', {
+        adults: this.booking?.noOfPersons,
+        children: this.booking?.noOfChildren,
+        childrenUnder5years: this.booking?.noOfChildrenUnder5years
+      });
       this.fromDate = new NgbDate(
         this.mileSecondToNGBDate(this.booking.fromDate).year,
         this.mileSecondToNGBDate(this.booking.fromDate).month,
@@ -885,20 +892,7 @@ export class BookingComponent implements OnInit {
       finalButton = 'Pay Later';
     }
 
-    console.log(
-      `%c[Antigravity Booking Page Diagnostic]\n` +
-      `-----------------------------------------\n` +
-      `Active Checkout Button : ${finalButton}\n` +
-      `-----------------------------------------\n` +
-      `websiteinstantBooking  : ${accService.websiteinstantBooking}\n` +
-      `instantBooking         : ${accService.instantBooking}\n` +
-      `payLater               : ${accService.payLater}\n` +
-      `bookoneActive          : ${accService.bookoneActive}\n` +
-      `paymentGateway         : ${this.businessUser?.paymentGateway || 'None (null)'}\n` +
-      `bookingengineurl param : ${this.bookingengineurl === 'true' ? 'true' : 'false (or undefined)'}\n` +
-      `-----------------------------------------`,
-      'background: #3b82f6; color: white; padding: 10px; border-radius: 4px; font-weight: bold; font-family: monospace; line-height: 1.5;'
-    );
+
 
     this.token.clearBookingDataObj();
   }
@@ -3093,19 +3087,7 @@ export class BookingComponent implements OnInit {
     enquiryForm.payableAmount = planTotalAmount;
     enquiryForm.roomName = plan.roomName;
     enquiryForm.extraPersonCharge = (plan?.extraPersonAdultCountAmount || plan?.SingleDayextraPersonAdultCountAmount || 0) * this.getPlanPayloadNights(plan);
-    console.log('Extra Person Charge Calculation:', {
-      extraPersonAdultCountAmount: plan?.extraPersonAdultCountAmount,
-      SingleDayextraPersonAdultCountAmount: plan?.SingleDayextraPersonAdultCountAmount,
-      nights: this.getPlanPayloadNights(plan),
-      calculatedExtraPersonCharge: enquiryForm.extraPersonCharge
-    });
     enquiryForm.extraChildCharge = (plan?.extraPersonChildCountAmount || plan?.SingleDayextraPersonChildCountAmount || 0) * this.getPlanPayloadNights(plan);
-    console.log('Extra Child Charge Calculation:', {
-      extraPersonChildCountAmount: plan?.extraPersonChildCountAmount,
-      SingleDayextraPersonChildCountAmount: plan?.SingleDayextraPersonChildCountAmount,
-      nights: this.getPlanPayloadNights(plan),
-      calculatedExtraChildCharge: enquiryForm.extraChildCharge
-    });
     enquiryForm.noOfExtraChild = plan.extraCountChild;
     const bookingEngineFlag = sessionStorage.getItem('BookingEngine');
     this.websiteUrlBookingEngine = bookingEngineFlag === 'true';
@@ -3201,7 +3183,7 @@ export class BookingComponent implements OnInit {
     enquiryForm.accountManager = '';
     enquiryForm.consultantPerson = '';
     enquiryForm.noOfRooms = this.isDayTripPlan(plan) ? 1 : Number(plan.selectedRoomnumber);
-    enquiryForm.noOfChildren = plan.extraCountChild;
+    enquiryForm.noOfChildren = plan.extraCountChild || this.booking.noOfChildren || 0;
     enquiryForm.accommodationType = this.token.getProperty().businessType;
     enquiryForm.status = 'Enquiry';
     enquiryForm.specialNotes = booking.notes || '';
@@ -8729,12 +8711,12 @@ export class BookingComponent implements OnInit {
     booking.lastName = this.booking.lastName;
     booking.mobile = this.booking.mobile;
     booking.email = this.booking.email;
-    booking.noOfChildren = plan.extraCountChild;
+    booking.noOfChildren = plan.extraCountChild || this.booking.noOfChildren || 0;
     // if(this.groupBookingId){
     //   booking.groupBookingId = this.groupBookingId;
     // }
     booking.groupBookingId = null;
-    booking.noOfChildrenUnder5years = plan.childrenBelow5years;
+    booking.noOfChildrenUnder5years = plan.childrenBelow5years || this.booking.noOfChildrenUnder5years || 0;
     booking.noOfNights = this.getPlanPayloadNights(plan);
     booking.noOfRooms = this.isDayTripPlan(plan) ? 1 : Number(plan.selectedRoomnumber);
     booking.netAmount = this.getPlanBaseAmount(plan).toFixed(2);
@@ -9037,7 +9019,7 @@ export class BookingComponent implements OnInit {
     enquiryForm.accountManager = '';
     enquiryForm.consultantPerson = '';
     enquiryForm.noOfRooms = this.isDayTripPlan(plan) ? 1 : Number(plan.selectedRoomnumber);
-    enquiryForm.noOfChildren = plan.extraCountChild;
+    enquiryForm.noOfChildren = plan.extraCountChild || this.booking.noOfChildren || 0;
     enquiryForm.accommodationType = this.token.getProperty().businessType;
     enquiryForm.status = 'Booked';
     enquiryForm.specialNotes = booking.notes || '';
@@ -11331,6 +11313,11 @@ export class BookingComponent implements OnInit {
   }
 
   async submitForm(plan: any, bookingSummary: any) {
+    console.log('%c[BOOKING ENGINE] CHOSEN GUESTS SUMMARY:', 'background: #22c55e; color: #fff; font-weight: bold; padding: 4px 8px; border-radius: 4px;', {
+      adults: this.booking?.noOfPersons || 1,
+      childrenUnder12Years: this.booking?.noOfChildren || 0,
+      childrenUnder5Years: this.booking?.noOfChildrenUnder5years || 0
+    });
     const booking: any = this.booking;
     if (this.specialDiscountData) {
       booking.netAmount = Number(plan.discountedPrice.toFixed(2));
@@ -11466,7 +11453,8 @@ export class BookingComponent implements OnInit {
     enquiryForm.accountManager = '';
     enquiryForm.consultantPerson = '';
     enquiryForm.noOfRooms = this.isDayTripPlan(plan) ? 1 : Number(plan.selectedRoomnumber);
-    enquiryForm.noOfChildren = plan.extraCountChild;
+    enquiryForm.noOfChildren = plan.extraCountChild || this.booking.noOfChildren || 0;
+
     enquiryForm.accommodationType = this.token.getProperty().businessType;
     enquiryForm.status = 'Enquiry';
     enquiryForm.specialNotes = booking.notes || '';
@@ -11563,7 +11551,8 @@ export class BookingComponent implements OnInit {
     this.token.saveToTime(String(checkOutDateTimeOne));
 
     bookingForm.noOfRooms = this.isDayTripPlan(plan) ? 1 : Number(plan.selectedRoomnumber);
-    bookingForm.noOfChildren = plan.extraCountChild;
+    bookingForm.noOfChildren = plan.extraCountChild || this.booking.noOfChildren || 0;
+
     bookingForm.propertyId = 107;
     bookingForm.propertyId = this.token.getProperty().id;
     bookingForm.taxDetails = this.token
@@ -13316,11 +13305,7 @@ sendWhatsappMessageToPropertyOwner() {
     const selectedPlans = this.bookingSummaryDetails?.selectedPlansSummary || [];
     const result = selectedPlans.some(plan => plan.isEnquire === true);
     
-    console.log('[Enquiry Debug - isRoomEnquiryOnly]:', {
-      result,
-      selectedPlansCount: selectedPlans.length,
-      plansWithEnquire: selectedPlans.map(p => ({ name: p.roomName, isEnquire: p.isEnquire }))
-    });
+
     
     return result;
   }
