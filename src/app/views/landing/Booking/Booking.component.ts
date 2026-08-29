@@ -612,11 +612,11 @@ export class BookingComponent implements OnInit {
           this.booking.noOfPersons = this.totalPlanAdults;
         }
       }
-      console.log('%c[BOOKING PAGE LOAD] RETRIEVED SEARCH STATE:', 'background: #3b82f6; color: #fff; font-weight: bold; padding: 4px 8px; border-radius: 4px;', {
-        adults: this.booking?.noOfPersons,
-        children: this.booking?.noOfChildren,
-        childrenUnder5years: this.booking?.noOfChildrenUnder5years
-      });
+      // console.log('%c[BOOKING PAGE LOAD] RETRIEVED SEARCH STATE:', 'background: #3b82f6; color: #fff; font-weight: bold; padding: 4px 8px; border-radius: 4px;', {
+      //   adults: this.booking?.noOfPersons,
+      //   children: this.booking?.noOfChildren,
+      //   childrenUnder5years: this.booking?.noOfChildrenUnder5years
+      // });
       this.fromDate = new NgbDate(
         this.mileSecondToNGBDate(this.booking.fromDate).year,
         this.mileSecondToNGBDate(this.booking.fromDate).month,
@@ -1741,33 +1741,106 @@ export class BookingComponent implements OnInit {
     }
   }
 
+  isCheckInWithin48Hours(checkInDateStr: string | any): boolean {
+    let year: number;
+    let month: number;
+    let day: number;
+
+    if (this.fromDate && this.fromDate.year && this.fromDate.month && this.fromDate.day) {
+      year = this.fromDate.year;
+      month = this.fromDate.month;
+      day = this.fromDate.day;
+    } else {
+      const targetDateStr = checkInDateStr || this.booking?.fromDate;
+      if (!targetDateStr) return false;
+      const ngb = this.mileSecondToNGBDate(targetDateStr);
+      if (!ngb || isNaN(ngb.year) || isNaN(ngb.month) || isNaN(ngb.day)) return false;
+      year = ngb.year;
+      month = ngb.month;
+      day = ngb.day;
+    }
+
+    const checkInDate = new Date(year, month - 1, day);
+    checkInDate.setHours(0, 0, 0, 0);
+    
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    const diffTime = checkInDate.getTime() - today.getTime();
+    const diffHours = diffTime / (1000 * 60 * 60);
+    const result = diffHours < 48;
+
+    const currentKey = `${year}-${month}-${day}`;
+    if ((window as any).bookingLastCheckInLogged !== currentKey) {
+      (window as any).bookingLastCheckInLogged = currentKey;
+      // console.log('[Booking 48h Debug]:', {
+      //   selectedDate: currentKey,
+      //   checkInDateObj: checkInDate.toString(),
+      //   todayObj: today.toString(),
+      //   diffHours: diffHours,
+      //   isWithin48h: result,
+      //   payNowConfigured: this.value,
+      //   hasGateway: this.businessUser?.paymentGateway != null
+      // });
+    }
+
+    return result;
+  }
+
   showPayNow(): boolean {
     const hasEnquiryRoom = this.bookingSummaryDetails?.selectedPlansSummary?.some(plan => plan.isEnquire === true);
     if (hasEnquiryRoom) return false;
 
     if (this.channelManagerIntegration) return true;
 
-    this.propertyData = this.token.getProperty();
+    this.propertyData = this.token.getProperty() || this.businessUser || {};
     this.accommodationData = this.propertyData.businessServiceDtoList?.filter(
       (entry) => entry.name === 'Accommodation',
     );
-    const hasPayLater = this.accommodationData?.some((a) => a.payLater);
-    if (hasPayLater) return false;
 
-    return this.value === true && this.businessUser?.paymentGateway != null;
+    const hasPayNow = this.value === true && this.businessUser?.paymentGateway != null;
+    const hasPayLater = this.accommodationData?.some((a) => a.payLater);
+
+    if (hasPayNow && !hasPayLater) {
+      return true;
+    }
+
+    if (hasPayLater) {
+      const isWithin48h = this.isCheckInWithin48Hours(this.booking?.fromDate);
+      if (isWithin48h) {
+        return false;
+      } else {
+        return true; // Always Pay Now if > 48h and Pay Later is ON
+      }
+    }
+
+    return false;
   }
 
   showPayLater(): boolean {
     const hasEnquiryRoom = this.bookingSummaryDetails?.selectedPlansSummary?.some(plan => plan.isEnquire === true);
     if (hasEnquiryRoom) return false;
 
-    this.propertyData = this.token.getProperty();
+    this.propertyData = this.token.getProperty() || this.businessUser || {};
     this.accommodationData = this.propertyData.businessServiceDtoList?.filter(
       (entry) => entry.name === 'Accommodation',
     );
 
+    const hasPayNow = this.value === true && this.businessUser?.paymentGateway != null;
     const hasPayLater = this.accommodationData?.some((a) => a.payLater);
-    if (hasPayLater) return true;
+
+    if (hasPayNow && !hasPayLater) {
+      return false;
+    }
+
+    if (hasPayLater) {
+      const isWithin48h = this.isCheckInWithin48Hours(this.booking?.fromDate);
+      if (isWithin48h) {
+        return true;
+      } else {
+        return false; // Beyond 48h -> Always Pay Now
+      }
+    }
 
     return false;
   }
@@ -2320,7 +2393,7 @@ export class BookingComponent implements OnInit {
     const chosenTime = sessionStorage.getItem('selectedCheckInTime') || '12:00';
 
     this.businessUser.businessServiceDtoList.forEach((item) => {
-      if (item.name === 'Accommodation') {
+      if (item.name === 'Accommodation' || item.name === 'Accomodation' || item.name === 'Room') {
         if (is24Hour) {
           this.fromTime = chosenTime;
           this.toTime = chosenTime;
@@ -2330,6 +2403,13 @@ export class BookingComponent implements OnInit {
         }
         this.channelManagerIntegration = item.cmIntegration;
         this.bookoneActiveData = item.bookoneActive;
+
+        // Populate this.value (Instant Booking status) for Pay Now check
+        if (this.bookingengineurl === 'true') {
+          this.value = item.websiteinstantBooking;
+        } else {
+          this.value = item.instantBooking;
+        }
       }
     });
     // 1️⃣ Property timezone
@@ -11313,11 +11393,11 @@ export class BookingComponent implements OnInit {
   }
 
   async submitForm(plan: any, bookingSummary: any) {
-    console.log('%c[BOOKING ENGINE] CHOSEN GUESTS SUMMARY:', 'background: #22c55e; color: #fff; font-weight: bold; padding: 4px 8px; border-radius: 4px;', {
-      adults: this.booking?.noOfPersons || 1,
-      childrenUnder12Years: this.booking?.noOfChildren || 0,
-      childrenUnder5Years: this.booking?.noOfChildrenUnder5years || 0
-    });
+    // console.log('%c[BOOKING ENGINE] CHOSEN GUESTS SUMMARY:', 'background: #22c55e; color: #fff; font-weight: bold; padding: 4px 8px; border-radius: 4px;', {
+    //   adults: this.booking?.noOfPersons || 1,
+    //   childrenUnder12Years: this.booking?.noOfChildren || 0,
+    //   childrenUnder5Years: this.booking?.noOfChildrenUnder5years || 0
+    // });
     const booking: any = this.booking;
     if (this.specialDiscountData) {
       booking.netAmount = Number(plan.discountedPrice.toFixed(2));
@@ -13290,13 +13370,13 @@ sendWhatsappMessageToPropertyOwner() {
     const hasPayNow = this.value === true && this.businessUser?.paymentGateway != null;
     const result = !hasPayNow && !hasPayLater;
     
-    console.log('[Enquiry Debug - isPropertyEnquiryOnly]:', {
-      result,
-      hasPayNow,
-      hasPayLater,
-      thisValue: this.value,
-      paymentGateway: this.businessUser?.paymentGateway
-    });
+    // console.log('[Enquiry Debug - isPropertyEnquiryOnly]:', {
+    //   result,
+    //   hasPayNow,
+    //   hasPayLater,
+    //   thisValue: this.value,
+    //   paymentGateway: this.businessUser?.paymentGateway
+    // });
     
     return result;
   }

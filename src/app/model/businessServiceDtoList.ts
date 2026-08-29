@@ -60,5 +60,8 @@ export class BusinessServiceDtoList {
   anyTimeCheckIn?: boolean;
   childMinAge?: number;
   childMaxAge?: number;
+  websiteinstantBooking?: boolean;
+  instantBooking?: boolean;
+  payLater?: boolean;
   constructor() {}
 }

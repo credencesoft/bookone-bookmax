@@ -2195,22 +2195,12 @@ getBookingButtonText(): string {
     return 'Enquiry Now';
   }
 
-  const propertyData: any = this.token.getProperty() || this.businessUser || {};
-  const accommodationData = propertyData.businessServiceDtoList?.filter(
-    (entry: any) => entry.name === 'Accommodation'
-  );
-  const cmIntegration = accommodationData?.some((a: any) => a.cmIntegration);
-  if (cmIntegration) {
+  if (this.showPayNow()) {
     return 'Pay Now';
   }
 
-  const hasPayLater = accommodationData?.some((a: any) => a.payLater);
-  if (hasPayLater) {
+  if (this.showPayLater()) {
     return 'Pay Later';
-  }
-
-  if (this.value === true && this.businessUser?.paymentGateway != null) {
-    return 'Pay Now';
   }
 
   return 'Enquiry Now';
@@ -6291,10 +6281,10 @@ onCheckOutClosed(): void {
           } else if (isPayLater) {
             bookingMode = 'Pay Later';
           }
-          console.log(
-            `%c[Antigravity Landing Page Log] Banner/Promotions Show: ${isPayNow} | Booking Mode: ${bookingMode}`,
-            'background: #10b981; color: white; padding: 6px 12px; border-radius: 4px; font-weight: bold; font-family: sans-serif;'
-          );
+          // console.log(
+          //   `%c[Antigravity Landing Page Log] Banner/Promotions Show: ${isPayNow} | Booking Mode: ${bookingMode}`,
+          //   'background: #10b981; color: white; padding: 6px 12px; border-radius: 4px; font-weight: bold; font-family: sans-serif;'
+          // );
 
           this.changeDetectorRefs.detectChanges();
         } else {
@@ -6458,18 +6448,30 @@ onCheckOutClosed(): void {
     }
   }
   showPayLater(): boolean {
-    // const bookoneActive = (this.businessUser as any)?.bookoneActive;
-    // if (bookoneActive === false) {
-    //   return false;
-    // }
+    // Strict enquiry check: if any room is enquiry-only, Pay Later is disabled
+    const hasEnquiryRoom = this.selectedPlansSummary?.some(plan => plan.isEnquire === true);
+    if (hasEnquiryRoom) return false;
 
     const propertyData: any = this.token.getProperty() || this.businessUser || {};
     const accommodationData = propertyData.businessServiceDtoList?.filter(
       (entry: any) => entry.name === 'Accommodation'
     );
 
+    const hasPayNow = this.value === true && this.businessUser?.paymentGateway != null;
     const hasPayLater = accommodationData?.some((a: any) => a.payLater);
-    if (hasPayLater) return true;
+
+    if (hasPayNow && !hasPayLater) {
+      return false;
+    }
+
+    if (hasPayLater) {
+      const isWithin48h = this.isCheckInWithin48Hours(this.checkinDate);
+      if (isWithin48h) {
+        return true;
+      } else {
+        return false; // Beyond 48h -> Always Pay Now
+      }
+    }
 
     return false;
   }
@@ -9560,6 +9562,52 @@ onCouponInputChange(event: string) {
     );
   }
 
+  isCheckInWithin48Hours(checkInDateStr: string | any): boolean {
+    let year: number;
+    let month: number;
+    let day: number;
+
+    if (this.fromDate && this.fromDate.year && this.fromDate.month && this.fromDate.day) {
+      year = this.fromDate.year;
+      month = this.fromDate.month;
+      day = this.fromDate.day;
+    } else {
+      const targetDateStr = checkInDateStr || this.booking?.fromDate || this.checkinDate;
+      if (!targetDateStr) return false;
+      const ngb = this.mileSecondToNGBDate(targetDateStr);
+      if (!ngb || isNaN(ngb.year) || isNaN(ngb.month) || isNaN(ngb.day)) return false;
+      year = ngb.year;
+      month = ngb.month;
+      day = ngb.day;
+    }
+
+    const checkInDate = new Date(year, month - 1, day);
+    checkInDate.setHours(0, 0, 0, 0);
+    
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    const diffTime = checkInDate.getTime() - today.getTime();
+    const diffHours = diffTime / (1000 * 60 * 60);
+    const result = diffHours < 48;
+
+    const currentKey = `${year}-${month}-${day}`;
+    if ((window as any).listingLastCheckInLogged !== currentKey) {
+      (window as any).listingLastCheckInLogged = currentKey;
+      // console.log('[Listing 48h Debug]:', {
+      //   selectedDate: currentKey,
+      //   checkInDateObj: checkInDate.toString(),
+      //   todayObj: today.toString(),
+      //   diffHours: diffHours,
+      //   isWithin48h: result,
+      //   payNowConfigured: this.value,
+      //   hasGateway: this.businessUser?.paymentGateway != null
+      // });
+    }
+
+    return result;
+  }
+
   showPayNow(): boolean {
     const propertyData: any = this.token.getProperty() || this.businessUser || {};
     const accommodationData = propertyData.businessServiceDtoList?.filter(
@@ -9568,10 +9616,27 @@ onCouponInputChange(event: string) {
     const cmIntegration = accommodationData?.some((a: any) => a.cmIntegration);
     if (cmIntegration) return true;
 
-    const hasPayLater = accommodationData?.some((a: any) => a.payLater);
-    if (hasPayLater) return false;
+    // Strict enquiry check: if any room is enquiry-only, Pay Now is disabled
+    const hasEnquiryRoom = this.selectedPlansSummary?.some(plan => plan.isEnquire === true);
+    if (hasEnquiryRoom) return false;
 
-    return this.value === true && this.businessUser?.paymentGateway != null;
+    const hasPayNow = this.value === true && this.businessUser?.paymentGateway != null;
+    const hasPayLater = accommodationData?.some((a: any) => a.payLater);
+
+    if (hasPayNow && !hasPayLater) {
+      return true;
+    }
+
+    if (hasPayLater) {
+      const isWithin48h = this.isCheckInWithin48Hours(this.checkinDate);
+      if (isWithin48h) {
+        return false;
+      } else {
+        return true; // Always Pay Now if > 48h and Pay Later is ON
+      }
+    }
+
+    return false;
   }
 
   isEnquiryOnly(): boolean {
