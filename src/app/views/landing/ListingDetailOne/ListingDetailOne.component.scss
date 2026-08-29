@@ -4554,3 +4554,159 @@ input:checked + .switch-slider:before {
   }
 }
 
+/* ==========================================
+   MODERN MINIMALIST CALENDAR STYLING OVERRIDES
+   ========================================== */
+::ng-deep {
+  ngb-datepicker {
+    border: none !important;
+    border-radius: 16px !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.02) !important;
+    background-color: #ffffff !important;
+    padding: 16px !important;
+    border: 1px solid #f1f5f9 !important;
+    overflow: hidden;
+
+    // Header month/year navigation
+    .ngb-dp-header {
+      background-color: #ffffff !important;
+      border-bottom: none !important;
+      padding-bottom: 12px !important;
+
+      button.btn-link {
+        background: #f8fafc !important;
+        border-radius: 50% !important;
+        width: 32px !important;
+        height: 32px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        transition: all 0.2s ease !important;
+        color: #475569 !important;
+        border: none !important;
+        outline: none !important;
+        box-shadow: none !important;
+
+        &:hover {
+          background-color: #f1f5f9 !important;
+          color: #0f172a !important;
+        }
+
+        .ngb-dp-navigation-chevron {
+          border-color: #475569 !important;
+          border-style: solid !important;
+          border-width: 0.15em 0.15em 0 0 !important;
+          display: inline-block !important;
+          width: 0.5em !important;
+          height: 0.5em !important;
+        }
+      }
+
+      .ngb-dp-navigation-select {
+        select.custom-select {
+          border: 1px solid #e2e8f0 !important;
+          border-radius: 6px !important;
+          background: #ffffff !important;
+          font-weight: 500 !important;
+          font-size: 14px !important;
+          color: #0f172a !important;
+          outline: none !important;
+          cursor: pointer !important;
+          padding: 4px 8px !important;
+          margin: 0 4px !important;
+          height: auto !important;
+          box-shadow: none !important;
+        }
+      }
+    }
+
+    // Weekdays row styling
+    .ngb-dp-weekdays {
+      background-color: #ffffff !important;
+      border-bottom: none !important;
+      margin-bottom: 8px !important;
+
+      .ngb-dp-weekday {
+        color: #94a3b8 !important;
+        font-size: 11px !important;
+        font-weight: 600 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.05em !important;
+        font-style: normal !important;
+      }
+    }
+
+    // Days grid styling
+    .ngb-dp-months {
+      .ngb-dp-month {
+        .ngb-dp-day {
+          font-size: 13px !important;
+          font-weight: 500 !important;
+          color: #334155 !important;
+          outline: none !important;
+          display: flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          width: 36px !important;
+          height: 36px !important;
+          margin: 2px !important;
+          border-radius: 50% !important;
+          transition: all 0.2s ease !important;
+          cursor: pointer !important;
+
+          &:hover {
+            background-color: #f1f5f9 !important;
+            color: #0f172a !important;
+          }
+
+          // Focused & custom selected states styling
+          .custom-day {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            
+            &.focused {
+              background-color: #f1f5f9;
+            }
+
+            &.range {
+              background-color: #f0fdf4 !important; // Light green/tint range background
+              color: #15803d !important;
+              border-radius: 0 !important;
+            }
+
+            &.selected {
+              background-color: var(--secondary, #0b01cc) !important;
+              color: #ffffff !important;
+              font-weight: 600 !important;
+              box-shadow: 0 4px 10px rgba(11, 1, 204, 0.25) !important;
+            }
+          }
+
+          // Fallback states for standard ngb-datepicker classes
+          &.bg-primary {
+            background-color: var(--secondary, #0b01cc) !important;
+            color: #ffffff !important;
+            font-weight: 600 !important;
+            box-shadow: 0 4px 10px rgba(11, 1, 204, 0.25) !important;
+          }
+
+          &.text-white {
+            color: #ffffff !important;
+          }
+
+          &.disabled {
+            color: #cbd5e1 !important;
+            background: transparent !important;
+            cursor: not-allowed !important;
+            pointer-events: none !important;
+          }
+        }
+      }
+    }
+  }
+}
+

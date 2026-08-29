@@ -1321,8 +1321,8 @@ checkValidCouponOrNot(couponList?){
     booking.lastName = this.booking.lastName;
     booking.mobile = this.booking.mobile;
     booking.email = this.booking.email;
-    booking.noOfChildren = plan.childrenAbove5years;
-    booking.noOfChildrenUnder5years = plan.childrenBelow5years;
+    booking.noOfChildren = plan.childrenAbove5years || this.booking.noOfChildren || 0;
+    booking.noOfChildrenUnder5years = plan.childrenBelow5years || this.booking.noOfChildrenUnder5years || 0;
     booking.noOfNights = plan.nights;
     booking.noOfRooms = Number(plan.selectedRoomnumber);
     booking.netAmount = plan.price;
