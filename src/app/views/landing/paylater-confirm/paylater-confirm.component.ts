@@ -42,7 +42,8 @@ export class PaylaterConfirmComponent {
   bookingSummaryDetails: any;
   totalPlanAdults: number = 0;
   totalPlanChildren: number = 0;
-  bookingsResponseList: any;
+  bookingsResponseList: any[] = [];
+  selectedAddOnServices: any[] = [];
   expanded: boolean = false;
     url: string;
     activeGoogleCenter: boolean = false;
@@ -58,28 +59,30 @@ export class PaylaterConfirmComponent {
     this.businessOfferDto = new BusinessOfferDto();
     this.businessUser = new BusinessUser();
     this.PropertyUrl = this.token.getPropertyUrl();
-    this.propertyDetails = this.token.getProperty();
+    this.propertyDetails = this.token.getProperty() || {};
     this.bookingone = this.token.getBookingData();
-    this.booking = this.token.getBookingDataObj();
+    this.booking = this.token.getBookingDataObj() || this.bookingone || {};
+    this.bookingone = this.bookingone || this.booking;
     const couponCodeValues = sessionStorage.getItem('selectedPromoData');
 
       if (couponCodeValues) {
         const parsed = JSON.parse(couponCodeValues); // convert to object
-        this.specialDiscountData = JSON.parse(couponCodeValues);
+        this.specialDiscountData = parsed;
           console.log("this.privatePromotionData", this.specialDiscountData);
       if (parsed.discountPercentage) {
             this.specialDiscountPercentage = parsed.discountPercentage;
           }
       }
-    if (this.bookingone.taxDetails?.length > 0) {
-      this.bookingone.taxDetails.forEach((element) => {
+    const taxDetails = this.bookingone?.taxDetails || this.propertyDetails?.taxDetails || [];
+    if (taxDetails.length > 0) {
+      taxDetails.forEach((element) => {
         if (element.name === 'GST') {
           this.booking.taxDetails = [];
           this.booking.taxDetails.push(element);
           this.taxPercentage = element.percentage;
           this.booking.taxPercentage = this.taxPercentage;
 
-          if (element.taxSlabsList.length > 0) {
+          if (element.taxSlabsList?.length > 0) {
             element.taxSlabsList.forEach((element2) => {
               if (
                 element2.maxAmount > this.booking.roomPrice &&
@@ -99,11 +102,11 @@ export class PaylaterConfirmComponent {
       // this.taxPercentage = this.booking.taxDetails[0].percentage;
     }
     this.savedServices = this.token.getSelectedServices();
-    this.currency = this.propertyDetails.localCurrency.toUpperCase();
+    this.currency = this.propertyDetails?.localCurrency?.toUpperCase();
     this.storedPromo = localStorage.getItem('selectPromo');
     if (this.storedPromo == 'true') {
       const selectedPromoData = JSON.parse(
-        localStorage.getItem('selectedPromoData')
+        localStorage.getItem('selectedPromoData') || '{}'
       );
       this.selectedPromo = selectedPromoData;
       // this.businessOfferDto = selectedPromoData
@@ -151,14 +154,208 @@ export class PaylaterConfirmComponent {
 
   const bookingsResponseList = sessionStorage.getItem('bookingsResponseList');
   if (bookingsResponseList) {
-    this.bookingsResponseList = JSON.parse(bookingsResponseList);
+    const parsedBookings = JSON.parse(bookingsResponseList);
+    this.bookingsResponseList = parsedBookings?.length
+      ? parsedBookings
+      : this.getSelectedDetailsFromSummary();
           this.totalDiscount = this.bookingsResponseList.reduce(
     (sum, booking) => sum + (booking.discountAmount || 0),
     0
   );
     this.calculateTotalGuestsFromPlans();
     // console.log('bookingsResponseList', this.bookingsResponseList);
+  } else {
+    this.bookingsResponseList = this.getSelectedDetailsFromSummary();
+    this.totalDiscount = this.bookingsResponseList.reduce(
+      (sum, booking) => sum + (booking.discountAmount || 0),
+      0
+    );
   }
+  this.selectedAddOnServices = this.getSelectedAddOnServices();
+}
+getSelectedDetailsFromSummary(): any[] {
+  const plans = this.bookingSummaryDetails?.selectedPlansSummary || [];
+
+  return plans.map((plan) => ({
+    roomId: plan.roomId,
+    roomName: plan.roomName,
+    roomRatePlanName: plan.planCodeName || plan.roomRatePlanName,
+    totalRoomTariffBeforeDiscount:
+      plan.totalRoomTariffBeforeDiscount ||
+      plan.roomTariffBeforeDiscount ||
+      plan.price ||
+      0,
+    noOfNights: plan.noOfNights || this.booking?.noOfNights || 0,
+    noOfRooms: plan.selectedRoomnumber || plan.noOfRooms || 1,
+    extraPersonCharge:
+      plan.extraPersonCharge ||
+      plan.extraPersonAdultCountAmount ||
+      plan.SingleDayextraPersonAdultCountAmount ||
+      0,
+    extraChildCharge:
+      plan.extraChildCharge ||
+      plan.extraPersonChildCountAmount ||
+      plan.SingleDayextraPersonChildCountAmount ||
+      0,
+    discountPercentage:
+      plan.discountPercentage || this.specialDiscountData?.discountPercentage || 0,
+    discountAmount: plan.discountAmount || 0,
+    beforeTaxAmount: plan.discountedPrice || plan.beforeTaxAmount || plan.price || 0,
+    taxAmount: plan.taxPercentageperroom || plan.taxAmount || 0,
+    totalAmount: plan.finalPrice || plan.totalAmount || 0,
+  }));
+}
+getSelectedAddOnServices(): any[] {
+  const servicesFromBookings = (this.bookingsResponseList || []).flatMap(
+    (booking) => {
+      if (Array.isArray(booking?.selectedServices)) {
+        return booking.selectedServices;
+      }
+      if (Array.isArray(booking?.selectedAddOns)) {
+        return booking.selectedAddOns;
+      }
+      if (Array.isArray(booking?.services)) {
+        return booking.services;
+      }
+      return [];
+    }
+  );
+
+  if (servicesFromBookings.length > 0) {
+    return servicesFromBookings;
+  }
+
+  if (Array.isArray(this.bookingSummaryDetails?.propertyServiceListDataOne)) {
+    return this.bookingSummaryDetails.propertyServiceListDataOne;
+  }
+
+  if (Array.isArray(this.savedServices)) {
+    return this.savedServices;
+  }
+
+  return [];
+}
+getServiceName(service: any): string {
+  return service?.name || service?.serviceName || service?.propertyServiceName || 'Add-on Service';
+}
+getServiceQuantity(service: any): number {
+  return this.toAmount(service?.quantity || service?.count || service?.quantityApplied || 1);
+}
+getServiceSubtotal(service: any): number {
+  const beforeTaxAmount = service?.beforeTaxAmount ?? service?.servicePrice ?? service?.unitPrice ?? 0;
+  return this.toAmount(beforeTaxAmount);
+}
+getServiceTax(service: any): number {
+  return this.toAmount(service?.taxAmount || 0);
+}
+getServiceTotal(service: any): number {
+  return this.toAmount(
+    service?.afterTaxAmount ??
+      service?.netAmount ??
+      this.getServiceSubtotal(service) + this.getServiceTax(service)
+  );
+}
+getAddOnsSubtotal(): number {
+  const summarySubtotal =
+    this.bookingSummaryDetails?.totalAddOnsPrice -
+    this.bookingSummaryDetails?.totaltaxfacilityAmount;
+
+  if (summarySubtotal > 0) {
+    return this.toAmount(summarySubtotal);
+  }
+
+  return this.toAmount(
+    this.selectedAddOnServices.reduce(
+      (sum, service) => sum + this.getServiceSubtotal(service),
+      0
+    )
+  );
+}
+getAddOnsTax(): number {
+  if (this.bookingSummaryDetails?.totaltaxfacilityAmount > 0) {
+    return this.toAmount(this.bookingSummaryDetails.totaltaxfacilityAmount);
+  }
+
+  return this.toAmount(
+    this.selectedAddOnServices.reduce(
+      (sum, service) => sum + this.getServiceTax(service),
+      0
+    )
+  );
+}
+getAddOnsTotal(): number {
+  if (this.bookingSummaryDetails?.totalAddOnsPrice > 0) {
+    return this.toAmount(this.bookingSummaryDetails.totalAddOnsPrice);
+  }
+
+  return this.toAmount(
+    this.selectedAddOnServices.reduce(
+      (sum, service) => sum + this.getServiceTotal(service),
+      0
+    )
+  );
+}
+getConvenienceFeeAmount(): number {
+  const summaryFee =
+    this.bookingSummaryDetails?.convenienceFeeAmount ??
+    this.bookingSummaryDetails?.convenienceFee;
+
+  if (summaryFee > 0) {
+    return this.toAmount(summaryFee);
+  }
+
+  const bookingFee =
+    this.booking?.convenienceFeeAmount ??
+    this.booking?.convenienceFee;
+
+  if (bookingFee > 0) {
+    return this.toAmount(bookingFee);
+  }
+
+  return this.toAmount(
+    (this.bookingsResponseList || []).reduce(
+      (sum, booking) =>
+        sum + this.toAmount(booking?.convenienceFeeAmount || booking?.convenienceFee),
+      0
+    )
+  );
+}
+getConfirmationTotalAmount(): number {
+  const roomTariff = this.toAmount(
+    this.bookingSummaryDetails?.totalPlanPrice - this.totalDiscount
+  );
+  const roomTax = this.toAmount(this.bookingSummaryDetails?.totalTax);
+  const addOnsTotal = this.getAddOnsTotal();
+  const convenienceFee = this.getConvenienceFeeAmount();
+
+  if (roomTariff > 0 || roomTax > 0 || addOnsTotal > 0 || convenienceFee > 0) {
+    return this.toAmount(
+      roomTariff + roomTax + addOnsTotal + convenienceFee
+    );
+  }
+
+  if (this.bookingSummaryDetails?.grandTotal > 0) {
+    return this.toAmount(this.bookingSummaryDetails.grandTotal);
+  }
+
+  if (this.bookingSummaryDetails?.totalAmount > 0) {
+    return this.toAmount(
+      this.bookingSummaryDetails.totalAmount + addOnsTotal + convenienceFee
+    );
+  }
+
+  return this.toAmount(
+    (this.bookingsResponseList || []).reduce(
+      (sum, booking) => sum + this.toAmount(booking?.totalAmount),
+      0
+    ) +
+      addOnsTotal +
+      convenienceFee
+  );
+}
+toAmount(value: any): number {
+  const amount = Number(value);
+  return Number.isFinite(amount) ? Number(amount.toFixed(2)) : 0;
 }
 getTrimmedDescription(description: string): string {
   if (!description) return '';
@@ -221,7 +418,7 @@ onGenerateVouchers() {
 
   calculateServiceHours() {
     this.accommodationService =
-      this.propertyDetails.businessServiceDtoList.filter(
+      (this.propertyDetails?.businessServiceDtoList || []).filter(
         (service) => service.name === 'Accommodation'
       );
     console.log(
@@ -277,13 +474,13 @@ onGenerateVouchers() {
       this.bookingSummaryDetails?.selectedPlansSummary?.reduce(
         (sum, plan) => sum + (plan.adults || 0),
         0
-      );
+      ) || 0;
 
     this.totalPlanChildren =
       this.bookingSummaryDetails?.selectedPlansSummary?.reduce(
         (sum, plan) => sum + (plan.children || 0),
         0
-      );
+      ) || 0;
   }
   async getPropertyDetailsById(id: number) {
     // debugger
@@ -295,11 +492,11 @@ onGenerateVouchers() {
       const data = await this.listingService?.findByPropertyId(id).toPromise();
       if (data.status === 200) {
         this.businessUser = data.body;
-        this.policies = this.businessUser.businessServiceDtoList.filter(
+        this.policies = (this.businessUser.businessServiceDtoList || []).filter(
           (ele) => ele.name === 'Accommodation'
         );
 
-        this.businessUser.propertyServicesList.forEach((ele) => {
+        (this.businessUser.propertyServicesList || []).forEach((ele) => {
           if (ele.id != null && ele.id != undefined) {
             this.propertyServiceListData.push(ele);
           }
