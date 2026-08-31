@@ -9160,6 +9160,48 @@ export class BookingComponent implements OnInit {
         .accommodationEnquiry(enquiryForm)
         .toPromise();
       if (response) {
+        const savedEnquiry = response.body || {};
+        const confirmationBooking = {
+          ...booking,
+          ...savedEnquiry,
+          propertyId: booking.propertyId || this.token.getProperty()?.id,
+          roomId: plan.roomId,
+          roomName: plan.roomName,
+          roomRatePlanName: plan.planCodeName,
+          totalRoomTariffBeforeDiscount:
+            this.getPlanRoomTariffBeforeDiscountTotal(plan),
+          noOfNights: this.getPlanPayloadNights(plan),
+          noOfRooms: this.isDayTripPlan(plan)
+            ? 1
+            : Number(plan.selectedRoomnumber),
+          extraPersonCharge:
+            (plan?.extraPersonAdultCountAmount ||
+              plan?.SingleDayextraPersonAdultCountAmount ||
+              0) * this.getPlanPayloadNights(plan),
+          extraChildCharge:
+            (plan?.extraPersonChildCountAmount ||
+              plan?.SingleDayextraPersonChildCountAmount ||
+              0) * this.getPlanPayloadNights(plan),
+          beforeTaxAmount: enquiryForm.beforeTaxAmount,
+          taxAmount: enquiryForm.taxAmount,
+          totalAmount: enquiryForm.totalAmount,
+          discountPercentage: enquiryForm.discountAmountPercentage || 0,
+          discountAmount: enquiryForm.discountAmount || 0,
+          convenienceFee,
+          selectedServiceTotal,
+          selectedServices,
+        };
+        const existingBookingsStr = sessionStorage.getItem('bookingsResponseList');
+        const existingBookings = existingBookingsStr
+          ? JSON.parse(existingBookingsStr)
+          : [];
+        existingBookings.push(confirmationBooking);
+        sessionStorage.setItem(
+          'bookingsResponseList',
+          JSON.stringify(existingBookings),
+        );
+        this.token.saveBookingDataObj(confirmationBooking);
+        this.router.navigate(['/reservation-confirm-page']);
         return true;
       }
     } catch (e) {
