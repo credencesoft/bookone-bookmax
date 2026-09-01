@@ -941,6 +941,7 @@
                         [(ngModel)]="selectedCountry"
                         (ngModelChange)="setCountry($event)"
                         required
+                        [disabled]="isPhoneNumberLocked"
                         style="width: 20%; height: 2.5rem"
                       >
                         <option
@@ -968,6 +969,7 @@
                           id="mobile"
                           name="mobile"
                           required
+                          [readonly]="isPhoneNumberLocked"
                           [placeholder]="getPhonePlaceholder()"
                           style="width: 100%; height: 2.5rem"
                           (ngModelChange)="validateMobile()"
@@ -977,6 +979,13 @@
                         </span>
                       </div>
                     </div>
+                    <span
+                      class="text-danger small"
+                      *ngIf="isPhoneNumberLocked"
+                      style="display: block; margin-top: 4px;"
+                    >
+                      Phone number cannot be changed
+                    </span>
                   </div>
 
                   <div class="mb-3">
@@ -2048,6 +2057,7 @@
                         name="countryMobile"
                         [(ngModel)]="selectedCountry"
                         (ngModelChange)="setCountry($event)"
+                        [disabled]="isPhoneNumberLocked"
                         style="width: 20%; height: 2.5rem"
                         required>
                         <option
@@ -2075,6 +2085,7 @@
                           id="mobile"
                           name="mobile"
                           required
+                          [readonly]="isPhoneNumberLocked"
                           [placeholder]="getPhonePlaceholder()"
                           style="width: 100%; height: 2.5rem"
                           (ngModelChange)="validateMobile()"
@@ -2084,6 +2095,13 @@
                         </span>
                       </div>
                     </div>
+                    <span
+                      class="text-danger small"
+                      *ngIf="isPhoneNumberLocked"
+                      style="display: block; margin-top: 4px;"
+                    >
+                      Phone number cannot be changed
+                    </span>
                   </div>
 
                   <div class="mb-3">
