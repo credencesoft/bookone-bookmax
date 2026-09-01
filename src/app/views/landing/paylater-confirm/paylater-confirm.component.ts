@@ -46,10 +46,11 @@ export class PaylaterConfirmComponent {
   selectedAddOnServices: any[] = [];
   expanded: boolean = false;
     url: string;
-    activeGoogleCenter: boolean = false;
-    totalDiscount = 0;
+  activeGoogleCenter: boolean = false;
+  totalDiscount = 0;
   websiteUrlBookingEngine: boolean = false;
-    roomLabel: string = 'Room';
+  serviceChargePercentage: number = 0;
+  roomLabel: string = 'Room';
   constructor(
     private token: TokenStorage,
     private hotelBookingService: HotelBookingService,
@@ -103,6 +104,7 @@ export class PaylaterConfirmComponent {
     }
     this.savedServices = this.token.getSelectedServices();
     this.currency = this.propertyDetails?.localCurrency?.toUpperCase();
+    this.serviceChargePercentage = this.getAccommodationServiceChargePercentage();
     this.storedPromo = localStorage.getItem('selectPromo');
     if (this.storedPromo == 'true') {
       const selectedPromoData = JSON.parse(
@@ -173,6 +175,9 @@ export class PaylaterConfirmComponent {
   }
   this.selectedAddOnServices = this.getSelectedAddOnServices();
 }
+private collectSelectedServices(source: any): any[] {
+  return Array.isArray(source) ? source.filter(Boolean) : [];
+}
 getSelectedDetailsFromSummary(): any[] {
   const plans = this.bookingSummaryDetails?.selectedPlansSummary || [];
 
@@ -208,16 +213,11 @@ getSelectedDetailsFromSummary(): any[] {
 getSelectedAddOnServices(): any[] {
   const servicesFromBookings = (this.bookingsResponseList || []).flatMap(
     (booking) => {
-      if (Array.isArray(booking?.selectedServices)) {
-        return booking.selectedServices;
-      }
-      if (Array.isArray(booking?.selectedAddOns)) {
-        return booking.selectedAddOns;
-      }
-      if (Array.isArray(booking?.services)) {
-        return booking.services;
-      }
-      return [];
+      return [
+        ...this.collectSelectedServices(booking?.selectedServices),
+        ...this.collectSelectedServices(booking?.selectedAddOns),
+        ...this.collectSelectedServices(booking?.services),
+      ];
     }
   );
 
@@ -225,8 +225,26 @@ getSelectedAddOnServices(): any[] {
     return servicesFromBookings;
   }
 
-  if (Array.isArray(this.bookingSummaryDetails?.propertyServiceListDataOne)) {
-    return this.bookingSummaryDetails.propertyServiceListDataOne;
+  const servicesFromSummary = [
+    ...this.collectSelectedServices(this.bookingSummaryDetails?.selectedServices),
+    ...this.collectSelectedServices(this.bookingSummaryDetails?.selectedAddOns),
+    ...this.collectSelectedServices(
+      this.bookingSummaryDetails?.propertyServiceListDataOne,
+    ),
+  ];
+
+  if (servicesFromSummary.length > 0) {
+    return servicesFromSummary;
+  }
+
+  const servicesFromBooking = [
+    ...this.collectSelectedServices(this.booking?.selectedServices),
+    ...this.collectSelectedServices(this.booking?.selectedAddOns),
+    ...this.collectSelectedServices(this.booking?.services),
+  ];
+
+  if (servicesFromBooking.length > 0) {
+    return servicesFromBooking;
   }
 
   if (Array.isArray(this.savedServices)) {
@@ -312,13 +330,19 @@ getConvenienceFeeAmount(): number {
     return this.toAmount(bookingFee);
   }
 
-  return this.toAmount(
+  const bookingsFee = this.toAmount(
     (this.bookingsResponseList || []).reduce(
       (sum, booking) =>
         sum + this.toAmount(booking?.convenienceFeeAmount || booking?.convenienceFee),
       0
     )
   );
+
+  if (bookingsFee > 0) {
+    return bookingsFee;
+  }
+
+  return this.calculateConvenienceFeeFromSummary();
 }
 getConfirmationTotalAmount(): number {
   const roomTariff = this.toAmount(
@@ -356,6 +380,40 @@ getConfirmationTotalAmount(): number {
 toAmount(value: any): number {
   const amount = Number(value);
   return Number.isFinite(amount) ? Number(amount.toFixed(2)) : 0;
+}
+getAccommodationServiceChargePercentage(): number {
+  const services = this.propertyDetails?.businessServiceDtoList?.length
+    ? this.propertyDetails.businessServiceDtoList
+    : this.businessUser?.businessServiceDtoList || [];
+  const accommodation = services
+    .find((service: any) => service?.name === 'Accommodation');
+
+  return this.toAmount(accommodation?.serviceChargePercentage);
+}
+calculateConvenienceFee(totalAmount: number, percentage: number): number {
+  const amount = this.toAmount(totalAmount);
+  const percent = this.toAmount(percentage);
+
+  if (amount <= 0 || percent <= 0) {
+    return 0;
+  }
+
+  return this.toAmount((amount * percent) / 100);
+}
+calculateConvenienceFeeFromSummary(): number {
+  const feePercent = this.serviceChargePercentage || this.getAccommodationServiceChargePercentage();
+  const finalRoomTariff = this.toAmount(
+    (this.bookingSummaryDetails?.totalPlanPrice || 0) - this.totalDiscount
+  );
+
+  if (finalRoomTariff > 0) {
+    return this.calculateConvenienceFee(finalRoomTariff, feePercent);
+  }
+
+  return this.calculateConvenienceFee(
+    this.bookingSummaryDetails?.totalAmount || this.booking?.beforeTaxAmount || this.booking?.netAmount,
+    feePercent
+  );
 }
 getTrimmedDescription(description: string): string {
   if (!description) return '';
@@ -492,6 +550,7 @@ onGenerateVouchers() {
       const data = await this.listingService?.findByPropertyId(id).toPromise();
       if (data.status === 200) {
         this.businessUser = data.body;
+        this.serviceChargePercentage = this.getAccommodationServiceChargePercentage();
         this.policies = (this.businessUser.businessServiceDtoList || []).filter(
           (ele) => ele.name === 'Accommodation'
         );
