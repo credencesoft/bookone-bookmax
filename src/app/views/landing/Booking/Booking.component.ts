@@ -1872,18 +1872,18 @@ export class BookingComponent implements OnInit {
         } else {
         }
 
-        if (foundSubscription) {
-          this.sendWhatsappMessageToTHMCopy(this.booking);
-          this.sendWhatsappMessageToTHM1Copy(this.booking);
-          this.sendWhatsappMessageToTHM2Copy(this.booking);
-          this.sendWhatsappMessageToTHM3Copy(this.booking);
-          this.sendWhatsappMessageToTHM4Copy(this.booking);
-        } else {
-          this.sendWhatsappMessageToTHM(this.booking);
-          this.sendWhatsappMessageToTHM1(this.booking);
-          this.sendWhatsappMessageToTHM2(this.booking);
-          this.sendWhatsappMessageToTHM3(this.booking);
-        }
+        // if (foundSubscription) {
+        //   this.sendWhatsappMessageToTHMCopy(this.booking);
+        //   this.sendWhatsappMessageToTHM1Copy(this.booking);
+        //   this.sendWhatsappMessageToTHM2Copy(this.booking);
+        //   this.sendWhatsappMessageToTHM3Copy(this.booking);
+        //   this.sendWhatsappMessageToTHM4Copy(this.booking);
+        // } else {
+        //   this.sendWhatsappMessageToTHM(this.booking);
+        //   this.sendWhatsappMessageToTHM1(this.booking);
+        //   this.sendWhatsappMessageToTHM2(this.booking);
+        //   this.sendWhatsappMessageToTHM3(this.booking);
+        // }
       });
   }
 
@@ -8840,7 +8840,7 @@ export class BookingComponent implements OnInit {
     booking.currency = this.businessUser.localCurrency;
     booking.fromTime = this.tokenFromTime;
     booking.toTime = this.tokenToTime;
-    booking.modeOfPayment = this.payment.paymentMode;
+    booking.modeOfPayment = isPayLaterBooking ? 'Pay Later' : (this.payment?.paymentMode || 'Cash');
     booking.externalSite = 'WebSite';
     booking.businessName = this.businessUser.name;
     booking.businessEmail = this.businessUser.email;
@@ -8857,7 +8857,7 @@ export class BookingComponent implements OnInit {
     booking.noOfExtraPerson = plan.extraCountAdult;
     booking.noOfExtraChild = plan.extraCountChild;
     booking.purposeOfVisit = '';
-    booking.advanceAmount = planAdvanceAmount;
+    booking.advanceAmount = isPayLaterBooking ? 0 : planAdvanceAmount;
     booking.paymentId = this.booking.paymentId;
     booking.includeService = this.booking.includeService;
     booking.taxDetails = this.token
