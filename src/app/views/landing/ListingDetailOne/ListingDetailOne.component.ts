@@ -294,6 +294,35 @@ export class ListingDetailOneComponent implements OnInit {
   amenitiesHighlights: any[] = [];
   propertyServiceListData: any[] = [];  // Backward compatibility alias
   propertyServicesNoId: any[] = [];
+  showAllPropertyServices: boolean = false;
+
+  get visiblePropertyServices(): any[] {
+    if (this.showAllPropertyServices || !this.propertyServicesNoId) {
+      return this.propertyServicesNoId || [];
+    }
+    return this.propertyServicesNoId.slice(0, 6);
+  }
+
+  togglePropertyServices(): void {
+    this.showAllPropertyServices = !this.showAllPropertyServices;
+  }
+
+  // ✅ Performance: TrackBy functions to prevent unnecessary DOM re-renders
+  trackById(index: number, item: any): any {
+    return item?.id || item?.uid || item?._id || index;
+  }
+
+  trackByIndex(index: number, item: any): number {
+    return index;
+  }
+
+  trackByRoomId(index: number, room: any): any {
+    return room?.roomTypeId || room?.id || room?.roomTypeName || index;
+  }
+
+  trackByPlanId(index: number, plan: any): any {
+    return plan?.ratePlanId || plan?.id || plan?.ratePlanName || index;
+  }
   // ✅ Renamed: Paid services for Add-on Services (Checkout)
   addOnServices: any[] = [];
   propertyServiceListDataOne: any[] = [];  // Backward compatibility alias
@@ -1621,6 +1650,7 @@ this.token.savePropertyUrl(currentUrl);
   }
 
   ngOnInit() {
+    this.onResize();
     localStorage.removeItem('selectPromo');
 
     this.currencyService.getLatestRates().subscribe(
@@ -2530,6 +2560,15 @@ onRoomSelect(roomIdentifier: string | number, planCode: string, count: number | 
 
   closeGalleryModal() {
     $(`#${this.galleryModalRef.nativeElement.id}`).modal('hide');
+  }
+
+  isMobileView: boolean = false;
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event?: any) {
+    if (isPlatformBrowser(this.platformId)) {
+      this.isMobileView = window.innerWidth < 1024;
+    }
   }
 
   @HostListener('window:keydown', ['$event'])
@@ -6038,25 +6077,24 @@ onCheckOutClosed(): void {
     }
   }
 
- getBookingUnitLabel(room?: Room | null) {
-    try{
-      if(room?.businessProductName?.trim() === 'Accommodation'){
-        return 'Room';
-      }
-      const accmmodationService = this.accommodationData;
-      if(!room?.businessProductName?.trim()){
-        const accommodationService = accmmodationService?.find(service => service?.name === 'Accommodation');
-        if(accommodationService && accommodationService?.businessProductName?.trim()){
-          return accommodationService.businessProductName;
+  getBookingUnitLabel(room?: Room | null) {
+    try {
+      let label = 'Room';
+      if (room?.businessProductName && room.businessProductName.trim() !== '') {
+        label = room.businessProductName.trim();
+      } else {
+        const accommodationService = this.accommodationData?.find((service: any) => service?.name === 'Accommodation');
+        if (accommodationService?.businessProductName && accommodationService.businessProductName.trim() !== '') {
+          label = accommodationService.businessProductName.trim();
         }
       }
-      if(!room){
+
+      const lower = label.toLowerCase();
+      if (lower.includes('accommodation') || lower.includes('accomodation')) {
         return 'Room';
       }
-      const productName = room?.businessProductName;
-      return productName ? productName : 'Room';
-    }
-    catch(error){
+      return label;
+    } catch (error) {
       console.error('Error in getBookingUnitLabel: ', error);
       return 'Room';
     }

@@ -3370,29 +3370,75 @@ text-align: center;
 
 .highlights-card {
   background: #fdfbfb;
-  border-radius: 12px;
-}
-
-.highlight-item {
-  flex: 0 0 45%;
+  border-radius: 10px;
+  border: 1px solid #eaeaea;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.02);
 }
 
 .highlight-list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 6px 8px;
+}
+
+@media (max-width: 576px) {
+  .highlight-list {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+}
+
+.highlight-item {
   display: flex;
-  flex-direction: column;
-  gap: 20px;
+  align-items: flex-start;
+  gap: 6px;
+  background: #ffffff;
+  border: 1px solid #f0f0f0;
+  border-radius: 6px;
+  padding: 4px 8px;
+  min-width: 0;
+  transition: all 0.15s ease-in-out;
+
+  &:hover {
+    border-color: var(--secondary, #0b01cc);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  }
 }
 
 .highlight-icon {
-  font-size: 16px; 
-  object-fit: contain;
-  padding: 10px;
-  border-radius: 8px;
+  font-size: 13px;
+  color: var(--primary, #232a45);
+  flex-shrink: 0;
+  margin-top: 1.5px;
+  padding: 0;
 }
 
 .highlight-text {
-  font-family: "Poppins";
-  text-align: justify;
+  font-family: "Poppins", sans-serif;
+  font-size: 12.5px;
+  color: #374151;
+  line-height: 1.25;
+  text-align: left;
+  word-break: normal;
+  overflow-wrap: break-word;
+  flex: 1;
+}
+
+.highlight-toggle-btn {
+  border-radius: 16px;
+  font-size: 11.5px;
+  font-weight: 500;
+  padding: 3px 12px;
+  color: var(--primary, #232a45);
+  border: 1px solid var(--primary, #232a45);
+  background: #fff;
+  transition: all 0.2s ease-in-out;
+
+  &:hover {
+    background-color: var(--primary, #232a45);
+    border-color: var(--primary, #232a45);
+    color: #ffffff;
+  }
 }
 
 
@@ -3722,38 +3768,79 @@ text-align: center;
   justify-content: center !important;
   height: 68px !important;
   position: relative !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+
+  &:hover {
+    border-color: #cbd5e1 !important;
+    background-color: #f1f5f9 !important;
+  }
 }
 
 .checkAvaRoom {
   flex: 1.5 1 0% !important; /* Give more space for Guests & Rooms */
 }
 
-// /* Date input overrides */
-// .date-input {
-//   font-family: "Nunito", sans-serif !important;
-//   font-size: 14px !important;
-//   font-weight: 500 !important;
-//   color: #0f172a !important;
-//   border: none !important;
-//   background: transparent !important;
-//   padding: 0 !important;
-//   margin: 0 !important;
-//   width: 100% !important;
-//   height: auto !important;
-//   box-shadow: none !important;
-// }
+#autocomplete-container {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  width: 100% !important;
+  padding-right: 28px !important;
+}
+
+.checkAva3 .label_heading1,
+.checkAva6 .label_heading1,
+.checkAvaTime .label_heading1,
+.checkAvaRoom .label_heading1 {
+  font-family: "Poppins", sans-serif !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  color: #64748b !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+  margin: 0 0 2px 0 !important;
+  padding: 0 !important;
+  line-height: 1.2 !important;
+  pointer-events: none !important;
+}
+
+/* Date input clean alignment */
+.date-input {
+  font-family: "Poppins", sans-serif !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  color: #0f172a !important;
+  border: none !important;
+  background: transparent !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  width: 100% !important;
+  height: auto !important;
+  line-height: 1.3 !important;
+  box-shadow: none !important;
+  cursor: pointer !important;
+}
 
 /* Calendar icons inside fields positioning */
 .checkAva3 .content-centered,
 .checkAva6 .content-centered {
   position: absolute;
-  right: 16px;
+  right: 14px;
   top: 50%;
   transform: translateY(-50%);
   display: flex;
   align-items: center;
-  pointer-events: auto;
-  cursor: pointer;
+  justify-content: center;
+  pointer-events: none;
+  opacity: 0.75;
+  transition: opacity 0.2s ease;
+
+  img {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+  }
 }
 
 /* Check-in time selector dropdown design */
@@ -3762,7 +3849,7 @@ text-align: center;
   background: transparent !important;
   font-family: "Poppins", sans-serif !important;
   font-size: 14px !important;
-  font-weight: 500 !important;
+  font-weight: 600 !important;
   color: #0f172a !important;
   padding: 0 !important;
   margin: 0 !important;
@@ -3778,15 +3865,21 @@ text-align: center;
   margin: 0 !important;
   border: none !important;
   cursor: pointer;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  width: 100% !important;
 }
 
 .checkAvaRoom .guests_count {
-  font-family: "Nunito", sans-serif !important;
+  font-family: "Poppins", sans-serif !important;
   font-size: 14px !important;
-  font-weight: 500 !important;
+  font-weight: 600 !important;
   color: #0f172a !important;
   display: inline-flex !important;
-  gap: 10px !important;
+  gap: 8px !important;
+  line-height: 1.3 !important;
+  white-space: nowrap !important;
 }
 
 /* Book Now Button (Dark Teal/Navy Pill) */
@@ -4709,4 +4802,30 @@ input:checked + .switch-slider:before {
     }
   }
 }
+
+/* ==========================================================================
+   PERFORMANCE & SMOOTH SCROLLING OPTIMIZATIONS
+   ========================================================================== */
+
+/* GPU Hardware Acceleration for smooth 60fps scrolling */
+.maiiin,
+.card-rooms,
+.highlights-card,
+.about-property {
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* Image rendering optimizations to prevent layout thrashing */
+img {
+  image-rendering: auto;
+}
+
+img[loading="lazy"] {
+  will-change: auto;
+}
+
+
 
