@@ -6885,7 +6885,7 @@ onCheckOutClosed(): void {
     this.dynamicCountryName = this.businessUser.address?.country;
     // The recipient's phone number (optional)
     const message =
-      '*This is an Enquiry from :* The HotelMate Website' +
+      '*This is an Enquiry from :* BookOne Bookmax' +
       '\nHotel Name: ' +
       this.dynamicText +
       '\nAddress: ' +
@@ -6983,7 +6983,7 @@ adjustDates() {
     this.dynamicCountryName = this.businessUser.address?.country;
     // The recipient's phone number (optional)
     const message =
-      '*This is an Enquiry from :* The HotelMate Website' +
+      '*This is an Enquiry from :* BookOne Bookmax' +
       '\nHotel Name: ' +
       this.dynamicText +
       '\nAddress: ' +

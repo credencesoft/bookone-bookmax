@@ -183,7 +183,26 @@ export class HeaderListingdetailsoneComponent implements OnInit {
     this.externalSite = 'WebSite';
     // The recipient's phone number (optional)
     const message =
-      '*This is an Enquiry from :* Your Website'
+      '*This is an Enquiry from :* BookOne Bookmax' +
+      '\nHotel Name: ' +
+      this.dynamicText +
+      ',' +
+      '\nProperty Id: ' +
+      this.dynamicPropertyId +
+      ',' +
+      '\nexternalSite: ' +
+      this.externalSite +
+      ',' +
+      '\nAddress: ' +
+      this.dynamicStreetNumber +
+      ',' +
+      this.dynamicStreetName +
+      ',' +
+      this.dynamicLocality +
+      ',' +
+      this.dynamicCity +
+      ',' +
+      this.dynamicCountryName; // The dynamic text you want to include
 
     return (
       baseUrl + '?phone=' + phoneNumber + '&text=' + encodeURIComponent(message)
@@ -211,7 +230,7 @@ export class HeaderListingdetailsoneComponent implements OnInit {
       this.externalSite = 'WebSite';
       // The recipient's phone number (optional)
       const message =
-        '*This is an Enquiry from :* The HotelMate Website' +
+        '*This is an Enquiry from :* BookOne Bookmax' +
         '\nHotel Name: ' +
         this.dynamicText +
         ',' +
@@ -249,7 +268,26 @@ export class HeaderListingdetailsoneComponent implements OnInit {
       this.externalSite = 'WebSite';
       // The recipient's phone number (optional)
       const message =
-        '*This is an Enquiry from :* Your Website'
+        '*This is an Enquiry from :* BookOne Bookmax' +
+        '\nHotel Name: ' +
+        this.dynamicText +
+        ',' +
+        '\nProperty Id: ' +
+        this.dynamicPropertyId +
+        ',' +
+        '\nexternalSite: ' +
+        this.externalSite +
+        ',' +
+        '\nAddress: ' +
+        this.dynamicStreetNumber +
+        ',' +
+        this.dynamicStreetName +
+        ',' +
+        this.dynamicLocality +
+        ',' +
+        this.dynamicCity +
+        ',' +
+        this.dynamicCountryName; // The dynamic text you want to include
 
       return (
         baseUrl + '?phone=' + phoneNumber + '&text=' + encodeURIComponent(message)
