@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, OnChanges, SimpleChanges } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Location } from '@angular/common';
 import { TokenStorage } from 'src/token.storage';
@@ -10,7 +10,7 @@ import { HotelBookingService } from 'src/services/hotel-booking.service';
   templateUrl: './Header-Listingdetailsone.component.html',
   styleUrls: ['./Header-Listingdetailsone.component.css']
 })
-export class HeaderListingdetailsoneComponent implements OnInit {
+export class HeaderListingdetailsoneComponent implements OnInit, OnChanges {
   // @Output() bookNowClicked = new EventEmitter<void>();
   @Output() onBookNowClick = new EventEmitter<void>();
   showListItems: boolean = false; // For your existing toggle functionality
@@ -295,11 +295,28 @@ export class HeaderListingdetailsoneComponent implements OnInit {
     }
   }
 
-  getPropertySubscription(){
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['businessUser'] && changes['businessUser'].currentValue?.id) {
+      if (!this.subscriptionFetched) {
+        this.getPropertySubscription();
+      }
+    }
+  }
+
+  getPropertySubscription() {
+    // First, check if the subscription list is already available on the businessUser object
+    if (this.businessUser?.subscriptionList && Array.isArray(this.businessUser.subscriptionList)) {
+      this.hasWhatsappEnquirySubscription = this.businessUser.subscriptionList.some(
+        (sub: any) => sub.name === 'Property WhatsApp Enquiry'
+      );
+      this.subscriptionFetched = true;
+      return;
+    }
+
     // Fallback order: token storage first, then input businessUser ID
     const propertyId = this.token.getProperty()?.id || this.businessUser?.id;
     if (propertyId) {
-      this.subscriptionFetched = true;
+      this.subscriptionFetched = true; // Prevent duplicate calls
       this.hotelBookingService.getSubscriptions(Number(propertyId)).subscribe({
         next: (subRes: any) => {
           // Safe check: handle direct array response or HttpResponse body response
@@ -309,6 +326,7 @@ export class HeaderListingdetailsoneComponent implements OnInit {
           );
         },
         error: (err) => {
+          this.subscriptionFetched = false; // Allow retry on error
           console.error('Error fetching subscriptions:', err);
         }
       });
