@@ -1279,7 +1279,7 @@
                 [class.has-twenty-four-hour-checkin]="isTwentyFourHourCheckIn"
                 [style.justify-content]="!showRoomsAndGuestsFilter ? 'center' : 'unset'"
               >
-                <div class="checkAva3" (click)="datepicker3Web.toggle(); removeSession(); roomsAndOccupancy = false" style="cursor: pointer;">
+                <div class="checkAva3" (click)="datepicker3Web.open(); removeSession(); roomsAndOccupancy = false" style="cursor: pointer;">
                   <div id="autocomplete-container">
                     <label
                       for="checkin"
@@ -1330,7 +1330,7 @@
                   </div>
                 </div>
 
-                <div class="checkAva6" (click)="datepicker4Web.toggle(); removeSession(); roomsAndOccupancy = false" style="cursor: pointer;">
+                <div class="checkAva6" (click)="datepicker4Web.open(); removeSession(); roomsAndOccupancy = false" style="cursor: pointer;">
                   <div id="autocomplete-container">
                     <label
                       for="checkout"
@@ -1673,7 +1673,7 @@
               </div>
               <div id="checkin">
                 <div class="row d-flex checkAva2" [class.has-twenty-four-hour-checkin]="isTwentyFourHourCheckIn">
-                  <div class="checkAva3" (click)="datepicker3.toggle(); removeSession(); roomsAndOccupancy = false" style="cursor: pointer;">
+                  <div class="checkAva3" (click)="datepicker3.open(); removeSession(); roomsAndOccupancy = false" style="cursor: pointer;">
                     <div id="autocomplete-container">
                       <label
                         for="checkin"
@@ -1724,7 +1724,7 @@
                     </div>
                   </div>
 
-                  <div class="checkAva6" (click)="datepicker4.toggle(); removeSession(); roomsAndOccupancy = false" style="cursor: pointer;">
+                  <div class="checkAva6" (click)="datepicker4.open(); removeSession(); roomsAndOccupancy = false" style="cursor: pointer;">
                     <div id="autocomplete-container">
                       <label
                         for="checkout"
