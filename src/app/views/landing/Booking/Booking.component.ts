@@ -120,6 +120,7 @@ export class BookingComponent implements OnInit {
   guestCouponError: string = '';
   guestCouponSuccess: string = '';
   guestCouponLoading: boolean = false;
+  isPhoneNumberLocked: boolean = false;
   grandTotalAmount: number;
   actualTaxAmount: number;
 
@@ -764,6 +765,7 @@ export class BookingComponent implements OnInit {
     if (couponCodeValues) {
       const parsed = JSON.parse(couponCodeValues); // convert to object
       this.specialDiscountData = JSON.parse(couponCodeValues);
+      this.updatePhoneLockStateFromPromo(parsed);
       if (parsed.couponCode) {
         this.enteredCoupon = parsed.couponCode;
       }
@@ -1870,18 +1872,18 @@ export class BookingComponent implements OnInit {
         } else {
         }
 
-        if (foundSubscription) {
-          this.sendWhatsappMessageToTHMCopy(this.booking);
-          this.sendWhatsappMessageToTHM1Copy(this.booking);
-          this.sendWhatsappMessageToTHM2Copy(this.booking);
-          this.sendWhatsappMessageToTHM3Copy(this.booking);
-          this.sendWhatsappMessageToTHM4Copy(this.booking);
-        } else {
-          this.sendWhatsappMessageToTHM(this.booking);
-          this.sendWhatsappMessageToTHM1(this.booking);
-          this.sendWhatsappMessageToTHM2(this.booking);
-          this.sendWhatsappMessageToTHM3(this.booking);
-        }
+        // if (foundSubscription) {
+        //   this.sendWhatsappMessageToTHMCopy(this.booking);
+        //   this.sendWhatsappMessageToTHM1Copy(this.booking);
+        //   this.sendWhatsappMessageToTHM2Copy(this.booking);
+        //   this.sendWhatsappMessageToTHM3Copy(this.booking);
+        //   this.sendWhatsappMessageToTHM4Copy(this.booking);
+        // } else {
+        //   this.sendWhatsappMessageToTHM(this.booking);
+        //   this.sendWhatsappMessageToTHM1(this.booking);
+        //   this.sendWhatsappMessageToTHM2(this.booking);
+        //   this.sendWhatsappMessageToTHM3(this.booking);
+        // }
       });
   }
 
@@ -2018,6 +2020,10 @@ export class BookingComponent implements OnInit {
     this.visibleGetCouponModal = true;
   }
 
+  private updatePhoneLockStateFromPromo(promoData?: any): void {
+    this.isPhoneNumberLocked = !!promoData?.whatsappNumber;
+  }
+
   generateAndApplyCoupon() {
     if (!this.guestCouponName || !this.guestCouponName.trim()) {
       this.guestCouponError = 'Guest Name is required';
@@ -2052,6 +2058,9 @@ export class BookingComponent implements OnInit {
               ...originalCoupon,
               couponCode: response.generatedCoupon
             };
+            if (this.guestCouponPhone) {
+              guestCouponObject.whatsappNumber = this.guestCouponPhone.trim();
+            }
             this.selectedCoupon(guestCouponObject);
           }
           
@@ -2088,12 +2097,15 @@ export class BookingComponent implements OnInit {
       this.showTheSelectedCoupon = true;
       this.visiblePromotion = false;
       this.showingSuccessMessage = true;
+      this.updatePhoneLockStateFromPromo(coupon);
 
       // Always use multi-discount calculation to ensure all properties updated
       this.calculateMultiDiscountAndTax();
 
       localStorage.setItem('selectedPromoData', JSON.stringify(coupon));
       localStorage.setItem('selectPromo', 'true');
+      sessionStorage.setItem('selectedPromoData', JSON.stringify(coupon));
+      sessionStorage.setItem('selectPromo', 'true');
 
       // Trigger change detection
       this.changeDetectorRefs.markForCheck();
@@ -2130,6 +2142,7 @@ export class BookingComponent implements OnInit {
       this.showTheSelectedCoupon = false;
       this.selectedCouponList = [];
       this.couponDiscountAmount = 0;
+      this.isPhoneNumberLocked = false;
       this.booking.netAmount = this.storedActualNetAmount;
       this.bookingRoomPrice = this.storeNightPerRoom;
 
@@ -8717,8 +8730,10 @@ export class BookingComponent implements OnInit {
     bookingSummary: any,
     callback?: () => void,
     index: number = 0,
-  ) {
-    if (this.isBackendFinalizedGateway()) {
+  ) { 
+    const isPayLaterBooking = this.showPayLater();
+
+    if (!isPayLaterBooking && this.isBackendFinalizedGateway()) {
       if (callback) callback();
       return;
     }
@@ -8825,7 +8840,7 @@ export class BookingComponent implements OnInit {
     booking.currency = this.businessUser.localCurrency;
     booking.fromTime = this.tokenFromTime;
     booking.toTime = this.tokenToTime;
-    booking.modeOfPayment = this.payment.paymentMode;
+    booking.modeOfPayment = isPayLaterBooking ? 'Pay Later' : (this.payment?.paymentMode || 'Cash');
     booking.externalSite = 'WebSite';
     booking.businessName = this.businessUser.name;
     booking.businessEmail = this.businessUser.email;
@@ -8842,7 +8857,7 @@ export class BookingComponent implements OnInit {
     booking.noOfExtraPerson = plan.extraCountAdult;
     booking.noOfExtraChild = plan.extraCountChild;
     booking.purposeOfVisit = '';
-    booking.advanceAmount = planAdvanceAmount;
+    booking.advanceAmount = isPayLaterBooking ? 0 : planAdvanceAmount;
     booking.paymentId = this.booking.paymentId;
     booking.includeService = this.booking.includeService;
     booking.taxDetails = this.token
@@ -9160,6 +9175,7 @@ export class BookingComponent implements OnInit {
         .accommodationEnquiry(enquiryForm)
         .toPromise();
       if (response) {
+        const savedEnquiry = response.body || {};
         return true;
       }
     } catch (e) {

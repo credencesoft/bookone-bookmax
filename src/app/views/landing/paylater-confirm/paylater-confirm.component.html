@@ -386,64 +386,76 @@
                   <td> <b>{{booking.roomName}} </b> <br/>
                     {{ booking.roomRatePlanName }}</td>
                   <td>
-                    ₹{{
-                      booking.totalRoomTariffBeforeDiscount
-                        | number : "1.2-2"
-                    }}
+                    {{ booking.totalRoomTariffBeforeDiscount | currency: currency : 'symbol' : '1.2-2' }}
                   </td>
                   <td>{{ booking?.noOfNights }}</td>
                   <td>{{ booking.noOfRooms }}</td>
-                  <td>₹{{ booking.extraPersonCharge | number : "1.2-2" }}</td>
-                  <td>₹{{ booking.extraChildCharge | number : "1.2-2" }}</td>
-                   <td *ngIf="booking.discountAmount">-₹{{ booking.discountAmount | number : "1.2-2" }}</td>
-                  <td>₹{{ booking.beforeTaxAmount | number : "1.2-2" }}</td>
-                  <td>₹{{ booking.taxAmount | number : "1.2-2" }}</td>
-                  <td>₹{{ booking.totalAmount | number : "1.2-2" }}</td>
+                  <td>{{ booking.extraPersonCharge | currency: currency : 'symbol' : '1.2-2' }}</td>
+                  <td>{{ booking.extraChildCharge | currency: currency : 'symbol' : '1.2-2' }}</td>
+                   <td *ngIf="booking.discountAmount">-{{ booking.discountAmount | currency: currency : 'symbol' : '1.2-2' }}</td>
+                  <td>{{ booking.beforeTaxAmount | currency: currency : 'symbol' : '1.2-2' }}</td>
+                  <td>{{ booking.taxAmount | currency: currency : 'symbol' : '1.2-2' }}</td>
+                  <td>{{ booking.totalAmount | currency: currency : 'symbol' : '1.2-2' }}</td>
                 </tr>
               </tbody>
             </table>
+
+            <div class="booking-summary-footer selected-addons-summary" *ngIf="selectedAddOnServices?.length > 0">
+              <div class="footer-borders">
+                <div style="font-weight: 600;">Selected Add-on Services</div>
+              </div>
+              <div class="footer-borders" *ngFor="let service of selectedAddOnServices">
+                <div class="d-flex justify-content-between">
+                  <div>
+                    {{ getServiceName(service) }}
+                    <span *ngIf="getServiceQuantity(service) > 1">
+                      x {{ getServiceQuantity(service) }}
+                    </span>
+                  </div>
+                  <div>{{ getServiceTotal(service) | currency: currency : 'symbol' : '1.2-2' }}</div>
+                </div>
+              </div>
+            </div>
 
             <div class="booking-summary-footer">
               <div class="footer-borders">
                 <div class="d-flex justify-content-between">
                   <div>Final {{this.roomLabel}} Tariff:</div>
-                  <div>₹{{ bookingSummaryDetails?.totalPlanPrice - totalDiscount  | number : "1.2-2" }}</div>
+                  <div>{{ bookingSummaryDetails?.totalPlanPrice - totalDiscount | currency: currency : 'symbol' : '1.2-2' }}</div>
                 </div>
                 </div>
               <div class="footer-borders">
                 <div class="d-flex justify-content-between">
                   <div>Total GST:</div>
-                  <div>₹ {{ bookingSummaryDetails?.totalTax | number : "1.2-2" }}</div>
+                  <div>{{ bookingSummaryDetails?.totalTax | currency: currency : 'symbol' : '1.2-2' }}</div>
                 </div>
                 </div>
-               <div class="footer-borders" *ngIf="bookingSummaryDetails?.totalAddOnsPrice">
+               <div class="footer-borders" *ngIf="getAddOnsTotal() > 0">
                 <div class="d-flex justify-content-between">
                   <div>
                     Total Add-on Services Price:
                   </div>
                   <div>
-                    ₹{{
-                  bookingSummaryDetails?.totalAddOnsPrice -
-                    bookingSummaryDetails?.totaltaxfacilityAmount
-                    | number : "1.2-2"
-                }}
+                    {{ getAddOnsSubtotal() | currency: currency : 'symbol' : '1.2-2' }}
                   </div>
                 </div>
                 </div>
-                <div class="footer-borders" *ngIf="bookingSummaryDetails?.totaltaxfacilityAmount">
+                <div class="footer-borders" *ngIf="getAddOnsTax() > 0">
                 <div class="d-flex justify-content-between">
                   <div>Total Add-on Services Tax Fees:</div>
-                  <div>₹{{
-                  bookingSummaryDetails?.totaltaxfacilityAmount
-                    | number : "1.2-2"
-                }}</div>
+                  <div>{{ getAddOnsTax() | currency: currency : 'symbol' : '1.2-2' }}</div>
+                </div>
+                </div>
+                <div class="footer-borders" *ngIf="getConvenienceFeeAmount() > 0">
+                <div class="d-flex justify-content-between">
+                  <div>Convenience Fee:</div>
+                  <div>{{ getConvenienceFeeAmount() | currency: currency : 'symbol' : '1.2-2' }}</div>
                 </div>
                 </div>
                  <div class="booking-summary-total total-borders">
                 <div class="d-flex justify-content-between ">
                   <div>Total Amount:</div>
-                  <div>₹
-                {{ bookingSummaryDetails?.totalAmount | number : "1.2-2" }}</div>
+                  <div>{{ getConfirmationTotalAmount() | currency: currency : 'symbol' : '1.2-2' }}</div>
                 </div>
 
               </div>
@@ -832,10 +844,7 @@
               <div class="d-flex justify-content-between" style="gap:10px">
               <div><b>{{booking.roomName}} </b> <br/>
                     {{ booking.roomRatePlanName }}</div>
-              <div>₹{{
-                      booking.totalRoomTariffBeforeDiscount
-                        | number : "1.2-2"
-                    }}</div>
+              <div>{{ booking.totalRoomTariffBeforeDiscount | currency: currency : 'symbol' : '1.2-2' }}</div>
             </div>
             <div class="d-flex justify-content-between">
                 <div>Room Count</div>
@@ -843,33 +852,46 @@
             </div>
             <div class="d-flex justify-content-between">
                 <div>Extra Pax</div>
-                <div>₹{{ booking.extraPersonCharge | number : "1.2-2" }}</div>
+                <div>{{ booking.extraPersonCharge | currency: currency : 'symbol' : '1.2-2' }}</div>
             </div>
             <div class="d-flex justify-content-between">
                 <div>Extra Child</div>
-                <div>₹{{ booking.extraChildCharge | number : "1.2-2" }}</div>
+                <div>{{ booking.extraChildCharge | currency: currency : 'symbol' : '1.2-2' }}</div>
             </div>
             <div class="d-flex justify-content-between" *ngIf="booking.discountAmount">
               <div *ngIf="booking.discountPercentage">Discount ({{booking.discountPercentage}}%)</div>
-              <div *ngIf="booking.discountAmount">-₹{{ booking.discountAmount | number : "1.2-2" }}</div>
+              <div *ngIf="booking.discountAmount">-{{ booking.discountAmount | currency: currency : 'symbol' : '1.2-2' }}</div>
 
             </div>
             <div class="d-flex justify-content-between">
                 <div>Sub Total</div>
-                <div>₹{{ booking.beforeTaxAmount | number : "1.2-2" }}</div>
+                <div>{{ booking.beforeTaxAmount | currency: currency : 'symbol' : '1.2-2' }}</div>
             </div>
 
 
             <div class="d-flex justify-content-between">
                 <div>Tax</div>
-                <div>₹{{ booking.taxAmount | number : "1.2-2" }}</div>
+                <div>{{ booking.taxAmount | currency: currency : 'symbol' : '1.2-2' }}</div>
             </div>
             <hr style="border: 1px solid #E5E7EB; margin-top: 5px; margin-bottom: 5px;">
             <div class="d-flex justify-content-between" style="font-weight: bold;">
                 <div>Total Amount</div>
-                <div>₹{{ booking.totalAmount | number : "1.2-2" }}</div>
+                <div>{{ booking.totalAmount | currency: currency : 'symbol' : '1.2-2' }}</div>
             </div>
           </ng-container>
+          <div class="selected-addons-summary-mobile" *ngIf="selectedAddOnServices?.length > 0">
+            <hr style="border: 1px solid #fff; margin-top: 10px; margin-bottom: 10px;">
+            <div style="font-weight: 600; margin-bottom: 6px;">Selected Add-on Services</div>
+            <div class="d-flex justify-content-between" *ngFor="let service of selectedAddOnServices">
+              <div>
+                {{ getServiceName(service) }}
+                <span *ngIf="getServiceQuantity(service) > 1">
+                  x {{ getServiceQuantity(service) }}
+                </span>
+              </div>
+              <div>{{ getServiceTotal(service) | currency: currency : 'symbol' : '1.2-2' }}</div>
+            </div>
+          </div>
           </div>
         </div>
       </div>
@@ -878,31 +900,28 @@
                       <div class="booking-summary-footer">
                         <div class="d-flex justify-content-between" >
                             <div>Final {{this.roomLabel}} Tariff:</div>
-                            <div>₹ {{ bookingSummaryDetails?.totalPlanPrice - totalDiscount  | number : "1.2-2" }}</div>
+                            <div>{{ bookingSummaryDetails?.totalPlanPrice - totalDiscount | currency: currency : 'symbol' : '1.2-2' }}</div>
                         </div>
                          <div class="d-flex justify-content-between" >
                             <div>Total GST:</div>
-                            <div>₹ {{ bookingSummaryDetails?.totalTax | number : "1.2-2" }}</div>
+                            <div>{{ bookingSummaryDetails?.totalTax | currency: currency : 'symbol' : '1.2-2' }}</div>
                         </div>
-                        <div class="d-flex justify-content-between" *ngIf="bookingSummaryDetails?.totalAddOnsPrice > 0">
+                        <div class="d-flex justify-content-between" *ngIf="getAddOnsTotal() > 0">
                             <div>Total Add-on Services Price:</div>
-                            <div>₹ {{
-                            bookingSummaryDetails?.totalAddOnsPrice -
-                              bookingSummaryDetails?.totaltaxfacilityAmount
-                              | number : "1.2-2"
-                            }}</div>
+                            <div>{{ getAddOnsSubtotal() | currency: currency : 'symbol' : '1.2-2' }}</div>
                         </div>
-                        <div class="d-flex justify-content-between" *ngIf="bookingSummaryDetails?.totaltaxfacilityAmount > 0">
+                        <div class="d-flex justify-content-between" *ngIf="getAddOnsTax() > 0">
                           <div>Total Add-on Services Tax Fees:</div>
-                          <div>₹{{
-                              bookingSummaryDetails?.totaltaxfacilityAmount
-                                | number : "1.2-2"
-                            }}</div>
+                          <div>{{ getAddOnsTax() | currency: currency : 'symbol' : '1.2-2' }}</div>
+                        </div>
+                        <div class="d-flex justify-content-between" *ngIf="getConvenienceFeeAmount() > 0">
+                          <div>Convenience Fee:</div>
+                          <div>{{ getConvenienceFeeAmount() | currency: currency : 'symbol' : '1.2-2' }}</div>
                         </div>
                         <hr style="border: 1px solid #E5E7EB; margin-top: 10px; margin-bottom: 10px;">
                         <div class="d-flex justify-content-between" style="font-weight: 600; color:#16A34A">
                           <div>Total Amount:</div>
-                          <div>₹{{ bookingSummaryDetails?.totalAmount | number : "1.2-2" }}</div>
+                          <div>{{ getConfirmationTotalAmount() | currency: currency : 'symbol' : '1.2-2' }}</div>
                         </div>
               <div>
               </div>

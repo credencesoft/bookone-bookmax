@@ -1253,7 +1253,7 @@
       "
     >
       <div [ngStyle]="{ 'margin-top': businessUser?.website ? '0px' : '0px' }">
-        <div class="website-web-vision">
+        <div class="website-web-vision" *ngIf="!isMobileView">
           <div 
             class="card checkAvaCard"
             [style.max-width]="!showRoomsAndGuestsFilter ? '65%' : '100%'"
@@ -1279,7 +1279,7 @@
                 [class.has-twenty-four-hour-checkin]="isTwentyFourHourCheckIn"
                 [style.justify-content]="!showRoomsAndGuestsFilter ? 'center' : 'unset'"
               >
-                <div class="checkAva3">
+                <div class="checkAva3" (click)="datepicker3Web.toggle(); removeSession(); roomsAndOccupancy = false" style="cursor: pointer;">
                   <div id="autocomplete-container">
                     <label
                       for="checkin"
@@ -1291,12 +1291,7 @@
                       readonly
                       #dpFromDate3
                       type="text"
-                      class="date-input form-control input-field-resize2 custom-border-on-focus"
-                      style="
-                        border: none;
-                        background: none !important;
-                        margin-top: -6px;
-                      "
+                      class="date-input form-control custom-border-on-focus"
                       placeholder="Check-in"
                       name="dpFromDate3"
                       [value]="formatNgbDateToDdMmYyyy(fromDate)"
@@ -1304,11 +1299,10 @@
                         fromDate = validateInput(fromDate, dpFromDate3.value)
                       "
                       required
-                      (click)="datepicker3Web.toggle(); removeSession(); roomsAndOccupancy = false"
                       autocomplete="off"
                     />
 
-                    <div class="form-group" style="height: 0px">
+                    <div class="form-group" style="height: 0px; margin: 0; padding: 0;">
                       <input
                         name="datepicker"
                         class="form-control input-field-resize"
@@ -1326,11 +1320,7 @@
                       />
                     </div>
                   </div>
-                  <div
-                    class="content-centered"
-                    (click)="datepicker3Web.toggle(); removeSession(); roomsAndOccupancy = false"
-                    style="cursor: pointer"
-                  >
+                  <div class="content-centered">
                     <img
                       src=" media-be/images/Calendar.png"
                       alt=""
@@ -1338,17 +1328,9 @@
                       width="25px"
                     />
                   </div>
-
-                  <div
-                    style="
-                      border-right: 1px solid #d9d9d9;
-                      margin-top: 2px;
-                      margin-bottom: 13px;
-                    "
-                  ></div>
                 </div>
 
-                <div class="checkAva6">
+                <div class="checkAva6" (click)="datepicker4Web.toggle(); removeSession(); roomsAndOccupancy = false" style="cursor: pointer;">
                   <div id="autocomplete-container">
                     <label
                       for="checkout"
@@ -1360,22 +1342,16 @@
                       readonly
                       #dpToDate3
                       type="text"
-                      class="date-input form-control input-field-resize2 custom-border-on-focus"
+                      class="date-input form-control custom-border-on-focus"
                       placeholder="Check-out"
                       name="dpToDate3"
                       [value]="formatNgbDateToDdMmYyyy(toDate)"
-                      style="
-                        border: none;
-                        background: none !important;
-                        margin-top: -6px;
-                      "
                       (input)="toDate = validateInput(toDate, dpToDate3.value)"
                       required
-                      (click)="datepicker4Web.toggle(); removeSession(); roomsAndOccupancy = false"
                       autocomplete="off"
                     />
 
-                    <div class="form-group" style="height: 0px">
+                    <div class="form-group" style="height: 0px; margin: 0; padding: 0;">
                       <input
                         name="datepicker"
                         class="form-control input-field-resize checkout-datepicker"
@@ -1393,11 +1369,7 @@
                       />
                     </div>
                   </div>
-                  <div
-                    class="content-centered"
-                    (click)="datepicker4Web.toggle(); removeSession(); roomsAndOccupancy = false"
-                    style="cursor: pointer"
-                  >
+                  <div class="content-centered">
                     <img
                       src=" media-be/images/Calendar.png"
                       alt=""
@@ -1438,36 +1410,22 @@
                     <div
                       class="input-box"
                       (click)="toggleRoomsAndOccupancy()"
-                      style="padding-bottom: 9px; padding-top: 7px !important"
                     >
-                      <label
-                        class="default-color"
-                        style="margin-bottom: 0px !important"
-                        >Guests & {{ roomLabel }}s</label
-                      >
-                      <br />
-                      <label
-                        class="text-default"
-                        style="
-                          font-size: 14px;
-                          margin: 0;
-                          padding: 0;
-                          color: #141319 !important;
-                        "
-                      >
-                        <span class="guests_count">
-                          <span data-adults-count="" class="text-nowrap"
-                            >{{ totalAdults }} adults</span>
-                          <span data-visible="accommodation" class="text-nowrap">
-                            <span data-children-count=""
-                              >{{ totalChildren }} children</span>
-                          </span>
-                          <span data-visible="accommodation" class="text-nowrap">
-                            <span data-room-count=""
-                              >{{ rooms }} {{ roomLabel === 'Room' ? (rooms > 1 ? 'rooms' : 'room') : roomLabel }}</span>
-                          </span>
-                        </span>
+                      <label class="label_heading1 default-color">
+                        Guests & {{ roomLabel }}s
                       </label>
+                      <div class="guests_count">
+                        <span data-adults-count="" class="text-nowrap"
+                          >{{ totalAdults }} adults</span>
+                        <span data-visible="accommodation" class="text-nowrap">
+                          <span data-children-count=""
+                            >{{ totalChildren }} children</span>
+                        </span>
+                        <span data-visible="accommodation" class="text-nowrap">
+                          <span data-room-count=""
+                            >{{ rooms }} {{ roomLabel === 'Room' ? (rooms > 1 ? 'rooms' : 'room') : roomLabel }}</span>
+                        </span>
+                      </div>
                     </div>
 
                     <div class="content-centered">
@@ -1697,7 +1655,7 @@
           </div>
         </div>
 
-        <div class="website-mob-vision">
+        <div class="website-mob-vision" *ngIf="isMobileView">
           <div>
             <div class="card checkAvaCard">
               <div class="checkin-mode-row checkin-mode-row--mobile" *ngIf="showTwentyFourHourBanner" style="border: none !important; margin-bottom: 15px; padding: 0;">
@@ -1715,7 +1673,7 @@
               </div>
               <div id="checkin">
                 <div class="row d-flex checkAva2" [class.has-twenty-four-hour-checkin]="isTwentyFourHourCheckIn">
-                  <div class="checkAva3">
+                  <div class="checkAva3" (click)="datepicker3.toggle(); removeSession(); roomsAndOccupancy = false" style="cursor: pointer;">
                     <div id="autocomplete-container">
                       <label
                         for="checkin"
@@ -1727,12 +1685,7 @@
                         readonly
                         #dpFromDate3
                         type="text"
-                        class="date-input form-control input-field-resize2 custom-border-on-focus"
-                        style="
-                          border: none;
-                          background: none !important;
-                          margin-top: -6px;
-                        "
+                        class="date-input form-control custom-border-on-focus"
                         placeholder="Check-in"
                         name="dpFromDate3"
                         [value]="formatNgbDateToDdMmYyyy(fromDate)"
@@ -1740,11 +1693,10 @@
                           fromDate = validateInput(fromDate, dpFromDate3.value)
                         "
                         required
-                        (click)="datepicker3.toggle(); removeSession(); roomsAndOccupancy = false"
                         autocomplete="off"
                       />
 
-                      <div class="form-group" style="height: 0px">
+                      <div class="form-group" style="height: 0px; margin: 0; padding: 0;">
                         <input
                           name="datepicker"
                           class="form-control input-field-resize"
@@ -1762,11 +1714,7 @@
                         />
                       </div>
                     </div>
-                    <div
-                      class="content-centered"
-                      (click)="datepicker3.toggle(); removeSession(); roomsAndOccupancy = false"
-                      style="cursor: pointer"
-                    >
+                    <div class="content-centered">
                       <img
                         src=" media-be/images/Calendar.png"
                         alt=""
@@ -1776,7 +1724,7 @@
                     </div>
                   </div>
 
-                  <div class="checkAva6">
+                  <div class="checkAva6" (click)="datepicker4.toggle(); removeSession(); roomsAndOccupancy = false" style="cursor: pointer;">
                     <div id="autocomplete-container">
                       <label
                         for="checkout"
@@ -1788,24 +1736,18 @@
                         readonly
                         #dpToDate3
                         type="text"
-                        class="date-input form-control input-field-resize2 custom-border-on-focus"
+                        class="date-input form-control custom-border-on-focus"
                         placeholder="Check-out"
                         name="dpToDate3"
                         [value]="formatNgbDateToDdMmYyyy(toDate)"
-                        style="
-                          border: none;
-                          background: none !important;
-                          margin-top: -6px;
-                        "
                         (input)="
                           toDate = validateInput(toDate, dpToDate3.value)
                         "
                         required
-                        (click)="datepicker4.toggle(); removeSession(); roomsAndOccupancy = false"
                         autocomplete="off"
                       />
 
-                      <div class="form-group" style="height: 0px">
+                      <div class="form-group" style="height: 0px; margin: 0; padding: 0;">
                         <input
                           name="datepicker"
                           class="form-control input-field-resize checkout-datepicker"
@@ -1823,19 +1765,15 @@
                         />
                       </div>
                     </div>
-                    <div
-                      class="content-centered"
-                      (click)="datepicker4.toggle(); removeSession(); roomsAndOccupancy = false"
-                      style="cursor: pointer"
-                    >
+                    <div class="content-centered">
                       <img
                         src=" media-be/images/Calendar.png"
                         alt=""
                         height="20px"
                         width="25px"
                       />
+                    </div>
                   </div>
-                </div>
                 <div *ngIf="isTwentyFourHourCheckIn" class="checkAvaTime checkAvaTime--mobile">
                   <div class="checkin-time-box">
                     <label class="label_heading1 checkAva7 default-color">
@@ -1866,36 +1804,22 @@
                       <div
                         class="input-box"
                         (click)="toggleRoomsAndOccupancy()"
-                        style="padding-bottom: 9px; padding-top: 7px !important"
                       >
-                        <label
-                          class="default-color"
-                          style="margin-bottom: 0px !important"
-                          >Guests & {{ roomLabel }}s</label
-                        >
-                        <br />
-                        <label
-                          class="text-default"
-                          style="
-                            font-size: 14px;
-                            margin: 0;
-                            padding: 0;
-                            color: #141319 !important;
-                          "
-                        >
-                          <span class="guests_count" style="display: inline-flex; gap: 20px;">
-                            <span data-adults-count="" class="text-nowrap"
-                              >{{ totalAdults }} adults</span>
-                            <span data-visible="accommodation" class="text-nowrap">
-                              <span data-children-count=""
-                                >{{ totalChildren }} children</span>
-                            </span>
-                            <span data-visible="accommodation" class="text-nowrap">
-                              <span data-room-count=""
-                                >{{ rooms }} {{ roomLabel === 'Room' ? (rooms > 1 ? 'rooms' : 'room') : roomLabel }}</span>
-                            </span>
-                          </span>
+                        <label class="label_heading1 default-color">
+                          Guests & {{ roomLabel }}s
                         </label>
+                        <div class="guests_count">
+                          <span data-adults-count="" class="text-nowrap"
+                            >{{ totalAdults }} adults</span>
+                          <span data-visible="accommodation" class="text-nowrap">
+                            <span data-children-count=""
+                              >{{ totalChildren }} children</span>
+                          </span>
+                          <span data-visible="accommodation" class="text-nowrap">
+                            <span data-room-count=""
+                              >{{ rooms }} {{ roomLabel === 'Room' ? (rooms > 1 ? 'rooms' : 'room') : roomLabel }}</span>
+                          </span>
+                        </div>
                       </div>
 
                      <div
@@ -3147,9 +3071,9 @@
 
         <div class="image-container">
           <div class="maiiin">
-        <div *ngFor="let room of availableRooms; let i = index">
+        <div *ngFor="let room of availableRooms; let i = index; trackBy: trackByRoomId">
           <ng-container *ngIf="hasVisiblePlans(room)">
-            <div class="right-popup" [class.show]="isPanelOpen">
+            <div class="right-popup" *ngIf="isPanelOpen && selectedRoom === room" [class.show]="isPanelOpen">
             <div class="popup-header">
               <div
                 style="
@@ -3316,7 +3240,7 @@
 
           <div class="card-rooms card margin-top-20px" *ngIf="availableRooms?.length > 0">
             <div
-              *ngFor="let rates of room.ratesAndAvailabilityDtos; let r = index"
+              *ngFor="let rates of room.ratesAndAvailabilityDtos; let r = index; trackBy: trackByPlanId"
             >
               <div class="d-flex justify-content-between flex-wrap-one"
                 *ngIf="room?.id === rates?.roomId &&
@@ -3380,6 +3304,8 @@
                       (click)="togglePanel(room, i)"
                       *ngIf="!room.imageList || room.imageList.length === 0"
                       src="https://themissionneighbourhood.com/images/no-image.png"
+                      loading="lazy"
+                      decoding="async"
                       class="w-100 gallery-image-card"
                       style="
                         aspect-ratio: 4/3;
@@ -3398,6 +3324,8 @@
                           room.imageList[0]?.url === room.imageList[1]?.url)
                       "
                       [src]="room.imageList[0].url"
+                      loading="lazy"
+                      decoding="async"
                       alt="Hotel Room"
                       class="w-100 gallery-image-card"
                       style="
@@ -3422,11 +3350,13 @@
                       <div class="carousel-inner img_size_room">
                         <div
                           class="carousel-item img_size_room"
-                          *ngFor="let image of room.imageList; let i = index"
+                          *ngFor="let image of room.imageList; let i = index; trackBy: trackByIndex"
                           [class.active]="i === 0"
                         >
                           <img
                             [src]="image.url"
+                            loading="lazy"
+                            decoding="async"
                             class="w-100 gallery-image-card"
                             alt="Slide {{ i }}"
                             style="
@@ -4032,8 +3962,8 @@
           </ng-container>
         </div>
 
-        <div *ngFor="let room of soldOutRooms; let i = index">
-          <div class="right-popup" [class.show]="isPanelOpenOne">
+        <div *ngFor="let room of soldOutRooms; let i = index; trackBy: trackByRoomId">
+          <div class="right-popup" *ngIf="isPanelOpenOne && selectedRoom === room" [class.show]="isPanelOpenOne">
             <div class="popup-header">
               <div
                 style="
@@ -4195,6 +4125,8 @@
                           room.imageList[0]?.url === room.imageList[1]?.url)
                       "
                       [src]="room.imageList[0].url"
+                      loading="lazy"
+                      decoding="async"
                       alt="Hotel Room"
                       class="w-100"
                       style="
@@ -4220,17 +4152,20 @@
                       <div class="carousel-inner img_size_room">
                         <div
                           class="carousel-item img_size_room"
-                          *ngFor="let image of room.imageList; let i = index"
+                          *ngFor="let image of room.imageList; let i = index; trackBy: trackByIndex"
                           [class.active]="i === 0"
                         >
                           <img
                             [src]="image.url"
+                            loading="lazy"
+                            decoding="async"
                             class="w-100"
                             alt="Slide {{ i }}"
                             style="
                               aspect-ratio: 4/3;
                               object-fit: cover;
                               border-radius: 0;
+                              cursor: pointer;
                             "
                           />
                         </div>
@@ -4889,22 +4824,32 @@
           <h3 class="aboutHeading">About Property</h3>
 
           <div class="card highlights-card">
-            <div class="p-3">
+            <div class="p-2 px-3">
 
               <div class="highlight-list">
 
-                <div *ngFor="let fac of propertyServicesNoId">
-                  <div class="d-flex align-items-center gap-4">
-
-                    <i class="fa-solid fa-forward highlight-icon"></i>
-
-                    <span class="highlight-text">
-                      {{ fac.name }}
-                    </span>
-
-                  </div>
+                <div *ngFor="let fac of visiblePropertyServices; trackBy: trackByIndex" class="highlight-item">
+                  <i class="fa-solid fa-circle-check highlight-icon"></i>
+                  <span class="highlight-text">
+                    {{ fac.name }}
+                  </span>
                 </div>
 
+              </div>
+
+              <div *ngIf="propertyServicesNoId.length > 6" class="mt-2 text-center">
+                <button
+                  type="button"
+                  class="btn btn-sm btn-outline-secondary highlight-toggle-btn"
+                  (click)="togglePropertyServices()"
+                >
+                  <span *ngIf="!showAllPropertyServices">
+                    + View all {{ propertyServicesNoId.length }} amenities
+                  </span>
+                  <span *ngIf="showAllPropertyServices">
+                    Show less
+                  </span>
+                </button>
               </div>
 
             </div>
