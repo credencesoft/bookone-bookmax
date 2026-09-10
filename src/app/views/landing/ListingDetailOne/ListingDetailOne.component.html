@@ -337,7 +337,7 @@
           <div *ngIf="!guestCouponGenerated">
             <!-- Guest Name Field -->
             <div style="display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px;">
-              <label style="font-size: 11px; font-weight: 500; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;">Guest Name</label>
+              <label style="font-size: 11px; font-weight: 600; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;">Guest Name</label>
               <input
                 type="text"
                 [(ngModel)]="guestCouponName"
@@ -361,7 +361,7 @@
 
             <!-- WhatsApp Phone Field -->
             <div style="display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px;">
-              <label style="font-size: 11px; font-weight: 500; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;">WhatsApp Number</label>
+              <label style="font-size: 11px; font-weight: 600; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;">WhatsApp Number</label>
               <div style="display: flex; gap: 8px; position: relative;">
                 
                 <!-- Dropdown Trigger Button -->
@@ -379,7 +379,7 @@
                       border-radius: 8px;
                       background-color: rgba(15, 23, 42, 0.4);
                       font-size: 13.5px;
-                      font-weight: 500;
+                      font-weight: 600;
                       color: #ffffff;
                       cursor: pointer;
                       outline: none;
@@ -453,7 +453,7 @@
                           <span style="font-size: 15px;">{{ c.flag }}</span>
                           <span style="font-size: 12.5px; font-weight: 500; color: #cbd5e1;">{{ c.name }}</span>
                         </div>
-                        <span style="font-size: 11px; font-weight: 500; color: #94a3b8;">{{ c.code }}</span>
+                        <span style="font-size: 11px; font-weight: 600; color: #94a3b8;">{{ c.code }}</span>
                       </div>
                     </div>
                   </div>
@@ -508,7 +508,7 @@
 
           <!-- Successful Coupon Generation State -->
           <div *ngIf="guestCouponGenerated" style="text-align: center; width: 100%;">
-            <div style="color: #22c55e; font-size: 13.5px; font-weight: 500; margin-bottom: 16px; padding: 10px; background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.2); border-radius: 10px; text-align: left;">
+            <div style="color: #22c55e; font-size: 13.5px; font-weight: 600; margin-bottom: 16px; padding: 10px; background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.2); border-radius: 10px; text-align: left;">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: #22c55e; margin-bottom: 4px; display: inline-block;">
                 <polyline points="20 6 9 17 4 12"></polyline>
               </svg>
@@ -732,7 +732,7 @@
           <div class="date-guest-box mb-4">
             <div class="row no-gutters border-bottom">
               <div class="col-6 pr-2 border-right padding-10px">
-                <small class="text-uppercase  text-muted" style="font-weight: 500;"
+                <small class="text-uppercase font-weight-bold text-muted"
                   >Check-in</small
                 ><br />
                 <span class="text-dark">{{
@@ -740,7 +740,7 @@
                 }}</span>
               </div>
               <div class="col-6 pl-2 padding-10px">
-                <small class="text-uppercase  text-muted" style="font-weight: 500;"
+                <small class="text-uppercase font-weight-bold text-muted"
                   >Checkout</small
                 ><br />
                 <span class="text-dark">{{
@@ -753,7 +753,7 @@
               *ngIf="selectedPlansSummary.length > 0"
             >
               <div>
-                <small class="text-uppercase  text-muted" style="font-weight: 500;"
+                <small class="text-uppercase font-weight-bold text-muted"
                   >Guests</small
                 ><br />
                 <span class="text-primary"
@@ -882,10 +882,7 @@
                 >
                   <small class="text-muted"
                     >Per-Day Price Breakdown
-                    <i
-                      class="fa-solid"
-                      [ngClass]="isOpen ? 'fa-angle-up' : 'fa-angle-down'"
-                    ></i>
+                    <span class="booking-summary-chevron" [class.is-open]="isOpen" aria-hidden="true"></span>
                   </small>
                   <!-- <small class="text-muted" *ngIf="taxArray && taxArray.length">
                 Tax Fee: {{ taxArray[i] | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency : currency : "symbol" : "1.2-2" }}
@@ -1026,7 +1023,7 @@
                 }"
                 (click)="onYesClick()"
               >
-                <i class="fa-solid fa-arrow-right"></i>
+                <span class="booking-summary-arrow" aria-hidden="true">&rarr;</span>
               </button>
             </div>
           </div>
@@ -1163,7 +1160,7 @@
               </span>
             </div>
             <div
-              class="d-flex justify-content-between  total-amount mt-2" style="font-weight: 500;"
+              class="d-flex justify-content-between font-weight-bold total-amount mt-2"
               *ngIf="!activeForGoogleHotelCenter"
             >
               <span>Total Amount</span>
@@ -1197,7 +1194,7 @@
               </span>
             </div>
             <div
-              class="d-flex justify-content-between  total-amount mt-2" style="font-weight: 500;"
+              class="d-flex justify-content-between font-weight-bold total-amount mt-2"
               *ngIf="activeForGoogleHotelCenter"
             >
               <span>Total Amount</span>
@@ -1256,13 +1253,15 @@
         <div class="website-web-vision" *ngIf="!isMobileView">
           <div 
             class="card checkAvaCard"
-            style="max-width: 70%; margin-left: auto; margin-right: auto;"
+            [style.max-width]="!showRoomsAndGuestsFilter ? '65%' : '100%'"
+            [style.margin-left]="!showRoomsAndGuestsFilter ? 'auto' : 'unset'"
+            [style.margin-right]="!showRoomsAndGuestsFilter ? 'auto' : 'unset'"
           >
             <div class="checkin-mode-row" *ngIf="showTwentyFourHourBanner" style="border: none !important; margin-bottom: 15px;">
               <div style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border: 1px solid #bbf7d0; border-radius: 10px; padding: 12px 16px; display: flex; align-items: flex-start; gap: 10px; width: 100%; box-shadow: 0 2px 4px rgba(22, 163, 74, 0.05);">
                 <i class="fa-solid fa-clock" style="color: #16a34a; font-size: 16px; margin-top: 2px;"></i>
                 <div style="display: flex; flex-direction: column; gap: 2px;">
-                  <span style="color: #14532d; font-size: 13px; font-weight: 500; text-align: left; letter-spacing: -0.1px;">
+                  <span style="color: #14532d; font-size: 13px; font-weight: 600; text-align: left; letter-spacing: -0.1px;">
                     Property has Time-based check-in
                   </span>
                   <span style="color: #166534; font-size: 11px; font-weight: 400; text-align: left; opacity: 0.9;">
@@ -1450,13 +1449,13 @@
                             class="d-flex text-center justify-content-between align-items-center"
                           >
                             <div class="col">
-                              <div class=" mb-2" style="font-weight: 500;">{{ roomLabel }}</div>
+                              <div class="font-weight-bold mb-2">{{ roomLabel }}</div>
                               <div>1</div>
                             </div>
 
                             <!-- Adults -->
                             <div class="col">
-                              <div class=" mb-2" style="font-weight: 500;">Adults</div>
+                              <div class="font-weight-bold mb-2">Adults</div>
                               <div
                                 class="d-flex justify-content-center align-items-center"
                               >
@@ -1484,7 +1483,7 @@
 
                             <!-- Children -->
                             <div class="col">
-                              <div class=" mb-2" style="font-weight: 500;">Children</div>
+                              <div class="font-weight-bold mb-2">Children</div>
                               <div
                                 class="d-flex justify-content-center align-items-center"
                               >
@@ -1521,13 +1520,13 @@
                             class="d-flex text-center justify-content-between align-items-center"
                           >
                             <div class="col">
-                              <div class=" mb-2" style="font-weight: 500;">{{ roomLabel }}</div>
+                              <div class="font-weight-bold mb-2">{{ roomLabel }}</div>
                               <div>{{ i + 2 }}</div>
                             </div>
 
                             <!-- Adults -->
                             <div class="col">
-                              <div class=" mb-2" style="font-weight: 500;">Adults</div>
+                              <div class="font-weight-bold mb-2">Adults</div>
                               <div
                                 class="d-flex justify-content-center align-items-center"
                               >
@@ -1557,7 +1556,7 @@
 
                             <!-- Children -->
                             <div class="col">
-                              <div class=" mb-2" style="font-weight: 500;">Children</div>
+                              <div class="font-weight-bold mb-2">Children</div>
                               <div
                                 class="d-flex justify-content-center align-items-center"
                               >
@@ -1599,13 +1598,14 @@
                         >
                           <div style="width: 70%">
                             <a
-                              class="color-text  cursor-pointer" style="font-weight: 500;"
+                              class="color-text font-weight-bold cursor-pointer"
                               (click)="addRoom()"
                               *ngIf="canAddRoom()"
                               >+ Add {{ roomLabel }}</a
                             >
                             <span
-                              class=" text-muted" style="font-weight: 500; cursor: not-allowed; opacity: 0.5;"
+                              class="font-weight-bold text-muted"
+                              style="cursor: not-allowed; opacity: 0.5;"
                               *ngIf="!canAddRoom()"
                               >+ Add {{ roomLabel }}</span
                             >
@@ -1620,7 +1620,7 @@
                               Please select the number of {{ roomLabel === 'Room' ? 'rooms' : roomLabel + 's' }} and assign
                               guests accordingly.
                             </span>
-                            <span *ngIf="!canAddRoom()" class="text-danger " style="font-weight: 500;">
+                            <span *ngIf="!canAddRoom()" class="text-danger font-weight-bold">
                               Maximum number of {{ roomLabel === 'Room' ? 'rooms' : roomLabel + 's' }} reached for this property.
                             </span>
                           </div>
@@ -1645,7 +1645,7 @@
                     style="margin-right: 7px"
                     src="media-be/images/search-img.png"
                   />
-                  Check Now
+                  Book Now
                 </button>
               </div>
             </div>
@@ -1659,7 +1659,7 @@
                 <div style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border: 1px solid #bbf7d0; border-radius: 10px; padding: 12px 16px; display: flex; align-items: flex-start; gap: 10px; width: 100%; box-shadow: 0 2px 4px rgba(22, 163, 74, 0.05);">
                   <i class="fa-solid fa-clock" style="color: #16a34a; font-size: 15px; margin-top: 2px;"></i>
                   <div style="display: flex; flex-direction: column; gap: 2px;">
-                    <span style="color: #14532d; font-size: 12px; font-weight: 500; text-align: left; letter-spacing: -0.1px;">
+                    <span style="color: #14532d; font-size: 12px; font-weight: 600; text-align: left; letter-spacing: -0.1px;">
                       Property has Time-based check-in
                     </span>
                     <span style="color: #166534; font-size: 10px; font-weight: 400; text-align: left; opacity: 0.9; line-height: 1.3;">
@@ -1847,13 +1847,13 @@
                               class="d-flex text-center justify-content-between align-items-center"
                             >
                               <div class="col">
-                                <div class=" mb-2" style="font-weight: 500;">{{ roomLabel }}</div>
+                                <div class="font-weight-bold mb-2">{{ roomLabel }}</div>
                                 <div>1</div>
                               </div>
 
                               <!-- Adults -->
                               <div class="col">
-                                <div class=" mb-2" style="font-weight: 500;">Adults</div>
+                                <div class="font-weight-bold mb-2">Adults</div>
                                 <div
                                   class="d-flex justify-content-center align-items-center"
                                 >
@@ -1881,7 +1881,7 @@
 
                               <!-- Children -->
                               <div class="col">
-                                <div class=" mb-2" style="font-weight: 500;">
+                                <div class="font-weight-bold mb-2">
                                   Children
                                 </div>
                                 <div
@@ -1920,13 +1920,13 @@
                               class="d-flex text-center justify-content-between align-items-center"
                             >
                               <div class="col">
-                                <div class=" mb-2" style="font-weight: 500;">{{ roomLabel }}</div>
+                                <div class="font-weight-bold mb-2">{{ roomLabel }}</div>
                                 <div>{{ i + 2 }}</div>
                               </div>
 
                               <!-- Adults -->
                               <div class="col">
-                                <div class=" mb-2" style="font-weight: 500;">Adults</div>
+                                <div class="font-weight-bold mb-2">Adults</div>
                                 <div
                                   class="d-flex justify-content-center align-items-center"
                                 >
@@ -1956,7 +1956,7 @@
 
                               <!-- Children -->
                               <div class="col">
-                                <div class=" mb-2" style="font-weight: 500;">
+                                <div class="font-weight-bold mb-2">
                                   Children
                                 </div>
                                 <div
@@ -1999,13 +1999,14 @@
                           >
                             <div style="width: 70%">
                               <a
-                                class="color-text  cursor-pointer" style="font-weight: 500;"
+                                class="color-text font-weight-bold cursor-pointer"
                                 (click)="addRoom()"
                                 *ngIf="canAddRoom()"
                                 >+ Add {{ roomLabel }}</a
                               >
                               <span
-                                class=" text-muted" style="font-weight: 500; cursor: not-allowed; opacity: 0.5;"
+                                class="font-weight-bold text-muted"
+                                style="cursor: not-allowed; opacity: 0.5;"
                                 *ngIf="!canAddRoom()"
                                 >+ Add {{ roomLabel }}</span
                               >
@@ -2020,7 +2021,7 @@
                                 Please select the number of {{ roomLabel === 'Room' ? 'rooms' : roomLabel + 's' }} and assign
                                 guests accordingly.
                               </span>
-                              <span *ngIf="!canAddRoom()" class="text-danger " style="font-weight: 500;">
+                              <span *ngIf="!canAddRoom()" class="text-danger font-weight-bold">
                                 Maximum number of {{ roomLabel === 'Room' ? 'rooms' : roomLabel + 's' }} reached for this property.
                               </span>
                             </div>
@@ -2052,7 +2053,7 @@
                       style="margin-right: 7px"
                       src="media-be/images/search-img.png"
                     />
-                    Check Now
+                    Book Now
                   </button>
                 </div>
               </div>
@@ -2079,7 +2080,7 @@
       <div class="row margin-top-40px listing-details-hero-row">
         <div class="col-12">
           <h2 class="hero-heading">{{ businessUser?.name }}</h2>
-          <p class="hero-subheading " style="font-weight: 500;">
+          <p class="hero-subheading font-weight-bold">
             <img src="media-be/images/location-icons.svg" alt="" width="17px" />
             {{ businessUser.address?.streetName }},
             {{ businessUser.address?.city }}, {{ businessUser.address?.state }},
@@ -2183,7 +2184,7 @@
                         <div>
                           <p
                             class="aminities-names"
-                            style="margin: 0; font-weight: 500; color: #334155; font-family: Poppins;"
+                            style="margin: 0; font-weight: 600; color: #334155; font-family: 'Plus Jakarta Sans';"
                           >
                             {{ fac.name }}
                           </p>
@@ -2234,7 +2235,7 @@
                       />
                     </div>
                     <div style="flex: 1">
-                      <p class="aminities-names" style="margin: 0; font-weight: 500; color: #0f172a">{{ fac.name }}</p>
+                      <p class="aminities-names" style="margin: 0; font-weight: 600; color: #0f172a">{{ fac.name }}</p>
                     </div>
                   </div>
                 </div>
@@ -2282,7 +2283,7 @@
                             />
                           </div>
                           <div style="flex: 1">
-                            <p class="aminities-names" style="margin: 0; font-weight: 500; color: #0f172a">{{ fac.name }}</p>
+                            <p class="aminities-names" style="margin: 0; font-weight: 600; color: #0f172a">{{ fac.name }}</p>
                           </div>
                         </div>
                       </div>
@@ -2306,337 +2307,445 @@
       </div>
     </div>
 
-    <!-- AI-Powered Suggestions Teaser -->
-    <div class="website-web-vision" style="margin-top: 40px; margin-bottom: 40px;">
-      <div class="row">
-        <div class="col-lg-12">
-          <!-- Main Container -->
-          <div
-            style="
-              background: linear-gradient(135deg, #0A2540 0%, #123B57 60%, #14456A 100%) !important;
-              border-radius: 24px;
-              padding: 32px 40px;
-              color: white;
-              position: relative;
-              overflow: hidden;
-              box-shadow: 0 10px 30px rgba(10, 37, 64, 0.15);
-            "
-          >
-            <!-- Background Decorative Glow -->
-            <div style="
-              position: absolute;
-              top: 0;
-              right: 0;
-              width: 100%;
-              height: 100%;
-              background-image: radial-gradient(circle at 85% 15%, rgba(58, 130, 150, 0.35), transparent 60%);
-              z-index: 1;
-              pointer-events: none;
-            "></div>
+    <!-- AI-Powered Suggestion Section - Teal Box -->
+   <!-- AI-Powered Suggestion Section -->
+<div
+  class="margin-top-40px website-web-vision"
+  *ngIf="!showSmartRecommendations"
+  style="margin-top: 40px; margin-bottom: 40px;"
+>
+  <div class="row">
+    <div class="col-lg-12">
+      <!-- Main Container -->
+      <div
+        style="
+          background: linear-gradient(
+            135deg,
+            #0A2540 0%,
+            #123B57 60%,
+            #14456A 100%
+          ) !important;
+          border-radius: 24px;
+          padding: 32px 40px;
+          color: white;
+          position: relative;
+          overflow: hidden;
+          box-shadow: 0 10px 30px rgba(10, 37, 64, 0.15);
+        "
+      >
+        <!-- Background Decorative Glow -->
+        <div
+          style="
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 100%;
+            background-image: radial-gradient(
+              circle at 85% 15%,
+              rgba(58, 130, 150, 0.35),
+              transparent 60%
+            );
+            z-index: 1;
+            pointer-events: none;
+          "
+        ></div>
 
-            <div class="row align-items-center position-relative" style="z-index: 2">
-              <!-- Left Content -->
-              <div class="col-lg-7 col-12">
-                <!-- Badge -->
+        <div
+          class="row align-items-center position-relative"
+          style="z-index: 2"
+        >
+          <!-- Left Content -->
+          <div class="col-lg-7 col-12">
+
+            <!-- Badge -->
+            <div
+              style="
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+                background-color: rgba(255, 255, 255, 0.08) !important;
+                border: 1px solid rgba(255, 255, 255, 0.25) !important;
+                padding: 6px 14px;
+                border-radius: 999px;
+                margin-bottom: 16px;
+                font-size: 11px;
+                font-family: 'Poppins', sans-serif;
+                font-weight: 600;
+                color: #FFFFFF;
+                letter-spacing: 1px;
+                text-transform: uppercase;
+              "
+            >
+              ✨ AI-POWERED SUGGESTION
+            </div>
+
+            <!-- Title -->
+            <h2
+              style="
+                font-family: 'Playfair Display', 'Lora', 'Georgia', serif;
+                font-size: 28px;
+                font-weight: 700;
+                color: #FFFFFF;
+                margin-bottom: 10px;
+                line-height: 1.15;
+              "
+            >
+              Unsure which room suits you best?
+            </h2>
+
+            <!-- Description -->
+            <p
+              style="
+                font-size: 14px;
+                font-weight: 400;
+                line-height: 1.4;
+                margin-bottom: 20px;
+                color: #C9D6E0;
+              "
+            >
+              Let our smart assistant analyze your preferences to find the
+              perfect match for your stay at the best rate.
+            </p>
+
+            <!-- Button -->
+            <button
+              class="btn"
+              style="
+                background-color: #FFFFFF;
+                color: #0F3D5C;
+                border: none;
+                padding: 10px 20px;
+                border-radius: 999px;
+                font-weight: 600;
+                font-family: 'Poppins', sans-serif;
+                font-size: 14px;
+                cursor: pointer;
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                transition: all 0.3s ease;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+              "
+              (click)="handleGetRecommendations()"
+              onmouseover="
+                this.style.transform='translateY(-2px)';
+                this.style.boxShadow='0 6px 16px rgba(0,0,0,0.15)'
+              "
+              onmouseout="
+                this.style.transform='translateY(0)';
+                this.style.boxShadow='0 4px 12px rgba(0,0,0,0.1)'
+              "
+            >
+              ✨ Get Smart Recommendations
+            </button>
+          </div>
+
+          <!-- Right Illustration: Stacked Card Mockup -->
+          <div
+            class="col-lg-5 col-12 d-flex justify-content-center align-items-center"
+            style="margin-top: 24px;"
+          >
+            <div
+              style="
+                position: relative;
+                width: 224px;
+                height: 256px;
+              "
+            >
+
+              <!-- Ghost / Back Card -->
+              <div
+                style="
+                  position: absolute;
+                  top: 12px;
+                  right: -12px;
+                  width: 200px;
+                  height: 232px;
+                  background: rgba(255, 255, 255, 0.05);
+                  border: 1px solid rgba(255, 255, 255, 0.3);
+                  border-radius: 16px;
+                  transform: rotate(4deg);
+                  z-index: 1;
+                "
+              ></div>
+
+              <!-- Main Front Card -->
+              <div
+                style="
+                  position: absolute;
+                  top: 0;
+                  left: 0;
+                  width: 208px;
+                  height: 248px;
+                  background: #FFFFFF;
+                  border-radius: 16px;
+                  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+                  transform: rotate(-4deg);
+                  z-index: 2;
+                  display: flex;
+                  flex-direction: column;
+                  overflow: hidden;
+                  padding-bottom: 12px;
+                "
+              >
+
+                <!-- Dynamic Room Image -->
                 <div
                   style="
-                    display: inline-flex;
-                    align-items: center;
-                    gap: 6px;
-                    background-color: rgba(255, 255, 255, 0.08) !important;
-                    border: 1px solid rgba(255, 255, 255, 0.25) !important;
-                    padding: 6px 14px;
-                    border-radius: 999px;
-                    margin-bottom: 16px;
-                    font-size: 11px;
-                    font-family: 'Poppins', sans-serif;
-                    font-weight: 600;
-                    color: #FFFFFF;
-                    letter-spacing: 1px;
-                    text-transform: uppercase;
+                    width: 100%;
+                    height: 55%;
+                    background-color: #f1f5f9;
                   "
                 >
-                  ✨ AI-POWERED SUGGESTION
+                  <img
+                    *ngIf="
+                      availableRooms &&
+                      availableRooms.length > 0 &&
+                      availableRooms[0].imageList &&
+                      availableRooms[0].imageList.length > 0 &&
+                      availableRooms[0].imageList[0].url
+                    "
+                    [src]="availableRooms[0].imageList[0].url"
+                    style="
+                      width: 100%;
+                      height: 100%;
+                      object-fit: cover;
+                    "
+                    alt="Room preview"
+                    onerror="
+                      this.style.display='none';
+                      this.nextElementSibling.style.display='block';
+                    "
+                  />
+
+                  <!-- Fallback Gradient -->
+                  <div
+                    [style.display]="
+                      (
+                        availableRooms &&
+                        availableRooms.length > 0 &&
+                        availableRooms[0].imageList &&
+                        availableRooms[0].imageList.length > 0 &&
+                        availableRooms[0].imageList[0].url
+                      )
+                        ? 'none'
+                        : 'block'
+                    "
+                    style="
+                      width: 100%;
+                      height: 100%;
+                      background: linear-gradient(
+                        135deg,
+                        #e2e8f0 0%,
+                        #cbd5e1 100%
+                      );
+                    "
+                  ></div>
                 </div>
 
-                <!-- Title -->
-                <h2 style="font-family: 'Playfair Display', 'Lora', 'Georgia', serif; font-size: 28px; font-weight: 700; color: #FFFFFF; margin-bottom: 10px; line-height: 1.15">
-                  Unsure which room suits you best?
-                </h2>
-
-                <!-- Description -->
-                <p
+                <!-- Card Content -->
+                <div
                   style="
-                    font-size: 14px;
-                    font-weight: 400;
-                    line-height: 1.4;
-                    margin-bottom: 20px;
-                    color: #C9D6E0;
-                  "
-                >
-                  Let our smart assistant analyze your preferences to find the
-                  perfect match for your stay at the best rate.
-                </p>
-
-                <!-- Button -->
-                <button
-                  class="btn"
-                  style="
-                    background-color: #FFFFFF;
-                    color: #0F3D5C;
-                    border: none;
-                    padding: 10px 20px;
-                    border-radius: 999px;
-                    font-weight: 600;
-                    font-family: 'Poppins', sans-serif;
-                    font-size: 14px;
-                    cursor: pointer;
-                    display: inline-flex;
-                    align-items: center;
-                    gap: 8px;
-                    transition: all 0.3s ease;
-                    box-shadow: 0 4px 12px rgba(0,0,0,0.1)
-                  "
-                  (click)="handleGetRecommendations()"
-                  onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 16px rgba(0,0,0,0.15)'"
-                  onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.1)'"
-                >
-                  ✨ Get Smart Recommendations
-                </button>
-              </div>
-
-              <!-- Right Illustration: Stacked Card Mockup -->
-              <div class="col-lg-5 col-12 d-flex justify-content-center align-items-center" style="margin-top: 24px;">
-                <div style="position: relative; width: 224px; height: 256px;">
-                  
-                  <!-- Ghost/Back Card -->
-                  <div style="
-                    position: absolute;
-                    top: 12px;
-                    right: -12px;
-                    width: 200px;
-                    height: 232px;
-                    background: rgba(255,255,255,0.05);
-                    border: 1px solid rgba(255,255,255,0.3);
-                    border-radius: 16px;
-                    transform: rotate(4deg);
-                    z-index: 1;
-                  "></div>
-
-                  <!-- Main Front Card -->
-                  <div style="
-                    position: absolute;
-                    top: 0;
-                    left: 0;
-                    width: 208px;
-                    height: 248px;
-                    background: #FFFFFF;
-                    border-radius: 16px;
-                    box-shadow: 0 12px 24px rgba(0,0,0,0.2);
-                    transform: rotate(-4deg);
-                    z-index: 2;
+                    padding: 12px;
+                    flex-grow: 1;
                     display: flex;
                     flex-direction: column;
-                    overflow: hidden;
-                    padding-bottom: 12px;
-                  ">
-                    <!-- Dynamic Room Image -->
-                    <div style="
-                      width: 100%;
-                      height: 55%;
-                      background-color: #f1f5f9;
-                    ">
-                      <img 
-                        *ngIf="availableRooms && availableRooms.length > 0 && availableRooms[0].imageList && availableRooms[0].imageList.length > 0 && availableRooms[0].imageList[0].url"
-                        [src]="availableRooms[0].imageList[0].url" 
-                        style="width: 100%; height: 100%; object-fit: cover;" 
-                        alt="Room preview"
-                        onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
-                      />
-                      <!-- Fallback gradient if no image -->
-                      <div 
-                        [style.display]="(availableRooms && availableRooms.length > 0 && availableRooms[0].imageList && availableRooms[0].imageList.length > 0 && availableRooms[0].imageList[0].url) ? 'none' : 'block'"
-                        style="width: 100%; height: 100%; background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);"
-                      ></div>
-                    </div>
-
-                    <!-- Skeleton Content -->
-                    <div style="padding: 12px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between;">
-                      <div>
-                        <!-- Skeleton text lines -->
-                        <div style="width: 80%; height: 8px; background: #E2E8F0; border-radius: 4px; margin-bottom: 8px;"></div>
-                        <div style="width: 50%; height: 6px; background: #E2E8F0; border-radius: 4px;"></div>
-                      </div>
-                      
-                      <!-- Functional Button -->
-                      <div style="
-                        width: 100%;
-                        background-color: #0F3D5C;
-                        color: #FFFFFF;
-                        text-align: center;
-                        padding: 8px 0;
-                        border-radius: 999px;
-                        font-family: 'Poppins', sans-serif;
-                        font-weight: 600;
-                        font-size: 12px;
-                        cursor: pointer;
-                        transition: all 0.3s ease;
+                    justify-content: space-between;
+                  "
+                >
+                  <div>
+                    <!-- Skeleton Text Line -->
+                    <div
+                      style="
+                        width: 80%;
+                        height: 8px;
+                        background: #E2E8F0;
+                        border-radius: 4px;
+                        margin-bottom: 8px;
                       "
-                      (click)="handleGetRecommendations()"
-                      onmouseover="this.style.backgroundColor='#0d324d'"
-                      onmouseout="this.style.backgroundColor='#0F3D5C'"
-                      >
-                        Select Room
-                      </div>
-                    </div>
+                    ></div>
 
+                    <!-- Skeleton Text Line -->
+                    <div
+                      style="
+                        width: 50%;
+                        height: 6px;
+                        background: #E2E8F0;
+                        border-radius: 4px;
+                      "
+                    ></div>
+                  </div>
+
+                  <!-- Functional Select Room Button -->
+                  <div
+                    style="
+                      width: 100%;
+                      background-color: #0F3D5C;
+                      color: #FFFFFF;
+                      text-align: center;
+                      padding: 8px 0;
+                      border-radius: 999px;
+                      font-family: 'Poppins', sans-serif;
+                      font-weight: 600;
+                      font-size: 12px;
+                      cursor: pointer;
+                      transition: all 0.3s ease;
+                    "
+                    (click)="handleGetRecommendations()"
+                    onmouseover="
+                      this.style.backgroundColor='#0d324d'
+                    "
+                    onmouseout="
+                      this.style.backgroundColor='#0F3D5C'
+                    "
+                  >
+                    Select Room
                   </div>
                 </div>
+
               </div>
             </div>
           </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+  
+    <!-- Smart Recommendations Cards Section (Shows below AI box if toggled) -->
+<div id="desktopRecommendationSection" class="margin-top-40px website-web-vision" *ngIf="showSmartRecommendations && smartRecommendationsBoolean">
+  <div class="row smart-recommend-header">
+    <div class="col-12">
+      <h4 class="rooms-heading-starts">Recommended For You</h4>
+      <button
+        class="smart-recommend-close"
+        type="button"
+        aria-label="Close recommendations"
+        (click)="showSmartRecommendations = false"
+      >
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+  </div>
+
+  <ng-container *ngIf="smartStatus === 'loading'">
+    <div class="card smart-recommend-card" style="align-items: center; justify-content: center; text-align: center; padding: 40px 20px;">
+      <div class="star-field">
+        <span class="star star-1">✨</span>
+        <span class="star star-2">✨</span>
+        <span class="star star-3">✨</span>
+      </div>
+      <h5 style="margin-top: 16px; font-weight: 600;">Analyzing your preferences...</h5>
+      <p style="color: #64748b; font-size: 14px;">Finding the best rooms and deals for your stay.</p>
+    </div>
+  </ng-container>
+
+  <ng-container *ngIf="smartStatus === 'error'">
+    <div class="card smart-recommend-card" style="align-items: center; justify-content: center; text-align: center; padding: 40px 20px;">
+      <div style="font-size: 32px; color: #ef4444;">⚠️</div>
+      <h5 style="margin-top: 16px; font-weight: 600;">Couldn't fetch recommendations</h5>
+      <p style="color: #64748b; font-size: 14px; margin-bottom: 20px;">There was an error while searching for the best deals.</p>
+      <button (click)="handleGetRecommendations()" style="background-color: #0F3D5C; color: white; padding: 10px 20px; border-radius: 8px; border: none; font-weight: 600; cursor: pointer;">
+        Try again
+      </button>
+    </div>
+  </ng-container>
+
+  <ng-container *ngIf="smartStatus === 'success'">
+    <p *ngIf="smartRecommendations?.urgencyMessage" style="color: #64748b; font-size: 14px; margin-bottom: 20px;">
+      {{ smartRecommendations.urgencyMessage }}
+    </p>
+
+    <div class="smart-recommend-grid" #smartRecommendRow (scroll)="updateScrollButtonsState()">
+      <div *ngFor="let cat of categories">
+        <div
+          class="card smart-recommend-card"
+          [ngClass]="'smart-recommend-card-' + cat.key.replace('Options', '')"
+        >
+          <ng-container
+            *ngFor="let room of smartRecommendations[cat.key]; let last = last"
+          >
+            <ng-container *ngIf="last">
+              <ng-container *ngIf="cheapestPlans[cat.key] as plan">
+                <div class="smart-recommend-media">
+                  <div *ngIf="cat.key === 'bestFitOptions' || cat.key === 'comfortOptions'"
+                       class="smart-recommend-badge">
+                    {{ cat.key === 'bestFitOptions' ? 'BEST FIT OPTION' : 'BEST VALUE DEAL' }}
+                  </div>
+
+                  <img [src]="room.imageUrl" [alt]="room?.roomName || 'Room preview'" />
+
+                  <div class="smart-recommend-availability" *ngIf="room?.availableCount && room.availableCount <= 5">
+                    Only {{ room.availableCount }} left
+                  </div>
+                </div>
+
+                <div class="smart-recommend-content">
+                  <h5 class="smart-recommend-room-name">
+                    {{ room?.roomName }}
+                  </h5>
+
+                  <div class="smart-recommend-tags" *ngIf="plan.idealFor?.length">
+                    <span *ngFor="let ideal of plan.idealFor">
+                      {{ ideal }}
+                    </span>
+                  </div>
+
+                  <div class="smart-recommend-description">
+                    <span class="smart-recommend-check" aria-hidden="true">&#10003;</span>
+                    <span>
+                      Perfect for {{ plan.idealFor.join(', ') }} seeking a great stay.
+                    </span>
+                  </div>
+
+                  <div class="smart-recommend-divider"></div>
+
+                  <div class="smart-recommend-footer">
+                    <div class="smart-recommend-price">
+                      <div>Total for {{ DiffDate }} night{{ DiffDate === 1 ? '' : 's' }}</div>
+                      <strong>
+                          {{ plan?.totalPrice | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency : currency : "symbol" : "1.2-2" }}
+                      </strong>
+                      <small>{{ plan?.pricePerNight | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency : currency : "symbol" : "1.2-2" }}/night</small>
+                    </div>
+
+                    <button class="smart-recommend-select" (click)="onSelectPlanFromSmartCard(plan)">
+                      Select Room
+                      <span class="recommend-arrow" aria-hidden="true">&rarr;</span>
+                    </button>
+                  </div>
+                </div>
+              </ng-container>
+            </ng-container>
+          </ng-container>
         </div>
       </div>
     </div>
 
-    <!-- Smart Recommendations Cards Section (Shows below AI box if toggled) -->
-    <div id="desktopRecommendationSection" class="margin-top-40px website-web-vision" *ngIf="showSmartRecommendations && smartRecommendationsBoolean">
-      <div class="row">
-        <div class="col-12">
-          <h4 class="rooms-heading-starts">Recommended For You</h4>
-        </div>
+    <!-- Scroll Controls -->
+    <div class="d-flex justify-content-end mt-3" style="gap: 10px">
+      <button
+        class="next-carasoul"
+        [disabled]="!canScrollPrev"
+        (click)="prevPage()"
+      >
+        <span class="recommend-carousel-arrow" aria-hidden="true">&larr;</span>
+      </button>
+      <button
+        class="next-carasoul"
+        [disabled]="!canScrollNext"
+        (click)="nextPage()"
+      >
+        <span class="recommend-carousel-arrow" aria-hidden="true">&rarr;</span>
+      </button>
+    </div>
+  </ng-container>
+</div>
       </div>
-      <ng-container *ngIf="smartStatus === 'loading'">
-        <div class="card smart-recommend-card" style="align-items: center; justify-content: center; text-align: center; padding: 40px 20px;">
-          <div class="star-field">
-            <span class="star star-1">✨</span>
-            <span class="star star-2">✨</span>
-            <span class="star star-3">✨</span>
-          </div>
-          <h5 style="margin-top: 16px; font-weight: 600;">Analyzing your preferences...</h5>
-          <p style="color: #64748b; font-size: 14px;">Finding the best rooms and deals for your stay.</p>
-        </div>
-      </ng-container>
-
-      <ng-container *ngIf="smartStatus === 'error'">
-        <div class="card smart-recommend-card" style="align-items: center; justify-content: center; text-align: center; padding: 40px 20px;">
-          <div style="font-size: 32px; color: #ef4444;">⚠️</div>
-          <h5 style="margin-top: 16px; font-weight: 600;">Couldn't fetch recommendations</h5>
-          <p style="color: #64748b; font-size: 14px; margin-bottom: 20px;">There was an error while searching for the best deals.</p>
-          <button (click)="handleGetRecommendations()" style="background-color: #0F3D5C; color: white; padding: 10px 20px; border-radius: 8px; border: none; font-weight: 600; cursor: pointer;">
-            Try again
-          </button>
-        </div>
-      </ng-container>
-
-      <ng-container *ngIf="smartStatus === 'success'">
-        <p *ngIf="smartRecommendations?.urgencyMessage" style="color: #64748b; font-size: 14px; margin-bottom: 20px;">
-          {{ smartRecommendations.urgencyMessage }}
-        </p>
-        <div class="smart-recommend-grid">
-        <div *ngFor="let cat of currentCategoriesList">
-          <div
-            class="card smart-recommend-card"
-            [ngClass]="
-              'smart-recommend-card-' + cat.key.replace('Options', '')
-            "
-          >
-            <ng-container
-              *ngFor="
-                let room of smartRecommendations[cat.key];
-                let last = last
-              "
-            >
-              <ng-container *ngIf="last">
-                <ng-container *ngIf="cheapestPlans[cat.key] as plan">
-                  <div style="position: relative; width: 100%; height: 160px; margin-bottom: 16px; border-radius: 8px; overflow: hidden; flex-shrink: 0;">
-                    <!-- Badge -->
-                    <div *ngIf="cat.key === 'bestFitOptions' || cat.key === 'comfortOptions'"
-                         style="position: absolute; top: 12px; left: 12px; background: #0F3D5C; color: white; font-weight: 700; font-size: 10px; padding: 4px 10px; border-radius: 999px; z-index: 1;">
-                      {{ cat.key === 'bestFitOptions' ? 'BEST FIT OPTION' : 'BEST VALUE DEAL' }}
-                    </div>
-                    
-                    <img [src]="room.imageUrl" alt="Room preview" style="width: 100%; height: 100%; object-fit: cover;" />
-                  </div>
-
-                  <div class="smart-recommend-content" style="flex-direction: column; align-items: stretch;">
-                    <!-- Heading: Room Name -->
-                    <h5 style="font-family: 'Playfair Display', serif; font-weight: 700; font-size: 20px; color: #0F172A; margin-bottom: 12px;">
-                      {{ room?.roomName }}
-                    </h5>
-                    
-                    <!-- Tags -->
-                    <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px;">
-                      <span *ngFor="let ideal of plan.idealFor" style="background: #F1F5F9; color: #475569; font-size: 12px; font-weight: 500; padding: 4px 10px; border-radius: 999px;">
-                        {{ ideal }}
-                      </span>
-                    </div>
-                    
-                    <!-- Description -->
-                    <div style="display: flex; align-items: flex-start; gap: 8px; margin-bottom: 16px;">
-                      <img src="media-be/images/check-circle.svg" alt="check" style="width: 16px; height: 16px; margin-top: 2px;" />
-                      <span style="color: #475569; font-size: 13px; line-height: 1.4;">
-                        Perfect for {{ plan.idealFor.join(', ') }} seeking a great stay.
-                      </span>
-                    </div>
-
-                    <div style="width: 100%; height: 1px; background: #E2E8F0; margin-bottom: 16px;"></div>
-
-                    <!-- Price & Button -->
-                    <div style="display: flex; justify-content: space-between; align-items: flex-end;">
-                      <div>
-                        <div style="color: #64748b; font-size: 11px; font-weight: 600; text-transform: uppercase; margin-bottom: 4px;">Total for {{ DiffDate }} night(s)</div>
-                        <div style="display: flex; align-items: baseline; gap: 8px;">
-                          <span style="font-size: 22px; font-weight: 700; color: #0F172A; line-height: 1;">
-                            {{ plan?.totalPrice | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency : currency : "symbol" : "1.2-2" }}
-                          </span>
-                        </div>
-                      </div>
-                      
-                      <button (click)="onSelectPlanFromSmartCard(plan)" 
-                              style="background: #0F3D5C; color: white; border: none; padding: 10px 20px; border-radius: 999px; font-weight: 600; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 8px;">
-                        Select Room
-                        <i class="fa-solid fa-arrow-right" style="font-size: 12px;"></i>
-                      </button>
-                    </div>
-                  </div>
-                    </ng-container>
-                  </ng-container>
-                </ng-container>
-              </div>
-            </div>
-          </div>
-          <!-- Pagination Controls -->
-            <div class="d-flex justify-content-end mt-3" style="gap: 10px">
-              <button
-                class="next-carasoul"
-                [disabled]="currentPage === 0"
-                (click)="prevPage()"
-              >
-                <i class="fa-solid fa-arrow-left"></i>
-              </button>
-              <button
-                class="next-carasoul"
-                [disabled]="currentPage >= totalPagesCount - 1"
-                (click)="nextPage()"
-              >
-                <i class="fa-solid fa-arrow-right"></i>
-              </button>
-            </div>
-          </ng-container>
-
-          <div
-            class="d-flex justify-content-end margin-top-20px"
-            *ngIf="smartRecommendationsBoolean"
-          >
-            <button
-              class="select-mannual"
-              (click)="scrollToAccommodationDash()"
-            >
-              Make Your Own Selection
-            </button>
-          </div>
-        </div>
 
     <!-- web view -->
     <!-- mob view -->
@@ -2644,7 +2753,7 @@
     <div class="website-mob-vision">
       <div class="col-12">
         <h2 class="hero-heading">{{ businessUser?.name }}</h2>
-        <p class="hero-subheading " style="font-weight: 500;">
+        <p class="hero-subheading font-weight-bold">
           <img src="media-be/images/location-icons.svg" alt="" width="17px" />
           {{ businessUser.address?.streetName }},
           {{ businessUser.address?.city }}, {{ businessUser.address?.state }},
@@ -2728,193 +2837,168 @@
           </p-carousel>
         </p-dialog>
 
-        <!-- SMART RECOMMENDATIONS UNIFIED SECTION -->
-        <section id="recommendationSection" class="recommendation-section margin-top-20px" *ngIf="smartRecommendationsBoolean">
-          <!-- State A: IDLE (Original Combo Grid) -->
-          <ng-container *ngIf="smartStatus === 'idle'">
-            <div class="col-12">
-              <div class="d-flex align-items-start" style="gap: 8px; margin-top: 15px">
-                <div style="width: 16%" class="smart-cion">
-                  <div class="smart-card">
-                    <img src=" media-be/images/smart-chat.svg" class="smart-card-img" alt="" />
-                  </div>
+        <div class="col-12">
+          <div
+            *ngIf="smartRecommendationsBoolean"
+            class="d-flex align-items-start"
+            style="gap: 8px; margin-top: 15px"
+          >
+            <div style="width: 16%" class="smart-cion">
+              <div class="smart-card">
+                <img
+                  src=" media-be/images/smart-chat.svg"
+                  class="smart-card-img"
+                  alt=""
+                />
+              </div>
+            </div>
+            <div>
+              <div class="smart-recommend">Smart Recommendations</div>
+              <div class="smart-recommend-1">
+                Not sure what to book? These room options are the best fit for
+                your stay – selected just for you.
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="d-flex scroll-container" *ngIf="smartRecommendationsBoolean">
+          <ng-container *ngIf="smartLoading && smartRecommendationsBoolean">
+            <div
+              class="card smart-recommend-card skeleton-card"
+              style="width: 100%"
+              *ngFor="let skeleton of [1, 2]"
+            >
+              <div style="gap: 8px">
+                <div class="width-49 left-shift">
+                  <div class="skeleton skeleton-title"></div>
+                  <div class="skeleton skeleton-text"></div>
                 </div>
-                <div>
-                  <div class="smart-recommend">Smart Recommendations</div>
-                  <div class="smart-recommend-1">
-                    Not sure what to book? These room options are the best fit for your stay — selected just for you.
-                  </div>
+                <div style="border-right: 1px solid #d9d9d9"></div>
+                <div class="width-49 left-shift">
+                  <div class="skeleton skeleton-text"></div>
+                  <div class="skeleton skeleton-price"></div>
+                  <div class="skeleton skeleton-text"></div>
                 </div>
               </div>
             </div>
-            
-            <div class="d-flex scroll-container margin-top-20px">
-              <div *ngFor="let cat of categories" class="card smart-recommend-card" [ngClass]="'smart-recommend-card-' + cat.key.replace('Options', '')">
-                <ng-container *ngFor="let room of smartRecommendations[cat.key]; let last = last">
-                  <ng-container *ngIf="last">
-                    <ng-container *ngFor="let plan of room.plans">
-                      <div class="d-flex justify-content-center" style="gap: 8px">
-                        <div class="width-49 left-shift">
-                          <h5 class="recommend-font" *ngIf="cat.key === 'bestFitOptions'"><img src="media-be/images/best-fit.svg" alt="" />&nbsp; Best Fit Options</h5>
-                          <h5 class="recommend-font" *ngIf="cat.key === 'luxuryOptions'"><img src="media-be/images/luxury-crown.svg" alt="" />&nbsp; Luxury Combo</h5>
-                          <h5 class="recommend-font" *ngIf="cat.key === 'comfortOptions'"><img src="media-be/images/sofa.svg" alt="" />&nbsp; Comfort Combo</h5>
-                          <h5 class="recommend-font" *ngIf="cat.key === 'budgetOptions'"><img src="media-be/images/budget.svg" alt="" />&nbsp; Budget Combo</h5>
+          </ng-container>
+          <div
+            *ngFor="let cat of categories"
+            class="card smart-recommend-card"
+            [ngClass]="'smart-recommend-card-' + cat.key.replace('Options', '')"
+          >
+            <ng-container
+              *ngFor="let room of smartRecommendations[cat.key]; let last = last"
+            >
+              <ng-container *ngIf="last">
+                <ng-container *ngFor="let plan of room.plans">
+                  <div class="d-flex justify-content-center" style="gap: 8px">
+                    <div class="width-49 left-shift">
+                      <!-- Category headings with icons -->
+                      <h5
+                        class="recommend-font"
+                        *ngIf="cat.key === 'bestFitOptions'"
+                      >
+                        <img src="media-be/images/best-fit.svg" alt="" />&nbsp;
+                        Best Fit Options
+                      </h5>
+                      <h5
+                        class="recommend-font"
+                        *ngIf="cat.key === 'luxuryOptions'"
+                      >
+                        <img
+                          src="media-be/images/luxury-crown.svg"
+                          alt=""
+                        />&nbsp; Luxury Combo
+                      </h5>
+                      <h5
+                        class="recommend-font"
+                        *ngIf="cat.key === 'comfortOptions'"
+                      >
+                        <img src="media-be/images/sofa.svg" alt="" />&nbsp;
+                        Comfort Combo
+                      </h5>
+                      <h5
+                        class="recommend-font"
+                        *ngIf="cat.key === 'budgetOptions'"
+                      >
+                        <img src="media-be/images/budget.svg" alt="" />&nbsp;
+                        Budget Combo
+                      </h5>
 
-                          <div class="line-height pricing-best-fit">&nbsp; &nbsp; {{ plan?.totalPrice | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency : currency : "symbol" : "1.2-2" }}</div>
-                          <div class="line-height">&nbsp; &nbsp; &nbsp; &nbsp; Total for {{ DiffDate }} nights</div>
-                          <div class="line-height">
-                            &nbsp; &nbsp; &nbsp; &nbsp; <img src="media-be/images/combo-star-one.svg" alt="" />&nbsp;
-                            <small>Ideal for {{ plan.idealFor.join(", ") }}</small>
-                          </div>
-                        </div>
+                      <!-- Price & details -->
+                      <div class="line-height pricing-best-fit">
+                        &nbsp; &nbsp; {{ plan?.totalPrice | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency : currency : "symbol" : "1.2-2" }}
+                      </div>
+                      <div class="line-height">
+                        &nbsp; &nbsp; &nbsp; &nbsp; Total for
+                        {{ DiffDate }} nights
+                      </div>
+                      <div class="line-height">
+                        &nbsp; &nbsp; &nbsp; &nbsp;
+                        <img
+                          src="media-be/images/combo-star-one.svg"
+                          alt=""
+                        />&nbsp;
+                        <small>Ideal for {{ plan.idealFor.join(", ") }}</small>
+                      </div>
+                    </div>
 
-                        <div style="border-right: 1px solid #d9d9d9"></div>
+                    <div style="border-right: 1px solid #d9d9d9"></div>
 
-                        <div class="width-49 left-shift">
-                          <div class="margin-bottom-10px">
-                            &nbsp; &nbsp; &nbsp;<img src="media-be/images/combo-ded-one.svg" alt="" />&nbsp;
-                            <small *ngIf="room.availableCount > 5">Fast-selling</small>
-                            <small *ngIf="room.availableCount <= 5">{{ room?.availableCount }} room(s) left</small>
-                          </div>
-                          <div class="room-box d-block justify-content-between mb-4" [ngClass]="'room-box-best-fit-' + cat.key.replace('Options', '')">
-                            <div class="room-details">
-                              <div class="room-title">{{ room?.roomName }}</div>
-                              <ng-container>
-                                <div>{{ plan.pricePerNight | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency : currency : "symbol" : "1.2-2" }} per night</div>
-                              </ng-container>
+                    <!-- Room Details -->
+                    <div class="width-49 left-shift">
+                      <div class="margin-bottom-10px">
+                        &nbsp; &nbsp; &nbsp;<img
+                          src="media-be/images/combo-ded-one.svg"
+                          alt=""
+                        />&nbsp;
+                        <small *ngIf="room.availableCount > 5"
+                          >Fast-selling</small
+                        >
+                        <small *ngIf="room.availableCount <= 5"
+                          >{{ room?.availableCount }} room(s) left</small
+                        >
+                      </div>
+                      <div
+                        class="room-box d-block justify-content-between mb-4"
+                        [ngClass]="
+                          'room-box-best-fit-' + cat.key.replace('Options', '')
+                        "
+                      >
+                        <div class="room-details">
+                          <div class="room-title">{{ room?.roomName }}</div>
+                          <ng-container>
+                            <div>
+                              {{ plan.pricePerNight | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency : currency : "symbol" : "1.2-2" }} per
+                              night
                             </div>
-                          </div>
-                          <div style="display: flex; justify-content: end; margin-top: 10px; margin-bottom: 10px;">
-                            <button (click)="handleGetRecommendations()" class="select-mannual">
-                              Choose <i class="fa-solid fa-arrow-right"></i>
-                            </button>
-                          </div>
+                          </ng-container>
                         </div>
                       </div>
-                    </ng-container>
-                  </ng-container>
+                      <div
+                        style="
+                          display: flex;
+                          justify-content: end;
+                          margin-top: 10px;
+                          margin-bottom: 10px;
+                        "
+                      >
+                        <button
+                          (click)="onSelectPlanFromSmartCard(plan)"
+                          class="select-mannual"
+                        >
+                          Choose <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
                 </ng-container>
-              </div>
-            </div>
-          </ng-container>
-
-          <!-- State B: LOADING -->
-          <ng-container *ngIf="smartStatus === 'loading'">
-            <div class="col-12 margin-top-20px">
-              <div class="card smart-recommend-card" style="width: 100%; align-items: center; justify-content: center; text-align: center; padding: 60px 20px;">
-                <div class="star-field">
-                  <span class="star star-1">✨</span>
-                  <span class="star star-2">✨</span>
-                  <span class="star star-3">✨</span>
-                </div>
-                <h5 style="margin-top: 24px; font-weight: 600;">Analyzing your preferences...</h5>
-                <p style="color: #64748b; font-size: 14px;">Finding the best rooms and deals for your stay.</p>
-              </div>
-            </div>
-          </ng-container>
-
-          <!-- State C: SUCCESS -->
-          <ng-container *ngIf="smartStatus === 'success'">
-            <div class="col-12">
-              <div class="d-flex align-items-center justify-content-between" style="margin-top: 15px; margin-bottom: 20px;">
-                <h4 class="rooms-heading-starts m-0">Recommended For You</h4>
-                <button class="select-mannual" (click)="scrollToAccommodationDash()" style="font-size: 13px; padding: 6px 12px; background: transparent; border: 1px solid #E2E8F0; color: #475569;">
-                  View all rooms
-                </button>
-              </div>
-              <p *ngIf="smartRecommendations?.urgencyMessage" style="color: #64748b; font-size: 14px; margin-bottom: 20px;">
-                {{ smartRecommendations.urgencyMessage }}
-              </p>
-            </div>
-            
-            <div class="d-flex scroll-container margin-top-20px">
-              <div *ngFor="let cat of currentCategoriesList" class="card smart-recommend-card" [ngClass]="'smart-recommend-card-' + cat.key.replace('Options', '')">
-                <ng-container *ngFor="let room of smartRecommendations[cat.key]; let last = last">
-                  <ng-container *ngIf="last">
-                    <ng-container *ngIf="cheapestPlans[cat.key] as plan">
-                      <div style="position: relative; width: 100%; height: 160px; margin-bottom: 16px; border-radius: 8px; overflow: hidden; flex-shrink: 0;">
-                        <!-- Badge -->
-                        <div *ngIf="cat.key === 'bestFitOptions' || cat.key === 'comfortOptions'"
-                             style="position: absolute; top: 12px; left: 12px; background: #0F3D5C; color: white; font-weight: 700; font-size: 10px; padding: 4px 10px; border-radius: 999px; z-index: 1;">
-                          {{ cat.key === 'bestFitOptions' ? 'BEST FIT OPTION' : 'BEST VALUE DEAL' }}
-                        </div>
-                        
-                        <img [src]="room.imageUrl" alt="Room preview" style="width: 100%; height: 100%; object-fit: cover;" />
-                      </div>
-
-                      <div class="smart-recommend-content" style="flex-direction: column; align-items: stretch; display: flex;">
-                        <!-- Heading: Room Name -->
-                        <h5 style="font-family: 'Playfair Display', serif; font-weight: 700; font-size: 20px; color: #0F172A; margin-bottom: 12px;">
-                          {{ room?.roomName }}
-                        </h5>
-                        
-                        <!-- Tags -->
-                        <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px;">
-                          <span *ngFor="let ideal of plan.idealFor" style="background: #F1F5F9; color: #475569; font-size: 12px; font-weight: 500; padding: 4px 10px; border-radius: 999px;">
-                            {{ ideal }}
-                          </span>
-                        </div>
-                        
-                        <!-- Description -->
-                        <div style="display: flex; align-items: flex-start; gap: 8px; margin-bottom: 16px;">
-                          <img src="media-be/images/check-circle.svg" alt="check" style="width: 16px; height: 16px; margin-top: 2px;" />
-                          <span style="color: #475569; font-size: 13px; line-height: 1.4;">
-                            Perfect for {{ plan.idealFor.join(', ') }} seeking a great stay.
-                          </span>
-                        </div>
-
-                        <div style="width: 100%; height: 1px; background: #E2E8F0; margin-bottom: 16px;"></div>
-
-                        <!-- Price & Button -->
-                        <div style="display: flex; justify-content: space-between; align-items: flex-end;">
-                          <div>
-                            <div style="color: #64748b; font-size: 11px; font-weight: 600; text-transform: uppercase; margin-bottom: 4px;">Total for {{ DiffDate }} night(s)</div>
-                            <div style="display: flex; align-items: baseline; gap: 8px;">
-                              <span style="font-size: 22px; font-weight: 700; color: #0F172A; line-height: 1;">
-                                {{ plan?.totalPrice | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency : currency : "symbol" : "1.2-2" }}
-                              </span>
-                            </div>
-                          </div>
-                          
-                          <button (click)="onSelectPlanFromSmartCard(plan)" 
-                                  style="background: #0F3D5C; color: white; border: none; padding: 10px 20px; border-radius: 999px; font-weight: 600; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 8px;">
-                            Select Room
-                            <i class="fa-solid fa-arrow-right" style="font-size: 12px;"></i>
-                          </button>
-                        </div>
-                      </div>
-                    </ng-container>
-                  </ng-container>
-                </ng-container>
-              </div>
-            </div>
-            
-            <!-- Pagination Controls (Only in success state) -->
-            <div class="col-12 d-flex justify-content-end mt-3" style="gap: 10px" *ngIf="totalPagesCount > 1">
-              <button class="next-carasoul" [disabled]="currentPage === 0" (click)="prevPage()">
-                <i class="fa-solid fa-arrow-left"></i>
-              </button>
-              <button class="next-carasoul" [disabled]="currentPage >= totalPagesCount - 1" (click)="nextPage()">
-                <i class="fa-solid fa-arrow-right"></i>
-              </button>
-            </div>
-          </ng-container>
-
-          <!-- State D: ERROR -->
-          <ng-container *ngIf="smartStatus === 'error'">
-            <div class="col-12 margin-top-20px">
-              <div class="card smart-recommend-card" style="width: 100%; align-items: center; justify-content: center; text-align: center; padding: 60px 20px;">
-                <div style="font-size: 32px; color: #ef4444;">⚠️</div>
-                <h5 style="margin-top: 16px; font-weight: 600;">Couldn't fetch recommendations</h5>
-                <p style="color: #64748b; font-size: 14px; margin-bottom: 20px;">There was an error while searching for the best deals.</p>
-                <button (click)="handleGetRecommendations()" style="background-color: #0F3D5C; color: white; padding: 10px 20px; border-radius: 8px; border: none; font-weight: 600; cursor: pointer;">
-                  Try again
-                </button>
-              </div>
-            </div>
-          </ng-container>
-        </section>
-        <!-- END SMART RECOMMENDATIONS UNIFIED SECTION -->
+              </ng-container>
+            </ng-container>
+          </div>
+        </div>
+      </div>
 
       <div
         class="margin-top-40px mobile-property-highlights"
@@ -2964,7 +3048,7 @@
                     <div>
                       <p
                         class="aminities-names"
-                        style="margin: 0; font-weight: 500; color: #334155; font-size: 16px;"
+                        style="margin: 0; font-weight: 600; color: #334155; font-size: 16px;"
                       >
                         {{ fac.name }}
                       </p>
@@ -3125,170 +3209,6 @@
           <div class="maiiin">
         <div *ngFor="let room of availableRooms; let i = index; trackBy: trackByRoomId">
           <ng-container *ngIf="hasVisiblePlans(room)">
-            <div class="right-popup" *ngIf="isPanelOpen && selectedRoom === room" [class.show]="isPanelOpen">
-            <div class="popup-header">
-              <div
-                style="
-                  display: flex;
-                  align-items: flex-start;
-                  justify-content: space-between;
-                "
-              >
-                <p class="popup-heading">
-                  {{ selectedRoom?.name }}
-                </p>
-
-                <i
-                  style="cursor: pointer; font-size: larger"
-                  (click)="togglePanel(selectedRoom, i)"
-                  class="fa-solid fa-xmark"
-                ></i>
-              </div>
-
-              <div *ngIf="selectedRoom?.imageList?.length">
-                <p-carousel
-                  [value]="selectedRoom?.imageList"
-                  [numVisible]="1"
-                  [numScroll]="1"
-                  [circular]="true"
-                  [autoplayInterval]="4000"
-                  [responsiveOptions]="responsiveOptions"
-                >
-                  <ng-template let-image pTemplate="item">
-                    <div
-                      class="border-1 surface-border border-round border-radius-20px"
-                    >
-                      <div>
-                        <div class="relative mx-auto">
-                          <img
-                            [src]="image.url"
-                            [alt]="image.caption || 'Room Image'"
-                            class="w-full border-round border-radius-20px"
-                            style="
-                              width: 100%;
-                              height: 300px;
-                              object-fit: cover;
-                            "
-                          />
-                          <div
-                            *ngIf="image.caption"
-                            class="text-center mt-2 text-sm text-gray-600"
-                          >
-                            {{ image.caption }}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </ng-template>
-                </p-carousel>
-              </div>
-              <div class="popup-body">
-                <div
-                  class="margin-top-20px selected-text"
-                  [innerHTML]="selectedRoom?.description"
-                ></div>
-                <div
-                  class="row"
-                  *ngIf="selectedRoom?.roomFacilities?.length > 0"
-                >
-                  <div
-                    class="col-6"
-                    *ngFor="let item of selectedRoom?.roomFacilities"
-                  >
-                    <div class="alignment-items-one margin-top-10px">
-                      <i
-                        [ngClass]="getAmenityIcon(item.name)"
-                        class="fa-solid"
-                      ></i>
-                      <div class="small mt-1">{{ item.name }}</div>
-                    </div>
-                  </div>
-                </div>
-                <hr
-                  style="border: 1px solid #e5e7eb; margin-top: 10px !important"
-                />
-                <div class="d-flex justify-content-between margin-bottom-10px">
-                  <div>Available Plans</div>
-
-                  <div class="aminities-highlights-ones">
-                    <img src="media-be/images/max-ocuupancy.svg" alt="" />
-                    Max Occupancy: {{ selectedRoom?.maximumOccupancy }}
-                  </div>
-                </div>
-
-                <ng-container *ngIf="this.availableRooms?.length > 0">
-                  <ng-container
-                    *ngFor="
-                      let rates of selectedRoom?.ratesAndAvailabilityDtos
-                        | slice: 0 : 1;
-                      let r = index
-                    "
-                  >
-                    <ng-container
-                      *ngFor="
-                        let plan of getFilteredPlans(rates?.roomRatePlans);
-                        let p = index
-                      "
-                    >
-                      <div class="popup-card">
-                        <h4 class="popup-plan">{{ plan.name }}</h4>
-
-                        <div
-                          class="d-flex justify-content-between margin-top-20px"
-                        >
-                          <h4 class="popup-plan " style="font-weight: 500;">
-                            {{
-                              getRoomPlanDisplayAmount(selectedRoom, plan)
-                                | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency : currency : "symbol" : "1.2-2"
-                            }}
-                          </h4>
-                          <p style="font-size: smaller">{{ getRoomPlanPriceLabel(selectedRoom, plan) }}</p>
-                        </div>
-                        <div class="d-flex justify-content-between">
-                          <div
-                            *ngIf="plan?.extraChargePerPerson"
-                            class="d-flex"
-                            style="align-items: center; gap: 10px"
-                          >
-                            <img src=" media-be/images/adult-img.svg" alt="" />
-                            <p style="font-size: smaller; margin-bottom: 0px">
-                              Extra Adult Charge:
-                              {{
-                                plan?.extraChargePerPerson
-                                  | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency : currency : "symbol" : "1.2-2"
-                              }}
-                            </p>
-                          </div>
-                          <div
-                            *ngIf="plan?.extraChargePerChild"
-                            class="d-flex"
-                            style="align-items: center; gap: 10px"
-                          >
-                            <img src=" media-be/images/child-img.svg" alt="" />
-                            <p style="font-size: smaller; margin-bottom: 0px">
-                              Extra Child Charge:
-                              {{
-                                plan?.extraChargePerChild
-                                  | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency : currency : "symbol" : "1.2-2"
-                              }}
-                            </p>
-                          </div>
-                        </div>
-                        <div class="margin-top-10px">
-                          <button
-                            class="btn select-plan"
-                            (click)="onSelectPlanFromPopup(plan)"
-                          >
-                            Select Plan
-                          </button>
-                        </div>
-                      </div>
-                    </ng-container>
-                  </ng-container>
-                </ng-container>
-              </div>
-            </div>
-          </div>
 
           <div class="card-rooms card margin-top-20px" *ngIf="availableRooms?.length > 0">
             <div
@@ -3313,7 +3233,7 @@
                     <div
                       *ngIf="room?.isEnquire"
                       style="z-index: 1; top: 10px; right: 10px;"
-                      class="position-absolute px-3 py-1 bg-warning text-dark rounded-pill small " style="font-weight: 500;"
+                      class="position-absolute px-3 py-1 bg-warning text-dark rounded-pill small font-weight-bold"
                     >
                       Enquiry
                     </div>
@@ -3635,7 +3555,7 @@
                                     ]
                                   "
                                 >
-                                  <i class="fa-solid fa-minus"></i>
+                                  <span class="stepper-symbol" aria-hidden="true">&minus;</span>
                                 </div>
                                 <div>
                                   {{
@@ -3648,7 +3568,7 @@
                                     !isPlanDisabled(plan, room) ? onIncrement(plan.code, 'adults', plan, room) : null
                                   "
                                 >
-                                  <i class="fa-solid fa-plus"></i>
+                                  <span class="stepper-symbol" aria-hidden="true">+</span>
                                 </div>
                               </div>
                             </div>
@@ -3668,7 +3588,7 @@
                                   class="cursor-pointer minus-btn"
                                   (click)="!isPlanDisabled(plan, room) ? onDecrement(plan.code, 'children', room) : null"
                                 >
-                                  <i class="fa-solid fa-minus"></i>
+                                  <span class="stepper-symbol" aria-hidden="true">&minus;</span>
                                 </div>
                                 <div>
                                   {{ getChildCount(plan.code, room) }}
@@ -3679,7 +3599,7 @@
                                     !isPlanDisabled(plan, room) ? onIncrement(plan.code, 'children', plan, room) : null
                                   "
                                 >
-                                  <i class="fa-solid fa-plus"></i>
+                                  <span class="stepper-symbol" aria-hidden="true">+</span>
                                 </div>
                               </div>
                               <div class="tooltip-one">
@@ -3881,7 +3801,7 @@
                                     ]
                                   "
                                 >
-                                  <i class="fa-solid fa-minus"></i>
+                                  <span class="stepper-symbol" aria-hidden="true">&minus;</span>
                                 </div>
                                 <div>
                                   {{
@@ -3894,7 +3814,7 @@
                                     !isPlanDisabled(plan, room) ? onIncrement(plan.code, 'adults', plan , room) : null
                                   "
                                 >
-                                  <i class="fa-solid fa-plus"></i>
+                                  <span class="stepper-symbol" aria-hidden="true">+</span>
                                 </div>
                               </div>
                             </div>
@@ -3915,7 +3835,7 @@
                                 class="cursor-pointer minus-btn"
                                 (click)="!isPlanDisabled(plan, room) ? onDecrement(plan.code, 'children', room) : null"
                               >
-                                <i class="fa-solid fa-minus"></i>
+                                <span class="stepper-symbol" aria-hidden="true">&minus;</span>
                               </div>
                               <div>
                                 {{ getChildCount(plan.code, room) }}
@@ -3926,7 +3846,7 @@
                                   !isPlanDisabled(plan, room) ? onIncrement(plan.code, 'children', plan ,room) : null
                                 "
                               >
-                                <i class="fa-solid fa-plus"></i>
+                                <span class="stepper-symbol" aria-hidden="true">+</span>
                               </div>
                             </div>
                           </div>
@@ -4015,120 +3935,6 @@
         </div>
 
         <div *ngFor="let room of soldOutRooms; let i = index; trackBy: trackByRoomId">
-          <div class="right-popup" *ngIf="isPanelOpenOne && selectedRoom === room" [class.show]="isPanelOpenOne">
-            <div class="popup-header">
-              <div
-                style="
-                  display: flex;
-                  align-items: flex-start;
-                  justify-content: space-between;
-                "
-              >
-                <p class="popup-heading">
-                  {{ selectedRoom?.name }}
-                </p>
-
-                <i
-                  style="cursor: pointer; font-size: larger"
-                  (click)="togglePanelOne(selectedRoom, i)"
-                  class="fa-solid fa-xmark"
-                ></i>
-              </div>
-
-              <div *ngIf="selectedRoom?.imageList?.length">
-                <p-carousel
-                  [value]="selectedRoom?.imageList"
-                  [numVisible]="1"
-                  [numScroll]="1"
-                  [circular]="true"
-                  [autoplayInterval]="4000"
-                  [responsiveOptions]="responsiveOptions"
-                >
-                  <ng-template let-image pTemplate="item">
-                    <div
-                      class="border-1 surface-border border-round border-radius-20px"
-                    >
-                      <div>
-                        <div class="relative mx-auto">
-                          <img
-                            [src]="image.url"
-                            [alt]="image.caption || 'Room Image'"
-                            class="w-full border-round border-radius-20px"
-                            style="
-                              width: 100%;
-                              height: 300px;
-                              object-fit: cover;
-                            "
-                          />
-                          <div
-                            *ngIf="image.caption"
-                            class="text-center mt-2 text-sm text-gray-600"
-                          >
-                            {{ image.caption }}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </ng-template>
-                </p-carousel>
-              </div>
-              <div class="popup-body">
-                <div
-                  class="margin-top-20px selected-text"
-                  [innerHTML]="selectedRoom?.description"
-                ></div>
-                <div
-                  class="row"
-                  *ngIf="selectedRoom?.roomFacilities?.length > 0"
-                >
-                  <div
-                    class="col-6"
-                    *ngFor="let item of selectedRoom?.roomFacilities"
-                  >
-                    <div class="alignment-items-one margin-top-10px">
-                      <i
-                        [ngClass]="getAmenityIcon(item.name)"
-                        class="fa-solid"
-                      ></i>
-                      <div class="small mt-1">{{ item.name }}</div>
-                    </div>
-                  </div>
-                </div>
-                <hr
-                  style="border: 1px solid #e5e7eb; margin-top: 10px !important"
-                />
-
-                <div class="d-flex justify-content-between margin-bottom-10px">
-                  <div>Available Plans</div>
-
-                  <div class="aminities-highlights-ones">
-                    <img src="media-be/images/max-ocuupancy.svg" alt="" />
-                    Max Occupancy: {{ selectedRoom?.maximumOccupancy }}
-                  </div>
-                </div>
-
-                <ng-container
-                  *ngIf="selectedRoom?.ratesAndAvailabilityDtos === null"
-                >
-                  <h4 class="not-available">No Plans Available</h4>
-                </ng-container>
-                <ng-container
-                  *ngIf="
-                    (selectedRoom?.ratesAndAvailabilityDtos?.[0]?.stopSellOBE !=
-                      null &&
-                      selectedRoom?.ratesAndAvailabilityDtos?.[0]
-                        ?.stopSellOBE !== false) ||
-                    (selectedRoom?.ratesAndAvailabilityDtos?.[0]?.stopSellOTA !=
-                      null &&
-                      selectedRoom?.ratesAndAvailabilityDtos?.[0]
-                        ?.stopSellOTA !== false)
-                  "
-                >
-                  <h4 class="not-available">No Plans Available</h4>
-                </ng-container>
-              </div>
-            </div>
-          </div>
           <div
             class="card-rooms card margin-top-20px"
             *ngIf="soldOutRooms.length > 0"
@@ -4328,7 +4134,7 @@
 
       <div class="side-images website-web-vision">
         <div class="card booking-card sticky-card">
-          <h5 class=" mb-3" style="font-weight: 500;">Booking Summary &nbsp;&nbsp;</h5>
+          <h5 class="font-weight-bold mb-3">Booking Summary &nbsp;&nbsp;</h5>
 
           <!-- Dates & Guests -->
           <small *ngIf="!isBookingAllowed()" class="text-danger">
@@ -4337,7 +4143,7 @@
           <div class="date-guest-box mb-4">
             <div class="row no-gutters border-bottom">
               <div class="col-6 pr-2 border-right padding-10px">
-                <small class="text-uppercase  text-muted" style="font-weight: 500;"
+                <small class="text-uppercase font-weight-bold text-muted"
                   >Check-in</small
                 ><br />
                 <span class="text-dark">{{
@@ -4345,7 +4151,7 @@
                 }}</span>
               </div>
               <div class="col-6 pl-2 padding-10px">
-                <small class="text-uppercase  text-muted" style="font-weight: 500;"
+                <small class="text-uppercase font-weight-bold text-muted"
                   >Checkout</small
                 ><br />
                 <span class="text-dark">{{
@@ -4358,7 +4164,7 @@
               *ngIf="selectedPlansSummary.length > 0"
             >
               <div>
-                <small class="text-uppercase  text-muted" style="font-weight: 500;"
+                <small class="text-uppercase font-weight-bold text-muted"
                   >Selected Guests</small
                 ><br />
                 <span class="text-primary"
@@ -4484,10 +4290,7 @@
                 >
                   <small class="text-muted"
                     >Per-Day Price Breakdown
-                    <i
-                      class="fa-solid"
-                      [ngClass]="isOpen ? 'fa-angle-up' : 'fa-angle-down'"
-                    ></i>
+                    <span class="booking-summary-chevron" [class.is-open]="isOpen" aria-hidden="true"></span>
                   </small>
                   <!-- <small class="text-muted" *ngIf="taxArray && taxArray.length">
                 Tax Fee: {{ taxArray[i] | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency : currency : "symbol" : "1.2-2" }}
@@ -4627,7 +4430,7 @@
                 }"
                 (click)="onYesClick()"
               >
-                <i class="fa-solid fa-arrow-right"></i>
+                <span class="booking-summary-arrow" aria-hidden="true">&rarr;</span>
               </button>
             </div>
           </div>
@@ -4765,7 +4568,7 @@
             </div>
 
             <div
-              class="d-flex justify-content-between  total-amount mt-2" style="font-weight: 500;"
+              class="d-flex justify-content-between font-weight-bold total-amount mt-2"
               *ngIf="!activeForGoogleHotelCenter"
             >
               <span>Total Amount</span>
@@ -4799,7 +4602,7 @@
               </span>
             </div>
             <div
-              class="d-flex justify-content-between  total-amount mt-2" style="font-weight: 500;"
+              class="d-flex justify-content-between font-weight-bold total-amount mt-2"
               *ngIf="activeForGoogleHotelCenter"
             >
               <span>Total Amount</span>
@@ -5160,7 +4963,7 @@
                   <span
                     style="
                       color: #090979;
-                      font-weight: 500;
+                      font-weight: bold;
                       font-size: 15px;
                       cursor: pointer;
                       float: right;
@@ -5184,3 +4987,281 @@
   <div class="loader-overlay" *ngIf="isLoadingProperty">
   <span class="loader-booking"></span>
 </div>
+            <div class="right-popup" *ngIf="isPanelOpen && selectedRoom" [class.show]="isPanelOpen">
+            <div class="popup-header">
+              <div
+                style="
+                  display: flex;
+                  align-items: flex-start;
+                  justify-content: space-between;
+                "
+              >
+                <p class="popup-heading">
+                  {{ selectedRoom?.name }}
+                </p>
+
+                <i
+                  style="cursor: pointer; font-size: larger"
+                  (click)="togglePanel(selectedRoom, i)"
+                  class="fa-solid fa-xmark"
+                ></i>
+              </div>
+
+              <div *ngIf="selectedRoom?.imageList?.length">
+                <p-carousel
+                  [value]="selectedRoom?.imageList"
+                  [numVisible]="1"
+                  [numScroll]="1"
+                  [circular]="true"
+                  [autoplayInterval]="4000"
+                  [responsiveOptions]="responsiveOptions"
+                >
+                  <ng-template let-image pTemplate="item">
+                    <div
+                      class="border-1 surface-border border-round border-radius-20px"
+                    >
+                      <div>
+                        <div class="relative mx-auto">
+                          <img
+                            [src]="image.url"
+                            [alt]="image.caption || 'Room Image'"
+                            class="w-full border-round border-radius-20px"
+                            style="
+                              width: 100%;
+                              height: 300px;
+                              object-fit: cover;
+                            "
+                          />
+                          <div
+                            *ngIf="image.caption"
+                            class="text-center mt-2 text-sm text-gray-600"
+                          >
+                            {{ image.caption }}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </ng-template>
+                </p-carousel>
+              </div>
+              <div class="popup-body">
+                <div
+                  class="margin-top-20px selected-text"
+                  [innerHTML]="selectedRoom?.description"
+                ></div>
+                <div
+                  class="row"
+                  *ngIf="selectedRoom?.roomFacilities?.length > 0"
+                >
+                  <div
+                    class="col-6"
+                    *ngFor="let item of selectedRoom?.roomFacilities"
+                  >
+                    <div class="alignment-items-one margin-top-10px">
+                      <i
+                        [ngClass]="getAmenityIcon(item.name)"
+                        class="fa-solid"
+                      ></i>
+                      <div class="small mt-1">{{ item.name }}</div>
+                    </div>
+                  </div>
+                </div>
+                <hr
+                  style="border: 1px solid #e5e7eb; margin-top: 10px !important"
+                />
+                <div class="d-flex justify-content-between margin-bottom-10px">
+                  <div>Available Plans</div>
+
+                  <div class="aminities-highlights-ones">
+                    <img src="media-be/images/max-ocuupancy.svg" alt="" />
+                    Max Occupancy: {{ selectedRoom?.maximumOccupancy }}
+                  </div>
+                </div>
+
+                <ng-container *ngIf="this.availableRooms?.length > 0">
+                  <ng-container
+                    *ngFor="
+                      let rates of selectedRoom?.ratesAndAvailabilityDtos
+                        | slice: 0 : 1;
+                      let r = index
+                    "
+                  >
+                    <ng-container
+                      *ngFor="
+                        let plan of getFilteredPlans(rates?.roomRatePlans);
+                        let p = index
+                      "
+                    >
+                      <div class="popup-card">
+                        <h4 class="popup-plan">{{ plan.name }}</h4>
+
+                        <div
+                          class="d-flex justify-content-between margin-top-20px"
+                        >
+                          <h4 class="popup-plan font-weight-bold">
+                            {{
+                              getRoomPlanDisplayAmount(selectedRoom, plan)
+                                | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency : currency : "symbol" : "1.2-2"
+                            }}
+                          </h4>
+                          <p style="font-size: smaller">{{ getRoomPlanPriceLabel(selectedRoom, plan) }}</p>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                          <div
+                            *ngIf="plan?.extraChargePerPerson"
+                            class="d-flex"
+                            style="align-items: center; gap: 10px"
+                          >
+                            <img src=" media-be/images/adult-img.svg" alt="" />
+                            <p style="font-size: smaller; margin-bottom: 0px">
+                              Extra Adult Charge:
+                              {{
+                                plan?.extraChargePerPerson
+                                  | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency : currency : "symbol" : "1.2-2"
+                              }}
+                            </p>
+                          </div>
+                          <div
+                            *ngIf="plan?.extraChargePerChild"
+                            class="d-flex"
+                            style="align-items: center; gap: 10px"
+                          >
+                            <img src=" media-be/images/child-img.svg" alt="" />
+                            <p style="font-size: smaller; margin-bottom: 0px">
+                              Extra Child Charge:
+                              {{
+                                plan?.extraChargePerChild
+                                  | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency : currency : "symbol" : "1.2-2"
+                              }}
+                            </p>
+                          </div>
+                        </div>
+                        <div class="margin-top-10px">
+                          <button
+                            class="btn select-plan"
+                            (click)="onSelectPlanFromPopup(plan)"
+                          >
+                            Select Plan
+                          </button>
+                        </div>
+                      </div>
+                    </ng-container>
+                  </ng-container>
+                </ng-container>
+              </div>
+            </div>
+          </div>
+          <div class="right-popup" *ngIf="isPanelOpenOne && selectedRoom" [class.show]="isPanelOpenOne">
+            <div class="popup-header">
+              <div
+                style="
+                  display: flex;
+                  align-items: flex-start;
+                  justify-content: space-between;
+                "
+              >
+                <p class="popup-heading">
+                  {{ selectedRoom?.name }}
+                </p>
+
+                <i
+                  style="cursor: pointer; font-size: larger"
+                  (click)="togglePanelOne(selectedRoom, i)"
+                  class="fa-solid fa-xmark"
+                ></i>
+              </div>
+
+              <div *ngIf="selectedRoom?.imageList?.length">
+                <p-carousel
+                  [value]="selectedRoom?.imageList"
+                  [numVisible]="1"
+                  [numScroll]="1"
+                  [circular]="true"
+                  [autoplayInterval]="4000"
+                  [responsiveOptions]="responsiveOptions"
+                >
+                  <ng-template let-image pTemplate="item">
+                    <div
+                      class="border-1 surface-border border-round border-radius-20px"
+                    >
+                      <div>
+                        <div class="relative mx-auto">
+                          <img
+                            [src]="image.url"
+                            [alt]="image.caption || 'Room Image'"
+                            class="w-full border-round border-radius-20px"
+                            style="
+                              width: 100%;
+                              height: 300px;
+                              object-fit: cover;
+                            "
+                          />
+                          <div
+                            *ngIf="image.caption"
+                            class="text-center mt-2 text-sm text-gray-600"
+                          >
+                            {{ image.caption }}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </ng-template>
+                </p-carousel>
+              </div>
+              <div class="popup-body">
+                <div
+                  class="margin-top-20px selected-text"
+                  [innerHTML]="selectedRoom?.description"
+                ></div>
+                <div
+                  class="row"
+                  *ngIf="selectedRoom?.roomFacilities?.length > 0"
+                >
+                  <div
+                    class="col-6"
+                    *ngFor="let item of selectedRoom?.roomFacilities"
+                  >
+                    <div class="alignment-items-one margin-top-10px">
+                      <i
+                        [ngClass]="getAmenityIcon(item.name)"
+                        class="fa-solid"
+                      ></i>
+                      <div class="small mt-1">{{ item.name }}</div>
+                    </div>
+                  </div>
+                </div>
+                <hr
+                  style="border: 1px solid #e5e7eb; margin-top: 10px !important"
+                />
+
+                <div class="d-flex justify-content-between margin-bottom-10px">
+                  <div>Available Plans</div>
+
+                  <div class="aminities-highlights-ones">
+                    <img src="media-be/images/max-ocuupancy.svg" alt="" />
+                    Max Occupancy: {{ selectedRoom?.maximumOccupancy }}
+                  </div>
+                </div>
+
+                <ng-container
+                  *ngIf="selectedRoom?.ratesAndAvailabilityDtos === null"
+                >
+                  <h4 class="not-available">No Plans Available</h4>
+                </ng-container>
+                <ng-container
+                  *ngIf="
+                    (selectedRoom?.ratesAndAvailabilityDtos?.[0]?.stopSellOBE !=
+                      null &&
+                      selectedRoom?.ratesAndAvailabilityDtos?.[0]
+                        ?.stopSellOBE !== false) ||
+                    (selectedRoom?.ratesAndAvailabilityDtos?.[0]?.stopSellOTA !=
+                      null &&
+                      selectedRoom?.ratesAndAvailabilityDtos?.[0]
+                        ?.stopSellOTA !== false)
+                  "
+                >
+                  <h4 class="not-available">No Plans Available</h4>
+                </ng-container>
+              </div>
+            </div>
+          </div>

@@ -1135,6 +1135,15 @@ expandedPlans: { [key: string]: boolean } = {};
     Label: 'Book Houseboat',
     TERM: 'Houseboat'
   };
+  @ViewChild('smartRecommendRow') smartRecommendRow!: ElementRef;
+  canScrollPrev = false;
+  canScrollNext = false;
+  @HostListener('window:resize')
+onWindowResizeRecalcScroll() {
+  if (this.smartStatus === 'success') {
+    this.updateScrollButtonsState();
+  }
+}
 
   constructor(
     private listingService: ListingService,
@@ -2065,18 +2074,18 @@ updatePagination() {
   this.currentCategoriesList = this.categories.slice(start, start + 2);
 }
 
-nextPage() {
-  if (this.currentPage < this.totalPagesCount - 1) {
-    this.currentPage++;
-    this.updatePagination();
-  }
-}
-prevPage() {
-  if (this.currentPage > 0) {
-    this.currentPage--;
-    this.updatePagination();
-  }
-}
+// nextPage() {
+//   if (this.currentPage < this.totalPagesCount - 1) {
+//     this.currentPage++;
+//     this.updatePagination();
+//   }
+// }
+// prevPage() {
+//   if (this.currentPage > 0) {
+//     this.currentPage--;
+//     this.updatePagination();
+//   }
+// }
 restoreGuestSelectionsFromSummary() {
   // ✅ Restore selectedPlansSummary
   const savedSummary = sessionStorage.getItem('bookingSummaryDetails');
@@ -10550,4 +10559,40 @@ onYesClick() {
     this.generateAndSetSchema();
     this.cd.detectChanges();
   }
+
+  scrollByCard(direction: 'prev' | 'next') {
+  const container = this.smartRecommendRow?.nativeElement;
+  if (!container) return;
+
+  const firstCard = container.querySelector('.smart-recommend-card') as HTMLElement;
+  const gap = 24;
+  const cardWidth = firstCard ? firstCard.getBoundingClientRect().width + gap : container.clientWidth;
+
+  container.scrollBy({
+    left: direction === 'next' ? cardWidth : -cardWidth,
+    behavior: 'smooth',
+  });
+
+  setTimeout(() => this.updateScrollButtonsState(), 0);
+}
+
+nextPage() {
+  this.scrollByCard('next');
+}
+
+prevPage() {
+  this.scrollByCard('prev');
+}
+
+updateScrollButtonsState() {
+  const container = this.smartRecommendRow?.nativeElement;
+  if (!container) {
+    this.canScrollPrev = false;
+    this.canScrollNext = false;
+    return;
+  }
+  const { scrollLeft, scrollWidth, clientWidth } = container;
+  this.canScrollPrev = scrollLeft > 5;
+  this.canScrollNext = scrollLeft + clientWidth < scrollWidth - 5;
+}
 }

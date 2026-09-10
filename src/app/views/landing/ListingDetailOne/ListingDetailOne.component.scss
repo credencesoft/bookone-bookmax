@@ -140,7 +140,7 @@ background-color: #f5f5f5;
   background-color: black;
   padding: 4px;
   color: var(--tertiary);
-  font-weight: 500;
+  font-weight: 700;
   border-radius: 7px;
   padding-left: 14px;
   padding-right: 14px;
@@ -210,11 +210,11 @@ background-color: #f5f5f5;
   width: 40%;
 }
 .special-code {
-  font-family: "Poppins";
-  font-weight: 500;
+  font-family: "Plus Jakarta Sans", sans-serif !important;
+  font-weight: 600;
 }
 .special-code-One {
-    font-family: "Poppins";
+    font-family: "Plus Jakarta Sans", sans-serif !important;
     font-weight: 400;
 }
 .special-section {
@@ -250,7 +250,7 @@ background-color: #f5f5f5;
   border: none;
   border-radius: 6px;
   padding: 5px;
-  font-family: "Poppins";
+   font-family: "Plus Jakarta Sans", sans-serif !important;
   font-size: smaller;
   background-color: var(--secondary, #0b01cc);
   color: var(--tertiary) !important;;
@@ -259,7 +259,7 @@ background-color: #f5f5f5;
 border: none;
     /* border-radius: 6px; */
     padding: 9px 15px;
-    font-family: "Poppins";
+     font-family: "Plus Jakarta Sans", sans-serif !important;
     font-size: smaller;
     background-color: var(--secondary, #0b01cc);
     color: var(--tertiary, #fff) !important;
@@ -345,15 +345,15 @@ display: flex;
 
 .date-restriction-popup__copy h6 {
   color: #1f2937;
-  font-family: 'Poppins';
+  font-family: "Plus Jakarta Sans", sans-serif !important;
   font-size: 15px;
-  font-weight: 500;
+  font-weight: 600;
   margin: 0 0 4px;
 }
 
 .date-restriction-popup__copy p {
   color: #6b7280;
-  font-family: 'Poppins';
+   font-family: "Plus Jakarta Sans", sans-serif !important;
   font-size: 13px;
   line-height: 1.5;
   margin: 0;
@@ -502,7 +502,7 @@ width: auto;
 .checkavaialabilyy-btn {
     background-color: var(--secondary, #0b01cc);
     color: var(--tertiary) !important;
-    font-family: "Poppins";
+    font-family: "Plus Jakarta Sans", sans-serif !important;
     border: none;
     padding: 7px 19px;
     border-radius: 15px !important;
@@ -511,7 +511,7 @@ width: auto;
 .Whatsapp-btn {
     background-color: #03A410;
     color: #fff;
-    font-family: "Poppins";
+    font-family: "Plus Jakarta Sans", sans-serif !important;
     border: none;
     padding: 7px 19px;
     border-radius: 7px;
@@ -546,11 +546,11 @@ width: auto;
 }
 .promo-heading {
   color: var(--tertiary) !important;;
-  font-family: "Poppins";
+  font-family: "Plus Jakarta Sans", sans-serif !important;
 }
 .code-coupon {
   color: var(--tertiary) !important;;
-  font-family: "Poppins";
+  font-family: "Plus Jakarta Sans", sans-serif !important;
   font-size: smaller;
 }
 
@@ -562,7 +562,7 @@ width: auto;
   background: linear-gradient(to right, #f59e0b, #f97316);
   color: #fff !important;
   border-radius: 999px;
-  font-weight: 500;
+  font-weight: 700;
   padding: 8px 16px;
   border: 1px solid rgba(255, 255, 255, 0.35);
 }
@@ -658,7 +658,7 @@ width: auto;
 .spin-title {
   margin: 0;
   font-size: 34px;
-  font-family: "Poppins";
+   font-family: "Plus Jakarta Sans", sans-serif !important;
   font-weight: 800;
   letter-spacing: 0.3px;
   color: #ffffff;
@@ -732,7 +732,7 @@ width: auto;
   transform: translateX(-50%);
   width: 70px;
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 700;
   color: #fff;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
 }
@@ -764,7 +764,7 @@ width: auto;
   border-radius: 999px;
   padding: 12px 30px;
   font-weight: 800;
-  font-family: "Poppins";
+   font-family: "Plus Jakarta Sans", sans-serif !important;
   font-size: 16px;
   cursor: pointer;
   min-width: 220px;
@@ -822,7 +822,7 @@ width: auto;
 .spin-result-code {
   margin-top: 10px;
   color: #fbbf24;
-  font-weight: 500;
+  font-weight: 700;
   letter-spacing: 1px;
 }
 
@@ -864,7 +864,7 @@ width: auto;
   }
 }
 .hero-heading {
-  font-family: "Poppins";
+   font-family: "Plus Jakarta Sans", sans-serif !important;
 }
 .margin-top-40px {
   margin-top: 40px;
@@ -889,11 +889,11 @@ width: auto;
 }
 .smart-recommend {
   color: var(--secondary, #0b01cc);
-  font-weight: 500;
-  font-family: "Poppins";
+  font-weight: 600;
+  font-family: "Plus Jakarta Sans", sans-serif !important;
 }
 .smart-recommend-1 {
-  font-family: "Poppins";
+  font-family: "Plus Jakarta Sans", sans-serif !important;
 }
 
 .gap-50px {
@@ -902,204 +902,475 @@ width: auto;
 .width-49 {
   width: 49%;
 }
-.smart-recommend-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 16px;
-  align-items: stretch;
-  margin-top: 20px;
-
-  @media (max-width: 767px) {
-    display: flex;
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-    padding-bottom: 12px;
-    
-    &::-webkit-scrollbar {
-      display: none;
-    }
-    
-    > * {
-      flex: 0 0 85%;
-      scroll-snap-align: start;
-    }
-  }
-}
-
 .smart-recommend-card {
-  position: relative;
-  padding: 20px;
-  font-family: "Poppins", sans-serif;
-  border: 1px solid #EEF1F4;
-  border-radius: 16px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  background-color: #FFFFFF;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  padding: 16px 12px;
+    margin-top: 20px;
+    font-family: "Plus Jakarta Sans", sans-serif !important;
+    border: 1px solid #D9D9D9;
+    box-shadow: 0 10px 16px rgba(0, 0, 0, 0.2);
 
-  &:hover {
-    @media (min-width: 768px) {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-    }
-  }
-
-  .smart-recommend-content {
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
-
-    .smart-recommend-left {
-      flex: none;
-    }
-    
-    .smart-recommend-right {
-      flex-grow: 1;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
-    }
-
-    .smart-divider-horizontal {
-      height: 1px;
-      width: 100%;
-      background-color: #EEF1F4;
-      margin: 12px 0;
-    }
-  }
-
-  .smart-fast-selling-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    background-color: #EAF4FB;
-    color: #0F3D5C;
-    padding: 4px 8px;
-    border-radius: 999px;
-    font-size: 11px;
-    font-weight: 600;
-    margin-bottom: 8px;
-  }
-
-  .choose-btn-wrapper {
-    margin-top: 16px;
-  }
-
-  .choose-btn {
-    width: 100%;
-    background-color: #0F3D5C;
-    color: #FFFFFF;
-    border: none;
-    border-radius: 10px;
-    padding: 10px;
-    font-weight: 600;
-    font-size: 14px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 44px;
-
-    &:hover {
-      background-color: #0a2a40;
-    }
-    
-    &:active {
-      transform: scale(0.95);
-    }
-  }
-
-  .pricing-best-fit {
-    font-size: 22px;
-    font-weight: 700;
-    color: #0F172A;
-    line-height: 1.2;
-    margin-top: 4px;
-  }
-
-  .recommend-font {
-    font-size: 14px;
-    font-weight: 600;
-    color: #333;
-    margin-bottom: 12px;
-    display: flex;
-    align-items: center;
-    img {
-      width: 16px;
-      height: 16px;
-    }
-  }
-
-  .line-height.small-grey {
-    font-size: 12px;
-    color: #64748b;
-    margin-bottom: 12px;
-  }
-
-  .ideal-pill {
-    background-color: #f1f5f9;
-    color: #475569;
-    font-size: 11px;
-    padding: 4px 8px;
-    border-radius: 999px;
-    display: inline-block;
-    align-self: flex-start;
-  }
-
-  .room-title {
-    font-size: 13px;
-    font-weight: 500;
-    color: #334155;
-    margin-bottom: 2px;
-  }
-
-  .per-night-text {
-    font-size: 13px;
-    color: #64748b;
-  }
-
-  @media (max-width: 767px) {
-    padding: 16px;
-  }
 }
-
 .smart-recommend-card-bestFit {
-  border-top: 4px solid #F2FBFF;
+padding: 16px 12px;
+    margin-top: 20px;
+    font-family: "Plus Jakarta Sans", sans-serif !important;
+    border: 1px solid #D9D9D9;
+    box-shadow: 0 10px 16px rgba(0, 0, 0, 0.2);
+    background-color: #F2FBFF;
 }
 .smart-recommend-card-comfort {
-  border-top: 4px solid #FAFAFF;
+padding: 16px 12px;
+    margin-top: 20px;
+    font-family: "Plus Jakarta Sans", sans-serif !important;
+    border: 1px solid #D9D9D9;
+    box-shadow: 0 10px 16px rgba(0, 0, 0, 0.2);
+    background-color: #FAFAFF;
 }
 .smart-recommend-card-luxury {
-  border-top: 4px solid #FFFBEF;
+padding: 16px 12px;
+    margin-top: 20px;
+     font-family: "Plus Jakarta Sans", sans-serif !important;
+    border: 1px solid #D9D9D9;
+    box-shadow: 0 10px 16px rgba(0, 0, 0, 0.2);
+    background-color: #FFFBEF;
 }
 .smart-recommend-card-budget {
-  border-top: 4px solid #F8FFFA;
+padding: 16px 12px;
+    margin-top: 20px;
+    font-family: "Plus Jakarta Sans", sans-serif !important;
+    border: 1px solid #D9D9D9;
+    box-shadow: 0 10px 16px rgba(0, 0, 0, 0.2);
+    background-color: #F8FFFA;
 }
 .next-carasoul {
   background-color: var(--secondary, #0b01cc);
   color: var(--tertiary, #fff) !important;
   border: none !important;
   cursor: pointer;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  transition: all 0.2s ease;
+
+  &:hover:not(:disabled) {
+    transform: scale(1.08);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
 }
 
 .next-carasoul:disabled {
-  background-color: #ccc !important;
-  color: #666 !important;
+  background-color: #e2e8f0 !important;
+  color: #94a3b8 !important;
   cursor: not-allowed;
-  opacity: 0.7;
+  opacity: 1;
+  box-shadow: none;
+}
+
+.recommend-arrow,
+.recommend-carousel-arrow {
+  font-family: Arial, sans-serif !important;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.recommend-arrow {
+  font-size: 17px;
+}
+
+.recommend-carousel-arrow {
+  font-size: 20px;
+}
+
+.stepper-symbol {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 14px;
+  min-height: 14px;
+  font-family: Arial, sans-serif !important;
+  font-size: 19px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.booking-summary-arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: Arial, sans-serif !important;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.booking-summary-chevron {
+  display: inline-flex;
+  width: 12px;
+  height: 12px;
+  margin-left: 5px;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease;
+}
+
+.booking-summary-chevron::before {
+  width: 7px;
+  height: 7px;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  content: "";
+  transform: rotate(45deg) translate(-1px, -1px);
+}
+
+.booking-summary-chevron.is-open {
+  transform: rotate(180deg);
+}
+
+.smart-recommend-grid {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 24px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
+  padding-bottom: 8px;
+  margin-top: 20px;
+
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.smart-recommend-grid > div {
+  flex: 0 0 calc(50% - 12px);
+  max-width: calc(50% - 12px);
+}
+
+.smart-recommend-grid .smart-recommend-card {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  min-height: 245px;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  box-shadow: 0 3px 12px rgba(15, 23, 42, 0.1);
+}
+
+.smart-recommend-header .col-12 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.smart-recommend-header .rooms-heading-starts {
+  margin: 0;
+}
+
+.smart-recommend-close {
+  display: inline-flex;
+  width: 36px;
+  height: 36px;
+  flex: 0 0 36px;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 1px solid #d7e0e8;
+  border-radius: 50%;
+  background: #fff;
+  color: #475569;
+  cursor: pointer;
+  font-family: Arial, sans-serif !important;
+  font-size: 25px;
+  font-weight: 400;
+  line-height: 1;
+  transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.smart-recommend-close:hover {
+  background: #f1f5f9;
+  color: #005575;
+  transform: rotate(90deg);
+}
+
+.smart-recommend-media {
+  position: relative;
+  flex: 0 0 38%;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.smart-recommend-grid .smart-recommend-card {
+  width: 100%;
+  height: 360px;
+  display: flex;
+  flex-direction: row;
+  min-height: 360px;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  box-shadow: 0 3px 12px rgba(15, 23, 42, 0.1);
+}
+
+.smart-recommend-content {
+  flex: 1;
+  min-width: 0;
+  padding: 18px 12px 16px;
+  display: flex;
+  flex-direction: column;
+}
+
+.smart-recommend-room-name {
+  margin: 0 0 6px;           /* was 0 0 8px */
+  color: #101b35;
+  font-family: "Playfair Display", serif !important;
+  font-size: 24px;           /* was 30px */
+  font-weight: 700;
+  line-height: 1.15;
+}
+
+.smart-recommend-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+  font-family: "Plus Jakarta Sans", sans-serif !important;
+}
+
+.smart-recommend-description {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;                 /* was 16px */
+  color: #52657f;
+  font-size: 14px;           /* was 16px */
+  line-height: 1.5;          /* was 1.7 */
+}
+
+.smart-recommend-divider {
+  height: 1px;
+  margin: auto 0 12px;       /* was auto 0 20px */
+  background: #e2e8f0;
+}
+
+.smart-recommend-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.smart-recommend-badge,
+.smart-recommend-availability {
+  position: absolute;
+  left: 16px;
+  color: #fff;
+  font-family: "Plus Jakarta Sans", sans-serif !important;
+  font-weight: 700;
+  z-index: 1;
+}
+
+.smart-recommend-badge {
+  top: 16px;
+  padding: 9px 14px;
+  background: #005575;
+  border-radius: 9px;
+  font-size: 13px;
+}
+
+.smart-recommend-availability {
+  bottom: 16px;
+  padding: 6px 10px;
+  background: #ef476f;
+  border-radius: 5px;
+  font-size: 12px;
+}
+
+
+
+.smart-recommend-room-name {
+  margin: 0 0 8px;
+  color: #101b35;
+  font-family: "Playfair Display", serif !important;
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 1.15;
+}
+
+.smart-recommend-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.smart-recommend-tags span {
+  padding: 4px 10px;
+  background: #f1f5f9;
+  border-radius: 4px;
+  color: #52657f;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.smart-recommend-description {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  color: #52657f;
+  font-size: 16px;
+  line-height: 1.7;
+}
+
+.smart-recommend-check {
+  display: inline-flex;
+  flex: 0 0 22px;
+  width: 22px;
+  height: 22px;
+  align-items: center;
+  justify-content: center;
+  margin-top: 3px;
+  border: 2px solid #005575;
+  border-radius: 50%;
+  color: #005575;
+  font-family: Arial, sans-serif !important;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.smart-recommend-divider {
+  height: 1px;
+  margin: auto 0 20px;
+  background: #e2e8f0;
+}
+
+.smart-recommend-footer {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.smart-recommend-price > div {
+  margin-bottom: 5px;
+  color: #8aa0bd;
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.smart-recommend-price strong {
+  display: block;
+  color: #101b35;
+  font-size: 36px;
+  line-height: 1.05;
+}
+
+.smart-recommend-price small {
+  color: #627796;
+  font-size: 15px;
+}
+
+.smart-recommend-select {
+  display: inline-flex;
+  min-width: 192px;
+  min-height: 60px;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 12px 24px;
+  border: 0;
+  border-radius: 18px;
+  background: #005575;
+  box-shadow: 0 10px 18px rgba(0, 85, 117, 0.22);
+  color: #fff;
+  cursor: pointer;
+  font-size: 17px;
+  font-weight: 700;
+   font-family: "Plus Jakarta Sans", sans-serif !important;
+}
+
+.smart-recommend-select:hover {
+  background: #00425a;
+}
+
+@media (max-width: 767px) {
+  .smart-recommend-grid {
+    gap: 16px;
+  }
+
+   .smart-recommend-grid > div {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+
+  .smart-recommend-grid .smart-recommend-card {
+    flex-direction: column;
+    height: 500px;
+    min-height: 500px;
+  }
+
+  .smart-recommend-media {
+    flex-basis: auto;
+    height: 210px;
+    min-height: 210px;
+  }
+
+  .smart-recommend-content {
+    padding: 22px 20px;
+  }
+
+  .smart-recommend-room-name {
+    font-size: 25px;
+  }
+
+  .smart-recommend-description {
+    font-size: 14px;
+  }
+
+  .smart-recommend-footer {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .smart-recommend-price strong {
+    font-size: 30px;
+  }
+
+  .smart-recommend-select {
+    width: 100%;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1199px) {
+  .smart-recommend-grid > div {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+}
+
+@media (min-width: 1200px) {
+  .smart-recommend-grid > div {
+    flex: 0 0 calc(50% - 12px);
+    max-width: calc(50% - 12px);
+  }
 }
 
 .smart-recommend-card-two {
   padding: 20px 15px;
   margin-top: 20px;
-  // background-color: #f1fff4;
-  font-family: "Poppins";
+  font-family: "Plus Jakarta Sans", sans-serif !important;
   border: 1px solid#D9D9D9;
   box-shadow: 0 10px 16px rgba(0, 0, 0, 0.2);
 }
@@ -1107,8 +1378,8 @@ width: auto;
   margin-left: 15px;
 }
 .recommend-font {
-  font-family: "Poppins";
-  font-weight: 500;
+  font-family: "Plus Jakarta Sans", sans-serif !important;
+  font-weight: 700;
 }
 .text-sm {
   font-size: smaller;
@@ -1127,7 +1398,7 @@ width: auto;
   line-height: 35px;
 }
 .occupancy-data {
-  font-weight: 500;
+  font-weight: 700;
   font-size: small;
 }
 .margin-top-20px {
@@ -1136,7 +1407,7 @@ width: auto;
 .select-mannual {
     // background-color: var(--secondary, #0b01cc);
     // color: var(--tertiary) !important;
-    // font-family: "Poppins";
+    // font-family: "Plus Jakarta Sans";
     // border: none;
     // padding: 6px 20px;
     // border-radius: 8px;
@@ -1151,13 +1422,13 @@ width: auto;
 }
 .aminities-highlights {
   font-weight: 500;
-  font-family: "Poppins";
+  font-family: "Plus Jakarta Sans", sans-serif !important;
   color: #000;
   display: inline-block;
   padding: 4px 8px;
 }
 .aminities-highlights-ones {
-    font-family: "Poppins";
+    font-family: "Plus Jakarta Sans", sans-serif !important;
     color: #000;
     display: inline-block;
     padding: 4px 8px;
@@ -1181,19 +1452,20 @@ width: auto;
 }
 
 .rooms-heading-starts {
-  font-weight: 500;
-  font-family: "Poppins";
-  color: #000;
+  font-weight: 700;
+  font-family: "Playfair Display", sans-serif !important;
+  color: oklch(20.8% .042 265.755);
   display: inline-block;
   padding: 4px 8px;
+  font-size: 1.875rem;
 }
 .aboutHeading {
   font-weight: 500;
   margin-left: 7px;
-  font-family: "Poppins";
+  font-family: "Playfair Display", sans-serif !important;
 }
 .about-content {
-  font-family: "Poppins";
+  font-family: "Plus Jakarta Sans", sans-serif !important;
   margin-top: 15px;
   text-align: justify;
   padding: 10px;
@@ -1215,8 +1487,8 @@ width: auto;
       text-align: left;
     margin-left: 20px;
     font-size: 23px;
-    font-weight: 500;
-    font-family: 'Poppins';
+    font-weight: 600;
+    font-family: "Plus Jakarta Sans", sans-serif !important;
 }
 .side-images {
   width: 27%;
@@ -1249,7 +1521,7 @@ width: auto;
   border: none !important;
   border-radius: 0.25rem;
   color: #000 !important;
-  font-family: "Poppins" !important;
+  font-family: "Plus Jakarta Sans", sans-serif !important;
    display: inline-block;
   white-space: nowrap;       
   overflow: hidden;   
@@ -1263,30 +1535,30 @@ width: auto;
   border-radius: 20px;
 }
 .selected-text {
-    font-family: "Poppins";
+    font-family: "Plus Jakarta Sans", sans-serif !important;
         font-size: small;
 }
 .planName {
-  font-family: "Poppins";
+  font-family: "Plus Jakarta Sans", sans-serif !important;
   font-weight: 400;
   font-size: 13px;
   color: var(--tertiary) !important;;
 }
 .ViewDetails {
   font-size: 11px;
-  font-family: "Poppins";
+  font-family: "Plus Jakarta Sans", sans-serif !important;
   color: var(--tertiary) !important;;
   cursor: pointer;
 }
 .pricing {
-  font-family: "Poppins";
+  font-family: "Plus Jakarta Sans", sans-serif !important;
   font-weight: 400;
   font-size: 13px;
   color: var(--tertiary) !important;;
 }
 .perNight {
   font-size: 10px;
-  font-family: "Poppins";
+  font-family: "Plus Jakarta Sans", sans-serif !important;
   color: var(--tertiary) !important;;
 }
 .margin-top-30px {
@@ -1330,7 +1602,7 @@ width: auto;
   width: 100%;
   color: #d86161;
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 700;
   line-height: 1.45;
   padding: 0;
   margin: 0;
@@ -1433,7 +1705,7 @@ width: auto;
   padding: 6px 11px;
   margin-top: -10px;
   font-size: 13px;
-  font-family: "Poppins";
+  font-family: "Plus Jakarta Sans", sans-serif !important;
 }
 .margin-top-40px {
   margin-top: 40px;
@@ -1441,13 +1713,13 @@ width: auto;
 .btn-add {
   background-color: var(--secondary, #0b01cc);
   color: var(--tertiary) !important;;
-  font-family: "Poppins";
+  font-family: "Plus Jakarta Sans", sans-serif !important;
   border: none;
   padding: 6px 16px;
   border-radius: 8px;
 }
 .content-room-number {
-  font-family: "Poppins";
+  font-family: "Plus Jakarta Sans", sans-serif !important;
   font-size: small;
 }
 .selected {
@@ -1515,13 +1787,13 @@ display: flex;
 }
 
 .room-title {
-  font-weight: 500;
+  font-weight: 600;
   font-size: 15px;
   margin-bottom: 2px;
 }
 
 .room-price {
-  font-weight: 500;
+  font-weight: 600;
   white-space: nowrap;
 }
 
@@ -1533,11 +1805,11 @@ display: flex;
 .btn-book-now {
   background-color: var(--secondary, #0b01cc);
   color: white;
-  font-weight: 500;
+  font-weight: 600;
   border-radius: 8px;
   padding: 10px 0;
   transition: 0.3s;
-  font-family: 'Poppins';
+  font-family: "Plus Jakarta Sans", sans-serif;
 }
 
 .btn-book-now:hover {
@@ -1592,8 +1864,8 @@ display: flex;
 position: absolute;
     right: -10px;
     padding: 6px 11px !important;
-    font-family: 'Poppins';
-    font-weight: 500;
+    font-family: "Plus Jakarta Sans", sans-serif !important;;
+    font-weight: 600;
 }
 
 .day-trip-badge {
@@ -1606,16 +1878,16 @@ position: absolute;
   border-radius: 5px;
   background-color: var(--secondary, #0b01cc) !important;
   color: var(--tertiary, #fff) !important;
-  font-family: 'Poppins';
+   font-family: "Plus Jakarta Sans", sans-serif !important;
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 700;
   line-height: 1.2;
   white-space: nowrap;
 }
 
 h3 .day-trip-badge {
   font-size: calc(100% - 0.6rem) !important;
-  font-weight: 500 !important;
+  font-weight: 700 !important;
   vertical-align: middle;
 }
 
@@ -1725,14 +1997,14 @@ h3 .day-trip-badge {
 }
 .guest-testimonials {
   padding: 2rem;
-  font-family: "Poppins";
+ font-family: "Plus Jakarta Sans", sans-serif !important;
 
   .gt-header {
     max-width: 240px;
 
     h3 {
       font-size: 1.25rem;
-      font-weight: 500;
+      font-weight: 600;
     }
 
     p {
@@ -1810,7 +2082,7 @@ h3 .day-trip-badge {
           }
 
           .gt-name {
-            font-weight: 500;
+            font-weight: 600;
             color: #222;
           }
         }
@@ -1820,11 +2092,11 @@ h3 .day-trip-badge {
 }
 .gs-heading {
   h3 {
-    font-family: "Poppins";
+    font-family: "Plus Jakarta Sans", sans-serif !important;
   }
   p {
     color: #737373;
-    font-family: "Poppins";
+    font-family: "Plus Jakarta Sans", sans-serif !important;
   }
 }
 .gs-card {
@@ -1832,10 +2104,10 @@ h3 .day-trip-badge {
   border-radius: 20px;
   box-shadow: 0px 1px 10px 0px rgba(0, 0, 0, 0.0509803922);
   gap: 15px;
-  font-family: "Poppins";
+  font-family: "Plus Jakarta Sans", sans-serif !important;
 }
 .gs-text {
-  font-family: "Poppins";
+  font-family: "Plus Jakarta Sans", sans-serif !important;
 }
 .gs-arrow-icon {
   background-color: #0029ff;
@@ -1856,10 +2128,10 @@ h3 .day-trip-badge {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 500;
+  font-weight: 600;
   font-size: 1rem;
   text-transform: uppercase;
-  font-family: "Poppins";
+  font-family: "Plus Jakarta Sans", sans-serif !important;
 }
 .terms-container {
     background-color: rgba(217, 217, 217, 0.1803921569);
@@ -1872,7 +2144,7 @@ h3 .day-trip-badge {
 }
 .error-text {
   text-align: center;
-  font-family: "Poppins";
+   font-family: "Plus Jakarta Sans", sans-serif !important;
   color: red;
   font-size: small;
 }
@@ -1902,7 +2174,7 @@ h3 .day-trip-badge {
 .explore-nearby {
   .section-title {
     font-size: 1.2rem;
-    font-weight: 500;
+    font-weight: 600;
     color: #1c1c1c;
   }
 
@@ -1947,7 +2219,7 @@ h3 .day-trip-badge {
   }
 }
 .ameniti1 {
-  font-family: "Poppins";
+   font-family: "Playfair Display", sans-serif !important;
   font-weight: 500;
 }
 
@@ -1967,7 +2239,7 @@ h3 .day-trip-badge {
     align-items: center;
     justify-content: center;
     font-size: 20px;
-    font-weight: 500;
+    font-weight: bold;
     cursor: pointer;
     transition: all 0.2s ease-in-out;
 
@@ -2006,7 +2278,7 @@ h3 .day-trip-badge {
   padding: 10px !important;
 }
 .business-text {
-  font-family: "Poppins";
+  font-family: "Plus Jakarta Sans", sans-serif !important;
 }
 .guest-slider {
   padding: 10px;
@@ -2058,7 +2330,7 @@ h3 .day-trip-badge {
 .see-more {
   background: rgba(11, 77, 117, 0.88) !important;
   color: #ffffff !important;
-  font-family: "Poppins";
+  font-family: "Plus Jakarta Sans", sans-serif !important;
   font-weight: 500;
   border-radius: 999px;
   padding: 10px 16px;
@@ -2168,8 +2440,8 @@ h3 .day-trip-badge {
   white-space: nowrap;
   background: rgba(84, 68, 58, 0.72) !important;
   color: #ffffff !important;
-  font-family: "Poppins", sans-serif;
-  font-weight: 500;
+  font-family: "Plus Jakarta Sans", sans-serif !important;
+  font-weight: 600;
   font-size: 15px;
   border-radius: 10px;
   padding: 12px 23px !important;
@@ -2302,7 +2574,7 @@ h3 .day-trip-badge {
 //   display: flex;
 //   align-items: center;
 //   margin: 0;
-//   font-family: "Poppins", sans-serif;
+//   font-family: "Plus Jakarta Sans", sans-serif;
 //   font-size: 20px;
 //   font-weight: 500;
 //   line-height: 1.2;
@@ -2383,8 +2655,8 @@ h3 .day-trip-badge {
   font-size: small;
 }
 .sold-out-header {
-  font-family: "Poppins";
-  font-weight: 500;
+   font-family: "Plus Jakarta Sans", sans-serif !important;
+  font-weight: 600;
 }
 .dates-seemore {
     background-color: var(--secondary, #0b01cc);
@@ -2415,7 +2687,7 @@ h3 .day-trip-badge {
 .popup-heading {
     font-size: 18px;
     font-weight: 400;
-    font-family: "Poppins";
+     font-family: "Plus Jakarta Sans", sans-serif !important;
 }
 .right-popup {
   position: fixed;
@@ -2424,7 +2696,7 @@ h3 .day-trip-badge {
   height: 100%;
   width: 500px;
   background: var(--tertiary) !important;;
-  transform: translateY(-100%);
+  transform: translateY(100%);
   transition: transform 0.4s ease-in-out;
   z-index: 1050;
   overflow-y: auto;
@@ -2477,15 +2749,15 @@ h3 .day-trip-badge {
 .not-available {
   text-align: center;
     margin-top: 30px;
-    font-family: 'Poppins';
+     font-family: "Plus Jakarta Sans", sans-serif !important;
     color: red;
 }
 
 .popup-plan {
-    font-family: "Poppins";
+     font-family: "Plus Jakarta Sans", sans-serif !important;
     color: var(--secondary, #0b01cc);
     font-size: 1.1rem;
-    font-weight: 500;
+    font-weight: 600;
 }
 .select-plan {
       width: 100%;
@@ -2563,7 +2835,7 @@ h3 .day-trip-badge {
 }
 .coming-soon {
   color: red; /* change to your desired color */
-  font-weight: 500;
+  font-weight: bold;
   animation: blink 1s infinite;
 }
 
@@ -2618,14 +2890,14 @@ h3 .day-trip-badge {
 }
 .booking-summary-dialog .p-dialog-header {
   color: #000 !important;           /* white text */
-  font-weight: 500;
+  font-weight: bold;
 }
 
 .plan-warning-text {
   width: 100%;
   color: #d86161;
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 700;
   line-height: 1.45;
   padding: 0;
   margin: 0;
@@ -2729,7 +3001,7 @@ h3 .day-trip-badge {
 /* Header */
 .mobile-dialog-header {
   font-size: 18px;
-  font-weight: 500;
+  font-weight: 600;
   padding: 15px;
   border-bottom: 1px solid #ddd;
   display: flex;
@@ -2928,7 +3200,7 @@ padding-bottom: 20px;
 .Whatsapp-btn {
     background-color: #03A410;
     color: #fff;
-    font-family: "Poppins";
+    font-family: "Plus Jakarta Sans", sans-serif !important;
     border: none;
     padding: 7px 19px;
     border-radius: 7px;
@@ -2995,7 +3267,7 @@ text-align: center;
 .btn-summary-change {
   display: flex;
     border: none;
-    font-family: 'Poppins';
+    font-family: "Plus Jakarta Sans", sans-serif !important;
     background-color: var(--secondary, #0b01cc);
     padding: 11px 31px;
     color: var(--tertiary) !important;;
@@ -3219,7 +3491,7 @@ text-align: center;
 .btn-summary-change {
   display: flex;
     border: none;
-    font-family: 'Poppins';
+    font-family: "Plus Jakarta Sans", sans-serif !important;
     background-color: var(--secondary, #0b01cc);
     padding: 11px 31px;
     color: var(--tertiary) !important;;
@@ -3489,7 +3761,7 @@ text-align: center;
   color: var(--secondary, #0b01cc);
   border-radius: 8px;
   padding: 10px 24px;
-  font-weight: 500;
+  font-weight: 600;
   transition: all 0.7s ease;
 }
 
@@ -3502,7 +3774,7 @@ text-align: center;
 
 .aboutHeading {
   font-size: 20px;
-  font-weight: 500;
+  font-weight: 600;
   margin-bottom: 12px;
    margin-bottom: 12px;
 }
@@ -3553,7 +3825,7 @@ text-align: center;
 }
 
 .highlight-text {
-  font-family: "Poppins", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif !important;
   font-size: 12.5px;
   color: #374151;
   line-height: 1.25;
@@ -3614,7 +3886,7 @@ text-align: center;
 }
 
 .text-section .title {
-  font-weight: 500;
+  font-weight: 600;
   font-size: 15px;
   color: #1f2937;
 }
@@ -3652,7 +3924,7 @@ text-align: center;
   margin: 4px 0 14px;
   color: #5f6368;
   font-size: 14px;
-  font-family: "Poppins";
+  font-family: "Plus Jakarta Sans", sans-serif !important;
 }
 
 .cancellation-rule-row {
@@ -3671,13 +3943,13 @@ text-align: center;
 .cancellation-rule-window {
   color: #202124;
   font-weight: 500;
-  font-family: "Poppins";
+  font-family: "Plus Jakarta Sans", sans-serif !important;
 }
 
 .cancellation-rule-charge {
   color: var(--secondary, #0b01cc);
-  font-weight: 500;
-  font-family: "Poppins";
+  font-weight: 700;
+  font-family: "Plus Jakarta Sans", sans-serif !important;
   white-space: nowrap;
 }
 
@@ -3711,9 +3983,9 @@ text-align: center;
 
 /* Property name header styling */
 .hero-heading {
-  font-family: "Playfair Display", "Poppins", "Merriweather", serif !important;
-  font-weight: 500 !important;
-  font-size: 28px !important;
+  font-family: "Playfair Display", "Plus Jakarta Sans", "Merriweather", serif !important;
+  font-weight: 700 !important;
+  font-size: 34px !important;
   color: #0f172a !important;
   margin-bottom: 6px !important;
   letter-spacing: -0.01em !important;
@@ -3721,13 +3993,14 @@ text-align: center;
 
 /* Location and address styling */
 .hero-subheading {
-  font-family: "Poppins", sans-serif !important;
+  font-family: "Plus Jakarta Sans", sans-serif !important;
   font-size: 13px !important;
-  font-weight: 500 !important;
+  font-weight: 600 !important;
   margin-top: 4px !important;
   display: flex !important;
   align-items: center !important;
   gap: 6px !important;
+  color: oklch(44.6% .043 257.281);
 }
 
 /* Gallery Navigation Tabs styling */
@@ -3743,7 +4016,7 @@ text-align: center;
 .gallery-tab-btn {
   background: none;
   border: none;
-  font-family: "Poppins", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif !important;
   font-size: 14px;
   font-weight: 500;
   color: #64748b;
@@ -3759,7 +4032,7 @@ text-align: center;
 
 .gallery-tab-btn.is-active {
   color: #0b4d75; /* Brand teal/navy */
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .gallery-tab-btn.is-active::after {
@@ -3819,9 +4092,9 @@ text-align: center;
   color: #ffffff;
   padding: 6px 14px;
   border-radius: 99px;
-  font-family: "Poppins", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif !important;
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 600;
   letter-spacing: 0.05em;
   display: flex;
   align-items: center;
@@ -3831,12 +4104,12 @@ text-align: center;
 .listing-gallery-360-content h3 {
   font-family: "Playfair Display", serif;
   font-size: 24px;
-  font-weight: 500;
+  font-weight: 700;
   margin: 0;
 }
 
 .listing-gallery-360-content p {
-  font-family: "Poppins", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif !important;
   font-size: 13px;
   color: #f1f5f9;
   margin: 0;
@@ -3846,8 +4119,8 @@ text-align: center;
 .btn-360-explore {
   background: #ffffff !important;
   color: #0b4d75 !important;
-  font-family: "Poppins", sans-serif;
-  font-weight: 500;
+  font-family: "Plus Jakarta Sans", sans-serif !important;
+  font-weight: 600;
   font-size: 14px;
   padding: 12px 28px !important;
   border-radius: 99px !important;
@@ -3872,7 +4145,7 @@ text-align: center;
   border-radius: 20px !important;
   border: 1px solid #f1f5f9 !important;
   box-shadow: 0 20px 40px rgba(15, 23, 42, 0.06) !important;
-  padding: 24px 24px 24px 24px !important;
+  padding: 60px 24px 24px 24px !important; /* Extra top padding to clear the top-right toggle */
   margin-top: 30px !important;
   margin-bottom: 24px !important;
   position: relative !important;
@@ -3899,13 +4172,13 @@ text-align: center;
   background-color: #f8fafc !important;
   border: 1px solid #e2e8f0 !important;
   border-radius: 12px !important;
-  padding: 6px 12px !important;
+  padding: 10px 16px !important;
   margin: 0 !important;
   flex: 1 1 0% !important;
   display: flex !important;
   flex-direction: column !important;
   justify-content: center !important;
-  height: 50px !important;
+  height: 68px !important;
   position: relative !important;
   cursor: pointer !important;
   transition: all 0.2s ease !important;
@@ -3932,9 +4205,9 @@ text-align: center;
 .checkAva6 .label_heading1,
 .checkAvaTime .label_heading1,
 .checkAvaRoom .label_heading1 {
-  font-family: "Poppins", sans-serif !important;
+  font-family: "Plus Jakarta Sans", sans-serif !important;
   font-size: 11px !important;
-  font-weight: 500 !important;
+  font-weight: 600 !important;
   color: #64748b !important;
   text-transform: uppercase !important;
   letter-spacing: 0.5px !important;
@@ -3946,9 +4219,9 @@ text-align: center;
 
 /* Date input clean alignment */
 .date-input {
-  font-family: "Poppins", sans-serif !important;
+  font-family: "Plus Jakarta Sans", sans-serif !important;
   font-size: 14px !important;
-  font-weight: 500 !important;
+  font-weight: 600 !important;
   color: #0f172a !important;
   border: none !important;
   background: transparent !important;
@@ -3986,9 +4259,9 @@ text-align: center;
 .checkAvaTime .time-select {
   border: none !important;
   background: transparent !important;
-  font-family: "Poppins", sans-serif !important;
+  font-family: "Plus Jakarta Sans", sans-serif !important;
   font-size: 14px !important;
-  font-weight: 500 !important;
+  font-weight: 600 !important;
   color: #0f172a !important;
   padding: 0 !important;
   margin: 0 !important;
@@ -4011,9 +4284,9 @@ text-align: center;
 }
 
 .checkAvaRoom .guests_count {
-  font-family: "Poppins", sans-serif !important;
+  font-family: "Plus Jakarta Sans", sans-serif !important;
   font-size: 14px !important;
-  font-weight: 500 !important;
+  font-weight: 600 !important;
   color: #0f172a !important;
   display: inline-flex !important;
   gap: 8px !important;
@@ -4024,8 +4297,8 @@ text-align: center;
 /* Book Now Button (Dark Teal/Navy Pill) */
 .checkavaialabilyy-btn {
   color: #ffffff !important; /* White text */
-  font-family: "Poppins", sans-serif !important;
-  font-weight: 500 !important;
+  font-family: "Plus Jakarta Sans", sans-serif !important;
+  font-weight: 600 !important;
   font-size: 15px !important;
   border: none !important;
   padding: 0 32px !important;
@@ -4064,16 +4337,16 @@ text-align: center;
   padding: 4px;
   border-radius: 99px;
   border: 1px solid #e2e8f0;
-  font-family: "Poppins", sans-serif;
+  font-family: "Nunito", sans-serif;
 }
 
 /* Toggle Individual Pill Button */
 .checkin-mode-toggle__btn {
   background: none;
   border: none;
-  font-family: "Poppins", sans-serif;
+  font-family: "Nunito", sans-serif;
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 600;
   color: #64748b;
   padding: 6px 16px;
   border-radius: 99px;
@@ -4162,7 +4435,7 @@ ngb-datepicker,
 .ngb-dp-month,
 .ngb-dp-navigation-select,
 .ngb-dp-day {
-  font-family: "Poppins", sans-serif !important;
+  font-family: "Plus Jakarta Sans", sans-serif !important;
 }
 
 /* Extra small screens adjustments (below 360px) */
@@ -4329,16 +4602,16 @@ ngb-datepicker,
 /* Title & Description */
 .rc-modal-title {
   color: #1e293b;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif !important;
   font-size: 24px;
-  font-weight: 500;
+  font-weight: 700;
   margin: 0 0 12px;
   letter-spacing: -0.5px;
 }
 
 .rc-modal-description {
   color: #64748b;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif !important;
   font-size: 14px;
   line-height: 1.6;
   margin: 0 0 20px;
@@ -4365,9 +4638,9 @@ ngb-datepicker,
   border: 1px solid #fee2e2;
   padding: 6px 12px;
   border-radius: 99px;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif !important;
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 600;
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -4376,7 +4649,7 @@ ngb-datepicker,
 
 .rc-modal-footer-text {
   color: #475569;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif !important;
   font-size: 13px;
   line-height: 1.5;
   margin: 0 0 28px;
@@ -4391,9 +4664,9 @@ ngb-datepicker,
 .rc-modal-btn {
   background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
   color: #ffffff;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif !important;
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
   letter-spacing: 0.3px;
   padding: 14px 40px;
   border: none;
@@ -4454,7 +4727,7 @@ ngb-datepicker,
    display: flex;
    align-items: center;
    gap: 10px;
-   font-family: "Poppins", sans-serif;
+   font-family: "Nunito", sans-serif !important;
    -webkit-user-select: none;
    user-select: none;
    padding: 4px 12px;
@@ -4463,7 +4736,7 @@ ngb-datepicker,
 
 .switch-label {
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 700;
   color: #64748b;
   cursor: pointer;
   transition: color 0.2s ease;
@@ -4687,7 +4960,7 @@ input:checked + .switch-slider:before {
   text-align: center;
   animation: bg-cycle 6s infinite ease-in-out;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
-  font-weight: 500 !important;
+  font-weight: 700 !important;
   font-size: 12px !important;
   letter-spacing: 0.3px;
   border-radius: 50px;
@@ -4706,7 +4979,7 @@ input:checked + .switch-slider:before {
   justify-content: center;
   padding: 0 10px;
   white-space: nowrap;
-  font-weight: 500 !important;
+  font-weight: 700 !important;
   color: #ffffff !important; /* Force strictly white text */
 }
 
@@ -4767,7 +5040,7 @@ input:checked + .switch-slider:before {
 /* Slow Blinking Animation for Single Badge Case */
 .blink-slow {
   animation: blink-slow-animation 4s infinite ease-in-out;
-  font-weight: 500 !important;
+  font-weight: 700 !important;
   font-size: 11.5px !important;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
   border: 1px solid rgba(255, 255, 255, 0.15);
@@ -4861,7 +5134,7 @@ input:checked + .switch-slider:before {
       .ngb-dp-weekday {
         color: #94a3b8 !important;
         font-size: 11px !important;
-        font-weight: 500 !important;
+        font-weight: 600 !important;
         text-transform: uppercase !important;
         letter-spacing: 0.05em !important;
         font-style: normal !important;
@@ -4913,7 +5186,7 @@ input:checked + .switch-slider:before {
             &.selected {
               background-color: var(--secondary, #0b01cc) !important;
               color: #ffffff !important;
-              font-weight: 500 !important;
+              font-weight: 600 !important;
               box-shadow: 0 4px 10px rgba(11, 1, 204, 0.25) !important;
             }
           }
@@ -4922,7 +5195,7 @@ input:checked + .switch-slider:before {
           &.bg-primary {
             background-color: var(--secondary, #0b01cc) !important;
             color: #ffffff !important;
-            font-weight: 500 !important;
+            font-weight: 600 !important;
             box-shadow: 0 4px 10px rgba(11, 1, 204, 0.25) !important;
           }
 
@@ -4946,6 +5219,34 @@ input:checked + .switch-slider:before {
    PERFORMANCE & SMOOTH SCROLLING OPTIMIZATIONS
    ========================================================================== */
 
+/* Listing detail typography: body copy uses Plus Jakarta Sans, while the
+   property and section display labels use Playfair Display. */
+:host {
+  font-family: "Plus Jakarta Sans", sans-serif !important;
+}
+
+:host :is(p, span, div, button, input, label, select, textarea, a, li, small, strong) {
+  font-family: "Plus Jakarta Sans", sans-serif !important;
+}
+
+:host :is(
+  .hero-heading,
+  .aminities-highlights,
+  .rooms-heading-starts,
+  .room-title,
+  .aboutHeading,
+  .ameniti1,
+  .smart-recommend-card h5
+) {
+  font-family: "Playfair Display", serif !important;
+}
+
+/* Dialogflow's launcher retains its native white chat outline on this teal circle. */
+df-messenger {
+  --df-messenger-chat-bubble-background: #005575;
+  --df-messenger-chat-bubble-size: 72px;
+}
+
 /* GPU Hardware Acceleration for smooth 60fps scrolling */
 .maiiin,
 .card-rooms,
@@ -4966,26 +5267,34 @@ img[loading="lazy"] {
   will-change: auto;
 }
 
+.room-cards-container {
+  overflow-x: auto;     
+  scrollbar-width: none; 
+  -ms-overflow-style: none;
+}
 
+.room-cards-container::-webkit-scrollbar {
+  display: none;
+}
 
 .star-field { position: relative; width: 64px; height: 64px; margin: 0 auto; }
-.star { position: absolute; font-size: 20px; }
 
-.star-1 { top: 50%; left: 50%; animation: orbit-1 3s linear infinite; }
-.star-2 { top: 50%; left: 50%; animation: orbit-2 3.5s linear infinite; animation-delay: -1s; }
-.star-3 { top: 50%; left: 50%; animation: orbit-3 2.8s linear infinite; animation-delay: -2s; }
+.star {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  font-size: 20px;
+  transform-origin: center;
+  animation: orbit-circle 3s linear infinite;
+}
 
-@keyframes orbit-1 {
-  0%   { transform: translate(-50%, -50%) rotate(0deg)   translateX(24px) rotate(0deg); }
-  100% { transform: translate(-50%, -50%) rotate(360deg) translateX(24px) rotate(-360deg); }
-}
-@keyframes orbit-2 {
-  0%   { transform: translate(-50%, -50%) rotate(120deg) translateX(20px) rotate(-120deg); }
-  100% { transform: translate(-50%, -50%) rotate(480deg) translateX(20px) rotate(-480deg); }
-}
-@keyframes orbit-3 {
-  0%   { transform: translate(-50%, -50%) rotate(240deg) translateX(28px) rotate(-240deg); }
-  100% { transform: translate(-50%, -50%) rotate(600deg) translateX(28px) rotate(-600deg); }
+.star-1 { animation-delay: 0s; }
+.star-2 { animation-delay: -1s; }   // 1/3 of the way around
+.star-3 { animation-delay: -2s; }   // 2/3 of the way around
+
+@keyframes orbit-circle {
+  0%   { transform: translate(-50%, -50%) rotate(0deg)   translateX(26px) rotate(0deg); }
+  100% { transform: translate(-50%, -50%) rotate(360deg) translateX(26px) rotate(-360deg); }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -4994,18 +5303,4 @@ img[loading="lazy"] {
 @keyframes fade-pulse {
   0%, 100% { opacity: 0.5; }
   50%      { opacity: 1; }
-}
-.recommendation-section {
-  position: relative;
-  min-height: 200px;
-  scroll-margin-top: 80px;
-}
-
-.recommendation-section > * {
-  animation: fadeIn 0.3s ease-in-out;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to   { opacity: 1; transform: translateY(0); }
 }
