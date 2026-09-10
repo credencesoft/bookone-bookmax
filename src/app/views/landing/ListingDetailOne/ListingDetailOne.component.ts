@@ -1136,12 +1136,16 @@ expandedPlans: { [key: string]: boolean } = {};
     TERM: 'Houseboat'
   };
   @ViewChild('smartRecommendRow') smartRecommendRow!: ElementRef;
+  @ViewChild('mobileSmartRecommendRow') mobileSmartRecommendRow!: ElementRef;
   canScrollPrev = false;
   canScrollNext = false;
+  mobileCanScrollPrev = false;
+  mobileCanScrollNext = false;
   @HostListener('window:resize')
 onWindowResizeRecalcScroll() {
-  if (this.smartStatus === 'success') {
-    this.updateScrollButtonsState();
+    if (this.smartStatus === 'success') {
+      this.updateScrollButtonsState();
+      this.updateMobileScrollButtonsState();
   }
 }
 
@@ -2720,6 +2724,8 @@ onRoomSelect(roomIdentifier: string | number, planCode: string, count: number | 
 
     this.smartStatus = 'loading';
     this.smartLoading = true;
+    this.canScrollPrev = false;
+    this.canScrollNext = false;
     this.smartRecommendations = null;
 
     document.body.style.overflow = "";
@@ -2815,6 +2821,14 @@ onRoomSelect(roomIdentifier: string | number, planCode: string, count: number | 
           this.smartStatus = 'success';
           this.smartLoading = false;
           this.changeDetectorRefs.detectChanges();
+          // The cards are rendered after this response. Calculate navigation
+          // state on the next tick so the first page enables Next only when a
+          // second page of recommendations is available.
+          setTimeout(() => {
+            this.updateScrollButtonsState();
+            this.updateMobileScrollButtonsState();
+            this.changeDetectorRefs.detectChanges();
+          }, 0);
         } catch (err) {
           console.error("Recommendation processing failed:", err);
           document.body.style.overflow = "";
@@ -10580,9 +10594,33 @@ nextPage() {
   this.scrollByCard('next');
 }
 
-prevPage() {
-  this.scrollByCard('prev');
-}
+  prevPage() {
+    this.scrollByCard('prev');
+  }
+
+  scrollMobileRecommendation(direction: 'prev' | 'next') {
+    const container = this.mobileSmartRecommendRow?.nativeElement as HTMLElement;
+    if (!container) return;
+
+    container.scrollBy({
+      left: direction === 'next' ? container.clientWidth : -container.clientWidth,
+      behavior: 'smooth',
+    });
+
+    setTimeout(() => this.updateMobileScrollButtonsState(), 350);
+  }
+
+  updateMobileScrollButtonsState() {
+    const container = this.mobileSmartRecommendRow?.nativeElement as HTMLElement;
+    if (!container) {
+      this.mobileCanScrollPrev = false;
+      this.mobileCanScrollNext = false;
+      return;
+    }
+
+    this.mobileCanScrollPrev = container.scrollLeft > 5;
+    this.mobileCanScrollNext = container.scrollLeft + container.clientWidth < container.scrollWidth - 5;
+  }
 
 updateScrollButtonsState() {
   const container = this.smartRecommendRow?.nativeElement;

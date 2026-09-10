@@ -2310,7 +2310,7 @@
     <!-- AI-Powered Suggestion Section - Teal Box -->
    <!-- AI-Powered Suggestion Section -->
 <div
-  class="margin-top-40px website-web-vision"
+  class="margin-top-40px website-web-vision smart-suggestion-section"
   *ngIf="!showSmartRecommendations"
   style="margin-top: 40px; margin-bottom: 40px;"
 >
@@ -2318,6 +2318,7 @@
     <div class="col-lg-12">
       <!-- Main Container -->
       <div
+        class="smart-suggestion-banner"
         style="
           background: linear-gradient(
             135deg,
@@ -2352,14 +2353,14 @@
         ></div>
 
         <div
-          class="row align-items-center position-relative"
+          class="row align-items-center position-relative smart-suggestion-row"
           style="z-index: 2"
         >
           <!-- Left Content -->
-          <div class="col-lg-7 col-12">
+          <div class="col-lg-7 col-12 smart-suggestion-copy">
 
             <!-- Badge -->
-            <div
+            <div class="smart-suggestion-badge"
               style="
                 display: inline-flex;
                 align-items: center;
@@ -2381,7 +2382,7 @@
             </div>
 
             <!-- Title -->
-            <h2
+            <h2 class="smart-suggestion-title"
               style="
                 font-family: 'Playfair Display', 'Lora', 'Georgia', serif;
                 font-size: 28px;
@@ -2395,7 +2396,7 @@
             </h2>
 
             <!-- Description -->
-            <p
+            <p class="smart-suggestion-description"
               style="
                 font-size: 14px;
                 font-weight: 400;
@@ -2410,7 +2411,7 @@
 
             <!-- Button -->
             <button
-              class="btn"
+              class="btn smart-suggestion-button"
               style="
                 background-color: #FFFFFF;
                 color: #0F3D5C;
@@ -2437,16 +2438,16 @@
                 this.style.boxShadow='0 4px 12px rgba(0,0,0,0.1)'
               "
             >
-              ✨ Get Smart Recommendations
+              ✨ Get Smart Recommendations1
             </button>
           </div>
 
           <!-- Right Illustration: Stacked Card Mockup -->
           <div
-            class="col-lg-5 col-12 d-flex justify-content-center align-items-center"
+            class="col-lg-5 col-12 d-flex justify-content-center align-items-center smart-suggestion-visual"
             style="margin-top: 24px;"
           >
-            <div
+            <div class="smart-suggestion-card-stack"
               style="
                 position: relative;
                 width: 224px;
@@ -2455,7 +2456,7 @@
             >
 
               <!-- Ghost / Back Card -->
-              <div
+              <div class="smart-suggestion-ghost-card"
                 style="
                   position: absolute;
                   top: 12px;
@@ -2471,7 +2472,7 @@
               ></div>
 
               <!-- Main Front Card -->
-              <div
+              <div class="smart-suggestion-preview-card"
                 style="
                   position: absolute;
                   top: 0;
@@ -2614,7 +2615,6 @@
   </div>
 </div>
 
-
   
     <!-- Smart Recommendations Cards Section (Shows below AI box if toggled) -->
 <div id="desktopRecommendationSection" class="margin-top-40px website-web-vision" *ngIf="showSmartRecommendations && smartRecommendationsBoolean">
@@ -2730,14 +2730,14 @@
     <div class="d-flex justify-content-end mt-3" style="gap: 10px">
       <button
         class="next-carasoul"
-        [disabled]="!canScrollPrev"
+        [disabled]="isLoading || smartLoading || smartStatus === 'loading' || !canScrollPrev"
         (click)="prevPage()"
       >
         <span class="recommend-carousel-arrow" aria-hidden="true">&larr;</span>
       </button>
       <button
         class="next-carasoul"
-        [disabled]="!canScrollNext"
+        [disabled]="isLoading || smartLoading || smartStatus === 'loading' || !canScrollNext"
         (click)="nextPage()"
       >
         <span class="recommend-carousel-arrow" aria-hidden="true">&rarr;</span>
@@ -2837,34 +2837,59 @@
           </p-carousel>
         </p-dialog>
 
-        <div class="col-12">
-          <div
-            *ngIf="smartRecommendationsBoolean"
-            class="d-flex align-items-start"
-            style="gap: 8px; margin-top: 15px"
-          >
-            <div style="width: 16%" class="smart-cion">
-              <div class="smart-card">
+        <!-- Mobile/tablet AI prompt. Replaces the former compact prompt. -->
+        <section
+          *ngIf="smartRecommendationsBoolean && !showSmartRecommendations"
+          class="smart-suggestion-mobile"
+          aria-labelledby="smart-suggestion-mobile-title"
+        >
+          <div class="smart-suggestion-mobile__copy">
+            <div class="smart-suggestion-mobile__badge" aria-hidden="true">AI-POWERED SUGGESTION</div>
+            <h2 id="smart-suggestion-mobile-title">Unsure which room suits you best?</h2>
+            <p>Let our smart assistant analyze your preferences to find the perfect match for your stay at the best rate.</p>
+            <button type="button" (click)="handleGetRecommendations()">
+              Get Smart Recommendations2
+            </button>
+          </div>
+          <div class="smart-suggestion-mobile__visual" aria-hidden="true">
+            <div class="smart-suggestion-mobile__back-card"></div>
+            <div class="smart-suggestion-mobile__preview-card">
+              <div class="smart-suggestion-mobile__image">
                 <img
-                  src=" media-be/images/smart-chat.svg"
-                  class="smart-card-img"
+                  *ngIf="availableRooms?.length && availableRooms[0]?.imageList?.length && availableRooms[0]?.imageList[0]?.url"
+                  [src]="availableRooms[0].imageList[0].url"
                   alt=""
                 />
               </div>
-            </div>
-            <div>
-              <div class="smart-recommend">Smart Recommendations</div>
-              <div class="smart-recommend-1">
-                Not sure what to book? These room options are the best fit for
-                your stay – selected just for you.
-              </div>
+              <span></span><span></span>
+              <strong>Select Room</strong>
             </div>
           </div>
-        </div>
-        <div class="d-flex scroll-container" *ngIf="smartRecommendationsBoolean">
+        </section>
+        <div id="recommendationSection" class="d-flex scroll-container" *ngIf="smartRecommendationsBoolean && showSmartRecommendations">
+          <div class="smart-recommend-mobile-header">
+            <div>
+              <h4>Recommended For You</h4>
+              <p *ngIf="smartRecommendations?.urgencyMessage">{{ smartRecommendations.urgencyMessage }}</p>
+            </div>
+            <button
+              type="button"
+              aria-label="Close recommendations"
+              (click)="showSmartRecommendations = false"
+            >&times;</button>
+          </div>
+          <div class="mobile-smart-recommend-loading" *ngIf="smartStatus === 'loading'">
+            <div class="star-field" aria-hidden="true">
+              <span class="star star-1">&#10024;</span>
+              <span class="star star-2">&#10024;</span>
+              <span class="star star-3">&#10024;</span>
+            </div>
+            <h5>Analyzing your preferences...</h5>
+            <p>Finding the best rooms and deals for your stay.</p>
+          </div>
           <ng-container *ngIf="smartLoading && smartRecommendationsBoolean">
             <div
-              class="card smart-recommend-card skeleton-card"
+              class="card smart-recommend-card skeleton-card mobile-smart-recommend-skeleton"
               style="width: 100%"
               *ngFor="let skeleton of [1, 2]"
             >
@@ -2882,9 +2907,63 @@
               </div>
             </div>
           </ng-container>
+          <div class="smart-recommend-mobile-error" *ngIf="smartStatus === 'error'">
+            <strong>Couldn't fetch recommendations</strong>
+            <p>There was an error while searching for the best deals.</p>
+            <button type="button" (click)="handleGetRecommendations()">Try again</button>
+          </div>
+          <div
+            #mobileSmartRecommendRow
+            class="mobile-smart-recommend-carousel"
+            *ngIf="smartStatus === 'success'"
+            (scroll)="updateMobileScrollButtonsState()"
+          >
+            <article
+              *ngFor="let cat of categories"
+              class="mobile-smart-recommend-card"
+              [ngClass]="'mobile-smart-recommend-card--' + cat.key.replace('Options', '')"
+            >
+              <ng-container *ngFor="let room of smartRecommendations[cat.key]; let last = last">
+                <ng-container *ngIf="last && cheapestPlans[cat.key] as plan">
+                  <div class="mobile-smart-recommend-card__media">
+                    <div
+                      *ngIf="cat.key === 'bestFitOptions' || cat.key === 'comfortOptions'"
+                      class="mobile-smart-recommend-card__badge"
+                    >
+                      {{ cat.key === 'bestFitOptions' ? 'BEST FIT OPTION' : 'BEST VALUE DEAL' }}
+                    </div>
+                    <img [src]="room.imageUrl" [alt]="room?.roomName || 'Room preview'" />
+                    <span *ngIf="room?.availableCount && room.availableCount <= 5" class="mobile-smart-recommend-card__availability">
+                      Only {{ room.availableCount }} left
+                    </span>
+                  </div>
+                  <div class="mobile-smart-recommend-card__content">
+                    <h5>{{ room?.roomName }}</h5>
+                    <div class="mobile-smart-recommend-card__tags" *ngIf="plan.idealFor?.length">
+                      <span *ngFor="let ideal of plan.idealFor">{{ ideal }}</span>
+                    </div>
+                    <p><b>&#10003;</b> Perfect for {{ plan.idealFor.join(', ') }} seeking a great stay.</p>
+                    <div class="mobile-smart-recommend-card__footer">
+                      <div>
+                        <small>Total for {{ DiffDate }} night{{ DiffDate === 1 ? '' : 's' }}</small>
+                        <strong>{{ plan?.totalPrice | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency : currency : "symbol" : "1.2-2" }}</strong>
+                        <em>{{ plan?.pricePerNight | convertCurrency : businessUser?.localCurrency : currency : exchangeRates | currency : currency : "symbol" : "1.2-2" }}/night</em>
+                      </div>
+                      <button type="button" (click)="onSelectPlanFromSmartCard(plan)">Select Room <span>&rarr;</span></button>
+                    </div>
+                  </div>
+                </ng-container>
+              </ng-container>
+            </article>
+          </div>
+          <div class="mobile-smart-recommend-controls" *ngIf="smartStatus === 'success' && categories.length > 1">
+            <button type="button" aria-label="Previous recommendation" [disabled]="!mobileCanScrollPrev" (click)="scrollMobileRecommendation('prev')">&larr;</button>
+            <button type="button" aria-label="Next recommendation" [disabled]="!mobileCanScrollNext" (click)="scrollMobileRecommendation('next')">&rarr;</button>
+          </div>
           <div
             *ngFor="let cat of categories"
-            class="card smart-recommend-card"
+            [hidden]="smartStatus !== 'success'"
+            class="card smart-recommend-card mobile-legacy-recommendation"
             [ngClass]="'smart-recommend-card-' + cat.key.replace('Options', '')"
           >
             <ng-container

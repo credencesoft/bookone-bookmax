@@ -987,6 +987,638 @@ padding: 16px 12px;
   font-size: 20px;
 }
 
+/* The desktop banner stays hidden in the mobile layout; the mobile template
+   renders its own banner after the property gallery. */
+@media (max-width: 1023px) {
+  .smart-suggestion-section.website-web-vision {
+    display: none !important;
+  }
+
+  .smart-suggestion-banner {
+    border-radius: 20px !important;
+    padding: 28px 30px !important;
+  }
+
+  .smart-suggestion-visual {
+    margin-top: 20px !important;
+  }
+}
+
+@media (max-width: 767px) {
+  .smart-suggestion-section.website-web-vision {
+    margin-top: 18px !important;
+    margin-bottom: 18px !important;
+  }
+
+  .smart-suggestion-banner {
+    border-radius: 18px !important;
+    padding: 24px 20px !important;
+  }
+
+  .smart-suggestion-copy {
+    text-align: center;
+  }
+
+  .smart-suggestion-badge {
+    margin-bottom: 12px !important;
+    font-size: 10px !important;
+  }
+
+  .smart-suggestion-title {
+    font-size: 25px !important;
+    line-height: 1.2 !important;
+    margin-bottom: 10px !important;
+  }
+
+  .smart-suggestion-description {
+    font-size: 14px !important;
+    line-height: 1.5 !important;
+    margin-bottom: 18px !important;
+  }
+
+  .smart-suggestion-button {
+    justify-content: center;
+    padding: 10px 18px !important;
+  }
+
+  .smart-suggestion-visual {
+    margin-top: 18px !important;
+  }
+
+  .smart-suggestion-card-stack {
+    width: 188px !important;
+    height: 214px !important;
+  }
+
+  .smart-suggestion-ghost-card {
+    width: 168px !important;
+    height: 194px !important;
+  }
+
+  .smart-suggestion-preview-card {
+    width: 176px !important;
+    height: 210px !important;
+  }
+}
+
+@media (max-width: 390px) {
+  .smart-suggestion-banner {
+    padding: 20px 16px !important;
+  }
+
+  .smart-suggestion-title {
+    font-size: 22px !important;
+  }
+
+  .smart-suggestion-button {
+    font-size: 13px !important;
+  }
+
+  .smart-suggestion-card-stack {
+    width: 166px !important;
+    height: 190px !important;
+  }
+
+  .smart-suggestion-ghost-card {
+    width: 150px !important;
+    height: 174px !important;
+  }
+
+  .smart-suggestion-preview-card {
+    width: 156px !important;
+    height: 186px !important;
+  }
+}
+
+/* The legacy compact prompt is not used in the mobile layout. */
+.smart-suggestion-compact {
+  display: none;
+}
+
+@media (max-width: 1023px) {
+  .smart-suggestion-section.website-web-vision {
+    display: none !important;
+  }
+
+  .smart-suggestion-compact {
+    display: none !important;
+    max-width: 430px;
+    margin: 22px auto;
+    padding: 0 10px;
+    color: #1f2937;
+    font-family: "Plus Jakarta Sans", sans-serif;
+  }
+
+  .smart-suggestion-compact__heading {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #075b55;
+  }
+
+  .smart-suggestion-compact__icon {
+    display: inline-flex;
+    width: 24px;
+    height: 24px;
+    flex: 0 0 24px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #0d6b62;
+    color: #fff;
+    font-size: 14px;
+  }
+
+  .smart-suggestion-compact h2 {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.3;
+  }
+
+  .smart-suggestion-compact p {
+    max-width: 305px;
+    margin: 4px auto 16px;
+    font-size: 13px;
+    line-height: 1.45;
+    text-align: center;
+  }
+
+  .smart-suggestion-compact__preview {
+    display: flex;
+    width: 100%;
+    height: 132px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 14px 22px;
+    overflow: hidden;
+    border: 1px solid #d7dce2;
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 8px 0 #c7c7c7, 0 10px 14px rgba(15, 23, 42, 0.12);
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .smart-suggestion-compact__preview:hover,
+  .smart-suggestion-compact__preview:focus-visible {
+    outline: none;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 0 #c7c7c7, 0 14px 18px rgba(15, 23, 42, 0.16);
+  }
+
+  .smart-suggestion-compact__line {
+    display: block;
+    height: 13px;
+    border-radius: 3px;
+    background: #f0f0f1;
+  }
+
+  .smart-suggestion-compact__line--long { width: 104px; }
+  .smart-suggestion-compact__line--medium { width: 76px; }
+  .smart-suggestion-compact__line--short { width: 60px; }
+}
+
+@media (max-width: 390px) {
+  .smart-suggestion-compact {
+    margin: 18px auto;
+  }
+
+  .smart-suggestion-compact__preview {
+    height: 128px;
+  }
+}
+
+/* Full AI recommendation prompt for the mobile/tablet listing layout. */
+.smart-suggestion-mobile {
+  display: flex;
+  min-height: 260px;
+  margin: 24px 0;
+  padding: 28px 30px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 28px;
+  overflow: hidden;
+  border-radius: 22px;
+  background: linear-gradient(135deg, #0a2540 0%, #123b57 60%, #14456a 100%);
+  box-shadow: 0 10px 30px rgba(10, 37, 64, 0.15);
+  color: #fff;
+  font-family: "Plus Jakarta Sans", sans-serif;
+}
+
+.smart-suggestion-mobile__copy {
+  position: relative;
+  z-index: 1;
+  max-width: 590px;
+}
+
+.smart-suggestion-mobile__badge {
+  display: inline-flex;
+  margin-bottom: 14px;
+  padding: 6px 13px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.9px;
+}
+
+.smart-suggestion-mobile__badge::before,
+.smart-suggestion-mobile button::before {
+  margin-right: 6px;
+  content: "✦";
+  color: #ffbb65;
+}
+
+.smart-suggestion-mobile h2 {
+  margin: 0 0 10px;
+  color: #fff;
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: clamp(25px, 3vw, 34px);
+  font-weight: 700;
+  line-height: 1.15;
+}
+
+.smart-suggestion-mobile p {
+  margin: 0 0 20px;
+  color: #c9d6e0;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.smart-suggestion-mobile button {
+  min-height: 44px;
+  padding: 10px 20px;
+  border: 0;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  color: #0f3d5c;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 700;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.smart-suggestion-mobile button:hover,
+.smart-suggestion-mobile button:focus-visible {
+  outline: none;
+  transform: translateY(-2px);
+  box-shadow: 0 7px 16px rgba(0, 0, 0, 0.2);
+}
+
+.smart-suggestion-mobile__visual {
+  position: relative;
+  width: 202px;
+  height: 218px;
+  flex: 0 0 202px;
+}
+
+.smart-suggestion-mobile__back-card,
+.smart-suggestion-mobile__preview-card {
+  position: absolute;
+  border-radius: 15px;
+}
+
+.smart-suggestion-mobile__back-card {
+  top: 12px;
+  right: 0;
+  width: 180px;
+  height: 196px;
+  border: 1px solid rgba(255, 255, 255, 0.32);
+  background: rgba(255, 255, 255, 0.06);
+  transform: rotate(4deg);
+}
+
+.smart-suggestion-mobile__preview-card {
+  top: 0;
+  left: 0;
+  display: flex;
+  width: 184px;
+  height: 210px;
+  flex-direction: column;
+  padding: 0 12px 12px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.22);
+  transform: rotate(-4deg);
+}
+
+.smart-suggestion-mobile__image {
+  height: 105px;
+  margin: 0 -12px 12px;
+  overflow: hidden;
+  background: linear-gradient(135deg, #e2e8f0, #cbd5e1);
+}
+
+.smart-suggestion-mobile__image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.smart-suggestion-mobile__preview-card span {
+  display: block;
+  width: 75%;
+  height: 7px;
+  margin: 0 0 7px;
+  border-radius: 8px;
+  background: #e2e8f0;
+}
+
+.smart-suggestion-mobile__preview-card span + span { width: 48%; }
+
+.smart-suggestion-mobile__preview-card strong {
+  display: block;
+  margin-top: auto;
+  padding: 8px;
+  border-radius: 999px;
+  background: #0f3d5c;
+  color: #fff;
+  font-size: 11px;
+  text-align: center;
+}
+
+#recommendationSection {
+  flex-wrap: wrap;
+  margin-top: 18px;
+}
+
+.smart-recommend-mobile-header {
+  display: flex;
+  width: 100%;
+  flex: 0 0 100%;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.smart-recommend-mobile-header h4 {
+  margin: 0;
+  color: #0a2540;
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: 25px;
+}
+
+.smart-recommend-mobile-header p {
+  margin: 4px 0 0;
+  color: #64748b;
+  font-size: 13px;
+}
+
+.smart-recommend-mobile-header button {
+  display: inline-flex;
+  width: 34px;
+  height: 34px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #dbe4ee;
+  border-radius: 50%;
+  background: #fff;
+  color: #0f3d5c;
+  cursor: pointer;
+  font-size: 26px;
+  line-height: 1;
+}
+
+.smart-recommend-mobile-error {
+  width: 100%;
+  padding: 24px;
+  border: 1px solid #fee2e2;
+  border-radius: 14px;
+  background: #fff;
+  color: #991b1b;
+  text-align: center;
+}
+
+.smart-recommend-mobile-error p { margin: 8px 0 16px; }
+
+.smart-recommend-mobile-error button {
+  padding: 9px 18px;
+  border: 0;
+  border-radius: 8px;
+  background: #0f3d5c;
+  color: #fff;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.mobile-legacy-recommendation { display: none !important; }
+.mobile-smart-recommend-skeleton { display: none !important; }
+
+.mobile-smart-recommend-loading {
+  width: 100%;
+  flex: 0 0 100%;
+  padding: 36px 20px;
+  border: 1px solid #dce7ef;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.1);
+  text-align: center;
+}
+
+.mobile-smart-recommend-loading .star-field {
+  margin: 0 auto 12px;
+}
+
+.mobile-smart-recommend-loading h5 {
+  margin: 0 0 6px;
+  color: #0a2540;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.mobile-smart-recommend-loading p {
+  margin: 0;
+  color: #64748b;
+  font-size: 13px;
+}
+
+.mobile-smart-recommend-carousel {
+  display: flex;
+  width: 100%;
+  flex: 0 0 100%;
+  gap: 16px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+}
+
+.mobile-smart-recommend-carousel::-webkit-scrollbar { display: none; }
+
+.mobile-smart-recommend-card {
+  display: flex;
+  min-width: 100%;
+  overflow: hidden;
+  scroll-snap-align: start;
+  border: 1px solid #dce7ef;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.1);
+}
+
+.mobile-smart-recommend-card--bestFit { background: #f2fbff; }
+.mobile-smart-recommend-card--comfort { background: #fafaff; }
+.mobile-smart-recommend-card--luxury { background: #fffcef; }
+.mobile-smart-recommend-card--budget { background: #f5fff8; }
+
+.mobile-smart-recommend-card__media {
+  position: relative;
+  width: 38%;
+  min-height: 210px;
+  flex: 0 0 38%;
+  overflow: hidden;
+  background: #e2e8f0;
+}
+
+.mobile-smart-recommend-card__media img { width: 100%; height: 100%; object-fit: cover; }
+
+.mobile-smart-recommend-card__badge,
+.mobile-smart-recommend-card__availability {
+  position: absolute;
+  left: 10px;
+  padding: 6px 9px;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.mobile-smart-recommend-card__badge { top: 10px; background: #00698e; }
+.mobile-smart-recommend-card__availability { bottom: 10px; background: #ec407a; }
+
+.mobile-smart-recommend-card__content {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  padding: 14px;
+}
+
+.mobile-smart-recommend-card__content h5 {
+  margin: 0 0 9px;
+  color: #082b4d;
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: 21px;
+}
+
+.mobile-smart-recommend-card__tags { display: flex; flex-wrap: wrap; gap: 5px; }
+.mobile-smart-recommend-card__tags span {
+  padding: 4px 7px;
+  border-radius: 4px;
+  background: #edf2f7;
+  color: #46648c;
+  font-size: 10px;
+}
+
+.mobile-smart-recommend-card__content p {
+  display: -webkit-box;
+  width: 100%;
+  min-width: 0;
+  margin: 8px 0;
+  overflow: hidden;
+  color: #46648c;
+  font-size: 11px;
+  line-height: 1.4;
+  white-space: normal !important;
+  overflow-wrap: anywhere;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+.mobile-smart-recommend-card__content p b { color: #00698e; font-size: 16px; }
+
+.mobile-smart-recommend-card__footer {
+  display: flex;
+  margin-top: auto;
+  padding-top: 10px;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 8px;
+  border-top: 1px solid #d9e3ec;
+}
+
+.mobile-smart-recommend-card__footer small,
+.mobile-smart-recommend-card__footer strong,
+.mobile-smart-recommend-card__footer em { display: block; }
+.mobile-smart-recommend-card__footer small { color: #7790ad; font-size: 9px; text-transform: uppercase; }
+.mobile-smart-recommend-card__footer strong { color: #082b4d; font-size: 20px; line-height: 1.2; }
+.mobile-smart-recommend-card__footer em { color: #52719b; font-size: 10px; font-style: normal; }
+.mobile-smart-recommend-card__footer button {
+  padding: 10px 13px;
+  border: 0;
+  border-radius: 999px;
+  background: #00617f;
+  color: #fff;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+.mobile-smart-recommend-card__footer button span { margin-left: 6px; font-size: 16px; }
+
+.mobile-smart-recommend-controls {
+  display: flex;
+  width: 100%;
+  flex: 0 0 100%;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 2px;
+}
+.mobile-smart-recommend-controls button {
+  width: 42px;
+  height: 42px;
+  border: 0;
+  border-radius: 50%;
+  background: #00617f;
+  color: #fff;
+  cursor: pointer;
+  font-size: 20px;
+}
+
+.mobile-smart-recommend-controls button:disabled {
+  background: #dbe5ef;
+  color: #8aa0b8;
+  cursor: not-allowed;
+}
+
+@media (max-width: 767px) {
+  .mobile-smart-recommend-card__media { width: 34%; min-height: 205px; flex-basis: 34%; }
+  .mobile-smart-recommend-card__content { padding: 11px; }
+  .mobile-smart-recommend-card__content h5 { font-size: 18px; }
+  .mobile-smart-recommend-card__content p { font-size: 10px; }
+  .mobile-smart-recommend-card__tags { gap: 3px; }
+  .mobile-smart-recommend-card__tags span { padding: 3px 5px; font-size: 9px; }
+  .mobile-smart-recommend-card__footer strong {
+    color: #082b4d;
+    font-size: 15px;
+    line-height: 1.2;
+  }
+  .mobile-smart-recommend-card__footer em {
+    color: #52719b;
+    font-size: 8px;
+    font-style: normal;
+  }
+  .mobile-smart-recommend-card__footer button { padding: 9px 10px; }
+}
+
+@media (max-width: 600px) {
+  .smart-suggestion-mobile {
+    min-height: 0;
+    padding: 24px 20px 20px;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .smart-suggestion-mobile__visual {
+    align-self: center;
+    margin-top: 4px;
+  }
+}
+
 .stepper-symbol {
   display: inline-flex;
   align-items: center;
@@ -1114,10 +1746,10 @@ padding: 16px 12px;
 
 .smart-recommend-grid .smart-recommend-card {
   width: 100%;
-  height: 360px;
+  height: 260px;
   display: flex;
   flex-direction: row;
-  min-height: 360px;
+  min-height: 260px;
   padding: 0;
   overflow: hidden;
   border: 1px solid #e2e8f0;
@@ -1128,16 +1760,16 @@ padding: 16px 12px;
 .smart-recommend-content {
   flex: 1;
   min-width: 0;
-  padding: 18px 12px 16px;
+  padding: 14px 12px;
   display: flex;
   flex-direction: column;
 }
 
 .smart-recommend-room-name {
-  margin: 0 0 6px;           /* was 0 0 8px */
+  margin: 0 0 6px; 
   color: #101b35;
   font-family: "Playfair Display", serif !important;
-  font-size: 24px;           /* was 30px */
+  font-size: 24px;       
   font-weight: 700;
   line-height: 1.15;
 }
@@ -1203,7 +1835,7 @@ padding: 16px 12px;
   margin: 0 0 8px;
   color: #101b35;
   font-family: "Playfair Display", serif !important;
-  font-size: 30px;
+  font-size: 21px !important;
   font-weight: 700;
   line-height: 1.15;
 }
@@ -1212,7 +1844,7 @@ padding: 16px 12px;
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
 
 .smart-recommend-tags span {
@@ -1227,10 +1859,10 @@ padding: 16px 12px;
 .smart-recommend-description {
   display: flex;
   align-items: flex-start;
-  gap: 16px;
+  gap: 12px;
   color: #52657f;
-  font-size: 16px;
-  line-height: 1.7;
+  font-size: 14px;
+  line-height: 1.45;
 }
 
 .smart-recommend-check {
@@ -1251,7 +1883,7 @@ padding: 16px 12px;
 
 .smart-recommend-divider {
   height: 1px;
-  margin: auto 0 20px;
+  margin: 14px 0 12px;
   background: #e2e8f0;
 }
 
@@ -1259,7 +1891,15 @@ padding: 16px 12px;
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  gap: 20px;
+  gap: 12px;
+  min-width: 0;
+  flex-wrap: nowrap;
+}
+
+.smart-recommend-price {
+  flex: 1 1 auto;
+  min-width: 0;
+  white-space: nowrap;
 }
 
 .smart-recommend-price > div {
@@ -1273,23 +1913,27 @@ padding: 16px 12px;
 .smart-recommend-price strong {
   display: block;
   color: #101b35;
-  font-size: 36px;
+  font-size: 20px;
   line-height: 1.05;
 }
 
 .smart-recommend-price small {
   color: #627796;
-  font-size: 15px;
+  font-size: 12px;
 }
 
 .smart-recommend-select {
   display: inline-flex;
+  box-sizing: border-box;
+  flex: 0 0 192px;
   min-width: 192px;
-  min-height: 60px;
+  max-width: 192px;
+  min-height: 54px;
   align-items: center;
   justify-content: center;
   gap: 20px;
-  padding: 12px 24px;
+  padding: 12px 16px;
+  white-space: nowrap;
   border: 0;
   border-radius: 18px;
   background: #005575;
@@ -1350,6 +1994,8 @@ padding: 16px 12px;
 
   .smart-recommend-select {
     width: 100%;
+    flex: 0 0 auto;
+    max-width: none;
   }
 }
 
@@ -1452,7 +2098,7 @@ padding: 16px 12px;
 }
 
 .rooms-heading-starts {
-  font-weight: 700;
+  font-weight: 500;
   font-family: "Playfair Display", sans-serif !important;
   color: oklch(20.8% .042 265.755);
   display: inline-block;
@@ -1460,15 +2106,32 @@ padding: 16px 12px;
   font-size: 1.875rem;
 }
 .aboutHeading {
-  font-weight: 500;
-  margin-left: 7px;
-  font-family: "Playfair Display", sans-serif !important;
+  margin: 0 0 18px;
+  color: #1f2937;
+  font-family: "Playfair Display", serif !important;
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1.25;
 }
 .about-content {
+  margin-top: 0;
+  padding: 0;
+  color: #52657f;
   font-family: "Plus Jakarta Sans", sans-serif !important;
-  margin-top: 15px;
-  text-align: justify;
-  padding: 10px;
+  text-align: left;
+}
+
+.about-content p {
+  margin: 0;
+  color: inherit;
+  font-family: "Plus Jakarta Sans", sans-serif !important;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1.6;
+}
+
+.about-content p + p {
+  margin-top: 18px;
 }
 .image-container {
   display: flex;
@@ -3773,10 +4436,10 @@ text-align: center;
 
 
 .aboutHeading {
-  font-size: 20px;
-  font-weight: 600;
-  margin-bottom: 12px;
-   margin-bottom: 12px;
+  font-size: 26px;
+  font-weight: 700;
+  margin: 0 0 18px;
+  line-height: 1.25;
 }
 
 .highlights-card {
@@ -3984,7 +4647,7 @@ text-align: center;
 /* Property name header styling */
 .hero-heading {
   font-family: "Playfair Display", "Plus Jakarta Sans", "Merriweather", serif !important;
-  font-weight: 700 !important;
+  font-weight: 500 !important;
   font-size: 34px !important;
   color: #0f172a !important;
   margin-bottom: 6px !important;
