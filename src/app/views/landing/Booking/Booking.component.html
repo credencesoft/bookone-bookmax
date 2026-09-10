@@ -354,9 +354,10 @@
           class="d-flex align-items-center container-div"
           style="gap: 10px; padding-top: 20px"
         >
-          <h4 class="review-book" (click)="backClicked()">
-            <i class="fa-solid fa-arrow-left"></i> &nbsp; Review Booking
-          </h4>
+          <button type="button" class="review-book" (click)="backClicked()">
+            <span class="review-book__arrow" aria-hidden="true"></span>
+            <span>Review Booking</span>
+          </button>
         </div>
         <div class="container-div text-change">
           &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;Looks like a great stay! Confirm the
@@ -366,7 +367,7 @@
       <div class="container-div" style="margin-top: 20px">
         <div class="booking-summary-container">
           <div class="row" style="margin: 0px !important">
-            <div class="col-7 padding-left0px padding-right-0px">
+            <div class="col-7 padding-left0px padding-right-0px booking-details-column">
               <!-- ① ROOM CHARGES ─────────────────────────────────────── -->
               <div class="rooms-cards-pricing card" style="padding: 30px; margin-bottom: 20px">
                 <div class="d-flex align-items-center" style="gap: 10px; margin-bottom: 16px">
@@ -1004,10 +1005,10 @@
                 </div>
               </form>
             </div>
-            <div class="col-5 padding-right-0px">
+            <div class="col-5 padding-right-0px booking-payment-column">
               <!-- ③ ORDER SUMMARY ─────────────────────────────────────────── -->
-              <div class="rooms-cards-pricing card" style="margin-bottom: 20px; position: sticky; top: 20px">
-                <div style="padding: 20px 20px 0; display: flex; align-items: center; gap: 10px; margin-bottom: 12px">
+              <div class="rooms-cards-pricing card booking-payment-summary" style="margin-bottom: 20px">
+                <div class="booking-payment-summary__header" style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px">
                   <span class="section-number-badge">4</span>
                   <h5 class="headimg-color" style="margin: 0">
                     <img src="media-be/images/payment-sum.svg" alt="" width="20" height="20" style="margin-right: 5px" />
@@ -1183,9 +1184,10 @@
           class="d-flex align-items-center container-div"
           style="gap: 10px; padding-top: 20px; padding-left: 10px"
         >
-          <h4 class="review-book" (click)="backClicked()">
-            <i class="fa-solid fa-arrow-left"></i> &nbsp; Review Booking
-          </h4>
+          <button type="button" class="review-book" (click)="backClicked()">
+            <span class="review-book__arrow" aria-hidden="true"></span>
+            <span>Review Booking</span>
+          </button>
         </div>
       </div>
       <div class="container-div" style="margin-top: 20px">
