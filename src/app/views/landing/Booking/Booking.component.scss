@@ -44,13 +44,14 @@
   gap: 10px;
   line-height: 1.3;
   margin: 0;
-  padding: 6px 0;
-  transition: color 0.2s ease, transform 0.2s ease;
+  padding: 6px 12px;
+  transition: all 0.2s ease;
 }
 
 .review-book:hover {
   color: var(--secondary, #0b01cc);
-  transform: translateX(-2px);
+  background: rgba(11, 1, 204, 0.06);
+  transform: translateX(-3px);
 }
 
 .review-book:focus-visible {
@@ -88,8 +89,17 @@
 
 .check-card {
   background-color: #F9FAFB;
-  padding: 10px;
-  border-radius: 20px;
+  padding: 12px 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(3, 30, 170, 0.08);
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+
+  &:hover {
+    background-color: rgba(3, 30, 170, 0.04);
+    border-color: rgba(3, 30, 170, 0.25);
+    box-shadow: 0 6px 18px rgba(3, 30, 170, 0.08);
+    transform: translateY(-2px);
+  }
 }
 
 .margin-botton-20px {
@@ -100,6 +110,17 @@
   padding: 20px;
   font-family: var(--app-font-family);
   font-size: small;
+  border-radius: 16px;
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  background-color: #ffffff;
+
+  &:hover {
+    transform: translateY(-3px);
+    border-color: rgba(11, 1, 204, 0.22);
+    box-shadow: 0 14px 30px -4px rgba(11, 1, 204, 0.12), 0 4px 12px rgba(0, 0, 0, 0.04);
+    background: linear-gradient(180deg, #ffffff 0%, rgba(248, 250, 252, 0.85) 100%);
+  }
 }
 
 .booking-summary-container {
@@ -137,7 +158,9 @@
 
   .booking-payment-summary {
     border-radius: 16px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(226, 232, 240, 0.9);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
     position: sticky;
     position: -webkit-sticky;
     top: 98px;
@@ -149,6 +172,12 @@
     scrollbar-gutter: stable;
     scrollbar-color: #cbd5e1 transparent;
     scrollbar-width: thin;
+
+    &:hover {
+      border-color: rgba(11, 1, 204, 0.25);
+      box-shadow: 0 16px 36px -6px rgba(11, 1, 204, 0.15), 0 6px 16px rgba(0, 0, 0, 0.06);
+      transform: translateY(-2px);
+    }
   }
 
   .booking-payment-summary__header {
@@ -216,6 +245,14 @@
   border-radius: 12px;
   padding: 14px;
   font-family: var(--app-font-family);
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+
+  &:hover {
+    background: rgba(219, 234, 254, 0.5);
+    border-color: rgba(59, 130, 246, 0.4);
+    box-shadow: 0 6px 18px rgba(59, 130, 246, 0.12);
+    transform: translateY(-2px);
+  }
 }
 
 .cancellation-rules-card-booking h5 {
@@ -786,7 +823,7 @@ p {
 //   }
 
 //   body {
-//     font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+//     font-family: var(--app-font-family);
 //     font-size: 16px;
 //     -webkit-font-smoothing: antialiased;
 //     display: flex;
@@ -1804,7 +1841,7 @@ p {
 //   }
 
 //   body {
-//     font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+//     font-family: var(--app-font-family);
 //     font-size: 16px;
 //     -webkit-font-smoothing: antialiased;
 //     display: flex;
@@ -3778,7 +3815,7 @@ table {
 
 //   .thankyou-enquiry1 {
 //       margin-top: -66px;
-//       font-family: "Arial";
+//       font-family: var(--app-font-family);
 //       margin-left: 354px;
 //       font-size: 40px;
 //   }
@@ -3788,7 +3825,7 @@ table {
 //     color: #9a9a9a;
 //     margin-top: -17px;
 //     margin-left: 362px;
-//     font-family: "Arial";
+//     font-family: var(--app-font-family);
 //     font-size: 22px;
 //   }
 
@@ -3797,7 +3834,7 @@ table {
 //     color: rgb(233, 47, 47) !important;
 //     margin-left: 19%;
 //     margin-top: 30px;
-//     font-family: "Arial";
+//     font-family: var(--app-font-family);
 //     font-size: 30px;
 //   }
 
@@ -3805,7 +3842,7 @@ table {
 //   .cont1 {
 //     margin-top: 7px;
 //     color: #484848;
-//     font-family: "Arial";
+//     font-family: var(--app-font-family);
 //     font-size: 22px;
 //     margin-left: 19%;
 //     margin-right: 200px;
@@ -3820,14 +3857,14 @@ table {
 //   .cardenquiry .cardpr {
 //       margin-left: 2.5pc;
 //       font-size: 1.5pc;
-//       font-family: "Arial";
+//       font-family: var(--app-font-family);
 //   }
 
 
 //   .lists-enquiry {
 //     margin-left: 5%;
 //     margin-top: 19px;
-//     font-family: "Arial";
+//     font-family: var(--app-font-family);
 //     font-size: 22px;
 //     text-align: justify;
 //     margin-right: 13%;
@@ -3859,7 +3896,7 @@ table {
 //     font-size: 18px;
 //     margin-top: 3pc;
 //     padding-bottom: 1%;
-//     font-family: "Arial";
+//     font-family: var(--app-font-family);
 //   }
 
 
@@ -3895,12 +3932,12 @@ table {
 //       padding-top: 15px;
 //       margin-left: 2pc;
 //       font-size: 10px;
-//       font-family: "Arial";
+//       font-family: var(--app-font-family);
 //   }
 
 
 //   .enquiry-terms-a {
-//     font-family: "Arial";
+//     font-family: var(--app-font-family);
 //     font-size: 12px;
 //     margin-left: 8%;
 //     font-size: 21px;
@@ -3909,7 +3946,7 @@ table {
 
 
 //   .arrowdownfoot {
-//     font-family: "Arial";
+//     font-family: var(--app-font-family);
 //     margin-top: 1%;
 //     width: 3%;
 //     margin-right: 2%;
@@ -3920,7 +3957,7 @@ table {
 
 //   .enquiry-details {
 //     margin-left: 84px;
-//     font-family: "Arial";
+//     font-family: var(--app-font-family);
 //     font-size: 27px;
 //     margin-top: 3%;
 //   }
@@ -5407,16 +5444,25 @@ p-dialog .p-dialog-header .p-dialog-title {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    transition: all 0.25s ease;
+    transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
+
+    &:hover:not(.selected) {
+      border-color: rgba(3, 30, 170, 0.4);
+      background: rgba(3, 30, 170, 0.04);
+      box-shadow: 0 6px 16px rgba(3, 30, 170, 0.1);
+      transform: translateY(-2px);
+    }
 
     &.selected {
       border: 1px solid #16a34a;
-      background: #f0fdf4;
-      box-shadow: 0 4px 10px rgba(22, 163, 74, 0.15);
-    }
+      background: rgba(22, 163, 74, 0.08);
+      box-shadow: 0 4px 12px rgba(22, 163, 74, 0.15);
 
-    &:hover {
-      border-color: #7c7c7c;
+      &:hover {
+        background: rgba(22, 163, 74, 0.12);
+        box-shadow: 0 8px 20px rgba(22, 163, 74, 0.22);
+        transform: translateY(-2px);
+      }
     }
 
     .advance-text {
@@ -5459,7 +5505,7 @@ p-dialog .p-dialog-header .p-dialog-title {
     border-radius: 10px;
     padding: 10px 8px;
     cursor: pointer;
-    transition: all 0.25s ease;
+    transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
     flex: 1;
     min-width: 90px;
 
@@ -5468,10 +5514,21 @@ p-dialog .p-dialog-header .p-dialog-title {
     justify-content: center;
     text-align: center;
 
+    &:hover:not(.selected) {
+      border-color: rgba(3, 30, 170, 0.4);
+      background: rgba(3, 30, 170, 0.04);
+      box-shadow: 0 4px 12px rgba(3, 30, 170, 0.1);
+    }
+
     &.selected {
       border: 1px solid #16a34a;
-      background: #f0fdf4;
+      background: rgba(22, 163, 74, 0.08);
       box-shadow: 0 2px 8px rgba(22, 163, 74, 0.15);
+
+      &:hover {
+        background: rgba(22, 163, 74, 0.12);
+        box-shadow: 0 6px 14px rgba(22, 163, 74, 0.2);
+      }
     }
 
     &:active {
@@ -5614,3 +5671,37 @@ p-dialog .p-dialog-header .p-dialog-title {
   }
 }
 }
+
+// ── Enhanced Translucent Hover Effects for Booking Summary ──
+.add-on-services-table tbody tr {
+  transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+
+  &:hover:not([style*="not-allowed"]) {
+    background-color: rgba(13, 148, 136, 0.08) !important;
+    box-shadow: inset 3px 0 0 #0d9488;
+  }
+}
+
+.rooms-cards-pricing .booking-heading {
+  transition: all 0.25s ease;
+  border-radius: 10px;
+  padding: 8px 12px;
+  margin-left: -12px;
+  margin-right: -12px;
+
+  &:hover {
+    background-color: rgba(241, 245, 249, 0.8);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.03);
+  }
+}
+
+.plan-add-ons-summary {
+  transition: all 0.25s ease;
+
+  &:hover {
+    background-color: rgba(241, 245, 249, 0.95) !important;
+    border-color: rgba(203, 213, 225, 0.9) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+  }
+}
+
