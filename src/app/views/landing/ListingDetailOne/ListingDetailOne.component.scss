@@ -1723,11 +1723,33 @@ padding: 16px 12px;
   background: #fff;
   color: #475569;
   cursor: pointer;
-  font-family: Arial, sans-serif !important;
-  font-size: 25px;
-  font-weight: 400;
-  line-height: 1;
+  position: relative;
   transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+/* Hide the text glyph — we draw the cross instead so it's always centered */
+.smart-recommend-close span {
+  display: none;
+}
+
+.smart-recommend-close::before,
+.smart-recommend-close::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 14px;
+  height: 2px;
+  background-color: currentColor;
+  border-radius: 1px;
+}
+
+.smart-recommend-close::before {
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.smart-recommend-close::after {
+  transform: translate(-50%, -50%) rotate(-45deg);
 }
 
 .smart-recommend-close:hover {
@@ -1735,7 +1757,6 @@ padding: 16px 12px;
   color: #005575;
   transform: rotate(90deg);
 }
-
 .smart-recommend-media {
   position: relative;
   flex: 0 0 38%;
