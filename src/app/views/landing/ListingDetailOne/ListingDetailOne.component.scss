@@ -210,11 +210,11 @@ background-color: #f5f5f5;
   width: 40%;
 }
 .special-code {
-  font-family: var(--app-font-family) !important;
+  font-family: var(--app-font-family);
   font-weight: 600;
 }
 .special-code-One {
-    font-family: var(--app-font-family) !important;
+    font-family: var(--app-font-family);
     font-weight: 400;
 }
 .special-section {
@@ -250,7 +250,7 @@ background-color: #f5f5f5;
   border: none;
   border-radius: 6px;
   padding: 5px;
-   font-family: var(--app-font-family) !important;
+   font-family: var(--app-font-family);
   font-size: smaller;
   background-color: var(--secondary, #0b01cc);
   color: var(--tertiary) !important;;
@@ -259,7 +259,7 @@ background-color: #f5f5f5;
 border: none;
     /* border-radius: 6px; */
     padding: 9px 15px;
-     font-family: var(--app-font-family) !important;
+     font-family: var(--app-font-family);
     font-size: smaller;
     background-color: var(--secondary, #0b01cc);
     color: var(--tertiary, #fff) !important;
@@ -345,7 +345,7 @@ display: flex;
 
 .date-restriction-popup__copy h6 {
   color: #1f2937;
-  font-family: var(--app-font-family) !important;
+  font-family: var(--app-font-family);
   font-size: 15px;
   font-weight: 600;
   margin: 0 0 4px;
@@ -353,7 +353,7 @@ display: flex;
 
 .date-restriction-popup__copy p {
   color: #6b7280;
-   font-family: var(--app-font-family) !important;
+   font-family: var(--app-font-family);
   font-size: 13px;
   line-height: 1.5;
   margin: 0;
@@ -502,7 +502,7 @@ width: auto;
 .checkavaialabilyy-btn {
     background-color: var(--secondary, #0b01cc);
     color: var(--tertiary) !important;
-    font-family: var(--app-font-family) !important;
+    font-family: var(--app-font-family);
     border: none;
     padding: 7px 19px;
     border-radius: 15px !important;
@@ -511,7 +511,7 @@ width: auto;
 .Whatsapp-btn {
     background-color: #03A410;
     color: #fff;
-    font-family: var(--app-font-family) !important;
+    font-family: var(--app-font-family);
     border: none;
     padding: 7px 19px;
     border-radius: 7px;
@@ -546,11 +546,11 @@ width: auto;
 }
 .promo-heading {
   color: var(--tertiary) !important;;
-  font-family: var(--app-font-family) !important;
+  font-family: var(--app-font-family);
 }
 .code-coupon {
   color: var(--tertiary) !important;;
-  font-family: var(--app-font-family) !important;
+  font-family: var(--app-font-family);
   font-size: smaller;
 }
 
@@ -658,7 +658,7 @@ width: auto;
 .spin-title {
   margin: 0;
   font-size: 34px;
-   font-family: var(--app-font-family) !important;
+   font-family: var(--app-font-family);
   font-weight: 800;
   letter-spacing: 0.3px;
   color: #ffffff;
@@ -764,7 +764,7 @@ width: auto;
   border-radius: 999px;
   padding: 12px 30px;
   font-weight: 800;
-   font-family: var(--app-font-family) !important;
+   font-family: var(--app-font-family);
   font-size: 16px;
   cursor: pointer;
   min-width: 220px;
@@ -864,7 +864,7 @@ width: auto;
   }
 }
 .hero-heading {
-   font-family: var(--app-font-family) !important;
+   font-family: var(--app-font-family);
 }
 .margin-top-40px {
   margin-top: 40px;
@@ -890,10 +890,10 @@ width: auto;
 .smart-recommend {
   color: var(--secondary, #0b01cc);
   font-weight: 600;
-  font-family: var(--app-font-family) !important;
+  font-family: var(--app-font-family);
 }
 .smart-recommend-1 {
-  font-family: var(--app-font-family) !important;
+  font-family: var(--app-font-family);
 }
 
 .gap-50px {
@@ -905,7 +905,7 @@ width: auto;
 .smart-recommend-card {
   padding: 16px 12px;
     margin-top: 20px;
-    font-family: var(--app-font-family) !important;
+    font-family: var(--app-font-family);
     border: 1px solid #D9D9D9;
     box-shadow: 0 10px 16px rgba(0, 0, 0, 0.2);
 
@@ -913,7 +913,7 @@ width: auto;
 .smart-recommend-card-bestFit {
 padding: 16px 12px;
     margin-top: 20px;
-    font-family: var(--app-font-family) !important;
+    font-family: var(--app-font-family);
     border: 1px solid #D9D9D9;
     box-shadow: 0 10px 16px rgba(0, 0, 0, 0.2);
     background-color: #F2FBFF;
@@ -921,7 +921,7 @@ padding: 16px 12px;
 .smart-recommend-card-comfort {
 padding: 16px 12px;
     margin-top: 20px;
-    font-family: var(--app-font-family) !important;
+    font-family: var(--app-font-family);
     border: 1px solid #D9D9D9;
     box-shadow: 0 10px 16px rgba(0, 0, 0, 0.2);
     background-color: #FAFAFF;
@@ -929,7 +929,7 @@ padding: 16px 12px;
 .smart-recommend-card-luxury {
 padding: 16px 12px;
     margin-top: 20px;
-     font-family: var(--app-font-family) !important;
+     font-family: var(--app-font-family);
     border: 1px solid #D9D9D9;
     box-shadow: 0 10px 16px rgba(0, 0, 0, 0.2);
     background-color: #FFFBEF;
@@ -937,7 +937,7 @@ padding: 16px 12px;
 .smart-recommend-card-budget {
 padding: 16px 12px;
     margin-top: 20px;
-    font-family: var(--app-font-family) !important;
+    font-family: var(--app-font-family);
     border: 1px solid #D9D9D9;
     box-shadow: 0 10px 16px rgba(0, 0, 0, 0.2);
     background-color: #F8FFFA;
@@ -974,7 +974,7 @@ padding: 16px 12px;
 
 .recommend-arrow,
 .recommend-carousel-arrow {
-  font-family: var(--app-font-family) !important;
+  font-family: var(--app-font-family);
   font-weight: 700;
   line-height: 1;
 }
@@ -1625,7 +1625,7 @@ padding: 16px 12px;
   justify-content: center;
   min-width: 14px;
   min-height: 14px;
-  font-family: var(--app-font-family) !important;
+  font-family: var(--app-font-family);
   font-size: 19px;
   font-weight: 700;
   line-height: 1;
@@ -1635,7 +1635,7 @@ padding: 16px 12px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-family: var(--app-font-family) !important;
+  font-family: var(--app-font-family);
   font-size: 22px;
   font-weight: 700;
   line-height: 1;
@@ -1789,7 +1789,7 @@ padding: 16px 12px;
 .smart-recommend-room-name {
   margin: 0 0 6px; 
   color: #101b35;
-  font-family: var(--app-font-family) !important;
+  font-family: var(--app-font-family);
   font-size: 24px;       
   font-weight: 700;
   line-height: 1.15;
@@ -1800,7 +1800,7 @@ padding: 16px 12px;
   flex-wrap: wrap;
   gap: 8px;
   margin-bottom: 12px;
-  font-family: var(--app-font-family) !important;
+  font-family: var(--app-font-family);
 }
 
 .smart-recommend-description {
@@ -1829,7 +1829,7 @@ padding: 16px 12px;
   position: absolute;
   left: 16px;
   color: #fff;
-  font-family: var(--app-font-family) !important;
+  font-family: var(--app-font-family);
   font-weight: 700;
   z-index: 1;
 }
@@ -1855,7 +1855,7 @@ padding: 16px 12px;
 .smart-recommend-room-name {
   margin: 0 0 8px;
   color: #101b35;
-  font-family: var(--app-font-family) !important;
+  font-family: var(--app-font-family);
   font-size: 21px !important;
   font-weight: 700;
   line-height: 1.15;
@@ -1897,7 +1897,7 @@ padding: 16px 12px;
   border: 2px solid #005575;
   border-radius: 50%;
   color: #005575;
-  font-family: var(--app-font-family) !important;
+  font-family: var(--app-font-family);
   font-size: 13px;
   font-weight: 700;
 }
@@ -1963,7 +1963,7 @@ padding: 16px 12px;
   cursor: pointer;
   font-size: 17px;
   font-weight: 700;
-   font-family: var(--app-font-family) !important;
+   font-family: var(--app-font-family);
 }
 
 .smart-recommend-select:hover {
@@ -2153,7 +2153,7 @@ padding: 16px 12px;
 .smart-recommend-card-two {
   padding: 20px 15px;
   margin-top: 20px;
-  font-family: var(--app-font-family) !important;
+  font-family: var(--app-font-family);
   border: 1px solid#D9D9D9;
   box-shadow: 0 10px 16px rgba(0, 0, 0, 0.2);
 }
@@ -2161,7 +2161,7 @@ padding: 16px 12px;
   margin-left: 15px;
 }
 .recommend-font {
-  font-family: var(--app-font-family) !important;
+  font-family: var(--app-font-family);
   font-weight: 700;
 }
 .text-sm {
@@ -2190,7 +2190,7 @@ padding: 16px 12px;
 .select-mannual {
     // background-color: var(--secondary, #0b01cc);
     // color: var(--tertiary) !important;
-    // font-family: "Plus Jakarta Sans";
+    // font-family: var(--app-font-family);
     // border: none;
     // padding: 6px 20px;
     // border-radius: 8px;
@@ -2205,13 +2205,13 @@ padding: 16px 12px;
 }
 .aminities-highlights {
   font-weight: 500;
-  font-family: var(--app-font-family) !important;
+  font-family: var(--app-font-family);
   color: #000;
   display: inline-block;
   padding: 4px 8px;
 }
 .aminities-highlights-ones {
-    font-family: var(--app-font-family) !important;
+    font-family: var(--app-font-family);
     color: #000;
     display: inline-block;
     padding: 4px 8px;
@@ -2236,7 +2236,7 @@ padding: 16px 12px;
 
 .rooms-heading-starts {
   font-weight: 500;
-  font-family: var(--app-font-family) !important;
+  font-family: var(--app-font-family);
   color: oklch(20.8% .042 265.755);
   display: inline-block;
   padding: 4px 8px;
@@ -2245,7 +2245,7 @@ padding: 16px 12px;
 .aboutHeading {
   margin: 0 0 18px;
   color: #1f2937;
-  font-family: var(--app-font-family) !important;
+  font-family: var(--app-font-family);
   font-size: 26px;
   font-weight: 700;
   line-height: 1.25;
@@ -2254,14 +2254,14 @@ padding: 16px 12px;
   margin-top: 0;
   padding: 0;
   color: #52657f;
-  font-family: var(--app-font-family) !important;
+  font-family: var(--app-font-family);
   text-align: left;
 }
 
 .about-content p {
   margin: 0;
   color: inherit;
-  font-family: var(--app-font-family) !important;
+  font-family: var(--app-font-family);
   font-size: 18px;
   font-weight: 400;
   line-height: 1.6;
@@ -2288,7 +2288,7 @@ padding: 16px 12px;
     margin-left: 20px;
     font-size: 23px;
     font-weight: 600;
-    font-family: var(--app-font-family) !important;
+    font-family: var(--app-font-family);
 }
 .side-images {
   width: 27%;
@@ -2335,30 +2335,30 @@ padding: 16px 12px;
   border-radius: 20px;
 }
 .selected-text {
-    font-family: var(--app-font-family) !important;
+    font-family: var(--app-font-family);
         font-size: small;
 }
 .planName {
-  font-family: var(--app-font-family) !important;
+  font-family: var(--app-font-family);
   font-weight: 400;
   font-size: 13px;
   color: var(--tertiary) !important;;
 }
 .ViewDetails {
   font-size: 11px;
-  font-family: var(--app-font-family) !important;
+  font-family: var(--app-font-family);
   color: var(--tertiary) !important;;
   cursor: pointer;
 }
 .pricing {
-  font-family: var(--app-font-family) !important;
+  font-family: var(--app-font-family);
   font-weight: 700;
   font-size: 13px;
   color: var(--tertiary) !important;;
 }
 .perNight {
   font-size: 10px;
-  font-family: var(--app-font-family) !important;
+  font-family: var(--app-font-family);
   color: var(--tertiary) !important;;
 }
 .margin-top-30px {
@@ -2505,7 +2505,7 @@ padding: 16px 12px;
   padding: 6px 11px;
   margin-top: -10px;
   font-size: 13px;
-  font-family: var(--app-font-family) !important;
+  font-family: var(--app-font-family);
 }
 .margin-top-40px {
   margin-top: 40px;
@@ -2513,13 +2513,13 @@ padding: 16px 12px;
 .btn-add {
   background-color: var(--secondary, #0b01cc);
   color: var(--tertiary) !important;;
-  font-family: var(--app-font-family) !important;
+  font-family: var(--app-font-family);
   border: none;
   padding: 6px 16px;
   border-radius: 8px;
 }
 .content-room-number {
-  font-family: var(--app-font-family) !important;
+  font-family: var(--app-font-family);
   font-size: small;
 }
 .selected {
@@ -2664,7 +2664,7 @@ display: flex;
 position: absolute;
     right: -10px;
     padding: 6px 11px !important;
-    font-family: var(--app-font-family) !important;;
+    font-family: var(--app-font-family);;
     font-weight: 600;
 }
 
@@ -2678,7 +2678,7 @@ position: absolute;
   border-radius: 5px;
   background-color: var(--secondary, #0b01cc) !important;
   color: var(--tertiary, #fff) !important;
-   font-family: var(--app-font-family) !important;
+   font-family: var(--app-font-family);
   font-size: 14px;
   font-weight: 700;
   line-height: 1.2;
@@ -2687,7 +2687,7 @@ position: absolute;
 
 h3 .day-trip-badge {
   font-size: calc(100% - 0.6rem) !important;
-  font-weight: 700 !important;
+  font-weight: var(--app-font-weight-semibold) !important;
   vertical-align: middle;
 }
 
@@ -2797,7 +2797,7 @@ h3 .day-trip-badge {
 }
 .guest-testimonials {
   padding: 2rem;
- font-family: var(--app-font-family) !important;
+ font-family: var(--app-font-family);
 
   .gt-header {
     max-width: 240px;
@@ -2892,11 +2892,11 @@ h3 .day-trip-badge {
 }
 .gs-heading {
   h3 {
-    font-family: var(--app-font-family) !important;
+    font-family: var(--app-font-family);
   }
   p {
     color: #737373;
-    font-family: var(--app-font-family) !important;
+    font-family: var(--app-font-family);
   }
 }
 .gs-card {
@@ -2904,10 +2904,10 @@ h3 .day-trip-badge {
   border-radius: 20px;
   box-shadow: 0px 1px 10px 0px rgba(0, 0, 0, 0.0509803922);
   gap: 15px;
-  font-family: var(--app-font-family) !important;
+  font-family: var(--app-font-family);
 }
 .gs-text {
-  font-family: var(--app-font-family) !important;
+  font-family: var(--app-font-family);
 }
 .gs-arrow-icon {
   background-color: #0029ff;
@@ -2931,7 +2931,7 @@ h3 .day-trip-badge {
   font-weight: 600;
   font-size: 1rem;
   text-transform: uppercase;
-  font-family: var(--app-font-family) !important;
+  font-family: var(--app-font-family);
 }
 .terms-container {
     background-color: rgba(217, 217, 217, 0.1803921569);
@@ -2944,7 +2944,7 @@ h3 .day-trip-badge {
 }
 .error-text {
   text-align: center;
-   font-family: var(--app-font-family) !important;
+   font-family: var(--app-font-family);
   color: red;
   font-size: small;
 }
@@ -3019,7 +3019,7 @@ h3 .day-trip-badge {
   }
 }
 .ameniti1 {
-   font-family: var(--app-font-family) !important;
+   font-family: var(--app-font-family);
   font-weight: 500;
 }
 
@@ -3078,7 +3078,7 @@ h3 .day-trip-badge {
   padding: 10px !important;
 }
 .business-text {
-  font-family: var(--app-font-family) !important;
+  font-family: var(--app-font-family);
 }
 .guest-slider {
   padding: 10px;
@@ -3130,7 +3130,7 @@ h3 .day-trip-badge {
 .see-more {
   background: rgba(11, 77, 117, 0.88) !important;
   color: #ffffff !important;
-  font-family: var(--app-font-family) !important;
+  font-family: var(--app-font-family);
   font-weight: 500;
   border-radius: 999px;
   padding: 10px 16px;
@@ -3240,7 +3240,7 @@ h3 .day-trip-badge {
   white-space: nowrap;
   background: rgba(84, 68, 58, 0.72) !important;
   color: #ffffff !important;
-  font-family: var(--app-font-family) !important;
+  font-family: var(--app-font-family);
   font-weight: 600;
   font-size: 15px;
   border-radius: 10px;
@@ -3374,7 +3374,7 @@ h3 .day-trip-badge {
 //   display: flex;
 //   align-items: center;
 //   margin: 0;
-//   font-family: "Plus Jakarta Sans", sans-serif;
+//   font-family: var(--app-font-family);
 //   font-size: 20px;
 //   font-weight: 500;
 //   line-height: 1.2;
@@ -3456,7 +3456,7 @@ h3 .day-trip-badge {
   font-size: small;
 }
 .sold-out-header {
-   font-family: var(--app-font-family) !important;
+   font-family: var(--app-font-family);
   font-weight: 600;
 }
 .dates-seemore {
@@ -3513,7 +3513,7 @@ h3 .day-trip-badge {
 .popup-heading {
     font-size: 18px;
     font-weight: 400;
-     font-family: var(--app-font-family) !important;
+     font-family: var(--app-font-family);
 }
 .right-popup {
   position: fixed;
@@ -3575,12 +3575,12 @@ h3 .day-trip-badge {
 .not-available {
   text-align: center;
     margin-top: 30px;
-     font-family: var(--app-font-family) !important;
+     font-family: var(--app-font-family);
     color: red;
 }
 
 .popup-plan {
-     font-family: var(--app-font-family) !important;
+     font-family: var(--app-font-family);
     color: var(--secondary, #0b01cc);
     font-size: 1.1rem;
     font-weight: 600;
@@ -4026,7 +4026,7 @@ padding-bottom: 20px;
 .Whatsapp-btn {
     background-color: #03A410;
     color: #fff;
-    font-family: var(--app-font-family) !important;
+    font-family: var(--app-font-family);
     border: none;
     padding: 7px 19px;
     border-radius: 7px;
@@ -4093,7 +4093,7 @@ text-align: center;
 .btn-summary-change {
   display: flex;
     border: none;
-    font-family: var(--app-font-family) !important;
+    font-family: var(--app-font-family);
     background-color: var(--secondary, #0b01cc);
     padding: 11px 31px;
     color: var(--tertiary) !important;;
@@ -4317,7 +4317,7 @@ text-align: center;
 .btn-summary-change {
   display: flex;
     border: none;
-    font-family: var(--app-font-family) !important;
+    font-family: var(--app-font-family);
     background-color: var(--secondary, #0b01cc);
     padding: 11px 31px;
     color: var(--tertiary) !important;;
@@ -4651,7 +4651,7 @@ text-align: center;
 }
 
 .highlight-text {
-  font-family: var(--app-font-family) !important;
+  font-family: var(--app-font-family);
   font-size: 12.5px;
   color: #374151;
   line-height: 1.25;
@@ -4750,7 +4750,7 @@ text-align: center;
   margin: 4px 0 14px;
   color: #5f6368;
   font-size: 14px;
-  font-family: var(--app-font-family) !important;
+  font-family: var(--app-font-family);
 }
 
 .cancellation-rule-row {
@@ -4769,13 +4769,13 @@ text-align: center;
 .cancellation-rule-window {
   color: #202124;
   font-weight: 500;
-  font-family: var(--app-font-family) !important;
+  font-family: var(--app-font-family);
 }
 
 .cancellation-rule-charge {
   color: var(--secondary, #0b01cc);
   font-weight: 700;
-  font-family: var(--app-font-family) !important;
+  font-family: var(--app-font-family);
   white-space: nowrap;
 }
 
@@ -4810,7 +4810,7 @@ text-align: center;
 /* Property name header styling */
 .hero-heading {
   font-family: var(--app-font-family) !important;
-  font-weight: 700 !important;
+  font-weight: var(--app-font-weight-semibold) !important;
   font-size: 34px !important;
   color: #0f172a !important;
   margin-bottom: 6px !important;
@@ -4842,7 +4842,7 @@ text-align: center;
 .gallery-tab-btn {
   background: none;
   border: none;
-  font-family: var(--app-font-family) !important;
+  font-family: var(--app-font-family);
   font-size: 14px;
   font-weight: 500;
   color: #64748b;
@@ -4918,7 +4918,7 @@ text-align: center;
   color: #ffffff;
   padding: 6px 14px;
   border-radius: 99px;
-  font-family: var(--app-font-family) !important;
+  font-family: var(--app-font-family);
   font-size: 13px;
   font-weight: 600;
   letter-spacing: 0.05em;
@@ -4935,7 +4935,7 @@ text-align: center;
 }
 
 .listing-gallery-360-content p {
-  font-family: var(--app-font-family) !important;
+  font-family: var(--app-font-family);
   font-size: 13px;
   color: #f1f5f9;
   margin: 0;
@@ -4945,7 +4945,7 @@ text-align: center;
 .btn-360-explore {
   background: #ffffff !important;
   color: #0b4d75 !important;
-  font-family: var(--app-font-family) !important;
+  font-family: var(--app-font-family);
   font-weight: 600;
   font-size: 14px;
   padding: 12px 28px !important;
@@ -5428,7 +5428,7 @@ ngb-datepicker,
 /* Title & Description */
 .rc-modal-title {
   color: #1e293b;
-  font-family: var(--app-font-family) !important;
+  font-family: var(--app-font-family);
   font-size: 24px;
   font-weight: 700;
   margin: 0 0 12px;
@@ -5437,7 +5437,7 @@ ngb-datepicker,
 
 .rc-modal-description {
   color: #64748b;
-  font-family: var(--app-font-family) !important;
+  font-family: var(--app-font-family);
   font-size: 14px;
   line-height: 1.6;
   margin: 0 0 20px;
@@ -5464,7 +5464,7 @@ ngb-datepicker,
   border: 1px solid #fee2e2;
   padding: 6px 12px;
   border-radius: 99px;
-  font-family: var(--app-font-family) !important;
+  font-family: var(--app-font-family);
   font-size: 13px;
   font-weight: 600;
   display: inline-flex;
@@ -5475,7 +5475,7 @@ ngb-datepicker,
 
 .rc-modal-footer-text {
   color: #475569;
-  font-family: var(--app-font-family) !important;
+  font-family: var(--app-font-family);
   font-size: 13px;
   line-height: 1.5;
   margin: 0 0 28px;
@@ -5490,7 +5490,7 @@ ngb-datepicker,
 .rc-modal-btn {
   background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
   color: #ffffff;
-  font-family: var(--app-font-family) !important;
+  font-family: var(--app-font-family);
   font-size: 14px;
   font-weight: 600;
   letter-spacing: 0.3px;
@@ -5553,7 +5553,7 @@ ngb-datepicker,
    display: flex;
    align-items: center;
    gap: 10px;
-   font-family: var(--app-font-family) !important;
+   font-family: var(--app-font-family);
    -webkit-user-select: none;
    user-select: none;
    padding: 4px 12px;
@@ -5786,7 +5786,7 @@ input:checked + .switch-slider:before {
   text-align: center;
   animation: bg-cycle 6s infinite ease-in-out;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
-  font-weight: 700 !important;
+  font-weight: var(--app-font-weight-semibold) !important;
   font-size: 12px !important;
   letter-spacing: 0.3px;
   border-radius: 50px;
@@ -5805,7 +5805,7 @@ input:checked + .switch-slider:before {
   justify-content: center;
   padding: 0 10px;
   white-space: nowrap;
-  font-weight: 700 !important;
+  font-weight: var(--app-font-weight-semibold) !important;
   color: #ffffff !important; /* Force strictly white text */
 }
 
@@ -5866,7 +5866,7 @@ input:checked + .switch-slider:before {
 /* Slow Blinking Animation for Single Badge Case */
 .blink-slow {
   animation: blink-slow-animation 4s infinite ease-in-out;
-  font-weight: 700 !important;
+  font-weight: var(--app-font-weight-semibold) !important;
   font-size: 11.5px !important;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
   border: 1px solid rgba(255, 255, 255, 0.15);
@@ -6045,31 +6045,6 @@ input:checked + .switch-slider:before {
    PERFORMANCE & SMOOTH SCROLLING OPTIMIZATIONS
    ========================================================================== */
 
-/* Match the reference: sans-serif details with bold serif display headings. */
-:host {
-  font-family: var(--app-font-family) !important;
-}
-
-:host :is(p, span, div, button, input, label, select, textarea, a, li, small, strong):where(:not(
-  .fa, .fas, .far, .fab, .fa-solid, .fa-regular, .fa-brands, .pi, .material-icons,
-  [class^="i-"], [class*=" i-"])) {
-  font-family: var(--app-font-family) !important;
-}
-
-:host :is(
-  .hero-heading,
-  .aminities-highlights,
-  .rooms-heading-starts,
-  .room-title,
-  .aboutHeading,
-  .ameniti1,
-  .smart-recommend-card h5,
-  .mobile-smart-recommend-card h5
-) {
-  font-family: var(--app-heading-font-family) !important;
-  font-weight: 700 !important;
-}
-
 /* Keep selection text readable without changing the card geometry. */
 :host .card-rooms h3 {
   font-weight: 700;
@@ -6085,7 +6060,7 @@ input:checked + .switch-slider:before {
 
 :host .booking-card .room-title {
   --app-font-family: var(--app-body-font-family);
-  font-family: var(--app-body-font-family) !important;
+  font-family: var(--app-font-family);
   font-weight: 600 !important;
 }
 
@@ -6160,3 +6135,157 @@ img[loading="lazy"] {
   0%, 100% { opacity: 0.5; }
   50%      { opacity: 1; }
 }
+
+/* Listing room cards: presentation scoped away from checkout and summary cards. */
+.listing-room-card {
+  padding: 24px 14px;
+  background: #fff;
+  border: 1px solid #edf0f3;
+  border-radius: 20px;
+  box-shadow: 0 2px 10px rgba(15, 23, 42, .07);
+  transition: background-color .2s ease, box-shadow .2s ease;
+
+  @media (hover: hover) {
+    &:hover {
+      background-color: color-mix(in srgb, var(--primary, #009bc4) 7%, white);
+      box-shadow: 0 8px 26px rgba(15, 23, 42, .16),
+        0 0 0 1px color-mix(in srgb, var(--primary, #009bc4) 22%, transparent);
+    }
+  }
+  &:focus-within {
+    background-color: color-mix(in srgb, var(--primary, #009bc4) 7%, white);
+    box-shadow: 0 8px 26px rgba(15, 23, 42, .16);
+  }
+
+  .spacing-manage { min-width: 0; padding: 0 14px; }
+  .spacing-manage:first-child > .position-relative {
+    border: 0 !important;
+    border-radius: 20px !important;
+    box-shadow: none !important;
+  }
+  .spacing-manage:last-child { padding: 0 14px 0 20px; }
+  h3 { font-size: 22px; line-height: 1.3; margin-bottom: 8px; }
+  .roomDescription { color: #64748b; font-size: 14px; line-height: 1.65; margin-bottom: 18px; }
+
+  .plan-cards {
+    border: 1px solid #dce3e8;
+    border-radius: 20px;
+    background: #fff;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, .07);
+    margin-bottom: 12px;
+    transition: box-shadow .18s ease, background-color .18s ease;
+    &:hover, &:focus-within {
+      box-shadow: 0 3px 14px rgba(15, 23, 42, .10), 0 0 0 1px #dbe4ec;
+    }
+    &.scroll-highlight { box-shadow: inset 3px 0 0 var(--primary, #004b66); }
+    &.disabled-plan-card { background: #f1f5f9; }
+  }
+  .card-title {
+    background: #eef5f7;
+    background: linear-gradient(to right, color-mix(in srgb, var(--primary, #009bc4) 40%, white), color-mix(in srgb, var(--primary, #009bc4) 20%, white));
+    color: #0f172a !important;
+    border-radius: 19px 19px 0 0;
+    padding: 10px 12px;
+    margin-bottom: 0;
+    > .d-flex { flex-wrap: wrap; gap: 8px !important; }
+  }
+  .planName, .pricing { color: #0f172a !important; }
+  .planName { font-size: 13px; font-weight: 600; }
+  .pricing { font-size: 15px; }
+  .perNight { color: #64748b !important; font-size: 11px; }
+  .ViewDetails { color: var(--primary, #004b66) !important; font-weight: 600; }
+  .card-data {
+    padding: 10px 12px;
+    font-size: 12px;
+    > .d-flex { flex-wrap: wrap; gap: 12px; }
+  }
+  .room-number, .room-numberOne { align-items: center; gap: 6px; }
+  .input-group-text { color: #64748b !important; font-size: 11px; }
+  .increament-bg, .room-quantity-stepper {
+    display: inline-flex;
+    align-items: center;
+    gap: 0;
+    border-radius: 6px;
+    background: transparent;
+    flex-shrink: 0;
+    font-variant-numeric: tabular-nums;
+  }
+  .minus-btn, .plus-btn, .quantity-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 28px;
+    padding: 0;
+    border: 0;
+    border-radius: 5px;
+    background: transparent !important;
+    color: #111 !important;
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+  }
+  .quantity-button {
+    &:hover:not(:disabled) { filter: brightness(.92); }
+    &:focus-visible { outline: 2px solid var(--primary, #004b66); outline-offset: 2px; }
+    &:disabled { opacity: .4; cursor: not-allowed; }
+  }
+  .quantity-value, .increament-bg > div:not(.minus-btn):not(.plus-btn) { min-width: 24px; text-align: center; }
+  .selected { border-radius: 12px; padding: 7px 12px; white-space: nowrap; }
+  .card-data.website-web-vision > .d-flex {
+    display: grid !important;
+    grid-template-columns: auto auto minmax(0, 1fr) auto;
+    align-items: start !important;
+    gap: 8px;
+  }
+  .card-data.website-web-vision .room-number,
+  .card-data.website-web-vision .room-numberOne { flex-wrap: nowrap; gap: 4px; }
+  .card-data.website-web-vision .room-numberOne > div:first-child { white-space: nowrap; }
+  .card-data.website-web-vision .room-numberOne img { width: 14px; }
+  .card-data.website-web-vision > .d-flex > .d-block { min-width: 0; }
+  .card-data.website-web-vision > .d-flex > .d-block > .d-flex { justify-content: flex-end; }
+  .card-data.website-web-vision > .d-flex > .d-block > .mt-2 { max-width: 100%; }
+
+  .error-text { white-space: normal; overflow-wrap: anywhere; }
+  .error-text:empty { display: none; }
+  .room-quantity-error { margin-bottom: 8px; }
+  .plan-warning-row { padding: 10px 0 0; }
+  .plan-warning-text { white-space: normal; }
+
+  @media (max-width: 1023px) {
+    padding: 16px 4px;
+    .spacing-manage { flex: 0 0 100%; max-width: 100%; }
+    .spacing-manage:first-child > .position-relative { border-radius: 16px !important; }
+    .spacing-manage:last-child { padding: 16px; }
+    .margin-top-mobile-30px { margin-top: 0; }
+    .gallery-image-card { max-height: 320px; }
+    .card-data > .margin-top-20px { justify-content: flex-end !important; margin-top: 12px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+    .plan-cards { transition: none; }
+  }
+}
+
+// ── Shared Counter Label Styling ("Room", "Adult", "Child") ──
+.counter-label {
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  color: #0f172a !important;
+  font-family: var(--app-font-family) !important;
+  line-height: 1.4 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+
+  img {
+    vertical-align: middle;
+  }
+}
+
+@media (max-width: 575px) {
+  .counter-label {
+    font-size: 11px !important;
+  }
+}
+

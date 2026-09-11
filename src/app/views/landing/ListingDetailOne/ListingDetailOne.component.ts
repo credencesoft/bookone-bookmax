@@ -2508,6 +2508,35 @@ private getPlanMaxExtraPersons(plan: any): number {
     return this.getRoomPlanSelectionKey(roomIdentifier, planCode);
   }
 
+  roomQuantityErrors: { [roomPlanKey: string]: string } = {};
+
+  changeRoomQuantity(room: any, plan: any, delta: number): void {
+    if (this.isPlanDisabled(plan, room) || plan?.nonRoomPlan || this.isDayTripPlan(plan, room)) {
+      return;
+    }
+
+    const key = this.getRoomPlanSelectionKey(room.id, plan.code);
+    const current = Number(this.selectedRoomsByPlan[key]) || 0;
+    const next = current + delta;
+    this.roomQuantityErrors[key] = '';
+    if (next < 0) return;
+
+    // Plans for the same room share inventory. Exclude this plan's scoped key.
+    const selectedElsewhere = Object.entries(this.selectedRoomsByPlan)
+      .filter(([selectionKey]) => selectionKey !== key && selectionKey.startsWith(`${room.id}_`))
+      .reduce((sum, [, count]) => sum + (Number(count) || 0), 0);
+    const available = Number(this.getMinAvailableRooms(room.ratesAndAvailabilityDtos)) || 0;
+    const limit = Math.max(0, available - selectedElsewhere);
+
+    // Always allow a decrease, including after availability has changed.
+    if (delta > 0 && next > limit) {
+      this.roomQuantityErrors[key] = `Only ${limit} ${this.getBookingUnitLabel(room)}(s) available for this plan after other selections.`;
+      return;
+    }
+
+    this.onRoomSelect(room.id, plan.code, next);
+  }
+
   setDefaultRoomIfMissing(planCode: string): boolean {
     if (this.selectedRoomsByPlan[planCode] === undefined) {
       this.selectedRoomsByPlan[planCode] = 0;
