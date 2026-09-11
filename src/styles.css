@@ -13,3 +13,26 @@
 .item{
   display: block !important;
 }
+
+:root {
+  --app-body-font-family: "Plus Jakarta Sans", Arial, sans-serif;
+  --app-font-family: var(--app-body-font-family);
+  --app-heading-font-family: "Playfair Display", Georgia, serif;
+}
+
+/* Body copy and controls use the reference's sans-serif font. Keep icon glyphs. */
+html, body,
+*:where(:not(.fa, .fas, .far, .fab, .fal, .fad, .fa-solid, .fa-regular,
+  .fa-brands, .fa-light, .fa-thin, .fa-duotone, .pi, .material-icons,
+  .material-icons-outlined, .material-symbols-outlined, .glyphicon,
+  [class^="i-"], [class*=" i-"])) {
+  font-family: var(--app-font-family) !important;
+}
+
+/* Scope the shared font token so local font rules and nested heading text agree.
+   Existing sizes and weights remain controlled by each component. */
+:is(h1, h2, h3, h4, h5, h6, .hero-heading, .aminities-highlights,
+  .rooms-heading-starts, .room-title, .aboutHeading, .ameniti1) {
+  --app-font-family: var(--app-heading-font-family);
+  font-family: var(--app-heading-font-family) !important;
+}

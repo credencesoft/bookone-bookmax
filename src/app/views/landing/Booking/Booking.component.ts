@@ -2753,6 +2753,9 @@ export class BookingComponent implements OnInit {
   }
   backClicked() {
     this.PropertyUrl = this.token.getPropertyUrl();
+    // The listing page restores the selected room state from session storage.
+    // Mark its room-selection section as the intended return destination.
+    sessionStorage.setItem('scrollTo', 'bookingSelectionAnchor');
     window.location.href = this.PropertyUrl;
   }
   getDateFormatDayMonthYear(

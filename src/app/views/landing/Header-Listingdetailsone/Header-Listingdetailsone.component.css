@@ -8,18 +8,17 @@
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5);
 }
 .header-section-content {
-    display: flex
-;
+    display: flex;
     gap: 57px;
     color: #fff;
     flex-grow: 1;
     justify-content: center;
-    font-family: Barlow;
+    font-family: var(--app-font-family);
     text-transform: uppercase;
     font-weight: 400;
     letter-spacing: 1px;
     transition: color .3s ease;
-    font-size: 22px;
+    font-size: 16px;
 }
 .header-section-content a:hover {
   color: var(--secondary, #0b01cc) !important;
@@ -104,7 +103,7 @@ hr {
 }
 
   .top-navbar {
-    height: 80px;
+    height: 60px;
     background-color: var(--primary);
     display: flex;
     align-items: center;
@@ -112,8 +111,6 @@ hr {
     position: sticky;
     top: 0;
     z-index: 1000;
-    border-bottom-left-radius: 26px;
-    border-bottom-right-radius: 26px;
     box-shadow: 0 12px 30px rgba(15, 23, 42, 0.12);
     overflow: hidden;
   }
@@ -147,23 +144,16 @@ hr {
 
   /* Unique blink button styles */
 .blinking-unique-btn {
-    padding: 5px;
-    border-radius: 12px;
-    border: 0px solid #6C8003;
-    color: #fff !important;
-    font-size: 16px;
-    font-weight: bold;
     cursor: pointer;
     background-color: var(--secondary, #0b01cc);
-    color:  var(--tertiary) !important;
+    color: var(--tertiary) !important;
     border: none;
-    padding: 14px 28px;
     display: flex;
-    font-family: Barlow;
-    font-size: 22px;
+    font-family: var(--app-font-family);
+    font-size: 16px;
     font-weight: 400;
     align-items: center;
-    padding: 10px 20px 10px 22px;
+    padding: 8px 16px 8px 16px;
     border-radius: 100px;
 }
 .blinking-unique-btn:hover {
@@ -180,7 +170,7 @@ hr {
     background: rgba(255, 255, 255, 0.12);
     color: #fff;
     padding: 10px 16px;
-    font-family: Barlow;
+    font-family: var(--app-font-family);
     font-size: 16px;
     font-weight: 500;
     letter-spacing: 0.4px;
@@ -205,24 +195,21 @@ hr {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    width: 1.7rem;
-    height: 1.7rem;
-    display: flex
-;
+    width: 20px;
+    height: 20px;
+    display: flex;
 }
 .Whatsapp-btn-header {
     background: linear-gradient(90deg, #22C55E 0%, #16A34A 100%);
     color:  var(--tertiary) !important;
     border: none;
-    padding: 14px 28px;
-    letter-spacing: 2px;
-border-radius: 12px;
+    letter-spacing: 1px;
     display: flex;
-    font-family: Barlow;
-    font-size: 22px;
+    font-family: var(--app-font-family);
+    font-size: 16px;
     font-weight: 400;
     align-items: center;
-    padding: 10px 20px 10px 22px;
+    padding: 8px 16px 8px 16px;
     border-radius: 100px;
     text-transform: uppercase;
 }
@@ -276,10 +263,8 @@ border-radius: 12px;
 
   @media (max-width: 768px) {
     .top-navbar {
-      height: 77px;
+      height: 60px;
       padding: 0 10px;
-      border-bottom-left-radius: 18px;
-      border-bottom-right-radius: 18px;
     }
 
     .left-section {
@@ -365,8 +350,8 @@ border-radius: 12px;
       width:95%
     }
     .icon-embed-small-01 {
-    width: 1.5rem !important;
-    height: 1.5rem !important;
+    width: 20px !important;
+    height: 20px !important;
 }
         .vertical-nav{
               width: 100%;
@@ -409,13 +394,13 @@ border-radius: 12px;
   width: 96%;
 }
 .Whatsapp-btn-header {
-      font-size: 20px !important;
+      font-size: 16px !important;
 }
 .blinking-unique-btn {
-    font-size: 20px !important;
+    font-size: 16px !important;
 }
 .header-section-content {
-    font-size: 20px;
+    font-size: 16px;
 }
     }
  @media (min-width: 1461px) and (max-width: 1800px) {

@@ -355,7 +355,7 @@
                 <div>Booking ID:</div>
                 <div *ngFor="let booking of bookingsResponseList; let last = last">
                   <span *ngIf="booking?.groupBookingId && last">
-                    <b>{{ booking?.groupBookingId }}</b></span
+                    <b style="font-weight: 500;">{{ booking?.groupBookingId }}</b></span
                   >
 
                     <span *ngIf="!booking?.groupBookingId">
@@ -380,7 +380,7 @@
                 <div>Check-in Date:</div>
                 <div>
                   <span *ngIf="booking.fromDate">
-                    <b>{{ booking.fromDate | date: "d MMM yyyy" }}</b></span
+                    <b style="font-weight: 500;">{{ booking.fromDate | date: "d MMM yyyy" }}</b></span
                   >
                 </div>
               </div>
@@ -391,7 +391,7 @@
                 <div>Check-out Date:</div>
                 <div>
                   <span *ngIf="booking.toDate">
-                    <b>{{ booking.toDate | date: "d MMM yyyy" }}</b></span
+                    <b style="font-weight: 500;">{{ booking.toDate | date: "d MMM yyyy" }}</b></span
                   >
                 </div>
               </div>
@@ -425,7 +425,7 @@
                 <div>Nights:</div>
                 <div>
                   <span>
-                    <b>{{ booking?.noOfNights }}</b></span
+                    <b style="font-weight: 500;">{{ booking?.noOfNights }}</b></span
                   >
                 </div>
               </div>
@@ -453,7 +453,7 @@
                 <div>Name:</div>
                 <div>
                   <span>
-                    <b>{{ booking.firstName }} {{ booking.lastName }}</b></span
+                    <b style="font-weight: 500;">{{ booking.firstName }} {{ booking.lastName }}</b></span
                   >
                 </div>
               </div>
@@ -473,7 +473,7 @@
                 <div>Email:</div>
                 <div>
                   <span>
-                    <b>{{ booking.email }}</b></span
+                    <b style="font-weight: 500;">{{ booking.email }}</b></span
                   >
                 </div>
               </div>
@@ -493,7 +493,7 @@
                 <div>Mobile No:</div>
                 <div>
                   <span>
-                    <b>{{ booking.mobile }}</b></span
+                    <b style="font-weight: 500;">{{ booking.mobile }}</b></span
                   >
                 </div>
               </div>
@@ -534,7 +534,7 @@
                 <tr
                   *ngFor="let booking of bookingsResponseList; let last = last"
                 >
-                  <td><div><b>{{booking.roomName}} </b> <br/>
+                  <td><div><b style="font-weight: 500;">{{booking.roomName}} </b> <br/>
                     {{ booking.roomRatePlanName }}</div></td>
                   <td>
                     {{
@@ -1008,7 +1008,7 @@
                 <div>Booking ID:</div>
                 <div *ngFor="let booking of bookingsResponseList; let last = last">
                   <span *ngIf="booking?.groupBookingId && last">
-                    <b>{{ booking?.groupBookingId }}</b></span
+                    <b style="font-weight: 500;">{{ booking?.groupBookingId }}</b></span
                   >
 
                   <span *ngIf="!booking?.groupBookingId">
@@ -1031,7 +1031,7 @@
                 <div>Check-in Date:</div>
                 <div>
                   <span *ngIf="booking.fromDate">
-                    <b>{{ booking.fromDate | date: "d MMM yyyy" }}</b></span
+                    <b style="font-weight: 500;">{{ booking.fromDate | date: "d MMM yyyy" }}</b></span
                   >
                 </div>
               </div>
@@ -1042,7 +1042,7 @@
                 <div>Check-out Date:</div>
                 <div>
                   <span *ngIf="booking.toDate">
-                    <b>{{ booking.toDate | date: "d MMM yyyy" }}</b></span
+                    <b style="font-weight: 500;">{{ booking.toDate | date: "d MMM yyyy" }}</b></span
                   >
                 </div>
               </div>
@@ -1075,7 +1075,7 @@
                 <div>Nights:</div>
                 <div>
                   <span>
-                    <b>{{ booking?.noOfNights }}</b></span
+                    <b style="font-weight: 500;">{{ booking?.noOfNights }}</b></span
                   >
                 </div>
               </div>
@@ -1103,7 +1103,7 @@
                 <div>Name:</div>
                 <div>
                   <span>
-                    <b>{{ booking.firstName }} {{ booking.lastName }}</b></span
+                    <b style="font-weight: 500;">{{ booking.firstName }} {{ booking.lastName }}</b></span
                   >
                 </div>
               </div>
@@ -1123,7 +1123,7 @@
                 <div>Email:</div>
                 <div class="alignmentChanges">
                   <span>
-                    <b>{{ booking.email }}</b></span
+                    <b style="font-weight: 500;">{{ booking.email }}</b></span
                   >
                 </div>
               </div>
@@ -1143,7 +1143,7 @@
                 <div>Mobile No:</div>
                 <div>
                   <span>
-                    <b>{{ booking.mobile }}</b></span
+                    <b style="font-weight: 500;">{{ booking.mobile }}</b></span
                   >
                 </div>
               </div>
@@ -1162,7 +1162,7 @@
           <div class="booking-summary-container">
                       <ng-container *ngFor="let booking of bookingsResponseList; let last = last">
               <div class="d-flex justify-content-between" style="gap: 10px">
-              <div ><b>{{booking.roomName}} </b> <br/>
+              <div ><b style="font-weight: 500;">{{booking.roomName}} </b> <br/>
                     {{ booking.roomRatePlanName }}</div>
               <div>{{
                        booking?.totalRoomTariffBeforeDiscount

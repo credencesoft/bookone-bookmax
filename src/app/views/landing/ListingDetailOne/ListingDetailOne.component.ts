@@ -264,6 +264,7 @@ export class ListingDetailOneComponent implements OnInit {
   errorMessagePrivate: string;
   smartRecommendationsBoolean: any;
   showSmartRecommendations: boolean = false;
+  smartStatus: 'idle' | 'loading' | 'success' | 'error' = 'idle';
   taxTotalSingle: number;
   utmMedium: any;
   utmSource: any;
@@ -1134,6 +1135,19 @@ expandedPlans: { [key: string]: boolean } = {};
     Label: 'Book Houseboat',
     TERM: 'Houseboat'
   };
+  @ViewChild('smartRecommendRow') smartRecommendRow!: ElementRef;
+  @ViewChild('mobileSmartRecommendRow') mobileSmartRecommendRow!: ElementRef;
+  canScrollPrev = false;
+  canScrollNext = false;
+  mobileCanScrollPrev = false;
+  mobileCanScrollNext = false;
+  @HostListener('window:resize')
+onWindowResizeRecalcScroll() {
+    if (this.smartStatus === 'success') {
+      this.updateScrollButtonsState();
+      this.updateMobileScrollButtonsState();
+  }
+}
 
   constructor(
     private listingService: ListingService,
@@ -1419,60 +1433,7 @@ this.token.savePropertyUrl(currentUrl);
         this.totalExtraAmount +
         this.booking.taxAmount;
     }
-    const savedBooking = sessionStorage.getItem('bookingSummaryDetails');
-    if (savedBooking) {
-      try {
-        const data = JSON.parse(savedBooking);
-        const currentHotelID = this.acRoute.snapshot.queryParams['hotelID'] || this.acRoute.snapshot.queryParams['hotelId'];
-        const currentSlug = this.acRoute.snapshot.params['detail'];
-
-        let isMatch = false;
-
-        if (data.propertyId !== undefined && data.propertyId !== null) {
-          if (currentHotelID !== undefined && currentHotelID !== null && Number(data.propertyId) === Number(currentHotelID)) {
-            isMatch = true;
-          }
-        }
-
-        if (data.businessSlug !== undefined && data.businessSlug !== null) {
-          if (currentSlug !== undefined && currentSlug !== null && data.businessSlug === currentSlug) {
-            isMatch = true;
-          }
-        }
-
-        if (!isMatch) {
-          sessionStorage.removeItem('bookingSummaryDetails');
-          sessionStorage.removeItem('guestDataArray');
-          sessionStorage.removeItem('bookingSummary');
-          this.selectedPlansSummary = [];
-        } else {
-          this.selectedPlansSummary = data.selectedPlansSummary || [];
-
-          // Rebuild selectedGuestsByPlan and selectedRoomsByPlan
-          this.selectedGuestsByPlan = {};
-          this.selectedRoomsByPlan = {};
-
-          this.selectedPlansSummary.forEach(plan => {
-            const planKey = this.getRoomPlanSelectionKey(plan.roomId ?? plan.roomName ?? 'room', plan.planName);
-            this.selectedGuestsByPlan[planKey] = {
-              adults: plan.adults,
-              children: plan.children
-            };
-            this.selectedRoomsByPlan[planKey] = plan.selectedRoomnumber;
-            this.selectedGuestsByPlan[plan.planName] = {
-              adults: plan.adults,
-              children: plan.children
-            };
-            this.selectedRoomsByPlan[plan.planName] = plan.selectedRoomnumber;
-          });
-        }
-      } catch (e) {
-        sessionStorage.removeItem('bookingSummaryDetails');
-        sessionStorage.removeItem('guestDataArray');
-        sessionStorage.removeItem('bookingSummary');
-        this.selectedPlansSummary = [];
-      }
-    }
+    this.restoreGuestSelectionsFromSummary();
     // this.toDate = calendar.getNext(calendar.getToday(), 'd', 10);
     if (
       this.token?.getRoomsData() !== null &&
@@ -2055,26 +2016,27 @@ sendWhatsappMessage() {
   this.errorMessagewhatsapp = '';
   this.isLoadingWhatsapp = false;
   }
-  nextPage() {
-  if (this.currentPage < this.totalPages - 1) {
-    this.currentPage++;
-  }
-}
-prevPage() {
-  if (this.currentPage > 0) {
-    this.currentPage--;
-  }
-}
+currentCategoriesList: any[] = [];
+totalPagesCount: number = 0;
 
-get totalPages() {
-  // 2 categories per page
-  return Math.ceil(this.categories.length / 2);
-}
-
-get currentCategories() {
+updatePagination() {
+  this.totalPagesCount = Math.ceil(this.categories.length / 2);
   const start = this.currentPage * 2;
-  return this.categories.slice(start, start + 2);
+  this.currentCategoriesList = this.categories.slice(start, start + 2);
 }
+
+// nextPage() {
+//   if (this.currentPage < this.totalPagesCount - 1) {
+//     this.currentPage++;
+//     this.updatePagination();
+//   }
+// }
+// prevPage() {
+//   if (this.currentPage > 0) {
+//     this.currentPage--;
+//     this.updatePagination();
+//   }
+// }
 restoreGuestSelectionsFromSummary() {
   // ✅ Restore selectedPlansSummary
   const savedSummary = sessionStorage.getItem('bookingSummaryDetails');
@@ -2082,28 +2044,17 @@ restoreGuestSelectionsFromSummary() {
 
   try {
     const parsedSummary = JSON.parse(savedSummary);
-    const currentHotelID = this.acRoute.snapshot.queryParams['hotelID'] || this.acRoute.snapshot.queryParams['hotelId'];
-    const currentSlug = this.acRoute.snapshot.params['detail'];
+    const matchState = this.getSavedBookingMatchState(parsedSummary);
 
-    let isMatch = false;
-
-    if (parsedSummary.propertyId !== undefined && parsedSummary.propertyId !== null) {
-      if (currentHotelID !== undefined && currentHotelID !== null && Number(parsedSummary.propertyId) === Number(currentHotelID)) {
-        isMatch = true;
-      }
+    // bookingSource URLs can initially contain only a source marker (such as
+    // GoogleHotelCenter). Wait for the property response before deciding that
+    // an in-session selection belongs to a different property.
+    if (matchState === 'pending') {
+      return;
     }
 
-    if (parsedSummary.businessSlug !== undefined && parsedSummary.businessSlug !== null) {
-      if (currentSlug !== undefined && currentSlug !== null && parsedSummary.businessSlug === currentSlug) {
-        isMatch = true;
-      }
-    }
-
-    if (!isMatch) {
-      sessionStorage.removeItem('bookingSummaryDetails');
-      sessionStorage.removeItem('guestDataArray');
-      sessionStorage.removeItem('bookingSummary');
-      this.selectedPlansSummary = [];
+    if (matchState === 'mismatch') {
+      this.clearSavedBookingSelection();
       return;
     }
 
@@ -2118,6 +2069,21 @@ restoreGuestSelectionsFromSummary() {
     this.selectedGuestsByPlan = {};
     this.selectedRoomsByPlan = {};
     this.childAgesByPlan = {};
+
+    // The summary restores rooms even when the optional guestDataArray is not
+    // available; guestDataArray below adds child-age details when present.
+    this.selectedPlansSummary.forEach(plan => {
+      const scopedKey = this.getRoomPlanSelectionKey(plan.roomId ?? plan.roomName ?? 'room', plan.planName);
+      const guests = {
+        adults: Number(plan.adults) || 0,
+        children: Number(plan.children) || 0
+      };
+      const roomCount = Number(plan.selectedRoomnumber) || 0;
+      this.selectedGuestsByPlan[scopedKey] = guests;
+      this.selectedRoomsByPlan[scopedKey] = roomCount;
+      this.selectedGuestsByPlan[plan.planName] = guests;
+      this.selectedRoomsByPlan[plan.planName] = roomCount;
+    });
 
     guestDataArray.forEach(entry => {
       const scopedKey = this.getRoomPlanSelectionKey(entry.roomId ?? entry.roomName ?? 'room', entry.planCode);
@@ -2134,12 +2100,55 @@ restoreGuestSelectionsFromSummary() {
       this.selectedRoomsByPlan[entry.planCode] = entry.roomCount;
       this.childAgesByPlan[entry.planCode] = entry.childAges || [];
     });
+
+    if (Array.isArray(parsedSummary.propertyServiceListDataOne)) {
+      this.selectedFacilityNames = parsedSummary.propertyServiceListDataOne
+        .map(item => item?.name)
+        .filter(Boolean);
+    }
   } catch (e) {
-    sessionStorage.removeItem('bookingSummaryDetails');
-    sessionStorage.removeItem('guestDataArray');
-    sessionStorage.removeItem('bookingSummary');
-    this.selectedPlansSummary = [];
+    this.clearSavedBookingSelection();
   }
+}
+
+private getSavedBookingMatchState(summary: any): 'match' | 'mismatch' | 'pending' {
+  const queryParams = this.acRoute.snapshot.queryParams || {};
+  const routeParams = this.acRoute.snapshot.params || {};
+  const savedId = this.toComparableId(summary?.propertyId);
+  const savedSlug = this.normalizePropertySlug(summary?.businessSlug);
+  const currentIds = [
+    this.toComparableId(queryParams['hotelID'] ?? queryParams['hotelId']),
+    this.toComparableId(routeParams['id']),
+    this.toComparableId(this.businessUser?.id)
+  ].filter((id): id is number => id !== null);
+  const currentSlugs = [
+    this.normalizePropertySlug(routeParams['detail']),
+    this.normalizePropertySlug(this.businessUser?.seoFriendlyName)
+  ].filter((slug): slug is string => !!slug);
+
+  if ((savedId !== null && currentIds.includes(savedId)) ||
+      (savedSlug && currentSlugs.includes(savedSlug))) {
+    return 'match';
+  }
+
+  return (currentIds.length > 0 || currentSlugs.length > 0) ? 'mismatch' : 'pending';
+}
+
+private toComparableId(value: any): number | null {
+  if (value === null || value === undefined || String(value).trim() === '') return null;
+  const numericValue = Number(value);
+  return Number.isFinite(numericValue) ? numericValue : null;
+}
+
+private normalizePropertySlug(value: any): string {
+  return String(value ?? '').trim().toLocaleLowerCase();
+}
+
+private clearSavedBookingSelection(): void {
+  sessionStorage.removeItem('bookingSummaryDetails');
+  sessionStorage.removeItem('guestDataArray');
+  sessionStorage.removeItem('bookingSummary');
+  this.selectedPlansSummary = [];
 }
 
 
@@ -2229,7 +2238,7 @@ showSliderPopup() {
 
 getBookingButtonText(): string {
   if (!this.isBookingAllowed()) {
-    return 'Book Now';
+    return 'Check Now';
   }
 
   const hasEnquiryRoom = this.selectedPlansSummary?.some(plan => plan.isEnquire === true);
@@ -2674,6 +2683,165 @@ onRoomSelect(roomIdentifier: string | number, planCode: string, count: number | 
     setTimeout(() => {
       this.openGalleryModal();
     }, 200);
+  }
+  getRoomImage(roomId: string | number, roomName: string, existingRoomsList: any[]) {
+    // 1. Match by ID (loose comparison in case of string vs number mismatch)
+    const byId = existingRoomsList.find(r => String(r.roomId) === String(roomId) || String(r.id) === String(roomId));
+    if (byId?.imageList?.[0]?.url) return byId.imageList[0].url;
+
+    // 2. Match by Name (case insensitive, trimmed)
+    if (roomName) {
+      const byName = existingRoomsList.find(
+        r => r.roomName?.trim().toLowerCase() === roomName.trim().toLowerCase() ||
+             r.name?.trim().toLowerCase() === roomName.trim().toLowerCase()
+      );
+      if (byName?.imageList?.[0]?.url) return byName.imageList[0].url;
+    }
+
+    // 3. Fallback: just return the first available room's image if all else fails, 
+    // to avoid the placeholder if we DO have images for the property
+    const fallbackRoom = existingRoomsList.find(r => r?.imageList?.[0]?.url);
+    if (fallbackRoom) return fallbackRoom.imageList[0].url;
+
+    // 4. Ultimate fallback
+    return 'media-be/images/default-room.png';
+  }
+
+  handleGetRecommendations() {
+    if (this.smartStatus === 'loading') return;
+
+    if (this.showSmartRecommendations && this.smartStatus === 'success') {
+      return;
+    }
+
+    this.showSmartRecommendations = true;
+
+    this.smartStatus = 'loading';
+    this.smartLoading = true;
+    this.canScrollPrev = false;
+    this.canScrollNext = false;
+    this.smartRecommendations = null;
+
+    document.body.style.overflow = "";
+    document.documentElement.style.overflow = "";
+
+    setTimeout(() => {
+      const desktopEl = document.getElementById('desktopRecommendationSection');
+      const mobileEl = document.getElementById('recommendationSection');
+      
+      if (desktopEl && desktopEl.offsetWidth > 0) {
+        desktopEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else if (mobileEl && mobileEl.offsetWidth > 0) {
+        mobileEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 50);
+
+    const safetyTimeout = setTimeout(() => {
+      if (this.smartStatus === 'loading') {
+        this.smartStatus = 'error';
+        this.smartLoading = false;
+        this.changeDetectorRefs.detectChanges();
+      }
+    }, 15000);
+
+    const queryParams = {
+      noOfChildren: this.booking.noOfChildren,
+      noOfAdults: this.booking.noOfPersons,
+      checkInDate: this.booking.fromDate,
+      checkOutDate: this.booking.toDate,
+      noOfRooms: this.booking.noOfRooms,
+    };
+    
+    const roomList = this.SubAvailableRooms || [];
+
+    this.hotelBookingService.getRecommendations(queryParams, roomList).subscribe({
+      next: (res) => {
+        clearTimeout(safetyTimeout);
+        document.body.style.overflow = "";
+        document.documentElement.style.overflow = "";
+        try {
+          this.smartRecommendations = res;
+          this.categories = [];
+          
+          ['bestFitOptions', 'luxuryOptions', 'comfortOptions', 'budgetOptions'].forEach(cat => {
+            if (this.smartRecommendations?.[cat]) {
+              this.smartRecommendations[cat].forEach((room: any) => {
+                if (room.plans && Array.isArray(room.plans)) {
+                  room.plans.sort((a: any, b: any) => (a.totalPrice || 0) - (b.totalPrice || 0));
+                }
+                room.imageUrl = this.getRoomImage(room.roomId, room.roomName, this.availableRooms);
+              });
+            }
+          });
+
+          const tempCategories: { key: string; label: string; minPrice: number }[] = [];
+
+          if (this.smartRecommendations?.bestFitOptions?.length) {
+            tempCategories.push({
+              key: 'bestFitOptions',
+              label: 'Best-Fit',
+              minPrice: this.getCategoryMinPrice(this.smartRecommendations.bestFitOptions)
+            });
+          }
+          if (this.smartRecommendations?.luxuryOptions?.length) {
+            tempCategories.push({
+              key: 'luxuryOptions',
+              label: 'Luxury',
+              minPrice: this.getCategoryMinPrice(this.smartRecommendations.luxuryOptions)
+            });
+          }
+          if (this.smartRecommendations?.comfortOptions?.length) {
+            tempCategories.push({
+              key: 'comfortOptions',
+              label: 'Comfort',
+              minPrice: this.getCategoryMinPrice(this.smartRecommendations.comfortOptions)
+            });
+          }
+          if (this.smartRecommendations?.budgetOptions?.length) {
+            tempCategories.push({
+              key: 'budgetOptions',
+              label: 'Budget',
+              minPrice: this.getCategoryMinPrice(this.smartRecommendations.budgetOptions)
+            });
+          }
+          
+          this.categories = tempCategories.sort((a, b) => b.minPrice - a.minPrice);
+          this.cheapestPlans = {};
+          this.categories.forEach(cat => {
+            this.cheapestPlans[cat.key] = this.calculateCheapestPlan(cat.key);
+          });
+          this.currentPage = 0;
+          this.updatePagination();
+          this.smartStatus = 'success';
+          this.smartLoading = false;
+          this.changeDetectorRefs.detectChanges();
+          // The cards are rendered after this response. Calculate navigation
+          // state on the next tick so the first page enables Next only when a
+          // second page of recommendations is available.
+          setTimeout(() => {
+            this.updateScrollButtonsState();
+            this.updateMobileScrollButtonsState();
+            this.changeDetectorRefs.detectChanges();
+          }, 0);
+        } catch (err) {
+          console.error("Recommendation processing failed:", err);
+          document.body.style.overflow = "";
+          document.documentElement.style.overflow = "";
+          this.smartStatus = 'error';
+          this.smartLoading = false;
+          this.changeDetectorRefs.detectChanges();
+        }
+      },
+      error: (err) => {
+        console.error("Recommendation fetch failed:", err);
+        clearTimeout(safetyTimeout);
+        document.body.style.overflow = "";
+        document.documentElement.style.overflow = "";
+        this.smartLoading = false;
+        this.smartStatus = 'error';
+        this.changeDetectorRefs.detectChanges();
+      }
+    });
   }
 
   // Open Smart Recommendations section
@@ -4910,23 +5078,55 @@ if (roomKey) {
   // }
   ngAfterViewInit() {
     // this.token.saveSelectedServices(this.selectedServices);
+    const sectionId = sessionStorage.getItem('scrollTo');
+    if (sectionId) {
+      this.scrollToRestoredSection(sectionId);
+      return;
+    }
+
     setTimeout(() => {
       window.scrollTo({
         top: 0,
         behavior: 'smooth',
       });
     }, 100);
+  }
 
-  const sectionId = sessionStorage.getItem('scrollTo');
-  if (sectionId) {
-    setTimeout(() => {
-      const el = document.getElementById(sectionId);
-      if (el) {
-        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  private scrollToRestoredSection(sectionId: string, attempt = 0): void {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      if (sectionId === 'bookingSelectionAnchor') {
+        // Return from checkout directly to the selected-room and desktop
+        // floating-summary layout, below the fixed header. Using an immediate
+        // jump avoids briefly showing the property hero during smooth scroll.
+        this.scrollToBookingSelectionAnchor(element);
+        // Property images and room cards can finish loading after the first
+        // paint and shift the layout. Re-align briefly while the return view
+        // settles so the user remains at the selected booking section.
+        [300, 1000, 2500].forEach(delay => {
+          setTimeout(() => {
+            const anchor = document.getElementById('bookingSelectionAnchor');
+            if (anchor) this.scrollToBookingSelectionAnchor(anchor);
+          }, delay);
+        });
+      } else {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
       sessionStorage.removeItem('scrollTo');
-    }, 100);
+      return;
+    }
+
+    // Room cards are populated asynchronously. Retry briefly so returning from
+    // checkout lands at the selected-room section instead of at page top.
+    if (attempt < 20) {
+      setTimeout(() => this.scrollToRestoredSection(sectionId, attempt + 1), 200);
+    }
   }
+
+  private scrollToBookingSelectionAnchor(anchor: HTMLElement): void {
+    const headerOffset = 110;
+    const targetTop = Math.max(0, anchor.getBoundingClientRect().top + window.scrollY - headerOffset);
+    window.scrollTo({ top: targetTop, behavior: 'auto' });
   }
 
   backClicked() {
@@ -5463,6 +5663,7 @@ onCheckOutClosed(): void {
       if (data.status === 200) {
         this.businessUser = data.body;
         this.propertyData = this.businessUser;
+        this.restoreGuestSelectionsFromSummary();
         this.checkAnyTimeCheckIn();
         this.accommodationData =
         this.propertyData.businessServiceDtoList?.filter(
@@ -6122,6 +6323,7 @@ onCheckOutClosed(): void {
             this.token.saveCountry(this.businessUser.address.country);
           }
           this.propertyData = this.businessUser;
+          this.restoreGuestSelectionsFromSummary();
           this.checkAnyTimeCheckIn();
           this.accommodationData = this.propertyData?.businessServiceDtoList?.filter((entry) => entry?.name === 'Accommodation');
           this.roomRateOrderEnabled = this.accommodationData?.some((entry) => entry?.roomRateOrder === true) || false;
@@ -8135,62 +8337,6 @@ this.token.savePropertyUrl(currentUrl);
 
           const roomList = response.body.roomList;
 
-          if (this.smartRecommendationsBoolean) {
-            this.hotelBookingService.getRecommendations(queryParams, roomList).subscribe({
-              next: (res) => {
-                this.smartLoading = false;
-                this.smartRecommendations = res;
-                this.categories = [];
-                ['bestFitOptions', 'luxuryOptions', 'comfortOptions', 'budgetOptions'].forEach(cat => {
-                  if (this.smartRecommendations?.[cat]) {
-                    this.smartRecommendations[cat].forEach((room: any) => {
-                      room.plans.sort((a: any, b: any) => a.totalPrice - b.totalPrice);
-                    });
-                  }
-                });
-
-                // Build and sort categories
-                const tempCategories: { key: string; label: string; minPrice: number }[] = [];
-
-                if (this.smartRecommendations?.bestFitOptions?.length) {
-                  tempCategories.push({
-                    key: 'bestFitOptions',
-                    label: 'Best-Fit',
-                    minPrice: this.getCategoryMinPrice(this.smartRecommendations.bestFitOptions)
-                  });
-                }
-                if (this.smartRecommendations?.luxuryOptions?.length) {
-                  tempCategories.push({
-                    key: 'luxuryOptions',
-                    label: 'Luxury',
-                    minPrice: this.getCategoryMinPrice(this.smartRecommendations.luxuryOptions)
-                  });
-                }
-                if (this.smartRecommendations?.comfortOptions?.length) {
-                  tempCategories.push({
-                    key: 'comfortOptions',
-                    label: 'Comfort',
-                    minPrice: this.getCategoryMinPrice(this.smartRecommendations.comfortOptions)
-                  });
-                }
-                if (this.smartRecommendations?.budgetOptions?.length) {
-                  tempCategories.push({
-                    key: 'budgetOptions',
-                    label: 'Budget',
-                    minPrice: this.getCategoryMinPrice(this.smartRecommendations.budgetOptions)
-                  });
-                }
-                this.changeDetectorRefs.detectChanges();
-                this.categories = tempCategories.sort((a, b) => b.minPrice - a.minPrice);
-              },
-              error: (err) => {
-                this.smartLoading = false;
-                Logger.log('Error fetching recommendations: ' + err);
-              }
-            });
-          } else {
-            this.smartLoading = false;
-          }
 
 
           // Sort the rooms so that rooms with the "Economy" rate plan come first
@@ -8502,21 +8648,26 @@ this.token.savePropertyUrl(currentUrl);
     return min;
   }
 
+  cheapestPlans: { [key: string]: any } = {};
+
   // get cheapest plan from a category
-  getCheapestPlan(categoryKey: string) {
+  calculateCheapestPlan(categoryKey: string) {
     const rooms = this.smartRecommendations[categoryKey] || [];
     let cheapestPlan: any = null;
 
-    rooms.forEach(room => {
-      room.plans.forEach((plan: any) => {
-        if (!cheapestPlan || plan.totalPrice < cheapestPlan.totalPrice) {
-          cheapestPlan = {
-            ...plan,
-            roomName: room.roomName,
-            availableCount: room.availableCount
-          };
-        }
-      });
+    rooms.forEach((room: any) => {
+      if (room.plans) {
+        room.plans.forEach((plan: any) => {
+          if (!cheapestPlan || plan.totalPrice < cheapestPlan.totalPrice) {
+            cheapestPlan = {
+              ...plan,
+              roomName: room.roomName,
+              availableCount: room.availableCount,
+              imageUrl: room.imageUrl
+            };
+          }
+        });
+      }
     });
 
     return cheapestPlan;
@@ -10450,4 +10601,64 @@ onYesClick() {
     this.generateAndSetSchema();
     this.cd.detectChanges();
   }
+
+  scrollByCard(direction: 'prev' | 'next') {
+  const container = this.smartRecommendRow?.nativeElement;
+  if (!container) return;
+
+  const firstCard = container.querySelector('.smart-recommend-card') as HTMLElement;
+  const gap = 24;
+  const cardWidth = firstCard ? firstCard.getBoundingClientRect().width + gap : container.clientWidth;
+
+  container.scrollBy({
+    left: direction === 'next' ? cardWidth : -cardWidth,
+    behavior: 'smooth',
+  });
+
+  setTimeout(() => this.updateScrollButtonsState(), 0);
+}
+
+nextPage() {
+  this.scrollByCard('next');
+}
+
+  prevPage() {
+    this.scrollByCard('prev');
+  }
+
+  scrollMobileRecommendation(direction: 'prev' | 'next') {
+    const container = this.mobileSmartRecommendRow?.nativeElement as HTMLElement;
+    if (!container) return;
+
+    container.scrollBy({
+      left: direction === 'next' ? container.clientWidth : -container.clientWidth,
+      behavior: 'smooth',
+    });
+
+    setTimeout(() => this.updateMobileScrollButtonsState(), 350);
+  }
+
+  updateMobileScrollButtonsState() {
+    const container = this.mobileSmartRecommendRow?.nativeElement as HTMLElement;
+    if (!container) {
+      this.mobileCanScrollPrev = false;
+      this.mobileCanScrollNext = false;
+      return;
+    }
+
+    this.mobileCanScrollPrev = container.scrollLeft > 5;
+    this.mobileCanScrollNext = container.scrollLeft + container.clientWidth < container.scrollWidth - 5;
+  }
+
+updateScrollButtonsState() {
+  const container = this.smartRecommendRow?.nativeElement;
+  if (!container) {
+    this.canScrollPrev = false;
+    this.canScrollNext = false;
+    return;
+  }
+  const { scrollLeft, scrollWidth, clientWidth } = container;
+  this.canScrollPrev = scrollLeft > 5;
+  this.canScrollNext = scrollLeft + clientWidth < scrollWidth - 5;
+}
 }

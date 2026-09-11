@@ -100,7 +100,7 @@ form.stripe {
   button.stripe {
     background: #5469d4;
     color: #ffffff;
-    font-family: Arial;
+    font-family: var(--app-font-family);
     border-radius: 0 0 4px 4px;
     border: 0;
     padding: 12px 16px;
@@ -262,7 +262,7 @@ form.stripe {
   button.stripe {
     background: #5469d4;
     color: #ffffff;
-    font-family: Arial;
+    font-family: var(--app-font-family);
     border-radius: 0 0 4px 4px;
     border: 0;
     padding: 12px 16px;
@@ -602,7 +602,7 @@ a.fancybox.tcClick.mngroominfo {
       border: 1px solid #434a4d;
       border-radius: 0px;
       color: #ffffff;
-      font-family: "Arial";
+      font-family: var(--app-font-family);
       font-size: 12px;
       height: 35px;
       margin: 26px auto 10px;
@@ -673,7 +673,7 @@ a.fancybox.tcClick.mngroominfo {
       border: 1px solid #fdba35!important;
   }
   .signInBtn, button.btn.btn-blue.btn_booknow2.no_radius {
-      font-family: 'Arial';
+      font-family: var(--app-font-family);
       font-size: 10px !important;
   }
   .signInBtn, .signInBtn:hover, .htl-actn-btn .grpbook-now {
@@ -965,7 +965,7 @@ form.stripe {
   button.stripe {
     background: #5469d4;
     color: #ffffff;
-    font-family: Arial;
+    font-family: var(--app-font-family);
     border-radius: 0 0 4px 4px;
     border: 0;
     padding: 12px 16px;
@@ -1128,7 +1128,7 @@ form.stripe {
   button.stripe {
     background: #5469d4;
     color: #ffffff;
-    font-family: Arial;
+    font-family: var(--app-font-family);
     border-radius: 0 0 4px 4px;
     border: 0;
     padding: 12px 16px;
@@ -1472,7 +1472,7 @@ a.fancybox.tcClick.mngroominfo {
       border: 1px solid #434a4d;
       border-radius: 0px;
       color: #ffffff;
-      font-family: "Arial";
+      font-family: var(--app-font-family);
       font-size: 12px;
       height: 35px;
       margin: 26px auto 10px;
@@ -1543,7 +1543,7 @@ a.fancybox.tcClick.mngroominfo {
       border: 1px solid #fdba35!important;
   }
   .signInBtn, button.btn.btn-blue.btn_booknow2.no_radius {
-      font-family: 'Arial';
+      font-family: var(--app-font-family);
       font-size: 10px !important;
   }
   .signInBtn, .signInBtn:hover, .htl-actn-btn .grpbook-now {
@@ -1789,7 +1789,7 @@ a.fancybox.tcClick.mngroominfo {
 
   .thankyou-enquiry1 {
       margin-top: -66px;
-      font-family: "Arial";
+      font-family: var(--app-font-family);
       margin-left: 25%;
       font-size: 40px;
   }
@@ -1799,7 +1799,7 @@ a.fancybox.tcClick.mngroominfo {
     color: #9a9a9a;
     margin-top: -17px;
     margin-left: 26%;
-    font-family: "Arial";
+    font-family: var(--app-font-family);
     font-size: 22px;
   }
 
@@ -1808,7 +1808,7 @@ a.fancybox.tcClick.mngroominfo {
     color: rgb(233, 47, 47) !important;
     margin-left: 25.4%;
     margin-top: 30px;
-    font-family: "Arial";
+    font-family: var(--app-font-family);
     font-size: 30px;
   }
 
@@ -1816,7 +1816,7 @@ a.fancybox.tcClick.mngroominfo {
   .cont1 {
     margin-top: 7px;
     color: #484848;
-    font-family: "Arial";
+    font-family: var(--app-font-family);
     font-size: 22px;
     margin-left: 25.4%;
     margin-right: 200px;
@@ -1831,14 +1831,14 @@ a.fancybox.tcClick.mngroominfo {
   .cardenquiry .cardpr {
     margin-left: 4%;
     font-size: 1.5pc;
-    font-family: "Arial";
+    font-family: var(--app-font-family);
   }
 
 
   .lists-enquiry {
     margin-left: 5%;
     margin-top: 19px;
-    font-family: "Arial";
+    font-family: var(--app-font-family);
     font-size: 22px;
     text-align: justify;
     margin-right: 13%;
@@ -1871,7 +1871,7 @@ a.fancybox.tcClick.mngroominfo {
     font-size: 18px;
     margin-top: 3pc;
     padding-bottom: 1%;
-    font-family: "Arial";
+    font-family: var(--app-font-family);
   }
 
 
@@ -1905,13 +1905,13 @@ a.fancybox.tcClick.mngroominfo {
   .cardenquiry1a {
       padding-top: 15px;
       font-size: 10px;
-      font-family: "Arial";
+      font-family: var(--app-font-family);
       margin-left: 6%;
   }
 
 
   .enquiry-terms-a {
-    font-family: "Arial";
+    font-family: var(--app-font-family);
     font-size: 12px;
     margin-left: 4%;
     font-size: 16px;
@@ -1932,7 +1932,7 @@ a.fancybox.tcClick.mngroominfo {
 
   .enquiry-details {
     margin-left: 54px;
-    font-family: "Arial";
+    font-family: var(--app-font-family);
     font-size: 27px;
     margin-top: 3%;
     color: #484848 !important;
@@ -1994,7 +1994,7 @@ a.fancybox.tcClick.mngroominfo {
 
     .thankyou-enquiry1 {
       margin-top: -66px;
-    font-family: "Arial";
+    font-family: var(--app-font-family);
     margin-left: 177px;
     font-size: 35px;
     }
@@ -2003,7 +2003,7 @@ a.fancybox.tcClick.mngroominfo {
       color: #9a9a9a;
       margin-top: -17px;
       margin-left: 186px;
-      font-family: "Arial";
+      font-family: var(--app-font-family);
       font-size: 25px;
     }
 
@@ -2011,14 +2011,14 @@ a.fancybox.tcClick.mngroominfo {
       color: rgb(233, 47, 47) !important;
     margin-left: 185px;
     margin-top: 24px;
-    font-family: "Arial";
+    font-family: var(--app-font-family);
     font-size: 30px;
     }
 
     .cont1 {
       margin-top: 27px;
     color: #484848;
-    font-family: "Arial";
+    font-family: var(--app-font-family);
     font-size: 23px;
     margin-left: 188px;
     text-align: justify;
@@ -2033,13 +2033,13 @@ a.fancybox.tcClick.mngroominfo {
     .cardenquiry .cardpr {
         margin-left: 2.5pc;
         font-size: 1.5pc;
-        font-family: "Arial";
+        font-family: var(--app-font-family);
     }
 
     .lists-enquiry {
       margin-left: 48px;
       margin-top: 19px;
-      font-family: "Arial";
+      font-family: var(--app-font-family);
       font-size: 22px;
       text-align: justify;
       margin-right: 35px;
@@ -2068,7 +2068,7 @@ a.fancybox.tcClick.mngroominfo {
       font-size: 20px;
       margin-top: 3pc;
       padding-bottom: 1%;
-      font-family: "Arial";
+      font-family: var(--app-font-family);
     }
 
     .foot2 {
@@ -2097,11 +2097,11 @@ a.fancybox.tcClick.mngroominfo {
         padding-top: 15px;
         margin-left: 6%;
         font-size: 10px;
-        font-family: "Arial";
+        font-family: var(--app-font-family);
     }
 
     .enquiry-terms-a {
-        font-family: "Arial";
+        font-family: var(--app-font-family);
         font-size: 12px;
         margin-left: 100px;
         font-size: 18px;
@@ -2109,14 +2109,14 @@ a.fancybox.tcClick.mngroominfo {
     }
 
     .arrowdownfoot {
-        font-family: "Arial";
+        font-family: var(--app-font-family);
         margin-top: 8px;
         width: 5%;
     }
 
     .enquiry-details {
       margin-left: 75px;
-      font-family: "Arial";
+      font-family: var(--app-font-family);
       font-size: 28px;
       margin-top: 27px;
       color: #484848 !important;
@@ -2135,7 +2135,7 @@ a.fancybox.tcClick.mngroominfo {
 
 
   .enquiry-terms-a {
-    font-family: "Arial";
+    font-family: var(--app-font-family);
     font-size: 12px;
     margin-left: 82px;
     font-size: 20px;
@@ -2144,7 +2144,7 @@ a.fancybox.tcClick.mngroominfo {
 
 
 .arrowdownfoot {
-  font-family: "Arial";
+  font-family: var(--app-font-family);
   margin-top: 12px;
   width: 7%;
 }
@@ -2209,7 +2209,7 @@ a.fancybox.tcClick.mngroominfo {
 
 .enquiry-details {
   margin-left: 75px;
-  font-family: "Arial";
+  font-family: var(--app-font-family);
   font-size: 28px;
   margin-top: 27px;
 }
@@ -2236,13 +2236,13 @@ a.fancybox.tcClick.mngroominfo {
       margin-left: 15%;
     margin-top: -9%;
     font-size: 19px;
-    font-family: "Arial";
+    font-family: var(--app-font-family);
     }
 
 
     .thankyou-enquiry2 {
       margin-left: 15%;
-    font-family: "Arial";
+    font-family: var(--app-font-family);
     font-size: 16px;
     margin-top: -2%;
     }
@@ -2250,14 +2250,14 @@ a.fancybox.tcClick.mngroominfo {
 
     .cont {
       color: rgb(233, 47, 47) !important;
-    font-family: "Arial";
+    font-family: var(--app-font-family);
     font-size: 18px;
     margin-left: 15%;
     }
 
     .cont1 {
       margin-left: 15%;
-      font-family: "Arial";
+      font-family: var(--app-font-family);
       font-size: 15px;
       text-align: justify;
       margin-right: 9%;
@@ -2269,7 +2269,7 @@ a.fancybox.tcClick.mngroominfo {
         margin-left: 4%;
         font-size: 1.3pc;
         text-align: justify;
-        font-family: "Arial";
+        font-family: var(--app-font-family);
     }
 
 
@@ -2278,7 +2278,7 @@ a.fancybox.tcClick.mngroominfo {
       font-size: 11px;
       margin-top: 43px;
       padding-bottom: 10%;
-      font-family: "Arial";
+      font-family: var(--app-font-family);
       margin-left: 15%;
       margin-right: 11%;
     }
@@ -2287,7 +2287,7 @@ a.fancybox.tcClick.mngroominfo {
     .foot2 {
       margin-left: 73%;
     margin-top: -4%;
-    font-family: "Arial";
+    font-family: var(--app-font-family);
     font-size: 12px;
     }
 
@@ -2302,7 +2302,7 @@ a.fancybox.tcClick.mngroominfo {
     .lists-enquiry {
       margin-left: 2%;
       margin-top: 19px;
-      font-family: "Arial";
+      font-family: var(--app-font-family);
       font-size: 13px;
       text-align: justify;
       margin-right: 6%;
@@ -2312,7 +2312,7 @@ a.fancybox.tcClick.mngroominfo {
 
     .enquiry-details {
       margin-left: 10%;
-      font-family: "Arial";
+      font-family: var(--app-font-family);
       font-size: 15px;
       margin-top: 10px;
       color: #484848 !important;
@@ -2322,7 +2322,7 @@ a.fancybox.tcClick.mngroominfo {
     .cardenquiry1a {
         padding-top: 15px;
         font-size: 10px;
-        font-family: "Arial";
+        font-family: var(--app-font-family);
     }
 
     .enquiry-terms {
@@ -2337,7 +2337,7 @@ a.fancybox.tcClick.mngroominfo {
 
 
     .enquiry-terms-a {
-      font-family: "Arial";
+      font-family: var(--app-font-family);
     font-size: 12px;
     margin-left: 5%;
     margin-top: 3%;
@@ -2365,7 +2365,7 @@ a.fancybox.tcClick.mngroominfo {
   .lists-enquiry {
     margin-left: 2%;
     margin-top: 19px;
-    font-family: "Arial";
+    font-family: var(--app-font-family);
     font-size: 13px;
     text-align: justify;
     margin-right: 6%;
@@ -2453,7 +2453,7 @@ a.fancybox.tcClick.mngroominfo {
 
   .thankyou-enquiry1 {
     margin-top: -66px;
-    font-family: "Arial";
+    font-family: var(--app-font-family);
     margin-left: 18%;
     font-size: 34px;
   }
@@ -2463,7 +2463,7 @@ a.fancybox.tcClick.mngroominfo {
     color: #9a9a9a;
     margin-top: -17px;
     margin-left: 19%;
-    font-family: "Arial";
+    font-family: var(--app-font-family);
     font-size: 20px;
   }
 
@@ -2472,7 +2472,7 @@ a.fancybox.tcClick.mngroominfo {
     color: rgb(233, 47, 47) !important;
     margin-left: 19%;
     margin-top: 30px;
-    font-family: "Arial";
+    font-family: var(--app-font-family);
     font-size: 24px;
   }
 
@@ -2480,7 +2480,7 @@ a.fancybox.tcClick.mngroominfo {
   .cont1 {
     margin-top: 7px;
     color: #484848;
-    font-family: "Arial";
+    font-family: var(--app-font-family);
     font-size: 20px;
     margin-left: 19%;
     margin-right: 13%;
@@ -2495,14 +2495,14 @@ a.fancybox.tcClick.mngroominfo {
   .cardenquiry .cardpr {
     margin-left: 4%;
     font-size: 1.5pc;
-    font-family: "Arial";
+    font-family: var(--app-font-family);
   }
 
 
   .lists-enquiry {
     margin-left: 5%;
     margin-top: 19px;
-    font-family: "Arial";
+    font-family: var(--app-font-family);
     font-size: 18px;
     text-align: justify;
     margin-right: 7%;
@@ -2535,7 +2535,7 @@ a.fancybox.tcClick.mngroominfo {
     font-size: 18px;
     margin-top: 3pc;
     padding-bottom: 1%;
-    font-family: "Arial";
+    font-family: var(--app-font-family);
   }
 
 
@@ -2567,13 +2567,13 @@ a.fancybox.tcClick.mngroominfo {
   .cardenquiry1a {
       padding-top: 15px;
       font-size: 10px;
-      font-family: "Arial";
+      font-family: var(--app-font-family);
       margin-left: 6%;
   }
 
 
   .enquiry-terms-a {
-    font-family: "Arial";
+    font-family: var(--app-font-family);
     font-size: 12px;
     margin-left: 3%;
     font-size: 13px;
@@ -2593,7 +2593,7 @@ a.fancybox.tcClick.mngroominfo {
 
   .enquiry-details {
     margin-left: 54px;
-    font-family: "Arial";
+    font-family: var(--app-font-family);
     font-size: 27px;
     margin-top: 3%;
   }

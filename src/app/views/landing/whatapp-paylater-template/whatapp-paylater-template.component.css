@@ -5,12 +5,12 @@
   color: #fff;
 }
 .font-change {
-  font-family: 'Poppins';
+  font-family: var(--app-font-family);
 }
 .needassistance {
          background-color: var(--secondary, #0b01cc);
     color: var(--tertiary) !important;
-    font-family: "Poppins";
+    font-family: var(--app-font-family);
     border: none;
     padding: 6px 20px;
     border-radius: 8px;
@@ -18,7 +18,7 @@
 .saveCopy {
           background-color: var(--secondary, #0b01cc);
     color: var(--tertiary) !important;
-    font-family: "Poppins";
+    font-family: var(--app-font-family);
     border: none;
     padding: 6px 20px;
     border-radius: 8px;
@@ -44,7 +44,7 @@
     padding: 20px;
     padding-top: 30px;
     background-color: #f0f0f0;
-    font-family: "Poppins";
+    font-family: var(--app-font-family);
 }
 .clamp-text {
   display: -webkit-box;
@@ -58,11 +58,11 @@
 .highlight-text {
     font-size: 15px;
     color: #615D5D;
-    font-family: 'Poppins';
+    font-family: var(--app-font-family);
   }
 .assistance-section {
   text-align: center;
-  font-family: Arial, sans-serif;
+  font-family: var(--app-font-family);
   margin-top: 20px;
 margin-bottom: 10px;
   color: #272727;
@@ -90,7 +90,7 @@ margin-bottom: 10px;
     margin-top: 30px;
     padding: 20px;
     border-radius: 5px;
-    font-family: 'Poppins';
+    font-family: var(--app-font-family);
     font-weight: 600;
 }
 
@@ -170,7 +170,7 @@ margin-bottom: 10px;
 .enquiry-details-card {
     padding: 21px;
     border: 1px solid #E5E7EB;
-    font-family: 'Poppins';
+    font-family: var(--app-font-family);
     line-height: 25px;
 }
 }
@@ -220,7 +220,7 @@ margin-bottom: 10px;
 
 .backNavigation {
       font-weight: 600;
-    font-family: 'Poppins';
+    font-family: var(--app-font-family);
     font-size: larger;
     cursor: pointer;
 }
@@ -239,7 +239,7 @@ margin-bottom: 10px;
   margin: auto;
 }
 .heading-enquiry {
- font-family: 'Poppins';
+ font-family: var(--app-font-family);
     font-weight: 600;
 }
 .enquiry-details-card {
@@ -247,7 +247,7 @@ margin-bottom: 10px;
           border: 1px solid #E5E7EB;
 }
    .booking-summary-container {
-      font-family: Arial, sans-serif;
+      font-family: var(--app-font-family);
       color: #333;
     }
 
@@ -255,7 +255,7 @@ margin-bottom: 10px;
       width: 100%;
       border-collapse: collapse;
       margin-bottom: 20px;
-      font-family: 'Poppins';
+      font-family: var(--app-font-family);
     }
 
     .booking-summary-table th,
@@ -277,7 +277,7 @@ margin-bottom: 10px;
     .booking-summary-footer {
     margin-top: 10px;
     text-align: right;
-    font-family: 'Poppins';
+    font-family: var(--app-font-family);
     }
 
     .booking-summary-footer div {
@@ -368,14 +368,14 @@ margin-bottom: 10px;
 }
 .backNavigation {
     font-weight: 600;
-    font-family: "Poppins";
+    font-family: var(--app-font-family);
     font-size: medium;
     cursor: pointer;
     margin-top: 10px;
 }
 .booking-summary-footer {
    margin-right: 0px;
-    font-family: "Poppins";
+    font-family: var(--app-font-family);
 }
 .booking-summary-footer div {
     margin: 0px 0;
@@ -408,7 +408,7 @@ margin-bottom: 10px;
 }
     .backNavigation {
     font-weight: 600;
-    font-family: "Poppins";
+    font-family: var(--app-font-family);
     font-size: medium;
     cursor: pointer;
     margin-top: 10px;
@@ -419,7 +419,7 @@ margin-bottom: 10px;
 }
 .booking-summary-footer {
    margin-right: 0px;
-    font-family: "Poppins";
+    font-family: var(--app-font-family);
 }
 .container-div {
     margin: auto;
