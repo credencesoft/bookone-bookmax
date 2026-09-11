@@ -1,0 +1,10453 @@
+// import { RatesAndAvailability } from './../../model/ratesAndAvailability';
+
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import {
+  Component,
+  OnInit,
+  AfterViewInit,
+  ViewEncapsulation,
+  ChangeDetectorRef,
+  ElementRef,
+  ViewChild,
+  EventEmitter,
+  Output,
+  PLATFORM_ID,
+  Inject,
+  Optional,
+  HostListener,
+} from '@angular/core';
+import { CurrencyService } from 'src/app/services/currency.service';
+import { ActivatedRoute, Router } from '@angular/router';
+import {
+  ModalDismissReasons,
+  NgbCalendar,
+  NgbDate,
+  NgbDateParserFormatter,
+  NgbDateStruct,
+  NgbModal,
+} from '@ng-bootstrap/ng-bootstrap';
+import { DatePipe, isPlatformBrowser, Location, ViewportScroller } from '@angular/common';
+import { Booking } from 'src/app/model/booking';
+import { BusinessServiceDtoList } from 'src/app/model/businessServiceDtoList';
+import { DateModel } from 'src/app/model/dateModel';
+import { GoogleReview } from 'src/app/model/googleReview';
+import { Review } from 'src/app/model/review';
+import { Room } from 'src/app/model/room';
+// import { Slots } from 'src/app/model/slots';
+// import { BusinessUser } from "src/app/model/user";
+// import { BusinessService } from 'src/app/services/business.service';
+// import { DateService } from 'src/app/services/date-service.service';
+// import { HotelBookingService } from 'src/app/services/hotel-booking.service';
+// import { ListingService } from 'src/app/services/listing.service';
+// import { Logger } from 'src/app/services/logger.service';
+// import { ReviewService } from 'src/app/services/review.service';
+// import { TokenStorage } from 'src/app/token.storage';
+// import { Details } from '../ListWithSidebar/ListWithSidebar.component';
+
+import { RoomRatePlans } from 'src/app/model/roomRatePlans';
+import { DomSanitizer, Meta, SafeUrl, Title } from '@angular/platform-browser';
+// import { TriggerEventService } from 'src/app/services/trigger-event.service';
+import { FormControl, FormGroup, NgForm, Validators } from '@angular/forms';
+import { environment } from 'src/environments/environment';
+import { API_URL_NZ, API_URL_PROMOTION } from 'src/app/app.component';
+import { ScrollBar } from '@ng-bootstrap/ng-bootstrap/util/scrollbar';
+// import { ScrollDirective } from '../scroll.directive';
+// import { BlogPostService } from 'src/app/services/blog-post.service';
+import { Observable } from 'rxjs';
+// import { forEach } from 'cypress/types/lodash';
+import { PropertyServiceDTO } from 'src/app/model/PropertyServices';
+import { HotelBookingService, RecommendationPayload } from 'src/services/hotel-booking.service';
+import { ListingService } from 'src/services/listing.service';
+import { ReviewService } from 'src/services/review.service';
+import { BlogPostService } from 'src/services/blog-post.service';
+import { Logger } from 'src/services/logger.service';
+import { TokenStorage } from 'src/token.storage';
+import { Details } from 'src/app/model/detail';
+import { TriggerEventService } from 'src/services/trigger-event.service';
+import { BusinessService } from 'src/services/business.service';
+import { BusinessUser } from 'src/app/model/user';
+import { RatesAndAvailability } from 'src/app/model/ratesAndAvailability';
+import { SchemaService } from 'src/services/schema.service';
+// import { Email } from "src/app/pages/Contact/Contact.component";
+declare var $: any;
+export interface Email {
+  fromEmail: string;
+  toEmail: string;
+  subject: string;
+  propertyName: string;
+  message: string;
+}
+
+interface RoomOne {
+  adults: number;
+  children: number;
+}
+
+@Component({
+  selector: 'list-detail-one',
+  templateUrl: './ListingDetailOne.component.html',
+  styleUrls: ['./ListingDetailOne.component.scss'],
+  encapsulation: ViewEncapsulation.None,
+})
+export class ListingDetailOneComponent implements OnInit {
+  showPastDateRestrictionPopup: boolean = false;
+  showGhcPastDatePopup: boolean = false;
+  showMinStayPopup: boolean = false;
+  minStayRequiredNights: number = 0;
+  showStopSellPopup: boolean = false;
+  stopSellTimeout: any;
+  blockedDatesList: string[] = [];
+  blockedDatesMessage: string = '';
+  pastDateRestrictionMessage: string =
+    'Reservations for past dates cannot be processed. To assist you, your booking dates have been adjusted to start from today.';
+  isLoadingProperty : boolean;
+  roomLowestPrices: { [roomId: string]: number | null } = {};
+  roomLowestPricesBookingEngine: { [roomId: string]: number | null } = {};
+  additionalRooms: RoomOne[] = [];
+  @ViewChild('accmd') accmdSection!: ElementRef;
+  expandedReviews: { [key: number]: boolean } = {};
+  reviews = [
+    {
+      stars: 5,
+      text: 'Cleanliness is a top priority here. The view from my window was simply breathtaking, especially at sunrise.',
+      name: 'Alex',
+    },
+    {
+      stars: 4,
+      text: 'I felt genuinely pampered throughout. It’s rare to experience this level of attention and care.',
+      name: 'Jane',
+    },
+    {
+      stars: 4,
+      text: "The room was clean and comfy, but the service could've been a bit quicker.",
+      name: 'Doe Guest',
+    },
+    {
+      stars: 5,
+      text: 'Amazing hospitality! The staff made me feel right at home from the moment I arrived.',
+      name: 'Guest Alex',
+    },
+    {
+      stars: 5,
+      text: 'Everything from check-in to check-out was seamless. Highly recommended!',
+      name: 'Emma Guest',
+    },
+  ];
+
+  scrollAmount = 250;
+
+  // @Output() bookNowClicked = new EventEmitter<void>();
+  showFullDescription: boolean[] = [];
+  hasServiceWithPrice: boolean = false;
+  showListingDetails: boolean = false;
+  website: string;
+  currentUrl: string;
+  propertyusername: string;
+  websiteUrlBookingEngine: boolean;
+  viewAddon: boolean;
+  noofRoomsAvailable: any[] = [];
+  valueAvailable: any;
+  getValueOfRooms: RatesAndAvailability;
+  allSavedService: any;
+  selectedServicesOne: any;
+  checkAvailabilityDisabled: boolean;
+  Googlehotelsortrooms: any[];
+  ghcOverrideClicked: boolean = false;
+  totalAmountPrice: string;
+  allTaxAmount: boolean = false;
+  bookingPrice: string;
+  daterangefilterSeo: string[] = [];
+  planWithDateArray: any;
+  planPriceSeo: any;
+  diffAmount: number;
+  activeGoogleHotelCenter: string;
+  googleUrlToken: this;
+  allTaxAmountPrice: any;
+  sortedRoomsLimit: any[] = [];
+  taxAmount: any;
+  landingrice: number;
+  isPopupOpen: boolean = false;
+  enteredCoupon: any;
+  isValidPrivateCoupon: boolean;
+  validCoupon: ' ';
+  validCouponCode: string = '';
+  privateOffers2: any[];
+  privateOffersMinimumAmount: any;
+    singleextraChild: number = 0;
+  singleextraAdults: number = 0;
+  privatePromotionData: any;
+  isCardVisible: boolean;
+  couponApplied: boolean;
+  couponSuccessApplied: boolean = false;
+  visibleGetCouponModal: boolean = false;
+  guestCouponName: string = '';
+  guestCouponPhone: string = '';
+  currentOfferIdForCoupon: any = null;
+  generatedGuestCouponCode: string = '';
+  guestCouponError: string = '';
+  guestCouponSuccess: string = '';
+  guestCouponLoading: boolean = false;
+  showSuccessContent: boolean = false;
+
+  // Country Code Dropdown and Validation Properties
+  countriesForCoupon = [
+    { name: 'India', code: '+91', flag: '🇮🇳', length: 10, isoCode: 'IN', currency: 'INR' },
+    { name: 'New Zealand', code: '+64', flag: '🇳🇿', minLength: 8, maxLength: 10, isoCode: 'NZ', currency: 'NZD' },
+    { name: 'Australia', code: '+61', flag: '🇦🇺', length: 9, isoCode: 'AU', currency: 'AUD' },
+    { name: 'United Kingdom', code: '+44', flag: '🇬🇧', length: 10, isoCode: 'GB', currency: 'GBP' },
+    { name: 'United States', code: '+1', flag: '🇺🇸', length: 10, isoCode: 'US', currency: 'USD' },
+    { name: 'Canada', code: '+1', flag: '🇨🇦', length: 10, isoCode: 'CA', currency: 'CAD' },
+    { name: 'Japan', code: '+81', flag: '🇯🇵', length: 10, isoCode: 'JP', currency: 'JPY' },
+    { name: 'Germany', code: '+49', flag: '🇩🇪', minLength: 10, maxLength: 11, isoCode: 'DE', currency: 'EUR' },
+    { name: 'France', code: '+33', flag: '🇫🇷', length: 9, isoCode: 'FR', currency: 'EUR' },
+    { name: 'Bangladesh', code: '+880', flag: '🇧🇩', length: 10, isoCode: 'BD', currency: 'BDT' },
+    { name: 'Sri Lanka', code: '+94', flag: '🇱🇰', length: 9, isoCode: 'LK', currency: 'LKR' },
+    { name: 'United Arab Emirates', code: '+971', flag: '🇦🇪', length: 9, isoCode: 'AE', currency: 'AED' },
+    { name: 'Singapore', code: '+65', flag: '🇸🇬', length: 8, isoCode: 'SG', currency: 'SGD' },
+    { name: 'Malaysia', code: '+60', flag: '🇲🇾', minLength: 9, maxLength: 10, isoCode: 'MY', currency: 'MYR' },
+    { name: 'South Africa', code: '+27', flag: '🇿🇦', length: 9, isoCode: 'ZA', currency: 'ZAR' }
+  ];
+  selectedCountryForCoupon: any = { name: 'India', code: '+91', flag: '🇮🇳', length: 10 };
+  countrySearchQuery: string = '';
+  showCountryDropdown: boolean = false;
+  guestCouponPhoneNo: string = '';
+  guestCouponGenerated: boolean = false;
+
+  get filteredCountriesForCoupon() {
+    if (!this.countrySearchQuery) {
+      return this.countriesForCoupon;
+    }
+    const q = this.countrySearchQuery.toLowerCase();
+    return this.countriesForCoupon.filter(c => 
+      c.name.toLowerCase().includes(q) || 
+      c.code.includes(q)
+    );
+  }
+
+  selectCountryForCoupon(country: any) {
+    this.selectedCountryForCoupon = country;
+    this.showCountryDropdown = false;
+    this.countrySearchQuery = '';
+    this.guestCouponError = '';
+  }
+
+  toggleCountryDropdown() {
+    this.showCountryDropdown = !this.showCountryDropdown;
+  }
+
+  onPhoneInput(event: any) {
+    // Sanitize input to digits only
+    this.guestCouponPhoneNo = this.guestCouponPhoneNo.replace(/\D/g, '');
+    this.guestCouponError = '';
+  }
+  isAfterCheckAvilability: boolean;
+  primaryColorProperty: any;
+  privateCouponPresent: any[];
+  phoneNumberBookingEngine: string;
+  roomPricePerPlan: any;
+  actualroompriceCharge: any;
+  extraAdultCharge: number;
+  extraChildrenCharge: number;
+  extraAdultCount: number;
+  extraChildCount: number;
+  showBookingSummary: boolean = false;
+  soldOutRooms: any;
+  paramsroomId: any;
+  paramsPlanCode: any;
+  specialDiscountPercentage: any;
+  specialDiscountData: any;
+  smartLoading: boolean = true;
+  categories: { key: string, label: string }[] = [];
+  currentPage = 0; // page index
+  successMessagewhatsapp: string;
+  errorMessagewhatsapp: string;
+  errorMessagePrivate: string;
+  smartRecommendationsBoolean: any;
+  showSmartRecommendations: boolean = false;
+  taxTotalSingle: number;
+  utmMedium: any;
+  utmSource: any;
+  priceingO: any;
+  serviceChargePercentage: any;
+  singleextraAdultChargeBookOne: any;
+   singleextraChildChargeBookOne: any;
+  roomRateOrderEnabled: boolean = false;
+  toggleListingDetails() {
+    this.showListingDetails = !this.showListingDetails;
+  }
+  // isPopupVisible = true; // Initially show the popup
+
+  lat = 0;
+  lng = 0;
+  staticAlertClosed: true;
+  error = null;
+  showDiv = false;
+  name: string;
+  phone: string;
+  fromEmail: string;
+  email: Email;
+  adultno: any;
+  dynamicCity: string;
+  dynamicStreetName: string;
+  dynamicLocality: string;
+  // ✅ Renamed: Non-paid services for Property Highlights
+  amenitiesHighlights: any[] = [];
+  propertyServiceListData: any[] = [];  // Backward compatibility alias
+  propertyServicesNoId: any[] = [];
+  showAllPropertyServices: boolean = false;
+
+  get visiblePropertyServices(): any[] {
+    if (this.showAllPropertyServices || !this.propertyServicesNoId) {
+      return this.propertyServicesNoId || [];
+    }
+    return this.propertyServicesNoId.slice(0, 6);
+  }
+
+  togglePropertyServices(): void {
+    this.showAllPropertyServices = !this.showAllPropertyServices;
+  }
+
+  // ✅ Performance: TrackBy functions to prevent unnecessary DOM re-renders
+  trackById(index: number, item: any): any {
+    return item?.id || item?.uid || item?._id || index;
+  }
+
+  trackByIndex(index: number, item: any): number {
+    return index;
+  }
+
+  trackByRoomId(index: number, room: any): any {
+    return room?.roomTypeId || room?.id || room?.roomTypeName || index;
+  }
+
+  trackByPlanId(index: number, plan: any): any {
+    return plan?.ratePlanId || plan?.id || plan?.ratePlanName || index;
+  }
+  // ✅ Renamed: Paid services for Add-on Services (Checkout)
+  addOnServices: any[] = [];
+  propertyServiceListDataOne: any[] = [];  // Backward compatibility alias
+  // ✅ New: Track selected add-ons in checkout
+  selectedAddOns: any[] = [];
+  selectedAddOnNames: string[] = [];
+  savedServices: any[] = [];
+  otaNames: string[] = [];
+  dynamicCountryName: string;
+  dynamicStreetNumber: string;
+  description: string;
+  ogDescription: string;
+  subject = 'Hotel details page Enquiry';
+  propertyname: string;
+  message: string;
+  serviceName: string;
+  subscriptions: string[];
+  successMessage: boolean = false;
+  datewisePriceMap: { [key: string]: number[] } = {};
+  div: boolean = true;
+  childno: any;
+  viewMore: boolean = false;
+  success: any = null;
+  selectedRoomIndex: number | null = null; // Initially no room selected
+  viewMoreOne = false;
+  SubAvailableRooms: Room[];
+
+  subjectControl: FormControl = new FormControl();
+  nameControl: FormControl = new FormControl([Validators.required]);
+  fromEmailControl: FormControl = new FormControl([
+    Validators.required,
+    Validators.pattern[
+      "/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:.[a-zA-Z0-9-]+)*$/"
+    ],
+  ]);
+  phoneControl: FormControl = new FormControl([
+    Validators.required,
+    Validators.pattern[
+      '+(9[976]d|8[987530]d|6[987]d|5[90]d|42d|3[875]d|2[98654321]d|9[8543210]|8[6421]|6[6543210]|5[87654321]|4[987654310]|3[9643210]|2[70]|7|1)d{1,14}$'
+    ],
+  ]);
+  messageControl: FormControl = new FormControl();
+  propertyControl: FormControl = new FormControl();
+  otaPlans: { otaName: string; price: number }[] = [];
+
+  emailSuccess: Boolean;
+
+  form = new FormGroup({
+    subject: this.subjectControl,
+    name: this.nameControl,
+    fromEmail: this.fromEmailControl,
+    propertyname: this.propertyControl,
+    phone: this.phoneControl,
+    message: this.messageControl,
+  });
+  currency: string;
+  exchangeRates: any;
+  model: NgbDateStruct;
+  businessServices: BusinessServiceDtoList[];
+  businessService: BusinessServiceDtoList;
+
+  businessServiceDto: BusinessServiceDtoList;
+  // showHide:boolean=true
+  branchList: any;
+  oneDayTrip: boolean = false;
+  selectBooking: boolean = true;
+  plans: any[] = [];
+
+  businessTypeName: string;
+
+  selectHotelBooking = false;
+  availability: boolean;
+  otaAvailableRooms: number;
+  planDetails: RoomRatePlans;
+  countryBase: string = environment.country;
+  parentOrganisationId = environment.parentOrganisationId;
+  propertyDetails: any = {
+    address: '',
+  };
+  businessUser: BusinessUser;
+
+  data: any = [];
+  details: Details;
+  selectedServiceName: string;
+  selectedIndex: number = -1;
+
+  serviceString: any;
+  loader: boolean;
+
+  serviceSelected: any;
+  ghcPlanCode: string | null = null;
+  prepareDay = 0;
+  prepareHour = 0;
+  prepareMinute = 0;
+
+  leadMaxDay = 0;
+  leadMaxMin = 0;
+  leadMaxHour = 0;
+
+  ngbDate: NgbDateStruct;
+  enabledDates: NgbDateStruct[];
+
+  roomsone: Room[];
+  availableRooms: Room[];
+  shortrooms: Room[];
+  roomWithGHCPlan: Room[];
+  facilities: BusinessUser[];
+  roomAvailability = false;
+  dayOneTrip: boolean;
+  dateModel: DateModel;
+
+  daySelected: string;
+  yearSelected: string;
+  monthSelected: number;
+
+  daySelected2: string;
+  yearSelected2: string;
+  monthSelected2: number;
+
+  currentDay: string;
+
+  monthArray = [
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec',
+  ];
+
+  dateSelected = false;
+  locationSelected = false;
+  resourceSelected = false;
+promoSelected = false;
+  places: any = [
+    {
+      image: 'media-be/images/most-img-4.jpg',
+    },
+  ];
+
+  hoveredDate: NgbDate | null = null;
+
+  fromDate: NgbDate | null;
+  toDate: NgbDate | null;
+  todayDate: NgbDate | null;
+
+  oneDayFromDate: NgbDate | null;
+  oneDayToDate: NgbDate | null;
+  dateFromDate: string;
+  dateToDate: string;
+  booking: Booking;
+  loaderHotelBooking = false;
+  allPalnPrice: boolean;
+  checkAvailabilityStatusHide = true;
+  selectedRoomName =
+    'Not Selected, Please choose a room type from `Rooms` menu';
+  checkAvailabilityStatus = false;
+  checkAvailabilityStatusName: string;
+  selectedRoomMaximumOccupancy: number;
+  selectedRoomAvailableNumber: number;
+  slotSelected: any;
+  resourceSelectedList: any[];
+  isWorkingTime: boolean = true;
+  taxPercentage: number;
+  isReviewFound: boolean = false;
+  googleReviews: GoogleReview[];
+  rate: number;
+  slortResource: any;
+  // slotSelected2: Slots;
+  // title = 'Angular Project Training';
+  slotCount = 0;
+  bookingTimeListLength: any[];
+  availabilityNumber = 0;
+  offersList: any[] = [];
+  showAlert = false;
+  alertType: string;
+  isSuccess: boolean;
+  headerTitle: string;
+  bodyMessage: string;
+  // showPastDateRestrictionPopup = false;
+  // pastDateRestrictionMessage =
+  //   'Past check-in dates are not available. We have updated your stay to the next available date. Please review the revised dates before continuing.';
+  hasPlan = false;
+  customerReviews: Review[];
+  sideMinderUrl: string;
+  isCustomerReviewFound = false;
+  currentRate = 4.54;
+  planpropertyServiceList: any[] = [];
+  showDescription: boolean = false;
+  taxArraySeo: any[];
+  closeResult = '';
+  modalImage = '';
+  modalTitle = '';
+  modalData: Room;
+  roomsAndOccupancy = false;
+  bookingCity: string;
+  adults = 1;
+  children = 0;
+  rooms = 1;
+  noOfrooms = 1;
+  DiffDate;
+  enddate;
+  startDate;
+  viewMoreRoomState: { [roomName: string]: boolean } = {};
+  slideConfig = {
+    centerMode: true,
+    centerPadding: '20%',
+    slidesToShow: 1,
+    autoplay: true,
+    autoplaySpeed: 3000,
+    arrows: true,
+
+    responsive: [
+      {
+        breakpoint: 1367,
+        settings: {
+          centerPadding: '15%',
+        },
+      },
+      {
+        breakpoint: 1025,
+        settings: {
+          centerPadding: '0',
+          arrows: true,
+        },
+      },
+      {
+        breakpoint: 767,
+        settings: {
+          centerPadding: '0',
+          slidesToShow: 1,
+          arrows: true,
+        },
+      },
+    ],
+  };
+  slideConfig2 = {
+    centerMode: true,
+    centerPadding: '0%',
+    slidesToShow: 1,
+    autoplay: true,
+    autoplaySpeed: 3000,
+    arrows: false,
+
+    responsive: [
+      {
+        breakpoint: 1367,
+        settings: {
+          centerPadding: '0%',
+          slidesToShow: 1,
+        },
+      },
+      {
+        breakpoint: 1025,
+        settings: {
+          centerPadding: '0',
+          arrows: false,
+        },
+      },
+      {
+        breakpoint: 767,
+        settings: {
+          centerPadding: '0',
+          slidesToShow: 1,
+          arrows: false,
+        },
+      },
+    ],
+  };
+  slideConfigOne = {
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    dots: true,
+    infinite: true,
+    autoplay: true,
+    autoplaySpeed: 2000,
+    arrows: true,
+  };
+  roomCarouselConfig = {
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    dots: true,
+    infinite: true,
+    autoplay: true,
+    autoplaySpeed: 2000,
+    arrows: true,
+  };
+  modalSlideConfig = {
+    centerMode: true,
+    centerPadding: '0%',
+    slidesToShow: 1,
+    dots: true,
+    autoplay: true,
+    autoplaySpeed: 3000,
+    arrows: true,
+    responsive: [
+      {
+        breakpoint: 1367,
+        settings: {
+          centerPadding: '0%',
+        },
+      },
+      {
+        breakpoint: 1025,
+        settings: {
+          centerPadding: '0',
+        },
+      },
+      {
+        breakpoint: 767,
+        settings: {
+          centerPadding: '0',
+          slidesToShow: 1,
+        },
+      },
+    ],
+  };
+  modalSlideConfig12 = {
+    centerMode: true,
+    centerPadding: '0%',
+    slidesToShow: 1,
+    dots: false,
+    autoplay: true,
+    autoplaySpeed: 3000,
+    arrows: false,
+    responsive: [
+      {
+        breakpoint: 1367,
+        settings: {
+          centerPadding: '0%',
+        },
+      },
+      {
+        breakpoint: 1025,
+        settings: {
+          centerPadding: '0',
+        },
+      },
+      {
+        breakpoint: 767,
+        settings: {
+          centerPadding: '0',
+          slidesToShow: 1,
+        },
+      },
+    ],
+  };
+  modalSlideConfig1 = {
+    centerMode: false,
+    centerPadding: '0%',
+    slidesToShow: 2,
+    margin: 10,
+    dots: false,
+    initialSlide: 0,
+    // autoplay: true,
+    autoplaySpeed: 6000,
+    arrows: true,
+    responsive: [
+      {
+        breakpoint: 1367,
+        settings: {
+          centerPadding: '0',
+        },
+      },
+      {
+        breakpoint: 1025,
+        settings: {
+          centerPadding: '0',
+        },
+      },
+      {
+        breakpoint: 767,
+        settings: {
+          centerPadding: '0',
+          slidesToShow: 2,
+        },
+      },
+    ],
+  };
+  modalSlideConfig156 = {
+    centerMode: false,
+    centerPadding: '0%',
+    slidesToShow: 2,
+
+    dots: false,
+    initialSlide: 0,
+    // autoplay: true,
+    autoplaySpeed: 6000,
+    arrows: true,
+    responsive: [
+      {
+        breakpoint: 1367,
+        settings: {
+          centerPadding: '0',
+        },
+      },
+      {
+        breakpoint: 1025,
+        settings: {
+          centerPadding: '0',
+        },
+      },
+      {
+        breakpoint: 767,
+        settings: {
+          centerPadding: '10',
+          slidesToShow: 2,
+        },
+      },
+    ],
+  };
+  modalSlideConfig2 = {
+    centerMode: true,
+    centerPadding: '0%',
+    slidesToShow: 4,
+    dots: true,
+    autoplay: true,
+
+    autoplaySpeed: 3000,
+    arrows: false,
+    responsive: [
+      {
+        breakpoint: 1367,
+        settings: {
+          centerPadding: '0%',
+          slidesToShow: 4,
+        },
+      },
+      {
+        breakpoint: 1025,
+        settings: {
+          centerPadding: '0',
+          slidesToShow: 2,
+        },
+      },
+      {
+        breakpoint: 767,
+        settings: {
+          centerPadding: '0',
+          slidesToShow: 1,
+        },
+      },
+    ],
+  };
+  modalSlideConfig3 = {
+    centerMode: true,
+    centerPadding: '0%',
+    slidesToShow: 4,
+    dots: false,
+    autoplay: true,
+
+    autoplaySpeed: 3000,
+    arrows: false,
+    responsive: [
+      {
+        breakpoint: 1367,
+        settings: {
+          centerPadding: '0%',
+          slidesToShow: 4,
+        },
+      },
+      {
+        breakpoint: 1025,
+        settings: {
+          centerPadding: '0',
+          slidesToShow: 2,
+        },
+      },
+      {
+        breakpoint: 767,
+        settings: {
+          centerPadding: '0',
+          slidesToShow: 1,
+        },
+      },
+    ],
+  };
+  bar: string;
+  pub: string;
+  swimming: string;
+  serviceDto: PropertyServiceDTO;
+  pet: string;
+  ac: string;
+  wifi: string;
+  tv: string;
+  blogPost: any[] = [];
+  isReadMore: boolean[] = [];
+  bookingMinDate: NgbDate | null;
+  bookingMaxDate: NgbDate | null;
+  planSelected = false;
+  planAmount = 0;
+  extraPersonRate = 0;
+  maxSelectRoom = 1;
+  maxOccupancy = 2;
+  MinOccupancy = 1;
+  bookingRoomPrice: number;
+  totalBeforeTaxAmount: number = 0;
+  PlanRoomPrice: number;
+  accommodationData: any[] = [];
+  restaurantData: any[] = [];
+  planObj: any;
+  city: string;
+  trustedURL: SafeUrl;
+  dangerousUrl: string;
+  logoUrl: string;
+  property: BusinessUser;
+  urlLocation: boolean;
+  isHotelMate: boolean = true;
+  showAll: boolean = false;
+showMoreAddons: boolean = false;
+selectedAddonNames: string[] = [];
+  checkinDay: number;
+  propertyDetail: any;
+  checkinMonth: number;
+  dynamicText: string; // Dynamic text variable
+  checkinYear: number;
+  nights: number;
+  hotelID: number;
+  policies = [];
+  cancellationPolicyData: any;
+  cancellationRuleRows: { window: string; chargeLabel: string }[] = [];
+  propertyId: any;
+  breakfast: PropertyServiceDTO;
+  addServiceList: PropertyServiceDTO[] = [];
+  laundry: PropertyServiceDTO;
+  totalExtraAmount: number = 0;
+  totalTaxAmount: number = 0;
+  pickup: PropertyServiceDTO;
+  checkout: PropertyServiceDTO;
+  dropoff: PropertyServiceDTO;
+  lunch: PropertyServiceDTO;
+  dinner: PropertyServiceDTO;
+  bld: PropertyServiceDTO;
+  distance: PropertyServiceDTO;
+  isRestaurant: PropertyServiceDTO;
+  DistanceRailway: PropertyServiceDTO;
+  isDistanceBusStop: PropertyServiceDTO;
+  isDistanceTouristPlace: PropertyServiceDTO;
+  counterb = 0;
+  counterl = 0;
+  counterd = 0;
+  breakfastservice: any;
+  planPrice: any;
+  minDateForCheckIn: NgbDate;
+  minDateForCheckOut: NgbDate;
+  dayTripCheckoutAllowed: boolean = false;
+  totalplanPrice: any;
+  lunchservice: any;
+  propertyData: BusinessUser;
+  bookingengineurl: string;
+  value: any;
+  dinnerservice: any;
+  activeForGoogleHotelCenter: boolean = false;
+  isDiabled: boolean;
+  showStaticContent: boolean = false;
+  daterange: any;
+  daterangefilter: any;
+  isHeaderVisible: boolean = false;
+  socialmedialist: any;
+  sortedRooms: any[] = [];
+  sortedRoomsOne: any[] = [];
+  isExpanded: boolean = false;
+  showFullDescriptionOne: boolean = false;
+  selectedServices: any[] = [];
+  valSelected: boolean = false;
+  showCarousel = false;
+  showRoomCarousel = false;
+  isLoading = true;
+  showHideFlag: boolean = false;
+  @ViewChild('scrollContainer', { read: ElementRef })
+  scrollContainer!: ElementRef;
+  @ViewChild('scrollContainerOne', { read: ElementRef })
+  scrollContainerOne!: ElementRef;
+  @ViewChild('scrollContainerThree', { read: ElementRef })
+  scrollContainerThree!: ElementRef;
+  @ViewChild('scrollContainerFour', { read: ElementRef })
+  scrollContainerFour!: ElementRef;
+  @ViewChild('ScrollingOne', { read: ElementRef }) ScrollingOne!: ElementRef;
+  @ViewChild('ScrollingTwo', { read: ElementRef }) ScrollingTwo!: ElementRef;
+  slickConfigTen = {
+    slidesToShow: 5,
+    slidesToScroll: 1,
+    infinite: true,
+    dots: true,
+    arrows: false,
+    autoplay: true,
+    autoplaySpeed: 2000,
+    responsive: [
+      {
+        breakpoint: 1024,
+        settings: {
+          slidesToShow: 2,
+          slidesToScroll: 1,
+          infinite: true,
+          dots: true,
+        },
+      },
+      {
+        breakpoint: 600,
+        settings: {
+          slidesToShow: 1,
+          slidesToScroll: 1,
+        },
+      },
+    ],
+  };
+  selectedPromotion: boolean = false;
+  selectedPromotionCouponData: any;
+  spinWheelOpen = false;
+  spinWheelSpinning = false;
+  spinWheelRotation = 0;
+  spinWheelSegments: any[] = [];
+  spinWheelResult: any = null;
+  spinWheelCouponSection: HTMLElement | null = null;
+  spinWheelConfetti: number[] = [];
+  roomOccupancy: number;
+  showError: boolean = false;
+  errorMessage: string;
+  totalAmount: any;
+  totalAmountParam: any;
+  taxAmountParam: any;
+  googleUrl: string;
+  extraPersonChargee: any;
+  extraChildChargee: any;
+  taxArray: any[];
+  allExtraPersonCharge: any;
+  allExtraChildCharge: number;
+  successMessagePrivate = ' ';
+  nearbyPlaces = [
+    {
+      name: 'Shree Mandir',
+      image: 'https://sannidhi.net/wp-content/uploads/2024/01/jagannath1.png',
+    },
+    {
+      name: 'Sea Beach',
+      image:
+        'https://odishatourism.gov.in/content/dam/tourism/home/discover/attractions/beaches/puri/puri%20corosal2.jpg',
+    },
+    {
+      name: 'Konark Temple',
+      image:
+        'https://media.istockphoto.com/id/1444924249/photo/konark-sun-temple-at-sunrise-konark-temple-is-a-unesco-world-heritage-site-at-puri-odisha.jpg?s=612x612&w=0&k=20&c=5Gd3UDpZeYh8DejD4a4TTrpAZLoPw5SARAUFT7hfwRk=',
+    },
+    {
+      name: 'Shanti Stupa',
+      image:
+        'https://plus.unsplash.com/premium_photo-1661949303004-bab6b7a82912?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8c2hhbnRpJTIwc3R1cGF8ZW58MHx8MHx8fDA%3D',
+    },
+    { name: 'Satapada', image: 'https://www.chilika.com/images/satapada.jpg' },
+    {
+      name: 'Museum',
+      image:
+        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSq5ht2y_pv9oUiiCVWOzRsWfEUxHz1hiBdeQ&s',
+    },
+    {
+      name: 'Lingaraj Temple',
+      image:
+        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRQd1m_VVctuhzkUI4yhf7Tu65_WNYNQd85TA&s',
+    },
+    {
+      name: 'Udayagiri',
+      image:
+        'https://upload.wikimedia.org/wikipedia/commons/7/72/Khandagari_and_Udaygiri_featured_image.jpg',
+    },
+    {
+      name: 'Nandankanan',
+      image:
+        'https://i.ytimg.com/vi/Y7o377iuIxs/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLACTvvXv00c7JJxh3aluGtxnsO8eg',
+    },
+  ];
+  dates: Date[] | undefined;
+  blogPosts$: Observable<any> | undefined;
+  responsiveOptions: any[];
+  popupTimeout: any;
+  selectedRoomsByPlan: { [planCode: string]: number } = {};
+  selectedGuestsByPlan: {
+    [planCode: string]: { adults: number; children: number };
+  } = {};
+  selectedPlansSummary: any[] = [];
+  activeImageIndex: number = 0;
+
+  @ViewChild('galleryModalRef') galleryModalRef!: ElementRef;
+  @ViewChild('carouselModalRef') carouselModalRef!: ElementRef;
+  isPanelOpen = false;
+  selectedRoom: any = null;
+  products: [] | undefined;
+  selectedFacilityNames: string[] = [];
+  showGallery = false;
+  sliderPopupVisible = false;
+guestSelectionErrors: { [planCode: string]: string } = {};
+isPanelOpenOne = false;
+  isOpen = false;
+childAgesByPlan: { [planCode: string]: (number | null)[] } = {};
+get ageOptions(): number[] {
+  const max = this.businessServiceDto?.childMaxAge ?? 17;
+  return Array.from({ length: max + 1 }, (_, i) => i);
+}
+get roomLabel(): string {
+  let label = 'Room';
+  const buttonLabel = this.businessServiceDto?.bookingButtonLabelText;
+  if (buttonLabel && buttonLabel.trim() !== '') {
+    label = buttonLabel;
+  } else {
+    const businessType = this.businessUser?.businessType;
+    if (businessType && businessType.trim() !== '') {
+      label = businessType;
+    } else {
+      const productName = this.businessServiceDto?.businessProductName;
+      if (productName && productName.trim() !== '') {
+        label = productName;
+      } else {
+        const serviceName = this.businessServiceDto?.businessServiceName || this.businessServiceDto?.name;
+        if (serviceName && serviceName.trim() !== '') {
+          label = serviceName;
+        }
+      }
+    }
+  }
+
+  const trimmedLabel = label.trim().toLowerCase();
+  const isRoomOrAccommodationLabel = trimmedLabel === 'room' || trimmedLabel === 'accommodation' || trimmedLabel === 'accomodation';
+
+  if (trimmedLabel.includes('accommodation') || trimmedLabel.includes('accomodation')) {
+    return 'Room';
+  }
+  return label;
+}
+get showRoomsAndGuestsFilter(): boolean {
+  const label = this.roomLabel?.toLowerCase();
+  return label === 'room' || label === 'accommodation' || label === 'accomodation';
+}
+get maxAdultsAllowedPerRoom(): number {
+  const label = this.roomLabel?.toLowerCase();
+  const isCustomUnit = label && label !== 'room' && label !== 'accommodation' && label !== 'accomodation';
+  
+  if (isCustomUnit && this.shortrooms && this.shortrooms.length > 0) {
+    return this.shortrooms.reduce((max, r) => Math.max(max, Number(r.maximumOccupancy || 4)), 4);
+  }
+  
+  return 30;
+}
+getMaxAdultLimitForBhk(index: number): number {
+  const label = this.roomLabel?.toLowerCase();
+  const isCustomUnit = label && label !== 'room' && label !== 'accommodation' && label !== 'accomodation';
+
+  if (isCustomUnit && this.shortrooms && this.shortrooms.length > 0) {
+    const sortedBhkMaxOccupancies = [...this.shortrooms]
+      .map(r => Number(r.maximumOccupancy || 4))
+      .sort((a, b) => b - a);
+
+    if (index < sortedBhkMaxOccupancies.length) {
+      return sortedBhkMaxOccupancies[index];
+    }
+    return sortedBhkMaxOccupancies[sortedBhkMaxOccupancies.length - 1];
+  }
+  return 4;
+}
+  singleextraAdultCount: number;
+  singleextraAdultCharge: number;
+  singleextraChildCount: number;
+  singleextraChildrenCharge: number;
+guestDataArray: Array<{
+  planCode: string;
+  planName: string;
+  adults: number;
+  children: number;
+  childAges: number[];
+  roomCount: number;
+}> = [];
+  smartRecommendations: any = {
+    bestFitOptions: [],
+    luxuryOptions: [],
+    comfortOptions: [],
+    budgetOptions: []
+  };
+
+  pageIndex = 0;   // current "page"
+  pageSize = 2;    // show 2 at a time
+  showWhatsappPopup = false;
+  whatsappNumber = '';
+  isLoadingWhatsapp: boolean = false;
+  isTwentyFourHourCheckIn = false;
+  showTwentyFourHourCheckInToggle = false;
+  showTwentyFourHourBanner = false;
+  activeGalleryTab = 'photo';
+  selectedCheckInTime = '12:00';
+  get availableCheckInTimes(): string[] {
+    const allTimes = Array.from({ length: 24 }, (_, hour) =>
+      `${String(hour).padStart(2, '0')}:00`
+    );
+    if (this.isCheckInDateToday()) {
+      const currentHour = new Date().getHours();
+      return allTimes.slice(currentHour);
+    }
+    return allTimes;
+  }
+  checkinDate: string;
+  checkoutDate: string;
+isRoomDescriptionExpanded = false;
+descriptionWordLimit = 30;
+expandedPlans: { [key: string]: boolean } = {};
+  public ACCOMMODATIONBUSINESSTERM = {
+    Label: 'Book Houseboat',
+    TERM: 'Houseboat'
+  };
+
+  constructor(
+    private listingService: ListingService,
+    public SchemaService:SchemaService,
+    private reviewService: ReviewService,
+    private contentfulService: BlogPostService,
+    private hotelBookingService: HotelBookingService,
+    private offerService: BusinessService,
+    private changeDetectorRefs: ChangeDetectorRef,
+    private acRoute: ActivatedRoute,
+    // private meta:Meta,
+    private triggerEventService: TriggerEventService,
+    private router: Router,
+    private locationBack: Location,
+    private calendar: NgbCalendar,
+
+    private http: HttpClient,
+    private routerone: ActivatedRoute,
+    // private businessService1:BusinessService,
+    // private businessService:BusinessService,
+    // private scroll:ScrollDirective,
+    public formatter: NgbDateParserFormatter,
+    private token: TokenStorage,
+    private modalService: NgbModal,
+    private titleService: Title,
+    private metaService: Meta,
+    private sanitizer: DomSanitizer,
+    private viewportScroller: ViewportScroller,
+    private cd: ChangeDetectorRef,
+    @Inject(PLATFORM_ID) private platformId: Object,
+    private currencyService: CurrencyService,
+    @Optional() @Inject('VIEWER_COUNTRY') private viewerCountry: string
+  ) {
+        this.acRoute.queryParams.subscribe((params) => {
+      if (params['hotelID'] !== undefined) {
+        this.hotelID = params['hotelID'];
+      } else if (params['hotelId'] !== undefined) {
+        this.hotelID = params['hotelId'];
+      }
+
+      if (params['checkinDay'] !== undefined) {
+        this.checkinDay = params['checkinDay'];
+      }
+
+      if (params['checkinMonth'] !== undefined) {
+        this.checkinMonth = params['checkinMonth'];
+      }
+
+      if (params['checkinYear'] !== undefined) {
+        this.checkinYear = params['checkinYear'];
+      }
+
+
+      if (params['nights'] !== undefined) {
+  this.nights = Number(params['nights']);
+}
+
+if (params['numGuests'] !== undefined) {
+  this.adultno = Number(params['numGuests']);
+}
+
+if (params['numAdults'] !== undefined) {
+  this.adults = Number(params['numAdults']);
+}
+
+if (params['roomId'] !== undefined) {
+  this.paramsroomId = Number(params['roomId']);
+}
+
+if (params['planCode'] !== undefined) {
+  this.paramsPlanCode = params['planCode'];
+} else if (params['ratePlan'] !== undefined) {
+  this.paramsPlanCode = params['ratePlan'];
+}
+
+if (params['Children'] !== undefined) {
+  this.childno = Number(params['Children']);
+  this.children = Number(params['Children']);
+}
+      if (params['currency'] !== undefined) {
+        this.currency = params['currency'];
+      } else if (params['userCurrency'] !== undefined) {
+        this.currency = params['userCurrency'];
+      }
+
+      const countryParam =
+        params['country'] ||
+        params['user_country'] ||
+        params['userCountry'] ||
+        params['user_country_code'] ||
+        params['userCountryCode'];
+      if (countryParam) {
+        this.token.saveCountry(countryParam);
+      }
+
+      if (params['taxAmount'] !== undefined) {
+        this.taxAmountParam = params['taxAmount'];
+      }
+
+      if (params['totalAmount'] !== undefined) {
+        this.totalAmountParam = params['totalAmount'];
+      }
+      if (this.hotelID != null && this.hotelID != undefined) {
+        this.getPropertyDetailsById(this.hotelID);
+        this.personChange();
+      }
+      if (this.checkinDay && this.checkinMonth && this.checkinYear) {
+  const year = Number(this.checkinYear);
+  const month = Number(this.checkinMonth);
+  const day = Number(this.checkinDay);
+  const nights = Number(this.nights);
+
+  // ✅ checkin date
+  this.checkinDate = `${year}-${('0' + month).slice(-2)}-${('0' + day).slice(-2)}`;
+
+  // ✅ checkout date
+  if (nights) {
+    const checkin = new Date(year, month - 1, day);
+    checkin.setDate(checkin.getDate() + nights);
+    this.checkoutDate = `${checkin.getFullYear()}-${('0' + (checkin.getMonth() + 1)).slice(-2)}-${('0' + checkin.getDate()).slice(-2)}`;
+  }
+
+}
+           if (params['bookingEngine'] !== undefined) {
+        this.urlLocation = params['bookingEngine'];
+        let websitebookingURL = 'true';
+        this.websiteUrlBookingEngine = true;
+        this.token.savewebsitebookingURL(websitebookingURL);
+
+      }
+        if (params['bookingEngine'] === undefined) {
+                  sessionStorage.removeItem('BookingEngine');
+        }
+
+      this.landingrice = Number(
+        (this.totalAmountParam - this.taxAmountParam).toFixed(2)
+      );
+      this.token.saveLandingPrice(this.landingrice);
+
+      if (!params['hotelID'] && !params['hotelId'] && !params['BookingEngine']) {
+        this.getDynamicNameFromUrl(this.currentUrl);
+      }
+              if (params['utm_medium'] !== undefined) {
+        this.utmMedium = params['utm_medium'];
+        sessionStorage.setItem('utm_medium', this.utmMedium);
+      } else {
+        sessionStorage.removeItem('utm_medium');
+      }
+
+
+      if (params['utm_source'] !== undefined && params['utm_source'] != '') {
+        this.utmSource = params['utm_source'];
+        sessionStorage.setItem('utm_source', this.utmSource);
+      } else {
+        sessionStorage.removeItem('utm_source');
+      }
+    });
+    const today = new Date();
+    this.minDateForCheckIn = new NgbDate(
+      today.getFullYear(),
+      today.getMonth() + 1,
+      today.getDate()
+    );
+    this.normalizeQueryDatesForRestriction();
+    // this.checkAvailabilityDisabled = true;
+let currentUrl = window.location.href;
+
+this.token.savePropertyUrl(currentUrl);
+    this.serviceDto = new PropertyServiceDTO();
+    this.businessServiceDto = new BusinessServiceDtoList();
+    this.businessService = new BusinessServiceDtoList();
+    this.businessUser = new BusinessUser();
+    this.addServiceList = [];
+    this.booking = new Booking();
+    this.details = new Details();
+    // this.updateTag();
+    this.token.clearwebsitebookingURL();
+    // this.token.saveSelectedServices(this.selectedServices);
+  // Always start with fresh defaults on load/refresh (1 room/BHK, 1 adult)
+  sessionStorage.removeItem('bookingSummary');
+  this.additionalRooms = [];
+  this.rooms = 1;
+  this.noOfrooms = 1;
+    this.bookingMinDate = calendar.getToday();
+    this.bookingengineurl = this.token.getwebsitebookingURL();
+    sessionStorage.removeItem('enquiryNo');
+    sessionStorage.removeItem('bookingsResponseList');
+    sessionStorage.removeItem('EnquiryResponseList');
+
+    this.selectedServicesOne = this.token?.getSelectedServices();
+    setTimeout(() => {
+      if (this.activeForGoogleHotelCenter == true) {
+        this.fetchAndProcessRoomsDataOne();
+      } else if (this.activeForGoogleHotelCenter == false) {
+        this.fetchAndProcessRoomsData();
+      }
+    }, 3000);
+    this.token.saveBookingEngineBoolean('normalUrl');
+
+    this.selectedServices = [];
+    this.oneDayFromDate = calendar.getToday();
+    if (this.token.getBookingCity() !== null) {
+      if (
+        this.token.getBookingCity() != null &&
+        this.token.getBookingCity() != undefined
+      ) {
+        this.propertyId = this.token.getBookingCity();
+      }
+      if (this.hotelID != null && this.hotelID != undefined) {
+        this.propertyId = this.hotelID;
+      }
+       if(this.checkinDay && this.checkinMonth && this.checkinYear) {
+        let checkedinday = new Date(Number(this.checkinYear), Number(this.checkinMonth) - 1, Number(this.checkinDay));
+
+        let checkedOutday = new Date(checkedinday);
+        let day = Number(checkedOutday.getDate()) + Number(this.nights);
+        checkedOutday.setDate(day);
+            this.booking.fromDate = this.getDateFormatYearMonthDay(
+          checkedinday.getDate(),
+          checkedinday.getMonth() + 1,
+          checkedinday.getFullYear()
+        );
+        this.fromDate = new NgbDate(
+        this.mileSecondToNGBDate(this.booking.fromDate).year,
+        this.mileSecondToNGBDate(this.booking.fromDate).month,
+        this.mileSecondToNGBDate(this.booking.fromDate).day
+      );
+        this.booking.toDate = this.getDateFormatYearMonthDay(
+          checkedOutday.getDate(),
+          checkedOutday.getMonth() + 1,
+          checkedOutday.getFullYear()
+        );
+
+        this.toDate = new NgbDate(
+        this.mileSecondToNGBDate(this.booking.toDate).year,
+        this.mileSecondToNGBDate(this.booking.toDate).month,
+        this.mileSecondToNGBDate(this.booking.toDate).day
+      );
+
+    } else {
+            this.fromDate = this.calendar.getToday();
+      this.todayDate = calendar.getToday();
+      this.toDate = this.calendar.getNext(this.calendar.getToday(), 'd', 1);
+    }
+
+      this.selectedServices = [];
+           if ( this.adults == null && this.adults == undefined ) {
+          this.adults = 1
+        }
+        if (this.childno == null && this.childno == undefined) {
+          this.children = 0;
+        } else {
+          this.children = Number(this.childno);
+        }
+
+      this.noOfrooms = 1;
+      // if(this.rooms === Number(CurrentRoomCout)){
+      //   this.rooms = 1;
+      // } else {
+      //   this.rooms = Number(CurrentRoomCout);
+      // }
+      // this.rooms = 1;
+
+      if (this.hotelID != null && this.hotelID != undefined) {
+        this.token.saveBookingEngineBoolean('googlehotelcenter');
+        this.getPropertyDetailsById(this.hotelID);
+      }
+      if (this.token.getServiceData() !== null) {
+        this.addServiceList = this.token.getServiceData();
+        this.totalExtraAmount = 0;
+        this.totalTaxAmount = 0;
+        this.totalBeforeTaxAmount = 0;
+        this.addServiceList.forEach((element) => {
+          this.totalExtraAmount =
+            this.totalExtraAmount + element.afterTaxAmount;
+          this.totalTaxAmount = this.totalTaxAmount + element.taxAmount;
+          this.totalBeforeTaxAmount =
+            this.totalBeforeTaxAmount + element.beforeTaxAmount;
+        });
+      }
+      this.booking.totalAmount =
+        this.booking.beforeTaxAmount +
+        this.totalExtraAmount +
+        this.booking.taxAmount;
+    }
+    const savedBooking = sessionStorage.getItem('bookingSummaryDetails');
+    if (savedBooking) {
+      try {
+        const data = JSON.parse(savedBooking);
+        const currentHotelID = this.acRoute.snapshot.queryParams['hotelID'] || this.acRoute.snapshot.queryParams['hotelId'];
+        const currentSlug = this.acRoute.snapshot.params['detail'];
+
+        let isMatch = false;
+
+        if (data.propertyId !== undefined && data.propertyId !== null) {
+          if (currentHotelID !== undefined && currentHotelID !== null && Number(data.propertyId) === Number(currentHotelID)) {
+            isMatch = true;
+          }
+        }
+
+        if (data.businessSlug !== undefined && data.businessSlug !== null) {
+          if (currentSlug !== undefined && currentSlug !== null && data.businessSlug === currentSlug) {
+            isMatch = true;
+          }
+        }
+
+        if (!isMatch) {
+          sessionStorage.removeItem('bookingSummaryDetails');
+          sessionStorage.removeItem('guestDataArray');
+          sessionStorage.removeItem('bookingSummary');
+          this.selectedPlansSummary = [];
+        } else {
+          this.selectedPlansSummary = data.selectedPlansSummary || [];
+
+          // Rebuild selectedGuestsByPlan and selectedRoomsByPlan
+          this.selectedGuestsByPlan = {};
+          this.selectedRoomsByPlan = {};
+
+          this.selectedPlansSummary.forEach(plan => {
+            const planKey = this.getRoomPlanSelectionKey(plan.roomId ?? plan.roomName ?? 'room', plan.planName);
+            this.selectedGuestsByPlan[planKey] = {
+              adults: plan.adults,
+              children: plan.children
+            };
+            this.selectedRoomsByPlan[planKey] = plan.selectedRoomnumber;
+            this.selectedGuestsByPlan[plan.planName] = {
+              adults: plan.adults,
+              children: plan.children
+            };
+            this.selectedRoomsByPlan[plan.planName] = plan.selectedRoomnumber;
+          });
+        }
+      } catch (e) {
+        sessionStorage.removeItem('bookingSummaryDetails');
+        sessionStorage.removeItem('guestDataArray');
+        sessionStorage.removeItem('bookingSummary');
+        this.selectedPlansSummary = [];
+      }
+    }
+    // this.toDate = calendar.getNext(calendar.getToday(), 'd', 10);
+    if (
+      this.token?.getRoomsData() !== null &&
+      this.token?.getRoomsData() !== undefined
+    ) {
+      this.availableRooms = this.getFilteredDataBasedOnRoomRateOrder(this.token?.getRoomsData());
+      this.shortrooms = this.token.getRoomsData();
+    }
+    this.acRoute.url.subscribe((urlSegments) => {
+      this.currentUrl = window.location.href; // Use window.location.href to get the full URL
+    });
+    if (
+      this.token.getBookingData() !== null &&
+      this.token?.getRoomsData() !== undefined
+    ) {
+      this.booking = this.token.getBookingData();
+
+      // this.trustedURL = this.safePipe.transform(this.sideMinderUrl );
+
+      this.fromDate = new NgbDate(
+        this.mileSecondToNGBDate(this.booking.fromDate).year,
+        this.mileSecondToNGBDate(this.booking.fromDate).month,
+        this.mileSecondToNGBDate(this.booking.fromDate).day
+      );
+      this.toDate = new NgbDate(
+        this.mileSecondToNGBDate(this.booking.toDate).year,
+        this.mileSecondToNGBDate(this.booking.toDate).month,
+        this.mileSecondToNGBDate(this.booking.toDate).day
+      );
+      if (
+        this.booking.noOfPersons === null ||
+        this.booking.noOfPersons === undefined
+      ) {
+        this.adults = 1;
+      } else {
+         const bookingData = this.token.getBookingData();
+        if (bookingData) {
+          this.booking = bookingData;
+
+          const totalAdults = this.adults || 1;
+
+
+          const additionalAdults = this.additionalRooms?.reduce(
+            (sum, room) => sum + (room.adults || 0),
+            0
+          );
+
+          this.adults = totalAdults - additionalAdults;
+
+          // Optional for children
+          if (this.childno == null && this.childno == undefined) {
+          this.children = 0;
+        } else {
+          this.children = Number(this.childno);
+        }
+          const totalChildren = this.children || 0;
+          const additionalChildren = this.additionalRooms?.reduce(
+            (sum, room) => sum + (room.children || 0),
+            0
+          );
+
+          this.children = totalChildren - additionalChildren;
+        }
+      }
+      this.rooms = 1 + (this.additionalRooms ? this.additionalRooms.length : 0);
+      this.booking.noOfRooms = this.rooms;
+      // if(this.rooms === Number(CurrentRoomCout)){
+      //   this.rooms = this.booking.noOfRooms;
+      // } else {
+      //   this.rooms = Number(CurrentRoomCout);
+      // }
+
+      this.taxPercentage = this.booking.taxPercentage;
+    } else {
+      if(this.checkinDay && this.checkinMonth && this.checkinYear) {
+        let checkedinday = new Date(Number(this.checkinYear), Number(this.checkinMonth) - 1, Number(this.checkinDay));
+
+        let checkedOutday = new Date(checkedinday);
+        let day = Number(checkedOutday.getDate()) + Number(this.nights);
+        checkedOutday.setDate(day);
+            this.booking.fromDate = this.getDateFormatYearMonthDay(
+          checkedinday.getDate(),
+          checkedinday.getMonth() + 1,
+          checkedinday.getFullYear()
+        );
+        this.fromDate = new NgbDate(
+        this.mileSecondToNGBDate(this.booking.fromDate).year,
+        this.mileSecondToNGBDate(this.booking.fromDate).month,
+        this.mileSecondToNGBDate(this.booking.fromDate).day
+      );
+        this.booking.toDate = this.getDateFormatYearMonthDay(
+          checkedOutday.getDate(),
+          checkedOutday.getMonth() + 1,
+          checkedOutday.getFullYear()
+        );
+
+        this.toDate = new NgbDate(
+        this.mileSecondToNGBDate(this.booking.toDate).year,
+        this.mileSecondToNGBDate(this.booking.toDate).month,
+        this.mileSecondToNGBDate(this.booking.toDate).day
+      );
+
+    } else {
+
+      this.fromDate = this.calendar.getToday();
+      this.toDate = this.calendar.getNext(this.calendar.getToday(), 'd', 1);
+    }
+           if ( this.adults == null && this.adults == undefined ) {
+      this.adults = 1
+     }
+     if (this.childno == null && this.childno == undefined) {
+          this.children = 0;
+        } else {
+          this.children = Number(this.childno);
+        }
+      this.noOfrooms = 1;
+      this.rooms = 1;
+      // if(this.rooms === Number(CurrentRoomCout)){
+      //   this.rooms = Number(CurrentRoomCout);;
+      // } else {
+      //   this.rooms = 1;
+      // }
+      // this.rooms = 1;
+    }
+    if (
+      this.token.getBookingData()?.roomName != null &&
+      this.token.getBookingData()?.roomName != undefined
+    ) {
+      this.showDiv = true;
+      this.div = true;
+    }
+    this.routerone.params.subscribe((params) => {
+      let uriId = this.routerone.snapshot.params['id'];
+      let uriDetail = this.routerone.snapshot.params['detail'];
+      if ((uriId != undefined && uriId != null && uriId == 'GoogleHotelCenter') || (uriDetail != undefined && uriDetail != null && uriDetail == 'GoogleHotelCenter')) {
+        this.activeForGoogleHotelCenter = true;
+      } else {
+        this.activeForGoogleHotelCenter = false;
+      }
+    });
+
+    this.bookingPrice = this.token.getBookingRoomPrice();
+    (this.googleUrlToken = this), token.getBookingEngineBoolean();
+
+    this.googleUrl = this.token.getPropertyUrl();
+    if (this.activeForGoogleHotelCenter === true) {
+      this.showDiv = false;
+    }
+
+
+
+    this.allExtraPersonCharge = this.booking.extraPersonCharge;
+    this.allExtraChildCharge = this.booking.extraChildCharge;
+    this.token.saveExtraPersonCharge(this.allExtraPersonCharge);
+    this.token.saveChildCharge(this.allExtraChildCharge);
+
+    this.booking.createdDate = new Date();
+    this.extraPersonChargee = this.token.getExtraPersonCharge();
+    if (
+      this.extraPersonChargee === 'NaN' ||
+      this.extraPersonChargee === null ||
+      this.extraPersonChargee === undefined
+    ) {
+      this.extraPersonChargee = 0;
+    }
+    this.extraChildChargee = this.token.getChildCharge();
+    if (
+      this.extraChildChargee === 'NaN' ||
+      this.extraChildChargee === null ||
+      this.extraChildChargee === undefined
+    ) {
+      this.extraChildChargee = 0;
+    }
+    this.blogPosts$ = this.contentfulService.getAllEntries();
+  }
+
+  ngOnInit() {
+    this.onResize();
+    localStorage.removeItem('selectPromo');
+
+    this.currencyService.getLatestRates().subscribe(
+      (data) => {
+        if (data && data.rates) {
+          this.exchangeRates = data.rates;
+          this.setCurrencyAndLocalization();
+        } else {
+          this.exchangeRates = null;
+          this.fallbackToLocalINR();
+        }
+      },
+      (error) => {
+        console.error('Failed to load exchange rates:', error);
+        this.exchangeRates = null;
+        this.fallbackToLocalINR();
+      }
+    );
+
+const couponCodeValues = sessionStorage.getItem('selectedPromoData');
+
+
+if (couponCodeValues) {
+  const parsed = JSON.parse(couponCodeValues); // convert to object
+  this.specialDiscountData = JSON.parse(couponCodeValues);
+if (parsed.couponCode) {
+  this.enteredCoupon = parsed.couponCode;
+  this.validCouponCode = parsed.couponCode;
+}
+if (parsed.discountPercentage) {
+      this.specialDiscountPercentage = parsed.discountPercentage;
+    }
+}
+
+    this.restoreGuestSelectionsFromSummary();
+const storedBooking = sessionStorage.getItem('bookingSummaryDetails');
+if (storedBooking) {
+  const bookingData = JSON.parse(storedBooking);
+  if(bookingData?.propertyServiceListDataOne) {
+    this.selectedFacilityNames = bookingData?.propertyServiceListDataOne?.map(item => item.name);
+  }
+
+}
+
+
+
+    this.setResponsiveOption();
+    if (this.hotelID != null && this.hotelID != undefined) {
+      this.token.saveBookingEngineBoolean('googlehotelcenter');
+    }
+
+    this.isReadMore = this.policies.map(() => false);
+    window.addEventListener('df-request-sent', (event) => {
+      this.propertyusername = this.businessUser.name;
+
+      const chatbotElement = document.getElementById('chatbot');
+      // ... rest of your code to set chat title
+      chatbotElement.setAttribute('chat-title', this.propertyusername);
+
+      chatbotElement.setAttribute('chat-title-icon', this.businessUser.logoUrl);
+      const propertyId = this.businessUser.id;
+      const propertyName = this.businessUser.name;
+      const currentDate = new Date();
+      const year = currentDate.getFullYear();
+      const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+      const day = String(currentDate.getDate()).padStart(2, '0');
+      const hours = String(currentDate.getHours()).padStart(2, '0');
+      const minutes = String(currentDate.getMinutes()).padStart(2, '0');
+      const seconds = String(currentDate.getSeconds()).padStart(2, '0');
+      const currentTimeString = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+      const dataToSend = {
+        propertyId: propertyId,
+        propertyName: propertyName,
+        currentDate: currentTimeString,
+      };
+      fetch('https://chatbot.api.thehotelmate.co/api/chatbot/receive-payload', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(dataToSend),
+      })
+        .then((response) => response.json())
+        .catch((error) => console.error('Error:', error));
+    });
+    if (this.city != null && this.city != undefined) {
+      this.offerService.getPropertyListByCity(this.city).subscribe((res) => {
+        this.restaurantData = res.body.filter(
+          (entry) => entry.businessType === 'Restaurants'
+        );
+      });
+    }
+    // this.token.clearRoomsData();
+
+    // const currentDate = new Date();
+    // const fromDate = new NgbDate(
+    //     currentDate.getFullYear(),
+    //     currentDate.getMonth() + 1,
+    //     currentDate.getDate()
+    // );
+
+    // const nextDate = new Date(currentDate);
+    // nextDate.setDate(currentDate.getDate() + 1);
+    // const toDate = new NgbDate(
+    //     nextDate.getFullYear(),
+    //     nextDate.getMonth() + 1,
+    //     nextDate.getDate()
+    // );
+
+    // this.fromDate = fromDate;
+    // this.toDate = toDate;
+
+    this.email = {
+      fromEmail: '',
+      toEmail: '',
+      subject: '',
+      propertyName: '',
+      message: '',
+    };
+    this.city = this.token.getProperty()?.address?.city;
+    if (this.token.getProperty() !== null) {
+      this.propertyDetail = this.token.getProperty();
+          if (
+      this.token.getProperty() !== undefined &&
+      this.token.getProperty() !== null
+    ) {
+      this.propertyData = this.token.getProperty();
+                   this.accommodationData =
+          this.propertyData.businessServiceDtoList?.filter(
+            (entry) => entry.name === 'Accommodation'
+          );
+              this.accommodationData = this.propertyData.businessServiceDtoList?.filter(
+      (entry) => entry.name === 'Accommodation'
+    );
+    this.accommodationData.forEach((element) => {
+       this.serviceChargePercentage = element.serviceChargePercentage;
+
+    });
+
+        this.accommodationData?.forEach((element) => {
+          this.smartRecommendationsBoolean = element.smartRecommendation;
+        });
+    }
+
+      if (this.activeForGoogleHotelCenter === true) {
+        this.accommodationData =
+          this.propertyDetail.businessServiceDtoList?.filter(
+            (entry) => entry.name === 'Accommodation'
+          );
+        this.accommodationData.forEach((element) => {
+          if (this.bookingengineurl === 'true') {
+            this.value = element.websiteinstantBooking;
+          } else if (this.value !== true) {
+            this.value = element.instantBooking;
+          }
+        });
+      }
+    }
+    if (this.token.getBookingCity() !== null) {
+      this.bookingCity = this.token.getBookingCity();
+    }
+    let businessSlug = this.acRoute.snapshot.params['detail'];
+    if (this.urlLocation !== undefined && this.urlLocation !== null) {
+      this.isHotelMate = false;
+    }
+
+    if (businessSlug !== undefined) {
+      // if (isNaN(Number(businessSlug)) === true) {
+      this.data = businessSlug;
+      this.details = this.data;
+
+      if (this.data.id === undefined) {
+        this.getPropertyDetailsBySeoName(this.data);
+      }
+      this.changeDetectorRefs.detectChanges();
+
+      // this.updateTag();
+      // }
+      //  else {
+      //   this.getPropertyDetailsById(Number(businessSlug));
+      // }
+
+      // else {
+      //   this.getPropertyDetails(this.details.id);
+      // }
+
+      // this.addToCartList = [];
+      // this.slotTimes = [];
+    }
+
+    this.getDiffDate(this.toDate, this.fromDate);
+    setTimeout(() => {
+      if (this.activeForGoogleHotelCenter == true) {
+        this.fetchAndProcessRoomsDataOne();
+      } else if (this.activeForGoogleHotelCenter == false) {
+        this.fetchAndProcessRoomsData();
+      }
+      this.checkLengthOfStayRestrictions();
+    }, 3000);
+    // this.adults = this.adults;
+    // this.checkingAvailability();
+    //  this.getTotalTaxFee();
+    this.validateSelectedCheckInTime();
+    localStorage.removeItem('landingrice');
+  }
+
+roomDescriptionPreview(room: any): string {
+  if (!room?.description) return '';
+
+  const plainText = room.description.replace(/<[^>]+>/g, '');
+  const wordArray = plainText.split(/\s+/);
+
+  if (wordArray.length <= this.descriptionWordLimit) {
+    return room.description;
+  }
+
+  return wordArray.slice(0, this.descriptionWordLimit).join(' ') + '...';
+}
+
+getTotalAdults(): number {
+  return this.selectedPlansSummary.reduce((sum, plan) => sum + (plan.adults || 0), 0);
+}
+
+  isPlanWithinDateRange(plan: any, targetDate?: string): boolean {
+    if (!plan) return false;
+
+    // If a specific date (e.g., rate.date) is provided, check if that date is within [effectiveDate, expiryDate]
+    if (targetDate) {
+      if (plan.expiryDate && targetDate > plan.expiryDate) {
+        return false;
+      }
+      if (plan.effectiveDate && targetDate < plan.effectiveDate) {
+        return false;
+      }
+      return true;
+    }
+
+    const todayStr = new Date().toISOString().split('T')[0];
+    const checkInDate = this.booking?.fromDate || todayStr;
+    const checkOutDate = this.booking?.toDate;
+
+    // Check-in must not be after plan's expiry date
+    if (plan.expiryDate && checkInDate > plan.expiryDate) {
+      return false;
+    }
+
+    // Last night of stay must not be before plan's effective date
+    if (checkOutDate && plan.effectiveDate) {
+      const lastNight = this.addDaysToDateString(checkOutDate, -1);
+      if (lastNight < plan.effectiveDate) {
+        return false;
+      }
+    } else if (plan.effectiveDate && checkInDate < plan.effectiveDate) {
+      return false;
+    }
+
+    return true;
+  }
+
+  getFilteredPlans(plans: any[], room?: any, targetDate?: string) {
+    try {
+      if (!plans) return [];
+      let filtered = this.websiteUrlBookingEngine
+        ? plans.filter(p => p?.name?.trim().toLowerCase() !== 'economy')
+        : plans;
+
+      // Filter by plan validity (effective date to expiry date)
+      filtered = filtered.filter((plan: any) => this.isPlanWithinDateRange(plan, targetDate));
+
+      if (isPlatformBrowser(this.platformId)) {
+        const searchAdults = Number(this.booking?.noOfPersons || this.adults || 1);
+        const searchRooms = Number(this.booking?.noOfRooms || this.rooms || 1);
+        const roomContext = room || this.selectedRoom;
+
+        if (searchAdults > 0 && searchRooms > 0) {
+          const requiredPerRoom = Math.ceil(searchAdults / searchRooms);
+          filtered = filtered.filter((plan: any) => {
+            const planMax = Number(plan?.maximumOccupancy ?? roomContext?.maximumOccupancy ?? 2);
+            return planMax >= requiredPerRoom;
+          });
+        }
+      }
+
+      return filtered;
+    } catch(error) {
+      console.error('Error filtering plans:', error);
+      return [];
+    }
+  }
+
+getTotalChildren(): number {
+  return this.selectedPlansSummary.reduce((sum, plan) => sum + (plan.children || 0), 0);
+}
+  toggleMoreAddons() {
+  this.showMoreAddons = !this.showMoreAddons;
+}
+removeSession() {
+  sessionStorage.removeItem('bookingSummaryDetails');
+const storedBooking = sessionStorage.getItem('bookingSummaryDetails');
+if (storedBooking) {
+  const bookingData = JSON.parse(storedBooking);
+  if(bookingData?.propertyServiceListDataOne) {
+    this.selectedFacilityNames = bookingData?.propertyServiceListDataOne?.map(item => item.name);
+  }
+
+}
+    const savedBooking = sessionStorage.getItem('bookingSummaryDetails');
+  if (savedBooking) {
+    const data = JSON.parse(savedBooking);
+    this.selectedPlansSummary = data.selectedPlansSummary || [];
+
+    // Rebuild selectedGuestsByPlan and selectedRoomsByPlan
+    this.selectedGuestsByPlan = {};
+    this.selectedRoomsByPlan = {};
+
+    this.selectedPlansSummary.forEach(plan => {
+      const planKey = this.getRoomPlanSelectionKey(plan.roomId ?? plan.roomName ?? 'room', plan.planName);
+      this.selectedGuestsByPlan[planKey] = {
+        adults: plan.adults,
+        children: plan.children
+      };
+      this.selectedRoomsByPlan[planKey] = plan.selectedRoomnumber;
+      this.selectedGuestsByPlan[plan.planName] = {
+        adults: plan.adults,
+        children: plan.children
+      };
+      this.selectedRoomsByPlan[plan.planName] = plan.selectedRoomnumber;
+
+    });
+  }
+  this.selectedPlansSummary = [];
+}
+onAddonToggle(addonName: string, checked: boolean) {
+  if (checked) {
+    if (!this.selectedAddonNames.includes(addonName)) {
+      this.selectedAddonNames.push(addonName);
+    }
+  } else {
+    this.selectedAddonNames = this.selectedAddonNames.filter(name => name !== addonName);
+  }
+}
+  get totalAdults(): number {
+    return (
+      Number(this.adults) + this.additionalRooms.reduce((sum, r) => sum + r.adults, 0)
+    );
+  }
+
+get totalChildren(): number {
+  const childno = Number(this.children); // ensures number
+  const additionalChildren = this.additionalRooms.reduce(
+    (sum, r) => sum + Number(r.children || 0), 0
+  );
+  return childno + additionalChildren;
+}
+    openWhatsappPopup() {
+    this.showWhatsappPopup = true;
+  }
+sendWhatsappMessage() {
+   this.isLoadingWhatsapp = true;
+  if (!this.whatsappNumber) {
+    this.errorMessagewhatsapp = 'Please enter your WhatsApp number';
+    this.successMessagewhatsapp = '';
+    return;
+  }
+
+  const apiUrl = `https://notification.uat.bookone.io/api/whatsapp/generate?propertyId=1965&propertyName=Production Property&mobileNumber=${this.whatsappNumber}`;
+
+  this.http.get(apiUrl, { observe: 'response', responseType: 'json' }).subscribe({
+    next: (response) => {
+
+      if (response.status === 200) {
+         this.isLoadingWhatsapp = false;
+        this.successMessagewhatsapp = 'A message has been sent to your WhatsApp.';
+        this.errorMessagewhatsapp = '';
+      } else {
+        this.errorMessagewhatsapp = 'Something went wrong. Please try again.';
+        this.successMessagewhatsapp = '';
+      }
+    },
+    error: (error) => {
+       this.isLoadingWhatsapp = false;
+      if(error.status === 200) {
+        this.successMessagewhatsapp = 'A message has been sent to your WhatsApp';
+        this.errorMessagewhatsapp = '';
+    setTimeout(() => {
+      this.closeWhatsappPopup();
+    }, 3000);
+      } else {
+      this.errorMessagewhatsapp = 'Failed to send WhatsApp message.';
+      this.successMessagewhatsapp = '';
+      }
+
+    }
+  });
+}
+
+
+  closeWhatsappPopup() {
+    this.showWhatsappPopup = false;
+      this.whatsappNumber = '';
+  this.successMessagewhatsapp = '';
+  this.errorMessagewhatsapp = '';
+  this.isLoadingWhatsapp = false;
+  }
+  nextPage() {
+  if (this.currentPage < this.totalPages - 1) {
+    this.currentPage++;
+  }
+}
+prevPage() {
+  if (this.currentPage > 0) {
+    this.currentPage--;
+  }
+}
+
+get totalPages() {
+  // 2 categories per page
+  return Math.ceil(this.categories.length / 2);
+}
+
+get currentCategories() {
+  const start = this.currentPage * 2;
+  return this.categories.slice(start, start + 2);
+}
+restoreGuestSelectionsFromSummary() {
+  // ✅ Restore selectedPlansSummary
+  const savedSummary = sessionStorage.getItem('bookingSummaryDetails');
+  if (!savedSummary) return;
+
+  try {
+    const parsedSummary = JSON.parse(savedSummary);
+    const currentHotelID = this.acRoute.snapshot.queryParams['hotelID'] || this.acRoute.snapshot.queryParams['hotelId'];
+    const currentSlug = this.acRoute.snapshot.params['detail'];
+
+    let isMatch = false;
+
+    if (parsedSummary.propertyId !== undefined && parsedSummary.propertyId !== null) {
+      if (currentHotelID !== undefined && currentHotelID !== null && Number(parsedSummary.propertyId) === Number(currentHotelID)) {
+        isMatch = true;
+      }
+    }
+
+    if (parsedSummary.businessSlug !== undefined && parsedSummary.businessSlug !== null) {
+      if (currentSlug !== undefined && currentSlug !== null && parsedSummary.businessSlug === currentSlug) {
+        isMatch = true;
+      }
+    }
+
+    if (!isMatch) {
+      sessionStorage.removeItem('bookingSummaryDetails');
+      sessionStorage.removeItem('guestDataArray');
+      sessionStorage.removeItem('bookingSummary');
+      this.selectedPlansSummary = [];
+      return;
+    }
+
+    const summaryList = parsedSummary.selectedPlansSummary || [];
+    this.selectedPlansSummary = summaryList;
+
+    // ✅ Restore guestDataArray
+    const savedGuestArray = sessionStorage.getItem('guestDataArray');
+    const guestDataArray = savedGuestArray ? JSON.parse(savedGuestArray) : [];
+
+    // ✅ Reset in-memory maps
+    this.selectedGuestsByPlan = {};
+    this.selectedRoomsByPlan = {};
+    this.childAgesByPlan = {};
+
+    guestDataArray.forEach(entry => {
+      const scopedKey = this.getRoomPlanSelectionKey(entry.roomId ?? entry.roomName ?? 'room', entry.planCode);
+      this.selectedGuestsByPlan[scopedKey] = {
+        adults: entry.adults,
+        children: entry.children
+      };
+      this.selectedRoomsByPlan[scopedKey] = entry.roomCount;
+      this.childAgesByPlan[scopedKey] = entry.childAges || [];
+      this.selectedGuestsByPlan[entry.planCode] = {
+        adults: entry.adults,
+        children: entry.children
+      };
+      this.selectedRoomsByPlan[entry.planCode] = entry.roomCount;
+      this.childAgesByPlan[entry.planCode] = entry.childAges || [];
+    });
+  } catch (e) {
+    sessionStorage.removeItem('bookingSummaryDetails');
+    sessionStorage.removeItem('guestDataArray');
+    sessionStorage.removeItem('bookingSummary');
+    this.selectedPlansSummary = [];
+  }
+}
+
+
+  calculateRoomSummary(): void {
+    this.rooms = 1 + this.additionalRooms.length;
+    this.noOfrooms = this.rooms;
+  }
+bookingSummaryView(){
+  if (!this.showBookingSummary) {
+    // Validation 1: Ensure at least one plan/room is selected
+    const selectedPlans = this.selectedPlansSummary || [];
+    if (selectedPlans.length === 0 || this.getTotalPlanPrice() === 0) {
+      return;
+    }
+
+    // Validation 2: Ensure all added children have an age selected
+    for (const key of Object.keys(this.childAgesByPlan)) {
+      const selectedRooms = this.selectedRoomsByPlan[key] || 0;
+      if (selectedRooms > 0) {
+        const ages = this.childAgesByPlan[key] || [];
+        if (ages.some(age => age === null || age === undefined)) {
+          const parts = key.split('_');
+          const planCode = parts.length > 1 ? parts[parts.length - 1] : key;
+          this.showTemporaryError(planCode, 'Please select age for all existing children first.');
+          return;
+        }
+      }
+    }
+  }
+  this.showBookingSummary = !this.showBookingSummary;
+}
+  onDialogVisibleChange(visible: boolean) {
+    this.showBookingSummary = visible;
+    this.cd.detectChanges();
+  }
+
+  // onHide should fire when the dialog is dismissed (mask, close button, ESC)
+  onDialogHide() {
+    this.showBookingSummary = false; // ensure state is cleared
+    this.cd.detectChanges(); // needed if your component uses OnPush
+  }
+saveRoomSummary() {
+  sessionStorage.setItem('bookingSummary', JSON.stringify(this.additionalRooms));
+}
+
+removeRoom(index: number): void {
+  this.additionalRooms.splice(index, 1);
+  this.saveRoomSummary();
+   this.calculateRoomSummary();
+}
+showSliderPopup() {
+  this.sliderPopupVisible = true;
+}
+  togglePanel(room: any, index: number) {
+    this.isPanelOpen = !this.isPanelOpen;
+
+    if (this.isPanelOpen) {
+      this.selectedRoom = room; // Save the clicked room data
+    } else {
+      this.selectedRoom = null;
+    }
+  }
+
+    togglePanelOne(room: any, index: number) {
+    this.isPanelOpenOne = !this.isPanelOpenOne;
+
+    if (this.isPanelOpenOne) {
+      this.selectedRoom = room; // Save the clicked room data
+    } else {
+      this.selectedRoom = null;
+    }
+  }
+
+  closePannel(){
+    this.isPanelOpen = false;
+  }
+
+
+  isBookingAllowed(): boolean {
+  const selectedRooms = this.selectedPlansSummary?.reduce(
+    (total, plan) => total + (plan.selectedRoomnumber || 0),
+    0
+  );
+
+  return selectedRooms >= this.rooms;
+}
+
+getBookingButtonText(): string {
+  if (!this.isBookingAllowed()) {
+    return 'Book Now';
+  }
+
+  const hasEnquiryRoom = this.selectedPlansSummary?.some(plan => plan.isEnquire === true);
+  if (hasEnquiryRoom) {
+    return 'Enquiry Now';
+  }
+
+  if (this.showPayNow()) {
+    return 'Pay Now';
+  }
+
+  if (this.showPayLater()) {
+    return 'Pay Later';
+  }
+
+  return 'Enquiry Now';
+}
+
+getMinAvailableRooms(ratesList: any[]): number {
+  if (!ratesList || ratesList.length === 0) return 0;
+  return Math.min(
+    ...ratesList
+      .filter(r => r.stopSellOBE === false || r.stopSellOBE === null)
+      .map(r => {
+        const computedAvailable = Math.max(0, (r.totalNoRooms ?? 0) - (r.noOfBooked ?? 0));
+        return (r.noOfAvailable !== undefined && r.noOfAvailable !== null && r.noOfAvailable > 0)
+          ? r.noOfAvailable
+          : computedAvailable;
+      })
+  );
+}
+
+getRoomOptions(totalAvailable: number, roomIdentifier: string | number, currentPlanCode: string): number[] {
+  // Filter only plans that belong to this room
+  const usedRooms = Object.entries(this.selectedRoomsByPlan)
+    .filter(([code]) => code !== currentPlanCode && code.startsWith(`${roomIdentifier}_`))
+    .reduce((sum, [, count]) => sum + (Number(count) || 0), 0);
+
+  const currentKey = `${roomIdentifier}_${currentPlanCode}`;
+  const currentSelection = Number(this.selectedRoomsByPlan[currentKey]) || 0;
+
+  const remaining = totalAvailable - usedRooms;
+  const maxAllowed = Math.max(currentSelection, remaining);
+
+  return Array.from({ length: maxAllowed + 1 }, (_, i) => i);
+}
+
+isDayTripRoom(room: any): boolean {
+  return room?.dayTrip === true || room?.roomDetails?.dayTrip === true;
+}
+
+isDayTripPlan(plan: any, room?: any): boolean {
+  return this.isDayTripRoom(room) || plan?.dayTrip === true || plan?.roomDetails?.dayTrip === true;
+}
+
+private isSameDayBookingSearch(): boolean {
+  if (this.booking?.fromDate && this.booking?.toDate) {
+    return this.booking.fromDate === this.booking.toDate;
+  }
+
+  return Number(this.booking?.noOfNights || 0) === 0;
+}
+
+  private hasDayTripRate(room: any): boolean {
+    const rates = room?.ratesAndAvailabilityDtos || [];
+    return (
+      this.isDayTripRoom(room) ||
+    rates.some((rate: any) =>
+      rate?.roomRatePlans?.some((plan: any) => this.isDayTripPlan(plan, room))
+    )
+  );
+}
+
+  isPlanDisabled(plan: any, room?: any): boolean {
+    // 1. Close to Arrival (CTA) Restriction Check
+    if (plan?.status?.toLowerCase() === 'close' && plan?.restriction?.toLowerCase() === 'arrival') {
+      return true;
+    }
+
+    // 2. Close to Departure (CTD) Restriction Check (Pre-computed look-ahead from backend)
+    if (plan?.isCloseToDeparture === true) {
+      return true;
+    }
+
+    const isDayTrip = this.isDayTripPlan(plan, room);
+    if (isDayTrip && !this.isSameDayBookingSearch()) {
+      return true;
+    }
+
+    if (
+      Number(this.booking?.noOfNights || 0) > 1 &&
+      plan?.onedayPlan === true &&
+      !isDayTrip
+    ) {
+      return true;
+    }
+
+    const nights = Number(this.booking?.noOfNights || this.nights || 0);
+    if (nights > 0) {
+      if (plan?.minimumLengthOfStay > 1 && nights < plan.minimumLengthOfStay) {
+        return true;
+      }
+      if (plan?.maximumLengthOfStay < 999 && nights > plan.maximumLengthOfStay) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  getPlanDisabledMessage(plan: any, room?: any): string {
+    // 1. Close to Arrival (CTA) Warning Message
+    if (plan?.status?.toLowerCase() === 'close' && plan?.restriction?.toLowerCase() === 'arrival') {
+      return 'Check-in is unavailable on this date.';
+    }
+
+    // 2. Close to Departure (CTD) Warning Message
+    if (plan?.isCloseToDeparture === true) {
+      return 'Check-out is unavailable on this date.';
+    }
+
+    if (this.isDayTripPlan(plan, room) && !this.isSameDayBookingSearch()) {
+      return 'Requires same-day check-in & check-out.';
+    }
+
+    if (
+      Number(this.booking?.noOfNights || 0) > 1 &&
+      plan?.onedayPlan === true &&
+      !this.isDayTripPlan(plan, room)
+    ) {
+      return 'Requires exactly a 1-night stay.';
+    }
+
+    const nights = Number(this.booking?.noOfNights || this.nights || 0);
+    if (nights > 0) {
+      if (plan?.minimumLengthOfStay > 1 && nights < plan.minimumLengthOfStay) {
+        return `Requires a minimum stay of ${plan.minimumLengthOfStay} nights.`;
+      }
+      if (plan?.maximumLengthOfStay < 999 && nights > plan.maximumLengthOfStay) {
+        return `Requires a maximum stay of ${plan.maximumLengthOfStay} nights.`;
+      }
+    }
+
+    return 'This plan is not available for selected dates.';
+  }
+
+  checkLengthOfStayRestrictions(): void {
+    const rooms = this.availableRooms || [];
+    if (rooms.length === 0) return;
+
+    const selectedNights = Number(this.booking?.noOfNights || this.nights || 0);
+    if (selectedNights === 0) return;
+
+    let totalPlansCount = 0;
+    let restrictedMinStayCount = 0;
+    const minStays = new Set<number>();
+
+    for (const room of rooms) {
+      if (!room.ratesAndAvailabilityDtos) continue;
+      for (const rate of room.ratesAndAvailabilityDtos) {
+        if (!rate.roomRatePlans) continue;
+        const visiblePlans = this.isPlanVisible(rate.roomRatePlans, room.name, room);
+        if (!visiblePlans) continue;
+        
+        for (const plan of visiblePlans) {
+          totalPlansCount++;
+          const minStay = Number(plan.minimumLengthOfStay || 1);
+          if (minStay > 1 && selectedNights < minStay) {
+            restrictedMinStayCount++;
+            minStays.add(minStay);
+          }
+        }
+      }
+    }
+
+    // Large Popup: Triggered ONLY if every visible plan is restricted AND they all share the same minimum stay
+    if (totalPlansCount > 0 && restrictedMinStayCount === totalPlansCount && minStays.size === 1) {
+      this.minStayRequiredNights = Array.from(minStays)[0];
+      this.showMinStayPopup = true;
+    } else {
+      this.showMinStayPopup = false;
+    }
+  }
+
+  private updateDayTripCheckoutAvailability(roomList: any[]): void {
+    if (this.activeForGoogleHotelCenter) {
+      return;
+    }
+
+    this.dayTripCheckoutAllowed = (roomList || []).some((room: any) =>
+      this.hasDayTripRate(room)
+    );
+    this.dayOneTrip = this.dayTripCheckoutAllowed;
+  }
+
+  getCheckoutMinDate(): NgbDate {
+    if (!this.fromDate) {
+      return this.minDateForCheckOut || this.minDateForCheckIn;
+    }
+
+    return this.dayTripCheckoutAllowed || this.activeForGoogleHotelCenter
+      ? this.fromDate
+      : this.calendar.getNext(this.fromDate, 'd', 1);
+  }
+
+  private addDaysToDateString(dateValue: any, days: number): string {
+    if (!dateValue) {
+      return dateValue;
+    }
+
+    const dateString = dateValue.toString();
+    const parts =
+      dateString.includes('-') && dateString.split('-')[0].length === 4
+        ? dateString.split('-').map(Number)
+        : dateString.split('-').reverse().map(Number);
+
+    if (parts.length !== 3 || parts.some((part) => Number.isNaN(part))) {
+      return dateValue;
+    }
+
+    const [year, month, day] = parts;
+    const date = new Date(year, month - 1, day);
+    date.setDate(date.getDate() + days);
+
+    return this.getDateFormatYearMonthDay(
+      date.getDate(),
+      date.getMonth() + 1,
+      date.getFullYear()
+    );
+  }
+
+  private getAvailabilityCheckoutDate(): string {
+    if (this.activeForGoogleHotelCenter) {
+      return this.booking.toDate;
+    }
+
+    return Number(this.DiffDate || 0) === 0
+      ? this.addDaysToDateString(this.booking.fromDate, 1)
+      : this.booking.toDate;
+  }
+
+private getDayTripPlanAmount(plan: any): number {
+  return Number(plan?.extraChargePerPerson || 0);
+}
+
+private getPlanIncludedAdults(plan: any): number {
+  return Number(plan?.minimumOccupancy ?? plan?.includedAdults ?? plan?.noOfAdults ?? 0) || 0;
+}
+
+private getPlanMaxExtraPersons(plan: any): number {
+  return Number(plan?.maxExtraPersons ?? plan?.maximumExtraPersons ?? plan?.extraPersonAllowed ?? 0) || 0;
+}
+
+  getDayTripAdultLimit(plan: any): number {
+  const includedAdults = this.getPlanIncludedAdults(plan);
+  const maxExtraPersons = this.getPlanMaxExtraPersons(plan);
+  const fallback = Number(plan?.maximumOccupancy || 0);
+  return Math.max(1, includedAdults + maxExtraPersons || fallback || 1);
+}
+
+  getRoomPlanSelectionKey(roomIdentifier: string | number, planCode: string): string {
+    return `${roomIdentifier ?? 'room'}_${planCode}`;
+  }
+
+  private getScopedRoomPlanKey(room: any, rates: any, planCode: string): string {
+    const roomIdentifier = room?.id ?? rates?.roomId ?? room?.name ?? rates?.roomName;
+    return this.getRoomPlanSelectionKey(roomIdentifier, planCode);
+  }
+
+  setDefaultRoomIfMissing(planCode: string): boolean {
+    if (this.selectedRoomsByPlan[planCode] === undefined) {
+      this.selectedRoomsByPlan[planCode] = 0;
+    }
+    return true;
+  }
+onRoomSelect(roomIdentifier: string | number, planCode: string, count: number | string) {
+  const plan = this.findPlanByCode(planCode);
+  if (this.isPlanDisabled(plan)) {
+    return;
+  }
+
+  const key = this.getRoomPlanSelectionKey(roomIdentifier, planCode);
+  const selectedCount = Number(count) || 0;
+
+  this.selectedRoomsByPlan[key] = selectedCount;
+  if (selectedCount > 0) {
+    if (!this.selectedGuestsByPlan[key]) {
+      const defaultAdults = Math.max(selectedCount, this.totalAdults || 1);
+      const defaultChildren = this.totalChildren || 0;
+      this.selectedGuestsByPlan[key] = { adults: defaultAdults, children: defaultChildren };
+      
+      if (!this.childAgesByPlan[key]) {
+        this.childAgesByPlan[key] = [];
+      }
+      while (this.childAgesByPlan[key].length < defaultChildren) {
+        this.childAgesByPlan[key].push(null);
+      }
+    } else {
+      this.selectedGuestsByPlan[key].adults = Math.max(this.selectedGuestsByPlan[key].adults, selectedCount);
+    }
+  } else {
+    delete this.selectedGuestsByPlan[key];
+    delete this.childAgesByPlan[key];
+  }
+
+}
+
+
+  getRemainingRooms(): number {
+    const totalSelected = Object.values(this.selectedRoomsByPlan).reduce(
+      (a, b) => a + b,
+      0
+    );
+    return this.rooms - totalSelected;
+  }
+
+  disableRoomIndexList(index: number, roomKey: string): boolean {
+    try {
+      const selectedKeys = Object.keys(this.selectedRoomsByPlan || {});
+      const selectedCount = selectedKeys.length;
+      const maxSelectable = this.rooms;
+
+      // Always enable already selected rooms
+      if (this.selectedRoomsByPlan[roomKey]) {
+        return false;
+      }
+
+      // Only allow enabling the next (maxSelectable - selectedCount) slots
+      // For example: rooms = 4, selected = 2 → allow only index 0, 1
+      return index >= maxSelectable - (maxSelectable - selectedCount);
+    } catch (error) {
+      console.error('Error in disableRoomIndexList:', error);
+      return true;
+    }
+  }
+
+  openGalleryModal() {
+    $(`#${this.galleryModalRef.nativeElement.id}`).modal('show');
+  }
+
+  closeGalleryModal() {
+    $(`#${this.galleryModalRef.nativeElement.id}`).modal('hide');
+  }
+
+  isMobileView: boolean = false;
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event?: any) {
+    if (isPlatformBrowser(this.platformId)) {
+      this.isMobileView = window.innerWidth < 1024;
+    }
+  }
+
+  @HostListener('window:keydown', ['$event'])
+  handleKeyDown(event: KeyboardEvent) {
+    if (isPlatformBrowser(this.platformId)) {
+      // 1. ESCAPE key to close/go back
+      if (event.key === 'Escape') {
+        const carouselOpen = $('#carouselModal').hasClass('show');
+        const galleryOpen = $('#galleryModal').hasClass('show');
+        
+        if (carouselOpen) {
+          this.closeCarouselModal();
+          event.preventDefault();
+        } else if (galleryOpen) {
+          this.closeGalleryModal();
+          event.preventDefault();
+        } else if (this.sliderPopupVisible) {
+          this.sliderPopupVisible = false;
+          event.preventDefault();
+        }
+      }
+
+      // 2. Keyboard Navigation for Carousel Modal
+      if ($('#carouselModal').hasClass('show')) {
+        if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
+          this.nextImage();
+          event.preventDefault();
+        } else if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') {
+          this.prevImage();
+          event.preventDefault();
+        }
+      }
+
+      // 3. Scroll Support for Gallery Modal
+      if ($('#galleryModal').hasClass('show')) {
+        const galleryModalBody = document.querySelector('#galleryModal .modal-body');
+        if (galleryModalBody) {
+          const scrollAmount = 100;
+          if (event.key === 'ArrowDown') {
+            galleryModalBody.scrollTop += scrollAmount;
+            event.preventDefault();
+          } else if (event.key === 'ArrowUp') {
+            galleryModalBody.scrollTop -= scrollAmount;
+            event.preventDefault();
+          } else if (event.key === 'PageDown') {
+            galleryModalBody.scrollTop += scrollAmount * 4;
+            event.preventDefault();
+          } else if (event.key === 'PageUp') {
+            galleryModalBody.scrollTop -= scrollAmount * 4;
+            event.preventDefault();
+          }
+        }
+      }
+    }
+  }
+
+  getListingGalleryClass(): string {
+    const imageCount: number = this.businessUser?.imageList?.length ?? 0;
+
+    if (imageCount <= 1) {
+      return 'listing-gallery-grid--single';
+    }
+
+    if (imageCount === 2) {
+      return 'listing-gallery-grid--two';
+    }
+
+    if (imageCount === 3) {
+      return 'listing-gallery-grid--three';
+    }
+
+    return 'listing-gallery-grid--many';
+  }
+
+  openCarouselModal(index: number, fromGallery: boolean = false) {
+    this.activeImageIndex = index;
+
+    if (fromGallery) {
+      this.closeGalleryModal();
+    }
+
+    setTimeout(() => {
+      $(`#${this.carouselModalRef.nativeElement.id}`).modal('show');
+    }, 200);
+  }
+
+  closeCarouselModal() {
+    $(`#${this.carouselModalRef.nativeElement.id}`).modal('hide');
+
+    // Open gallery modal again if coming from it
+    setTimeout(() => {
+      this.openGalleryModal();
+    }, 200);
+  }
+
+  // Open Smart Recommendations section
+  openSmartRecommendations() {
+    // Scroll to room selection area which contains smart recommendations
+    const element = document.getElementById('accmdOne');
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
+
+  nextImage() {
+    if (this.activeImageIndex < this.businessUser.imageList.length - 1) {
+      this.activeImageIndex++;
+    }
+  }
+
+  prevImage() {
+    if (this.activeImageIndex > 0) {
+      this.activeImageIndex--;
+    }
+  }
+  // onIncrement(planCode: string, type: 'adults' | 'children', plan: any) {
+  //   const limit = type === 'adults' ? plan.maximumOccupancy : plan.noOfChildren;
+  //   const totalAllowed =
+  //     type === 'adults' ? this.totalAdults : this.totalChildren;
+
+  //   if (
+  //     !this.selectedRoomsByPlan[planCode] ||
+  //     this.selectedRoomsByPlan[planCode] === 0
+  //   ) {
+  //     return; // Stop if no room selected
+  //   }
+
+  //   // Initialize selectedGuestsByPlan if not already
+  //   if (!this.selectedGuestsByPlan[planCode]) {
+  //     this.selectedGuestsByPlan[planCode] = { adults: 0, children: 0 };
+  //   }
+
+  //   const current = this.selectedGuestsByPlan[planCode][type];
+
+  //   const totalSelected = Object.values(this.selectedGuestsByPlan).reduce(
+  //     (sum, val) => sum + val[type],
+  //     0
+  //   );
+
+  //   if (current < limit && totalSelected < totalAllowed) {
+  //     this.selectedGuestsByPlan[planCode][type]++;
+  //   }
+  // }
+
+onIncrement(planCode: string, type: 'adults' | 'children', plan: any, room: any) {
+  if (this.isPlanDisabled(plan, room)) {
+    return;
+  }
+
+  this.guestSelectionErrors[planCode] = '';
+
+  const isDayTrip = this.isDayTripPlan(plan, room);
+  const scopedRoomKey = this.getScopedRoomPlanKey(room, null, planCode);
+  if (isDayTrip) {
+    this.selectedRoomsByPlan[scopedRoomKey] = 1;
+  }
+
+  const selectedRooms = isDayTrip
+    ? 1
+    : (this.selectedRoomsByPlan[scopedRoomKey] || 0);
+
+  if (selectedRooms === 0 && !plan?.nonRoomPlan) {
+    this.showTemporaryError(planCode, 'Please add a room first.');
+    return;
+  }
+  if (!this.selectedGuestsByPlan[scopedRoomKey]) {
+    this.selectedGuestsByPlan[scopedRoomKey] = { adults: 0, children: 0 };
+  }
+
+  if (!this.childAgesByPlan[scopedRoomKey]) {
+    this.childAgesByPlan[scopedRoomKey] = [];
+  }
+  if (plan?.nonRoomPlan) {
+    const lastPlan = room?.ratesAndAvailabilityDtos?.at(-1);
+    const maxAdult = plan?.maximumOccupancy || 0;
+    const maxChild = plan?.noOfChildren || 0;
+
+    const maxCapacityPerRoom = maxAdult + maxChild || 1; // Avoid division by zero
+    const roomsAvailable = lastPlan?.noOfAvailable || 0;
+
+    const totalMaxAdultOccupancy = maxAdult * roomsAvailable;
+    const totalMaxChildOccupancy = maxChild * roomsAvailable;
+    const totalMaxOccupancy = maxCapacityPerRoom * roomsAvailable;
+
+    const currentAdults = this.selectedGuestsByPlan[scopedRoomKey].adults ?? 0;
+
+    if (type === 'adults') {
+      const projectedAdults = currentAdults + 1;
+      const ages = this.childAgesByPlan[scopedRoomKey] || [];
+      const projectedTotal = projectedAdults + ages.length;
+
+      if (projectedAdults > totalMaxAdultOccupancy) {
+        this.showTemporaryError(
+          planCode,
+          `Maximum adult occupancy of ${totalMaxAdultOccupancy} exceeded.`
+        );
+        return;
+      }
+
+      if (projectedTotal > totalMaxOccupancy) {
+        this.showTemporaryError(planCode, `Maximum occupancy of ${totalMaxOccupancy} exceeded.`);
+        return;
+      }
+
+      this.selectedGuestsByPlan[scopedRoomKey].adults++;
+    } else if (type === 'children') {
+      const ages = this.childAgesByPlan[scopedRoomKey];
+
+      if (ages.some(a => a === null)) {
+        this.showTemporaryError(planCode, 'Please select age for all existing children first.');
+        return;
+      }
+
+      if (maxChild > 0 && ages.length >= totalMaxChildOccupancy) {
+        this.showTemporaryError(planCode, `Maximum children of ${totalMaxChildOccupancy} exceeded.`);
+        return;
+      }
+
+      const projectedChildren = ages.length + 1;
+      const projectedTotal = currentAdults + projectedChildren;
+
+      if (projectedTotal > totalMaxOccupancy) {
+        this.showTemporaryError(planCode, `Maximum occupancy of ${totalMaxOccupancy} exceeded.`);
+        return;
+      }
+
+      this.childAgesByPlan[scopedRoomKey].push(null);
+      const lastIndex = this.childAgesByPlan[scopedRoomKey].length - 1;
+      this.autoOpenChildAgeDropdown(scopedRoomKey, lastIndex);
+    }
+
+    const totalGuests = this.selectedGuestsByPlan[scopedRoomKey].adults + this.selectedGuestsByPlan[scopedRoomKey].children;
+    const updatedSelectedRooms = Math.ceil(totalGuests / maxCapacityPerRoom);
+
+    if (updatedSelectedRooms === 0 && !plan?.nonRoomPlan) {
+      this.showTemporaryError(planCode, 'Please add a room first.');
+      return;
+    }
+
+    this.selectedRoomsByPlan[scopedRoomKey] = updatedSelectedRooms;
+  } else {
+    if (isDayTrip && type === 'adults') {
+      const currentAdults = this.selectedGuestsByPlan[scopedRoomKey].adults || 0;
+      const adultLimit = this.getDayTripAdultLimit(plan);
+      if (currentAdults >= adultLimit) {
+        this.showTemporaryError(
+          planCode,
+          `Maximum adult occupancy of ${adultLimit} adults exceeded.`
+        );
+        return;
+      }
+      this.selectedGuestsByPlan[scopedRoomKey].adults++;
+      return;
+    }
+
+    const maxAdult = plan.maximumOccupancy || 0;
+    const maxChild = plan.noOfChildren || 0;
+
+    const maxCapacityPerRoom = maxAdult + maxChild;
+    const totalMaxAdultOccupancy = maxAdult * selectedRooms;
+    const totalMaxChildOccupancy = maxChild * selectedRooms;
+    const maxOccupancy = maxCapacityPerRoom * selectedRooms;
+
+    const adults = this.selectedGuestsByPlan[scopedRoomKey].adults;
+
+    const ages = this.childAgesByPlan[scopedRoomKey];
+
+    if (type === 'adults') {
+      if (adults >= totalMaxAdultOccupancy) {
+        this.showTemporaryError(
+          planCode,
+          `Maximum adult occupancy of ${totalMaxAdultOccupancy} adults exceeded.`
+        );
+        return;
+      }
+
+      const projectedTotal = adults + 1 + ages.length;
+      if (projectedTotal > maxOccupancy) {
+        this.showTemporaryError(
+          planCode,
+          `Maximum occupancy of ${maxOccupancy} exceeded.`
+        );
+        return;
+      }
+
+      this.selectedGuestsByPlan[scopedRoomKey].adults++;
+      return;
+    }
+
+    if (type === 'children') {
+      if (ages.some(a => a === null)) {
+        this.showTemporaryError(
+          planCode,
+          'Please select age for all existing children first.'
+        );
+        return;
+      }
+
+      if (maxChild > 0 && ages.length >= totalMaxChildOccupancy) {
+        this.showTemporaryError(planCode, `Maximum children of ${totalMaxChildOccupancy} exceeded.`);
+        return;
+      }
+
+      const projectedTotal = adults + ages.length + 1;
+      const under5Limit = 2 * selectedRooms;
+      if (projectedTotal > (maxOccupancy + under5Limit)) {
+        this.showTemporaryError(
+          planCode,
+          `Maximum occupancy of ${maxOccupancy} exceeded.`
+        );
+        return;
+      }
+
+      this.childAgesByPlan[scopedRoomKey].push(null);
+      const lastIndex = this.childAgesByPlan[scopedRoomKey].length - 1;
+      this.autoOpenChildAgeDropdown(scopedRoomKey, lastIndex);
+
+    }
+  }
+}
+
+autoOpenChildAgeDropdown(scopedRoomKey: string, index: number) {
+  setTimeout(() => {
+    const id = `child-age-select-${scopedRoomKey}-${index}`;
+    const element = document.getElementById(id) as HTMLSelectElement;
+    if (element) {
+      element.focus();
+      try {
+        const mousedownEvent = new MouseEvent('mousedown', {
+          bubbles: true,
+          cancelable: true,
+          view: window
+        });
+        element.dispatchEvent(mousedownEvent);
+        element.click();
+      } catch (e) {
+        console.error('Error auto-opening select dropdown:', e);
+      }
+    }
+  }, 100);
+}
+
+private showTemporaryError(planCode: string, message: string) {
+  this.guestSelectionErrors[planCode] = message;
+  setTimeout(() => {
+    this.guestSelectionErrors[planCode] = '';
+  }, 4000);
+}
+
+onDecrement(planCode: string, type: 'adults' | 'children', room?: any) {
+  const plan = this.findPlanByCode(planCode);
+  if (this.isPlanDisabled(plan)) {
+    return;
+  }
+
+  const scopedRoomKey = this.getScopedRoomPlanKey(room, null, planCode);
+  const currentGuests = this.selectedGuestsByPlan[scopedRoomKey];
+
+  if (currentGuests) {
+    if (type === 'adults' && currentGuests.adults > 0) {
+      currentGuests.adults--;
+    } else if (type === 'children' && this.childAgesByPlan[scopedRoomKey]?.length > 0) {
+      this.childAgesByPlan[scopedRoomKey].pop();
+      currentGuests.children = this.getChildCount(planCode, room);
+    } else {
+      return;
+    }
+
+    const totalGuests = (currentGuests.adults || 0) + (currentGuests.children || 0);
+
+    if (totalGuests === 0) {
+      // ✅ Remove the specific plan object from selectedPlansSummary
+      this.selectedPlansSummary = this.selectedPlansSummary.filter(
+        plan => plan.planName !== planCode
+      );
+
+      // ✅ Optionally remove from localStorage
+      const roomCount = this.selectedRoomsByPlan[scopedRoomKey] || 0;
+      const guestDataKey = `guestData_${planCode}_${roomCount}`;
+      sessionStorage.removeItem(guestDataKey);
+
+      // ✅ Optionally clean up in-memory maps
+      delete this.selectedGuestsByPlan[scopedRoomKey];
+      delete this.selectedRoomsByPlan[scopedRoomKey];
+      delete this.childAgesByPlan[scopedRoomKey];
+
+      // ✅ Update sessionStorage
+      sessionStorage.setItem(
+        'bookingSummaryDetails',
+        JSON.stringify({
+          propertyId: this.businessUser?.id,
+          businessSlug: this.businessUser?.seoFriendlyName,
+          selectedPlansSummary: this.selectedPlansSummary
+        })
+      );
+    }
+  }
+}
+
+onChildAgeChange(planCode: string, plan: any, room?: any) {
+  if (this.isPlanDisabled(plan)) {
+    return;
+  }
+
+  const scopedRoomKey = this.getScopedRoomPlanKey(room, null, planCode);
+  const selectedRooms = this.selectedRoomsByPlan[scopedRoomKey] || 0;
+  const maxAdult = plan.maximumOccupancy || 0;
+  const maxChild = plan.noOfChildren || 0;
+
+  const maxCapacityPerRoom = maxAdult + maxChild;
+  const maxOccupancy = maxCapacityPerRoom * selectedRooms;
+
+  const ages = this.childAgesByPlan[scopedRoomKey] || [];
+
+  const adults = this.selectedGuestsByPlan[scopedRoomKey]?.adults || 0;
+
+  const freeThreshold = this.getFreeChildThreshold();
+  const above5Count = ages.filter(a => a !== null && (plan?.childAgeLimit && plan.childAgeLimit > 0 ? a >= plan.childAgeLimit : a > freeThreshold)).length;
+  const under5Count = ages.filter(a => a !== null && (plan?.childAgeLimit && plan.childAgeLimit > 0 ? a < plan.childAgeLimit : a <= freeThreshold)).length;
+
+  const under5Limit = 2 * selectedRooms;
+  const ageLimitText = plan?.childAgeLimit && plan.childAgeLimit > 0 ? `${plan.childAgeLimit} years` : `${freeThreshold} years`;
+
+  if (under5Count > under5Limit) {
+    this.showTemporaryError(
+      planCode,
+      `Only ${under5Limit} children below ${ageLimitText} allowed.`
+    );
+    this.resetLastChangedAge(planCode, room);
+    return;
+  }
+
+  if ((adults + above5Count) > maxOccupancy) {
+    this.showTemporaryError(
+      planCode,
+      `Maximum occupancy of ${maxOccupancy} exceeded.`
+    );
+    this.resetLastChangedAge(planCode, room);
+    return;
+  }
+
+  if (!this.selectedGuestsByPlan[scopedRoomKey]) {
+    this.selectedGuestsByPlan[scopedRoomKey] = { adults: 0, children: 0 };
+  }
+  this.selectedGuestsByPlan[scopedRoomKey].children = this.getChildCount(planCode, room);
+
+  this.guestSelectionErrors[planCode] = '';
+}
+
+triggerPlanUpdate(planCode: string, room?: any) {
+  const scopedRoomKey = this.getScopedRoomPlanKey(room, null, planCode);
+  const selectedRooms = this.selectedRoomsByPlan[scopedRoomKey] || 0;
+  if (selectedRooms > 0) {
+    const rateObj = room?.ratesAndAvailabilityDtos?.find((rate: any) => 
+      rate.roomRatePlans?.some((p: any) => p.code === planCode)
+    ) || this.getRateByPlanCode(planCode);
+    if (rateObj) {
+      this.onPlanSelect(planCode, rateObj, room);
+    }
+  }
+}
+getChildCount(planCode: string, room?: any) {
+  const scopedRoomKey = this.getScopedRoomPlanKey(room, null, planCode);
+  const ages = this.childAgesByPlan[scopedRoomKey] || this.childAgesByPlan[planCode] || [];
+  return ages.filter(age => age !== null && age !== undefined).length;
+}
+resetLastChangedAge(planCode: string, room?: any) {
+  const scopedRoomKey = this.getScopedRoomPlanKey(room, null, planCode);
+  const lastIndex = this.childAgesByPlan[scopedRoomKey]?.length - 1;
+  this.childAgesByPlan[scopedRoomKey][lastIndex] = null;
+}
+  canAddRoom(): boolean {
+    let maxRooms = 30;
+    const label = this.roomLabel?.toLowerCase();
+    const isBhkOrVilla = label && label !== 'room' && label !== 'accommodation';
+
+    if (isBhkOrVilla) {
+      if (this.shortrooms && this.shortrooms.length > 0) {
+        maxRooms = this.shortrooms.length;
+      } else if (this.availableRooms && this.availableRooms.length > 0) {
+        maxRooms = this.availableRooms.length;
+      }
+    }
+    return this.rooms < maxRooms;
+  }
+  addRoom() {
+    if (!this.canAddRoom()) return;
+    this.additionalRooms.push({ adults: 1, children: 0 });
+    this.rooms++;
+    this.noOfrooms = this.rooms;
+  }
+  getBhkBlockGuestsForRoom(room: any): { adults: number; children: number } {
+    const bhkBlocks = [
+      { adults: Number(this.adults || 1), children: Number(this.children || 0) },
+      ...(this.additionalRooms || []).map(r => ({ adults: Number(r.adults || 1), children: Number(r.children || 0) }))
+    ];
+    if (bhkBlocks.length === 0) {
+      return { adults: Number(this.totalAdults || 1), children: Number(this.totalChildren || 0) };
+    }
+    const maxOccupancy = Number(room?.maximumOccupancy || room?.room?.maximumOccupancy || 0);
+    let bestBlock = bhkBlocks[0];
+    let minDiff = Math.abs(Number(bhkBlocks[0].adults + bhkBlocks[0].children) - maxOccupancy);
+
+    for (let i = 1; i < bhkBlocks.length; i++) {
+      const totalGuestsInBlock = Number(bhkBlocks[i].adults + bhkBlocks[i].children);
+      const diff = Math.abs(totalGuestsInBlock - maxOccupancy);
+      if (diff < minDiff) {
+        minDiff = diff;
+        bestBlock = bhkBlocks[i];
+      }
+    }
+    return bestBlock;
+  }
+  getUnassignedGuests(excludeScopedRoomKey?: string): { adults: number; children: number } {
+    let assignedAdults = 0;
+    let assignedChildren = 0;
+
+    for (const key of Object.keys(this.selectedGuestsByPlan)) {
+      if (key === excludeScopedRoomKey) continue;
+      if (this.selectedRoomsByPlan[key] > 0) {
+        assignedAdults += Number(this.selectedGuestsByPlan[key]?.adults || 0);
+        assignedChildren += Number(this.selectedGuestsByPlan[key]?.children || 0);
+      }
+    }
+
+    const remainingAdults = Math.max(0, Number(this.totalAdults || 1) - assignedAdults);
+    const remainingChildren = Math.max(0, Number(this.totalChildren || 0) - assignedChildren);
+
+    return { adults: remainingAdults, children: remainingChildren };
+  }
+  getFreeChildThreshold(): number {
+    if (this.businessServiceDto?.childMinAge !== undefined && this.businessServiceDto?.childMinAge !== null) {
+      return this.businessServiceDto.childMinAge;
+    }
+    const accommodationService = this.businessUser?.businessServiceDtoList?.find(ele => ele.name === 'Accommodation' || ele.name === 'Accomodation' || ele.name === 'Room');
+    if (accommodationService?.childMinAge !== undefined && accommodationService?.childMinAge !== null) {
+      return accommodationService.childMinAge;
+    }
+    const propService = this.propertyData?.businessServiceDtoList?.find(ele => ele.name === 'Accommodation' || ele.name === 'Accomodation' || ele.name === 'Room');
+    if (propService?.childMinAge !== undefined && propService?.childMinAge !== null) {
+      return propService.childMinAge;
+    }
+    const propDetailService = this.propertyDetail?.businessServiceDtoList?.find(ele => ele.name === 'Accommodation' || ele.name === 'Accomodation' || ele.name === 'Room');
+    if (propDetailService?.childMinAge !== undefined && propDetailService?.childMinAge !== null) {
+      return propDetailService.childMinAge;
+    }
+    return 5;
+  }
+  onMouseEnter() {
+    clearTimeout(this.popupTimeout);
+    this.roomsAndOccupancy = true;
+  }
+
+  onMouseLeave() {
+    this.popupTimeout = setTimeout(() => {
+      this.roomsAndOccupancy = false;
+    }, 200); // 200ms delay to avoid flicker
+  }
+
+  closing() {
+    this.roomsAndOccupancy = false;
+  }
+
+  closeChanges(){
+    this.roomsAndOccupancy = false;
+  }
+
+  selectRoomsbtn() {
+    this.closeGalleryModal();
+    setTimeout(() => {
+      this.scrollToAccommodationDash();
+    }, 500);
+  }
+
+  getCodeandSetDefaultGHC(plancode): void {
+  const planCode = plancode;
+  const rate = this.getRateByPlanCode(planCode);
+  const scopedKey = this.getScopedRoomPlanKey(this.selectedRoom, rate, planCode);
+
+  // 1. Assign default selection
+  this.selectedRoomsByPlan[scopedKey] = 1;
+  this.selectedGuestsByPlan[scopedKey] = {
+    adults: this.totalAdults || this.adults || 1,
+    children: this.totalChildren || this.childno || 0,
+  };
+  if (!this.childAgesByPlan[scopedKey]) {
+    this.childAgesByPlan[scopedKey] = [];
+  }
+  while (this.childAgesByPlan[scopedKey].length < (this.totalChildren || this.childno || 0)) {
+    this.childAgesByPlan[scopedKey].push(null);
+  }
+
+  // 2. Trigger plan selection
+  this.onPlanSelect(planCode, rate, this.selectedRoom);
+  this.isPanelOpen = false;
+  // 3. Scroll to the plan card — even if it's already in view
+  setTimeout(() => {
+    const el = document.getElementById('plan-' + planCode);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+      // Optionally add a highlight effect
+      el.classList.add('scroll-highlight');
+      // setTimeout(() => {
+      //   el.classList.remove('scroll-highlight');
+      // }, 5000);
+    }
+  }, 100); // slight delay ensures DOM updates
+}
+
+  onPlanSelect(planCode: string, rates: any, roomContext?: any) {
+    const roomId = roomContext?.id ?? rates?.roomId;
+    const roomName = roomContext?.name ?? rates?.roomName ?? '';
+    const plan = rates?.roomRatePlans?.find((p) => p.code === planCode && rates?.roomId === roomId);
+
+    // Reset
+    if (!plan) return;
+    
+   const ghcOtaPrice = this.getGhcOtaPlanPrice(plan);
+     if (this.activeForGoogleHotelCenter === true && plan.code === 'GHC' && ghcOtaPrice !== null) {
+       plan.amount = ghcOtaPrice;
+     }
+    if (this.isPlanDisabled(plan, roomContext || rates)) return;
+
+    const isDayTrip = this.isDayTripPlan(plan, roomContext || rates);
+    const scopedRoomKey = this.getScopedRoomPlanKey(roomContext, rates, planCode);
+
+    let currentSelectedRooms = isDayTrip
+      ? 1
+      : (this.selectedRoomsByPlan[scopedRoomKey] || 0);
+
+    if (currentSelectedRooms === 0 && !plan?.nonRoomPlan) {
+      currentSelectedRooms = 1;
+      this.selectedRoomsByPlan[scopedRoomKey] = 1;
+    }
+
+    if (isDayTrip) {
+      this.selectedRoomsByPlan[scopedRoomKey] = 1;
+      if (!this.selectedGuestsByPlan[scopedRoomKey]) {
+        this.selectedGuestsByPlan[scopedRoomKey] = {
+          adults: Math.max(1, this.totalAdults || this.getPlanIncludedAdults(plan) || 1),
+          children: this.totalChildren || 0
+        };
+      }
+      this.selectedGuestsByPlan[scopedRoomKey].adults = Math.min(
+        Math.max(1, Number(this.selectedGuestsByPlan[scopedRoomKey].adults || 1)),
+        this.getDayTripAdultLimit(plan),
+      );
+      if (!this.childAgesByPlan[scopedRoomKey]) {
+        this.childAgesByPlan[scopedRoomKey] = [];
+      }
+      while (this.childAgesByPlan[scopedRoomKey].length < (this.totalChildren || 0)) {
+        this.childAgesByPlan[scopedRoomKey].push(null);
+      }
+    } else {
+      if (currentSelectedRooms > 0) {
+        if (!this.selectedGuestsByPlan[scopedRoomKey]) {
+          const label = this.roomLabel?.toLowerCase();
+          const isBhkOrVilla = label && label !== 'room' && label !== 'accommodation';
+          const defaultGuests = isBhkOrVilla
+            ? this.getBhkBlockGuestsForRoom(roomContext || rates)
+            : { adults: this.totalAdults || 1, children: this.totalChildren || 0 };
+
+          const maxOccupancyForPlan = Number(plan?.maximumOccupancy || roomContext?.maximumOccupancy || rates?.room?.maximumOccupancy || 30);
+          const unassigned = this.getUnassignedGuests(scopedRoomKey);
+          const targetAdults = Math.min(defaultGuests.adults, unassigned.adults);
+          const targetChildren = Math.min(defaultGuests.children, unassigned.children);
+
+          this.selectedGuestsByPlan[scopedRoomKey] = {
+            adults: Math.max(currentSelectedRooms, Math.min(maxOccupancyForPlan, targetAdults > 0 ? targetAdults : 1)),
+            children: targetChildren
+          };
+        }
+        if (!this.childAgesByPlan[scopedRoomKey]) {
+          this.childAgesByPlan[scopedRoomKey] = [];
+        }
+        while (this.childAgesByPlan[scopedRoomKey].length < (this.selectedGuestsByPlan[scopedRoomKey].children || 0)) {
+          this.childAgesByPlan[scopedRoomKey].push(null);
+        }
+      }
+    }
+
+    const ages = this.childAgesByPlan[scopedRoomKey] || [];
+    if (ages.some(a => a === null)) {
+      this.showTemporaryError(planCode, 'Please select age for all children first.');
+      return;
+    }
+
+    const selectedRooms = isDayTrip
+      ? 1
+      : (this.selectedRoomsByPlan[scopedRoomKey] || 0);
+    const selectedGuests = this.selectedGuestsByPlan[scopedRoomKey] || this.selectedGuestsByPlan[planCode] || { adults: 0, children: 0 };
+    const childAges = (this.childAgesByPlan[scopedRoomKey] || this.childAgesByPlan[planCode] || []).map(a => Number(a));
+    const freeThreshold = this.getFreeChildThreshold();
+    const below5Count = childAges.filter(a => !isNaN(a) && a <= freeThreshold).length;
+    const above5Count = childAges.filter(a => !isNaN(a) && a > freeThreshold).length;
+
+    // Reset
+    this.extraAdultCharge = 0;
+    this.extraChildrenCharge = 0;
+    this.extraAdultCount = 0;
+    this.extraChildCount = 0;
+
+    let chargedAsAdultCount = 0;
+    let chargedAsChildCount = 0;
+
+    if ((plan.maximumOccupancy + plan.noOfChildren) * selectedRooms > selectedGuests?.adults + above5Count ||
+      (plan.maximumOccupancy + plan.noOfChildren) * selectedRooms === selectedGuests?.adults + above5Count) {
+      const savedGuestArray = sessionStorage.getItem('guestDataArray');
+      let guestDataArray = savedGuestArray ? JSON.parse(savedGuestArray) : [];
+
+      // Step 2: Prepare the new entry
+      const newEntry = {
+        planCode: plan.code,
+        planName: plan.name,
+        roomId,
+        roomName,
+        adults: selectedGuests.adults,
+        children: selectedGuests.children,
+        childAges: childAges,
+        roomCount: selectedRooms
+      };
+      const existingIndex = guestDataArray.findIndex(
+        entry => entry.planCode === plan.code && Number(entry.roomId || 0) === Number(roomId || 0)
+      );
+
+
+      if (existingIndex > -1) {
+        guestDataArray[existingIndex] = newEntry;
+      } else {
+        guestDataArray.push(newEntry);
+      }
+
+      sessionStorage.setItem('guestDataArray', JSON.stringify(guestDataArray));
+
+      rates.roomRatePlans.forEach((ele1) => {
+
+        if (plan.code === ele1.code) {
+          const totalMinAdults = ele1.minimumOccupancy * selectedRooms;
+          const totalMinChildren = selectedGuests.adults < (ele1.minimumOccupancy * selectedRooms) ? (ele1.minimumOccupancy * selectedRooms) - selectedGuests.adults : plan.noOfChildren;
+          
+          const ageLimit = plan?.childAgeLimit && plan.childAgeLimit > 0 ? plan.childAgeLimit : 0;
+          const chargeableChildren = childAges.filter(a => a !== null && a !== undefined && !isNaN(a) && a > freeThreshold);
+          const chargeableCount = chargeableChildren.length;
+
+          // Sort chargeable children such that children >= ageLimit come first
+          const sortedChargeableChildren = [...chargeableChildren].sort((a, b) => {
+            const aAbove = ageLimit > 0 && a >= ageLimit;
+            const bAbove = ageLimit > 0 && b >= ageLimit;
+            if (aAbove && !bAbove) return -1;
+            if (!aAbove && bAbove) return 1;
+            return 0;
+          });
+
+          const extraChildrenCount = chargeableCount > totalMinChildren ? chargeableCount - totalMinChildren : 0;
+          const chargedChildren = sortedChargeableChildren.slice(0, extraChildrenCount);
+          chargedAsAdultCount = chargedChildren.filter(age => ageLimit > 0 && age >= ageLimit).length;
+          chargedAsChildCount = chargedChildren.filter(age => !(ageLimit > 0 && age >= ageLimit)).length;
+
+          const extraChildrenCharge = (chargedAsAdultCount * (ele1.extraChargePerPerson || 0)) + (chargedAsChildCount * (ele1.extraChargePerChild || 0));
+
+          const extraAdults =
+            selectedGuests.adults > totalMinAdults
+              ? selectedGuests.adults - totalMinAdults
+              : 0;
+
+          if (selectedRooms > 1) {
+            const totalIncludedAdults = ele1.minimumOccupancy * selectedRooms;
+            const totalExtraAdults =
+              selectedGuests.adults > totalIncludedAdults
+                ? selectedGuests.adults - totalIncludedAdults
+                : 0;
+
+            const totalExtraChildren = extraChildrenCount;
+
+            this.singleextraAdults =
+              totalExtraAdults > 0 ? totalExtraAdults / selectedRooms : 0;
+
+            this.singleextraChild =
+              totalExtraChildren > 0 ? totalExtraChildren / selectedRooms : 0;
+
+          } else {
+            this.singleextraAdults = extraAdults;
+            this.singleextraChild = extraChildrenCount;
+          }
+
+          this.extraAdultCount = extraAdults;
+          this.extraAdultCharge = extraAdults * ele1.extraChargePerPerson;
+          this.singleextraAdultCount = this.singleextraChild;
+          this.singleextraAdultCharge = this.singleextraAdults * ele1.extraChargePerPerson;
+          if (this.extraAdultCount > 0) {
+            this.singleextraAdultChargeBookOne = ele1.extraChargePerPerson;
+          } else {
+            this.singleextraAdultChargeBookOne = 0;
+          }
+
+
+
+          this.extraChildCount = extraChildrenCount;
+          if (this.extraChildCount > 0) {
+            this.singleextraChildChargeBookOne = ele1.extraChargePerChild;
+          } else {
+            this.singleextraChildChargeBookOne = 0;
+          }
+          this.singleextraChildCount = this.singleextraChild;
+          this.singleextraChildrenCharge = selectedRooms > 1 ? extraChildrenCharge / selectedRooms : extraChildrenCharge;
+
+          this.extraChildrenCharge = extraChildrenCharge;
+        }
+      });
+
+      if (selectedRooms && selectedGuests?.adults > 0) {
+        const roomName = rates.roomName;
+        const roomId = rates.roomId;
+        const planName = plan.code;
+        const planCodeName = plan.name;
+        const nights = isDayTrip ? 1 : this.DiffDate;
+        const summaryNights = isDayTrip ? 1 : this.DiffDate;
+        const planDescription = plan.description;
+        const datewiseBreakdown =
+          isDayTrip
+            ? []
+            :
+          plan?.code !== 'GHC'
+            ? this.getPlanDatewiseBreakdown(
+                roomId,
+                plan.code,
+                selectedRooms,
+                this.extraAdultCount || 0,
+                this.extraChildCount || 0,
+                this.singleextraAdults,
+                this.singleextraChild,
+                chargedAsAdultCount,
+                chargedAsChildCount
+              )
+            : [];
+
+        if (isDayTrip) {
+          const ageLimit = plan?.childAgeLimit && plan.childAgeLimit > 0 ? plan.childAgeLimit : 0;
+          const dayTripAdultRate = plan.extraChargePerPerson || this.getDayTripPlanAmount(plan) || 0;
+          const dayTripChildRate = plan.extraChargePerChild || 0;
+
+          let dayTripChildCharge = 0;
+          let dtChargedAsAdult = 0;
+          let dtChargedAsChild = 0;
+
+          childAges.forEach(age => {
+            if (age === null || age === undefined || isNaN(age)) return;
+            if (ageLimit > 0 && age >= ageLimit) {
+              dayTripChildCharge += dayTripAdultRate;
+              dtChargedAsAdult++;
+            } else if (age > freeThreshold) {
+              dayTripChildCharge += dayTripChildRate;
+              dtChargedAsChild++;
+            }
+          });
+
+          const dayTripAdultCharge =
+            this.getDayTripPlanAmount(plan) * Number(selectedGuests?.adults || 0);
+
+          this.extraAdultCount = Number(selectedGuests?.adults || 0);
+          this.extraChildCount = Number(selectedGuests?.children || this.getChildCount(planCode, roomContext) || 0);
+          this.extraAdultCharge = dayTripAdultCharge;
+          this.extraChildrenCharge = dayTripChildCharge;
+          this.actualroompriceCharge = this.getDayTripPlanAmount(plan);
+          this.roomPricePerPlan = dayTripAdultCharge + dayTripChildCharge;
+
+          chargedAsAdultCount = dtChargedAsAdult;
+          chargedAsChildCount = dtChargedAsChild;
+        } else if (datewiseBreakdown.length) {
+          this.roomPricePerPlan = datewiseBreakdown.reduce(
+            (sum: number, night: any) => sum + Number(night?.subtotal || 0),
+            0
+          );
+          this.actualroompriceCharge = Number(
+            (datewiseBreakdown[0]?.roomPrice || plan.amount || 0) /
+              (selectedRooms || 1)
+          );
+        } else if (this.extraAdultCharge && !this.extraChildrenCharge) {
+          const priceOne = ((plan.amount * nights * selectedRooms) + (this.extraAdultCharge * nights));
+          this.actualroompriceCharge = plan.amount;
+          this.roomPricePerPlan = priceOne;
+        } else if (this.extraChildrenCharge && !this.extraAdultCharge) {
+          const priceOne = ((plan.amount * nights * selectedRooms) + (this.extraChildrenCharge * nights));
+          this.actualroompriceCharge = plan.amount;
+          this.roomPricePerPlan = priceOne;
+        } else if (this.extraAdultCharge && this.extraChildrenCharge) {
+          const priceOne = ((plan.amount * nights * selectedRooms) + ((this.extraChildrenCharge + this.extraAdultCharge) * nights));
+          this.actualroompriceCharge = plan.amount;
+          this.roomPricePerPlan = priceOne;
+        } else {
+          const priceOne = (plan.amount * selectedRooms) * nights;
+          this.roomPricePerPlan = priceOne;
+          this.actualroompriceCharge = plan.amount;
+        }
+
+        const price = Number(this.roomPricePerPlan.toFixed(2));
+        const actualRoomPrice = Number(this.actualroompriceCharge.toFixed(2));
+        const selectedRoomnumber = selectedRooms;
+        const SingleDayextraPersonAdultCountAmount = this.extraAdultCharge;
+        const SingleDayextraPersonChildCountAmount = this.extraChildrenCharge;
+        const extraPersonAdultCountAmount = this.extraAdultCharge;
+        const extraPersonChildCountAmount = this.extraChildrenCharge;
+        const extraCountAdult = this.extraAdultCount ? this.extraAdultCount : 0;
+        const extraCountChild = this.extraChildCount ? this.extraChildCount : 0;
+        const childrenBelow5years = below5Count;
+        const childrenAbove5years = above5Count;
+        const singleextraAdultCharges = this.singleextraAdultCharge;
+        const singleextraChildrenCharges = this.singleextraChildrenCharge;
+        const singleextraAdultChargeBookOne = this.singleextraAdultChargeBookOne;
+        const singleextraChildrenChargeBookOne = this.singleextraChildChargeBookOne;
+        if (this.businessUser.taxDetails.length > 0) {
+          this.businessUser.taxDetails.forEach((element) => {
+            if (element.name === 'GST') {
+              this.booking.taxDetails = [];
+              this.booking.taxDetails.push(element);
+              this.taxPercentage = element.percentage;
+              // this.booking.taxPercentage = this.taxPercentage;
+
+              if (
+                plan?.code === 'GHC' &&
+                this.activeForGoogleHotelCenter === true
+              ) {
+                if (element.taxSlabsList.length > 0) {
+                  element.taxSlabsList.forEach((element2) => {
+                    if (
+                      element2.maxAmount >=
+                      price +
+                      (extraPersonAdultCountAmount +
+                        extraPersonChildCountAmount) /
+                      nights &&
+                      element2.minAmount <=
+                      this.booking.roomPrice +
+                      (extraPersonAdultCountAmount +
+                        extraPersonChildCountAmount) /
+                      nights
+                    ) {
+                      this.taxPercentage = element2.percentage;
+                      this.booking.taxPercentage = this.taxPercentage;
+                    } else if (
+                      element2.maxAmount <=
+                      price +
+                      (extraPersonAdultCountAmount +
+                        extraPersonChildCountAmount) /
+                      nights
+                    ) {
+                      this.taxPercentage = element2.percentage;
+                      // this.booking.taxPercentage = this.taxPercentage;
+                    }
+                  });
+                }
+              } else {
+                if (selectedRooms > 1) {
+                  if (element.taxSlabsList.length > 0) {
+                    element.taxSlabsList.forEach((element2) => {
+                      if (
+                        element2.maxAmount >= (this.actualroompriceCharge + singleextraAdultCharges + singleextraChildrenCharges) &&
+                        element2.minAmount <= (this.actualroompriceCharge + singleextraAdultCharges + singleextraChildrenCharges)
+                      ) {
+                        this.taxPercentage = element2.percentage;
+                        // this.booking.taxPercentage = this.taxPercentage;
+                      } else if (element2.maxAmount <= (this.actualroompriceCharge + singleextraAdultCharges + singleextraChildrenCharges)) {
+                        this.taxPercentage = element2.percentage;
+                        // this.booking.taxPercentage = this.taxPercentage;
+                      }
+                    });
+                  }
+                } else {
+                  if (element.taxSlabsList.length > 0) {
+                    element.taxSlabsList.forEach((element2) => {
+                      if (
+                        element2.maxAmount >= (this.actualroompriceCharge + SingleDayextraPersonAdultCountAmount + SingleDayextraPersonChildCountAmount) &&
+                        element2.minAmount <= (this.actualroompriceCharge + SingleDayextraPersonAdultCountAmount + SingleDayextraPersonChildCountAmount)
+                      ) {
+                        this.taxPercentage = element2.percentage;
+                        // this.booking.taxPercentage = this.taxPercentage;
+                      } else if (element2.maxAmount <= (this.actualroompriceCharge + SingleDayextraPersonAdultCountAmount + SingleDayextraPersonChildCountAmount)) {
+                        this.taxPercentage = element2.percentage;
+                        // this.booking.taxPercentage = this.taxPercentage;
+                      }
+                    });
+                  }
+                }
+
+              }
+            }
+          });
+        }
+
+        const taxpercentage = this.taxPercentage;
+        this.taxTotalSingle = isDayTrip
+          ? this.calculateTaxAmount(
+              (SingleDayextraPersonAdultCountAmount || 0) +
+                (SingleDayextraPersonChildCountAmount || 0),
+              plan,
+            )
+          : datewiseBreakdown.length
+          ? datewiseBreakdown.reduce((sum: number, night: any) => {
+              return (
+                sum +
+                this.calculateTaxAmount(
+                  Number(night?.taxBase || night?.subtotal || 0),
+                  plan
+                ) *
+                  Number(night?.roomMultiplier || 1)
+              );
+            }, 0)
+          : 0;
+        if (!isDayTrip && !datewiseBreakdown.length) {
+          this.daterangefilterSeo?.forEach(() => {
+            if (selectedRoomnumber > 1) {
+              this.taxTotalSingle += this.calculateTaxAmount(
+                (actualRoomPrice) +
+                (singleextraAdultCharges || 0) +
+                (singleextraChildrenCharges || 0),
+                plan
+              );
+            } else {
+              this.taxTotalSingle += this.calculateTaxAmount(
+                (actualRoomPrice * selectedRoomnumber) +
+                (SingleDayextraPersonAdultCountAmount || 0) +
+                (SingleDayextraPersonChildCountAmount || 0),
+                plan
+              );
+            }
+          });
+        }
+        const taxPercentageperroom = Number(this.taxTotalSingle.toFixed(2));
+
+
+        const matchedRoom: any = this.availableRooms?.find((r: any) => r.id === roomId);
+        const summaryEntry = {
+          roomName,
+          actualRoomPrice,
+          isEnquire: matchedRoom?.isEnquire ?? matchedRoom?.enquire ?? roomContext?.isEnquire ?? rates?.isEnquire ?? false,
+          extraPersonChildCountAmount,
+          extraPersonAdultCountAmount,
+          SingleDayextraPersonChildCountAmount,
+          singleextraAdultCharges,
+          singleextraAdultChargeBookOne,
+          extraChargePerPerson: singleextraAdultChargeBookOne,
+          singleextraChildrenChargeBookOne,
+          singleextraChildrenCharges,
+          SingleDayextraPersonAdultCountAmount,
+          roomId,
+          planName,
+          adults: selectedGuests.adults,
+          children: this.getChildCount(planCode, roomContext) || 0,
+          nights: summaryNights,
+          price,
+          selectedRoomnumber,
+          taxPercentageperroom,
+          taxpercentage,
+          extraCountChild,
+          extraCountAdult,
+          planCode: planName,
+          planCodeName,
+          childrenAbove5years,
+          childrenBelow5years,
+          chargedAsAdultCount,
+          chargedAsChildCount,
+          planDescription,
+          dailyRates: datewiseBreakdown,
+          dayTrip: isDayTrip,
+          checkInDate: this.booking.fromDate,
+          checkOutDate: isDayTrip
+            ? this.addDaysToDateString(this.booking.fromDate, 1)
+            : this.booking.toDate,
+        };
+      
+        summaryEntry.price = Number(
+          this.getPlanSubtotal(summaryEntry).toFixed(2)
+        );
+        const index = this.selectedPlansSummary.findIndex(
+          (p) => p.planName === planName && p.roomId === roomId
+        );
+        if (index > -1) {
+          this.selectedPlansSummary[index] = summaryEntry;
+        } else {
+          this.selectedPlansSummary.push(summaryEntry);
+        }
+        sessionStorage.setItem(
+          'bookingSummaryDetails',
+          JSON.stringify({
+            propertyId: this.businessUser?.id,
+            businessSlug: this.businessUser?.seoFriendlyName,
+            selectedPlansSummary: this.selectedPlansSummary
+          })
+        );
+      }
+    }
+  }
+
+  getGhcOtaPlanPrice(plan: any): number | null {
+  if (!Array.isArray(plan?.otaPlanList)) {
+    return null;
+  }
+
+  const ghcPlan = plan.otaPlanList.find((otaPlan: any) => otaPlan?.otaName === 'GHC');
+  const ghcPrice = Number(ghcPlan?.price);
+
+  return Number.isFinite(ghcPrice) ? ghcPrice : null;
+}
+
+// getTotalGhCPrice(plan: any): number {
+//   let total = 0;
+//   if (this.planPrice?.length) {
+//     this.planPrice.forEach((price: number) => {
+//       total += (price * plan.selectedRoomnumber) + plan.extraPersonAdultCountAmount;
+//       total += this.calculateTaxAmount(((price * plan.selectedRoomnumber) + plan.extraPersonAdultCountAmount), plan);
+//     });
+//   }
+//   return total;
+// }
+
+// getTotalNonGhCPrice(plan: any): number {
+//   let total = 0;
+//   if (plan.nights) {
+//     for (let i = 0; i < plan.nights; i++) {
+//       total += (plan.actualRoomPrice * plan.selectedRoomnumber) + plan.extraPersonAdultCountAmount;
+//       total += this.calculateTaxAmount(((plan.actualRoomPrice * plan.selectedRoomnumber) + plan.extraPersonAdultCountAmount), plan);
+//     }
+//   }
+//   return total;
+// }
+
+
+getSubtotalGhCPrice(plan: any): number {
+  return this.getPlanSubtotal(plan);
+}
+
+getSubtotalNonGhCPrice(plan: any): number {
+  return this.getPlanSubtotal(plan);
+}
+
+getTotalGhCPrice(plan: any): number {
+  const subtotal = this.getPlanSubtotal(plan);
+  return subtotal + this.getPlanTaxTotal(plan);
+}
+
+getTotalNonGhCPrice(plan: any): number {
+  const subtotal = this.getPlanSubtotal(plan);
+  return subtotal + this.getPlanTaxTotal(plan);
+}
+
+
+getGrandTotal(): number {
+  let total = 0;
+  this.selectedPlansSummary.forEach((plan: any) => {
+    if (plan.planName === 'GHC') {
+      total += this.getTotalGhCPrice(plan);
+    } else {
+      total += this.getTotalNonGhCPrice(plan);
+    }
+  });
+  return total;
+}
+
+getGrandSubtotal(): number {
+  return this.selectedPlansSummary.reduce((sum: number, plan: any) => {
+    return sum + this.getPlanSubtotal(plan);
+  }, 0);
+}
+
+getTaxGhCPrice(plan: any): number {
+  const subtotal = this.getSubtotalGhCPrice(plan);
+  return this.calculateTaxAmount(subtotal, plan);
+}
+
+getTaxNonGhCPrice(plan: any): number {
+  const subtotal = this.getSubtotalNonGhCPrice(plan);
+  return this.calculateTaxAmount(subtotal, plan);
+}
+
+getGrandTaxTotal(): number {
+  return this.selectedPlansSummary.reduce((sum: number, plan: any) => {
+    return sum + this.getPlanTaxTotal(plan, this.specialDiscountPercentage || 0);
+  }, 0);
+}
+
+
+
+getTotalWithoutTax(plan: any): number {
+  let total = 0;
+
+  // GHC part (without tax)
+  if (this.planPrice?.length && plan.planName === 'GHC') {
+    this.planPrice.forEach((price: number) => {
+      total += (price * plan.selectedRoomnumber) + plan.extraPersonAdultCountAmount;
+    });
+  }
+
+  // Non-GHC part (without tax)
+  if (plan.planName !== 'GHC' && plan.nights) {
+    for (let i = 0; i < plan.nights; i++) {
+      total += (plan.actualRoomPrice * plan.selectedRoomnumber) + plan.extraPersonAdultCountAmount;
+    }
+  }
+
+  return total;
+}
+
+
+
+  calculateTaxAmount(basePrice: number, plan: any): number {
+  let taxPercentage = 0;
+  const planCode = plan?.code || plan?.planCode || plan?.planName;
+
+ if (this.businessUser?.taxDetails?.length > 0) {
+      this.businessUser.taxDetails.forEach((element) => {
+        if (element.name === 'GST') {
+          this.booking.taxDetails = [];
+          this.booking.taxDetails.push(element);
+          this.taxPercentage = element.percentage;
+          this.booking.taxPercentage = this.taxPercentage;
+          if (
+            planCode === 'GHC' &&
+            this.activeForGoogleHotelCenter === true
+          ) {
+            if (element.taxSlabsList.length > 0) {
+              element.taxSlabsList.forEach((element2) => {
+                if (
+                  element2.maxAmount >=
+                    basePrice &&
+                  element2.minAmount <=
+                    basePrice
+                ) {
+                  this.taxPercentage = element2.percentage;
+                  this.booking.taxPercentage = this.taxPercentage;
+                } else if (
+                  element2.maxAmount <=
+                  basePrice
+                ) {
+                  this.taxPercentage = element2.percentage;
+                  this.booking.taxPercentage = this.taxPercentage;
+                }
+              });
+            }
+          } else {
+            if (element.taxSlabsList.length > 0) {
+              element.taxSlabsList.forEach((element2) => {
+                if (
+                  element2.maxAmount >= basePrice &&
+                  element2.minAmount <= basePrice
+                ) {
+                  this.taxPercentage = element2.percentage;
+                  this.booking.taxPercentage = this.taxPercentage;
+                } else if (element2.maxAmount <= basePrice) {
+                  this.taxPercentage = element2.percentage;
+                  this.booking.taxPercentage = this.taxPercentage;
+                }
+              });
+            }
+          }
+        }
+      });
+      // this.taxPercentage = this.booking.taxDetails[0].percentage;
+    }
+  return (basePrice * this.booking.taxPercentage) / 100;
+}
+
+
+onSelectPlanFromSmartCard(plan: any): void {
+  const planCode = plan.planCode;
+  // find the rate from availableRooms
+  const rate = this.getRateByPlanCodeSmartCard(planCode);
+  if (!rate) {
+    console.warn('No matching rate found for planCode:', planCode);
+    return;
+  }
+
+  // 1. Assign default selection
+  const scopedKey = this.getScopedRoomPlanKey(this.selectedRoom, rate, planCode);
+  this.selectedRoomsByPlan[scopedKey] = this.rooms;
+  this.selectedGuestsByPlan[scopedKey] = {
+    adults: this.totalAdults || this.booking.noOfPersons || this.rooms || 1,
+    children: this.totalChildren || 0,
+  };
+  if (!this.childAgesByPlan[scopedKey]) {
+    this.childAgesByPlan[scopedKey] = [];
+  }
+  while (this.childAgesByPlan[scopedKey].length < (this.totalChildren || 0)) {
+    this.childAgesByPlan[scopedKey].push(null);
+  }
+
+  // 2. Trigger plan selection with rate
+  this.onPlanSelect(planCode, rate, this.selectedRoom);
+  this.isPanelOpen = false;
+
+  // 3. Scroll to the plan card — even if it's already in view
+  setTimeout(() => {
+    const el = document.getElementById('plan-' + planCode);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      el.classList.add('scroll-highlight');
+      // setTimeout(() => el.classList.remove('scroll-highlight'), 3000);
+    }
+  }, 100);
+}
+
+onGhCPlanSelect(){
+    // this.checkingAvailability();
+}
+
+
+onSelectPlanFromPopup(plan: any): void {
+  const planCode = plan.code;
+
+  // 1. Assign default selection
+  const rate = this.getRateByPlanCode(planCode);
+  const scopedKey = this.getScopedRoomPlanKey(this.selectedRoom, rate, planCode);
+  this.selectedRoomsByPlan[scopedKey] = 1;
+  this.selectedGuestsByPlan[scopedKey] = {
+    adults: this.totalAdults || 2,
+    children: this.totalChildren || 0,
+  };
+  if (!this.childAgesByPlan[scopedKey]) {
+    this.childAgesByPlan[scopedKey] = [];
+  }
+  while (this.childAgesByPlan[scopedKey].length < (this.totalChildren || 0)) {
+    this.childAgesByPlan[scopedKey].push(null);
+  }
+
+  // 2. Trigger plan selection
+  this.onPlanSelect(planCode, rate, this.selectedRoom);
+  this.isPanelOpen = false;
+  // 3. Scroll to the plan card — even if it's already in view
+  setTimeout(() => {
+    const el = document.getElementById('plan-' + planCode);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+      // Optionally add a highlight effect
+      el.classList.add('scroll-highlight');
+      // setTimeout(() => {
+      //   el.classList.remove('scroll-highlight');
+      // }, 3000);
+    }
+  }, 100); // slight delay ensures DOM updates
+}
+
+
+getRateByPlanCode(planCode: string) {
+  for (let rate of this.selectedRoom?.ratesAndAvailabilityDtos || []) {
+    const plan = rate.roomRatePlans.find(p => p.code === planCode);
+    if (plan) return rate;
+  }
+  return null;
+}
+
+getRateByPlanCodeSmartCard(planCode: string) {
+  if (!this.availableRooms) return null;
+
+  for (const room of this.availableRooms) {
+    for (const rate of room?.ratesAndAvailabilityDtos || []) {
+      const plan = rate.roomRatePlans.find(p => p.code === planCode);
+      if (plan) {
+        return rate;
+      }
+    }
+  }
+  return null;
+}
+
+private findPlanByCode(planCode: string): any {
+  const rooms = [
+    ...(this.availableRooms || []),
+    ...(this.soldOutRooms || []),
+    ...(this.selectedRoom ? [this.selectedRoom] : []),
+  ];
+
+  for (const room of rooms) {
+    for (const rate of room?.ratesAndAvailabilityDtos || []) {
+      const plan = rate?.roomRatePlans?.find((roomPlan: any) => roomPlan?.code === planCode);
+      if (plan) {
+        return plan;
+      }
+    }
+  }
+
+  return null;
+}
+
+getRatesForRoomPlan(roomId: number, planCode: string): any[] {
+  const matchedRoom = this.availableRooms?.find((room: any) => room?.id === roomId);
+  if (!matchedRoom?.ratesAndAvailabilityDtos?.length) {
+    return [];
+  }
+
+  return matchedRoom.ratesAndAvailabilityDtos
+    .filter((rate: any) => rate?.roomRatePlans?.some((plan: any) => plan?.code === planCode))
+    .sort((a: any, b: any) => new Date(a?.date).getTime() - new Date(b?.date).getTime());
+}
+
+getPlanDatewiseBreakdown(
+  roomId: number,
+  planCode: string,
+  selectedRooms: number,
+  totalExtraAdults: number,
+  totalExtraChildren: number,
+  singleRoomExtraAdults: number,
+  singleRoomExtraChildren: number,
+  chargedAsAdultCount?: number,
+  chargedAsChildCount?: number
+): any[] {
+  return this.getRatesForRoomPlan(roomId, planCode)
+    .map((rate: any) => {
+      const matchedPlan = rate?.roomRatePlans?.find((roomPlan: any) => roomPlan?.code === planCode);
+      if (!matchedPlan) {
+        return null;
+      }
+
+      const roomPrice = Number(matchedPlan.amount || 0);
+      const extraAdultCharge =
+        selectedRooms > 1
+          ? Number((singleRoomExtraAdults * (matchedPlan.extraChargePerPerson || 0)).toFixed(2))
+          : Number((totalExtraAdults * (matchedPlan.extraChargePerPerson || 0)).toFixed(2));
+      
+      // Calculate extra child charge based on age limits if counts are provided
+      let extraChildCharge = 0;
+      if (chargedAsAdultCount !== undefined && chargedAsChildCount !== undefined) {
+        const adultRate = matchedPlan.extraChargePerPerson || 0;
+        const childRate = matchedPlan.extraChargePerChild || 0;
+        if (selectedRooms > 1) {
+          const singleAdultCount = chargedAsAdultCount / selectedRooms;
+          const singleChildCount = chargedAsChildCount / selectedRooms;
+          extraChildCharge = Number(((singleAdultCount * adultRate) + (singleChildCount * childRate)).toFixed(2));
+        } else {
+          extraChildCharge = Number(((chargedAsAdultCount * adultRate) + (chargedAsChildCount * childRate)).toFixed(2));
+        }
+      } else {
+        extraChildCharge =
+          selectedRooms > 1
+            ? Number((singleRoomExtraChildren * (matchedPlan.extraChargePerChild || 0)).toFixed(2))
+            : Number((totalExtraChildren * (matchedPlan.extraChargePerChild || 0)).toFixed(2));
+      }
+
+      const subtotal =
+        selectedRooms > 1
+          ? Number(((roomPrice + extraAdultCharge + extraChildCharge) * selectedRooms).toFixed(2))
+          : Number(((roomPrice * selectedRooms) + extraAdultCharge + extraChildCharge).toFixed(2));
+
+      return {
+        date: rate?.date,
+        dateLabel: new Date(rate?.date).toLocaleDateString('en-US', {
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric',
+        }),
+        roomPrice: Number((roomPrice * selectedRooms).toFixed(2)),
+        extraAdultCharge,
+        extraChildCharge,
+        subtotal,
+        taxBase:
+          selectedRooms > 1
+            ? Number((roomPrice + extraAdultCharge + extraChildCharge).toFixed(2))
+            : subtotal,
+        roomMultiplier: selectedRooms > 1 ? selectedRooms : 1,
+      };
+    })
+    .filter(Boolean);
+}
+
+getSummaryPlanNightlyBreakdown(plan: any): any[] {
+  const selectedRoomCount = Number(plan?.selectedRoomnumber || 1);
+
+  if (plan?.planName === 'GHC') {
+    return (this.daterangefilter || []).map((item: string, i: number) => {
+      const roomPrice = Number(this.planPrice?.[i] || 0);
+      const extraAdultCharge =
+        selectedRoomCount > 1
+          ? Number(plan.singleextraAdultCharges || 0)
+          : Number(plan.SingleDayextraPersonAdultCountAmount || 0);
+      const extraChildCharge =
+        selectedRoomCount > 1
+          ? Number(plan.singleextraChildrenCharges || 0)
+          : Number(plan.SingleDayextraPersonChildCountAmount || 0);
+      const subtotal =
+        selectedRoomCount > 1
+          ? Number(
+              ((roomPrice + extraAdultCharge + extraChildCharge) * selectedRoomCount).toFixed(2)
+            )
+          : Number((roomPrice + extraAdultCharge + extraChildCharge).toFixed(2));
+
+      return {
+        dateLabel: item,
+        roomPrice: Number((roomPrice * selectedRoomCount).toFixed(2)),
+        extraAdultCharge,
+        extraChildCharge,
+        subtotal,
+        taxBase:
+          selectedRoomCount > 1
+            ? Number((roomPrice + extraAdultCharge + extraChildCharge).toFixed(2))
+            : subtotal,
+        roomMultiplier: selectedRoomCount > 1 ? selectedRoomCount : 1,
+      };
+    });
+  }
+
+  if (Array.isArray(plan?.dailyRates) && plan.dailyRates.length) {
+    return plan.dailyRates.map((night: any) => ({
+      date: night?.date,
+      dateLabel:
+        night?.dateLabel ||
+        new Date(night?.date).toLocaleDateString('en-US', {
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric',
+        }),
+      roomPrice: Number(night?.roomPrice || 0),
+      extraAdultCharge: Number(night?.extraAdultCharge || 0),
+      extraChildCharge: Number(night?.extraChildCharge || 0),
+      subtotal: Number(night?.subtotal || 0),
+      taxBase: Number(night?.taxBase || night?.subtotal || 0),
+      roomMultiplier: Number(night?.roomMultiplier || 1),
+    }));
+  }
+
+  return Array.from({ length: Number(plan?.nights || 0) }).map((_, index) => {
+    const roomPrice = Number(
+      (Number(plan.actualRoomPrice || 0) * selectedRoomCount).toFixed(2)
+    );
+    const extraAdultCharge =
+      selectedRoomCount > 1
+        ? Number(plan.singleextraAdultCharges || 0)
+        : Number(plan.SingleDayextraPersonAdultCountAmount || 0);
+    const extraChildCharge =
+      selectedRoomCount > 1
+        ? Number(plan.singleextraChildrenCharges || 0)
+        : Number(plan.SingleDayextraPersonChildCountAmount || 0);
+    const subtotal =
+      selectedRoomCount > 1
+        ? Number(
+            (
+              (Number(plan.actualRoomPrice || 0) +
+                Number(plan.singleextraAdultCharges || 0) +
+                Number(plan.singleextraChildrenCharges || 0)) *
+              selectedRoomCount
+            ).toFixed(2)
+          )
+        : Number(
+            (
+              roomPrice +
+              Number(plan.SingleDayextraPersonAdultCountAmount || 0) +
+              Number(plan.SingleDayextraPersonChildCountAmount || 0)
+            ).toFixed(2)
+          );
+
+    return {
+      dateLabel: this.daterangefilterSeo?.[index] || `Night ${index + 1}`,
+      roomPrice,
+      extraAdultCharge,
+      extraChildCharge,
+      subtotal,
+      taxBase:
+        selectedRoomCount > 1
+          ? Number(
+              (
+                Number(plan.actualRoomPrice || 0) +
+                Number(plan.singleextraAdultCharges || 0) +
+                Number(plan.singleextraChildrenCharges || 0)
+              ).toFixed(2)
+            )
+          : subtotal,
+      roomMultiplier: selectedRoomCount > 1 ? selectedRoomCount : 1,
+    };
+  });
+}
+
+getSummaryPlanAdultCharge(plan: any): number {
+  if (Array.isArray(plan?.dailyRates) && plan.dailyRates.length) {
+    return Number(
+      plan.dailyRates.reduce(
+        (sum: number, night: any) =>
+          sum +
+          (Number(night?.extraAdultCharge || 0) *
+            Number(night?.roomMultiplier || 1)),
+        0
+      )
+    );
+  }
+
+  return Number(
+    Number(plan?.selectedRoomnumber || 0) > 1
+      ? plan?.singleextraAdultCharges || 0
+      : plan?.SingleDayextraPersonAdultCountAmount || 0
+  );
+}
+
+getSummaryPlanChildCharge(plan: any): number {
+  if (Array.isArray(plan?.dailyRates) && plan.dailyRates.length) {
+    return Number(
+      plan.dailyRates.reduce(
+        (sum: number, night: any) =>
+          sum +
+          (Number(night?.extraChildCharge || 0) *
+            Number(night?.roomMultiplier || 1)),
+        0
+      )
+    );
+  }
+
+  return Number(
+    Number(plan?.selectedRoomnumber || 0) > 1
+      ? plan?.singleextraChildrenCharges || 0
+      : plan?.SingleDayextraPersonChildCountAmount || 0
+  );
+}
+
+getSummaryNightTaxAmount(night: any, plan: any): number {
+  return (
+    this.calculateTaxAmount(
+      Number(night?.taxBase || night?.subtotal || 0),
+      plan
+    ) * Number(night?.roomMultiplier || 1)
+  );
+}
+
+getPlanSubtotal(plan: any): number {
+  if (this.isDayTripPlan(plan)) {
+    return Number(
+      (
+        Number(plan?.SingleDayextraPersonAdultCountAmount || plan?.extraPersonAdultCountAmount || 0) +
+        Number(plan?.SingleDayextraPersonChildCountAmount || plan?.extraPersonChildCountAmount || 0)
+      ).toFixed(2)
+    );
+  }
+
+  const fallbackSubtotal =
+    Number(plan?.price || 0)
+
+  return Number(fallbackSubtotal.toFixed(2));
+  const subtotal = this.getSummaryPlanNightlyBreakdown(plan).reduce(
+    (sum: number, night: any) => sum + Number(night?.subtotal || 0),
+    0
+  );
+
+  if (subtotal > 0) {
+    return Number(subtotal.toFixed(2));
+  }
+}
+
+getPlanTaxTotal(plan: any, discountPercentage = 0): number {
+  if (this.isDayTripPlan(plan)) {
+    const subtotal = this.getPlanSubtotal(plan);
+    const discountedSubtotal =
+      discountPercentage > 0 ? subtotal - (subtotal * discountPercentage) / 100 : subtotal;
+    return this.calculateTaxAmount(discountedSubtotal, plan);
+  }
+
+  return this.getSummaryPlanNightlyBreakdown(plan).reduce((sum: number, night: any) => {
+    const subtotal = Number(night?.subtotal || 0);
+    const roomMultiplier = Number(night?.roomMultiplier || 1);
+    const discountedSubtotal =
+      discountPercentage > 0
+        ? subtotal - (subtotal * discountPercentage) / 100
+        : subtotal;
+    const discountedTaxBase =
+      roomMultiplier > 1
+        ? discountedSubtotal / roomMultiplier
+        : discountedSubtotal;
+
+    return sum + this.calculateTaxAmount(discountedTaxBase, plan) * roomMultiplier;
+  }, 0);
+}
+
+private getSelectedRoomCountForPlan(room: any, plan: any): number {
+  const directSelection = Number(this.selectedRoomsByPlan?.[plan?.code]);
+  const roomScopedSelection = Number(
+    this.selectedRoomsByPlan?.[this.getRoomPlanSelectionKey(room?.id ?? room?.name, plan?.code)]
+  );
+  const selectedRoomCount =
+    (!Number.isNaN(directSelection) && directSelection > 0
+      ? directSelection
+      : !Number.isNaN(roomScopedSelection) && roomScopedSelection > 0
+      ? roomScopedSelection
+      : 1);
+
+  return selectedRoomCount;
+}
+
+private getSelectedGuestsForPlan(room: any, plan: any): { adults: number; children: number } {
+  const scopedKey = this.getRoomPlanSelectionKey(room?.id ?? room?.name, plan?.code);
+  return this.selectedGuestsByPlan?.[scopedKey] || this.selectedGuestsByPlan?.[plan?.code] || { adults: 0, children: 0 };
+}
+
+getSelectedAdultsForPlan(room: any, plan: any): number {
+  return Number(this.getSelectedGuestsForPlan(room, plan)?.adults || 0);
+}
+
+getSelectedChildrenForPlan(room: any, plan: any): number {
+  return Number(this.getSelectedGuestsForPlan(room, plan)?.children || 0);
+}
+
+getRoomPlanDisplayAmount(room: any, plan: any): number {
+  if (this.isDayTripPlan(plan, room)) {
+    return this.getDayTripPlanAmount(plan);
+  }
+
+  const nightlyRates = this.getRatesForRoomPlan(room?.id, plan?.code)
+    .map((rate: any) => {
+      const matchedPlan = rate?.roomRatePlans?.find(
+        (roomPlan: any) => roomPlan?.code === plan?.code
+      );
+      return Number(matchedPlan?.amount || 0);
+    })
+    .filter((amount: number) => amount > 0);
+
+  const totalAmount = nightlyRates.length
+    ? nightlyRates.reduce((sum: number, amount: number) => sum + amount, 0)
+    : Number(plan?.amount || 0);
+
+  if (this.activeForGoogleHotelCenter && plan?.code === 'GHC') {
+    return Number(totalAmount || this.totalplanPrice || 0);
+  }
+
+  return totalAmount;
+}
+
+getRoomDiscountPercentage(room: any, rates: any): number {
+  const roomOnlyPrice = Number(room?.roomOnlyPrice) || 0;
+  if (!roomOnlyPrice || !rates?.roomRatePlans || rates.roomRatePlans.length === 0) {
+    return 0;
+  }
+
+  const visiblePlans = this.isPlanVisible(rates.roomRatePlans, room.name, room);
+  if (!visiblePlans || visiblePlans.length === 0) {
+    return 0;
+  }
+
+  let minPlanPrice = Infinity;
+  for (const plan of visiblePlans) {
+    const planPrice = this.getRoomPlanDisplayAmount(room, plan);
+    if (planPrice > 0 && planPrice < minPlanPrice) {
+      minPlanPrice = planPrice;
+    }
+  }
+
+  if (minPlanPrice < roomOnlyPrice) {
+    const discount = ((roomOnlyPrice - minPlanPrice) / roomOnlyPrice) * 100;
+    return discount > 0 ? Math.round(discount) : 0;
+  }
+
+  return 0;
+}
+
+
+getRoomPlanPriceLabel(room: any, plan: any): string {
+  if (this.isDayTripPlan(plan, room)) {
+    return 'single day + taxes';
+  }
+
+  if (this.activeForGoogleHotelCenter && plan?.code === 'GHC') {
+    return 'for selected stay + taxes';
+  }
+
+  const nights = this.getRatesForRoomPlan(room?.id, plan?.code).length;
+  return nights > 1 ? `for ${nights} nights + taxes` : 'per night + taxes';
+}
+
+
+//   removePlan(index: number): void {
+//   if (index > -1) {
+//     this.selectedPlansSummary.splice(index, 1);
+
+//     // Update session storage
+//     sessionStorage.setItem(
+//       'bookingSummaryDetails',
+//       JSON.stringify({
+//         selectedPlansSummary: this.selectedPlansSummary
+//       })
+//     );
+//         const savedBooking = sessionStorage.getItem('bookingSummaryDetails');
+//   if (savedBooking) {
+//     const data = JSON.parse(savedBooking);
+//     this.selectedPlansSummary = data.selectedPlansSummary || [];
+
+//     // Rebuild selectedGuestsByPlan and selectedRoomsByPlan
+//     this.selectedGuestsByPlan = {};
+//     this.selectedRoomsByPlan = {};
+
+//     this.selectedPlansSummary.forEach(plan => {
+//       this.selectedGuestsByPlan[plan.planName] = {
+//         adults: plan.adults,
+//         children: plan.children
+//       };
+//       this.selectedRoomsByPlan[plan.planName] = plan.selectedRoomnumber;
+//     });
+//   }
+//   }
+// }
+
+removePlan(index: number): void {
+  if (index > -1) {
+    const removedPlan = this.selectedPlansSummary[index];
+    this.selectedPlansSummary.splice(index, 1);
+    sessionStorage.setItem(
+      'bookingSummaryDetails',
+      JSON.stringify({
+        propertyId: this.businessUser?.id,
+        businessSlug: this.businessUser?.seoFriendlyName,
+        selectedPlansSummary: this.selectedPlansSummary
+      })
+    );
+    const savedGuestArray = sessionStorage.getItem('guestDataArray');
+    let guestDataArray = savedGuestArray ? JSON.parse(savedGuestArray) : [];
+    guestDataArray = guestDataArray.filter(
+      entry => entry.planCode !== removedPlan.planName
+    );
+    sessionStorage.setItem('guestDataArray', JSON.stringify(guestDataArray));
+    this.selectedGuestsByPlan = {};
+    this.selectedRoomsByPlan = {};
+    this.childAgesByPlan = {};
+
+    guestDataArray.forEach(entry => {
+      this.selectedGuestsByPlan[entry.planCode] = {
+        adults: entry.adults,
+        children: entry.children
+      };
+      this.selectedRoomsByPlan[entry.planCode] = entry.roomCount;
+      this.childAgesByPlan[entry.planCode] = entry.childAges || [];
+    });
+  }
+}
+  publishPage(event: any) {
+    if (
+      this.token.getProperty() !== undefined &&
+      this.token.getProperty() !== null
+    ) {
+      this.propertyData = this.token.getProperty();
+      if (this.activeForGoogleHotelCenter === true) {
+        this.accommodationData =
+          this.propertyData.businessServiceDtoList?.filter(
+            (entry) => entry.name === 'Accommodation'
+          );
+        this.accommodationData.forEach((element) => {
+          if (this.bookingengineurl === 'true') {
+            this.value = element.websiteinstantBooking;
+          } else if (this.value !== true) {
+            this.value = element.instantBooking;
+          }
+        });
+      }
+    }
+    if (event !== null && event! + undefined) {
+      this.showHideFlag = true;
+    }
+
+    this.changeDetectorRefs.detectChanges();
+  }
+  fetchAndProcessRoomsData() {
+    this.isLoading = true;
+    this.sortAndLimitRoomsOne();
+    this.isLoading = false;
+    // setTimeout(() => {
+
+    // }, 1000);
+  }
+
+  fetchAndProcessRoomsDataOne() {
+    this.isLoading = true;
+    this.sortAndLimitRooms();
+    this.isLoading = false;
+    // setTimeout(() => {
+
+    // }, 1000);
+  }
+
+  scrollLeft() {
+    this.scrollContainer.nativeElement.scrollLeft -= 250; // Adjust this value to match card width
+  }
+
+  scrollRight() {
+    this.scrollContainer.nativeElement.scrollLeft += 250; // Adjust this value to match card width
+  }
+  scrollLeftOne(index) {
+    this.scrollContainerOne.nativeElement.scrollLeft -= 250; // Adjust this value to match card width
+  }
+
+  scrollRightOne() {
+    this.scrollContainerOne.nativeElement.scrollLeft += 250; // Adjust this value to match card width
+  }
+  // showhide(){
+  openRoomCarousel() {
+    this.showRoomCarousel = true;
+  }
+
+  toggleDescriptionOne() {
+    this.showFullDescriptionOne = !this.showFullDescriptionOne;
+  }
+
+  toggleDescription(index: number) {
+    this.showFullDescription[index] = !this.showFullDescription[index];
+  }
+sortAndLimitRooms() {
+    // Sort rooms by roomOnlyPrice in ascending order
+    this.sortedRooms = this.Googlehotelsortrooms?.sort((a, b) => a.roomOnlyPrice - b.roomOnlyPrice).slice(0, 2);
+    this.sortedRooms?.forEach((room) => {
+      let totalAvailableRooms = 0;
+
+      room?.ratesAndAvailabilityDtos?.forEach((rate) => {
+        if (rate?.roomName === room?.name) {
+          totalAvailableRooms += rate?.noOfAvailable || 0;
+        }
+      });
+
+      // Assign the total available rooms to the room object
+      room.roomsAvailable = totalAvailableRooms;
+       let planPrices: number[] = [];
+
+    room?.ratesAndAvailabilityDtos?.forEach(rate => {
+      rate?.roomRatePlans?.forEach(plan => {
+        if (typeof plan?.amount === 'number') {
+          planPrices.push(plan.amount);
+        }
+      });
+    });
+    this.roomLowestPrices = {}
+  // Store lowest price by room ID or room.name
+    const lowestPrice = this.getLowestPrice(room);
+    this.roomLowestPrices[room.id || room.name] = lowestPrice;
+    });
+    this.isLoading=false
+  }
+
+
+
+  getLowestPrice(room: any): number | null {
+    const allPlans = room?.ratesAndAvailabilityDtos
+      ?.flatMap((availability: any) => availability?.roomRatePlans || [])
+      .map((plan: any) => plan?.amount);
+
+    return allPlans?.length ? Math.min(...allPlans) : null;
+  }
+
+  getDynamicNameFromUrl(url: string): string | null {
+    const fullUrl = this.locationBack.prepareExternalUrl(
+      this.locationBack.path(true)
+    );
+
+    // You can also access the current URL with window.location.href
+    const domain = window.location.hostname; // Get the domain part from the URL
+    const name = domain.split('.')[1]; // This will extract 'saanaira-resort-spa'
+    if (this.name) {
+      this.getPropertyDetailsBySeoName(name);
+    }
+
+    return name;
+  }
+  getAmenityIcon(name: string): string {
+    const iconMap: { [key: string]: string } = {
+      'Air-Condition': 'fa-fan',
+      Wifi: 'fa-wifi',
+      'Free Parking': 'fa-square-parking',
+      'Family Room': 'fa-people-roof',
+      Restaurant: 'fa-utensils',
+      'Restaurant Available': 'fa-utensils',
+      'Room Service': 'fa-bell-concierge',
+      '24 Hours Room Service': 'fa-bell-concierge',
+      'Pet Friendly': 'fa-dog',
+      'Non Smoking Room': 'fa-ban-smoking',
+      'Smoking Zone': 'fa-smoking',
+      'Hand Sanitizer': 'fa-pump-soap',
+      Bathtub: 'fa-bath',
+      'Flat TV': 'fa-tv',
+      Spa: 'fa-spa',
+      'Airport Shuttle': 'fa-shuttle-van',
+      'Swimming Pool': 'fa-person-swimming',
+      Breakfast: 'fa-mug-hot',
+      Bar: 'fa-champagne-glasses',
+      Fitness: 'fa-dumbbell',
+      Geyser: 'fa-fire',
+      'Paid Wifi': 'fa-wifi',
+      'Complimentary Wifi': 'fa-wifi',
+      'Attached Bathroom': 'fa-bath',
+    };
+
+    return iconMap[name.trim()] || 'fa-circle-question'; // fallback icon
+  }
+
+ sortAndLimitRoomsOne() {
+    this.sortedRoomsOne = this.shortrooms?.sort((a, b) => a.roomOnlyPrice - b.roomOnlyPrice).slice(0, 2);
+
+    this.sortedRoomsOne?.forEach((room) => {
+      let totalAvailableRooms = 0;
+
+      room?.ratesAndAvailabilityDtos?.forEach((rate) => {
+        if (rate?.roomName === room?.name) {
+          totalAvailableRooms += rate?.noOfAvailable || 0;
+        }
+      });
+
+      // Assign the total available rooms to the room object
+      room.roomsAvailable = totalAvailableRooms;
+
+      this.roomLowestPricesBookingEngine = this.roomLowestPricesBookingEngine || {}; // Ensure object is initialized
+
+const lowestPlan = this.getLowestPriceBookingEngine(room); // This returns a number or null
+
+const roomKey = room.id || room.name;
+
+if (roomKey) {
+  this.roomLowestPricesBookingEngine[roomKey] = lowestPlan;
+}
+
+
+    });
+  }
+
+
+
+  getLowestPriceBookingEngine(room: any): number | null {
+    const allPlans = room?.ratesAndAvailabilityDtos
+      ?.flatMap((availability: any) => availability?.roomRatePlans || [])
+      .filter(
+        (plan: any) =>
+          typeof plan?.amount === 'number' &&
+          !isNaN(plan.amount) &&
+          plan?.code?.toLowerCase() !== 'ghc'
+      );
+
+    if (!allPlans?.length) return null;
+
+    const lowestPlan = allPlans.reduce((min, curr) =>
+      curr.amount < min.amount ? curr : min
+    );
+
+    return lowestPlan;
+  }
+
+  toggleView() {
+    this.isExpanded = !this.isExpanded;
+  }
+  toggleReadMore(index: number) {
+    // Toggle the read more/less flag for the clicked policy
+    this.isReadMore[index] = !this.isReadMore[index];
+  }
+
+  private parsePolicyDurationToHours(value: string): number {
+    const upper = String(value || '').toUpperCase();
+    if (upper === 'P-INF') return Number.POSITIVE_INFINITY;
+    const match = upper.match(/^P-(\d+)H$/);
+    return match ? Number(match[1]) : 0;
+  }
+
+  private formatChargeLabel(type: string, value: number): string {
+    const normalized = String(type || '').toLowerCase();
+    const safeValue = Number(value || 0);
+    if (normalized === 'none') return 'No deduction';
+    if (normalized === 'full') return '100% deduction';
+    if (normalized === 'fixed') return `Fixed Rs. ${safeValue}`;
+    return `${safeValue}% deduction`;
+  }
+
+  private formatPolicyWindow(from: string, to: string): string {
+    const parse = (policyDuration: string) => {
+      const upper = String(policyDuration || '').toUpperCase();
+      if (upper === 'P-INF') return 'Anytime';
+      const match = upper.match(/^P-(\d+)H$/);
+      return match ? `${match[1]}h` : upper;
+    };
+    const fromText = parse(from);
+    const toText = parse(to);
+    if (String(from || '').toUpperCase() === 'P-INF') return `Before ${toText}`;
+    return `${fromText} to ${toText} before check-in`;
+  }
+
+  private buildCancellationRuleRows() {
+    const rules = this.cancellationPolicyData?.rules || [];
+    this.cancellationRuleRows = rules.map((rule: any) => ({
+      window: this.formatPolicyWindow(rule?.from, rule?.to),
+      chargeLabel: this.formatChargeLabel(rule?.charge_type, Number(rule?.charge_value || 0)),
+    }));
+  }
+  decrementL(lunchservice) {
+    if (this.counterl > 0) {
+      this.counterl--;
+    }
+
+    this.serviceDto = new PropertyServiceDTO();
+    this.serviceDto = lunchservice;
+    this.serviceDto.count = this.counterl;
+
+    this.serviceDto.organisationId = this.businessUser.organisationId;
+    this.serviceDto.logoUrl = this.businessUser.logoUrl;
+    this.serviceDto.date = this.booking.fromDate;
+
+    this.serviceDto.beforeTaxAmount =
+      this.serviceDto.servicePrice * this.serviceDto.count;
+    this.serviceDto.taxAmount =
+      (this.serviceDto.beforeTaxAmount / 100) * this.serviceDto.taxPercentage;
+    this.serviceDto.afterTaxAmount =
+      this.serviceDto.beforeTaxAmount + this.serviceDto.taxAmount;
+    //  this.addServiceList.some(e=>{
+    // e.id === item.id
+    //  })
+
+    if (
+      this.addServiceList.some((data) => data.name === lunchservice.name) ===
+      true
+    ) {
+      let service = this.addServiceList.find(
+        (data) => data.name === lunchservice.name
+      );
+      let i = this.addServiceList.indexOf(service);
+      this.addServiceList[i].count = this.serviceDto.count;
+      if (
+        this.addServiceList[i].servicePrice === 0 ||
+        this.addServiceList[i].servicePrice === undefined
+      ) {
+        this.addServiceList[i].servicePrice =
+          this.addServiceList[i].beforeTaxAmount;
+      }
+      this.addServiceList[i].beforeTaxAmount =
+        this.addServiceList[i].servicePrice * this.addServiceList[i].count;
+      this.addServiceList[i].taxAmount =
+        (this.addServiceList[i].beforeTaxAmount / 100) *
+        this.addServiceList[i].taxPercentage;
+      this.addServiceList[i].afterTaxAmount =
+        this.addServiceList[i].beforeTaxAmount +
+        this.addServiceList[i].taxAmount;
+    } else {
+      this.addServiceList.push(this.serviceDto);
+    }
+
+    this.serviceDto = new PropertyServiceDTO();
+
+
+    this.totalTaxAmount = 0;
+    this.totalExtraAmount = 0;
+    this.totalBeforeTaxAmount = 0;
+    this.addServiceList.forEach((element) => {
+      this.totalExtraAmount = this.totalExtraAmount + element.afterTaxAmount;
+      this.totalTaxAmount = this.totalTaxAmount + element.taxAmount;
+      this.totalBeforeTaxAmount =
+        this.totalBeforeTaxAmount + element.beforeTaxAmount;
+    });
+    this.booking.totalAmount =
+      this.booking.beforeTaxAmount +
+      this.totalExtraAmount +
+      this.booking.taxAmount;
+    this.token.saveServiceData(this.addServiceList);
+  }
+
+  hidediv() {
+    this.div = false;
+  }
+
+  slickCarouselConfig = {
+    // centerMode: true,
+    // centerPadding: '10%',
+    centerMode: true,
+    centerPadding: '0',
+    slidesToShow: 3,
+    dots: false,
+    autoplay: true,
+    autoplaySpeed: 2000,
+    arrows: true,
+    responsive: [
+      {
+        breakpoint: 1441,
+        settings: {
+          centerPadding: '0',
+          slidesToShow: 4,
+        },
+      },
+      {
+        breakpoint: 1025,
+        settings: {
+          centerPadding: '0',
+          slidesToShow: 2,
+        },
+      },
+      {
+        breakpoint: 767,
+        settings: {
+          centerPadding: '0',
+          slidesToShow: 1,
+        },
+      },
+    ],
+  };
+  toggleRowStyles() {
+    this.showAll = !this.showAll;
+  }
+
+  decrementb(breakfastservice) {
+    if (this.counterb > 0) {
+      this.counterb--;
+    }
+
+    this.serviceDto = new PropertyServiceDTO();
+    this.serviceDto = breakfastservice;
+    this.serviceDto.count = this.counterb;
+
+    this.serviceDto.organisationId = this.businessUser.organisationId;
+    this.serviceDto.logoUrl = this.businessUser.logoUrl;
+    this.serviceDto.date = this.booking.fromDate;
+
+    this.serviceDto.beforeTaxAmount =
+      this.serviceDto.servicePrice * this.serviceDto.count;
+    this.serviceDto.taxAmount =
+      (this.serviceDto.beforeTaxAmount / 100) * this.serviceDto.taxPercentage;
+    this.serviceDto.afterTaxAmount =
+      this.serviceDto.beforeTaxAmount + this.serviceDto.taxAmount;
+    //  this.addServiceList.some(e=>{
+    // e.id === item.id
+    //  })
+
+    if (
+      this.addServiceList.some(
+        (data) => data.name === breakfastservice.name
+      ) === true
+    ) {
+      let service = this.addServiceList.find(
+        (data) => data.name === breakfastservice.name
+      );
+      let i = this.addServiceList.indexOf(service);
+      this.addServiceList[i].count = this.serviceDto.count;
+      if (
+        this.addServiceList[i].servicePrice === 0 ||
+        this.addServiceList[i].servicePrice === undefined
+      ) {
+        this.addServiceList[i].servicePrice =
+          this.addServiceList[i].beforeTaxAmount;
+      }
+      this.addServiceList[i].beforeTaxAmount =
+        this.addServiceList[i].servicePrice * this.addServiceList[i].count;
+      this.addServiceList[i].taxAmount =
+        (this.addServiceList[i].beforeTaxAmount / 100) *
+        this.addServiceList[i].taxPercentage;
+      this.addServiceList[i].afterTaxAmount =
+        this.addServiceList[i].beforeTaxAmount +
+        this.addServiceList[i].taxAmount;
+    } else {
+      this.addServiceList.push(this.serviceDto);
+    }
+
+    this.serviceDto = new PropertyServiceDTO();
+
+
+    this.totalTaxAmount = 0;
+    this.totalExtraAmount = 0;
+    this.totalBeforeTaxAmount = 0;
+    this.addServiceList.forEach((element) => {
+      this.totalExtraAmount = this.totalExtraAmount + element.afterTaxAmount;
+      this.totalTaxAmount = this.totalTaxAmount + element.taxAmount;
+      this.totalBeforeTaxAmount =
+        this.totalBeforeTaxAmount + element.beforeTaxAmount;
+    });
+    this.booking.totalAmount =
+      this.booking.beforeTaxAmount +
+      this.totalExtraAmount +
+      this.booking.taxAmount;
+    this.token.saveServiceData(this.addServiceList);
+  }
+  decrementD(dinnerservice) {
+    if (this.counterd > 0) {
+      this.counterd--;
+    }
+
+    this.serviceDto = new PropertyServiceDTO();
+    this.serviceDto = dinnerservice;
+    this.serviceDto.count = this.counterd;
+
+    this.serviceDto.organisationId = this.businessUser.organisationId;
+    this.serviceDto.logoUrl = this.businessUser.logoUrl;
+    this.serviceDto.date = this.booking.fromDate;
+
+    this.serviceDto.beforeTaxAmount =
+      this.serviceDto.servicePrice * this.serviceDto.count;
+    this.serviceDto.taxAmount =
+      (this.serviceDto.beforeTaxAmount / 100) * this.serviceDto.taxPercentage;
+    this.serviceDto.afterTaxAmount =
+      this.serviceDto.beforeTaxAmount + this.serviceDto.taxAmount;
+    //  this.addServiceList.some(e=>{
+    // e.id === item.id
+    //  })
+
+    if (
+      this.addServiceList.some((data) => data.name === dinnerservice.name) ===
+      true
+    ) {
+      let service = this.addServiceList.find(
+        (data) => data.name === dinnerservice.name
+      );
+      let i = this.addServiceList.indexOf(service);
+      this.addServiceList[i].count = this.serviceDto.count;
+      if (
+        this.addServiceList[i].servicePrice === 0 ||
+        this.addServiceList[i].servicePrice === undefined
+      ) {
+        this.addServiceList[i].servicePrice =
+          this.addServiceList[i].beforeTaxAmount;
+      }
+      this.addServiceList[i].beforeTaxAmount =
+        this.addServiceList[i].servicePrice * this.addServiceList[i].count;
+      this.addServiceList[i].taxAmount =
+        (this.addServiceList[i].beforeTaxAmount / 100) *
+        this.addServiceList[i].taxPercentage;
+      this.addServiceList[i].afterTaxAmount =
+        this.addServiceList[i].beforeTaxAmount +
+        this.addServiceList[i].taxAmount;
+    } else {
+      this.addServiceList.push(this.serviceDto);
+    }
+
+    this.serviceDto = new PropertyServiceDTO();
+
+
+    this.totalTaxAmount = 0;
+    this.totalExtraAmount = 0;
+    this.totalBeforeTaxAmount = 0;
+    this.addServiceList.forEach((element) => {
+      this.totalExtraAmount = this.totalExtraAmount + element.afterTaxAmount;
+      this.totalTaxAmount = this.totalTaxAmount + element.taxAmount;
+      this.totalBeforeTaxAmount =
+        this.totalBeforeTaxAmount + element.beforeTaxAmount;
+    });
+    this.booking.totalAmount =
+      this.booking.beforeTaxAmount +
+      this.totalExtraAmount +
+      this.booking.taxAmount;
+    this.token.saveServiceData(this.addServiceList);
+  }
+
+  // }
+  ngAfterViewInit() {
+    // this.token.saveSelectedServices(this.selectedServices);
+    setTimeout(() => {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth',
+      });
+    }, 100);
+
+  const sectionId = sessionStorage.getItem('scrollTo');
+  if (sectionId) {
+    setTimeout(() => {
+      const el = document.getElementById(sectionId);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+      sessionStorage.removeItem('scrollTo');
+    }, 100);
+  }
+  }
+
+  backClicked() {
+    this.locationBack.back();
+  }
+  onAdd(facility, index) {
+    facility.isAdded = true;
+    facility.quantity = 1;
+    this.selectedServices.push(facility);
+    this.token.saveSelectedServices(this.selectedServices);
+    this.updateTokenStorage();
+    this.selectedServicesOne = this.selectedServices;
+    this.changeDetectorRefs.detectChanges();
+  }
+
+  increaseQuantity(facility) {
+    facility.quantity++;
+    if (this.selectedServicesOne) {
+      const facilityIndex = this.selectedServicesOne.findIndex(
+        (ele) => ele.id === facility.id
+      );
+
+      if (facilityIndex !== -1) {
+        this.selectedServicesOne[facilityIndex].quantity = facility.quantity;
+      } else {
+        this.selectedServicesOne.push(facility);
+      }
+
+      this.token.saveSelectedServices(this.selectedServicesOne);
+    } else {
+      this.token.saveSelectedServices(this.selectedServices);
+      this.updateTokenStorage();
+    }
+  }
+
+  decreaseQuantity(facility) {
+    if (facility.quantity > 1) {
+      facility.quantity--;
+      if (
+        this.selectedServicesOne != null &&
+        this.selectedServicesOne != undefined
+      ) {
+        this.selectedServicesOne.forEach((ele) => {
+          if (ele.id === facility.id) {
+            ele.quantity = facility.quantity;
+          }
+        });
+
+        this.token.saveSelectedServices(this.selectedServicesOne);
+      } else {
+        this.token.saveSelectedServices(this.selectedServices);
+        this.updateTokenStorage();
+      }
+    } else if (facility.quantity === 1) {
+      facility.isAdded = false;
+      facility.quantity = null;
+      if (
+        this.selectedServicesOne != null &&
+        this.selectedServicesOne != undefined
+      ) {
+        this.selectedServicesOne = this.selectedServicesOne.filter((ele) => {
+          // Check if the condition is met
+          if (ele.id === facility.id) {
+            ele.quantity = facility.quantity; // Update quantity if needed
+
+            return false; // Exclude this element from the new array
+          }
+          return true;
+          // Keep this element in the new array
+        });
+        this.token.saveSelectedServices(this.selectedServicesOne);
+      }
+
+      const index = this.selectedServices.indexOf(facility);
+      if (index > -1) {
+        this.selectedServices.splice(index, 1);
+      }
+    }
+  }
+
+  // Save selected services to token storage
+
+  updateTokenStorage() {
+    this.token.saveSelectedServices(this.selectedServices);
+  }
+  navigateToSection(elementId: string): void {
+    this.viewportScroller.scrollToAnchor(elementId);
+  }
+  reset() {
+    this.booking = {} as Booking;
+    this.showDiv = false;
+  }
+  public setTitle(newTitle: string) {
+    this.titleService.setTitle(newTitle);
+  }
+  personChange() {
+    if (
+      this.adultno != null ||
+      (this.adultno != undefined && this.booking.noOfPersons == null) ||
+      this.booking.noOfPersons == undefined
+    ) {
+      this.adults = Number(this.adults);
+    }
+    if (
+      this.childno != null ||
+      (this.childno != undefined && this.booking.noOfChildren == null) ||
+      this.booking.noOfChildren == undefined
+    ) {
+      this.children = Number(this.childno);
+    }
+  }
+  checkingAvailabilityOneDay() {
+    this.loaderHotelBooking = true;
+    this.checkAvailabilityStatusHide = false;
+    this.booking.propertyId = this.businessUser.id;
+
+    this.booking.fromDate = this.getDateFormatYearMonthDay(
+      this.oneDayFromDate.day,
+      this.oneDayFromDate.month,
+      this.oneDayFromDate.year
+    );
+
+    this.booking.toDate = this.addDaysToDateString(this.booking.fromDate, 1);
+    this.booking.noOfRooms = this.noOfrooms;
+    this.booking.noOfPersons = this.adults;
+
+    this.token.saveBookingData(this.booking);
+
+    this.hotelBookingService
+      .checkAvailabilityByProperty(
+        this.booking.fromDate,
+        this.getAvailabilityCheckoutDate(),
+        this.booking.noOfRooms,
+        this.booking.noOfPersons,
+        this.booking.propertyId
+      )
+      .subscribe(
+        (response) => {
+          this.loaderHotelBooking = false;
+          this.updateDayTripCheckoutAvailability(response?.body?.roomList || []);
+          this.availableRooms = this.getFilteredDataBasedOnRoomRateOrder(response?.body?.roomList);
+          this.availableRooms = this.availableRooms.filter(room =>
+            room.ratesAndAvailabilityDtos?.length > 0 &&
+            room.ratesAndAvailabilityDtos.every((rate: any) =>
+              (rate.stopSellOBE === null || rate.stopSellOBE === false) &&
+              (rate.stopSellOTA === null || rate.stopSellOTA === false)
+            )
+          );
+    // Filter sold-out rooms
+          this.soldOutRooms = response.body.roomList.filter(room => {
+            if (this.isRoomTooSmall(room)) {
+              return false;
+            }
+            return room.ratesAndAvailabilityDtos === null ||
+              room.ratesAndAvailabilityDtos.length === 0 ||
+              room.ratesAndAvailabilityDtos.some((rate: any) =>
+                (rate.stopSellOBE !== null && rate.stopSellOBE !== false) ||
+                (rate.stopSellOTA !== null && rate.stopSellOTA !== false)
+              );
+          });
+          this.shortrooms = response.body.roomList;
+          this.checkAvailabilityStatus = response.body.available;
+          this.booking.bookingAmount = response.body.bookingAmount;
+
+          // this.booking.extraPersonCharge = response.body.extraPersonCharge;
+
+          // this.selectedRoomMaximumOccupancy = response.body.noOfPersons;
+
+          if (response.body.available === true) {
+            this.checkAvailabilityStatusName = 'Available';
+          } else {
+            this.checkAvailabilityStatusName = 'Not Available';
+          }
+          this.oneDayTripShow();
+          this.checkLengthOfStayRestrictions();
+          // Logger.log('checkAvailability ' + JSON.stringify(response.body));
+        },
+        (error) => {
+          if (error instanceof HttpErrorResponse) {
+            Logger.log('checkAvailability error');
+          }
+        }
+      );
+  }
+
+  adult() {
+    if (this.adultno != null || this.adultno != undefined) {
+      this.adults = Number(+this.adults);
+    } else {
+      this.adults = this.adults;
+    }
+  }
+  onCheckInClosed(): void {
+  if (this.fromDate) {
+    this.booking.fromDate = this.getDateFormatYearMonthDay(
+      this.fromDate.day,
+      this.fromDate.month,
+      this.fromDate.year
+    );
+
+    // Automatically set next day as default checkout if not chosen yet
+    if (!this.toDate) {
+      const nextDay = this.calendar.getNext(this.fromDate, 'd', 1);
+      this.toDate = nextDay;
+      this.booking.toDate = this.getDateFormatYearMonthDay(
+        nextDay.day,
+        nextDay.month,
+        nextDay.year
+      );
+    }
+
+    this.booking.noOfRooms = this.noOfrooms;
+    this.booking.noOfPersons = this.adults;
+
+    this.token.saveBookingData(this.booking);
+  }
+}
+
+onCheckOutClosed(): void {
+  if (this.toDate) {
+    this.booking.toDate = this.getDateFormatYearMonthDay(
+      this.toDate.day,
+      this.toDate.month,
+      this.toDate.year
+    );
+
+    if (this.fromDate) {
+      this.booking.fromDate = this.getDateFormatYearMonthDay(
+        this.fromDate.day,
+        this.fromDate.month,
+        this.fromDate.year
+      );
+    }
+
+    this.booking.noOfRooms = this.noOfrooms;
+    this.booking.noOfPersons = this.adults;
+
+    this.token.saveBookingData(this.booking);
+    this.checkingAvailability();
+  }
+}
+
+  child() {
+    if (this.childno != null || this.childno != undefined) {
+      this.children = Number(+this.children + 1);
+    } else {
+      this.children = this.children + 1;
+    }
+  }
+  navigatePrivacy() {
+    // this.token.saveBookingData(this.booking);
+    // this.token.saveProperty(this.businessUser);
+    this.router.navigate(['privacy']);
+  }
+  submitForm(form: NgForm) {
+    Logger.log(JSON.stringify(this.subscriptions));
+    const TO_EMAIL = 'reservation@thehotelmate.co';
+    // const TO_EMAIL = 'abir.sayeed@gmail.com';
+    // const TO_EMAIL = "subhasmitatripathy37@gmail.com";
+    this.email.fromEmail = this.fromEmail;
+    this.email.toEmail = TO_EMAIL;
+    this.name = this.name;
+    this.email.subject = this.subject;
+    this.propertyname = this.businessUser?.seoFriendlyName;
+    // tslint:disable-next-line: max-line-length
+    this.email.message =
+      '\nPropertyName: ' +
+      this.businessUser.name +
+      '\nName: ' +
+      this.name +
+      '\nEmail: ' +
+      this.fromEmail +
+      ' \nPhone: ' +
+      this.phone +
+      ' \nMessage: ' +
+      this.message +
+      '. \n*****This enquiry is showing from Bookone PMS Website******';
+
+    Logger.log(this.subscriptions + ' ' + this.name);
+    this.email.subject = '' + this.subject;
+    Logger.log('form data ' + JSON.stringify(this.email));
+    //  this.success = true;
+    this.http
+      .post<Email>(API_URL_NZ + '/api/thm/sendEmailFromWebSite', this.email)
+      .subscribe((response) => {
+        this.success = response;
+        Logger.log(response);
+      });
+    this.sendemailtosupport(this.email);
+  }
+  sendemailtosupport(email) {
+    email.toEmail = 'reservation@thehotelmate.co';
+    this.http
+      .post<Email>(API_URL_NZ + '/api/thm/sendEmailFromWebSite', email)
+      .subscribe((response) => {
+        this.success = response;
+        Logger.log(response);
+        this.name = '';
+        this.fromEmail = '';
+        this.phone = '';
+        this.subject = '';
+        this.propertyname = '';
+        this.message = '';
+        this.successMessage = true;
+      });
+  }
+  // changeTheme(primary: string, secondary: string, tertiary: string) {
+  //   document.documentElement.style.setProperty('--primary', primary);
+
+  //   document.documentElement.style.setProperty('--secondary', secondary);
+  //   document.documentElement.style.setProperty('--tertiary', tertiary);
+  //   document.documentElement.style.setProperty('--button-primary', tertiary);
+  //   document.documentElement.style.setProperty(
+  //     '--primary-gradient',
+  //     'linear-gradient( 180deg, ' + tertiary + ', ' + secondary + ')'
+  //   );
+  //   document.documentElement.style.setProperty(
+  //     '--secondary-gradient',
+  //     'linear-gradient( 312deg, ' + primary + ', ' + secondary + ')'
+  //   );
+  //   document.documentElement.style.setProperty(
+  //     '--secondary-one-gradient',
+  //     'linear-gradient( 180deg, ' + primary + ', ' + secondary + ')'
+  //   );
+
+  //   document.documentElement.style.setProperty(
+  //     '--third-gradient',
+  //     'linear-gradient( 180deg, ' + primary + ', ' + secondary + ')'
+  //   );
+  getContrastColor(hexColor?: string): string {
+    if (!hexColor) return '#ffffff';
+    let color = hexColor.replace('#', '');
+    if (color.length === 3) {
+      color = color.split('').map(c => c + c).join('');
+    }
+    if (color.length !== 6) return '#ffffff';
+    const r = parseInt(color.substring(0, 2), 16);
+    const g = parseInt(color.substring(2, 4), 16);
+    const b = parseInt(color.substring(4, 6), 16);
+    const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
+    return (yiq >= 128) ? '#0f172a' : '#ffffff';
+  }
+
+  changeTheme(primary?: string, secondary?: string, tertiary?: string) {
+  // Default colors if none are passed
+  const defaultPrimary = "#232A45";   // blue
+  const defaultSecondary = "#0B01CC"; // green
+  const defaultTertiary = "#fff";  // yellow
+
+  const p = primary || defaultPrimary;
+  const s = secondary || defaultSecondary;
+  const t = tertiary || defaultTertiary;
+
+  document.documentElement.style.setProperty('--primary', p);
+  document.documentElement.style.setProperty('--secondary', s);
+  document.documentElement.style.setProperty('--tertiary', t);
+  document.documentElement.style.setProperty('--button-primary', t);
+
+  document.documentElement.style.setProperty(
+    '--primary-gradient',
+    `linear-gradient(180deg, ${t}, ${s})`
+  );
+  document.documentElement.style.setProperty(
+    '--secondary-gradient',
+    `linear-gradient(312deg, ${p}, ${s})`
+  );
+  document.documentElement.style.setProperty(
+    '--secondary-one-gradient',
+    `linear-gradient(180deg, ${p}, ${s})`
+  );
+  document.documentElement.style.setProperty(
+    '--third-gradient',
+    `linear-gradient(180deg, ${p}, ${s})`
+  );
+}
+
+  stripHtml(html: string): string {
+    if (!html) return '';
+    let text = html
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&amp;/g, '&')
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;/g, "'")
+      .replace(/&nbsp;/g, ' ');
+
+    text = text.replace(/<[^>]*>/g, '');
+    return text.replace(/\s+/g, ' ').trim();
+  }
+
+  updateTag() {
+    let keywords = this.businessUser?.address?.city;
+
+    if (
+      this.businessUser.businessDescription != null &&
+      this.businessUser.businessDescription != undefined
+    ) {
+      this.description = this.stripHtml(this.businessUser.businessDescription);
+    } else {
+      this.description = 'Contact No: +91-7326079861';
+    }
+    let title =
+      this.businessUser.name +
+      ' | The Hotel Mate' +
+      ' | Contact No: +91-7326079861';
+
+    let ogTitle =
+      this.businessUser.name +
+      ' | The Hotel Mate' +
+      ' | Contact No: +91-7326079861';
+
+    if (
+      this.businessUser.businessDescription != null &&
+      this.businessUser.businessDescription != undefined
+    ) {
+      this.ogDescription = this.stripHtml(this.businessUser.businessDescription);
+    } else {
+      this.ogDescription = 'Contact No: +91-7326079861';
+    }
+
+    let ogImage = this.businessUser.logoUrl;
+    let ogUrl = 'https://thehotelmate.co/' + this.businessUser.seoFriendlyName;
+    let ogSiteName = '';
+    this.metaService.updateTag({ name: 'title', content: title });
+    this.titleService.setTitle(title);
+    this.metaService.updateTag({ name: 'keywords', content: keywords });
+    this.metaService.updateTag({
+      name: 'description',
+      content: this.description,
+    });
+    this.metaService.updateTag({ name: 'robots', content: 'noindex,nofollow' });
+    // fb
+
+    this.metaService.updateTag({ property: 'og:title', content: ogTitle });
+    this.metaService.updateTag(
+      {
+        property: 'og:description',
+        content: this.ogDescription,
+      },
+      `property='og:description'`
+    );
+    this.metaService.updateTag({ property: 'og:image', content: ogImage });
+    this.metaService.updateTag({ property: 'og:url', content: ogUrl });
+    this.metaService.updateTag(
+      {
+        property: 'og:site_name',
+        content: ogSiteName,
+      },
+      `property='og:site_name'`
+    );
+    this.metaService.updateTag({ property: 'og:image', content: ogImage });
+
+
+    // twitter
+    this.metaService.updateTag({ name: 'twitter:title', content: ogTitle });
+    this.metaService.updateTag(
+      {
+        name: 'twitter:description',
+        content: this.ogDescription,
+      },
+      `name='twitter:description'`
+    );
+    this.metaService.updateTag({ name: 'twitter:image', content: ogImage });
+    this.metaService.updateTag(
+      {
+        name: 'twitter:image:alt',
+        content: this.ogDescription,
+      },
+      `name='twitter:image:alt'`
+    );
+    this.changeDetectorRefs.detectChanges();
+  }
+  mileSecondToNGBDate(date: string) {
+    if (date && typeof date === 'string') {
+      const parts = date.split('-');
+      if (parts.length === 3 && parts[0].length === 4) {
+        const year = parseInt(parts[0], 10);
+        const month = parseInt(parts[1], 10);
+        const day = parseInt(parts[2], 10);
+        if (!isNaN(year) && !isNaN(month) && !isNaN(day)) {
+          return { year: year, month: month, day: day };
+        }
+      }
+    }
+    const dsd = typeof date === 'string' ? new Date(date.replace(/-/g, '/')) : new Date(date);
+    const year = dsd.getFullYear();
+    const day = dsd.getDate();
+    const month = dsd.getMonth() + 1;
+    return { year: year, month: month, day: day };
+  }
+  // contefulpage() {
+  //   this.router.navigate(["/blogpost"]);
+  // }
+  getDiffDate(toDate, fromDate) {
+    if (!toDate || !fromDate) {
+      return;
+    }
+    this.enddate = new Date(toDate.year, toDate.month - 1, toDate.day);
+
+    this.startDate = new Date(fromDate.year, fromDate.month - 1, fromDate.day);
+
+    this.DiffDate = Math.floor(
+      (Date.UTC(
+        this.enddate.getFullYear(),
+        this.enddate.getMonth(),
+        this.enddate.getDate()
+      ) -
+        Date.UTC(
+          this.startDate.getFullYear(),
+          this.startDate.getMonth(),
+          this.startDate.getDate()
+        )) /
+        (1000 * 60 * 60 * 24)
+    );
+  }
+  toggleRoomsAndOccupancy() {
+    if (this.roomsAndOccupancy === false) {
+      this.roomsAndOccupancy = true;
+    } else if (this.roomsAndOccupancy === true) {
+      this.roomsAndOccupancy = false;
+    }
+  }
+
+  // privtePromotion(){
+
+  // }
+
+  async getPropertyDetailsById(id: number) {
+    this.isLoadingProperty = true;
+ this.loader = true;
+    try {
+      this.loader = true;
+      const data = await this.listingService?.findByPropertyId(id).toPromise();
+      if (data.status === 200) {
+        this.businessUser = data.body;
+        this.propertyData = this.businessUser;
+        this.checkAnyTimeCheckIn();
+        this.accommodationData =
+        this.propertyData.businessServiceDtoList?.filter(
+            (entry) => entry.name === 'Accommodation'
+        );
+        this.accommodationData?.forEach((element) => {
+          this.smartRecommendationsBoolean = element.smartRecommendation;
+        });
+        this.isLoadingProperty = false;
+        this.generateAndSetSchema();
+        this.getOfferList(this.businessUser.seoFriendlyName);
+        this.getGoogleReview(this.businessUser.id);
+        this.showStaticContent = true;
+        this.policies = this.businessUser.businessServiceDtoList.filter(
+          (ele) => ele.name === 'Accommodation'
+        );
+        this.cancellationPolicyData = this.policies?.[0]?.cancellationPolicy;
+        this.buildCancellationRuleRows();
+
+        this.amenitiesHighlights = [];
+        this.propertyServiceListData = [];
+        this.addOnServices = [];
+        this.propertyServiceListDataOne = [];
+        this.propertyServicesNoId = [];
+
+        this.businessUser.propertyServicesList.forEach((ele) => {
+          const isFree = (Number(ele.servicePrice) === 0 || ele.servicePrice == null) &&
+                         (Number(ele.adultServicePrice) === 0 || ele.adultServicePrice == null) &&
+                         (Number(ele.childServicePrice) === 0 || ele.childServicePrice == null);
+
+          if ((ele.id == null || ele.id == undefined) && isFree) {
+            this.propertyServicesNoId.push(ele);
+          }
+
+          if (isFree) {
+            this.amenitiesHighlights.push(ele);
+            this.propertyServiceListData.push(ele);  // Backward compatibility
+          } else {
+            this.addOnServices.push(ele);
+            this.propertyServiceListDataOne.push(ele);  // Backward compatibility
+          }
+        });
+
+        this.businessUser?.socialMediaLinks.forEach((element) => {
+          this.socialmedialist = element;
+        });
+
+        // this.propertyServiceListDataOne =
+        //   this.businessUser.propertyServicesList.filter((ele) =>
+        //     this.isEligibleAddOnService(ele)
+        //   );
+        this.addOnServices = [...this.propertyServiceListDataOne];
+
+        if (
+          this.selectedServices != null &&
+          this.selectedServices != undefined
+        ) {
+          this.savedServices = this.token
+            ?.getSelectedServices()
+            ?.forEach((ele) => {
+              this.propertyServiceListDataOne.forEach((val) => {
+                if (ele.name === val.name) {
+                  this.valSelected = true;
+                  this.viewAddon = true;
+                  val.quantity = ele.quantity;
+                }
+              });
+            });
+        }
+        this.updateTag();
+        this.token.saveProperty(this.businessUser);
+
+          this.accommodationData = this.businessUser.businessServiceDtoList?.filter(
+          (entry) => entry.name === 'Accommodation'
+        );
+        this.accommodationData.forEach((element) => {
+          this.serviceChargePercentage = element.serviceChargePercentage;
+
+        });
+        if (this.urlLocation !== undefined && this.urlLocation !== null) {
+          this.triggerEventService.newEvent(this.urlLocation);
+        }
+
+        this.dangerousUrl =
+          'https://siteminder-git-main-rekha-credencesoft.vercel.app/propertyId/' +
+          this.businessUser.id;
+        this.trustedURL = this.sanitizer.bypassSecurityTrustResourceUrl(
+          this.dangerousUrl
+        );
+        this.setCurrencyAndLocalization();
+        this.businessTypeName = this.businessUser.businessType;
+
+        if (this.token.getBookingCity() !== null) {
+          this.bookingCity = this.token.getBookingCity();
+        } else {
+          this.token.saveBookingCity(this.bookingCity);
+        }
+
+        this.businessServiceDto = this.businessUser.businessServiceDtoList.find(
+          (data) => data.name === this.businessUser.businessType
+        );
+
+        if (this.businessUser.primaryColor !== undefined) {
+          this.changeTheme(
+            this.businessUser.primaryColor,
+            this.businessUser.secondaryColor,
+            this.businessUser.tertiaryColor
+          );
+        }
+
+        this.maxSelectRoom = this.businessUser.numberOfRooms;
+        this.maxOccupancy = this.businessUser.maximumOccupancy;
+
+        this.selectHotelBooking = true;
+
+        let checkedinday = new Date(Number(this.checkinYear), Number(this.checkinMonth) - 1, Number(this.checkinDay));
+
+        let checkedOutday = new Date(checkedinday);
+        let day = Number(checkedOutday.getDate()) + Number(this.nights);
+        checkedOutday.setDate(day);
+
+        this.booking.fromDate = this.getDateFormatYearMonthDay(
+          checkedinday.getDate(),
+          checkedinday.getMonth() + 1,
+          checkedinday.getFullYear()
+        );
+        this.booking.toDate = this.getDateFormatYearMonthDay(
+          checkedOutday.getDate(),
+          checkedOutday.getMonth() + 1,
+          checkedOutday.getFullYear()
+        );
+
+        this.booking.noOfRooms = 1;
+        this.booking.noOfPersons = 1;
+        this.booking.noOfChildren = 1;
+
+        this.fromDate = new NgbDate(
+          this.mileSecondToNGBDate(this.booking.fromDate).year,
+          this.mileSecondToNGBDate(this.booking.fromDate).month,
+          this.mileSecondToNGBDate(this.booking.fromDate).day
+        );
+        this.toDate = new NgbDate(
+          this.mileSecondToNGBDate(this.booking.toDate).year,
+          this.mileSecondToNGBDate(this.booking.toDate).month,
+          this.mileSecondToNGBDate(this.booking.toDate).day
+        );
+        this.noOfrooms = this.booking.noOfRooms;
+        this.getDiffDate(this.toDate, this.fromDate);
+        this.checkingAvailability();
+
+        if (
+          this.booking.taxPercentage != null &&
+          this.booking.taxPercentage != undefined
+        ) {
+          this.taxPercentage = this.booking.taxPercentage;
+        } else {
+          this.taxPercentage = 0;
+        }
+
+        if (
+          this.businessServiceDto !== undefined &&
+          this.businessServiceDto.maxLeadTime !== undefined
+        ) {
+          const maxLead = new Date(
+            0,
+            0,
+            0,
+            0,
+            this.businessServiceDto.maxLeadTime,
+            0
+          );
+          this.leadMaxDay = Math.floor(
+            this.businessServiceDto.maxLeadTime / 1440
+          );
+          this.leadMaxMin = maxLead.getMinutes();
+          this.leadMaxHour = maxLead.getHours();
+        }
+
+        if (
+          this.businessServiceDto !== undefined &&
+          this.businessServiceDto.minLeadTime !== undefined
+        ) {
+          const minLead = new Date(
+            0,
+            0,
+            0,
+            0,
+            this.businessServiceDto.minLeadTime,
+            0
+          );
+          // Do something with minLead?
+        }
+
+        if (
+          this.businessServiceDto !== undefined &&
+          this.businessServiceDto.stdPrepTime !== undefined
+        ) {
+          const prep = new Date(
+            0,
+            0,
+            0,
+            0,
+            this.businessServiceDto.stdPrepTime,
+            0
+          );
+          this.prepareDay = Math.floor(
+            this.businessServiceDto.maxLeadTime / 1440
+          );
+          this.prepareHour = prep.getHours();
+          this.prepareMinute = prep.getMinutes();
+        }
+
+        this.booking.propertyId = this.businessUser.id;
+        this.lat = parseFloat(this.businessUser.latitude);
+        this.lng = parseFloat(this.businessUser.longitude);
+
+        this.loader = false;
+        this.changeDetectorRefs.detectChanges();
+      } else {
+        this.isLoadingProperty = false;
+        this.router.navigate(["/error"]);
+      }
+    } catch (error) {
+       if (isPlatformBrowser(this.platformId)) {
+      this.router.navigate(["/error"]);
+      }
+      this.isLoadingProperty = false;
+      this.loader = false;
+      // Handle the error appropriately, if needed.
+    }
+  }
+  generateAndSetSchema() {
+    // Guard against missing data.
+    if (!this.businessUser || !this.businessUser.address) {
+      return;
+    }
+
+    const activeCurrency = (this.currency || this.businessUser.localCurrency || 'INR').toUpperCase();
+
+    const totalVal = this.totalAmountParam != null && this.totalAmountParam !== undefined ? Number(this.totalAmountParam).toFixed(2) : '0.00';
+    const taxVal = this.taxAmountParam != null && this.taxAmountParam !== undefined ? Number(this.taxAmountParam).toFixed(2) : '0.00';
+    const baseVal = (Number(totalVal) - Number(taxVal)).toFixed(2);
+
+  const schema = {
+  "@context": "https://schema.org",
+  "@type": "Hotel",
+  "name": this.businessUser?.name,
+  "url": `https://bookone.io/detail/${this.businessUser?.id}`,
+  "identifier": this.businessUser?.id,
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": this.businessUser?.address?.streetName,
+    "addressLocality": this.businessUser?.address?.city,
+    "postalCode": this.businessUser?.address?.postcode,
+    "addressCountry": this.businessUser?.address?.country
+  },
+  "telephone": this.businessUser?.mobile,
+  "makesOffer": [{
+    "@type": ["Offer", "LodgingReservation"],
+    "checkinTime": `${this.checkinDate}T14:00:00`,   // e.g. "2025-11-26T14:00:00"
+    "checkoutTime": `${this.checkoutDate}T11:00:00`, // e.g. "2025-11-28T11:00:00"
+    "name": "Economy",
+    "priceSpecification": {
+      "@type": "CompoundPriceSpecification",
+      "price": totalVal,       // total amount
+      "priceCurrency": activeCurrency,
+      "priceComponent": [
+        {
+          "@type": "UnitPriceSpecification",
+          "name": "Base rate",
+          "price": baseVal,
+          "priceCurrency": activeCurrency
+        },
+        {
+          "@type": "UnitPriceSpecification",
+          "name": "Tax",
+          "price": taxVal,
+          "priceCurrency": activeCurrency
+        }
+      ]
+    },
+    "availability": "https://schema.org/InStock"
+  }]
+};
+    this.SchemaService.setSchema(schema);
+  }
+
+  increament(breakfastservice) {
+    this.counterb = this.counterb + 1;
+    this.serviceDto = new PropertyServiceDTO();
+    this.serviceDto = breakfastservice;
+    this.serviceDto.count = this.counterb;
+
+    this.serviceDto.organisationId = this.businessUser.organisationId;
+    this.serviceDto.logoUrl = this.businessUser.logoUrl;
+    this.serviceDto.date = this.booking.fromDate;
+
+    this.serviceDto.beforeTaxAmount =
+      this.serviceDto.servicePrice * this.serviceDto.count;
+    this.serviceDto.taxAmount =
+      (this.serviceDto.beforeTaxAmount / 100) * this.serviceDto.taxPercentage;
+    this.serviceDto.afterTaxAmount =
+      this.serviceDto.beforeTaxAmount + this.serviceDto.taxAmount;
+    //  this.addServiceList.some(e=>{
+    // e.id === item.id
+    //  })
+
+    if (
+      this.addServiceList.some(
+        (data) => data.name === breakfastservice.name
+      ) === true
+    ) {
+      let service = this.addServiceList.find(
+        (data) => data.name === breakfastservice.name
+      );
+      let i = this.addServiceList.indexOf(service);
+      this.addServiceList[i].count = this.serviceDto.count;
+      if (
+        this.addServiceList[i].servicePrice === 0 ||
+        this.addServiceList[i].servicePrice === undefined
+      ) {
+        this.addServiceList[i].servicePrice =
+          this.addServiceList[i].beforeTaxAmount;
+      }
+      this.addServiceList[i].beforeTaxAmount =
+        this.addServiceList[i].servicePrice * this.addServiceList[i].count;
+      this.addServiceList[i].taxAmount =
+        (this.addServiceList[i].beforeTaxAmount / 100) *
+        this.addServiceList[i].taxPercentage;
+      this.addServiceList[i].afterTaxAmount =
+        this.addServiceList[i].beforeTaxAmount +
+        this.addServiceList[i].taxAmount;
+    } else {
+      this.addServiceList.push(this.serviceDto);
+    }
+
+    this.serviceDto = new PropertyServiceDTO();
+
+    this.totalTaxAmount = 0;
+    this.totalExtraAmount = 0;
+    this.totalBeforeTaxAmount = 0;
+    this.addServiceList.forEach((element) => {
+      this.totalExtraAmount = this.totalExtraAmount + element.afterTaxAmount;
+      this.totalTaxAmount = this.totalTaxAmount + element.taxAmount;
+      this.totalBeforeTaxAmount =
+        this.totalBeforeTaxAmount + element.beforeTaxAmount;
+    });
+    this.booking.totalAmount =
+      this.booking.beforeTaxAmount +
+      this.totalExtraAmount +
+      this.booking.taxAmount;
+    this.token.saveServiceData(this.addServiceList);
+  }
+  increamentL(lunchservice) {
+    this.counterl = this.counterl + 1;
+
+    this.serviceDto = new PropertyServiceDTO();
+    this.serviceDto = lunchservice;
+    this.serviceDto.count = this.counterl;
+
+    this.serviceDto.organisationId = this.businessUser.organisationId;
+    this.serviceDto.logoUrl = this.businessUser.logoUrl;
+    this.serviceDto.date = this.booking.fromDate;
+
+    this.serviceDto.beforeTaxAmount =
+      this.serviceDto.servicePrice * this.serviceDto.count;
+    this.serviceDto.taxAmount =
+      (this.serviceDto.beforeTaxAmount / 100) * this.serviceDto.taxPercentage;
+    this.serviceDto.afterTaxAmount =
+      this.serviceDto.beforeTaxAmount + this.serviceDto.taxAmount;
+    //  this.addServiceList.some(e=>{
+    // e.id === item.id
+    //  })
+
+    if (
+      this.addServiceList.some((data) => data.name === lunchservice.name) ===
+      true
+    ) {
+      let service = this.addServiceList.find(
+        (data) => data.name === lunchservice.name
+      );
+      let i = this.addServiceList.indexOf(service);
+      this.addServiceList[i].count = this.serviceDto.count;
+      if (
+        this.addServiceList[i].servicePrice === 0 ||
+        this.addServiceList[i].servicePrice === undefined
+      ) {
+        this.addServiceList[i].servicePrice =
+          this.addServiceList[i].beforeTaxAmount;
+      }
+      this.addServiceList[i].beforeTaxAmount =
+        this.addServiceList[i].servicePrice * this.addServiceList[i].count;
+      this.addServiceList[i].taxAmount =
+        (this.addServiceList[i].beforeTaxAmount / 100) *
+        this.addServiceList[i].taxPercentage;
+      this.addServiceList[i].afterTaxAmount =
+        this.addServiceList[i].beforeTaxAmount +
+        this.addServiceList[i].taxAmount;
+    } else {
+      this.addServiceList.push(this.serviceDto);
+    }
+
+    this.serviceDto = new PropertyServiceDTO();
+
+    this.totalTaxAmount = 0;
+    this.totalExtraAmount = 0;
+    this.totalBeforeTaxAmount = 0;
+    this.addServiceList.forEach((element) => {
+      this.totalExtraAmount = this.totalExtraAmount + element.afterTaxAmount;
+      this.totalTaxAmount = this.totalTaxAmount + element.taxAmount;
+      this.totalBeforeTaxAmount =
+        this.totalBeforeTaxAmount + element.beforeTaxAmount;
+    });
+    this.booking.totalAmount =
+      this.booking.beforeTaxAmount +
+      this.totalExtraAmount +
+      this.booking.taxAmount;
+    this.token.saveServiceData(this.addServiceList);
+  }
+  increamentD(dinnerservice) {
+    this.counterd = this.counterd + 1;
+    this.serviceDto = new PropertyServiceDTO();
+    this.serviceDto = dinnerservice;
+    this.serviceDto.count = this.counterd;
+
+    this.serviceDto.organisationId = this.businessUser.organisationId;
+    this.serviceDto.logoUrl = this.businessUser.logoUrl;
+    this.serviceDto.date = this.booking.fromDate;
+
+    this.serviceDto.beforeTaxAmount =
+      this.serviceDto.servicePrice * this.serviceDto.count;
+    this.serviceDto.taxAmount =
+      (this.serviceDto.beforeTaxAmount / 100) * this.serviceDto.taxPercentage;
+    this.serviceDto.afterTaxAmount =
+      this.serviceDto.beforeTaxAmount + this.serviceDto.taxAmount;
+    //  this.addServiceList.some(e=>{
+    // e.id === item.id
+    //  })
+
+    if (
+      this.addServiceList.some((data) => data.name === dinnerservice.name) ===
+      true
+    ) {
+      let service = this.addServiceList.find(
+        (data) => data.name === dinnerservice.name
+      );
+      let i = this.addServiceList.indexOf(service);
+      this.addServiceList[i].count = this.serviceDto.count;
+      if (
+        this.addServiceList[i].servicePrice === 0 ||
+        this.addServiceList[i].servicePrice === undefined
+      ) {
+        this.addServiceList[i].servicePrice =
+          this.addServiceList[i].beforeTaxAmount;
+      }
+      this.addServiceList[i].beforeTaxAmount =
+        this.addServiceList[i].servicePrice * this.addServiceList[i].count;
+      this.addServiceList[i].taxAmount =
+        (this.addServiceList[i].beforeTaxAmount / 100) *
+        this.addServiceList[i].taxPercentage;
+      this.addServiceList[i].afterTaxAmount =
+        this.addServiceList[i].beforeTaxAmount +
+        this.addServiceList[i].taxAmount;
+    } else {
+      this.addServiceList.push(this.serviceDto);
+    }
+
+    this.serviceDto = new PropertyServiceDTO();
+
+    this.totalTaxAmount = 0;
+    this.totalExtraAmount = 0;
+    this.totalBeforeTaxAmount = 0;
+    this.addServiceList.forEach((element) => {
+      this.totalExtraAmount = this.totalExtraAmount + element.afterTaxAmount;
+      this.totalTaxAmount = this.totalTaxAmount + element.taxAmount;
+      this.totalBeforeTaxAmount =
+        this.totalBeforeTaxAmount + element.beforeTaxAmount;
+    });
+    this.booking.totalAmount =
+      this.booking.beforeTaxAmount +
+      this.totalExtraAmount +
+      this.booking.taxAmount;
+    this.token.saveServiceData(this.addServiceList);
+  }
+
+  gotocheckout() {
+    this.availableRooms?.forEach((room) => {
+      this.booking.roomType = room.name;
+      // this.booking.roomRatePlanName = plan.name;
+
+      // Reset previous error messages
+      this.showError = false;
+      // this.errorMessage = '';
+      room.ratesAndAvailabilityDtos?.forEach((ele) => {
+        ele.roomRatePlans?.forEach((ele1) => {
+          if (ele1.name === this.booking.roomRatePlanName) {
+            const personsPerRoom = Math.ceil(
+              this.booking.noOfPersons / this.booking.noOfRooms
+            );
+            if (personsPerRoom > ele1.maximumOccupancy) {
+              this.roomOccupancy = ele1.maximumOccupancy;
+              const requiredRooms = Math.ceil(
+                this.booking.noOfPersons / ele1.maximumOccupancy
+              );
+              const additionalRoomsNeeded =
+                requiredRooms - this.booking.noOfRooms;
+              this.showError = true;
+              this.errorMessage = `The number of persons exceeds the maximum occupancy of ${this.roomOccupancy} per room. You need to add ${additionalRoomsNeeded} more room(s) or reduce the number of guests to match the plan occupancy.`;
+              this.showErrorPopup();
+            } else {
+              if (
+                this.booking?.netAmount <=
+                this.selectedPromotionCouponData?.minimumOrderAmount
+              ) {
+                localStorage.removeItem('selectedPromoData');
+                localStorage.removeItem('selectPromo');
+              }
+
+              this.token.saveBookingRoomPrice(this.booking.roomPrice);
+              if (this.booking.planCode === 'GHC') {
+                this.token.saveLandingPrice(
+                  this.totalplanPrice);
+              } else {
+                this.token.saveLandingPrice(this.booking.netAmount);
+              }
+
+              this.router.navigate(['/booking-checkout']);
+            }
+          }
+        });
+      });
+    });
+    // if(this.booking?.netAmount <= this.selectedPromotionCouponData?.minimumOrderAmount){
+    //   localStorage.removeItem('selectedPromoData');
+    //   localStorage.removeItem('selectPromo');
+    // }
+    // this.token.saveBookingRoomPrice(this.booking.roomPrice);
+    // this.router.navigate(['/booking']);
+  }
+
+  showErrorPopup() {
+    const bootstrap = window['bootstrap'];
+    const modalElement = document.getElementById('errorModal');
+    if (modalElement) {
+      const modal = new bootstrap.Modal(modalElement);
+      modal.show();
+    }
+  }
+
+  checkAndShowStopSellPopup(roomList: any[]): void {
+    if (!roomList || roomList.length === 0) return;
+
+    // Filter out rooms that are too small or have no rates at all
+    const relevantRooms = roomList.filter(room =>
+      !this.isRoomTooSmall(room) &&
+      room.ratesAndAvailabilityDtos &&
+      room.ratesAndAvailabilityDtos.length > 0
+    );
+
+    if (relevantRooms.length === 0) return;
+
+    // Get all unique dates in the selected range
+    const allDatesSet = new Set<string>();
+    relevantRooms.forEach(room => {
+      room.ratesAndAvailabilityDtos.forEach((rate: any) => {
+        if (rate.date) {
+          allDatesSet.add(rate.date);
+        }
+      });
+    });
+
+    const uniqueDates = Array.from(allDatesSet).sort();
+    const blockedDates: string[] = [];
+
+    uniqueDates.forEach(dateStr => {
+      // Check if EVERY relevant room is unavailable on this date
+      const isUnavailableOnDate = relevantRooms.every(room => {
+        const rateForDate = room.ratesAndAvailabilityDtos.find((r: any) => r.date === dateStr);
+        if (!rateForDate) return true; // if no rate info for this date, consider it unavailable
+
+        const hasStopSell = (rateForDate.stopSellOBE !== null && rateForDate.stopSellOBE !== false) ||
+                            (rateForDate.stopSellOTA !== null && rateForDate.stopSellOTA !== false);
+        const hasNoInventory = rateForDate.noOfAvailable === null || rateForDate.noOfAvailable <= 0;
+
+        return hasStopSell || hasNoInventory;
+      });
+
+      if (isUnavailableOnDate) {
+        // Format the date string beautifully (e.g., "Jun 10")
+        try {
+          const formattedDate = new Date(dateStr).toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric'
+          });
+          blockedDates.push(formattedDate);
+        } catch (e) {
+          blockedDates.push(dateStr);
+        }
+      }
+    });
+
+    if (blockedDates.length > 0) {
+      this.blockedDatesList = blockedDates;
+      this.blockedDatesMessage = blockedDates.join(', ');
+      this.showStopSellPopup = true;
+      this.selectedPlansSummary = [];
+      this.token.saveBookingRoomPrice(null);
+      sessionStorage.removeItem('bookingSummaryDetails');
+      sessionStorage.removeItem('bookingSummary');
+      this.changeDetectorRefs.detectChanges();
+
+      if (this.stopSellTimeout) {
+        clearTimeout(this.stopSellTimeout);
+      }
+
+      this.stopSellTimeout = setTimeout(() => {
+        this.showStopSellPopup = false;
+        this.changeDetectorRefs.detectChanges();
+      }, 45000);
+    } else {
+      this.showStopSellPopup = false;
+      this.blockedDatesList = [];
+      this.blockedDatesMessage = '';
+    }
+  }
+
+  getBookingUnitLabel(room?: Room | null) {
+    try {
+      let label = 'Room';
+      if (room?.businessProductName && room.businessProductName.trim() !== '') {
+        label = room.businessProductName.trim();
+      } else {
+        const accommodationService = this.accommodationData?.find((service: any) => service?.name === 'Accommodation');
+        if (accommodationService?.businessProductName && accommodationService.businessProductName.trim() !== '') {
+          label = accommodationService.businessProductName.trim();
+        }
+      }
+
+      const lower = label.toLowerCase();
+      if (lower.includes('accommodation') || lower.includes('accomodation')) {
+        return 'Room';
+      }
+      return label;
+    } catch (error) {
+      console.error('Error in getBookingUnitLabel: ', error);
+      return 'Room';
+    }
+  }
+
+  getPropertyDetailsBySeoName(seoName: string) {
+    this.loader = true;
+    this.listingService.findPropertyBySEOName(seoName).subscribe(
+      (data) => {
+        if (data.status === 200) {
+          this.businessUser = data.body;
+          if (this.businessUser?.address?.country) {
+            this.token.saveCountry(this.businessUser.address.country);
+          }
+          this.propertyData = this.businessUser;
+          this.checkAnyTimeCheckIn();
+          this.accommodationData = this.propertyData?.businessServiceDtoList?.filter((entry) => entry?.name === 'Accommodation');
+          this.roomRateOrderEnabled = this.accommodationData?.some((entry) => entry?.roomRateOrder === true) || false;
+          this.accommodationData?.forEach((element) => {
+            this.smartRecommendationsBoolean = element.smartRecommendation;
+          });
+          this.getGoogleReview(this.businessUser.id);
+          this.showStaticContent = true;
+          // this.businessUser.businessServiceDtoList.filter(ele =>
+          //   )
+
+          this.policies = this.businessUser.businessServiceDtoList.filter(
+            (ele) => ele.name === 'Accommodation'
+          );
+          this.cancellationPolicyData = this.policies?.[0]?.cancellationPolicy;
+          this.buildCancellationRuleRows();
+
+          this.updateTag();
+          this.changeDetectorRefs.detectChanges();
+          this.token.saveProperty(this.businessUser);
+          this.accommodationData = this.businessUser.businessServiceDtoList?.filter(
+            (entry) => entry.name === 'Accommodation'
+          );
+          this.accommodationData?.forEach((element) => {
+            this.serviceChargePercentage = element.serviceChargePercentage;
+          });
+          if (this.urlLocation !== undefined && this.urlLocation !== null) {
+            this.triggerEventService.newEvent(this.urlLocation);
+          }
+
+          this.dangerousUrl =
+            'https://siteminder-git-main-rekha-credencesoft.vercel.app/propertyId/' +
+            this.businessUser.id;
+          this.trustedURL = this.sanitizer.bypassSecurityTrustResourceUrl(
+            this.dangerousUrl
+          );
+          this.setCurrencyAndLocalization();
+          this.getOfferList(seoName);
+          this.businessTypeName = this.businessUser.businessType;
+
+          this.businessUser?.socialMediaLinks.forEach((element) => {
+            this.socialmedialist = element;
+          });
+
+          // this.getReview(this.businessUser.id);
+          // this.getBranch(this.businessUser.id);
+          // this.getCustomerReview(this.businessUser.id);
+
+          if (this.token.getBookingCity() !== null) {
+            this.bookingCity = this.token.getBookingCity();
+          } else {
+            this.token.saveBookingCity(this.bookingCity);
+          }
+          this.businessServiceDto =
+            this.businessUser.businessServiceDtoList.find(
+              (data) => data.name === this.businessUser.businessType
+            );
+
+          if (this.businessUser.primaryColor !== undefined) {
+            this.changeTheme(
+              this.businessUser.primaryColor,
+              this.businessUser.secondaryColor,
+              this.businessUser.tertiaryColor
+            );
+          }
+
+          // if (this.businessServiceDto !== null && this.businessServiceDto !== undefined) {
+          //   this.slotRevdata(this.businessServiceDto);
+          // }
+
+          // if (this.businessUser.businessType === 'Accommodation') {
+          // this.selectOrder = false;
+          this.maxSelectRoom = this.businessUser.numberOfRooms;
+          this.maxOccupancy = this.businessUser.maximumOccupancy;
+
+          this.selectHotelBooking = true;
+          if (this.token?.getRoomsData() != null) {
+            this.checkingAvailability();
+          }
+
+          this.amenitiesHighlights = [];
+          this.propertyServiceListData = [];
+          this.addOnServices = [];
+          this.propertyServiceListDataOne = [];
+          this.propertyServicesNoId = [];
+
+          // ✅ Separate non-paid and paid services
+          this.businessUser.propertyServicesList.forEach((ele) => {
+            const isFree = (Number(ele.servicePrice) === 0 || ele.servicePrice == null) &&
+                           (Number(ele.adultServicePrice) === 0 || ele.adultServicePrice == null) &&
+                           (Number(ele.childServicePrice) === 0 || ele.childServicePrice == null);
+
+            if ((ele.id == null || ele.id == undefined) && isFree) {
+              this.propertyServicesNoId.push(ele);
+            }
+
+            if (isFree) {
+              this.amenitiesHighlights.push(ele);
+              this.propertyServiceListData.push(ele);
+            } else {
+              this.addOnServices.push(ele);
+              this.propertyServiceListDataOne.push(ele);
+            }
+          });
+
+          if (
+            this.selectedServices != null &&
+            this.selectedServices != undefined
+          ) {
+            this.savedServices = this.token
+              ?.getSelectedServices()
+              ?.forEach((ele) => {
+                this.addOnServices?.forEach((val) => {
+                  if (ele.name === val.name) {
+                    this.valSelected = true;
+                    this.viewAddon = true;
+                    val.quantity = ele.quantity;
+                  }
+                });
+              });
+          }
+
+          if (this.token?.getRoomsData() === null) {
+            // this.getRoom();
+            this.checkingAvailability();
+
+            // this.checkingAvailabilityOneDay();
+          }
+          // }
+          if (
+            this.booking.taxPercentage != null &&
+            this.booking.taxPercentage != undefined
+          ) {
+            this.taxPercentage = this.booking.taxPercentage;
+
+          } else {
+            this.taxPercentage = 0;
+          }
+          // Logger.log('this.businessServiceDto : '+JSON.stringify(this.businessServiceDto));
+
+          if (
+            this.businessServiceDto !== undefined &&
+            this.businessServiceDto.maxLeadTime !== undefined
+          ) {
+            const maxLead = new Date(
+              0,
+              0,
+              0,
+              0,
+              this.businessServiceDto.maxLeadTime,
+              0
+            );
+
+            this.leadMaxDay = Math.floor(
+              this.businessServiceDto.maxLeadTime / 1440
+            );
+            this.leadMaxMin = maxLead.getMinutes();
+            this.leadMaxHour = maxLead.getHours();
+          }
+
+          if (
+            this.businessServiceDto !== undefined &&
+            this.businessServiceDto.minLeadTime !== undefined
+          ) {
+            const minLead = new Date(
+              0,
+              0,
+              0,
+              0,
+              this.businessServiceDto.minLeadTime,
+              0
+            );
+          }
+
+          if (
+            this.businessServiceDto !== undefined &&
+            this.businessServiceDto.stdPrepTime !== undefined
+          ) {
+            const prep = new Date(
+              0,
+              0,
+              0,
+              0,
+              this.businessServiceDto.stdPrepTime,
+              0
+            );
+
+            this.prepareDay = Math.floor(
+              this.businessServiceDto.maxLeadTime / 1440
+            );
+            this.prepareHour = prep.getHours();
+            this.prepareMinute = prep.getMinutes();
+          }
+
+          this.booking.propertyId = this.businessUser.id;
+          this.lat = parseFloat(this.businessUser.latitude);
+          this.lng = parseFloat(this.businessUser.longitude);
+
+          this.loader = false;
+
+          // Clean one-time log for landing page state
+          const isPayNow = this.showPayNow();
+          const isPayLater = this.showPayLater();
+          let bookingMode = 'Enquiry Now';
+          if (isPayNow) {
+            bookingMode = 'Pay Now';
+          } else if (isPayLater) {
+            bookingMode = 'Pay Later';
+          }
+          // console.log(
+          //   `%c[Antigravity Landing Page Log] Banner/Promotions Show: ${isPayNow} | Booking Mode: ${bookingMode}`,
+          //   'background: #10b981; color: white; padding: 6px 12px; border-radius: 4px; font-weight: bold; font-family: sans-serif;'
+          // );
+
+          this.changeDetectorRefs.detectChanges();
+        } else {
+        }
+      },
+      (error) => {
+        this.loader = false;
+        this.router.navigate(['/error']);
+        // this.router.navigate(["/error"]);
+      }
+    );
+  }
+  getBranch(id) {
+    this.listingService.getBusinessBranch(id).subscribe((response) => {
+      this.branchList = response.body;
+      // Logger.log('this.branchList:' + JSON.stringify(this.branchList));
+    });
+  }
+
+  showAllTheOfferList: any[] = [];
+  // getOfferList(seo) {
+  //   this.offerService
+  //     .getOfferListFindBySeoFriendlyName(seo)
+  //     .subscribe((data) => {
+  //       this.offersList = data.body;
+  //        const filteredOffers = data.body.filter(
+  //       (offer) => offer.promotionAppliedFor !== 'Private'
+  //     );
+  //       this.showAllTheOfferList = this.checkValidCouponOrNot(filteredOffers);
+  //   });
+  // }
+ getOfferList(seo: string) {
+    if (this.activeForGoogleHotelCenter === true) {
+  this.offerService
+    .getOfferListFindByName(seo, 'Platform Promotion')
+    .subscribe((response) => {
+      if (response.body && response.body.length > 0) {
+        this.offersList = [...this.offersList, ...response.body];
+      }
+
+
+      const currentDate = new Date();
+      const validCoupons = this.offersList.filter((coupon: any) => {
+        if (coupon.startDate && coupon.endDate && coupon.discountPercentage) {
+          const startDate = new Date(coupon.startDate);
+          const endDate = new Date(coupon.endDate);
+          return (
+            currentDate >= startDate &&
+            currentDate <= endDate &&
+            coupon.discountPercentage != 100
+          );
+        }
+        return false;
+      });
+
+      this.showAllTheOfferList = this.checkValidCouponOrNot(validCoupons);
+
+      this.changeDetectorRefs.detectChanges();
+    });
+}
+ else {
+      this.offerService
+        .getOfferListFindBySeoFriendlyName(seo)
+        .subscribe((data) => {
+          if (data.body && data.body.length > 0) {
+            this.offersList = data.body;
+          } else {
+            this.offersList = [];
+          }
+          this.showAllTheOfferList = this.checkValidCouponOrNot(
+            this.offersList
+          );
+          this.changeDetectorRefs.detectChanges();
+        });
+    }
+  }
+
+
+
+  checkValidCouponOrNot(couponList?) {
+    try {
+      const validCoupons = [];
+      
+      // Determine target start/end dates from selected booking parameters or fallback to today
+      const bookingFrom = this.booking?.fromDate ? new Date(this.booking.fromDate) : new Date();
+      const bookingTo = this.booking?.toDate ? new Date(this.booking.toDate) : new Date();
+      
+      // Normalize times to make date-only comparisons reliable
+      bookingFrom.setHours(0, 0, 0, 0);
+      bookingTo.setHours(23, 59, 59, 999);
+
+      couponList.forEach((coupon) => {
+        if (coupon.startDate && coupon.endDate && coupon.discountPercentage) {
+          const startDate = new Date(coupon.startDate);
+          const endDate = new Date(coupon.endDate);
+          
+          startDate.setHours(0, 0, 0, 0);
+          endDate.setHours(23, 59, 59, 999);
+
+          // Check if the guest's entire booking stay falls within the promotion date range
+          if (
+            bookingFrom >= startDate &&
+            bookingTo <= endDate &&
+            coupon.discountPercentage != 100
+          ) {
+            validCoupons.push(coupon);
+          }
+        }
+      });
+      return validCoupons;
+    } catch (error) {
+      console.error('Error in checkValidCouponOrNot : ', error);
+    }
+  }
+  getInitial(name: string): string {
+    return name?.trim().charAt(0).toUpperCase();
+  }
+  setResponsiveOption() {
+    try {
+      this.responsiveOptions = [
+        {
+          breakpoint: '1024px',
+          numVisible: 1,
+          numScroll: 1,
+        },
+        {
+          breakpoint: '768px',
+          numVisible: 1,
+          numScroll: 1,
+        },
+      ];
+    } catch (error) {
+      console.error('Error in setResponsiveOption : ', error);
+    }
+  }
+
+  selectedPromotionList(promo) {
+    try {
+      this.selectedPromotionCouponData = promo;
+      const offerSection = document.getElementById('accmdOne');
+      if (offerSection) {
+        offerSection.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start',
+        });
+      }
+      const offerSection2 = document.getElementById('accmdtwo');
+      if (offerSection2) {
+        offerSection2.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start',
+        });
+      }
+      if (this.showPayLater() == false) {
+        this.selectedPromotion = true;
+        localStorage.setItem('selectedPromoData', JSON.stringify(promo));
+        localStorage.setItem('selectPromo', 'true');
+      }
+    } catch (error) {
+      console.error('Error in selectedPromotionList : ', error);
+    }
+  }
+  showPayLater(): boolean {
+    // Strict enquiry check: if any room is enquiry-only, Pay Later is disabled
+    const hasEnquiryRoom = this.selectedPlansSummary?.some(plan => plan.isEnquire === true);
+    if (hasEnquiryRoom) return false;
+
+    const propertyData: any = this.token.getProperty() || this.businessUser || {};
+    const accommodationData = propertyData.businessServiceDtoList?.filter(
+      (entry: any) => entry.name === 'Accommodation'
+    );
+
+    const hasPayNow = this.value === true && this.businessUser?.paymentGateway != null;
+    const hasPayLater = accommodationData?.some((a: any) => a.payLater);
+
+    if (hasPayNow && !hasPayLater) {
+      return false;
+    }
+
+    if (hasPayLater) {
+      const isWithin48h = this.isCheckInWithin48Hours(this.checkinDate);
+      if (isWithin48h) {
+        return true;
+      } else {
+        return false; // Beyond 48h -> Always Pay Now
+      }
+    }
+
+    return false;
+  }
+
+  getReview(id) {
+    this.loader = true;
+    this.listingService.getAllReview(id).subscribe(
+      (data) => {
+        if (data.status === 200) {
+          this.googleReviews = data.body;
+          Logger.log(
+            'this.googleReviews:' + JSON.stringify(this.googleReviews)
+          );
+          if (this.googleReviews.length > 0) {
+            this.isReviewFound = true;
+          } else {
+            this.isReviewFound = false;
+          }
+          Logger.log(JSON.stringify(this.googleReviews));
+          this.loader = false;
+          this.changeDetectorRefs.detectChanges();
+        } else if (data.status === 404) {
+          this.googleReviews = [];
+        }
+      },
+      (error) => {
+        this.loader = false;
+        this.isReviewFound = false;
+        this.changeDetectorRefs.detectChanges();
+      }
+    );
+  }
+  getGoogleReview(id) {
+    this.listingService.getGoogleReview(id).subscribe((response) => {
+      this.googleReviews = response.body;
+      if (this.googleReviews && this.googleReviews.length > 0) {
+        this.reviews = this.googleReviews.map((r: any) => {
+          return {
+            stars: Math.round(r.rating || 5),
+            text: r.reviewText || '',
+            name: r.reviewerName || r.customerName || 'Guest'
+          };
+        });
+        this.isReviewFound = true;
+      } else {
+        this.reviews = [];
+        this.isReviewFound = false;
+      }
+      this.changeDetectorRefs.detectChanges();
+    });
+  }
+  getCustomerReview(id) {
+    this.loader = true;
+    this.reviewService
+      .getReviewFindByPropertyIdAndReviewStatus(id, 'Approved')
+      .subscribe(
+        (data) => {
+          if (data.status === 200) {
+            this.customerReviews = data.body;
+            Logger.log(
+              'this.customerReviews:' + JSON.stringify(this.customerReviews)
+            );
+            if (this.customerReviews.length > 0) {
+              this.isCustomerReviewFound = true;
+            } else {
+              this.isCustomerReviewFound = false;
+            }
+            this.loader = false;
+            this.changeDetectorRefs.detectChanges();
+          } else if (data.status === 404) {
+            this.customerReviews = [];
+          }
+        },
+        (error) => {
+          this.loader = false;
+          this.isCustomerReviewFound = false;
+          this.changeDetectorRefs.detectChanges();
+        }
+      );
+  }
+  getRoom() {
+    this.hotelBookingService
+      .getRoomDetailsByPropertyId(this.businessUser.id)
+      .subscribe(
+        (response) => {
+          this.roomsone = response.body;
+        },
+        (error) => {
+          if (error instanceof HttpErrorResponse) {
+          }
+        }
+      );
+    this.booking.noOfPersons = 1;
+    this.booking.noOfRooms = 1;
+  }
+  getRoomByDate(fromDate: string, toDate: string) {
+    this.hotelBookingService
+      .getRoomDetailsByPropertyIdAndDate(this.businessUser.id, fromDate, toDate)
+      .subscribe(
+        (response) => {
+          if (response.status === 200) {
+            this.roomAvailability = true;
+            // Logger.log('getRoomByDate ' + JSON.stringify(response.body));
+
+            this.roomsone = response.body;
+            // Logger.log('getRoomByDate ' + JSON.stringify(this.rooms));
+          } else {
+          }
+        },
+        (error) => {
+          if (error instanceof HttpErrorResponse) {
+          }
+        }
+      );
+  }
+
+  onPlanSelected(plan, room) {
+    this.booking.roomType = room.name;
+    this.booking.roomRatePlanName = plan.name;
+
+    // Reset previous error messages
+    this.showError = false;
+    this.errorMessage = '';
+    this.availableRooms?.forEach((room) => {
+      room.ratesAndAvailabilityDtos?.forEach((ele) => {
+        ele.roomRatePlans?.forEach((ele1) => {
+          if (ele1.name === this.booking.roomRatePlanName) {
+            const personsPerRoom = Math.ceil(
+              this.booking.noOfPersons / this.booking.noOfRooms
+            );
+            if (personsPerRoom > ele1.maximumOccupancy) {
+              this.roomOccupancy = ele1.maximumOccupancy;
+              const requiredRooms = Math.ceil(
+                this.booking.noOfPersons / ele1.maximumOccupancy
+              );
+              const additionalRoomsNeeded =
+                requiredRooms - this.booking.noOfRooms;
+              this.showError = true;
+              this.errorMessage = `The number of persons exceeds the maximum occupancy of ${this.roomOccupancy} per room. You need to add ${additionalRoomsNeeded} more room(s) or reduce the number of guests to match the plan occupancy.`;
+              this.showErrorPopup();
+            }
+          }
+        });
+      });
+    });
+
+    this.booking.roomType = room.name;
+
+    this.showDiv = true;
+    let elements = document.getElementsByClassName('sticky-button');
+    (elements[0] as HTMLElement).style.display = 'block';
+    let elementsone = document.getElementsByClassName('sticky-buttonmobile');
+    (elementsone[0] as HTMLElement).style.display = 'block';
+    this.div = true;
+    this.checkAvailabilityStatus = false;
+    this.checkAvailabilityStatusHide = true;
+    this.checkAvailabilityStatusName = undefined;
+    this.noOfrooms = this.rooms;
+    if (this.booking.noOfPersons > room.maximumOccupancy) {
+      this.extraPersonRate = plan.extraChargePerPerson;
+    }
+    this.booking.extraPersonCharge = this.extraPersonRate;
+    if (
+      plan.minimumOccupancy * this.booking.noOfRooms <
+      this.booking.noOfPersons
+    ) {
+      if (plan.extraChargePerPerson !== 0) {
+        this.booking.noOfExtraPerson =
+          this.booking.noOfPersons -
+          plan.minimumOccupancy * this.booking.noOfRooms;
+        this.booking.extraPersonCharge =
+          plan.extraChargePerPerson *
+          this.booking.noOfExtraPerson *
+          this.DiffDate;
+      } else {
+        this.booking.extraPersonCharge = 0;
+      }
+    } else {
+      this.booking.noOfExtraPerson = 0;
+      this.booking.extraPersonCharge = 0;
+    }
+    if (
+      plan.noOfChildren * this.booking.noOfRooms <
+      this.booking.noOfChildren
+    ) {
+      if (plan.extraChargePerChild !== 0) {
+        this.booking.noOfExtraChild =
+          this.booking.noOfChildren -
+          plan.noOfChildren * this.booking.noOfRooms;
+        this.booking.extraChildCharge =
+          plan.extraChargePerChild *
+          this.booking.noOfExtraChild *
+          this.DiffDate;
+      } else {
+        this.booking.extraChildCharge = 0;
+      }
+    } else {
+      this.booking.noOfExtraChild = 0;
+      this.booking.extraChildCharge = 0;
+    }
+    this.booking.roomPrice = plan.amount;
+    this.booking.netAmount =
+      plan.amount * this.DiffDate * this.noOfrooms +
+      this.booking.extraPersonCharge +
+      this.booking.extraChildCharge;
+    if (this.businessUser.taxDetails.length > 0) {
+      this.businessUser.taxDetails.forEach((element) => {
+        if (element.name === 'GST') {
+          this.booking.taxDetails = [];
+          this.booking.taxDetails.push(element);
+          this.taxPercentage = element.percentage;
+          this.booking.taxPercentage = this.taxPercentage;
+          if (
+            plan?.code === 'GHC' &&
+            this.activeForGoogleHotelCenter === true
+          ) {
+            if (element.taxSlabsList.length > 0) {
+              element.taxSlabsList.forEach((element2) => {
+                if (
+                  element2.maxAmount >=
+                    this.booking.roomPrice +
+                      (this.booking.extraPersonCharge +
+                        this.booking.extraChildCharge) /
+                        this.booking.noOfNights &&
+                  element2.minAmount <=
+                    this.booking.roomPrice +
+                      (this.booking.extraPersonCharge +
+                        this.booking.extraChildCharge) /
+                        this.booking.noOfNights
+                ) {
+                  this.taxPercentage = element2.percentage;
+                  this.booking.taxPercentage = this.taxPercentage;
+                } else if (
+                  element2.maxAmount <=
+                  this.booking.roomPrice +
+                    (this.booking.extraPersonCharge +
+                      this.booking.extraChildCharge) /
+                      this.booking.noOfNights
+                ) {
+                  this.taxPercentage = element2.percentage;
+                  this.booking.taxPercentage = this.taxPercentage;
+                }
+              });
+            }
+          } else {
+            if (element.taxSlabsList.length > 0) {
+              element.taxSlabsList.forEach((element2) => {
+                if (
+                  element2.maxAmount >= this.booking.netAmount &&
+                  element2.minAmount <= this.booking.netAmount
+                ) {
+                  this.taxPercentage = element2.percentage;
+                  this.booking.taxPercentage = this.taxPercentage;
+                } else if (element2.maxAmount <= this.booking.netAmount) {
+                  this.taxPercentage = element2.percentage;
+                  this.booking.taxPercentage = this.taxPercentage;
+                }
+              });
+            }
+          }
+        }
+      });
+      // this.taxPercentage = this.booking.taxDetails[0].percentage;
+    }
+    if (plan !== undefined && plan.amount !== undefined) {
+      this.bookingRoomPrice =
+        plan.amount * this.DiffDate * this.booking.noOfRooms +
+        this.booking.extraPersonCharge +
+        this.booking.extraChildCharge;
+      this.PlanRoomPrice = plan.amount * this.DiffDate * this.booking.noOfRooms;
+    } else {
+      this.bookingRoomPrice = 0;
+      this.PlanRoomPrice = 0;
+    }
+
+    this.booking.taxPercentage = this.taxPercentage;
+    this.planDetails = plan;
+    this.booking.planCode = plan.code;
+    this.booking.roomRatePlanName = plan.name;
+    this.booking.roomPrice = plan.amount;
+    this.planSelected = true;
+    this.planAmount = plan.amount;
+
+    let serviceList = plan.propertyServicesList;
+    let anotherServiceList = [];
+    serviceList
+      .filter(
+        (n) => n.applicableToAdult !== false || n.applicableToChild !== false
+      )
+      .forEach((element) => {
+        let adultCount = 0;
+
+        let childCount = 0;
+        if (element.applicableToAdult === true) {
+          adultCount = this.adults;
+        }
+        if (element.applicableToChild === true) {
+          childCount = this.children;
+        }
+
+        element.count = adultCount + childCount;
+        element.organisationId = this.businessUser.organisationId;
+        element.logoUrl = this.businessUser.logoUrl;
+        element.date = this.booking.fromDate;
+        // this.serviceDto.servicePrice = this.serviceDto.beforeTaxAmount;
+        element.beforeTaxAmount = element.servicePrice * element.count;
+        element.taxAmount =
+          (element.beforeTaxAmount / 100) * element.taxPercentage;
+        element.afterTaxAmount = element.beforeTaxAmount + element.taxAmount;
+        anotherServiceList.push(element);
+      });
+
+    this.token.saveServiceData(anotherServiceList);
+
+    this.allExtraPersonCharge = this.booking.extraPersonCharge;
+    this.allExtraChildCharge = this.booking.extraChildCharge;
+    this.token.saveExtraPersonCharge(this.allExtraPersonCharge);
+    this.token.saveChildCharge(this.allExtraChildCharge);
+
+    // if (
+    //   serviceList.length > 0 &&
+    //   serviceList !== undefined &&
+    //   serviceList !== null
+    // ) {
+    //   this.router.navigate(["/add-service"]);
+    // } else {
+    //   this.router.navigate(["/booking-checkout"]);
+    // }
+    // this.fromDate = undefined;
+    // this.toDate = undefined;
+    // this.booking.fromDate = undefined;
+    // this.booking.toDate = undefined;?
+    document.getElementById('contentOne')?.scrollIntoView();
+    Logger.log(JSON.stringify(this.booking));
+    Logger.log(JSON.stringify(this.checkAvailabilityStatusHide));
+    this.changeDetectorRefs.detectChanges();
+    // this.checkingAvailability1();
+    this.planPriceSeo = [];
+    this.getPlanAmount(plan);
+  }
+  getPlanAmount(plan: any): number[] {
+    if (!plan?.name) {
+      console.warn('Invalid plan input:', plan);
+      console.warn('name plan input:', plan?.name);
+      return [];
+    }
+
+    this.changeDetectorRefs.detectChanges();
+
+    // ✅ Move reset logic OUTSIDE the loop
+    this.taxArraySeo = [];
+    this.planPriceSeo = [];
+    this.extraPersonChargee = this.token.getExtraPersonCharge();
+    this.extraChildChargee = this.token.getChildCharge();
+
+    const matchedAmounts: number[] = [];
+
+    this.planWithDateArray
+      .filter(
+        (entry) => Array.isArray(entry?.planList) && entry.planList.length
+      )
+      .forEach((entry) => {
+        const matchedPlan = entry.planList.find((p) => p?.name === plan.name);
+        if (matchedPlan?.amount != null) {
+          matchedAmounts.push(matchedPlan.amount);
+
+          this.planPriceSeo.push(matchedPlan.amount * this.booking.noOfRooms);
+
+          let extraPerson = Number(this.extraPersonChargee);
+          let extraChild = Number(this.extraChildChargee);
+          let noOfNights = Number(this.booking.noOfNights);
+
+          let totalPrice =
+            Number(matchedPlan.amount) +
+            (extraPerson + extraChild) / noOfNights;
+
+          if (totalPrice <= 7500) {
+            this.taxAmount = (totalPrice * 12) / 100;
+            this.taxArraySeo.push(this.taxAmount);
+          }
+
+          if (totalPrice > 7501) {
+            this.taxAmount = (totalPrice * 18) / 100;
+            this.taxArraySeo.push(this.taxAmount);
+          }
+        }
+      });
+
+    this.changeDetectorRefs.detectChanges();
+
+    return matchedAmounts;
+  }
+
+  toggleReviewText(index: number): void {
+    this.expandedReviews[index] = !this.expandedReviews[index];
+    this.changeDetectorRefs.detectChanges();
+  }
+  // const = document.getElementsByClassName('booking-summary')[0];
+  // if(bookingSummaryElement) {
+  //   bookingSummaryElement.scrollIntoView();
+  // }
+
+  getWhatsappShareUrl(): string {
+    const baseUrl = 'https://api.whatsapp.com/send';
+    const phoneNumber = '919082741973';
+    this.dynamicText = this.businessUser.name;
+    this.dynamicCity = this.businessUser?.address?.city;
+    this.dynamicStreetName = this.businessUser.address?.streetName;
+    this.dynamicLocality = this.businessUser.address?.locality;
+    this.dynamicStreetNumber = this.businessUser.address?.streetNumber;
+    this.dynamicCountryName = this.businessUser.address?.country;
+    // The recipient's phone number (optional)
+    const message =
+      '*This is an Enquiry from :* BookOne Bookmax' +
+      '\nHotel Name: ' +
+      this.dynamicText +
+      '\nAddress: ' +
+      this.dynamicStreetNumber +
+      ',' +
+      this.dynamicStreetName +
+      ',' +
+      this.dynamicLocality +
+      ',' +
+      this.dynamicCity +
+      ',' +
+      this.dynamicCountryName; // The dynamic text you want to include
+
+    return (
+      baseUrl + '?phone=' + phoneNumber + '&text=' + encodeURIComponent(message)
+    );
+  }
+
+  onBookNowClick() {
+    this.scrollToAccommodationDash();
+  }
+
+  scrollToAccommodation() {
+    const element = document.getElementById('accmd');
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  }
+
+  scrollToAccommodationCheckin() {
+    const element = document.getElementById('checkin');
+    if (element) {
+      const yOffset = -2000; // Adjust this value as needed
+      const y = element.getBoundingClientRect().top + window.scrollY + yOffset;
+      window.scrollTo({ top: y, behavior: 'smooth' });
+
+      const card = document.getElementById('slideCard');
+      if (card && card.classList.contains('active')) {
+        card.classList.remove('active');
+      }
+    }
+  }
+
+  scrollToAccommodationDash() {
+    const element = document.getElementById('accmdOne');
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  }
+    scrollToSmartDash() {
+    const element = document.getElementById('smartOne');
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  }
+adjustDates() {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+
+
+  scrollToAccommodationDashmobile() {
+    const element = document.getElementById('accmdtwo');
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  }
+  scrollToService() {
+
+    const element = document.getElementById('serv');
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  }
+
+  toggleViewMore() {
+    this.viewMoreOne = !this.viewMoreOne;
+  }
+
+  scrollToPrivate() {
+    const element = document.getElementById('serv');
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  }
+
+  customerwhatsappurl(): string {
+    const baseUrl = 'https://api.whatsapp.com/send';
+    const phoneNumber = this.businessUser.whatsApp;
+    this.dynamicText = this.businessUser.name;
+    this.dynamicCity = this.businessUser?.address?.city;
+    this.dynamicStreetName = this.businessUser.address?.streetName;
+    this.dynamicLocality = this.businessUser.address?.locality;
+    this.dynamicStreetNumber = this.businessUser.address?.streetNumber;
+    this.dynamicCountryName = this.businessUser.address?.country;
+    // The recipient's phone number (optional)
+    const message =
+      '*This is an Enquiry from :* BookOne Bookmax' +
+      '\nHotel Name: ' +
+      this.dynamicText +
+      '\nAddress: ' +
+      this.dynamicStreetNumber +
+      ',' +
+      this.dynamicStreetName +
+      ',' +
+      this.dynamicLocality +
+      ',' +
+      this.dynamicCity +
+      ',' +
+      this.dynamicCountryName; // The dynamic text you want to include
+
+    return (
+      baseUrl + '?phone=' + phoneNumber + '&text=' + encodeURIComponent(message)
+    );
+  }
+
+  navigate() {
+    // if (
+    //     serviceList.length > 0 &&
+    //     serviceList !== undefined &&
+    //     serviceList !== null
+    //   ) {
+    //     this.router.navigate(["/add-service"]);
+    //   } else {
+    this.token.saveBookingRoomPrice(this.booking.roomPrice);
+    this.router.navigate(['/booking']);
+    // }
+  }
+// onBookNow() {
+//   const selectedAddOns = this.propertyServiceListDataOne
+//     .filter(item => this.selectedFacilityNames.includes(item.name));
+
+//     if(this.specialDiscountData){
+//         const bookingData = {
+//     fromDate: this.booking.fromDate,
+//     toDate: this.booking.toDate,
+//     totalAdults: this.totalAdults,
+//     totalChildren: this.totalChildren,
+//     totalNights: this.DiffDate,
+//     selectedPlansSummary: this.selectedPlansSummary,
+//     propertyServiceListDataOne: selectedAddOns, // ✅ only selected items
+//     totalPlanPrice: this.getTotalPlanPrice(),
+//     totaltaxfacilityAmount: this.getTotalTaxFacility(),
+//     totalAddOnsPrice: this.getTotalAfterTaxAmountFacility() + this.getTotalTaxFacility(),
+//     totalTax: this.getTotalTaxPrice(),
+//     totalAmount:
+//       (this.getTotalPlanPrice() +
+//       this.getTotalAfterTaxAmountFacility() +
+//       this.getTotalTaxPrice()) - ((this.getTotalPlanPrice() * this.specialDiscountPercentage)/100),
+//   };
+//       sessionStorage.setItem('bookingSummaryDetails', JSON.stringify(bookingData));
+//     } else {
+//         const bookingData = {
+//     fromDate: this.booking.fromDate,
+//     toDate: this.booking.toDate,
+//     totalAdults: this.totalAdults,
+//     totalChildren: this.totalChildren,
+//     totalNights: this.DiffDate,
+//     selectedPlansSummary: this.selectedPlansSummary,
+//     propertyServiceListDataOne: selectedAddOns, // ✅ only selected items
+//     totalPlanPrice: this.getTotalPlanPrice(),
+//     totaltaxfacilityAmount: this.getTotalTaxFacility(),
+//     totalAddOnsPrice: this.getTotalAfterTaxAmountFacility() + this.getTotalTaxFacility(),
+//     totalTax: this.getTotalTaxPrice(),
+//     totalAmount:
+//       this.getTotalPlanPrice() +
+//       this.getTotalAfterTaxAmountFacility() +
+//       this.getTotalTaxPrice(),
+//   };
+//     sessionStorage.setItem('bookingSummaryDetails', JSON.stringify(bookingData));
+//     }
+
+
+
+//   this.router.navigate(['/booking']);
+// }
+onBookNow() {
+  this.booking.noOfRooms = this.rooms || this.noOfrooms || 1;
+  this.booking.noOfPersons = this.totalAdults || this.adults || 1;
+  this.booking.noOfChildren = this.totalChildren || this.children || 0;
+  this.token.saveBookingData(this.booking);
+
+  sessionStorage.setItem('isTwentyFourHourCheckIn', String(this.isTwentyFourHourCheckIn));
+  sessionStorage.setItem('selectedCheckInTime', this.selectedCheckInTime);
+  let currentUrl = window.location.href;
+this.token.savePropertyUrl(currentUrl);
+  const selectedAddOns = this.propertyServiceListDataOne
+    .filter(item => this.selectedFacilityNames.includes(item.name));
+  this.syncSelectedAddOnsToCheckoutState(selectedAddOns);
+
+  if (this.activeForGoogleHotelCenter && !this.specialDiscountData ) {
+  let bookingSummary = JSON.parse(sessionStorage.getItem('bookingSummaryDetails') || '{}');
+
+  if (bookingSummary && bookingSummary.selectedPlansSummary) {
+    bookingSummary.selectedPlansSummary = bookingSummary.selectedPlansSummary.map((plan: any) => {
+      if (this.isDayTripPlan(plan)) {
+        return {
+          ...plan,
+          selectedRoomnumber: 1,
+          nights: 0,
+          price: this.getPlanSubtotal(plan),
+          taxPercentageperroom: Number(this.getPlanTaxTotal(plan).toFixed(2)),
+          checkOutDate: plan.checkInDate || this.booking.fromDate,
+        };
+      }
+      let newPrice = 0;
+      if (plan.planName === 'GHC') {
+        newPrice = this.planPrice.reduce(
+          (sum, p) => sum + (p * plan.selectedRoomnumber),
+          0
+        );
+      } else {
+        newPrice = plan.actualRoomPrice * plan.selectedRoomnumber * plan.nights;
+      }
+      newPrice += (((plan.SingleDayextraPersonAdultCountAmount || 0) + (plan.SingleDayextraPersonChildCountAmount || 0)) * plan.nights) ;
+      const newTax = (newPrice * (plan.taxpercentage || 0)) / 100;
+      const newPricNonGHC = (((plan.actualRoomPrice * plan.selectedRoomnumber) + (plan.SingleDayextraPersonAdultCountAmount + plan.SingleDayextraPersonChildCountAmount)) * plan.nights)
+      const newTaxNonGHC = (newPricNonGHC * (plan.taxpercentage || 0)) / 100;
+        if (plan.planName === 'GHC') {
+                const actualRoomPrice =
+      (this.planPrice[0] || 0);
+        let taxTotalOne = 0;
+    this.selectedPlansSummary.forEach((plan: any) => {
+    if (plan.planName === 'GHC') {
+      this.daterangefilter?.forEach((nights, i) => {
+        const priceArray = [this.planPrice[i]];
+        priceArray.forEach((price) => {
+          taxTotalOne += this.calculateTaxAmount(price * plan.selectedRoomnumber + (plan.SingleDayextraPersonAdultCountAmount + plan.SingleDayextraPersonChildCountAmount), plan);
+        });
+      });
+
+    }
+  });
+      return {
+        ...plan,
+        actualRoomPrice: actualRoomPrice,
+        price: newPrice,
+        taxPercentageperroom: Number(taxTotalOne.toFixed(2)),
+      };
+        } else {
+  let taxTotalTwo = 0;
+
+  if (plan.planName !== 'GHC') {
+    if (plan.selectedRoomnumber > 1) {
+      taxTotalTwo = this.daterangefilterSeo?.reduce((sum, _, i) => {
+      return sum + this.calculateTaxAmount(
+        (plan.actualRoomPrice)
+        + (plan.singleextraAdultCharges + plan.singleextraChildrenCharges),
+        plan
+      ) * plan.selectedRoomnumber;
+    }, 0) || 0;
+    } else {
+         taxTotalTwo = this.daterangefilterSeo?.reduce((sum, _, i) => {
+      return sum + this.calculateTaxAmount(
+        (plan.actualRoomPrice)
+        + (plan.SingleDayextraPersonAdultCountAmount + plan.SingleDayextraPersonChildCountAmount),
+        plan
+      ) * plan.selectedRoomnumber;
+    }, 0) || 0;
+    }
+
+  }
+
+  return {
+    ...plan,
+    price: newPricNonGHC,
+    taxPercentageperroom: Number(taxTotalTwo.toFixed(2)),
+  };
+}
+    });
+  }
+
+  const totalPlanPrice = bookingSummary.selectedPlansSummary
+    ? this.getGrandSubtotal()
+    : this.getTotalPlanPrice();
+
+  const totalTax = bookingSummary.selectedPlansSummary
+    ? this.getGrandTaxTotal()
+    : this.getTotalTaxPrice();
+
+  const selectedAddOns = this.propertyServiceListDataOne
+    .filter(item => this.selectedFacilityNames.includes(item.name));
+
+      const  bookingData = {
+      propertyId: this.businessUser?.id,
+      businessSlug: this.businessUser?.seoFriendlyName,
+      fromDate: this.booking.fromDate,
+      toDate: this.booking.toDate,
+      totalAdults: this.totalAdults,
+      totalChildren: this.totalChildren,
+      totalNights: this.DiffDate,
+      selectedPlansSummary: bookingSummary.selectedPlansSummary,
+      propertyServiceListDataOne: selectedAddOns,
+      totalPlanPrice: Number(totalPlanPrice.toFixed(2)),
+      totalTax: Number(totalTax.toFixed(2)),
+      totalAddOnsPrice: this.getTotalAfterTaxAmountFacility() + this.getTotalTaxFacility(),
+      totaltaxfacilityAmount: this.getTotalTaxFacility(),
+      totalAmount: this.specialDiscountPercentage
+        ? Number((totalPlanPrice + totalTax +
+          this.getTotalAfterTaxAmountFacility() +
+          this.getTotalTaxFacility() -
+          (totalPlanPrice * this.specialDiscountPercentage) / 100).toFixed(2))
+        : Number((totalPlanPrice + totalTax +
+          this.getTotalAfterTaxAmountFacility() +
+          this.getTotalTaxFacility()).toFixed(2)),
+    };
+    sessionStorage.setItem('bookingSummaryDetails', JSON.stringify(bookingData));
+
+    // Phase 4: Store selected add-ons for Booking component and LMS enquiry snapshot
+    sessionStorage.setItem('addOnServices', JSON.stringify(this.addOnServices));
+  } else if(this.specialDiscountData && !this.activeForGoogleHotelCenter){
+    if (this.specialDiscountData) {
+  this.selectedPlansSummary = this.selectedPlansSummary.map(plan => {
+    let discountedPrice = plan.price;
+
+          if (this.businessUser?.taxDetails?.length > 0) {
+      this.businessUser?.taxDetails.forEach((element) => {
+        if (element.name === 'GST') {
+          this.booking.taxDetails = [];
+          this.booking.taxDetails.push(element);
+          this.taxPercentage = element.percentage;
+          this.booking.taxPercentage = this.taxPercentage;
+
+          if (
+            plan?.code === 'GHC' &&
+            this.activeForGoogleHotelCenter === true
+          ) {
+            if (element.taxSlabsList.length > 0) {
+              element.taxSlabsList.forEach((element2) => {
+                if (
+                  element2.maxAmount >=
+                    discountedPrice &&
+                  element2.minAmount <= discountedPrice
+                ) {
+                  this.taxPercentage = element2.percentage;
+                  this.booking.taxPercentage = this.taxPercentage;
+                } else if (
+                  element2.maxAmount <=
+                  discountedPrice
+                ) {
+                  this.taxPercentage = element2.percentage;
+                  this.booking.taxPercentage = this.taxPercentage;
+                }
+              });
+            }
+          } else {
+            if (element.taxSlabsList.length > 0) {
+              element.taxSlabsList.forEach((element2) => {
+                if (
+                  element2.maxAmount >= discountedPrice &&
+                  element2.minAmount <= discountedPrice
+                ) {
+                  this.taxPercentage = element2.percentage;
+                  this.booking.taxPercentage = this.taxPercentage;
+                } else if (element2.maxAmount <= discountedPrice) {
+                  this.taxPercentage = element2.percentage;
+                  this.booking.taxPercentage = this.taxPercentage;
+                }
+              });
+            }
+          }
+        }
+      });
+    }
+
+    if (plan.selectedRoomnumber > 1) {
+            this.priceingO = plan.actualRoomPrice +
+                  (plan.singleextraAdultCharges || 0) +
+                  (plan.singleextraChildrenCharges || 0) || 0;
+          } else {
+            this.priceingO =  plan.actualRoomPrice +
+                  (plan.SingleDayextraPersonAdultCountAmount || 0) +
+                  (plan.SingleDayextraPersonChildCountAmount || 0) || 0;
+          }
+            const price = this.priceingO || 0;
+          let discountAmount = 0;
+           discountAmount = (plan.price * this.specialDiscountData.discountPercentage) / 100;
+          discountedPrice = price;
+
+          if (this.specialDiscountData?.discountPercentage) {
+            discountedPrice -= discountAmount;
+          }
+              if (this.businessUser?.taxDetails?.length > 0) {
+      this.businessUser?.taxDetails.forEach((element) => {
+        if (element.name === 'GST') {
+          this.booking.taxDetails = [];
+          this.booking.taxDetails.push(element);
+          this.taxPercentage = element.percentage;
+          this.booking.taxPercentage = this.taxPercentage;
+
+          if (
+            plan?.code === 'GHC' &&
+            this.activeForGoogleHotelCenter === true
+          ) {
+            if (element.taxSlabsList.length > 0) {
+              element.taxSlabsList.forEach((element2) => {
+                if (
+                  element2.maxAmount >=
+                    discountedPrice &&
+                  element2.minAmount <= discountedPrice
+                ) {
+                  this.taxPercentage = element2.percentage;
+                  this.booking.taxPercentage = this.taxPercentage;
+                } else if (
+                  element2.maxAmount <=
+                  discountedPrice
+                ) {
+                  this.taxPercentage = element2.percentage;
+                  this.booking.taxPercentage = this.taxPercentage;
+                }
+              });
+            }
+          } else {
+            if (element.taxSlabsList.length >= 0) {
+              element.taxSlabsList.forEach((element2) => {
+                if (
+                  element2.maxAmount >= discountedPrice &&
+                  element2.minAmount <= discountedPrice
+                ) {
+                  this.taxPercentage = element2.percentage;
+                  this.booking.taxPercentage = this.taxPercentage;
+                } else if (element2.maxAmount <= discountedPrice) {
+                  this.taxPercentage = element2.percentage;
+                  this.booking.taxPercentage = this.taxPercentage;
+                }
+              });
+            }
+          }
+        }
+      });
+    }
+    const taxPercent = this.taxPercentage || 0;
+    discountedPrice = plan.price - discountAmount;
+    const taxAmount = (((discountedPrice * taxPercent) / 100) );
+
+    return {
+      ...plan,
+      discountedPrice,
+      discountAmount,
+      taxpercentage: taxPercent,
+      taxPercentageperroom: Number(taxAmount.toFixed(2)),
+      finalPrice: discountedPrice + Number(taxAmount.toFixed(2))
+    };
+  });
+}
+        const bookingData = {
+    propertyId: this.businessUser?.id,
+    businessSlug: this.businessUser?.seoFriendlyName,
+    fromDate: this.booking.fromDate,
+    toDate: this.booking.toDate,
+    totalAdults: this.totalAdults,
+    totalChildren: this.totalChildren,
+    totalNights: this.DiffDate,
+    selectedPlansSummary: this.selectedPlansSummary,
+    propertyServiceListDataOne: selectedAddOns, // ✅ only selected items
+    totalPlanPrice: this.getTotalPlanPrice(),
+    totaltaxfacilityAmount: this.getTotalTaxFacility(),
+    totalAddOnsPrice: this.getTotalAfterTaxAmountFacility() + this.getTotalTaxFacility(),
+    totalTax: Number(this.getTotalTaxPrice().toFixed(2)),
+    totalAmount:
+      Number((((this.getTotalPlanPrice() +
+      this.getTotalAfterTaxAmountFacility()) - ((this.getTotalPlanPrice() * this.specialDiscountPercentage)/100)) + this.getTotalTaxPrice()).toFixed(2)),
+  };
+      sessionStorage.setItem('bookingSummaryDetails', JSON.stringify(bookingData));
+      // Phase 4: Store add-on services in sessionStorage for Booking component
+      sessionStorage.setItem('addOnServices', JSON.stringify(this.addOnServices));
+    } else if(this.specialDiscountData && this.activeForGoogleHotelCenter){
+    if (this.specialDiscountData) {
+  this.selectedPlansSummary = this.selectedPlansSummary.map(plan => {
+    let discountedPrice = plan.price;
+
+          if (this.businessUser?.taxDetails?.length > 0) {
+      this.businessUser?.taxDetails.forEach((element) => {
+        if (element.name === 'GST') {
+          this.booking.taxDetails = [];
+          this.booking.taxDetails.push(element);
+          this.taxPercentage = element.percentage;
+          this.booking.taxPercentage = this.taxPercentage;
+
+          if (
+            plan?.code === 'GHC' &&
+            this.activeForGoogleHotelCenter === true
+          ) {
+            if (element.taxSlabsList.length > 0) {
+              element.taxSlabsList.forEach((element2) => {
+                if (
+                  element2.maxAmount >=
+                    discountedPrice &&
+                  element2.minAmount <= discountedPrice
+                ) {
+                  this.taxPercentage = element2.percentage;
+                  this.booking.taxPercentage = this.taxPercentage;
+                } else if (
+                  element2.maxAmount <=
+                  discountedPrice
+                ) {
+                  this.taxPercentage = element2.percentage;
+                  this.booking.taxPercentage = this.taxPercentage;
+                }
+              });
+            }
+          } else {
+            if (element.taxSlabsList.length > 0) {
+              element.taxSlabsList.forEach((element2) => {
+                if (
+                  element2.maxAmount >= discountedPrice &&
+                  element2.minAmount <= discountedPrice
+                ) {
+                  this.taxPercentage = element2.percentage;
+                  this.booking.taxPercentage = this.taxPercentage;
+                } else if (element2.maxAmount <= discountedPrice) {
+                  this.taxPercentage = element2.percentage;
+                  this.booking.taxPercentage = this.taxPercentage;
+                }
+              });
+            }
+          }
+        }
+      });
+    }
+
+    let discountAmount = 0;
+      discountAmount = (plan.price * this.specialDiscountData.discountPercentage) / 100;
+      discountedPrice -= discountAmount;
+        let discountedPriceOne = 0;
+       if (plan.selectedRoomnumber > 1) {
+          discountedPriceOne = ((plan.actualRoomPrice) +
+        (plan.singleextraAdultCharges || 0) +
+        (plan.singleextraChildrenCharges || 0));
+
+        } else {
+          discountedPriceOne = ((plan.actualRoomPrice) +
+        (plan.SingleDayextraPersonAdultCountAmount || 0) +
+        (plan.SingleDayextraPersonChildCountAmount || 0));
+
+        }
+              if (this.businessUser?.taxDetails?.length > 0) {
+      this.businessUser?.taxDetails.forEach((element) => {
+        if (element.name === 'GST') {
+          this.booking.taxDetails = [];
+          this.booking.taxDetails.push(element);
+          this.taxPercentage = element.percentage;
+          this.booking.taxPercentage = this.taxPercentage;
+
+          if (
+            plan?.code === 'GHC' &&
+            this.activeForGoogleHotelCenter === true
+          ) {
+            if (element.taxSlabsList.length > 0) {
+              element.taxSlabsList.forEach((element2) => {
+                if (
+                  element2.maxAmount >=
+                    discountedPriceOne &&
+                  element2.minAmount <= discountedPriceOne
+                ) {
+                  this.taxPercentage = element2.percentage;
+                  this.booking.taxPercentage = this.taxPercentage;
+                } else if (
+                  element2.maxAmount <=
+                  discountedPriceOne
+                ) {
+                  this.taxPercentage = element2.percentage;
+                  this.booking.taxPercentage = this.taxPercentage;
+                }
+              });
+            }
+          } else {
+            if (element.taxSlabsList.length > 0) {
+              element.taxSlabsList.forEach((element2) => {
+                if (
+                  element2.maxAmount >= discountedPriceOne &&
+                  element2.minAmount <= discountedPriceOne
+                ) {
+                  this.taxPercentage = element2.percentage;
+                  this.booking.taxPercentage = this.taxPercentage;
+                } else if (element2.maxAmount <= discountedPriceOne) {
+                  this.taxPercentage = element2.percentage;
+                  this.booking.taxPercentage = this.taxPercentage;
+                }
+              });
+            }
+          }
+        }
+      });
+    }
+    const taxPercent = this.taxPercentage || 0;
+    const taxAmount = (discountedPrice * taxPercent) / 100;
+
+    return {
+      ...plan,
+      discountedPrice,
+      discountAmount,
+      taxpercentage: taxPercent,
+      taxPercentageperroom: Number(taxAmount.toFixed(2)),
+      finalPrice: discountedPrice + Number(taxAmount.toFixed(2))
+    };
+  });
+}
+        const bookingData = {
+    propertyId: this.businessUser?.id,
+    businessSlug: this.businessUser?.seoFriendlyName,
+    fromDate: this.booking.fromDate,
+    toDate: this.booking.toDate,
+    totalAdults: this.totalAdults,
+    totalChildren: this.totalChildren,
+    totalNights: this.DiffDate,
+    selectedPlansSummary: this.selectedPlansSummary,
+    propertyServiceListDataOne: selectedAddOns, // ✅ only selected items
+    totalPlanPrice: this.getTotalPlanPrice(),
+    totaltaxfacilityAmount: this.getTotalTaxFacility(),
+    totalAddOnsPrice: this.getTotalAfterTaxAmountFacility() + this.getTotalTaxFacility(),
+    totalTax: this.getGrandTaxTotal(),
+    totalAmount: Number((((this.getGrandSubtotal() - ((this.getGrandSubtotal() * this.specialDiscountPercentage) / 100)))
+                    + this.getGrandTaxTotal()).toFixed(2)),
+  };
+      sessionStorage.setItem('bookingSummaryDetails', JSON.stringify(bookingData));
+      // Phase 4: Store add-on services in sessionStorage for Booking component
+      sessionStorage.setItem('addOnServices', JSON.stringify(this.addOnServices));
+    }else {
+
+   const bookingData = {
+      propertyId: this.businessUser?.id,
+      businessSlug: this.businessUser?.seoFriendlyName,
+      fromDate: this.booking.fromDate,
+      toDate: this.booking.toDate,
+      totalAdults: this.totalAdults,
+      totalChildren: this.totalChildren,
+      totalNights: this.DiffDate,
+      selectedPlansSummary: this.selectedPlansSummary,
+      propertyServiceListDataOne: selectedAddOns,
+      totalPlanPrice: this.getTotalPlanPrice(),
+      totalTax: Number((this.getTotalTaxPrice()).toFixed(2)),
+      totalAddOnsPrice: this.getTotalAfterTaxAmountFacility() + this.getTotalTaxFacility(),
+      totaltaxfacilityAmount: this.getTotalTaxFacility(),
+      totalAmount: this.specialDiscountPercentage
+        ? Number((this.getTotalPlanPrice() +
+          this.getTotalAfterTaxAmountFacility() +
+          this.getTotalTaxPrice() -
+          (this.getTotalPlanPrice() * this.specialDiscountPercentage) / 100).toFixed(2))
+        : Number((this.getTotalPlanPrice() +
+          this.getTotalAfterTaxAmountFacility() +
+          this.getTotalTaxPrice()).toFixed(2)),
+    };
+    sessionStorage.setItem('bookingSummaryDetails', JSON.stringify(bookingData));
+    // Phase 4: Store add-on services in sessionStorage for Booking component
+    sessionStorage.setItem('addOnServices', JSON.stringify(this.addOnServices));
+  }
+
+  this.router.navigate(['/booking']);
+}
+
+  opendate() {
+    this.oneDayTrip = true;
+    this.selectBooking = false;
+  }
+  changedate() {
+    this.oneDayTrip = false;
+    this.selectBooking = true;
+  }
+  onDayTripPlanSelected(plan, room) {
+    this.checkAvailabilityStatus = false;
+    this.checkAvailabilityStatusHide = true;
+    this.checkAvailabilityStatusName = undefined;
+
+    this.booking.extraPersonCharge = plan.extraChargePerPerson;
+    this.booking.extraChildCharge = plan.extraChargePerChild;
+
+    this.booking.netAmount =
+      plan.amount * this.DiffDate * this.noOfrooms +
+      this.booking.extraPersonCharge +
+      this.booking.extraChildCharge;
+    this.booking.notes =
+      'Adult (' +
+      this.booking.noOfPersons +
+      ' X ' +
+      this.booking.extraPersonCharge +
+      '): ' +
+      this.booking.noOfPersons * this.booking.extraPersonCharge +
+      ', Child(' +
+      this.booking.noOfChildren +
+      ' X ' +
+      this.booking.extraChildCharge +
+      '): ' +
+      this.booking.noOfChildren * this.booking.extraChildCharge +
+      '';
+
+    // if (this.businessUser.taxDetails.length > 0) {
+    //   this.businessUser.taxDetails.forEach((element) => {
+    //     if (element.name === 'GST') {
+    //       this.booking.taxDetails = [];
+    //       this.booking.taxDetails.push(element);
+    //       this.taxPercentage = element.percentage;
+    //       this.booking.taxPercentage = this.taxPercentage;
+    //       if (element.taxSlabsList.length > 0) {
+    //         element.taxSlabsList.forEach((element2) => {
+    //           if (
+    //             element2.maxAmount > this.booking.netAmount &&
+    //             element2.minAmount < this.booking.netAmount
+    //           ) {
+    //             this.taxPercentage = element2.percentage;
+    //             this.booking.taxPercentage = this.taxPercentage;
+    //           } else if (element2.maxAmount < this.booking.netAmount) {
+    //             this.taxPercentage = element2.percentage;
+    //             this.booking.taxPercentage = this.taxPercentage;
+    //           }
+    //         });
+    //       }
+    //     }
+    //   });
+
+    // }
+    if (this.businessUser.taxDetails.length > 0) {
+      this.taxPercentage = this.businessUser.taxDetails[0].percentage;
+    }
+    if (this.businessUser.taxDetails[0].taxSlabsList.length > 0) {
+      this.businessUser.taxDetails[0].taxSlabsList.forEach((element) => {
+        if (
+          element.maxAmount > this.booking.netAmount &&
+          element.minAmount < this.booking.netAmount
+        ) {
+          this.taxPercentage = element.percentage;
+        } else if (element.maxAmount < this.booking.netAmount) {
+          this.taxPercentage = element.percentage;
+        }
+      });
+    }
+    if (plan !== undefined && plan.amount !== undefined) {
+      this.bookingRoomPrice =
+        plan.amount * this.DiffDate * this.booking.noOfRooms +
+        this.booking.extraPersonCharge +
+        this.booking.extraChildCharge;
+      this.PlanRoomPrice = plan.amount * this.DiffDate * this.booking.noOfRooms;
+    } else {
+      this.bookingRoomPrice = 0;
+      this.PlanRoomPrice = 0;
+    }
+    if (this.businessUser.taxDetails.length > 0) {
+      this.taxPercentage = this.businessUser.taxDetails[0].percentage;
+    }
+    if (this.businessUser.taxDetails[0].taxSlabsList.length > 0) {
+      this.businessUser.taxDetails[0].taxSlabsList.forEach((element) => {
+        if (
+          element.maxAmount > this.booking.netAmount &&
+          element.minAmount < this.booking.netAmount
+        ) {
+          this.taxPercentage = element.percentage;
+        } else if (element.maxAmount < this.booking.netAmount) {
+          this.taxPercentage = element.percentage;
+        }
+      });
+    }
+    this.planDetails = plan;
+    this.booking.planCode = plan.code;
+    this.booking.roomRatePlanName = plan.name;
+    this.booking.roomPrice = plan.amount;
+    this.planSelected = true;
+    this.planAmount = plan.amount;
+
+    let serviceList = plan.propertyServicesList;
+    let anotherServiceList = [];
+
+    serviceList
+      .filter(
+        (n) => n.applicableToAdult !== false || n.applicableToChild !== false
+      )
+      .forEach((element) => {
+        if (
+          element.applicableToAdult === false &&
+          element.applicableToChild === false
+        ) {
+          element = null;
+          // anotherServiceList.push(element);
+        } else {
+          let adultCount = 0;
+          let childCount = 0;
+          if (element.applicableToAdult === true) {
+            adultCount = this.adults;
+          }
+          if (element.applicableToChild === true) {
+            childCount = this.children;
+          }
+
+          element.count = adultCount + childCount;
+          if (element.count > 0) {
+            element.organisationId = this.businessUser.organisationId;
+            element.logoUrl = this.businessUser.logoUrl;
+            element.date = this.booking.fromDate;
+            // this.serviceDto.servicePrice = this.serviceDto.beforeTaxAmount;
+            element.beforeTaxAmount = element.servicePrice * element.count;
+            element.taxAmount =
+              (element.beforeTaxAmount / 100) * element.taxPercentage;
+            element.afterTaxAmount =
+              element.beforeTaxAmount + element.taxAmount;
+            anotherServiceList.push(element);
+          }
+        }
+
+        // element.count = this.adults+this.children;
+      });
+    if (
+      serviceList.length > 0 &&
+      serviceList !== undefined &&
+      serviceList !== null
+    ) {
+      this.router.navigate(['/add-service-odt']);
+    } else {
+      this.router.navigate(['/booking-odt']);
+    }
+
+    this.token.saveServiceData(anotherServiceList);
+    // this.fromDate = undefined;
+    // this.toDate = undefined;
+    // this.booking.fromDate = undefined;
+    // this.booking.toDate = undefined;
+    Logger.log(JSON.stringify(this.booking));
+    Logger.log(JSON.stringify(this.checkAvailabilityStatusHide));
+    this.changeDetectorRefs.detectChanges();
+    // this.checkingAvailability();
+  }
+  bookOneDayTrip() {
+    this.booking.noOfRooms = this.noOfrooms;
+    this.booking.noOfPersons = this.adults;
+    this.booking.noOfChildren = this.children;
+
+    // this.booking.netAmount =
+    this.changeDetectorRefs.detectChanges();
+
+    this.token.saveBookingData(this.booking);
+    // this.router.navigate(['/add-service-odt']);
+  }
+
+  onRoomBook(roomId, index, indexOne) {
+    this.selectedIndex = index;
+    this.viewAddon = true;
+
+    this.scrollToService();
+
+    const stickyCard = document.getElementById('stickyCard');
+
+    stickyCard.classList.toggle('show');
+  }
+
+  getPlan(roomId: string) {
+    this.loader = true;
+    this.hotelBookingService
+      .getPlan(String(this.businessUser.id), roomId)
+      .subscribe(
+        (data) => {
+          if (data.status === 200) {
+            this.plans = data.body;
+            this.loader = false;
+            this.changeDetectorRefs.detectChanges();
+            this.hasPlan = true;
+
+            Logger.log('this.plans : ' + JSON.stringify(this.plans));
+          } else if (data.status === 404) {
+            this.hasPlan = false;
+            this.plans = null;
+            this.changeDetectorRefs.detectChanges();
+            Logger.log('this.plans : ' + JSON.stringify(this.plans));
+          }
+        },
+        (error) => {
+          this.hasPlan = false;
+          this.plans = null;
+          this.changeDetectorRefs.detectChanges();
+          Logger.log('this.plans : ' + JSON.stringify(this.plans));
+          // Logger.log(JSON.stringify(error));
+          this.loader = false;
+        }
+      );
+  }
+
+  getDateDBFormat(date: Date) {
+    let currentDay: string;
+    let currentMonth: string;
+
+    if (date.getDate().toString().length === 1) {
+      currentDay = '0' + date.getDate();
+    } else {
+      currentDay = '' + date.getDate();
+    }
+
+    if ((date.getMonth() + 1).toString().length === 1) {
+      currentMonth = '0' + (date.getMonth() + 1);
+    } else {
+      currentMonth = '' + (date.getMonth() + 1);
+    }
+
+    return currentDay + '-' + currentMonth + '-' + date.getFullYear();
+  }
+  setFromDate() {
+    this.booking.fromDate = this.getDateFormatYearMonthDay(
+      this.fromDate.day,
+      this.fromDate.month,
+      this.fromDate.year
+    );
+  }
+  setToDate() {
+    this.booking.toDate = this.getDateFormatYearMonthDay(
+      this.toDate.day,
+      this.toDate.month,
+      this.toDate.year
+    );
+  }
+  formatNgbDateToDdMmYyyy(date: any): string {
+    if (!date) {
+      return '';
+    }
+    const day = Number(date.day) < 10 ? `0${date.day}` : `${date.day}`;
+    const month = Number(date.month) < 10 ? `0${date.month}` : `${date.month}`;
+    return `${day}-${month}-${date.year}`;
+  }
+  getDateFormatYearMonthDay(
+    day12: number,
+    month12: number,
+    year12: number
+  ): string {
+    const year = year12;
+    const date = day12;
+
+    const month = month12;
+
+    let month1;
+    let day1;
+    if (Number(month) < 10) {
+      month1 = `0${month}`;
+    } else {
+      month1 = `${month}`;
+    }
+    if (Number(date) < 10) {
+      day1 = `0${date}`;
+    } else {
+      day1 = `${date}`;
+    }
+
+    return `${year}-${month1}-${day1}`;
+  }
+  getDateFormatDayMonthYear(
+    day12: number,
+    month12: number,
+    year12: number
+  ): string {
+    const year = year12;
+    const date = day12;
+
+    const month = month12;
+
+    let month1;
+    let day1;
+    if (Number(month) < 10) {
+      month1 = `0${month}`;
+    } else {
+      month1 = `${month}`;
+    }
+    if (Number(date) < 10) {
+      day1 = `0${date}`;
+    } else {
+      day1 = `${date}`;
+    }
+
+    return `${day1}-${month1}-${year}`;
+  }
+  oneDayTripShow() {}
+  toggleCard() {
+    const card = document.getElementById('slideCard');
+    card.classList.toggle('active');
+  }
+  resetForm() {
+    this.checkAvailabilityDisabled = false;
+    this.adults = 1;
+    this.children = 0;
+    this.rooms = 1;
+    this.fromDate = this.calendar.getToday();
+    this.toDate = this.calendar.getNext(this.calendar.getToday(), 'd', 1);
+    this.isPopupOpen = false;
+    this.enteredCoupon = '';
+    this.isCardVisible = false;
+    this.token.clearAllTaxArray();
+    this.token.clearExtraPersonCharge();
+    this.token.clearExtraChildCharge();
+  }
+
+  private normalizeQueryDatesForRestriction(): void {
+    if (!this.checkinDay || !this.checkinMonth || !this.checkinYear) {
+      return;
+    }
+
+    const requestedCheckIn = new Date(
+      Number(this.checkinYear),
+      Number(this.checkinMonth) - 1,
+      Number(this.checkinDay)
+    );
+
+    if (Number.isNaN(requestedCheckIn.getTime())) {
+      return;
+    }
+
+    requestedCheckIn.setHours(0, 0, 0, 0);
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    let queryUpdated = false;
+
+    if (requestedCheckIn < today) {
+      this.checkinDay = today.getDate();
+      this.checkinMonth = today.getMonth() + 1;
+      this.checkinYear = today.getFullYear();
+      
+      if (this.activeForGoogleHotelCenter) {
+        this.showGhcPastDatePopup = true;
+        setTimeout(() => {
+          this.showGhcPastDatePopup = false;
+          this.changeDetectorRefs.detectChanges();
+        }, 30000);
+      } else {
+        this.showPastDateRestrictionPopup = true;
+        setTimeout(() => {
+          this.showPastDateRestrictionPopup = false;
+          this.changeDetectorRefs.detectChanges();
+        }, 5000);
+      }
+      queryUpdated = true;
+    }
+
+    if (!this.nights || Number(this.nights) < 1) {
+      this.nights = 1;
+      queryUpdated = true;
+    }
+
+    if (queryUpdated) {
+      this.router.navigate([], {
+        relativeTo: this.acRoute,
+        queryParams: {
+          checkinDay: this.checkinDay,
+          checkinMonth: this.checkinMonth,
+          checkinYear: this.checkinYear,
+          nights: this.nights,
+        },
+        queryParamsHandling: 'merge',
+        replaceUrl: true,
+      });
+    }
+  }
+  clicked() {
+    this.checkAvailabilityDisabled = true;
+  }
+
+  checkingAvailability() {
+    this.smartLoading = true;
+    if (this.activeForGoogleHotelCenter === true) {
+      this.showDiv = false;
+    }
+    this.isSuccess = true;
+    this.headerTitle = 'Success!';
+    this.bodyMessage = 'CheckAvailability Clicked ';
+
+    this.showSuccess(this.contentDialog);
+    setTimeout(() => {
+      this.showAlert = false;
+      this.changeDetectorRefs.detectChanges();
+      // document.getElementById("content").scrollIntoView();
+    }, 1000);
+
+    this.loaderHotelBooking = true;
+    this.checkAvailabilityStatusHide = false;
+    this.booking.propertyId = this.businessUser.id;
+
+          if (
+      this.fromDate &&
+      this.fromDate.day != null &&
+      this.fromDate.month != null &&
+      this.fromDate.year != null
+    ) {
+      this.booking.fromDate = this.getDateFormatYearMonthDay(
+        this.fromDate.day,
+        this.fromDate.month,
+        this.fromDate.year
+      );
+    } else {
+      let currentDate = new Date();
+      this.booking.fromDate = this.getDateFormatYearMonthDay(
+        currentDate.getDate(),
+        currentDate.getMonth() + 1,
+        currentDate.getFullYear()
+      );
+    }
+        if (
+      this.toDate &&
+      this.toDate.day != null &&
+      this.toDate.month != null &&
+      this.toDate.year != null
+    ) {
+      this.booking.toDate = this.getDateFormatYearMonthDay(
+        this.toDate.day,
+        this.toDate.month,
+        this.toDate.year
+      );
+    } else {
+      let currentDate = new Date();
+      currentDate.setDate(currentDate.getDate() + 1);
+      this.booking.toDate = this.getDateFormatYearMonthDay(
+        currentDate.getDate(),
+        currentDate.getMonth() + 1,
+        currentDate.getFullYear()
+      );
+    }
+
+
+
+
+    const showRoomsAndGuests = this.showRoomsAndGuestsFilter;
+    this.booking.noOfRooms = showRoomsAndGuests ? this.rooms : (this.rooms || 1);
+    this.booking.noOfPersons = showRoomsAndGuests ? this.totalAdults : (this.totalAdults || this.adults || 1);
+    this.booking.noOfChildren = showRoomsAndGuests ? this.totalChildren : (this.totalChildren || this.children || 0);
+    if (this.fromDate && this.toDate) {
+      this.getDiffDate(this.toDate, this.fromDate);
+    }
+    this.booking.noOfNights = this.DiffDate;
+    this.token.saveBookingData(this.booking);
+    sessionStorage.setItem('bookingSummary', JSON.stringify(this.additionalRooms))
+    // Logger.log('checkAvailability submit' + JSON.stringify(this.booking));
+
+    this.hotelBookingService
+      .checkAvailabilityByProperty(
+        this.booking.fromDate,
+        this.getAvailabilityCheckoutDate(),
+        this.booking.noOfRooms,
+        this.booking.noOfPersons,
+        this.booking.propertyId
+      )
+      .subscribe(
+        (response) => {
+          this.loaderHotelBooking = false;
+
+          const roomListOne = response?.body?.roomList || [];
+          this.updateDayTripCheckoutAvailability(roomListOne);
+          const sortedRoomsOne = this.getFilteredDataBasedOnRoomRateOrder(roomListOne);
+          const isSameDaySearch = this.isSameDayBookingSearch();
+          const availabilityNightCount = isSameDaySearch
+            ? 1
+            : Number(this.booking.noOfNights || 0);
+
+          // For Available Rooms
+          this.availableRooms = sortedRoomsOne.filter(room => {
+            const rates = room.ratesAndAvailabilityDtos;
+            if (!rates || rates.length === 0) return false;
+
+            const hasStopSell = rates.some((rate: any) =>
+              (rate.stopSellOBE !== null && rate.stopSellOBE !== false) ||
+              (rate.stopSellOTA !== null && rate.stopSellOTA !== false)
+            );
+            const hasDayTripRate = this.hasDayTripRate(room);
+            const matchesDateType = rates.length === availabilityNightCount || hasDayTripRate;
+            const matchesDayTripSearch = !isSameDaySearch || hasDayTripRate;
+
+            return matchesDateType && matchesDayTripSearch && !hasStopSell;
+          });
+
+          if(this.activeForGoogleHotelCenter === true || this.paramsroomId !== undefined) {
+            this.getAvailableRoomsForGHC(this.availableRooms);
+          }
+
+          // For Sold Out Rooms
+          this.soldOutRooms = sortedRoomsOne.filter(room => {
+            if (this.isRoomTooSmall(room)) return false;
+            const rates = room.ratesAndAvailabilityDtos;
+
+            const hasDayTripRate = this.hasDayTripRate(room);
+            const matchesDateType = rates?.length === availabilityNightCount || hasDayTripRate;
+            const matchesDayTripSearch = !isSameDaySearch || hasDayTripRate;
+
+            if (isSameDaySearch && (!matchesDateType || !matchesDayTripSearch)) return false;
+            if (!rates || !matchesDateType) return true;
+
+            // Check all rates in range for stop-sells
+            const hasStopSell = rates.some((rate: any) =>
+              (rate.stopSellOBE !== null && rate.stopSellOBE !== false) ||
+              (rate.stopSellOTA !== null && rate.stopSellOTA !== false)
+            );
+
+            return hasStopSell;
+          });
+
+          // Trigger stop-sell popup validation
+          this.checkAndShowStopSellPopup(roomListOne);
+          this.checkLengthOfStayRestrictions();
+          this.SubAvailableRooms = response.body.roomList;
+          const queryParams = {
+             noOfChildren: this.booking.noOfChildren,
+             noOfAdults: this.booking.noOfPersons,
+            checkInDate: this.booking.fromDate,
+            checkOutDate: this.booking.toDate,
+            noOfRooms: this.booking.noOfRooms,
+          };
+
+          const roomList = response.body.roomList;
+
+          if (this.smartRecommendationsBoolean) {
+            this.hotelBookingService.getRecommendations(queryParams, roomList).subscribe({
+              next: (res) => {
+                this.smartLoading = false;
+                this.smartRecommendations = res;
+                this.categories = [];
+                ['bestFitOptions', 'luxuryOptions', 'comfortOptions', 'budgetOptions'].forEach(cat => {
+                  if (this.smartRecommendations?.[cat]) {
+                    this.smartRecommendations[cat].forEach((room: any) => {
+                      room.plans.sort((a: any, b: any) => a.totalPrice - b.totalPrice);
+                    });
+                  }
+                });
+
+                // Build and sort categories
+                const tempCategories: { key: string; label: string; minPrice: number }[] = [];
+
+                if (this.smartRecommendations?.bestFitOptions?.length) {
+                  tempCategories.push({
+                    key: 'bestFitOptions',
+                    label: 'Best-Fit',
+                    minPrice: this.getCategoryMinPrice(this.smartRecommendations.bestFitOptions)
+                  });
+                }
+                if (this.smartRecommendations?.luxuryOptions?.length) {
+                  tempCategories.push({
+                    key: 'luxuryOptions',
+                    label: 'Luxury',
+                    minPrice: this.getCategoryMinPrice(this.smartRecommendations.luxuryOptions)
+                  });
+                }
+                if (this.smartRecommendations?.comfortOptions?.length) {
+                  tempCategories.push({
+                    key: 'comfortOptions',
+                    label: 'Comfort',
+                    minPrice: this.getCategoryMinPrice(this.smartRecommendations.comfortOptions)
+                  });
+                }
+                if (this.smartRecommendations?.budgetOptions?.length) {
+                  tempCategories.push({
+                    key: 'budgetOptions',
+                    label: 'Budget',
+                    minPrice: this.getCategoryMinPrice(this.smartRecommendations.budgetOptions)
+                  });
+                }
+                this.changeDetectorRefs.detectChanges();
+                this.categories = tempCategories.sort((a, b) => b.minPrice - a.minPrice);
+              },
+              error: (err) => {
+                this.smartLoading = false;
+                Logger.log('Error fetching recommendations: ' + err);
+              }
+            });
+          } else {
+            this.smartLoading = false;
+          }
+
+
+          // Sort the rooms so that rooms with the "Economy" rate plan come first
+          // const sortedRooms = this.availableRooms.sort((a, b) => {
+          //   const hasEconomyA = a.ratesAndAvailabilityDtos.some(dto =>
+          //     dto.roomRatePlans.some(plan => plan.name === "Economy")
+          //   );
+          //   const hasEconomyB = b.ratesAndAvailabilityDtos.some(dto =>
+          //     dto.roomRatePlans.some(plan => plan.name === "Economy")
+          //   );
+
+          //   // If A has "Economy" and B doesn't, A should come first
+          //   if (hasEconomyA && !hasEconomyB) return -1;
+          //   if (!hasEconomyA && hasEconomyB) return 1;
+          //   return 0; // Keep original order if both have or don't have "Economy"
+          // });
+
+                    this.shortrooms =  response.body.roomList;
+
+          // (window as any).dataLayer = (window as any).dataLayer.filter(event => event.event !== 'hotel_booking');
+          // setTimeout(() => {
+          //   this.pushDataToDataLayer();
+          // }, 2000);
+          let facilities = this.businessUser.propertyServicesList;
+
+          if (
+            this.availableRooms !== null &&
+            this.availableRooms !== undefined
+          ) {
+            this.dayOneTrip = this.availableRooms.some((room) => this.hasDayTripRate(room));
+            this.availableRooms.forEach((room) => {
+              room?.roomFacilities?.forEach((element) => {
+                if (element.name == 'Bar') {
+                  this.bar = element;
+                }
+                if (element.name == 'Pub') {
+                  this.pub = element;
+                }
+                if (element.name == 'Swimming Pool') {
+                  this.swimming = element;
+                }
+                if (element.name == 'Pet Friendly') {
+                  this.pet = element;
+                }
+                if (element.name == 'Air-Condition') {
+                  this.ac = element;
+                }
+                if (element.name == 'Wifi') {
+                  this.wifi = element;
+                }
+                if (element.name == 'Flat TV') {
+                  this.tv = element;
+                }
+              });
+            });
+          }
+          this.roomWithGHCPlan = [];
+          this.Googlehotelsortrooms = [];
+          let ghcPlan = new RoomRatePlans();
+          this.daterange = [];
+          this.daterangefilter = [];
+
+          this.availableRooms?.forEach((event) => {
+            event?.ratesAndAvailabilityDtos?.forEach((event2) => {
+              event2?.roomRatePlans?.forEach((plan) => {
+                if (
+                  plan?.code === 'GHC' &&
+                  this.activeForGoogleHotelCenter === true
+                ) {
+                  if (
+                    plan?.otaPlanList != null &&
+                    plan?.otaPlanList != undefined &&
+                    plan?.otaPlanList?.length > 0
+                  ) {
+                    plan.otaPlanList.forEach((element) => {
+                      if (element?.otaName === 'GHC') {
+                        plan.amount = element?.price;
+                        this.daterange.push(event2.date);
+
+                        // Convert timestamps to formatted dates
+                        const datePipe = new DatePipe('en-US');
+                        this.daterange.forEach((timestamp) => {
+                          let formattedDate = datePipe.transform(
+                            new Date(timestamp),
+                            'yyyy-MM-dd'
+                          );
+                          const inputDate = new Date(timestamp);
+                          // formattedDate = inputDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                          formattedDate = inputDate.toLocaleDateString(
+                            'en-US',
+                            { month: 'short', day: 'numeric', year: 'numeric' }
+                          ); // Adjust the format as needed
+                          this.daterangefilter.push(formattedDate);
+                        });
+
+                        // Log the array of formatted dates
+                      }
+                    });
+                  }
+                  this.daterangefilter = Array.from(
+                    new Set(this.daterangefilter)
+                  );
+                  const economyPlan = event2.roomRatePlans.find((p: any) => p.name?.trim().toLowerCase() === 'economy');
+                  event2.roomRatePlans = [];
+                  ghcPlan = plan;
+                  event2.roomRatePlans.push(ghcPlan);
+                  if (economyPlan && economyPlan.code !== 'GHC') {
+                    event2.roomRatePlans.push(economyPlan);
+                  }
+                  this.roomWithGHCPlan?.push(event);
+                }
+              });
+            });
+          });
+          this.planPrice = [];
+          this.taxArray = [];
+
+          this.roomWithGHCPlan[0]?.ratesAndAvailabilityDtos.forEach((e) => {
+            e.roomRatePlans.forEach((element) => {
+              if (element.otaPlanList.length > 0) {
+                this.allPalnPrice = true;
+              }
+              element.otaPlanList.forEach((element2) => {
+
+                if (element2.otaName === 'GHC') {
+                  this.planPrice.push(element2.price * this.booking.noOfRooms);
+                  let extraPerson = this.extraAdultCharge;
+                  let extraChild = this.extraChildrenCharge;
+                  let noOfNights = Number(this.booking.noOfNights);
+
+
+                  let totalPrice =
+                    Number(element2.price) +
+                    (extraPerson + extraChild) / noOfNights;
+                  if (totalPrice <= 7500) {
+                    this.taxAmount =
+                      ((totalPrice * this.booking.noOfRooms) * 12) / 100;
+                    this.taxArray.push(this.taxAmount);
+
+                  }
+
+                  if (totalPrice > 7501) {
+                    this.taxAmount =
+                      ((totalPrice * this.booking.noOfRooms) * 18) / 100;
+                    this.taxArray.push(this.taxAmount);
+
+                  }
+
+                  this.totalplanPrice = this.planPrice.reduce(
+                    (accumulator, currentValue) => accumulator + currentValue,
+                    0
+                  );
+                  if (
+                    this.activeForGoogleHotelCenter === true &&
+                    element.otaPlanList.length > 0
+                  ) {
+                    this.token.saveLandingPrice(this.totalplanPrice);
+                  }
+                }
+              });
+            });
+          });
+
+          this.datewisePriceMap = {}; // reset
+          this.daterangefilterSeo = [];
+          this.planObj = [];
+          this.planWithDateArray = []; // NEW ARRAY
+          this.planPriceSeo = [];
+
+          this.availableRooms?.forEach((event) => {
+            event?.ratesAndAvailabilityDtos?.forEach((event3) => {
+              const inputDate = new Date(event3.date);
+              const formattedDate = inputDate.toLocaleDateString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric',
+              });
+
+              if (!this.datewisePriceMap[formattedDate]) {
+                this.datewisePriceMap[formattedDate] = [];
+                this.daterangefilterSeo.push(formattedDate);
+              }
+
+              this.planWithDateArray.push({
+                date: formattedDate,
+                planList: event3?.roomRatePlans,
+              });
+            });
+          });
+          sessionStorage.setItem(
+                  'hasAvailableRoomsData',
+                  JSON.stringify(this.availableRooms)
+                );
+          // localStorage.setItem('totalPlanPrice', this.totalplanPrice.toString());
+
+          this.Googlehotelsortrooms = this.roomWithGHCPlan;
+          this.availableRooms?.forEach((des) => {
+            const hasAvailableRooms = des?.ratesAndAvailabilityDtos?.some(
+
+              (des2) => {
+                des2?.otaAvailabilityList.forEach((element) => {
+                  if (element?.otaName === 'GHC') {
+                    element.noOfAvailable = this.otaAvailableRooms;
+                  }
+                });
+                return des2.stopSellOBE !== true && des2.stopSellOBE !== null;
+              }
+            );
+
+            this.isDiabled = !hasAvailableRooms;
+          });
+
+          if (facilities !== null && facilities !== undefined) {
+            facilities.forEach((fac) => {
+              if (fac.name == 'Breakfast (Adult)' || fac.name == 'Breakfast') {
+                this.breakfast = fac;
+              }
+              if (fac.name == 'Laundry') {
+                this.laundry = fac;
+              }
+              if (fac.name == 'Pick Up') {
+                this.pickup = fac;
+              }
+              if (fac.name == 'Late Check-Out') {
+                this.checkout = fac;
+              }
+              if (fac.name == 'Drop Off') {
+                this.dropoff = fac;
+              }
+              if (fac.name == 'Lunch') {
+                this.lunch = fac;
+              }
+              if (fac.name == 'Dinner') {
+                this.dinner = fac;
+              }
+              if (fac.serviceType == 'Distance') {
+                this.distance = fac;
+              }
+              if (fac.serviceType == 'RestaurantHotel') {
+                this.isRestaurant = fac;
+              }
+              if (fac.serviceType == 'DistanceRailway') {
+                this.DistanceRailway = fac;
+              }
+              if (fac.serviceType == 'DistanceBusStop') {
+                this.isDistanceBusStop = fac;
+              }
+
+              if (fac.serviceType == 'DistanceTouristPlace') {
+                this.isDistanceTouristPlace = fac;
+              }
+
+              if (fac.name == 'BreakFast, Lunch, Dinner') {
+                this.bld = fac;
+              }
+            });
+          }
+          this.checkAvailabilityStatus = response.body.available;
+          this.booking.bookingAmount = response.body.bookingAmount;
+          // this.booking.extraPersonCharge = response.body.extraPersonCharge;
+          this.maxSelectRoom = response.body.numberOfRooms;
+          // this.selectedRoomMaximumOccupancy = response.body.noOfPersons;
+
+          this.availableRooms.forEach((ele) => {
+            if (
+              ele.ratesAndAvailabilityDtos != null &&
+              ele.ratesAndAvailabilityDtos != undefined &&
+              ele.ratesAndAvailabilityDtos.length > 0
+            ) {
+              this.availability = true;
+            } else {
+              this.allDtosNull();
+            }
+          });
+          if (response.body.available === true) {
+            this.checkAvailabilityStatusName = 'Available';
+          } else {
+            this.checkAvailabilityStatusName = 'Not Available';
+          }
+
+          // Logger.log('checkAvailability ' + JSON.stringify(response.body));
+        },
+        (error) => {
+          if (error instanceof HttpErrorResponse) {
+            Logger.log('checkAvailability error');
+          }
+        }
+      );
+    setTimeout(() => {
+      if (this.activeForGoogleHotelCenter == true) {
+        this.fetchAndProcessRoomsDataOne();
+      } else if (this.activeForGoogleHotelCenter == false) {
+        this.fetchAndProcessRoomsData();
+      }
+    }, 3000);
+    // this.sortAndLimitRoomsOne();
+    this.token.clearAllTaxArray();
+    this.getTotalTaxFee();
+  }
+    getCategoryMinPrice(optionRooms: any[]): number {
+    let min = Infinity;
+    optionRooms.forEach(room => {
+      room.plans.forEach((plan: any) => {
+        if (plan.totalPrice < min) {
+          min = plan.totalPrice;
+        }
+      });
+    });
+    return min;
+  }
+
+  // get cheapest plan from a category
+  getCheapestPlan(categoryKey: string) {
+    const rooms = this.smartRecommendations[categoryKey] || [];
+    let cheapestPlan: any = null;
+
+    rooms.forEach(room => {
+      room.plans.forEach((plan: any) => {
+        if (!cheapestPlan || plan.totalPrice < cheapestPlan.totalPrice) {
+          cheapestPlan = {
+            ...plan,
+            roomName: room.roomName,
+            availableCount: room.availableCount
+          };
+        }
+      });
+    });
+
+    return cheapestPlan;
+  }
+isPlanSelected(planName: string, room?: any): boolean {
+  return this.selectedPlansSummary.some(
+    (p) =>
+      p.planName === planName &&
+      (!room?.id || Number(p.roomId || 0) === Number(room.id))
+  );
+
+}
+
+  shouldDisableRoomImageClick(room: any): boolean {
+    const hasOneDayPlan = room?.ratesAndAvailabilityDtos?.some((rate: any) =>
+      rate?.roomRatePlans?.some((plan: any) => plan?.onedayPlan === true)
+    );
+    const hasDayTripPlan = this.hasDayTripRate(room);
+
+    if (!this.isSameDayBookingSearch() && hasDayTripPlan) {
+      return true;
+    }
+
+    return (
+      Number(this.booking?.noOfNights) > 1 &&
+      (!!hasOneDayPlan || this.isDayTripRoom(room))
+    );
+  }
+
+  toggleDropdownNights(index) {
+    this.isOpen = !this.isOpen;
+  }
+
+onFacilityToggle(name: string, isChecked: boolean): void {
+  if (isChecked) {
+    this.selectedFacilityNames.push(name);
+  } else {
+    this.selectedFacilityNames = this.selectedFacilityNames.filter(n => n !== name);
+  }
+}
+
+
+getTotalAfterTaxAmountFacility(): number {
+  const limit = this.viewMore ? this.propertyServiceListDataOne.length : 4;
+  return this.propertyServiceListDataOne
+    .slice(0, limit)
+    .filter(item => this.selectedFacilityNames.includes(item.name))
+    .reduce((sum, item) => sum + (item?.servicePrice || 0), 0);
+}
+getTotalTaxFacility(): number {
+  const limit = this.viewMore ? this.propertyServiceListDataOne.length : 4;
+  return this.propertyServiceListDataOne
+    .slice(0, limit)
+    .filter(item => this.selectedFacilityNames.includes(item.name))
+    .reduce((sum, item) => sum + (item?.taxAmount || 0), 0);
+}
+get totalEachPlanPrice(): number {
+  return this.planPrice?.reduce((sum, price) => sum + price, 0) || 0;
+}
+
+calculateConvenienceFee(totalAmount: number, percentage: number): number {
+  if (!totalAmount || !percentage) {
+    return 0;
+  }
+
+  const fee = (totalAmount * percentage) / 100;
+  return Number(fee.toFixed(2));
+}
+
+  getTotalPlanPrice(): number {
+    return this.selectedPlansSummary?.reduce(
+      (sum, plan) => sum + this.getPlanSubtotal(plan),
+      0
+    ) || 0;
+  }
+
+//   getTotalTaxPrice(): number {
+//         const savedBooking = sessionStorage.getItem('bookingSummaryDetails');
+//   if (savedBooking) {
+//     const data = JSON.parse(savedBooking);
+//     this.selectedPlansSummary = data.selectedPlansSummary
+//   }
+//   const couponCodeValues = sessionStorage.getItem('selectedPromoData');
+// if (couponCodeValues) {
+//   const parsed = JSON.parse(couponCodeValues); // convert to object
+//   this.specialDiscountData = JSON.parse(couponCodeValues);
+// }
+//           if(this.selectedPlansSummary){
+//           if(this.specialDiscountData){
+//       return (
+//     this.selectedPlansSummary?.reduce((sum, plan) => {
+//       const price = plan?.actualRoomPrice || 0;
+
+//       const taxPercent = plan?.taxpercentage || 0;
+//       let discountedPrice = price;
+//       if (this.specialDiscountData?.discountPercentage) {
+//         const discountAmount = (price * this.specialDiscountData.discountPercentage) / 100;
+//         discountedPrice -= discountAmount;
+//       } else {
+//         if (this.businessUser?.taxDetails?.length > 0) {
+//       this.businessUser?.taxDetails.forEach((element) => {
+//         if (element.name === 'GST') {
+//           this.booking.taxDetails = [];
+//           this.booking.taxDetails.push(element);
+//           this.taxPercentage = element.percentage;
+//           this.booking.taxPercentage = this.taxPercentage;
+
+//           if (
+//             plan?.code === 'GHC' &&
+//             this.activeForGoogleHotelCenter === true
+//           ) {
+//             if (element.taxSlabsList.length > 0) {
+//               element.taxSlabsList.forEach((element2) => {
+//                 if (
+//                   element2.maxAmount >=
+//                     discountedPrice &&
+//                   element2.minAmount <= discountedPrice
+//                 ) {
+//                   this.taxPercentage = element2.percentage;
+//                   this.booking.taxPercentage = this.taxPercentage;
+//                 } else if (
+//                   element2.maxAmount <=
+//                   discountedPrice
+//                 ) {
+//                   this.taxPercentage = element2.percentage;
+//                   this.booking.taxPercentage = this.taxPercentage;
+//                 }
+//               });
+//             }
+//           } else {
+//             if (element.taxSlabsList.length > 0) {
+//               element.taxSlabsList.forEach((element2) => {
+//                 if (
+//                   element2.maxAmount >= discountedPrice &&
+//                   element2.minAmount <= discountedPrice
+//                 ) {
+//                   this.taxPercentage = element2.percentage;
+//                   this.booking.taxPercentage = this.taxPercentage;
+//                 } else if (element2.maxAmount <= discountedPrice) {
+//                   this.taxPercentage = element2.percentage;
+//                   this.booking.taxPercentage = this.taxPercentage;
+//                 }
+//               });
+//             }
+//           }
+//         }
+//       });
+//     }
+//       }
+
+//       const taxAmount = (discountedPrice * this.taxPercentage) / 100;
+
+//       return sum + taxAmount;
+//     }, 0) || 0
+//   );
+//     } else {
+//                let taxTotal = 0;
+//   this.daterangefilterSeo?.forEach((_, i) => {
+//     this.selectedPlansSummary.forEach(plan => {
+//         if(plan.selectedRoomnumber > 1) {
+//           taxTotal  += this.calculateTaxAmount(
+//         (plan.actualRoomPrice) +
+//         (plan.singleextraAdultCharges || 0) +
+//         (plan.singleextraChildrenCharges || 0),
+//         plan
+//       ) * plan.selectedRoomnumber;
+//         } else {
+//           taxTotal  += this.calculateTaxAmount(
+//         (plan.actualRoomPrice) +
+//         (plan.SingleDayextraPersonAdultCountAmount || 0) +
+//         (plan.SingleDayextraPersonChildCountAmount || 0),
+//         plan
+//       ) * plan.selectedRoomnumber;
+//         }
+
+//     });
+//   });
+//   return taxTotal;
+//     }
+//       }
+//   }
+
+getTotalTaxPrice(): number {
+  const discountPercentage = Number(this.specialDiscountPercentage || 0);
+  return this.selectedPlansSummary?.reduce((sum: number, plan: any) => {
+    return sum + this.getPlanTaxTotal(plan, discountPercentage);
+  }, 0) || 0;
+}
+
+
+  getTotalTaxFee(): number {
+    let url = new URL(this.googleUrl);
+    let params = new URLSearchParams(url.search);
+
+    // Get the taxAmount value if it exists
+    let taxAmount = params.get('taxAmount');
+    let totaltax: number;
+
+    if (taxAmount !== null && this.isSuccess === false) {
+      totaltax = Number(taxAmount);
+    } else {
+      if (!this.taxArray || !this.taxArray.length) return 0;
+      totaltax = this.taxArray.reduce(
+        (acc, curr) => acc + Number(curr || 0),
+        0
+      );
+    }
+
+    this.token.saveAllTaxAray(totaltax);
+
+    return totaltax;
+  }
+  getTotalTaxFeeSeo(): number {
+    let url = new URL(this.googleUrl);
+    let params = new URLSearchParams(url.search);
+
+    // Get the taxAmount value if it exists
+    let taxAmount = params.get('taxAmount');
+    let totaltax: number;
+
+    if (taxAmount !== null && this.isSuccess === false) {
+      totaltax = Number(taxAmount);
+    } else {
+      if (!this.taxArraySeo || !this.taxArraySeo.length) return 0;
+      totaltax = this.taxArraySeo.reduce(
+        (acc, curr) => acc + Number(curr || 0),
+        0
+      );
+    }
+
+    this.token.saveAllTaxAray(totaltax);
+
+    return totaltax;
+  }
+  checkavailabilityCall() {
+    this.isLoading = true;
+  }
+
+  landingTaxAmount() {
+    this.allTaxAmount = true;
+    this.token.clearLandingPrice();
+    // this.getTotalTaxFee();
+  }
+  goToEnquiry() {
+    this.router.navigate(['/enquiry']);
+  }
+  contentDialog(contentDialog: any) {
+    throw new Error('Method not implemented.');
+  }
+
+  allDtosNull(): boolean {
+    return this.availableRooms?.every(
+      (dto) => dto.ratesAndAvailabilityDtos === null
+    );
+  }
+
+  onDateSelection(date: NgbDate, type: string) {
+    if (type === 'checkin') {
+      if (date.before(this.minDateForCheckIn)) {
+        return; // Prevent past date selection
+      }
+      this.fromDate = date;
+      this.validateSelectedCheckInTime();
+      this.toDate = this.calendar.getNext(date, 'd', 1);
+      this.minDateForCheckOut = this.getCheckoutMinDate();
+    } else if (type === 'checkout') {
+      const minCheckoutDate = this.getCheckoutMinDate();
+      if (date.equals(minCheckoutDate) || date.after(minCheckoutDate)) {
+        this.toDate = date;
+      }
+    }
+
+    // Call only if both dates are selected
+    if (this.fromDate && this.toDate) {
+      this.getDiffDate(this.toDate, this.fromDate);
+    }
+    this.checkingAvailability();
+  }
+
+  isHovered(date: NgbDate) {
+    return (
+      this.fromDate &&
+      !this.toDate &&
+      this.hoveredDate &&
+      date.after(this.fromDate) &&
+      date.before(this.hoveredDate)
+    );
+  }
+
+  isInside(date: NgbDate) {
+    return this.toDate && date.after(this.fromDate) && date.before(this.toDate);
+  }
+
+  isRange(date: NgbDate) {
+    return (
+      date.equals(this.fromDate) ||
+      (this.toDate && date.equals(this.toDate)) ||
+      this.isInside(date) ||
+      this.isHovered(date)
+    );
+  }
+
+  validateInput(currentValue: NgbDate | null, input: string): NgbDate | null {
+    const parsed = this.formatter.parse(input);
+    return parsed && this.calendar.isValid(NgbDate.from(parsed))
+      ? NgbDate.from(parsed)
+      : currentValue;
+  }
+  hasPercentage(roomOnlyPrice, planAmount) {
+    if (((roomOnlyPrice - planAmount) / roomOnlyPrice) * 100 > 0) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+  bookRoomNow() {
+    this.booking.noOfRooms = this.noOfrooms;
+    this.booking.noOfPersons = this.adults;
+    this.booking.noOfChildren = this.children;
+    // this.booking.netAmount =
+    this.changeDetectorRefs.detectChanges();
+    this.extraPersonChargee = this.token.getExtraPersonCharge();
+    this.extraChildChargee = this.token.getChildCharge();
+    this.token.saveProperty(this.businessUser);
+    this.token.saveBookingData(this.booking);
+  }
+
+  validateNoOfrooms(event: number, no) {
+    if (event > no) {
+      this.noOfrooms = no;
+    } else if (event < no) {
+      this.noOfrooms = 0;
+    } else {
+      this.noOfrooms = event;
+    }
+  }
+  showMessage() {
+    this.isSuccess = false;
+    this.headerTitle = 'Warning!';
+    this.bodyMessage = 'This Slot Not Available';
+    this.showWarning(this.bodyMessage);
+  }
+  showSuccess(content) {
+    this.alertType = 'success';
+    this.showAlert = true;
+  }
+  showWarning(content) {
+    this.alertType = 'warning';
+    this.showAlert = true;
+    setTimeout(() => {
+      this.showAlert = false;
+      this.changeDetectorRefs.detectChanges();
+    }, 3000);
+  }
+  showDanger(content) {
+    this.alertType = 'danger';
+    this.showAlert = true;
+    setTimeout(() => {
+      this.showAlert = false;
+      this.changeDetectorRefs.detectChanges();
+    }, 3000);
+  }
+  open(content, src, title) {
+    this.modalData = src;
+    this.modalTitle = title;
+    this.modalService
+      .open(content, { size: 'xl', scrollable: true })
+      .result.then(
+        (result) => {
+          this.closeResult = `Closed with: ${result}`;
+        },
+        (reason) => {
+          this.closeResult = `Dismissed ${this.getDismissReason(reason)}`;
+        }
+      );
+  }
+  // openImage(content, src, title) {
+  //   this.modalImage = src;
+  //   this.modalTitle = title;
+  //   this.modalService
+  //     .open(content, { size: 'lg', scrollable: true })
+  //     .result.then(
+  //       (result) => {
+  //         this.closeResult = `Closed with: ${result}`;
+  //       },
+  //       (reason) => {
+  //         this.closeResult = `Dismissed ${this.getDismissReason(reason)}`;
+  //       }
+  //     );
+  // }
+  openImage() {
+    // Set this to true to open the modal with the carousel
+    this.showCarousel = true;
+  }
+
+  toggleRoomViewMore(roomName: string): void {
+    this.viewMoreRoomState[roomName] = !this.viewMoreRoomState[roomName];
+  }
+
+  expandedRooms: string[] = [];
+
+isPlanVisible(filteredPlans: any[], roomName: string, room?: any) {
+  if (!filteredPlans) return [];
+  // If websiteBookingEngine is true, remove "Economy" plans first
+  let plans = this.websiteUrlBookingEngine
+    ? filteredPlans.filter(
+        (plan: any) => plan.name?.trim().toLowerCase() !== 'economy'
+      )
+    : filteredPlans;
+
+  // Filter by plan validity (effective date to expiry date)
+  const firstDate = room?.ratesAndAvailabilityDtos?.[0]?.date;
+  plans = plans.filter((plan: any) => this.isPlanWithinDateRange(plan, firstDate));
+  // Filter out plans that are not available on all nights of the selected stay period
+  if (room?.ratesAndAvailabilityDtos && room.ratesAndAvailabilityDtos.length > 0) {
+    const totalNights = room.ratesAndAvailabilityDtos.length;
+    plans = plans.filter((plan: any) => {
+      const occurrences = room.ratesAndAvailabilityDtos.filter((rate: any) =>
+        rate?.roomRatePlans?.some((p: any) => p.code === plan.code && this.isPlanWithinDateRange(p, rate.date))
+      ).length;
+      return occurrences === totalNights;
+    });
+  }
+
+  // Apply minimum & maximum occupancy filtering based on the search query:
+  // ONLY run filtering in the browser to avoid SSR (Server Side Rendering) issues and allow search engines to see all plans
+  if (isPlatformBrowser(this.platformId)) {
+    const searchAdults = Number(this.booking?.noOfPersons || this.adults || 1);
+    const searchRooms = Number(this.booking?.noOfRooms || this.rooms || 1);
+
+    if (searchAdults > 0 && searchRooms > 0) {
+      // Calculate total combined maximum occupancy of all available rooms/BHKs
+      const totalAvailableCapacity = (this.availableRooms || []).reduce((sum, r) => {
+        const roomMax = Number(r?.maximumOccupancy || 0);
+        const maxPlanOcc = (r?.ratesAndAvailabilityDtos?.[0]?.roomRatePlans || []).reduce((max: number, p: any) => {
+          return Math.max(max, Number(p?.maximumOccupancy || 0));
+        }, 0);
+        return sum + Math.max(roomMax, maxPlanOcc);
+      }, 0);
+
+      const label = this.roomLabel?.toLowerCase();
+      const isCustomUnit = label && label !== 'room' && label !== 'accommodation';
+
+      // If it is a custom unit (BHK, Villa, etc.), bypass strict requiredPerRoom filtering
+      // as long as total guests are within the overall capacity.
+      if (isCustomUnit && searchAdults <= totalAvailableCapacity) {
+        // Keep all plans visible for BHK / Villa
+      } else {
+        // Otherwise, fall back to standard requiredPerRoom filtering
+        const requiredPerRoom = Math.ceil(searchAdults / searchRooms);
+        plans = plans.filter((plan: any) => {
+          const planMax = Number(plan?.maximumOccupancy ?? room?.maximumOccupancy ?? 2);
+          return planMax >= requiredPerRoom;
+        });
+      }
+    }
+  }
+
+  // Then handle expanded/collapsed logic
+  return this.expandedRooms.includes(roomName)
+    ? plans
+    : plans.slice(0, 3);
+}
+
+hasVisiblePlans(room: any): boolean {
+  if (!room || !room.ratesAndAvailabilityDtos) return false;
+  return room.ratesAndAvailabilityDtos.some((rate: any) => {
+    if (!rate || !rate.roomRatePlans) return false;
+    const plans = this.isPlanVisible(rate.roomRatePlans, room.name, room);
+    return plans && plans.length > 0;
+  });
+}
+
+isRoomTooSmall(room: any): boolean {
+  if (!room) return false;
+  if (!isPlatformBrowser(this.platformId)) {
+    return false;
+  }
+  const searchAdults = Number(this.booking?.noOfPersons || this.adults || 1);
+  const searchRooms = Number(this.booking?.noOfRooms || this.rooms || 1);
+  if (searchAdults > 0 && searchRooms > 0) {
+    const label = this.roomLabel?.toLowerCase();
+    const isCustomUnit = label && label !== 'room' && label !== 'accommodation';
+
+    if (isCustomUnit) {
+      const totalAvailableCapacity = (this.availableRooms || []).reduce((sum, r) => {
+        const roomMax = Number(r?.maximumOccupancy || 0);
+        const maxPlanOcc = (r?.ratesAndAvailabilityDtos?.[0]?.roomRatePlans || []).reduce((max: number, p: any) => {
+          return Math.max(max, Number(p?.maximumOccupancy || 0));
+        }, 0);
+        return sum + Math.max(roomMax, maxPlanOcc);
+      }, 0);
+
+      if (searchAdults <= totalAvailableCapacity) {
+        return false;
+      }
+    }
+
+    const requiredPerRoom = Math.ceil(searchAdults / searchRooms);
+    
+    // Check if the room's maximum occupancy is less than requiredPerRoom
+    const roomMax = Number(room.maximumOccupancy ?? 2);
+    if (roomMax < requiredPerRoom) {
+      return true;
+    }
+    
+    // Also check if any plan inside the room has a maximum occupancy that is at least requiredPerRoom
+    if (room.ratesAndAvailabilityDtos && room.ratesAndAvailabilityDtos.length > 0) {
+      const hasAnyAccommodatingPlan = room.ratesAndAvailabilityDtos.some((rate: any) => {
+        return rate.roomRatePlans && rate.roomRatePlans.some((plan: any) => {
+          const planMax = Number(plan?.maximumOccupancy ?? room.maximumOccupancy ?? 2);
+          return planMax >= requiredPerRoom;
+        });
+      });
+      if (!hasAnyAccommodatingPlan) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+  toggleRoomExpansion(roomName: string): void {
+    const index = this.expandedRooms.indexOf(roomName);
+    if (index > -1) {
+      this.expandedRooms.splice(index, 1);
+    } else {
+      this.expandedRooms.push(roomName);
+    }
+  }
+
+  isRoomExpanded(roomName: string): boolean {
+    return this.expandedRooms.includes(roomName);
+  }
+
+  checkingAvailability1() {
+    this.isSuccess = true;
+    this.headerTitle = 'Success!';
+    this.bodyMessage = 'CheckAvailability Clicked ';
+
+    this.showSuccess(this.contentDialog);
+    setTimeout(() => {
+      this.showAlert = false;
+      this.changeDetectorRefs.detectChanges();
+      // document.getElementById("content").scrollIntoView();
+    }, 1000);
+
+    this.loaderHotelBooking = true;
+    this.checkAvailabilityStatusHide = false;
+    this.booking.propertyId = this.businessUser.id;
+    this.token.saveBookingRoomPrice(this.booking.roomPrice);
+
+
+
+    const showRoomsAndGuests = this.showRoomsAndGuestsFilter;
+    this.booking.noOfRooms = showRoomsAndGuests ? this.rooms : (this.noOfrooms || 1);
+    this.booking.noOfPersons = showRoomsAndGuests ? this.adults : (this.adults || 1);
+    this.booking.noOfChildren = showRoomsAndGuests ? this.children : (this.children || 0);
+    // this.token.saveBookingData(this.booking);
+    // Logger.log('checkAvailability submit' + JSON.stringify(this.booking));
+
+    this.hotelBookingService
+      .checkAvailabilityByProperty(
+        this.booking.fromDate,
+        this.booking.toDate,
+        this.booking.noOfRooms,
+        this.booking.noOfPersons,
+        this.booking.propertyId
+      )
+      .subscribe(
+        (response) => {
+          this.loaderHotelBooking = false;
+          this.updateDayTripCheckoutAvailability(response?.body?.roomList || []);
+          this.availableRooms = this.getFilteredDataBasedOnRoomRateOrder(response?.body?.roomList);
+                    this.availableRooms = this.availableRooms.filter(room =>
+            room.ratesAndAvailabilityDtos?.length > 0 &&
+            room.ratesAndAvailabilityDtos.every((rate: any) =>
+              (rate.stopSellOBE === null || rate.stopSellOBE === false) &&
+              (rate.stopSellOTA === null || rate.stopSellOTA === false)
+            )
+          );
+        if(this.activeForGoogleHotelCenter === true || this.paramsroomId !== undefined) {
+          this.getAvailableRoomsForGHC(this.availableRooms);
+        }
+    // Filter sold-out rooms
+          this.soldOutRooms = response.body.roomList.filter(room => {
+            if (this.isRoomTooSmall(room)) {
+              return false;
+            }
+            return room.ratesAndAvailabilityDtos === null ||
+              room.ratesAndAvailabilityDtos.length === 0 ||
+              room.ratesAndAvailabilityDtos.some((rate: any) =>
+                (rate.stopSellOBE !== null && rate.stopSellOBE !== false) ||
+                (rate.stopSellOTA !== null && rate.stopSellOTA !== false)
+              );
+          });
+          this.shortrooms = response.body.roomList;
+          this.checkLengthOfStayRestrictions();
+          let facilities = this.businessUser.propertyServicesList;
+          if (
+            this.availableRooms !== null &&
+            this.availableRooms !== undefined
+          ) {
+            this.dayOneTrip = this.availableRooms.some((room) => this.hasDayTripRate(room));
+            this.availableRooms.forEach((room) => {
+              room?.ratesAndAvailabilityDtos?.forEach((ele) => {
+                ele.roomRatePlans?.forEach((e) => {
+                  if (e.name === this.booking.roomRatePlanName) {
+                    this.planpropertyServiceList = e.propertyServicesList;
+                    this.planpropertyServiceList?.forEach((service) => {
+                      if (service.name == 'Breakfast' || 'Breakfast (Adult)') {
+                        this.breakfastservice = service;
+                      }
+                      if (service.name == 'Lunch') {
+                        this.lunchservice = service;
+                      }
+                      if (service.name == 'Dinner') {
+                        this.dinnerservice = service;
+                      }
+                    });
+                  }
+                });
+              });
+              room?.roomFacilities?.forEach((element) => {
+                if (element.name == 'Bar') {
+                  this.bar = element;
+                }
+                if (element.name == 'Pub') {
+                  this.pub = element;
+                }
+                if (element.name == 'Swimming Pool') {
+                  this.swimming = element;
+                }
+                if (element.name == 'Pet Friendly') {
+                  this.pet = element;
+                }
+                if (element.name == 'Air-Condition') {
+                  this.ac = element;
+                }
+                if (element.name == 'Wifi') {
+                  this.wifi = element;
+                }
+                if (element.name == 'Flat TV') {
+                  this.tv = element;
+                }
+              });
+            });
+          }
+          this.roomWithGHCPlan = [];
+          let ghcPlan = new RoomRatePlans();
+          this.daterange = [];
+          this.daterangefilter = [];
+          this.availableRooms?.forEach((event) => {
+            event?.ratesAndAvailabilityDtos?.forEach((event2) => {
+              event2?.roomRatePlans?.forEach((plan) => {
+                if (
+                  plan?.code === 'GHC' &&
+                  this.activeForGoogleHotelCenter === true
+                ) {
+                  if (
+                    plan?.otaPlanList != null &&
+                    plan?.otaPlanList != undefined &&
+                    plan?.otaPlanList?.length > 0
+                  ) {
+                    plan.otaPlanList.forEach((element) => {
+                      if (element?.otaName === 'GHC') {
+                        plan.amount = element?.price;
+                        this.daterange.push(event2.date);
+
+                        // Convert timestamps to formatted dates
+                        const datePipe = new DatePipe('en-US');
+                        this.daterange.forEach((timestamp) => {
+                          let formattedDate = datePipe.transform(
+                            new Date(timestamp),
+                            'yyyy-MM-dd'
+                          );
+                          const inputDate = new Date(timestamp);
+                          // formattedDate = inputDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                          formattedDate = inputDate.toLocaleDateString(
+                            'en-US',
+                            { month: 'short', day: 'numeric', year: 'numeric' }
+                          ); // Adjust the format as needed
+                          this.daterangefilter.push(formattedDate);
+                        });
+                        this.daterangefilter = Array.from(
+                          new Set(this.daterangefilter)
+                        );
+                      }
+                    });
+                  }
+                  const economyPlan = event2.roomRatePlans.find((p: any) => p.name?.trim().toLowerCase() === 'economy');
+                  event2.roomRatePlans = [];
+                  ghcPlan = plan;
+                  event2.roomRatePlans.push(ghcPlan);
+                  if (economyPlan && economyPlan.code !== 'GHC') {
+                    event2.roomRatePlans.push(economyPlan);
+                  }
+                  this.roomWithGHCPlan?.push(event);
+                }
+              });
+            });
+          });
+          this.planPrice = [];
+          if (this.activeForGoogleHotelCenter === true) {
+            this.roomWithGHCPlan[0]?.ratesAndAvailabilityDtos.forEach((e) => {
+              e.roomRatePlans.forEach((element) => {
+                element.otaPlanList.forEach((element2) => {
+                  if (element2.otaName === 'GHC') {
+                    this.planPrice.push(element2.price);
+                    this.totalplanPrice = this.planPrice.reduce(
+                      (accumulator, currentValue) => accumulator + currentValue,
+                      0
+                    );
+                  }
+                  this.bookingCity = this.planPrice[0]?.toString();
+                  this.token.saveBookingCity(this.bookingCity);
+
+                  this.booking.roomPrice = this.totalplanPrice;
+
+                  this.booking.netAmount =
+                    this.booking.roomPrice * this.noOfrooms +
+                    this.booking.extraPersonCharge +
+                    this.booking.extraChildCharge;
+                  //  this.token.saveBookingData(this.booking);
+                });
+              });
+            });
+          }
+          this.Googlehotelsortrooms = this.roomWithGHCPlan;
+          this.availableRooms?.forEach((des) => {
+            const hasAvailableRooms = des?.ratesAndAvailabilityDtos?.some(
+              (des2) => {
+                return des2.stopSellOBE !== true && des2.stopSellOBE !== null;
+              }
+            );
+
+            this.isDiabled = !hasAvailableRooms;
+          });
+
+          if (facilities !== null && facilities !== undefined) {
+            facilities.forEach((fac) => {
+              if (fac.name == 'Breakfast (Adult)' || fac.name == 'Breakfast') {
+                this.breakfast = fac;
+              }
+              if (fac.name == 'Laundry') {
+                this.laundry = fac;
+              }
+              if (fac.name == 'Pick Up') {
+                this.pickup = fac;
+              }
+              if (fac.name == 'Late Check-Out') {
+                this.checkout = fac;
+              }
+              if (fac.name == 'Drop Off') {
+                this.dropoff = fac;
+              }
+              if (fac.name == 'Lunch') {
+                this.lunch = fac;
+              }
+              if (fac.name == 'Dinner') {
+                this.dinner = fac;
+              }
+              if (fac.serviceType == 'Distance') {
+                this.distance = fac;
+              }
+              if (fac.serviceType == 'RestaurantHotel') {
+                this.isRestaurant = fac;
+              }
+              if (fac.serviceType == 'DistanceRailway') {
+                this.DistanceRailway = fac;
+              }
+
+              if (fac.serviceType == 'DistanceBusStop') {
+                this.isDistanceBusStop = fac;
+              }
+
+              if (fac.serviceType == 'DistanceTouristPlace') {
+                this.isDistanceTouristPlace = fac;
+              }
+
+              if (fac.name == 'BreakFast, Lunch, Dinner') {
+                this.bld = fac;
+              }
+            });
+          }
+          this.checkAvailabilityStatus = response.body.available;
+          this.booking.bookingAmount = response.body.bookingAmount;
+          // this.booking.extraPersonCharge = response.body.extraPersonCharge;
+          this.maxSelectRoom = response.body.numberOfRooms;
+          // this.selectedRoomMaximumOccupancy = response.body.noOfPersons;
+
+          this.availableRooms.forEach((ele) => {
+            if (
+              ele.ratesAndAvailabilityDtos != null &&
+              ele.ratesAndAvailabilityDtos != undefined &&
+              ele.ratesAndAvailabilityDtos.length > 0
+            ) {
+              this.availability = true;
+            } else {
+              this.allDtosNull();
+            }
+          });
+          if (response.body.available === true) {
+            this.checkAvailabilityStatusName = 'Available';
+          } else {
+            this.checkAvailabilityStatusName = 'Not Available';
+          }
+        },
+        (error) => {
+          if (error instanceof HttpErrorResponse) {
+            Logger.log('checkAvailability error');
+          }
+        }
+      );
+  }
+
+getAvailableRoomsForGHC(availableRooms: any[]) {
+  let selected = false;
+  availableRooms.forEach((room) => {
+    if (selected) return;
+    if (room.id === Number(this.paramsroomId)) {
+      room?.ratesAndAvailabilityDtos?.forEach((rate) => {
+        if (selected) return;
+        
+        let targetPlan = null;
+        let targetPlanCode = this.paramsPlanCode;
+        
+        if (targetPlanCode) {
+          targetPlan = rate?.roomRatePlans?.find((p) => 
+            p.code?.toLowerCase() === String(targetPlanCode).toLowerCase() || 
+            p.planName?.toLowerCase() === String(targetPlanCode).toLowerCase()
+          );
+        } else if (this.activeForGoogleHotelCenter) {
+          targetPlan = rate?.roomRatePlans?.find((p) => p.code === 'GHC');
+        } else {
+          targetPlan = rate?.roomRatePlans?.[0];
+        }
+        
+        if (targetPlan) {
+          const planCode = targetPlan.code;
+          const scopedKey = this.getRoomPlanSelectionKey(room.id, planCode);
+          this.selectedRoomsByPlan[scopedKey] = 1;
+          this.selectedGuestsByPlan[scopedKey] = {
+            adults: this.adults,
+            children: this.childno,
+          };
+          
+          if (!this.expandedRooms.includes(room.name)) {
+            this.expandedRooms.push(room.name);
+          }
+          
+          this.onPlanSelect(planCode, rate, room);
+          this.isPanelOpen = false;
+          selected = true;
+          
+          setTimeout(() => {
+            const isMobile = window.innerWidth <= 768;
+            if (isMobile) {
+              window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+            } else {
+              const summaryEl = document.querySelector('.booking-card.sticky-card');
+              if (summaryEl) {
+                summaryEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              } else {
+                const el = document.getElementById('plan-' + planCode);
+                if (el) {
+                  el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                  el.classList.add('scroll-highlight');
+                }
+              }
+            }
+          }, 500);
+        }
+      });
+    }
+  });
+}
+
+
+
+  private getDismissReason(reason: any): string {
+    if (reason === ModalDismissReasons.ESC) {
+      return 'by pressing ESC';
+    } else if (reason === ModalDismissReasons.BACKDROP_CLICK) {
+      return 'by clicking on a backdrop';
+    } else {
+      return `with: ${reason}`;
+    }
+  }
+
+  //    privtePromotion() {
+  //   this.isPopupOpen = true;
+  // }
+
+  privtePromotion() {
+    this.isPopupOpen = true;
+    this.isValidPrivateCoupon = false; // reset the flag
+
+    const privateOffers = this.offersList.filter(
+      (offer) => offer.promotionAppliedFor === 'Private'
+    );
+
+    if (privateOffers.length > 0) {
+      this.validCouponCode = privateOffers[0].couponCode;
+
+    }
+  }
+
+
+onCouponInputChange(event: string) {
+  this.enteredCoupon = event.trim();
+
+  if (!this.enteredCoupon) {
+    this.resetCoupon();
+    return;
+  }
+
+  const matchedOffer = this.offersList.find(
+    (offer) =>
+      offer.couponCode?.trim().toUpperCase() ===
+      this.enteredCoupon.toUpperCase()
+  );
+
+  if (matchedOffer) {
+
+    this.validCouponCode = matchedOffer.couponCode;
+    this.privatePromotionData = matchedOffer;
+    this.specialDiscountData = matchedOffer;
+    this.specialDiscountPercentage = matchedOffer.discountPercentage || null;
+
+    sessionStorage.setItem('selectedPromoData', JSON.stringify(matchedOffer));
+    sessionStorage.setItem('selectPromo', 'true');
+    this.promoSelected = true;
+  } else {
+    this.resetCoupon();
+  }
+}
+  private resetCoupon() {
+  this.validCouponCode = '';
+  this.privatePromotionData = null;
+  this.specialDiscountData = null;
+  this.specialDiscountPercentage = null;
+  this.promoSelected = false;
+
+  sessionStorage.removeItem('selectedPromoData');
+  sessionStorage.removeItem('selectPromo');
+  this.enteredCoupon = '';
+}
+
+  openGetCouponModal(coupon: any) {
+    this.currentOfferIdForCoupon = coupon.id;
+    this.guestCouponName = '';
+    this.guestCouponPhone = '';
+    this.guestCouponPhoneNo = '';
+    
+    // Fallback logic sequence:
+    // 1. URL Query Parameters -> 2. Session/Local Storage -> 3. Property Address Country -> 4. Default to India (+91)
+    let countryToMatch = '';
+    
+    try {
+      // 1. Check URL parameters
+      const urlCountry = this.acRoute.snapshot.queryParams['country'] ||
+                         this.acRoute.snapshot.queryParams['user_country'] ||
+                         this.acRoute.snapshot.queryParams['userCountry'] ||
+                         this.acRoute.snapshot.queryParams['user_country_code'] ||
+                         this.acRoute.snapshot.queryParams['userCountryCode'];
+                         
+      if (urlCountry) {
+        countryToMatch = urlCountry;
+      } else {
+        // 2. Check storage
+        const storageCountry = sessionStorage.getItem('country') || localStorage.getItem('country');
+        if (storageCountry) {
+          countryToMatch = storageCountry;
+        } else {
+          // 3. Check property address country config
+          const propertyCountry = this.businessUser?.address?.country || (this.businessUser as any)?.country;
+          if (propertyCountry) {
+            countryToMatch = propertyCountry;
+          }
+        }
+      }
+      
+      if (countryToMatch) {
+        const qLower = countryToMatch.toLowerCase().trim();
+        const matched = this.countriesForCoupon.find(c => 
+          c.name.toLowerCase().includes(qLower) || 
+          qLower.includes(c.name.toLowerCase()) || 
+          (qLower === 'nz' && c.name === 'New Zealand') ||
+          (qLower === 'in' && c.name === 'India') ||
+          (qLower === 'uk' && c.name === 'United Kingdom') ||
+          (qLower === 'us' && c.name === 'United States') ||
+          (qLower === 'ca' && c.name === 'Canada') ||
+          (qLower === 'au' && c.name === 'Australia')
+        );
+        if (matched) {
+          this.selectedCountryForCoupon = matched;
+        } else {
+          // Default to India if matched country isn't in supported lists
+          this.selectedCountryForCoupon = this.countriesForCoupon[0];
+        }
+      } else {
+        // 4. Fallback to India (+91)
+        this.selectedCountryForCoupon = this.countriesForCoupon[0];
+      }
+    } catch (e) {
+      console.error('Error in country resolution fallback sequence: ', e);
+      this.selectedCountryForCoupon = this.countriesForCoupon[0];
+    }
+
+    this.countrySearchQuery = '';
+    this.showCountryDropdown = false;
+    this.generatedGuestCouponCode = '';
+    this.guestCouponError = '';
+    this.guestCouponSuccess = '';
+    this.guestCouponLoading = false;
+    this.visibleGetCouponModal = true;
+  }
+
+  generateAndApplyCoupon() {
+    if (!this.guestCouponName || !this.guestCouponName.trim()) {
+      this.guestCouponError = 'Guest Name is required';
+      return;
+    }
+    if (!this.guestCouponPhoneNo || !this.guestCouponPhoneNo.trim()) {
+      this.guestCouponError = 'WhatsApp Number is required';
+      return;
+    }
+
+    // Dynamic country validation
+    const num = this.guestCouponPhoneNo.trim().replace(/\D/g, '');
+    const country = this.selectedCountryForCoupon;
+    let isValid = false;
+    let expectedFormat = '';
+
+    if (country.length) {
+      isValid = num.length === country.length;
+      expectedFormat = `${country.length} digits`;
+    } else if (country.minLength && country.maxLength) {
+      isValid = num.length >= country.minLength && num.length <= country.maxLength;
+      expectedFormat = `${country.minLength}-${country.maxLength} digits`;
+    } else {
+      isValid = num.length >= 7 && num.length <= 15;
+      expectedFormat = '7-15 digits';
+    }
+
+    if (!isValid) {
+      this.guestCouponError = `Invalid phone number for ${country.name}. Must be exactly ${expectedFormat}.`;
+      return;
+    }
+
+    this.guestCouponLoading = true;
+    this.guestCouponError = '';
+    this.guestCouponSuccess = '';
+
+    // Form absolute WhatsApp number with country code (e.g. +919876543210)
+    const finalWhatsAppNumber = country.code + num;
+    this.guestCouponPhone = finalWhatsAppNumber;
+
+    const payload = {
+      businessOfferId: this.currentOfferIdForCoupon,
+      guestName: this.guestCouponName.trim(),
+      whatsappNumber: finalWhatsAppNumber
+    };
+
+    const url = `${API_URL_PROMOTION}/api/guest-promotion/request`;
+    this.http.post<any>(url, payload).subscribe(
+      (response: any) => {
+        this.guestCouponLoading = false;
+        if (response && response.generatedCoupon) {
+          this.generatedGuestCouponCode = response.generatedCoupon;
+          this.guestCouponSuccess = `Coupon generated successfully: ${response.generatedCoupon}! Sent to WhatsApp.`;
+          
+          const allOffers = this.showAllTheOfferList?.length ? this.showAllTheOfferList : this.offersList;
+          const originalOffer = allOffers?.find((o: any) => o.id === this.currentOfferIdForCoupon);
+          if (originalOffer) {
+            const guestCouponObject = {
+              ...originalOffer,
+              couponCode: response.generatedCoupon
+            };
+
+            this.selectedPromotion = true;
+            this.selectedPromotionCouponData = guestCouponObject;
+            this.couponApplied = true;
+            this.couponSuccessApplied = true;
+            this.showSuccessContent = true;
+
+            sessionStorage.setItem('selectedPromoData', JSON.stringify(guestCouponObject));
+            sessionStorage.setItem('selectPromo', 'true');
+            localStorage.setItem('selectedPromoData', JSON.stringify(guestCouponObject));
+            localStorage.setItem('selectPromo', 'true');
+
+            this.enteredCoupon = response.generatedCoupon;
+            this.validCouponCode = response.generatedCoupon;
+            this.specialDiscountData = guestCouponObject;
+            this.specialDiscountPercentage = guestCouponObject.discountPercentage;
+            this.promoSelected = true;
+          }
+
+          setTimeout(() => {
+            this.visibleGetCouponModal = false;
+          }, 3000);
+        } else {
+          this.guestCouponError = 'Failed to generate coupon. Please try again.';
+        }
+      },
+      (error) => {
+        this.guestCouponLoading = false;
+        console.error('Error generating guest coupon:', error);
+        if (error && error.error && typeof error.error === 'string') {
+          this.guestCouponError = error.error;
+        } else {
+          this.guestCouponError = 'An error occurred while generating your coupon. Please try again.';
+        }
+      }
+    );
+  }
+
+  isCheckInWithin48Hours(checkInDateStr: string | any): boolean {
+    let year: number;
+    let month: number;
+    let day: number;
+
+    if (this.fromDate && this.fromDate.year && this.fromDate.month && this.fromDate.day) {
+      year = this.fromDate.year;
+      month = this.fromDate.month;
+      day = this.fromDate.day;
+    } else {
+      const targetDateStr = checkInDateStr || this.booking?.fromDate || this.checkinDate;
+      if (!targetDateStr) return false;
+      const ngb = this.mileSecondToNGBDate(targetDateStr);
+      if (!ngb || isNaN(ngb.year) || isNaN(ngb.month) || isNaN(ngb.day)) return false;
+      year = ngb.year;
+      month = ngb.month;
+      day = ngb.day;
+    }
+
+    const checkInDate = new Date(year, month - 1, day);
+    checkInDate.setHours(0, 0, 0, 0);
+    
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    const diffTime = checkInDate.getTime() - today.getTime();
+    const diffHours = diffTime / (1000 * 60 * 60);
+    const result = diffHours < 48;
+
+    const currentKey = `${year}-${month}-${day}`;
+    if ((window as any).listingLastCheckInLogged !== currentKey) {
+      (window as any).listingLastCheckInLogged = currentKey;
+      // console.log('[Listing 48h Debug]:', {
+      //   selectedDate: currentKey,
+      //   checkInDateObj: checkInDate.toString(),
+      //   todayObj: today.toString(),
+      //   diffHours: diffHours,
+      //   isWithin48h: result,
+      //   payNowConfigured: this.value,
+      //   hasGateway: this.businessUser?.paymentGateway != null
+      // });
+    }
+
+    return result;
+  }
+
+  showPayNow(): boolean {
+    const propertyData: any = this.token.getProperty() || this.businessUser || {};
+    const accommodationData = propertyData.businessServiceDtoList?.filter(
+      (entry: any) => entry.name === 'Accommodation'
+    );
+    const cmIntegration = accommodationData?.some((a: any) => a.cmIntegration);
+    if (cmIntegration) return true;
+
+    // Strict enquiry check: if any room is enquiry-only, Pay Now is disabled
+    const hasEnquiryRoom = this.selectedPlansSummary?.some(plan => plan.isEnquire === true);
+    if (hasEnquiryRoom) return false;
+
+    const hasPayNow = this.value === true && this.businessUser?.paymentGateway != null;
+    const hasPayLater = accommodationData?.some((a: any) => a.payLater);
+
+    if (hasPayNow && !hasPayLater) {
+      return true;
+    }
+
+    if (hasPayLater) {
+      const isWithin48h = this.isCheckInWithin48Hours(this.checkinDate);
+      if (isWithin48h) {
+        return false;
+      } else {
+        return true; // Always Pay Now if > 48h and Pay Later is ON
+      }
+    }
+
+    return false;
+  }
+
+  isEnquiryOnly(): boolean {
+    return !this.value;
+  }
+
+  isPayLaterProperty(): boolean {
+    const propertyData: any = this.token.getProperty() || this.businessUser || {};
+    const accommodationData = propertyData.businessServiceDtoList?.filter(
+      (entry: any) => entry.name === 'Accommodation'
+    );
+    const accommodationService = accommodationData?.[0];
+    return accommodationService ? (accommodationService.payLater === true) : false;
+  }
+
+  shouldShowPromotions(): boolean {
+    return this.showPayNow();
+  }
+
+  openSpinWheel(product: any, couponSection: HTMLElement) {
+    if (!this.shouldShowPromotions()) {
+      return;
+    }
+    this.showBookingSummary = false;
+
+    // Reset guest coupon fields for spin wheel inline flow
+    this.currentOfferIdForCoupon = product?.id;
+    this.guestCouponName = '';
+    this.guestCouponPhone = '';
+    this.guestCouponPhoneNo = '';
+    this.generatedGuestCouponCode = '';
+    this.guestCouponError = '';
+    this.guestCouponSuccess = '';
+    this.guestCouponLoading = false;
+    this.guestCouponGenerated = false;
+
+    // Resolve country fallback sequence
+    let countryToMatch = '';
+    try {
+      const urlCountry = this.acRoute.snapshot.queryParams['country'] ||
+                         this.acRoute.snapshot.queryParams['user_country'] ||
+                         this.acRoute.snapshot.queryParams['userCountry'] ||
+                         this.acRoute.snapshot.queryParams['user_country_code'] ||
+                         this.acRoute.snapshot.queryParams['userCountryCode'];
+                         
+      if (urlCountry) {
+        countryToMatch = urlCountry;
+      }
+      
+      if (countryToMatch) {
+        const qLower = countryToMatch.toLowerCase().trim();
+        
+        // 1. Exact ISO Code check (e.g. 'us', 'in', 'jp', 'nz', 'gb'), exact name, or currency
+        let matched = this.countriesForCoupon.find(c => 
+          (c.isoCode && c.isoCode.toLowerCase() === qLower) || 
+          c.name.toLowerCase() === qLower ||
+          (c.currency && c.currency.toLowerCase() === qLower)
+        );
+
+        // 2. Fallback to substring matching only if query length > 2 (prevents short 'us' matching 'australia')
+        if (!matched && qLower.length > 2) {
+          matched = this.countriesForCoupon.find(c => 
+            c.name.toLowerCase().includes(qLower) || 
+            qLower.includes(c.name.toLowerCase())
+          );
+        }
+
+        // 3. Fallbacks for standard 2-letter codes
+        if (!matched) {
+          if (qLower === 'nz') matched = this.countriesForCoupon.find(c => c.name === 'New Zealand');
+          else if (qLower === 'in') matched = this.countriesForCoupon.find(c => c.name === 'India');
+          else if (qLower === 'uk' || qLower === 'gb') matched = this.countriesForCoupon.find(c => c.name === 'United Kingdom');
+          else if (qLower === 'us') matched = this.countriesForCoupon.find(c => c.name === 'United States');
+          else if (qLower === 'ca') matched = this.countriesForCoupon.find(c => c.name === 'Canada');
+          else if (qLower === 'au') matched = this.countriesForCoupon.find(c => c.name === 'Australia');
+          else if (qLower === 'jp') matched = this.countriesForCoupon.find(c => c.name === 'Japan');
+          else if (qLower === 'de') matched = this.countriesForCoupon.find(c => c.name === 'Germany');
+          else if (qLower === 'fr') matched = this.countriesForCoupon.find(c => c.name === 'France');
+        }
+
+        if (matched) {
+          this.selectedCountryForCoupon = matched;
+        } else {
+          this.selectedCountryForCoupon = this.countriesForCoupon[0];
+        }
+      } else {
+        this.selectedCountryForCoupon = this.countriesForCoupon[0];
+      }
+    } catch (e) {
+      console.error('Error in country resolution fallback sequence: ', e);
+      this.selectedCountryForCoupon = this.countriesForCoupon[0];
+    }
+
+    this.countrySearchQuery = '';
+    this.showCountryDropdown = false;
+
+    const validOfferList = this.checkValidCouponOrNot(this.showAllTheOfferList?.length ? this.showAllTheOfferList : this.offersList) || [];
+    const offersWithCode = validOfferList.filter((offer: any) => offer?.couponCode && Number(offer?.discountPercentage) > 0);
+
+    if (!offersWithCode.length) {
+      return;
+    }
+
+    const selectedCode = product?.couponCode?.trim()?.toUpperCase();
+    const primaryOffer = offersWithCode.find(
+      (offer: any) => offer?.couponCode?.trim()?.toUpperCase() === selectedCode
+    ) || offersWithCode[0];
+
+    const uniqueOffers: any[] = [];
+    const seen = new Set<string>();
+
+    [primaryOffer, ...offersWithCode].forEach((offer: any) => {
+      const key = offer?.couponCode?.trim()?.toUpperCase();
+      if (key && !seen.has(key)) {
+        seen.add(key);
+        uniqueOffers.push(offer);
+      }
+    });
+
+    const colors = ['#f59e0b', '#ef4444', '#3b82f6', '#10b981', '#8b5cf6', '#ec4899', '#eab308'];
+    const selectedOffers = uniqueOffers.slice(0, 7);
+    this.spinWheelSegments = selectedOffers.map((offer: any, index: number) => ({
+      type: 'offer',
+      offer,
+      label: `${offer.discountPercentage}%`,
+      color: colors[index % colors.length],
+    }));
+
+    this.spinWheelSegments.push({
+      type: 'retry',
+      label: 'Try Again',
+      color: '#6b7280',
+    });
+
+    this.spinWheelCouponSection = couponSection;
+    this.spinWheelResult = null;
+    this.spinWheelOpen = true;
+  }
+
+  submitSpinWheelPromotion() {
+    if (!this.guestCouponName || !this.guestCouponName.trim()) {
+      this.guestCouponError = 'Guest Name is required';
+      return;
+    }
+    if (!this.guestCouponPhoneNo || !this.guestCouponPhoneNo.trim()) {
+      this.guestCouponError = 'WhatsApp Number is required';
+      return;
+    }
+
+    // Dynamic country validation
+    const num = this.guestCouponPhoneNo.trim().replace(/\D/g, '');
+    const country = this.selectedCountryForCoupon;
+    let isValid = false;
+    let expectedFormat = '';
+
+    if (country.length) {
+      isValid = num.length === country.length;
+      expectedFormat = `${country.length} digits`;
+    } else if (country.minLength && country.maxLength) {
+      isValid = num.length >= country.minLength && num.length <= country.maxLength;
+      expectedFormat = `${country.minLength}-${country.maxLength} digits`;
+    } else {
+      isValid = num.length >= 7 && num.length <= 15;
+      expectedFormat = '7-15 digits';
+    }
+
+    if (!isValid) {
+      this.guestCouponError = `Invalid phone number for ${country.name}. Must be exactly ${expectedFormat}.`;
+      return;
+    }
+
+    this.guestCouponLoading = true;
+    this.guestCouponError = '';
+    this.guestCouponSuccess = '';
+
+    const finalWhatsAppNumber = country.code + num;
+    this.guestCouponPhone = finalWhatsAppNumber;
+
+    const wonOffer = this.spinWheelResult?.offer;
+    const offerId = wonOffer?.id || this.currentOfferIdForCoupon;
+
+    const payload = {
+      businessOfferId: offerId,
+      guestName: this.guestCouponName.trim(),
+      whatsappNumber: finalWhatsAppNumber
+    };
+
+    const url = `${API_URL_PROMOTION}/api/guest-promotion/request`;
+    this.http.post<any>(url, payload).subscribe(
+      (response: any) => {
+        this.guestCouponLoading = false;
+        if (response && response.generatedCoupon) {
+          this.generatedGuestCouponCode = response.generatedCoupon;
+          this.guestCouponSuccess = `Coupon ${response.generatedCoupon} generated successfully! Sent to WhatsApp.`;
+          this.guestCouponGenerated = true;
+
+          const guestCouponObject = {
+            ...wonOffer,
+            couponCode: response.generatedCoupon,
+            guestName: this.guestCouponName.trim(),
+            whatsappNumber: finalWhatsAppNumber
+          };
+
+          this.selectedPromotion = true;
+          this.selectedPromotionCouponData = guestCouponObject;
+          this.couponApplied = true;
+          this.couponSuccessApplied = true;
+          this.showSuccessContent = true;
+
+          sessionStorage.setItem('selectedPromoData', JSON.stringify(guestCouponObject));
+          sessionStorage.setItem('selectPromo', 'true');
+          localStorage.setItem('selectedPromoData', JSON.stringify(guestCouponObject));
+          localStorage.setItem('selectPromo', 'true');
+
+          this.enteredCoupon = response.generatedCoupon;
+          this.validCouponCode = response.generatedCoupon;
+          this.specialDiscountData = guestCouponObject;
+          this.specialDiscountPercentage = guestCouponObject.discountPercentage;
+          this.promoSelected = true;
+        } else {
+          this.guestCouponError = 'Failed to generate coupon. Please try again.';
+        }
+      },
+      (error) => {
+        this.guestCouponLoading = false;
+        console.error('Error generating guest coupon:', error);
+        if (error && error.error && typeof error.error === 'string') {
+          this.guestCouponError = error.error;
+        } else if (error && error.error && typeof error.error.message === 'string') {
+          this.guestCouponError = error.error.message;
+        } else {
+          this.guestCouponError = 'An error occurred while generating your coupon. Please try again.';
+        }
+      }
+    );
+  }
+
+  claimGuestPromotion() {
+    this.showBookingSummary = true;
+    this.spinWheelOpen = false;
+    this.spinWheelResult = null;
+    this.guestCouponGenerated = false;
+
+    setTimeout(() => {
+      const offerSection = document.getElementById('accmdOne');
+      if (offerSection) {
+        offerSection.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start'
+        });
+      }
+    }, 300);
+  }
+
+  closeSpinWheel() {
+    if (this.spinWheelSpinning) {
+      return;
+    }
+    this.spinWheelOpen = false;
+    this.spinWheelResult = null;
+  }
+
+  getWheelSegmentRotate(index: number): string {
+    if (!this.spinWheelSegments?.length) {
+      return 'rotate(0deg)';
+    }
+    const angle = (360 / this.spinWheelSegments.length) * index;
+    return `rotate(${angle}deg)`;
+  }
+
+  startSpinWheel() {
+    if (this.spinWheelSpinning || !this.spinWheelSegments?.length) {
+      return;
+    }
+
+    this.spinWheelSpinning = true;
+    this.spinWheelResult = null;
+
+    const winningIndex = Math.floor(Math.random() * this.spinWheelSegments.length);
+    const segmentAngle = 360 / this.spinWheelSegments.length;
+    const currentNormalizedRotation = ((this.spinWheelRotation % 360) + 360) % 360;
+    const desiredRotation = (360 - winningIndex * segmentAngle) % 360;
+    const deltaRotation = (desiredRotation - currentNormalizedRotation + 360) % 360;
+    const targetRotation = this.spinWheelRotation + 5 * 360 + deltaRotation;
+
+    this.spinWheelRotation = targetRotation;
+
+    setTimeout(() => {
+      this.spinWheelSpinning = false;
+      this.spinWheelResult = this.spinWheelSegments[winningIndex];
+      if (this.spinWheelResult?.type === 'offer') {
+        this.triggerSpinConfetti();
+      }
+    }, 4000);
+  }
+
+  resetSpinResult() {
+    this.spinWheelResult = null;
+  }
+
+  claimSpinCoupon() {
+    if (!this.spinWheelResult || this.spinWheelResult.type !== 'offer') {
+      return;
+    }
+    this.showBookingSummary = true;
+
+    this.applyCoupon(this.spinWheelResult.offer, this.spinWheelCouponSection as HTMLElement);
+    this.spinWheelOpen = false;
+    this.spinWheelResult = null;
+  }
+
+  private triggerSpinConfetti() {
+    this.spinWheelConfetti = Array.from({ length: 30 }, (_, i) => i);
+    setTimeout(() => {
+      this.spinWheelConfetti = [];
+    }, 2200);
+  }
+
+  applyCoupon(product: any, couponSection: HTMLElement) {
+
+  sessionStorage.removeItem('selectedPromoData');
+  sessionStorage.removeItem('selectPromo');
+  this.enteredCoupon = product.couponCode;
+  // couponSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+  this.onYesClick();
+   this.promoSelected = sessionStorage.getItem('selectPromo') === 'true';
+}
+
+
+onYesClick() {
+  const matchingOffer = this.offersList.find(
+    (item) =>
+      item.couponCode?.trim().toUpperCase() ===
+      this.enteredCoupon?.trim().toUpperCase()
+  );
+
+  if (matchingOffer) {
+    this.privatePromotionData = matchingOffer;
+    this.privateOffersMinimumAmount = matchingOffer.minimumOrderAmount;
+
+    const bookingFrom = new Date(this.booking.fromDate).getTime();
+    const bookingTo = new Date(this.booking.toDate).getTime();
+
+    const promoStart = Number(matchingOffer.startDate);
+    const promoEnd = Number(matchingOffer.endDate);
+
+    if (promoStart <= bookingFrom && promoEnd >= bookingTo) {
+      // ✅ Booking is fully inside promo period → Apply
+      this.successMessagePrivate = 'Applied';
+      this.errorMessagePrivate = '';
+      this.selectedPromotion = true;
+      this.isValidPrivateCoupon = true;
+      this.couponApplied = true;
+      this.couponSuccessApplied = true;
+
+      sessionStorage.setItem(
+        'selectedPromoData',
+        JSON.stringify(this.privatePromotionData)
+      );
+      sessionStorage.setItem('selectPromo', 'true');
+      this.promoSelected = sessionStorage.getItem('selectPromo') === 'true';
+
+      const couponCodeValues = sessionStorage.getItem('selectedPromoData');
+      if (couponCodeValues) {
+        const parsed = JSON.parse(couponCodeValues);
+        this.specialDiscountData = parsed;
+
+        if (parsed.couponCode) {
+          this.enteredCoupon = parsed.couponCode;
+          this.validCouponCode = parsed.couponCode;
+        }
+        if (parsed.discountPercentage) {
+          this.specialDiscountPercentage = parsed.discountPercentage;
+        }
+      }
+
+      // Optional: auto-scroll and close popup
+      setTimeout(() => {
+        this.isPopupOpen = false;
+        const offerSection23 = document.getElementById('accmdOne');
+        if (offerSection23) {
+          offerSection23.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start',
+          });
+        }
+      }, 1000);
+    } else {
+      this.successMessagePrivate = '';
+      this.errorMessagePrivate = 'Validity Expired';
+      setTimeout(() => {
+        this.errorMessagePrivate = '';
+      }, 3000);
+      this.isValidPrivateCoupon = false;
+      this.couponApplied = false;
+      this.couponSuccessApplied = false;
+    }
+  } else {
+  }
+}
+
+
+
+  onYesClickMobileView() {
+    this.privateOffers2 = this.offersList.filter(
+      (offer) => offer.promotionAppliedFor === 'Private'
+    );
+
+    this.privateOffers2.forEach((item1) => {
+      this.privatePromotionData = item1;
+      this.privateOffersMinimumAmount = item1.minimumOrderAmount;
+    });
+
+    if (
+      this.enteredCoupon.trim().toUpperCase() ===
+      this.validCouponCode.toUpperCase()
+    ) {
+      this.successMessagePrivate = 'Applied';
+      this.selectedPromotion = true;
+      this.isValidPrivateCoupon = true;
+      this.couponApplied = true;
+      this.couponSuccessApplied = true;
+
+      localStorage.setItem(
+        'selectedPromoData',
+        JSON.stringify(this.privatePromotionData)
+      );
+      localStorage.setItem('selectPromo', 'true');
+
+      // Optional: delay scroll and close
+      setTimeout(() => {
+        this.isPopupOpen = false;
+        const offerSection23 = document.getElementById('accmdtwo');
+        if (offerSection23) {
+          offerSection23.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start',
+          });
+        }
+      }, 1000);
+    }
+  }
+
+  validateAndCloseCard() {
+    if (
+      this.enteredCoupon &&
+      this.enteredCoupon.trim() === this.validCouponCode
+    ) {
+      this.isPopupOpen = false; // close popup
+      const card = document.getElementById('stickyPrivate');
+      if (card) {
+        card.style.display = 'none'; // hide the card
+      }
+    }
+
+    if (this.couponSuccessApplied) {
+      this.showSuccessContent = true;
+    }
+  }
+
+  resetButtonPrivate() {
+    this.enteredCoupon = '';
+    this.showSuccessContent = false;
+    this.couponSuccessApplied = false;
+  }
+
+  clearEnteredCoupon() {
+    this.enteredCoupon = ' ';
+  }
+
+  onNoClick() {
+    this.isPopupOpen = false;
+  }
+
+  closePopup() {
+    this.isPopupOpen = false;
+  }
+  onYes() {
+    this.isPopupOpen = false;
+  }
+
+  onNo() {
+    this.isPopupOpen = false;
+  }
+
+  getFilteredDataBasedOnRoomRateOrder(roomList: any[]): any[] {
+    try {
+      if (!roomList || roomList.length === 0) return [];
+      const sortedRooms = [...roomList];
+       const activeGoogleHotelCenter = sessionStorage.getItem('checkbookingengine');
+    if (activeGoogleHotelCenter === 'googlehotelcenter') {
+      return sortedRooms.sort((a, b) => {const priceA = Number(a?.roomOnlyPrice) || 0;const priceB = Number(b?.roomOnlyPrice) || 0;
+        return priceA - priceB;});
+    }
+
+      if (this.roomRateOrderEnabled) {
+        return sortedRooms.sort((a: any, b: any) => this.getPrimaryRoomRateAmount(a) - this.getPrimaryRoomRateAmount(b));
+      }
+      return sortedRooms.sort((a: any, b: any) => (Number(b?.roomOnlyPrice) || 0) - (Number(a?.roomOnlyPrice) || 0));
+    }
+    catch (error) {
+      console.error('Error in getFilteredDataBasedOnRoomRateOrder: ',error);
+      return roomList || [];
+    }
+  }
+
+  private getPrimaryRoomRateAmount(room: any): number {
+    try{
+      const amount = this.sortedRooms.sort((a: any, b: any)=> a.roomOnlyPrice - b.roomOnlyPrice);
+      const parsedAmount = Number(amount);
+      if (!Number.isNaN(parsedAmount) && parsedAmount > 0) {
+        return parsedAmount;
+      }
+      return Number(room?.roomOnlyPrice) || 0;
+    }
+    catch(error){
+      console.error('Error in getPrimaryRoomRateAmount: ', error);
+      return 0;
+    }
+  }
+
+  // ✅ Add-on Service Methods (Phase 2-3)
+  /**
+   * Toggle add-on service selection
+   * @param service - The service to toggle
+   */
+  toggleAddOnSelection(service: any) {
+    const index = this.selectedAddOns.findIndex(s => s.id === service.id);
+    if (index > -1) {
+      // Remove if already selected
+      this.selectedAddOns.splice(index, 1);
+      const nameIndex = this.selectedAddOnNames.indexOf(service.name);
+      if (nameIndex > -1) {
+        this.selectedAddOnNames.splice(nameIndex, 1);
+      }
+    } else {
+      // Add if not selected
+      this.selectedAddOns.push(service);
+      this.selectedAddOnNames.push(service.name);
+    }
+    this.syncSelectedAddOnsToCheckoutState(this.selectedAddOns);
+    this.cd.detectChanges();
+  }
+
+  /**
+   * Check if a service is already selected
+   * @param service - The service to check
+   */
+  isAddOnSelected(service: any): boolean {
+    return this.selectedAddOns.some(s => s.id === service.id);
+  }
+
+  /**
+   * Get selected add-ons for checkout
+   */
+  getSelectedAddOns(): any[] {
+    return this.selectedAddOns;
+  }
+
+  /**
+   * Get total add-ons amount (before tax)
+   */
+  getTotalAddOnsAmount(): number {
+    return this.selectedAddOns.reduce((total, addon) => {
+      return total + (Number(addon.servicePrice) || 0);
+    }, 0);
+  }
+
+  /**
+   * Clear all selected add-ons
+   */
+  clearAddOnSelections() {
+    this.selectedAddOns = [];
+    this.selectedAddOnNames = [];
+    this.syncSelectedAddOnsToCheckoutState([]);
+    this.cd.detectChanges();
+  }
+
+  private syncSelectedAddOnsToCheckoutState(selectedAddOns: any[]) {
+    const normalizedAddOns = (selectedAddOns || []).map((service) => ({
+      ...service,
+      quantity: service?.quantity ?? service?.count ?? 1,
+      count: service?.count ?? service?.quantity ?? 1,
+      afterTaxAmount:
+        service?.afterTaxAmount ?? service?.netAmount ?? service?.servicePrice ?? 0,
+      netAmount:
+        service?.netAmount ?? service?.afterTaxAmount ?? service?.servicePrice ?? 0,
+      servicePrice:
+        service?.servicePrice ?? service?.afterTaxAmount ?? service?.netAmount ?? 0,
+      sourceChannel: service?.sourceChannel ?? 'WebSite',
+    }));
+
+    this.token.saveSelectedServices(normalizedAddOns);
+    this.token.saveServiceData(normalizedAddOns);
+  }
+
+  setCheckInMode(isTwentyFourHour: boolean): void {
+    this.isTwentyFourHourCheckIn = isTwentyFourHour;
+    this.roomsAndOccupancy = false;
+    if (!isTwentyFourHour) {
+      this.selectedCheckInTime = '12:00';
+    }
+  }
+
+  checkAnyTimeCheckIn(): void {
+    this.showTwentyFourHourCheckInToggle = !!this.businessUser?.businessServiceDtoList?.some(
+      (service: any) => service?.anyTimeCheckIn === true || service?.anyTimeCheckIn === 'true'
+    );
+    if (this.showTwentyFourHourCheckInToggle) {
+      this.isTwentyFourHourCheckIn = true;
+      this.showTwentyFourHourBanner = true;
+      setTimeout(() => {
+        this.showTwentyFourHourBanner = false;
+      }, 45000);
+    } else {
+      this.isTwentyFourHourCheckIn = false;
+      this.showTwentyFourHourBanner = false;
+    }
+  }
+
+  isCheckInDateToday(): boolean {
+    if (!this.fromDate) {
+      return false;
+    }
+    const today = new Date();
+    return (
+      this.fromDate.year === today.getFullYear() &&
+      this.fromDate.month === (today.getMonth() + 1) &&
+      this.fromDate.day === today.getDate()
+    );
+  }
+
+  validateSelectedCheckInTime(): void {
+    if (this.isCheckInDateToday()) {
+      const currentHour = new Date().getHours();
+      const selectedHour = parseInt(this.selectedCheckInTime.split(':')[0], 10);
+      if (selectedHour < currentHour) {
+        this.selectedCheckInTime = `${String(currentHour).padStart(2, '0')}:00`;
+      }
+    }
+  }
+
+  setCurrencyAndLocalization() {
+    if (!this.exchangeRates) {
+      this.fallbackToLocalINR();
+      return;
+    }
+
+    // 1. If query param currency or userCurrency exists, use it
+    const queryCurrency = this.acRoute.snapshot.queryParams['currency'] || this.acRoute.snapshot.queryParams['userCurrency'];
+    if (queryCurrency) {
+      this.currency = queryCurrency.toUpperCase();
+      try {
+        sessionStorage.setItem('selected_currency', this.currency);
+      } catch (e) {
+        console.error('Error writing to sessionStorage selected_currency:', e);
+      }
+      this.generateAndSetSchema();
+      this.cd.detectChanges();
+      return;
+    }
+
+    // 2. If query param country exists, map it to currency and use it
+    const queryCountry = this.acRoute.snapshot.queryParams['country'];
+    if (queryCountry) {
+      this.token.saveCountry(queryCountry);
+      const countryCurrency = this.getCurrencyFromCountry(queryCountry);
+      if (countryCurrency) {
+        this.currency = countryCurrency;
+        try {
+          sessionStorage.setItem('selected_currency', this.currency);
+        } catch (e) {
+          console.error('Error writing to sessionStorage selected_currency:', e);
+        }
+        this.generateAndSetSchema();
+        this.cd.detectChanges();
+        return;
+      }
+    }
+
+    // 3. If CloudFront viewerCountry was injected via SSR, map it
+    if (this.viewerCountry) {
+      const countryCurrency = this.getCurrencyFromCountry(this.viewerCountry);
+      if (countryCurrency) {
+        this.currency = countryCurrency;
+        try {
+          sessionStorage.setItem('selected_currency', this.currency);
+        } catch (e) {
+          console.error('Error writing to sessionStorage selected_currency:', e);
+        }
+        this.generateAndSetSchema();
+        this.cd.detectChanges();
+        return;
+      }
+    }
+
+    // 4. Fallback to property's local currency
+    if (this.businessUser && this.businessUser.localCurrency) {
+      this.currency = this.businessUser.localCurrency.toUpperCase();
+    } else {
+      this.currency = 'INR';
+    }
+    try {
+      sessionStorage.setItem('selected_currency', this.currency);
+    } catch (e) {
+      console.error('Error writing to sessionStorage selected_currency:', e);
+    }
+    this.generateAndSetSchema();
+    this.cd.detectChanges();
+  }
+
+  getCurrencyFromCountry(country: string): string {
+    const mapping = {
+      'US': 'USD',
+      'IN': 'INR',
+      'AU': 'AUD',
+      'NZ': 'NZD',
+      'GB': 'GBP',
+      'EU': 'EUR',
+      'CA': 'CAD',
+      'BD': 'BDT'
+    };
+    return mapping[country.toUpperCase()] || null;
+  }
+
+  fallbackToLocalINR() {
+    if (this.businessUser && this.businessUser.localCurrency) {
+      this.currency = this.businessUser.localCurrency.toUpperCase();
+    } else {
+      this.currency = 'INR';
+    }
+    try {
+      sessionStorage.setItem('selected_currency', this.currency);
+    } catch (e) {
+      console.error('Error writing to sessionStorage selected_currency:', e);
+    }
+    this.generateAndSetSchema();
+    this.cd.detectChanges();
+  }
+}

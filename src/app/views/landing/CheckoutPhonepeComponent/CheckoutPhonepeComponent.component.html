@@ -1,0 +1,20 @@
+<div class="main-wrapper">
+
+  <!-- <title-bar title="Booking Checkout" subtitle="Fill details for booking"></title-bar> -->
+
+  <div class="content">
+      <div class="container">
+          <div class="row">
+              <div class="col-12" *ngIf="payment.failureMessage !== null">
+                  <h2>ERROR: {{payment.failureCode}}</h2>
+                  <p>{{payment.failureMessage}}</p>
+                  <!-- <h5 style="color: red;">Oops!! Seems your payment is not successful but we have confirmed your booking. Please arrange the payment with Property to keep your booking alive.</h5> -->
+                  <h5 style="color: red;">Oops!! Seems your payment is not successful. Please try again later.</h5>
+
+                  <button class="btn btn-primary" type="button" (click)="onGoHome()">Go Back</button>
+              </div>
+
+          </div>
+      </div>
+  </div>
+</div>

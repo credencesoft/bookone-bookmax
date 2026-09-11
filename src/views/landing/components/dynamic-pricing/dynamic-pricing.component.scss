@@ -1,0 +1,40 @@
+.switch.default-switch label input[type=checkbox]:checked + .lever {
+    background-color: #4DCCBF;
+}
+.switch.default-switch label input[type=checkbox]:checked + .lever:after {
+    background-color: #2BBBAD;
+}.switch.round label .lever {
+    width: 54px;
+    height: 34px;
+    border-radius: 10em;
+}
+.switch.round label .lever:after {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    left: 4px;
+    top: 4px;
+}
+.solution-container.active {
+    background: linear-gradient(-29deg, #f9a35a, #309dba) !important;
+}
+.solution-container.active  h2 {
+    color: #fff !important;
+}
+.solution-container.active i {
+    -webkit-text-fill-color: #fff;
+}
+.my-custom-class {
+    background: aliceblue;
+    font-size: 125%;
+  }
+  .my-custom-class .arrow::after {
+    border-top-color: aliceblue;
+  }
+  input, input:before, input:after {
+    -webkit-user-select: initial;
+    -khtml-user-select: initial;
+    -moz-user-select: initial;
+    -ms-user-select: initial;
+    user-select: initial;
+   } 

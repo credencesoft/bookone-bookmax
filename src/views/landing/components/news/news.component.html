@@ -1,0 +1,80 @@
+<section id="news-wrap" class="news-wrap p-t-b-80">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12 section-header mb-5">
+                <h2 class="font-weight-bold">Recent News From Blog</h2>
+                <p>Hotel Industry Latest Blogs & Tips - bookone</p>
+
+            </div>
+        </div>
+
+        <div class="row" *ngIf="posts">
+            <div class="col-md-4 col-sm-6 mb-lg-0 mb-md-0 mb-4 " *ngFor='let post of posts'>
+                <div class="card bg-dark text-white o-hidden">
+                    <img *ngIf="!post._embedded['wp:featuredmedia']" class="card-img" height="400px" src="" alt="Card image">
+                    <img *ngIf="post._embedded['wp:featuredmedia']" class="card-img"  height="400px" [src]= "post._embedded['wp:featuredmedia'][0].source_url" alt="Card image">
+                    <div class="card-img-overlay">
+                        <div class="text-center pt-4">
+                            <h3 class="font-weight-bold mb-2 text-white" [innerHTML]='post.title.rendered'></h3>
+                            <p [innerHTML]='post.excerpt.rendered'>
+                            </p>
+
+                            <a routerLink="/landing/blog/{{post.slug}}"   class="btn  btn-gradient half-button">Read More</a>
+                        </div>
+                        <div class="p-1 text-left card-footer font-weight-light">
+                            <!-- <span class="mr-2"><i class="eva eva-message-circle-outline text-white mr-1"></i>12 </span> -->
+                            <span class="mr-2"><i class="eva eva-calendar-outline text-white mr-1"></i>{{post.date | date:'short' }}</span>
+                            <span class=""><i class="eva eva-person-outline text-white mr-1"></i>{{post._embedded['author'][0].name}}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- end of col -->
+            <!-- <div class="col-md-4">
+
+
+                <div class="card my-4">
+                    <h5 class="card-header">Search</h5>
+                    <div class="card-body">
+                        <div class="input-group">
+                            <input type="text" class="form-control rounded-pill" placeholder="Search for...">
+                            <span class="input-group-btn ml-2" ngModel name="search">
+              <button class="btn  btn-gradient" type="button" (click)="getSearch()" >Search</button>
+            </span>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="card my-4">
+                    <h5 class="card-header">Categories</h5>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <ul class="list-unstyled mb-0"  >
+                                    <li *ngFor= 'let category of categories'>
+                                        <a  (click)="getCategoryFilter(category.slug)" >{{category.name}}</a>
+                                    </li>
+                                    
+                                </ul>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="card my-4">
+                    <h5 class="card-header">Welcome to our Blog</h5>
+                    <div class="card-body">
+                        
+                    </div>
+                </div>
+        
+            </div> -->
+
+
+        </div>
+
+    </div>
+</section>

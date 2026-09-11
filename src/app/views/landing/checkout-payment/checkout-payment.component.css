@@ -1,0 +1,80 @@
+.loading-spinner {
+  text-align: center;
+  font-size: 20px;
+  font-weight: bold;
+  color: #000;
+}
+
+.payment-error-message {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 1000;
+}
+
+.message-container {
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 20px;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.icon {
+  font-size: 48px;
+  color: #d9534f;
+  margin-bottom: 10px;
+}
+
+.message-content h2 {
+  font-size: 24px;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.message-content p {
+  font-size: 16px;
+  color: #666;
+  margin-bottom: 20px;
+}
+
+.retry-button {
+  background: #d9534f;
+  color: #ffffff;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease-in-out 0.1s;
+}
+
+.retry-button:hover {
+  background: #c9302c;
+}
+
+@media (max-width: 480px) {
+  .message-container {
+    padding: 15px;
+  }
+
+  .message-content h2 {
+    font-size: 20px;
+  }
+
+  .message-content p {
+    font-size: 14px;
+  }
+
+  .retry-button {
+    font-size: 14px;
+  }
+}

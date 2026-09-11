@@ -1,0 +1,28 @@
+.p-toast .p-toast-message.p-toast-message-success {
+  height: 70px;
+}
+
+.p-toast .p-toast-message.p-toast-message-info {
+  height: 70px;
+}
+
+.p-toast .p-toast-message .p-toast-message-content .p-toast-message-text {
+  position: relative;
+  bottom: 10px;
+}
+
+p-toast p-toastitem {
+  position: absolute;
+  width: 350px;
+  right: 0px;
+}
+
+p-toast .p-toast
+  .p-toast-message
+  .p-toast-message-content
+  .p-icon:not(.p-toast-icon-close-icon) {
+  position: relative;
+  width: 20px;
+  height: 20px;
+  bottom: 18px;
+}

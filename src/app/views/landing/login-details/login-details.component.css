@@ -1,0 +1,372 @@
+table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+  
+  th, td {
+    border: 1px solid black;
+    padding: 5px;
+  }
+  
+  th {
+    background-color: #ddd;
+  }
+  .search-alignment{
+  margin-top: -14px;
+    margin-left: -20px;
+  }
+  
+  .search-button-data{
+    margin-left:-10px;
+  }
+
+  nav > .nav.nav-tabs{
+
+    border: none;
+      color:#fff;
+      background:#bbbbbb;
+      border-radius:0;
+  
+  }
+  nav > div a.nav-item.nav-link,
+  nav > div a.nav-item.nav-link.active
+  {
+    border: none;
+      padding: 18px 25px;
+      color:#000000;
+      background:#bbbbbb;
+      border-radius:0;
+  }
+  
+  nav > div a.nav-item.nav-link.active:after
+   {
+    content: "";
+    position: relative;
+    bottom: -60px;
+    left: -10%;
+    border: 15px solid transparent;
+    border-top-color: #221950 ;
+  }
+  .tab-content{
+    background: #fdfdfd;
+      line-height: 25px;
+      border: 1px solid #ddd;
+      border-top:5px solid #221950;
+      border-bottom:5px solid #221950;
+      padding:30px 25px;
+  }
+  
+  nav > div a.nav-item.nav-link:hover,
+  nav > div a.nav-item.nav-link:focus
+  {
+    border: none;
+      background: #221950;
+      color:#fff;
+      border-radius:0;
+      transition:background 0.20s linear;
+  }
+  .reservation-list-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+  }
+
+
+  /* label.radio-container {
+    display: block;
+    position: relative;
+    padding-left: 36px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 13px;
+  } */
+
+
+
+  label.radio-container::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 30px;
+    height: 30px;
+    border: 2px solid #271a55;
+    border-radius: 50%;
+  }
+
+
+
+  /* label.radio-container::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 30px;
+    height: 30px;
+    border: 2px solid #271a55;
+    border-radius: 50%;
+  } */
+
+
+  input[type="radio"]:checked + label.radio-container::before {
+    background-color: #271a55; 
+  }
+
+
+  label.radio-container {
+    display: block;
+    position: relative;
+    padding-left: 46px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 19px;
+  }
+
+
+  .gridradio {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    grid-gap: 5px;
+  }
+
+
+
+  @media (min-width: 769px) {
+    .radiosection {
+      display: none;
+    }
+  
+    input[type="radio"] {
+      display: none; /* Hide the default radio button */
+    }
+  
+    .gridradio {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      grid-gap: 5px;
+    }
+  
+    .gridradio2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      grid-gap: 5px;
+      position: relative;
+      padding-left: 46px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 19px;
+    }
+  
+    .gridradio-a {
+      margin-bottom: 10px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 19px;
+      text-align: center;
+    }
+  
+  
+  }
+
+
+
+  @media (max-width: 768px) {
+
+
+    .tabs button {
+      background-color: #f2f2f2;
+  border: none;
+      cursor: pointer;
+      text-align: center;
+       width: 165px;
+      padding: 20px;
+    }
+  
+    .radiosection2 {
+      display: none;
+    }
+  
+    
+  
+  
+  
+  .gridradio {
+   
+    display: flex;
+    flex-wrap: wrap;
+  
+    align-items: center;
+  }
+  
+  .gridradio2 {
+  
+    display: flex;
+    justify-content: center;
+    grid-gap: 1px;
+    font-size: 13px;
+  }
+  
+  
+  .gridradio, .gridradio2 {
+  
+    margin-right: 10px;
+  }
+  
+  
+  .featured-card {
+    margin-left: 0;
+    margin-right: 0;
+  }
+  
+  input[type="radio"] {
+    display: none; 
+  }
+  
+  label.radio-container {
+    display: block;
+    position: relative;
+    padding-left: 36px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 13px;
+  }
+  
+  label.radio-container::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 22px;
+    height: 22px;
+    border: 2px solid #271a55;
+    border-radius: 50%;
+  }
+  
+  }
+
+
+
+  
+
+
+ 
+
+
+  .gridradio2 {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    grid-gap: 5px;
+    position: relative;
+    padding-left: 46px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 19px;
+  }
+
+
+
+
+  
+  .reservation-list-header {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .reservation-list-header > div {
+    font-weight: bold;
+  }
+  
+  .reservation-list-body {
+    padding: 10px;
+  }
+  
+  .responsive-box {
+    background-color: #fff; /* Set your desired background color */
+    padding: 20px; /* Adjust padding as needed */
+    margin: 10px; /* Adjust margin as needed */
+    box-shadow: 0 0 10px 2px rgba(0, 0, 0, 0.2); /* Shadow properties */
+    /* width: 80%; Initial width for smaller screens */
+    /* max-width: 500px; Maximum width for larger screens */
+    display: flex; /* Center content horizontally (optional) */
+    align-items: center; /* Center content vertically (optional) */
+    justify-content: center; /* Center content horizontally (optional) */
+  }
+  
+  /* Media Queries for Responsive Behavior */
+  
+  @media (min-width: 768px) {
+      /* width: 60%;  */
+  }
+  
+  @media (min-width: 992px) {
+      /* width: 40%; Adjust width for large screens */
+  }
+  
+  .col-md-12-counttable{
+    padding: 50px;
+  }
+
+
+  @media only screen and (max-width: 768px) {
+  .noofbook{
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+.allignment{
+  display:flex;
+  justify-content:center;
+  margin-top:20px;
+  font-size: x-small;
+  margin-right: 38px;
+}
+
+.allignment span {
+  margin-right: 10px;
+  margin-top: 10px;
+}
+
+.allignment button {
+  padding: 8px 16px;
+  background-color: #221950;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.allignment button:hover {
+  background-color: #221950;
+}
+
+.allignment button[disabled] {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+

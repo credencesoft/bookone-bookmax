@@ -1,8 +1,33 @@
-// The file contents for the current environment will overwrite these during build.
-// The build system defaults to the dev environment which uses `environment.ts`, but if you do
-// `ng build --env=prod` then `environment.prod.ts` will be used instead.
-// The list of which env maps to which file can be found in `.angular-cli.json`.
-
 export const environment = {
-  production: false
+    appIdCustomer: 'BookOneCustomerApp',
+  sessionAppId: 'BOOKONE_MOBILE_APP_CUSTOMER',
+  production: true,
+  appId: 'TheHotelMate',
+  spaceId:'99i7n5tw4eq0',
+  accessToken:'q0iVR3edz6GByDVpTdYxTwOsL2yhXA2aApPWKw_7mYk',
+  nzAPIUrl: 'https://api.thehotelmate.co',
+  inAPIUrl: 'https://api.thehotelmate.co',
+  hdfcAPIUrl:'https://payment.bookone.io',
+  apiScheduler: 'https://scheduler.api.bookone.io',
+  apiUrlAddress: 'https://api.bookonelocal.in/api-address',
+  apiUrlPromotion: 'https://api.bookonelocal.in/promotion-api',
+  apiLms: 'https://api.bookone.io/api-lms',
+  channelIntegration:'https://api.bookonelocal.in/channel-integration',
+  apiUrlBookone: 'https://api.bookonelocal.in/api-bookone',
+  parentOrganisationId: 1,
+  dashboardUrl: 'https://app.bookonelocal.in',
+  apiUrl: "https://api.thehotelmate.co",
+  apiUrlOne: "https://api.bookonelocal.in/api-bookone",
+  recommendedUrl: "https://contentai.thehotelmate.co",
+  razorPay: 'https://razorpay.bookonepms.com',
+  phonepeUrl: 'https://phonepe.bookonepms.com',
+  appUrl: 'https://thehotelmate.co',
+  androidAppUrl: 'https://play.google.com/store/apps/details?id=nz.co.bookonelocal.customer',
+  iosAppUrl: 'https://apps.apple.com/us/app/bookone-local/id1528910778',
+  payuUrl: 'https://payu.bookonepms.com',
+  country: 'in',
+  googleKey: '',
+  callbackUrl: 'https://bookone.io/payment-confirmation',
+  failureCode:'https://bookone.io/payment-failure',
+  callbackUrlPayment:'https://bookone.io/confirm-payment'
 };

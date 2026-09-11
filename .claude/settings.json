@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx ng:*)",
+      "Read(//private/tmp/**)"
+    ],
+    "additionalDirectories": [
+      "/Users/samayamuduli/dev/csoft/angular-bookone-lead-management/src/app/views/business-lead"
+    ]
+  }
+}

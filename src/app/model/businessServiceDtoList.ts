@@ -1,0 +1,67 @@
+// import { ClosedDays } from './closedDays';
+// import { OpenDays } from './openDays';
+// import { BusinessServiceTypes } from './businessServiceTypes';
+
+import { BusinessServiceTypes } from './businessServiceTypes';
+// import { ClosedDays } from "./closedDays";
+// import { OpenDays } from "./openDays";
+
+export interface AdvanceDiscountSlab {
+  advancePercentage: number;
+  discountPercentage: number;
+}
+
+export class BusinessServiceDtoList {
+  id: number;
+  // closedDays: ClosedDays[];
+  // openDays: OpenDays[];
+  name: string;
+
+  businessLocationName: string;
+  customerLocationName: string;
+  canChangeBusinessAddress: boolean;
+  provideBusinessAndCustomerAddress: boolean;
+  advanceAmountPercentage:number;
+  advanceDiscountSlabs?: AdvanceDiscountSlab[];
+  businessTermLocation: string;
+  businessTermResource: string;
+  businessTermsResource?: string;
+
+  businessProductName: string;
+  businessServiceName: string;
+  checkInTime: string;
+  checkOutTime: string;
+  maxLeadTime: number;
+  minLeadTime: number;
+  stdPrepTime: number;
+
+  description: string;
+  propertyId: number;
+  businessServiceTypes: BusinessServiceTypes[];
+  policy: string;
+  serviceCloseList: [
+    {
+      day: string;
+    }
+  ];
+  serviceOpenList: [
+    {
+      breakFromTime: string;
+      breakToTime: string;
+      closingTime: string;
+      day: string;
+      openingTime: string;
+    }
+  ];
+  cmIntegration: any;
+  bookoneActive: any;
+  roomRateOrder: boolean;
+  bookingButtonLabelText: string;
+  anyTimeCheckIn?: boolean;
+  childMinAge?: number;
+  childMaxAge?: number;
+  websiteinstantBooking?: boolean;
+  instantBooking?: boolean;
+  payLater?: boolean;
+  constructor() {}
+}

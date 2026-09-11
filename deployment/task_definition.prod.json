@@ -1,0 +1,18 @@
+{
+  "containerDefinitions": [
+    {
+      "name": "main_container",
+      "image": "153432822124.dkr.ecr.ap-south-1.amazonaws.com/b1pms-webui-prod",
+      "portMappings": [
+        { "containerPort": 4200, "hostPort": 4200, "protocol": "tcp" }
+      ],
+      "essential": true
+    }
+  ],
+  "family": "b1pms-webui-prod",
+  "cpu": "2048",
+  "memory": "5120",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["EC2", "FARGATE"],
+  "executionRoleArn": "arn:aws:iam::153432822124:role/ecsTaskExecutionRole"
+}

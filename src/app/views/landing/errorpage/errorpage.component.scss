@@ -1,0 +1,93 @@
+// @import url("https://fonts.googleapis.com/css?family=Montserrat:400,400i,700");
+
+$bg: #313942;
+$ghost: #221950;
+$heading: #221950;
+
+*,
+*:after,
+*:before {
+  box-sizing: border-box;
+}
+
+// body {
+//   background-color: $bg;
+//   font-family: 'Montserrat', sans-serif;
+// }
+
+.error-custom {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  height: 627px;
+  justify-content: center;
+  text-align: center;
+}
+
+.error-custom h1 {
+  color: $heading;
+  font-size: 12.5rem;
+  letter-spacing: .10em;
+//   margin: .025em 0;
+  text-shadow: .05em .05em 0 rgba(0,0,0,.25);
+  white-space: nowrap;
+
+  @media(max-width: 30rem) {
+    font-size: 8.5rem;
+  }
+
+  & > span {
+    animation: spooky 2s alternate infinite linear;
+    color: $ghost;
+    display: inline-block;
+  }
+}
+
+.error-custom h2 {
+  color: $heading;
+  margin-bottom: .40em;
+}
+
+.error-custom p {
+  color: black;
+  margin-top: 0;
+  margin-bottom: 30px;
+}
+
+@keyframes spooky {
+  from {
+    transform: translateY(.15em) scaleY(.95);
+  }
+
+  to {
+    transform: translateY(-.15em);
+  }
+}
+
+@media  (max-width: 950px) {
+
+    .error-custom {
+
+        height: 927px;
+
+      }
+
+}
+
+@media only screen and (max-width: 600px) {
+    .error-custom p {
+        color: black;
+        margin-top: 0;
+        margin-bottom: 40px;
+        margin-left: 3px;
+        margin-right: 3px;
+    }
+
+    .error-custom h2 {
+        color: #221950;
+        margin-bottom: 0.4em;
+        margin-left: 3px;
+        margin-right: 3px;
+        font-size: 26px;
+    }
+  }

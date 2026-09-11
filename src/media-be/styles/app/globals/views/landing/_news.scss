@@ -1,0 +1,17 @@
+.news-wrap {
+    .card {
+        .card-img-overlay {
+            &:after {
+                background: linear-gradient(-29deg, #f9a35aba 0, #309dbaba 100%) !important;
+                background: -moz-linear-gradient(-29deg, #f9a35aba 0, #309dbaba 100%) !important;
+                background: -ms-linear-gradient(-29deg, #f9a35aba 0, #309dbaba 100%) !important;
+                background: -o-linear-gradient(-29deg, #f9a35aba 0, #309dbaba 100%) !important;
+                background: linear-gradient(-29deg, #f9a35aba 0, #309dbaba 100%) !important;
+            }
+        }
+        .eva {
+            color: #fff;
+            -webkit-text-fill-color: #fff;
+        }
+    }
+}

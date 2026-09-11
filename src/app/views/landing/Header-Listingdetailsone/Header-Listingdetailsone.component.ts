@@ -1,0 +1,349 @@
+import { Component, EventEmitter, Input, OnInit, Output, OnChanges, SimpleChanges } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Location } from '@angular/common';
+import { TokenStorage } from 'src/token.storage';
+import { BusinessUser } from 'src/app/model/user';
+import { HotelBookingService } from 'src/services/hotel-booking.service';
+
+@Component({
+  selector: 'app-Header-Listingdetailsone',
+  templateUrl: './Header-Listingdetailsone.component.html',
+  styleUrls: ['./Header-Listingdetailsone.component.css']
+})
+export class HeaderListingdetailsoneComponent implements OnInit, OnChanges {
+  // @Output() bookNowClicked = new EventEmitter<void>();
+  @Output() onBookNowClick = new EventEmitter<void>();
+  showListItems: boolean = false; // For your existing toggle functionality
+  isdone : boolean = false;
+  @Input()
+  businessUser:any;
+  socialmedialist:any;
+  showListingDetails: boolean = false;
+  website: string;
+  logoUrl: string;
+  dynamicText: string;
+  dynamicCity: string;
+  dynamicStreetName: string;
+  dynamicLocality: string;
+  propertyname: string;
+    dynamicCountryName: string;
+  dynamicStreetNumber: string;
+  propertydetails:BusinessUser;
+  PropertyUrl: string;
+  showheader: boolean =false;
+  websiteUrlBookingEngine: boolean =  false;
+  urlLocation: boolean;
+  dynamicPropertyId: number;
+  dynamicSource: any;
+  externalSite: string;
+  hasWhatsappEnquirySubscription: boolean = false;
+  subscriptionFetched: boolean = false;
+
+  // gotopropertydetail() {
+  //   let PropertyUrl = this.token.getPropertyUrl();
+  //   //console.log(PropertyUrl);
+
+  //   if (PropertyUrl.startsWith('http://') || PropertyUrl.startsWith('https://')) {
+  //     console.error("Property URL should be a relative path, not a full URL");
+  //   } else {
+  //     this.router.navigate([PropertyUrl]);
+  //   }
+  // }
+
+  goBack(): void {
+    this.location.back();
+  }
+
+  closeNavbar(): void {
+    this.isdone = false; // Hides the vertical navbar
+  }
+
+  constructor(private router: Router,
+    private location: Location,
+    private token:TokenStorage,
+    private acRoute: ActivatedRoute,
+    private hotelBookingService: HotelBookingService
+  ) {
+    // this.propertydetails = this.token.getProperty();
+    // //console.log("propertydata="+ JSON.stringify(this.propertydetails))
+   this.checkBookingEngineFlag();
+  setInterval(() => {
+    this.checkBookingEngineFlag();
+        this.website = this.businessUser?.website;
+      this.businessUser?.socialMediaLinks?.forEach(element => {
+        this.socialmedialist=element
+      });
+      if (this.businessUser != null ) {
+        this.showheader = true
+      
+      if (!this.subscriptionFetched && this.businessUser.id) {
+        this.getPropertySubscription();
+      }
+    }
+  }, 1000);
+    this.PropertyUrl = this.token.getPropertyUrl();
+    //console.log("property url:" + this.PropertyUrl)
+    this.website = this.businessUser?.website;
+
+    setTimeout(() => {
+    this.website = this.businessUser?.website;
+      this.businessUser?.socialMediaLinks?.forEach(element => {
+        this.socialmedialist=element
+      });
+      if (this.businessUser != null ) {
+        this.showheader = true
+      } 
+    }, 1000);
+
+   }
+ ngAfterViewInit() {
+    this.acRoute.queryParams.subscribe((params) => {
+      if (params['bookingEngine'] !== undefined) {
+        this.urlLocation = params['bookingEngine'];
+        let websitebookingURL = 'true';
+        this.websiteUrlBookingEngine = true;
+        sessionStorage.setItem('BookingEngine', 'true');
+      }
+    });
+    this.getPropertySubscription();
+ }
+ 
+  ngOnInit() {
+    this.website = this.businessUser?.website;
+    //console.log('new link is',this.website);
+  }
+  
+  checkBookingEngineFlag(): void {
+    const bookingEngineFlag = sessionStorage.getItem('BookingEngine');
+    this.websiteUrlBookingEngine = bookingEngineFlag === 'true';
+  }
+  
+  getFormattedNumber(): string {
+    const rawNumber = this.websiteUrlBookingEngine
+      ? this.businessUser?.mobile
+      : (this.businessUser?.id === 2614 ? '7205469540' : (this.businessUser?.id === 3526 ? '8972391727' : (this.businessUser?.id === 3530 ? '9202322643 ' :(this.businessUser?.id === 3531 ? '9728128788' : '7326079861'))));
+    if (!rawNumber) return '';
+
+    // Remove non-digits
+    let digits = rawNumber.replace(/\D/g, '');
+
+    // If it's 10 digits → format like 8100 21 21 21
+    if (digits.length === 10) {
+      return digits.replace(/(\d{4})(\d{2})(\d{2})(\d{2})/, '$1 $2 $3 $4');
+    }
+
+    // Otherwise just return original
+    return rawNumber;
+  }
+
+  toggleListingDetails() {
+    this.showListingDetails = !this.showListingDetails;
+    this.isdone = true;
+    this.website = this.businessUser?.website;
+    this.businessUser?.socialMediaLinks.forEach(element => {
+      this.socialmedialist=element
+    });
+    this.propertyname = this.businessUser?.seoFriendlyName;
+    this.logoUrl=this.businessUser?.logoUrl;
+    //console.log(this.logoUrl);
+    //console.log('new link is',this.website);
+    //console.log('new link is hello world',this.socialmedialist);
+    //console.log('new link is',this.propertyname);
+  }
+  
+  openWhatsapp() {
+    const url = this.getWhatsappShareUrl();
+    window.open(url, '_blank'); // opens WhatsApp link in new tab/app
+  }
+
+  copyPageUrl(): void {
+    if (typeof window === 'undefined' || !window.location?.href) {
+      return;
+    }
+
+    const currentUrl = window.location.href;
+    if (navigator?.clipboard?.writeText) {
+      navigator.clipboard.writeText(currentUrl);
+      return;
+    }
+
+    window.prompt('Copy this page URL:', currentUrl);
+  }
+  
+  getWhatsappShareUrl(): string {
+    const baseUrl = 'https://api.whatsapp.com/send';
+    this.dynamicText = this.businessUser.name;
+    const phoneNumber = this.businessUser.mobile;
+    this.dynamicPropertyId = this.businessUser.id;
+    this.dynamicCity = this.businessUser?.address?.city;
+    this.dynamicStreetName = this.businessUser.address?.streetName;
+    this.dynamicLocality = this.businessUser.address?.locality;
+    this.dynamicStreetNumber = this.businessUser.address?.streetNumber;
+    this.dynamicCountryName = this.businessUser.address?.country;
+    this.externalSite = 'WebSite';
+    // The recipient's phone number (optional)
+    const message =
+      '*This is an Enquiry from :* BookOne Bookmax' +
+      '\nHotel Name: ' +
+      this.dynamicText +
+      ',' +
+      '\nProperty Id: ' +
+      this.dynamicPropertyId +
+      ',' +
+      '\nexternalSite: ' +
+      this.externalSite +
+      ',' +
+      '\nAddress: ' +
+      this.dynamicStreetNumber +
+      ',' +
+      this.dynamicStreetName +
+      ',' +
+      this.dynamicLocality +
+      ',' +
+      this.dynamicCity +
+      ',' +
+      this.dynamicCountryName; // The dynamic text you want to include
+
+    return (
+      baseUrl + '?phone=' + phoneNumber + '&text=' + encodeURIComponent(message)
+    );
+  }
+  
+  formatUrl(url: string): string {
+    if (!url) return '';
+    return url.startsWith('http://') || url.startsWith('https://')
+      ? url
+      : 'https://' + url;
+  }
+  
+  getWhatsappShareUrlOne(): string {
+    if (this.hasWhatsappEnquirySubscription !== true) {
+      const baseUrl = 'https://api.whatsapp.com/send';
+      const phoneNumber = '919004126958';
+      this.dynamicText = this.businessUser.name;
+      this.dynamicPropertyId = this.businessUser.id;
+      this.dynamicCity = this.businessUser?.address?.city;
+      this.dynamicStreetName = this.businessUser.address?.streetName;
+      this.dynamicLocality = this.businessUser.address?.locality;
+      this.dynamicStreetNumber = this.businessUser.address?.streetNumber;
+      this.dynamicCountryName = this.businessUser.address?.country;
+      this.externalSite = 'WebSite';
+      // The recipient's phone number (optional)
+      const message =
+        '*This is an Enquiry from :* BookOne Bookmax' +
+        '\nHotel Name: ' +
+        this.dynamicText +
+        ',' +
+        '\nProperty Id: ' +
+        this.dynamicPropertyId +
+        ',' +
+        '\nexternalSite: ' +
+        this.externalSite +
+        ',' +
+        '\nAddress: ' +
+        this.dynamicStreetNumber +
+        ',' +
+        this.dynamicStreetName +
+        ',' +
+        this.dynamicLocality +
+        ',' +
+        this.dynamicCity +
+        ',' +
+        this.dynamicCountryName; // The dynamic text you want to include
+
+      return (
+        baseUrl + '?phone=' + phoneNumber + '&text=' + encodeURIComponent(message)
+      );
+    }
+    else {
+      const baseUrl = 'https://api.whatsapp.com/send';
+      this.dynamicText = this.businessUser.name;
+      const phoneNumber = this.businessUser.mobile;
+      this.dynamicPropertyId = this.businessUser.id;
+      this.dynamicCity = this.businessUser?.address?.city;
+      this.dynamicStreetName = this.businessUser.address?.streetName;
+      this.dynamicLocality = this.businessUser.address?.locality;
+      this.dynamicStreetNumber = this.businessUser.address?.streetNumber;
+      this.dynamicCountryName = this.businessUser.address?.country;
+      this.externalSite = 'WebSite';
+      // The recipient's phone number (optional)
+      const message =
+        '*This is an Enquiry from :* BookOne Bookmax' +
+        '\nHotel Name: ' +
+        this.dynamicText +
+        ',' +
+        '\nProperty Id: ' +
+        this.dynamicPropertyId +
+        ',' +
+        '\nexternalSite: ' +
+        this.externalSite +
+        ',' +
+        '\nAddress: ' +
+        this.dynamicStreetNumber +
+        ',' +
+        this.dynamicStreetName +
+        ',' +
+        this.dynamicLocality +
+        ',' +
+        this.dynamicCity +
+        ',' +
+        this.dynamicCountryName; // The dynamic text you want to include
+
+      return (
+        baseUrl + '?phone=' + phoneNumber + '&text=' + encodeURIComponent(message)
+      );
+    }
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['businessUser'] && changes['businessUser'].currentValue?.id) {
+      if (!this.subscriptionFetched) {
+        this.getPropertySubscription();
+      }
+    }
+  }
+
+  getPropertySubscription() {
+    // First, check if the subscription list is already available on the businessUser object
+    if (this.businessUser?.subscriptionList && Array.isArray(this.businessUser.subscriptionList)) {
+      this.hasWhatsappEnquirySubscription = this.businessUser.subscriptionList.some(
+        (sub: any) => sub.name === 'Property WhatsApp Enquiry'
+      );
+      this.subscriptionFetched = true;
+      return;
+    }
+
+    // Fallback order: token storage first, then input businessUser ID
+    const propertyId = this.token.getProperty()?.id || this.businessUser?.id;
+    if (propertyId) {
+      this.subscriptionFetched = true; // Prevent duplicate calls
+      this.hotelBookingService.getSubscriptions(Number(propertyId)).subscribe({
+        next: (subRes: any) => {
+          // Safe check: handle direct array response or HttpResponse body response
+          const subscriptions = Array.isArray(subRes) ? subRes : (subRes?.body ?? []);
+          this.hasWhatsappEnquirySubscription = subscriptions.some(
+            (sub: any) => sub.name === 'Property WhatsApp Enquiry'
+          );
+        },
+        error: (err) => {
+          this.subscriptionFetched = false; // Allow retry on error
+          console.error('Error fetching subscriptions:', err);
+        }
+      });
+    }
+  }
+  
+  toggleListItems() {
+    this.showListItems = !this.showListItems;
+  }
+
+  scrollToAccommodation(event: MouseEvent) {
+    // Prevent the event from bubbling up
+    event.stopPropagation();
+    this.onBookNowClick.emit(); // Emit the event when the button is clicked
+  }
+  
+  navigate(){
+
+  }
+}
