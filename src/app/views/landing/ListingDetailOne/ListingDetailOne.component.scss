@@ -1926,7 +1926,7 @@ padding: 16px 12px;
 .smart-recommend-price > div {
   margin-bottom: 5px;
   color: #8aa0bd;
-  font-size: 14px;
+  font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
 }
@@ -2144,11 +2144,10 @@ padding: 16px 12px;
 
 .about-content p {
   margin: 0;
-  color: inherit;
+  color: oklch(44.6% .043 257.281) !important;
   font-family: "Plus Jakarta Sans", sans-serif !important;
-  font-size: 18px;
-  font-weight: 400;
-  line-height: 1.6;
+  font-size: 0.85rem;
+  line-height: 1.625;
 }
 
 .about-content p + p {
@@ -2904,7 +2903,9 @@ h3 .day-trip-badge {
 }
 .ameniti1 {
    font-family: "Playfair Display", sans-serif !important;
-  font-weight: 500;
+  font-weight: 700;
+  font-size: 1.25rem;
+  line-height: 1.4;
 }
 
 .carousel-control-next-icon {
@@ -3335,8 +3336,9 @@ h3 .day-trip-badge {
 }
 .roomDescription {
   text-align: justify;
-  color: #757575;
+  color: oklch(55.4% .046 257.417);
   font-size: small;
+  font-weight: 500;
 }
 .sold-out-header {
    font-family: "Plus Jakarta Sans", sans-serif !important;
@@ -4457,10 +4459,10 @@ text-align: center;
 
 
 .aboutHeading {
-  font-size: 26px;
+  font-size: 1.25rem;
   font-weight: 700;
   margin: 0 0 18px;
-  line-height: 1.25;
+  line-height: calc(1.75 / 1.25);
 }
 
 .highlights-card {
