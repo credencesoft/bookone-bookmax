@@ -4897,6 +4897,40 @@ text-align: center;
   cursor: pointer !important;
 }
 
+/* Match the booking-field treatment: date plus a secondary arrival/departure time. */
+.booking-search-shell .checkAva3.has-default-time,
+.booking-search-shell .checkAva6.has-default-time {
+  height: 114px !important;
+}
+
+.booking-search-shell .booking-default-time {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 8px;
+  color: #8ca1be;
+  font-family: "Plus Jakarta Sans", sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1;
+}
+
+.booking-search-shell .booking-default-time i {
+  color: #8ca1be;
+  font-size: 12px;
+}
+
+.booking-search-shell .checkAvaRoom {
+  min-height: 76px !important;
+  height: 76px !important;
+}
+
+.booking-search-shell .checkavaialabilyy-btn {
+  height: 60px !important;
+  min-width: 216px !important;
+  font-size: 16px !important;
+}
+
 /* Calendar icons inside fields positioning */
 .checkAva3 .content-centered,
 .checkAva6 .content-centered {

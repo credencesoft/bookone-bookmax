@@ -1276,7 +1276,7 @@
                 [class.has-twenty-four-hour-checkin]="isTwentyFourHourCheckIn"
                 [style.justify-content]="!showRoomsAndGuestsFilter ? 'center' : 'unset'"
               >
-                <div class="checkAva3" (click)="datepicker3Web.open(); removeSession(); roomsAndOccupancy = false" style="cursor: pointer;">
+                <div class="checkAva3" [class.has-default-time]="!isTwentyFourHourCheckIn" (click)="datepicker3Web.open(); removeSession(); roomsAndOccupancy = false" style="cursor: pointer;">
                   <div id="autocomplete-container">
                     <label
                       for="checkin"
@@ -1298,6 +1298,9 @@
                       required
                       autocomplete="off"
                     />
+                    <span *ngIf="!isTwentyFourHourCheckIn" class="booking-default-time">
+                      <i class="fa-regular fa-clock" aria-hidden="true"></i> 12:00 PM
+                    </span>
 
                     <div class="form-group" style="height: 0px; margin: 0; padding: 0;">
                       <input
@@ -1327,7 +1330,7 @@
                   </div>
                 </div>
 
-                <div class="checkAva6" (click)="datepicker4Web.open(); removeSession(); roomsAndOccupancy = false" style="cursor: pointer;">
+                <div class="checkAva6" [class.has-default-time]="!isTwentyFourHourCheckIn" (click)="datepicker4Web.open(); removeSession(); roomsAndOccupancy = false" style="cursor: pointer;">
                   <div id="autocomplete-container">
                     <label
                       for="checkout"
@@ -1347,6 +1350,9 @@
                       required
                       autocomplete="off"
                     />
+                    <span *ngIf="!isTwentyFourHourCheckIn" class="booking-default-time">
+                      <i class="fa-regular fa-clock" aria-hidden="true"></i> 11:00 AM
+                    </span>
 
                     <div class="form-group" style="height: 0px; margin: 0; padding: 0;">
                       <input
