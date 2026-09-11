@@ -1253,15 +1253,13 @@
         <div class="website-web-vision" *ngIf="!isMobileView">
           <div 
             class="card checkAvaCard"
-            [style.max-width]="!showRoomsAndGuestsFilter ? '65%' : '100%'"
-            [style.margin-left]="!showRoomsAndGuestsFilter ? 'auto' : 'unset'"
-            [style.margin-right]="!showRoomsAndGuestsFilter ? 'auto' : 'unset'"
+            style="max-width: 70%; margin-left: auto; margin-right: auto;"
           >
             <div class="checkin-mode-row" *ngIf="showTwentyFourHourBanner" style="border: none !important; margin-bottom: 15px;">
               <div style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border: 1px solid #bbf7d0; border-radius: 10px; padding: 12px 16px; display: flex; align-items: flex-start; gap: 10px; width: 100%; box-shadow: 0 2px 4px rgba(22, 163, 74, 0.05);">
                 <i class="fa-solid fa-clock" style="color: #16a34a; font-size: 16px; margin-top: 2px;"></i>
                 <div style="display: flex; flex-direction: column; gap: 2px;">
-                  <span style="color: #14532d; font-size: 13px; font-weight: 600; text-align: left; letter-spacing: -0.1px;">
+                  <span style="color: #14532d; font-size: 13px; font-weight: 500; text-align: left; letter-spacing: -0.1px;">
                     Property has Time-based check-in
                   </span>
                   <span style="color: #166534; font-size: 11px; font-weight: 400; text-align: left; opacity: 0.9;">
@@ -1276,7 +1274,7 @@
                 [class.has-twenty-four-hour-checkin]="isTwentyFourHourCheckIn"
                 [style.justify-content]="!showRoomsAndGuestsFilter ? 'center' : 'unset'"
               >
-                <div class="checkAva3" [class.has-default-time]="!isTwentyFourHourCheckIn" (click)="datepicker3Web.open(); removeSession(); roomsAndOccupancy = false" style="cursor: pointer;">
+                <div class="checkAva3" (click)="datepicker3Web.open(); removeSession(); roomsAndOccupancy = false" style="cursor: pointer;">
                   <div id="autocomplete-container">
                     <label
                       for="checkin"
@@ -1298,9 +1296,6 @@
                       required
                       autocomplete="off"
                     />
-                    <span *ngIf="!isTwentyFourHourCheckIn" class="booking-default-time">
-                      <i class="fa-regular fa-clock" aria-hidden="true"></i> 12:00 PM
-                    </span>
 
                     <div class="form-group" style="height: 0px; margin: 0; padding: 0;">
                       <input
@@ -1330,7 +1325,7 @@
                   </div>
                 </div>
 
-                <div class="checkAva6" [class.has-default-time]="!isTwentyFourHourCheckIn" (click)="datepicker4Web.open(); removeSession(); roomsAndOccupancy = false" style="cursor: pointer;">
+                <div class="checkAva6" (click)="datepicker4Web.open(); removeSession(); roomsAndOccupancy = false" style="cursor: pointer;">
                   <div id="autocomplete-container">
                     <label
                       for="checkout"
@@ -1350,9 +1345,6 @@
                       required
                       autocomplete="off"
                     />
-                    <span *ngIf="!isTwentyFourHourCheckIn" class="booking-default-time">
-                      <i class="fa-regular fa-clock" aria-hidden="true"></i> 11:00 AM
-                    </span>
 
                     <div class="form-group" style="height: 0px; margin: 0; padding: 0;">
                       <input
@@ -1455,13 +1447,13 @@
                             class="d-flex text-center justify-content-between align-items-center"
                           >
                             <div class="col">
-                              <div class="font-weight-bold mb-2">{{ roomLabel }}</div>
+                              <div class=" mb-2" style="font-weight: 500;">{{ roomLabel }}</div>
                               <div>1</div>
                             </div>
 
                             <!-- Adults -->
                             <div class="col">
-                              <div class="font-weight-bold mb-2">Adults</div>
+                              <div class=" mb-2" style="font-weight: 500;">Adults</div>
                               <div
                                 class="d-flex justify-content-center align-items-center"
                               >
@@ -1489,7 +1481,7 @@
 
                             <!-- Children -->
                             <div class="col">
-                              <div class="font-weight-bold mb-2">Children</div>
+                              <div class=" mb-2" style="font-weight: 500;">Children</div>
                               <div
                                 class="d-flex justify-content-center align-items-center"
                               >
@@ -1526,13 +1518,13 @@
                             class="d-flex text-center justify-content-between align-items-center"
                           >
                             <div class="col">
-                              <div class="font-weight-bold mb-2">{{ roomLabel }}</div>
+                              <div class=" mb-2" style="font-weight: 500;">{{ roomLabel }}</div>
                               <div>{{ i + 2 }}</div>
                             </div>
 
                             <!-- Adults -->
                             <div class="col">
-                              <div class="font-weight-bold mb-2">Adults</div>
+                              <div class=" mb-2" style="font-weight: 500;">Adults</div>
                               <div
                                 class="d-flex justify-content-center align-items-center"
                               >
@@ -1562,7 +1554,7 @@
 
                             <!-- Children -->
                             <div class="col">
-                              <div class="font-weight-bold mb-2">Children</div>
+                              <div class=" mb-2" style="font-weight: 500;">Children</div>
                               <div
                                 class="d-flex justify-content-center align-items-center"
                               >
@@ -1604,14 +1596,13 @@
                         >
                           <div style="width: 70%">
                             <a
-                              class="color-text font-weight-bold cursor-pointer"
+                              class="color-text  cursor-pointer" style="font-weight: 500;"
                               (click)="addRoom()"
                               *ngIf="canAddRoom()"
                               >+ Add {{ roomLabel }}</a
                             >
                             <span
-                              class="font-weight-bold text-muted"
-                              style="cursor: not-allowed; opacity: 0.5;"
+                              class=" text-muted" style="font-weight: 500; cursor: not-allowed; opacity: 0.5;"
                               *ngIf="!canAddRoom()"
                               >+ Add {{ roomLabel }}</span
                             >
@@ -1626,7 +1617,7 @@
                               Please select the number of {{ roomLabel === 'Room' ? 'rooms' : roomLabel + 's' }} and assign
                               guests accordingly.
                             </span>
-                            <span *ngIf="!canAddRoom()" class="text-danger font-weight-bold">
+                            <span *ngIf="!canAddRoom()" class="text-danger " style="font-weight: 500;">
                               Maximum number of {{ roomLabel === 'Room' ? 'rooms' : roomLabel + 's' }} reached for this property.
                             </span>
                           </div>
@@ -2190,7 +2181,7 @@
                         <div>
                           <p
                             class="aminities-names"
-                            style="margin: 0; font-weight: 600; color: #334155; font-family: 'Plus Jakarta Sans';"
+                            style="margin: 0; font-weight: 600; color: #334155; font-family: var(--app-font-family);"
                           >
                             {{ fac.name }}
                           </p>
@@ -2317,7 +2308,7 @@
    <!-- AI-Powered Suggestion Section -->
 <div
   class="margin-top-40px website-web-vision smart-suggestion-section"
-  *ngIf="!showSmartRecommendations"
+  *ngIf="smartRecommendationsBoolean && !showSmartRecommendations"
   style="margin-top: 40px; margin-bottom: 40px;"
 >
   <div class="row">
@@ -2377,7 +2368,7 @@
                 border-radius: 999px;
                 margin-bottom: 16px;
                 font-size: 11px;
-                font-family: 'Poppins', sans-serif;
+                font-family: var(--app-font-family);
                 font-weight: 600;
                 color: #FFFFFF;
                 letter-spacing: 1px;
@@ -2390,7 +2381,7 @@
             <!-- Title -->
             <h2 class="smart-suggestion-title"
               style="
-                font-family: 'Playfair Display', 'Lora', 'Georgia', serif;
+                font-family: var(--app-font-family);
                 font-size: 28px;
                 font-weight: 700;
                 color: #FFFFFF;
@@ -2425,7 +2416,7 @@
                 padding: 10px 20px;
                 border-radius: 999px;
                 font-weight: 600;
-                font-family: 'Poppins', sans-serif;
+                font-family: var(--app-font-family);
                 font-size: 14px;
                 cursor: pointer;
                 display: inline-flex;
@@ -2593,7 +2584,7 @@
                       text-align: center;
                       padding: 8px 0;
                       border-radius: 999px;
-                      font-family: 'Poppins', sans-serif;
+                      font-family: var(--app-font-family);
                       font-weight: 600;
                       font-size: 12px;
                       cursor: pointer;
@@ -3290,7 +3281,7 @@
           <h4 class="rooms-heading-starts">Select {{ getBookingUnitLabel() }}s</h4>
         </div>
 
-        <div class="image-container">
+        <div id="bookingSelectionAnchor" class="image-container">
           <div class="maiiin">
         <div *ngFor="let room of availableRooms; let i = index; trackBy: trackByRoomId">
           <ng-container *ngIf="hasVisiblePlans(room)">
@@ -5085,11 +5076,16 @@
                   {{ selectedRoom?.name }}
                 </p>
 
-                <i
-                  style="cursor: pointer; font-size: larger"
+                <button
+                  type="button"
+                  class="room-panel-close"
+                  aria-label="Close room details"
                   (click)="togglePanel(selectedRoom, i)"
-                  class="fa-solid fa-xmark"
-                ></i>
+                >
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+                    <path d="M6 6L18 18M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                  </svg>
+                </button>
               </div>
 
               <div *ngIf="selectedRoom?.imageList?.length">
@@ -5249,11 +5245,16 @@
                   {{ selectedRoom?.name }}
                 </p>
 
-                <i
-                  style="cursor: pointer; font-size: larger"
+                <button
+                  type="button"
+                  class="room-panel-close"
+                  aria-label="Close room details"
                   (click)="togglePanelOne(selectedRoom, i)"
-                  class="fa-solid fa-xmark"
-                ></i>
+                >
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+                    <path d="M6 6L18 18M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                  </svg>
+                </button>
               </div>
 
               <div *ngIf="selectedRoom?.imageList?.length">

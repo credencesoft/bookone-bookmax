@@ -45,7 +45,7 @@
 
 .assistance-section {
   text-align: center;
-  font-family: Arial, sans-serif;
+  font-family: var(--app-font-family);
   margin-top: 20px;
   margin-bottom: 10px;
   color: #272727;
@@ -107,7 +107,7 @@
   border: 1px solid #dbeafe;
   border-radius: 12px;
   padding: 14px;
-  font-family: 'Poppins';
+  font-family: var(--app-font-family);
 }
 
 .cancellation-rules-card-voucher h5 {
@@ -237,13 +237,13 @@
 }
 
 .font-change {
-  font-family: 'Poppins';
+  font-family: var(--app-font-family);
 }
 
 .needassistance {
   background-color: var(--secondary, #0b01cc);
   color: var(--tertiary) !important;
-  font-family: "Poppins";
+  font-family: var(--app-font-family);
   border: none;
   padding: 6px 20px;
   border-radius: 8px;
@@ -252,7 +252,7 @@
 .saveCopy {
   background-color: var(--secondary, #0b01cc);
   color: var(--tertiary) !important;
-  font-family: "Poppins";
+  font-family: var(--app-font-family);
   border: none;
   padding: 6px 20px;
   border-radius: 8px;
@@ -281,7 +281,7 @@
   padding: 20px;
   padding-top: 30px;
   background-color: #f0f0f0;
-  font-family: "Poppins";
+  font-family: var(--app-font-family);
 }
 
 .clamp-text {
@@ -298,12 +298,12 @@
 .highlight-text {
   font-size: 15px;
   color: #615D5D;
-  font-family: 'Poppins';
+  font-family: var(--app-font-family);
 }
 
 .assistance-section {
   text-align: center;
-  font-family: Arial, sans-serif;
+  font-family: var(--app-font-family);
   margin-top: 20px;
   margin-bottom: 10px;
   color: #272727;
@@ -332,7 +332,7 @@
   margin-top: 30px;
   padding: 20px;
   border-radius: 5px;
-  font-family: 'Poppins';
+  font-family: var(--app-font-family);
   font-weight: 600;
 }
 
@@ -416,7 +416,7 @@
   .enquiry-details-card {
     padding: 21px;
     border: 1px solid #E5E7EB;
-    font-family: 'Poppins';
+    font-family: var(--app-font-family);
     line-height: 25px;
   }
 }
@@ -471,7 +471,7 @@
 
 .backNavigation {
   font-weight: 600;
-  font-family: 'Poppins';
+  font-family: var(--app-font-family);
   font-size: larger;
   cursor: pointer;
 }
@@ -492,18 +492,18 @@
 }
 
 .heading-enquiry {
-  font-family: 'Poppins';
+  font-family: var(--app-font-family);
   font-weight: 600;
 }
 
 .enquiry-details-card {
   padding: 21px;
   border: 1px solid #E5E7EB;
-  font-family: 'Poppins';
+  font-family: var(--app-font-family);
 }
 
 .booking-summary-container {
-  font-family: 'Poppins';
+  font-family: var(--app-font-family);
   color: #333;
 }
 
@@ -511,7 +511,7 @@
   width: 100%;
   border-collapse: collapse;
   margin-bottom: 20px;
-  font-family: 'Poppins';
+  font-family: var(--app-font-family);
 }
 
 .booking-summary-table th,
@@ -554,7 +554,7 @@
 .booking-summary-footer {
   margin-top: 10px;
   text-align: right;
-  font-family: 'Poppins';
+  font-family: var(--app-font-family);
 }
 
 .booking-summary-footer div {
@@ -567,7 +567,7 @@
   overflow: hidden;
   background: #fff;
   padding-top: 21px;
-  font-family: 'Poppins';
+  font-family: var(--app-font-family);
 }
 
 .footer-borders {
@@ -651,7 +651,7 @@
   .hotel-card-unique {
     padding: 10px;
     padding-top: 21px;
-    font-family: 'Poppins';
+    font-family: var(--app-font-family);
   }
 
   .hotel-card-unique-body {
@@ -660,7 +660,7 @@
 
   .backNavigation {
     font-weight: 600;
-    font-family: "Poppins";
+    font-family: var(--app-font-family);
     font-size: medium;
     cursor: pointer;
     margin-top: 10px;
@@ -668,7 +668,7 @@
 
   .booking-summary-footer {
     margin-right: 0px;
-    font-family: "Poppins";
+    font-family: var(--app-font-family);
   }
 
   .booking-summary-footer div {
@@ -694,7 +694,7 @@
   .hotel-card-unique {
     padding: 10px;
     padding-top: 21px;
-    font-family: 'Poppins';
+    font-family: var(--app-font-family);
   }
 
   .hotel-card-unique-body {
@@ -703,7 +703,7 @@
 
   .backNavigation {
     font-weight: 600;
-    font-family: "Poppins";
+    font-family: var(--app-font-family);
     font-size: medium;
     cursor: pointer;
     margin-top: 10px;
@@ -721,7 +721,7 @@
 
   .booking-summary-footer {
     margin-right: 0px;
-    font-family: "Poppins";
+    font-family: var(--app-font-family);
   }
 
   .container-div {

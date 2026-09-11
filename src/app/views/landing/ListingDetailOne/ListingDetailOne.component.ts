@@ -1433,60 +1433,7 @@ this.token.savePropertyUrl(currentUrl);
         this.totalExtraAmount +
         this.booking.taxAmount;
     }
-    const savedBooking = sessionStorage.getItem('bookingSummaryDetails');
-    if (savedBooking) {
-      try {
-        const data = JSON.parse(savedBooking);
-        const currentHotelID = this.acRoute.snapshot.queryParams['hotelID'] || this.acRoute.snapshot.queryParams['hotelId'];
-        const currentSlug = this.acRoute.snapshot.params['detail'];
-
-        let isMatch = false;
-
-        if (data.propertyId !== undefined && data.propertyId !== null) {
-          if (currentHotelID !== undefined && currentHotelID !== null && Number(data.propertyId) === Number(currentHotelID)) {
-            isMatch = true;
-          }
-        }
-
-        if (data.businessSlug !== undefined && data.businessSlug !== null) {
-          if (currentSlug !== undefined && currentSlug !== null && data.businessSlug === currentSlug) {
-            isMatch = true;
-          }
-        }
-
-        if (!isMatch) {
-          sessionStorage.removeItem('bookingSummaryDetails');
-          sessionStorage.removeItem('guestDataArray');
-          sessionStorage.removeItem('bookingSummary');
-          this.selectedPlansSummary = [];
-        } else {
-          this.selectedPlansSummary = data.selectedPlansSummary || [];
-
-          // Rebuild selectedGuestsByPlan and selectedRoomsByPlan
-          this.selectedGuestsByPlan = {};
-          this.selectedRoomsByPlan = {};
-
-          this.selectedPlansSummary.forEach(plan => {
-            const planKey = this.getRoomPlanSelectionKey(plan.roomId ?? plan.roomName ?? 'room', plan.planName);
-            this.selectedGuestsByPlan[planKey] = {
-              adults: plan.adults,
-              children: plan.children
-            };
-            this.selectedRoomsByPlan[planKey] = plan.selectedRoomnumber;
-            this.selectedGuestsByPlan[plan.planName] = {
-              adults: plan.adults,
-              children: plan.children
-            };
-            this.selectedRoomsByPlan[plan.planName] = plan.selectedRoomnumber;
-          });
-        }
-      } catch (e) {
-        sessionStorage.removeItem('bookingSummaryDetails');
-        sessionStorage.removeItem('guestDataArray');
-        sessionStorage.removeItem('bookingSummary');
-        this.selectedPlansSummary = [];
-      }
-    }
+    this.restoreGuestSelectionsFromSummary();
     // this.toDate = calendar.getNext(calendar.getToday(), 'd', 10);
     if (
       this.token?.getRoomsData() !== null &&
@@ -2097,28 +2044,17 @@ restoreGuestSelectionsFromSummary() {
 
   try {
     const parsedSummary = JSON.parse(savedSummary);
-    const currentHotelID = this.acRoute.snapshot.queryParams['hotelID'] || this.acRoute.snapshot.queryParams['hotelId'];
-    const currentSlug = this.acRoute.snapshot.params['detail'];
+    const matchState = this.getSavedBookingMatchState(parsedSummary);
 
-    let isMatch = false;
-
-    if (parsedSummary.propertyId !== undefined && parsedSummary.propertyId !== null) {
-      if (currentHotelID !== undefined && currentHotelID !== null && Number(parsedSummary.propertyId) === Number(currentHotelID)) {
-        isMatch = true;
-      }
+    // bookingSource URLs can initially contain only a source marker (such as
+    // GoogleHotelCenter). Wait for the property response before deciding that
+    // an in-session selection belongs to a different property.
+    if (matchState === 'pending') {
+      return;
     }
 
-    if (parsedSummary.businessSlug !== undefined && parsedSummary.businessSlug !== null) {
-      if (currentSlug !== undefined && currentSlug !== null && parsedSummary.businessSlug === currentSlug) {
-        isMatch = true;
-      }
-    }
-
-    if (!isMatch) {
-      sessionStorage.removeItem('bookingSummaryDetails');
-      sessionStorage.removeItem('guestDataArray');
-      sessionStorage.removeItem('bookingSummary');
-      this.selectedPlansSummary = [];
+    if (matchState === 'mismatch') {
+      this.clearSavedBookingSelection();
       return;
     }
 
@@ -2133,6 +2069,21 @@ restoreGuestSelectionsFromSummary() {
     this.selectedGuestsByPlan = {};
     this.selectedRoomsByPlan = {};
     this.childAgesByPlan = {};
+
+    // The summary restores rooms even when the optional guestDataArray is not
+    // available; guestDataArray below adds child-age details when present.
+    this.selectedPlansSummary.forEach(plan => {
+      const scopedKey = this.getRoomPlanSelectionKey(plan.roomId ?? plan.roomName ?? 'room', plan.planName);
+      const guests = {
+        adults: Number(plan.adults) || 0,
+        children: Number(plan.children) || 0
+      };
+      const roomCount = Number(plan.selectedRoomnumber) || 0;
+      this.selectedGuestsByPlan[scopedKey] = guests;
+      this.selectedRoomsByPlan[scopedKey] = roomCount;
+      this.selectedGuestsByPlan[plan.planName] = guests;
+      this.selectedRoomsByPlan[plan.planName] = roomCount;
+    });
 
     guestDataArray.forEach(entry => {
       const scopedKey = this.getRoomPlanSelectionKey(entry.roomId ?? entry.roomName ?? 'room', entry.planCode);
@@ -2149,12 +2100,55 @@ restoreGuestSelectionsFromSummary() {
       this.selectedRoomsByPlan[entry.planCode] = entry.roomCount;
       this.childAgesByPlan[entry.planCode] = entry.childAges || [];
     });
+
+    if (Array.isArray(parsedSummary.propertyServiceListDataOne)) {
+      this.selectedFacilityNames = parsedSummary.propertyServiceListDataOne
+        .map(item => item?.name)
+        .filter(Boolean);
+    }
   } catch (e) {
-    sessionStorage.removeItem('bookingSummaryDetails');
-    sessionStorage.removeItem('guestDataArray');
-    sessionStorage.removeItem('bookingSummary');
-    this.selectedPlansSummary = [];
+    this.clearSavedBookingSelection();
   }
+}
+
+private getSavedBookingMatchState(summary: any): 'match' | 'mismatch' | 'pending' {
+  const queryParams = this.acRoute.snapshot.queryParams || {};
+  const routeParams = this.acRoute.snapshot.params || {};
+  const savedId = this.toComparableId(summary?.propertyId);
+  const savedSlug = this.normalizePropertySlug(summary?.businessSlug);
+  const currentIds = [
+    this.toComparableId(queryParams['hotelID'] ?? queryParams['hotelId']),
+    this.toComparableId(routeParams['id']),
+    this.toComparableId(this.businessUser?.id)
+  ].filter((id): id is number => id !== null);
+  const currentSlugs = [
+    this.normalizePropertySlug(routeParams['detail']),
+    this.normalizePropertySlug(this.businessUser?.seoFriendlyName)
+  ].filter((slug): slug is string => !!slug);
+
+  if ((savedId !== null && currentIds.includes(savedId)) ||
+      (savedSlug && currentSlugs.includes(savedSlug))) {
+    return 'match';
+  }
+
+  return (currentIds.length > 0 || currentSlugs.length > 0) ? 'mismatch' : 'pending';
+}
+
+private toComparableId(value: any): number | null {
+  if (value === null || value === undefined || String(value).trim() === '') return null;
+  const numericValue = Number(value);
+  return Number.isFinite(numericValue) ? numericValue : null;
+}
+
+private normalizePropertySlug(value: any): string {
+  return String(value ?? '').trim().toLocaleLowerCase();
+}
+
+private clearSavedBookingSelection(): void {
+  sessionStorage.removeItem('bookingSummaryDetails');
+  sessionStorage.removeItem('guestDataArray');
+  sessionStorage.removeItem('bookingSummary');
+  this.selectedPlansSummary = [];
 }
 
 
@@ -5084,23 +5078,55 @@ if (roomKey) {
   // }
   ngAfterViewInit() {
     // this.token.saveSelectedServices(this.selectedServices);
+    const sectionId = sessionStorage.getItem('scrollTo');
+    if (sectionId) {
+      this.scrollToRestoredSection(sectionId);
+      return;
+    }
+
     setTimeout(() => {
       window.scrollTo({
         top: 0,
         behavior: 'smooth',
       });
     }, 100);
+  }
 
-  const sectionId = sessionStorage.getItem('scrollTo');
-  if (sectionId) {
-    setTimeout(() => {
-      const el = document.getElementById(sectionId);
-      if (el) {
-        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  private scrollToRestoredSection(sectionId: string, attempt = 0): void {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      if (sectionId === 'bookingSelectionAnchor') {
+        // Return from checkout directly to the selected-room and desktop
+        // floating-summary layout, below the fixed header. Using an immediate
+        // jump avoids briefly showing the property hero during smooth scroll.
+        this.scrollToBookingSelectionAnchor(element);
+        // Property images and room cards can finish loading after the first
+        // paint and shift the layout. Re-align briefly while the return view
+        // settles so the user remains at the selected booking section.
+        [300, 1000, 2500].forEach(delay => {
+          setTimeout(() => {
+            const anchor = document.getElementById('bookingSelectionAnchor');
+            if (anchor) this.scrollToBookingSelectionAnchor(anchor);
+          }, delay);
+        });
+      } else {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
       sessionStorage.removeItem('scrollTo');
-    }, 100);
+      return;
+    }
+
+    // Room cards are populated asynchronously. Retry briefly so returning from
+    // checkout lands at the selected-room section instead of at page top.
+    if (attempt < 20) {
+      setTimeout(() => this.scrollToRestoredSection(sectionId, attempt + 1), 200);
+    }
   }
+
+  private scrollToBookingSelectionAnchor(anchor: HTMLElement): void {
+    const headerOffset = 110;
+    const targetTop = Math.max(0, anchor.getBoundingClientRect().top + window.scrollY - headerOffset);
+    window.scrollTo({ top: targetTop, behavior: 'auto' });
   }
 
   backClicked() {
@@ -5637,6 +5663,7 @@ onCheckOutClosed(): void {
       if (data.status === 200) {
         this.businessUser = data.body;
         this.propertyData = this.businessUser;
+        this.restoreGuestSelectionsFromSummary();
         this.checkAnyTimeCheckIn();
         this.accommodationData =
         this.propertyData.businessServiceDtoList?.filter(
@@ -6296,6 +6323,7 @@ onCheckOutClosed(): void {
             this.token.saveCountry(this.businessUser.address.country);
           }
           this.propertyData = this.businessUser;
+          this.restoreGuestSelectionsFromSummary();
           this.checkAnyTimeCheckIn();
           this.accommodationData = this.propertyData?.businessServiceDtoList?.filter((entry) => entry?.name === 'Accommodation');
           this.roomRateOrderEnabled = this.accommodationData?.some((entry) => entry?.roomRateOrder === true) || false;
